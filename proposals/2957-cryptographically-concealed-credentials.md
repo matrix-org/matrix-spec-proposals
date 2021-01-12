@@ -73,12 +73,12 @@ The ciphertext is MACed using HMAC-SHA-256 using K<sub>MAC</sub> as the key.
 The server stores A<sub>pub</sub> securely stores the result of
 K<sub>conf</sub> = HKDF(ECDH(S<sub>priv</sub>, C<sub>pub</sub>) ||
 ECDH(S<sub>priv</sub>, A<sub>pub</sub>), "", "`confirmation key|`\<Matrix
-ID>`|`A<sub>pub</sub>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 256), called the
+ID>`|`A<sub>pub</sub>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 16), called the
 confirmation key.
 
 The client calculates K<sub>conf</sub> = HKDF(ECDH(C<sub>priv</sub>,
 S<sub>pub</sub>) || ECDH(A<sub>priv</sub>, S<sub>pub</sub>), "", "`confirmation
-tag|`\<Matrix ID>`|`A<sub>pub</sub>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 256),
+tag|`\<Matrix ID>`|`A<sub>pub</sub>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 16),
 and calculates HKDF(K<sub>conf</sub>, "", "`security check|`\<Matrix
 ID>`|`A<sub>priv</sub>", 3), giving a number between 0 and 7.  The client then
 displays the emoji (or the text equivalent) from the SAS verification emoji
@@ -94,7 +94,7 @@ C'<sub>pub</sub> to the server.
 The server then generates its own ephemeral Curve25519 key pair
 <S'<sub>priv</sub>,S'<sub>pub</sub>> and calculates K'<sub>AES</sub> = HKDF(ECDH(S'<sub>priv</sub>,
 A<sub>pub</sub>) || ECDH(S'<sub>priv</sub>, C'<sub>pub</sub>), "", "`server
-encryption|`\<MATRIX ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>", 256).
+encryption|`\<Matrix ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>", 256).
 
 - the PBKDF2 parameters to use,
 - S'<sub>pub</sub>
@@ -108,7 +108,7 @@ generate the base key K<sub>base</sub>.  It then calculates
   "`authentication key|`\<Matrix ID>", 256) and the corresponding public key
   A<sub>pub</sub>
 - K'<sub>AES</sub> = HKDF(ECDH(A<sub>priv</sub>, S'<sub>pub</sub>) ||
-  ECDH(C'<sub>priv</sub>, S'<sub>pub</sub>), "", "`server encryption|`\<MATRIX
+  ECDH(C'<sub>priv</sub>, S'<sub>pub</sub>), "", "`server encryption|`\<Matrix
   ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>", 256), and
   decrypts K<sub>conf</sub> using K'<sub>AES</sub>.
 - HKDF(K<sub>conf</sub>, "", "`security check|`\<Matrix ID>`|`A<sub>priv</sub>",
@@ -122,22 +122,28 @@ confidence) that they entered their password correctly, and that they are
 communicating with the same entity that they were communicating with when they
 registered.
 
-The client then calculates K'<sub>MAC</sub> = HKDF(ECDH(A<sub>priv</sub>,
-S'<sub>pub</sub>) || ECDH(C'<sub>priv</sub>,S'<sub>pub</sub>), "", "`client
-MAC|`\<Matrix
+The client then calculates K<sub>2</sub> = ECDH(A<sub>priv</sub>,
+S'<sub>pub</sub>) || ECDH(C'<sub>priv</sub>,S'<sub>pub</sub>) and
+K'<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", "`client MAC|`\<Matrix
 ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
 256), and sends an HMAC of the nonce using this key to the server.
 
-The server calculates K'<sub>MAC</sub> = HKDF(ECDH(S'<sub>priv</sub>,
-A<sub>pub</sub>) || ECDH(S'<sub>priv</sub>,C'<sub>pub</sub>), "", "`client
-MAC|`\<Matrix
-ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
-256) and K''<sub>MAC</sub> = HKDF(ECDH(S'<sub>priv</sub>,
-A<sub>pub</sub>) || ECDH(S'<sub>priv</sub>,C'<sub>pub</sub>), "", "`server
-MAC|`\<Matrix
-ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
-256), verifies the HMAC sent by the client, and responds with an HMAC of the
-nonce using K''<sub>MAC</sub>.
+The server calculates
+
+- K<sub>2</sub> = ECDH(S'<sub>priv</sub>, A<sub>pub</sub>) ||
+  ECDH(S'<sub>priv</sub>,C'<sub>pub</sub>)
+- K'<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", "`client MAC|`\<Matrix
+  ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
+  256)
+- K''<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", "`server MAC|`\<Matrix
+  ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
+  256)
+
+The server verifies the HMAC sent by the client, which proves to the server
+that the client is in possession of the secret key A<sub>priv</sub>.  The
+server then responds with an HMAC of the nonce using K''<sub>MAC</sub>, which
+the client can check to show that the server is in possession of the public key
+A<sub>pub</sub>.
 
 ### Protocol details
 
@@ -197,14 +203,15 @@ related to the user's password), and an encrypted version of K<sub>conf</sub>.
 
 If the attacker knows K<sub>conf</sub>, they could try to brute-force the
 user's password until they can decrypt the encrypted version of
-K<sub>conf</sub> to obtain the known value of K<sub>conf</sub>.  However, if
-the attacker knows K<sub>conf</sub>, they would also know A<sub>pub</sub>,
-which would already allow them to try to brute-force the user's password, so in
-this case, the attacker does not gain any information by attempting to log in.
-Note that in this case, it is important that the encryption of K<sub>conf</sub>
-is done in an unauthenticated manner to ensure that an attacker is not given
-any information about whether or not they have guessed the right decryption
-key.
+K<sub>conf</sub> to obtain the known value of K<sub>conf</sub>.  However,
+K<sub>conf</sub> is only 16 bits long, so there may be multiple passwords that
+can be result in its correct decryption.  Also, if the attacker knows
+K<sub>conf</sub>, they would most likely also know A<sub>pub</sub>, which would
+already allow them to try to brute-force the user's password, so in this case,
+the attacker does not gain any information by attempting to log in.  Note that
+in this case, it is important that the encryption of K<sub>conf</sub> is done
+in an unauthenticated manner to ensure that an attacker is not given any
+information about whether or not they have guessed the right decryption key.
 
 It should be noted that an attacker who shoulder-surfs when the user registers
 or logs in will be able to see the emoji security check displayed to the user.
@@ -216,7 +223,9 @@ password by submitting requests to the server, and so can be rate-limited by
 the server.  Since the emoji security check provides some feedback to the user
 on whether they mistyped their password (a mistyped password would have a 7/8
 chance of displaying the wrong emoji), servers can more aggressively rate-limit
-login attempts when using this method.
+login attempts when using this method.  Clients could also make the emoji
+security check optional so that users can disable it when they are in a
+situation where shoulder-surfing is likely.
 
 ### Man-in-the-middle attacks
 
