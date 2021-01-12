@@ -30,7 +30,7 @@ contain specification). Room versions are a bit more nuanced though, and are cov
 
 The version which covers the entire specification and all its parts is called the "Matrix version", and
 is a promotion of the previously marketing-only version number assigned to the spec. The first version
-after this proposal is expected to be Matrix 1.1, though the spec core team will make that distinction.
+after this proposal is expected to be Matrix 1.1, though the spec core team will make that decision.
 v1.0 would be left in the marketing era and recorded for posterity (though still retains no significant
 meaning).
 
@@ -76,7 +76,7 @@ See the section on brewing Matrix versions for information on how the unstable v
 `MINOR` versions have a backwards compatibility scheme described later in this proposal. `MAJOR`
 versions are expected to have zero backwards compatibility guarantees to them.
 
-For clarity, `v1.2.0` will probably work with `v1.1.0`, though implementations should be wary if they
+For clarity, `v1.2` will probably work with `v1.1`, though implementations should be wary if they
 depend on a version. As mentioned, the backwards compatibility scheme section goes into more detail on
 this.
 
