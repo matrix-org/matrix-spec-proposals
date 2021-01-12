@@ -124,35 +124,29 @@ to remove any room editions, so they are not covered as a potential process for 
 
 ### Deprecation approach
 
-This MSC doesn't change much about how things get deprecated, though it would be codified by this MSC.
+Previous to this proposal the deprecation approach was largely undocumented - this MSC aims to codify
+a standardized approach.
 
 An MSC is required to transition something from stable (the default) to deprecated. Once something has
-been deprecated for suitably long enough, it is eligible for removal from the specification with another
-MSC. Today's process is the same, though not defined explicitly.
+been deprecated for suitably long enough (usually 1 version), it is eligible for removal from the
+specification with another MSC. Today's process is the same, though not defined explicitly.
 
-Also not mentioned in today's system is that implementations are not required to implement deprecated
-endpoints. This MSC doesn't change that, but does put some rules around how deprecation works for a
-given endpoint. Specifically, if a server wants to support a Matrix version where an endpoint is *not*
-deprecated, then it must serve it.
+The present system for deprecation also allows implementations to skip implementation of deprecated
+endpoints. This proposal does not permit such behaviour: for an implementation to remain compliant
+with the specification, it must implement all endpoints (including deprecated ones) in the version(s)
+it wishes to target.
 
 As an example, if `/test` were introduced in v1.1, deprecated in v1.2, and removed in v1.3 then an
 implementation can support v1.1, v1.2, and v1.3 by implementing `/test` as it was defined in v1.2 (minus
-the deprecation flag). If the implementation wanted to support just v1.2 and v1.3, then it could
-optionally implement `/test`, though is encouraged to. Further, if the implementation only wanted to
-support v1.3, then it *should not* implement `/test` at all because it was removed.
+the deprecation flag). If the implementation wanted to support just v1.2 and v1.3, then it still must
+implement `/test`. If the implementation only wanted to support v1.3, then it *should not* implement
+`/test` at all because it was removed.
 
 Generally deprecation is paired with replacement or breaking changes. For example, if `/v3/sync` were
 to be modified such that it needed to be bumped to `v4`, the MSC which does so would deprecate `/v3/sync`
 in favour of its proposed `/v4/sync`. Because endpoints are versioned on a per-endpoint basis, `/v4/sync`
 will still work with a server that supports `/v3/profile` (for example) - the version number doesn't mean
 an implementation can only use v4 endpoints.
-
-This sort of approach could be potentially confusing and non-standard as it would mean for an amount of
-time in the specification there would be two versions of an endpoint: one deprecated and one not. Most
-specifications and protocols do not use this sort of approach and instead opt to replace the whole API
-or outright remove the endpoint, however the Matrix specification tends to have a longer-lived cycle
-associated with it and thus means we should support a larger than average backwards compatibility
-period.
 
 ## Potential issues
 
