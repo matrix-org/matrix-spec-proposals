@@ -1,7 +1,7 @@
 /api/node_modules
-/assets
 /assets.tar.gz
 /env*
+/resources
 /scripts/gen
 /scripts/continuserv/continuserv
 /scripts/speculator/speculator
