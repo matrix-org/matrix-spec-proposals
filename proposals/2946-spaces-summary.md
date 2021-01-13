@@ -45,6 +45,7 @@ Clients are able to do this currently by peeking into all of these rooms
 POST /_matrix/client/r0/rooms/{roomID}/spaces
 {
     "max_rooms_per_space": 5,      // The maximum number of rooms/subspaces to return for a given space, if negative unbounded. default: -1.
+    "auto_join_only": true,        // If true, only return m.space.child events with auto_join:true, default: false, which returns all events.
     "limit": 100,                  // The maximum number of rooms/subspaces to return, server can override this, default: 100.
     "batch": "opaque_string"       // A token to use if this is a subsequent HTTP hit, default: "".
 }
@@ -81,7 +82,7 @@ which returns:
                 "via": ["example.com"],
                 "present": true,
                 "order": "abcd",
-                "default": true
+                "auto_join": true
             }
         },
         {
@@ -112,6 +113,11 @@ Justifications for the request API shape are as follows:
  - `limit`: The maximum number of events to return in `events`. It is desirable for clients
    and servers to be able to put a maximum cap on the amount of data returned to the client.
    **This limit may be exceeded if the root room has `> limit` rooms.**
+ - `auto_join_only`: If `true`, only a subset of the graph is returned based on the presence
+   of `auto_join: true` in the `content` field of `m.space.child`. Some clients may only
+   care about the "main" or "default" rooms, which are rooms with this flag set. This does
+   not affect parent state events: they are still returned. This does not modify the value
+   of `num_refs`.
  - `batch`: Required for pagination. Could be a query parameter but it's easier if
    request data is in one place.
 
