@@ -183,16 +183,20 @@ available) to join whichever subset of it makes most sense for the client's
 UX.
 
 Obviously auto-joining can be a DoS vector, and we consider it to be antisocial
-for a space to try to join its users to more than ~100 children.
+for a space to try to autojoin its members to more than 100 children (in total).
 
 Clients could display the auto-joined children in the room list whenever the
 space appears in the list - thus helping users discover other rooms in a space
-even if they're not joined to that space.
+even if they're not joined to that space.  For instance, if you join
+`#matrix:matrix.org`, your client could show that room in the context of its
+parent space, with that space's autojoined children shown alongside it as
+siblings.
 
-XXX: I still think it's more common that a space admin will want users to know
-that a child exists (by showing it in the room list), rather than force them to
-actually join it.  So this would be an `advertise` flag or something on the child.
-Matthew to discuss with Nad...
+It may also be useful to have a way to "suggest" that members of a space
+should join certain children (but without actually autojoining them) - to
+advertise particular rooms more prominently than in the room directory.
+However, this can be added in a later MSC if it's found to be needed in
+practice.
 
 ### Long description
 
