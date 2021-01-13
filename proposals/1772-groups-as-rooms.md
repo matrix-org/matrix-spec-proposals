@@ -118,7 +118,7 @@ relationship can be expressed in one of two ways:
     forbidden and should be ignored if received.)
 
     If `auto_join` is set to `true`, that indicates that the child should be
-    automatically joined by members of the space see
+    automatically joined by members of the space: see
     [below](#auto-joined-children).
 
  2. Separately, rooms can claim parents via the `m.room.parent` state
