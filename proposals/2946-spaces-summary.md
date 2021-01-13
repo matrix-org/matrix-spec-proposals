@@ -135,6 +135,7 @@ Server behaviour:
    following rules:
     * If this room has already been processed, skip. NB: do not remember this between calls,
       as servers will need to visit the same room more than once to return additional events.
+    * Mark this room as processed.
     * Is the caller currently joined to the room or is the room `world_readable`?
       If no, skip this room. If yes, continue.
     * If this room has not ever been in `rooms` (across multiple requests), extract the
@@ -147,7 +148,6 @@ Server behaviour:
       they haven't been added before (across multiple requests).
     * Else add them to `events` honouring the `limit` and `max_rooms_per_space` values. If either
       are exceeded, stop adding events. If the event has already been added, do not add it again.
-    * Mark this room as processed.
     * For each referenced room ID in the events being returned to the caller (both parent and child)
       add the room ID to the queue of unvisited rooms. Loop from the beginning.
   - This guarantees that all edges for the root node are given to the client. Not all edges of subspaces
@@ -188,3 +188,45 @@ Client behaviour:
           `rooms` and render it.
         - Else the child is a space, render the space as a heading (using the room name/topic) and
           restart the lookup using the new space room ID.
+
+#### Federation API
+
+Servers may not be joined to all subspaces in the graph. If this happens, they will lack the room state to form a response.
+Servers may get this information by peeking into the room, but this includes a live stream of events which is unecessary and
+is a single request per room in the graph. It would be preferable if there was a federation endpoint which included this
+information and nothing more. This is more performant and is a single request per _server_ (which may have many nodes
+of the graph). Effectively, this federation API requests the view of the graph from the point of view of the destination
+server.
+
+```
+POST /_matrix/federation/v1/spaces/{roomID}
+{
+    "exclude_rooms": ["!a:b", "!b:c"] // Optional. Do not return state events in these rooms, nor include these rooms in `rooms`.
+    "max_rooms_per_space": 5,         // The maximum number of rooms/subspaces to return for a given space, if negative unbounded. default: -1.
+    "limit": 100,                     // The maximum number of rooms/subspaces to return, server can override this, default: 100.
+    "batch": "opaque_string"          // A token to use if this is a subsequent HTTP hit, default: "".
+}
+```
+
+Justifications for the request API shape are the same as before with one exception:
+ - The HTTP path: Per-room federation endpoints are not put under `/rooms` so this proposal doesn't either.
+ - The `exclude_rooms` parameter: In order to stop redundant information being sent to the server, this field allows requesting
+   servers the ability to suppress node/edge information on a per-room basis. If a room ID is present in this list,
+   the server should not return node information under `rooms` nor should it return _any state events in this room_. NB: state
+   events which _point to_ this room should still be included.
+
+The response body remains unchanged from the client format.
+
+Sending server behaviour:
+ - When walking the spaces graph, if the server is not joined to a given room, remember the `via` server names and the room ID.
+ - Send a federated request to a server in `via` for the unknown room, marking rooms the server is already joined to
+   in `exclude_rooms`.
+ - Servers MAY eagerly request graph information and SHOULD cache the response for a configurable duration. This proposal recommends
+   1 hour.
+
+Receiving server behaviour:
+ - Validate the request and check sender signatures.
+ - Walk the graph in the same way as the CS API endpoint, remembering to exclude rooms in `exclude_rooms`. "Exclude" in this
+   context merely means do not add the room or state events in that room to the response. The room itself MUST still be walked
+   so servers can extract transitive rooms e.g `A -> B -> C` and the requesting server requests `room_id: A, exclude_rooms: [B]`
+   must return `C`.
