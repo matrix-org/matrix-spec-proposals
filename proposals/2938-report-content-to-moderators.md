@@ -40,6 +40,8 @@ instead of homeserver admins.
 In the following, we call **moderators** for a room `roomId` any user with a powerlevel sufficient
 to both kick and ban bad room members from that room.
 
+#### Client API
+
 We extend `POST /_matrix/client/r0/rooms/{roomId}/report/{eventId}` with a JSON Body Parameter
 
 | Parameter | Type   | Description |
@@ -50,6 +52,8 @@ If `target` is `"homeserver-admins"` or unspecified, the behavior is unchanged.
 
 If `target` is `"room-moderators"`, the message is intended to be propagated as a server notice to
 moderators for this room.
+
+#### Server notices
 
 We further extend server notices so that the field `server_notice_type` may also admit a new
 value:
@@ -102,6 +106,66 @@ as `"room-moderators"` they should:
     "reason": "{reason}"    // From JSON body parameter
   }
   ```
+3. for all homeservers other than local with at least one moderator in room `roomId`:
+  1. send a PDU
+  ```json
+  {
+    "room_id": "{roomId}", // From path parameter
+    "sender":  "{userId}", // From authentication token
+    "origin":  "{server_name}", // From server configuration
+    "origin_server_ts": "{now}", // From clock
+    "type": "m.server_notice.content_report",
+    "content": {
+      "body": "User has reported content", // Or any other human-readable description
+      "msgtype": "m.server_notice.content_report",
+      "roomId": "{roomId}",   // From path parameter
+      "eventId": "{eventId}", // From path parameter
+      "userId": "{userId}",   // From authentication token
+      "score": "{score}",     // From JSON body parameter
+      "reason": "{reason}",   // From JSON body parameter
+    },
+    "prev_events": [...],     // Most recent events in room `{roomId}`, as per usual PDU mechanisms
+    "depth": ?????,           // FIXME: How should we pick this?
+    "auth_events": [
+      "{userAuthEventId}",    // Event ID for the authentication of user {userId}
+      "{reportedUserAuthEventId}", // Event ID for the authentication of the user who created event {eventId}
+    ],
+    "hashes": {
+      ...                      // Hashes, as per usual PDU mechanisms
+    },
+    "signatures": {
+      ...                      // Signatures, as per usual PDU mechanism
+    },
+  }
+  ```
+2. When a server receives a PDU with the following content:
+  ```json
+  {
+    "body": "{body}",
+    "msgtype": "m.server_notice.content_report",
+    "roomId": "{roomId}",
+    "eventId": "{eventId}",
+    "userId": "{userId}",
+    "score": "{score}",
+    "reason": "{reason}",
+  }
+  ```
+  1. ignore the message if it is an invalid PDU, as per usual PDU rules; otherwise
+  2. ignore the message if server is not part of `roomId`; otherwise
+  3. ignore the message ignore the message if `eventId` is not an event in `roomId` or if `userId` is not a member of `roomId`; otherwise
+  4. for all moderators in room `roomId` on server:
+    1. send a server notice
+    ```json
+    {
+      "body": "{body}", // Or any other human-readable description.
+      "msgtype": "m.server_notice.content_report",
+      "roomId": "{roomId}",   // From PDU
+      "eventId": "{eventId}", // From PDU
+      "userId": "{userId}",   // From PDU
+      "score": "{score}",     // From PDU
+      "reason": "{reason}"    // From PDU
+    }
+    ```
 
 #### Client behavior (receiving reports)
 
