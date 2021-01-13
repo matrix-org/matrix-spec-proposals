@@ -1,4 +1,4 @@
-### Spaces Summary API
+## Spaces Summary API
 
 *This MSC depends on [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).*
 
@@ -39,7 +39,7 @@ Space A
 Clients are able to do this currently by peeking into all of these rooms
 (assuming they have permission to) but this is costly and slow.
 
-#### Client API
+### Client API
 
 ```
 POST /_matrix/client/r0/rooms/{roomID}/spaces
@@ -189,7 +189,9 @@ Client behaviour:
         - Else the child is a space, render the space as a heading (using the room name/topic) and
           restart the lookup using the new space room ID.
 
-#### Federation API
+
+### Federation API
+
 
 Servers may not be joined to all subspaces in the graph. If this happens, they will lack the room state to form a response.
 Servers may get this information by peeking into the room, but this includes a live stream of events which is unecessary and
