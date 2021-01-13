@@ -24,10 +24,22 @@ password to the server.  Additional goals of this proposal include:
   attacker cannot take any of the server's responses to perform any offline
   computations or guesses to try to obtain the user's password.
 
+Another benefit of the method proposed here, compared to the current practice
+of sending the password to the server, is that the costly operation of key
+stretching is moved to the client rather than the server.  This means that an
+attacker cannot easily DoS the server by sending a large number of login
+attempts.
 
 ## Proposal
 
 ### Protocol overview
+
+The protocol operates by generating a Curve25519 key pair based on the user's
+password.  The server is provided with the public part of the key pair, and
+uses it to verify that the client is in possession of the private key by
+generating a shared MAC key that the client uses to generate a MAC that the
+server can verify.  Other keys and cryptographic operations are used to provide
+additional security properties.
 
 #### Notation
 
@@ -37,11 +49,16 @@ password to the server.  Additional goals of this proposal include:
   the private key A<sub>priv</sub> and the public key B<sub>pub</sub>.
 - HKDF(K, S, I, L): HKDF-SHA-256 where K is the initial key material, S is the
   salt, I is the info, and L is the number of bits to generate.
+- PBKDF2(P, S, I, L): PBKDF2 using HMAC-SHA-256 as the hash function, where P is
+  the password, S is the salt, I is the iteration count, and L is the length.
+- `text in monospace` denotes a literal byte string; "" denotes the empty byte
+  string
+- "+" denotes concatenation of byte strings
 
 #### Registration
 
-When registering, the client generates an ephemeral Curve25519 key pair <C<sub>priv</sub>,C<sub>pub</sub>>, and
-sends to the server:
+When registering, the client generates an ephemeral Curve25519 key pair
+<C<sub>priv</sub>,C<sub>pub</sub>>, and sends to the server:
 
 - the user's desired Matrix ID
 - C<sub>pub</sub>
@@ -49,45 +66,52 @@ sends to the server:
 The server generates its own ephemeral Curve25519 key pair
 <S<sub>priv</sub>,S<sub>pub</sub>>, and sends the S<sub>pub</sub> to the user.
 
-The client calculates K<sub>1</sub> = ECDH(C<sub>priv</sub>,S<sub>pub</sub>)
-and then calculates
+The client calculates:
 
-- K<sub>AES</sub> = HKDF(K<sub>1</sub>, "", "`encryption key|`\<Matrix ID>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 256)
-- K<sub>MAC</sub> = HKDF(K<sub>1</sub>, "", "`mac key|`\<Matrix ID>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 256)
+- K<sub>1</sub> = ECDH(C<sub>priv</sub>,S<sub>pub</sub>)
+- K<sub>AES</sub> = HKDF(K<sub>1</sub>, "", `encryption key|`+ MatrixID+ `|` +
+  C<sub>pub</sub> + `|` + S<sub>pub</sub>, 256)
+- K<sub>IV</sub> = HKDF(K<sub>1</sub>, "", `encryption iv|` + MatrixID + `|` +
+  C<sub>pub</sub> + `|` + S<sub>pub</sub>, 256)
+- K<sub>MAC</sub> = HKDF(K<sub>1</sub>, "", `mac key|` + MatrixID + `|` +
+  C<sub>pub</sub> + `|` + S<sub>pub</sub>, 256)
+- Salt = HKDF(R, "", `salt|` + MatrixID), where R is a random byte string
+- K<sub>base</sub> = PBKDF2(Password, Salt, I, 256), where I is an iteration
+  count chosen by the client (K<sub>base</sub> can be used as the Secret
+  Storage key)
+- the Curve25519 private key A<sub>priv</sub> = HKDF(K<sub>base</sub>, "",
+  `authentication key|` + MatrixID, 256), which is called the "authentication
+  key", and the corresponding public key A<sub>pub</sub>
 
-where \<Matrix ID> is the user's desired Matrix ID.
-
-The client then takes the user's password and generates the base key
-K<sub>base</sub> using PBKDF2 (K<sub>base</sub> can be used as the Secret
-Storage key).  The client then calculates the Curve25519 private key
-A<sub>priv</sub> = HKDF(K<sub>base</sub>, "", "`authentication key|`\<Matrix
-ID>", 256), and the corresponding public key A<sub>pub</sub>.  The client sends
-to the server, encrypted with AES-256-CBC using K<sub>AES</sub> the AES key
-generated above:
+The client sends to the server (encrypted with AES-256-CBC using the key
+K<sub>AES</sub> and the initialization vector K<sub>IV</sub>, and MACed with
+HMAC-SHA-256 using K<sub>MAC</sub> as the key):
 
 - A<sub>pub</sub>
-- the PBKDF2 parameters used
+- R, and I, which can be used to reconstruct the PBKDF2 parameters
 
-The ciphertext is MACed using HMAC-SHA-256 using K<sub>MAC</sub> as the key.
+The server stores A<sub>pub</sub>, R, and I, as well as the result of
+K<sub>conf</sub> = HKDF(ECDH(S<sub>priv</sub>, C<sub>pub</sub>) +
+ECDH(S<sub>priv</sub>, A<sub>pub</sub>), "", `confirmation key|` + MatrixID +
+`|` + A<sub>pub</sub> + `|` + C<sub>pub</sub> + `|` + S<sub>pub</sub>, 16),
+called the confirmation key.
 
-The server stores A<sub>pub</sub> securely stores the result of
-K<sub>conf</sub> = HKDF(ECDH(S<sub>priv</sub>, C<sub>pub</sub>) ||
-ECDH(S<sub>priv</sub>, A<sub>pub</sub>), "", "`confirmation key|`\<Matrix
-ID>`|`A<sub>pub</sub>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 16), called the
-confirmation key.
+The client calculates
 
-The client calculates K<sub>conf</sub> = HKDF(ECDH(C<sub>priv</sub>,
-S<sub>pub</sub>) || ECDH(A<sub>priv</sub>, S<sub>pub</sub>), "", "`confirmation
-tag|`\<Matrix ID>`|`A<sub>pub</sub>`|`C<sub>pub</sub>`|`S<sub>pub</sub>", 16),
-and calculates HKDF(K<sub>conf</sub>, "", "`security check|`\<Matrix
-ID>`|`A<sub>priv</sub>", 3), giving a number between 0 and 7.  The client then
-displays the emoji (or the text equivalent) from the SAS verification emoji
-list corresponding to that number.  The user remembers/records the emoji for
-later verification.
+- K<sub>conf</sub> = HKDF(ECDH(C<sub>priv</sub>, S<sub>pub</sub>) +
+  ECDH(A<sub>priv</sub>, S<sub>pub</sub>), "", `confirmation key|` + MatrixID +
+  `|` + A<sub>pub</sub> + `|` + C<sub>pub</sub> + `|` + S<sub>pub</sub>, 16),
+- HKDF(A<sub>priv</sub> + K<sub>conf</sub>, "", `security check|` + MatrixID,
+  3), giving a number between 0 and 7
 
-Resetting a user's password would happen similarly, with the addition that the
-data in Secret Storage would need to be re-encrypted if the user is using the
-same password for that.
+The client then displays the emoji (or the text equivalent) from the SAS
+verification emoji list corresponding to that number.  The user
+remembers/records the emoji for later verification.
+
+Changing/resetting a user's password would happen similarly, with the addition
+that the data in Secret Storage would need to be re-encrypted if the user is
+using the same password for that, or re-created if the user does not remember
+their previous password.
 
 #### Logging in
 
@@ -96,26 +120,41 @@ The client generates an ephemeral Curve25519 key pair
 C'<sub>pub</sub> to the server.
 
 The server then generates its own ephemeral Curve25519 key pair
-<S'<sub>priv</sub>,S'<sub>pub</sub>> and calculates K'<sub>AES</sub> = HKDF(ECDH(S'<sub>priv</sub>,
-A<sub>pub</sub>) || ECDH(S'<sub>priv</sub>, C'<sub>pub</sub>), "", "`server
-encryption|`\<Matrix ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>", 256).
+<S'<sub>priv</sub>,S'<sub>pub</sub>>, calculates
 
-- the PBKDF2 parameters to use,
+- K<sub>2</sub> = ECDH(S'<sub>priv</sub>, A<sub>pub</sub>) +
+  ECDH(S'<sub>priv</sub>, C'<sub>pub</sub>)
+- K'<sub>AES</sub> = HKDF(K<sub>2</sub>, "", `encryption key|` + MatrixID +
+  `|` + A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub>, 256)
+- K'<sub>IV</sub> = HKDF(K<sub>2</sub>, "", `encryption iv|` + MatrixID +
+  `|` + A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub>, 256)
+
+and sends to the client:
+
+- the parameters R and I that it received from the client when registering
 - S'<sub>pub</sub>
 - a random 32-byte nonce
-- K<sub>conf</sub>, encrypted with AES-256-CBC using K'<sub>AES</sub>
+- K<sub>conf</sub>, encrypted with AES-256-CBC using the key K'<sub>AES</sub>
+  and the initialization vector K'<sub>IV</sub>
 
-The client performs PBKDF2 on the user's password using the given parameters to
-generate the base key K<sub>base</sub>.  It then calculates
+The client calculates:
 
+- Salt = HKDF(R, "", `salt|` + MatrixID)
+- K<sub>base</sub> = PBKDF2(Password, Salt, I, 256)
 - the Curve25519 private key A<sub>priv</sub> = HKDF(K<sub>base</sub>, "",
-  "`authentication key|`\<Matrix ID>", 256) and the corresponding public key
+  `authentication key|` + MatrixID, 256) and the corresponding public key
   A<sub>pub</sub>
-- K'<sub>AES</sub> = HKDF(ECDH(A<sub>priv</sub>, S'<sub>pub</sub>) ||
-  ECDH(C'<sub>priv</sub>, S'<sub>pub</sub>), "", "`server encryption|`\<Matrix
-  ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>", 256), and
-  decrypts K<sub>conf</sub> using K'<sub>AES</sub>.
-- HKDF(K<sub>conf</sub>, "", "`security check|`\<Matrix ID>`|`A<sub>priv</sub>",
+- K<sub>2</sub> = ECDH(A<sub>priv</sub>, S'<sub>pub</sub>) +
+  ECDH(C'<sub>priv</sub>, S'<sub>pub</sub>)
+- K'<sub>AES</sub> = HKDF(K<sub>2</sub>, "", `encryption key|` + MatrixID +
+  `|` + A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub>,
+  256)
+- K'<sub>IV</sub> = HKDF(K<sub>2</sub>, "", `encryption iv|` + MatrixID +
+  `|` + A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub>,
+  256)
+- K<sub>conf</sub> by decrypting the ciphertext sent by the server using
+  K'<sub>AES</sub> and K'<sub>IV</sub>
+- HKDF(A<sub>priv</sub> + K<sub>conf</sub>, "", `security check|` + MatrixID,
   3)
 
 The client displays the emoji (or text equivalent) from the SAS verification
@@ -126,27 +165,27 @@ confidence) that they entered their password correctly, and that they are
 communicating with the same entity that they were communicating with when they
 registered.
 
-The client then calculates K<sub>2</sub> = ECDH(A<sub>priv</sub>,
-S'<sub>pub</sub>) || ECDH(C'<sub>priv</sub>,S'<sub>pub</sub>) and
-K'<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", "`client MAC|`\<Matrix
-ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
-256), and sends an HMAC of the nonce using this key to the server.
+The client then calculates
+
+- K'<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", `client MAC|` + MatrixID + `|` +
+  A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub> + `|` +
+  K<sub>conf</sub>, 256)
+
+and sends an HMAC of the nonce using the key K'<sub>MAC</sub> to the server.
 
 The server calculates
 
-- K<sub>2</sub> = ECDH(S'<sub>priv</sub>, A<sub>pub</sub>) ||
-  ECDH(S'<sub>priv</sub>,C'<sub>pub</sub>)
-- K'<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", "`client MAC|`\<Matrix
-  ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
-  256)
-- K''<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", "`server MAC|`\<Matrix
-  ID>`|`A<sub>pub</sub>`|`C'<sub>pub</sub>`|`S'<sub>pub</sub>`|`K<sub>conf</sub>",
-  256)
+- K'<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", `client MAC|` + MatrixID + `|` +
+  A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub> + `|` +
+  K<sub>conf</sub>, 256)
+- K''<sub>MAC</sub> = HKDF(K<sub>2</sub>, "", `server MAC|` + MatrixID + `|` +
+  A<sub>pub</sub> + `|` + C'<sub>pub</sub> + `|` + S'<sub>pub</sub> + `|` +
+  K<sub>conf</sub>, 256)
 
-The server verifies the HMAC sent by the client, which proves to the server
-that the client is in possession of the secret key A<sub>priv</sub>.  The
-server then responds with an HMAC of the nonce using K''<sub>MAC</sub>, which
-the client can check to show that the server is in possession of the public key
+and verifies the HMAC sent by the client, which proves to the server that the
+client is in possession of the secret key A<sub>priv</sub>.  The server then
+responds with an HMAC of the nonce using the key K''<sub>MAC</sub>, which the
+client can check to show that the server is in possession of the public key
 A<sub>pub</sub>.
 
 ### Protocol details
@@ -154,6 +193,14 @@ A<sub>pub</sub>.
 TODO:
 
 ## Security characteristics
+
+### Different ciphersuites
+
+Although the proposal specifically mentions certain cryptographic algorithms
+(such as Curve25519 and SHA-256), these can be swapped out for different
+algorithms should one algorithm be found to be insecure.
+
+TODO: the protocol details should say how the algorithms are negotiated
 
 ### Replay attacks
 
@@ -238,13 +285,65 @@ information (for example, A<sub>pub</sub>, if they eavesdrop during the user's
 registration) that would allow them to brute-force the user's password.  Since
 the sensitive data is encrypted using a key produced by an ECDH, it is not
 enough for the attacker to be a passive eavesdropper; they would need to be an
-active man-in-the-middle.
+active man-in-the-middle who uses their own set of ephemeral Curve25519 keys.
 
-TODO: ...
+If there is a man-in-the-middle during the registration phase, then the
+K<sub>conf</sub> values calculated by the client and server will be different.
+If the user later connects to the server without the man-in-the-middle, the
+value of K<sub>conf</sub> encrypted and sent by the server will be different
+from the value calculated by the client during registration, yielding a 7/8
+chance that the emoji security check will not match.
+
+Conversely, if there is no man-in-the-middle during the registration phase, but
+there is one during the login phase, the man-in-the-middle will receive the
+value of K<sub>conf</sub> encrypted using a key based on their ephemeral
+Curve25519 key.  However, they cannot decrypt it and re-encrypt it to send to
+the user since the key is also based on the authentication key, which they do
+not have.  Thus the best they can do is pass the ciphertext along, or replace
+it with a random value, which has a 7/8 chance of being detected with the emoji
+security check.
+
+There is no protection against a man-in-the-middle who is present during the
+registration phase and all login phases.
+
+While a 1/8 chance of success is significant, a 7/8 chance of failure may be
+enough to dissuade some attackers if the consequences of tipping of the user to
+the attacker is viewed as sufficiently significant.
+
+### Malicious PBKDF2 parameters
+
+A malicious server could present incorrect PBKDF2 parameters to a client in
+order to perform an attack.
+
+A malicious server could present a very large iteration count in order to DoS a
+client by making it perform many calculations.  To guard against this, clients
+may define a maximum number of iterations that they are willing to perform, and
+fail the login if the requested number of iterations exceeds this number.
+
+On the other hand, a malicious server could present a very small iteration
+count.  The server can then try to brute-force the user's password by trying
+various passwords using this reduced iteration count until it can reproduce the
+MAC sent by the client.  To guard against this, clients may define a minimum
+number of iterations that they are willing to perform.
+
+If the server were allowed to send the PBKDF2 salt, it could send a salt for
+which it has pre-computed a rainbow table giving possible K<sub>base</sub>
+values.  Then, when it receives the MAC from the client, it could try the
+various K<sub>base</sub> values until it finds one that matches (if present),
+giving it the user's password.  To mitigate against this, the PBKDF2 salt is
+first passed through HKDF, which means that the server can no longer control
+the PBKDF2 salt.
 
 ### Phishing
 
-TODO: ...
+It may be possible that a user is tricked into trying to log into a malicious
+homeserver, thinking that it is their homeserver.  In such a case, there is a
+7/8 chance that the emoji security check will not match.  Still, an attacker
+might still be happy to trick 1/8 of the people who try to log in.  In the case
+where the emoji security check fails to alert the user (either because it
+matched or because they ignored it), the attacker would need to brute-force the
+user's password based on their response.  This is essentially the same as the
+situation given above under "Malicious PBKDF2 parameters".
 
 ### ...
 
@@ -256,6 +355,13 @@ are managed by an external system.
 ...
 
 ## Alternatives
+
+### PAKE
+
+A Password-authenticated Key Exchange (PAKE) is a method by which a password is
+used to generate a key that is shared between two parties.  Some PAKEs, those
+which define a client and server role where the server does not store
+password-equivalent data, are suitable for client-server authentication.
 
 TODO: compare with various PAKEs (e.g. SRP, OPAQUE)
 
@@ -277,6 +383,25 @@ server.  This is noted in the "Security Considerations" section of RFC-5802:
 > user to all servers providing SCRAM access using the same hash function,
 > password, iteration count, and salt.  For this reason, it is important to use
 > randomly generated salt values.
+
+### Socialist Millionaire
+
+The [socialist millionaire
+protocol](https://www.win.tue.nl/~berry/papers/dam.pdf) could be used to
+construct an authentication protocol.  Such an authentication protocol might
+look something like this: the user's password is used to generate a Curve25519
+key part, and the public part is given to the server, as is done in this
+proposal.  On login, the Curve25519 key is used to generate a shared secret,
+possibly in a way similar to what is done in this proposal.  The client and
+server can then use the socialist millionaire protocol to determine if they
+have the shared secret.  In this way, if either party is not who they claim to
+be, they will not gain any information about the user's credentials.
+
+This would address some of the vulnerabilities in the protocol from this
+proposal.  However, the current socialist millionaire protocol is tied to the
+discrete logarithm problem.  It would also be harder for Matrix clients to
+implement since it uses cryptography that is not currently used by Matrix
+clients.
 
 ### Argon2
 
@@ -305,6 +430,20 @@ two ways.
    check before submitting the password.  Old clients will not display the
    emoji, providing a hint to users that the client does not support this
    authentication method.
+
+### User enumeration
+
+Since users log in by first submitting their user ID to the server before
+supplying their credentials, an attacker could determine which user IDs are
+active if the server responds differently for user IDs that are not in use.  If
+a server does not want attackers to be able to learn this information, it
+should respond to such requests with a response consistent with how it would
+respond to an existing user.  When it does so, the PBKDF2 parameters should be
+the same when a specific user ID is requested multiple times.  Otherwise, an
+attacker could make two login requests in quick succession and compare the
+PBKDF2 parameters to see if they are different.  One way to do this is to set
+the iteration count to a value that is used in a common client, and set the
+salt to a hash of the requested user ID, salted by a secret value.
 
 ## Possible future work
 
