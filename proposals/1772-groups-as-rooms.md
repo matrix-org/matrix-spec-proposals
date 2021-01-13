@@ -151,8 +151,8 @@ relationship can be expressed in one of two ways:
     extended in future to declare additional parents, but more investigation
     into appropriate semantics is needed.
 
-This structure means that rooms can end up with multiple parents. This implies
-that the room will appear multiple times in the room list hierarchy.
+This structure means that rooms can end up appearing multiple times in the
+room list hierarchy, given they can be children of multiple different spaces.
 
 In a typical hierarchy, we expect *both* parent->child and child->parent
 relationships to exist, so that the space can be discovered from the room, and
