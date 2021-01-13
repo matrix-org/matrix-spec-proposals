@@ -238,3 +238,6 @@ Receiving server behaviour:
    context merely means do not add the room or state events in that room to the response. The room itself MUST still be walked
    so servers can extract transitive rooms e.g `A -> B -> C` and the requesting server requests `room_id: A, exclude_rooms: [B]`
    must return `C`.
+ - Servers are authorised to see node/edge information if they are either joined to the room or the room is `world_readable`.
+   A well-behaved server will not send requests for rooms they are already joined to, so they should only be shown `world_readable`
+   rooms.
