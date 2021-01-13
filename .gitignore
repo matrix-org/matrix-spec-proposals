@@ -1,6 +1,7 @@
 /api/node_modules
 /assets.tar.gz
 /env*
+/node_modules
 /resources
 /scripts/gen
 /scripts/continuserv/continuserv
