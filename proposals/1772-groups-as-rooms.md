@@ -121,7 +121,7 @@ relationship can be expressed in one of two ways:
     automatically joined by members of the space: see
     [below](#auto-joined-children).
 
- 2. Separately, rooms can claim parents via the `m.room.parent` state
+ 2. Separately, rooms can claim a parent via the `m.room.parent` state
     event:
 
     ```js
