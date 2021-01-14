@@ -177,11 +177,15 @@ Cycles in the parent->child and child->parent relationships are *not*
 permitted, but clients (and servers) should be aware that they may be
 encountered, and ignore the relationship rather than recursing infinitely.
 
+XXX: we need to deterministically specify where the cycles get cut.
+I think kegan found a solution for this when implementing MSC2946 in Dendrite.
+
 ### Auto-joined children
 
 The `auto_join` flag on a child listing allows a space admin to list the
 sub-spaces and rooms in that space which should be automatically joined by
-members of that space.
+members of that space.  (This is not a force-join, which are descoped for
+a future MSC; the user can subsequently part these room if they desire.)
 
 Joining should be performed by the client.  This can optionally be sped up by
 using [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) to get a
