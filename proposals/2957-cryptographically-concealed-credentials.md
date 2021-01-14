@@ -256,7 +256,7 @@ If the attacker knows K<sub>conf</sub>, they could try to brute-force the
 user's password until they can decrypt the encrypted version of
 K<sub>conf</sub> to obtain the known value of K<sub>conf</sub>.  However,
 K<sub>conf</sub> is only 16 bits long, so there may be multiple passwords that
-can be result in its correct decryption.  Also, if the attacker knows
+can result in its correct decryption.  Also, if the attacker knows
 K<sub>conf</sub>, they would most likely also know A<sub>pub</sub>, which would
 already allow them to try to brute-force the user's password, so in this case,
 the attacker does not gain any information by attempting to log in.  Note that
