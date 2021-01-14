@@ -147,7 +147,9 @@ relationship can be expressed in one of two ways:
     To avoid abuse where a room admin falsely claims that a room is part of a
     space that it should not be, clients could ignore such `m.space.parent`
     events unless their sender has a sufficient power-level to send an
-    `m.space.child` event in the parent.
+    `m.space.child` event in the parent. The rationale for checking the power
+    level, rather than the *actual* presence of an `m.space.child` event in the
+    parent, is to accommodate "secret" rooms (see below).
 
     Where the parent space also claims a parent, clients can recursively peek
     into the grandparent space, and so on.
