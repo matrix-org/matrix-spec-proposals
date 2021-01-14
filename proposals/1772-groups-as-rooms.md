@@ -50,7 +50,9 @@ way as a normal room.
 
 Normal messages within a space-room are discouraged (but not blocked by the
 server): user interfaces are not expected to have a way to enter or display
-such messages.
+such messages.  Space-rooms should be created with a power level for
+`events_default` of 100, to prevent the rooms accidentally/maliciously
+clogging up with messages from random members of the space.
 
 ### Membership of spaces
 
