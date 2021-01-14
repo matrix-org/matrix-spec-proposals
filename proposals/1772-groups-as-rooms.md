@@ -65,7 +65,12 @@ to see the directory of rooms within the space by peeking into the space-room
 (thus avoiding the need to add `m.room.member` events to the event graph within
 the room).
 
-Join rules, invites and 3PID invites work as for a normal room.
+Join rules, invites and 3PID invites work as for a normal room, with the
+exception that `invite_state` sent along with invites should be amended to
+include the event containing the type `m.space`, to allow clients to discern
+whether an invite is to a space-room or not.
+
+XXX: Should we also include a MSC2946 summary of the space in the invite too?
 
 ### Relationship between rooms and spaces
 
