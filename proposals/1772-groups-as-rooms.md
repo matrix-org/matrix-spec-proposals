@@ -184,6 +184,10 @@ encountered, and ignore the relationship rather than recursing infinitely.
 XXX: we need to deterministically specify where the cycles get cut.
 I think kegan found a solution for this when implementing MSC2946 in Dendrite.
 
+XXX: we need to specify how vias are updated as time goes on (perhaps servers
+with sufficient permission could automatically add themselves into the via event
+via the bot from MSC2962?)
+
 ### Auto-joined children
 
 The `auto_join` flag on a child listing allows a space admin to list the
