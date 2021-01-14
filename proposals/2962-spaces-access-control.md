@@ -3,7 +3,7 @@
 MSC1772 defines Spaces: a new way to define groups of users and rooms in
 Matrix by describing them as a room.  Originally MSC1772 attempted to define
 how you could apply permissions to Matrix rooms based on the membership of a
-space. However, this is effectively a separate concern to how you model spaces
+space. However, this is effectively a separate concern from how you model spaces
 themselves, and so has been split out into a this separate MSC.
 
 ## Goals:
@@ -157,7 +157,7 @@ Things that were considered and dismissed:
   Problem 4: Doesn't allow for random room admins to delegate their PLs to a
   space without being admins in that space.
 
-* To implemplement the mapping, we require any user who is an admin in the
+* To implement the mapping, we require any user who is an admin in the
   space (ie, anyone who has permission to change the access rights in the
   space) to also be admins and members of any child rooms.
 
