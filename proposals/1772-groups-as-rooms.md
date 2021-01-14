@@ -126,12 +126,12 @@ relationship can be expressed in one of two ways:
     automatically joined by members of the space: see
     [below](#auto-joined-children).
 
- 2. Separately, rooms can claim a parent via the `m.room.parent` state
+ 2. Separately, rooms can claim a parent via the `m.space.parent` state
     event:
 
     ```js
     {
-        "type": "m.room.parent",
+        "type": "m.space.parent",
         "state_key": "",
         "content": {
             "room_id": "!space:example.com",
@@ -145,9 +145,9 @@ relationship can be expressed in one of two ways:
     that space and group them together.
 
     To avoid abuse where a room admin falsely claims that a room is part of a
-    space that it should not be, clients could ignore such `m.room.parent`
+    space that it should not be, clients could ignore such `m.space.parent`
     events unless their sender has a sufficient power-level to send an
-    `m.room.child` event in the parent.
+    `m.space.child` event in the parent.
 
     Where the parent space also claims a parent, clients can recursively peek
     into the grandparent space, and so on.
@@ -305,7 +305,7 @@ Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `m.space` | room type | `org.matrix.msc1772.space`
 `m.space.child` | event type | `org.matrix.msc1772.space.child`
-`m.room.parent` | event type | `org.matrix.msc1772.room.parent`
+`m.space.parent` | event type | `org.matrix.msc1772.room.parent`
 
 ## History
 
