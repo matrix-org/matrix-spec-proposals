@@ -55,9 +55,10 @@ This change necessitates a new room version.
 
 #### Representing the mapping from spaces to power levels
 
-The desired mapping from spaces to power levels is defined in a new state event
-type, `m.room.power_level_mappings`. The content should contain a `mappings`
-key which is an ordered list, for example:
+The desired mapping from spaces to power levels is defined in a new state
+event type, `m.room.power_level_mappings`, set in the room whose PLs are being
+manipulated. The content should contain a `mappings` key which is an
+ordered list, for example:
 
 ```js
 {
