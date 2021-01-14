@@ -81,16 +81,14 @@ relationship can be expressed in one of two ways:
  1. The admins of a space can advertise rooms and subspaces for their space by
     setting `m.space.child` state events. The `state_key` is the ID of a child
     room or space, and the content should contain a `via` key which gives a list
-    of candidate servers that can be used to join the room. `present: true` key
-    is included to distinguish from a deleted state event. Something like:
+    of candidate servers that can be used to join the room. Something like:
 
     ```js
     {
         "type": "m.space.child",
         "state_key": "!abcd:example.com",
         "content": {
-            "via": ["example.com", "test.org"],
-            "present": true
+            "via": ["example.com", "test.org"]
         }
     }
 
@@ -99,7 +97,6 @@ relationship can be expressed in one of two ways:
         "state_key": "!efgh:example.com",
         "content": {
             "via": ["example.com"],
-            "present": true,
             "order": "abcd",
             "auto_join": true
         }
@@ -113,7 +110,7 @@ relationship can be expressed in one of two ways:
     }
     ```
 
-    Children where `present` is not present or is not set to `true` are ignored.
+    Children where `via` is not present are ignored.
 
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
@@ -126,23 +123,31 @@ relationship can be expressed in one of two ways:
     automatically joined by members of the space: see
     [below](#auto-joined-children).
 
- 2. Separately, rooms can claim a parent via the `m.space.parent` state
-    event:
+ 2. Separately, rooms can claim parents via the `m.space.parent` state
+    event.
+
+    Similar to `m.space.child`, the `state_key` is the ID of the parent space,
+    and the content should contain a `via` key which gives a list of candidate
+    servers that can be used to join the parent.
 
     ```js
     {
         "type": "m.space.parent",
-        "state_key": "",
+        "state_key": "!space:example.com",
         "content": {
-            "room_id": "!space:example.com",
-            "via": ["example.com"]
+            "via": ["example.com"],
+            "present": true,
+            "canonical": true,
         }
     }
     ```
 
-    In this case, after a user joins such a room, the client could optionally
-    start peeking into the parent space, enabling it to find other rooms in
-    that space and group them together.
+    Parents where `via` is not present are ignored.
+
+    `canonical` determines whether this is the main parent for the space. When
+    a user joins a room with a canonical parent, clients may switch to view
+    the room in the context of that parent space, peeking into it in order to
+    find other rooms and group them together.
 
     To avoid abuse where a room admin falsely claims that a room is part of a
     space that it should not be, clients could ignore such `m.space.parent`
@@ -154,12 +159,9 @@ relationship can be expressed in one of two ways:
     Where the parent space also claims a parent, clients can recursively peek
     into the grandparent space, and so on.
 
-    Note that each room can only declare a single parent. This could be
-    extended in future to declare additional parents, but more investigation
-    into appropriate semantics is needed.
-
 This structure means that rooms can end up appearing multiple times in the
-room list hierarchy, given they can be children of multiple different spaces.
+room list hierarchy, given they can be children of multiple different spaces
+(or have multiple parents in different spaces).
 
 In a typical hierarchy, we expect *both* parent->child and child->parent
 relationships to exist, so that the space can be discovered from the room, and
