@@ -322,7 +322,7 @@ Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `m.space` | room type | `org.matrix.msc1772.space`
 `m.space.child` | event type | `org.matrix.msc1772.space.child`
-`m.space.parent` | event type | `org.matrix.msc1772.room.parent`
+`m.space.parent` | event type | `org.matrix.msc1772.space.parent`
 
 ## History
 
