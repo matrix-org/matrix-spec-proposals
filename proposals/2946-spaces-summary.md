@@ -225,7 +225,9 @@ Justifications for the request API shape are the same as before with one excepti
    the server should not return node information under `rooms` nor should it return _any state events in this room_. NB: state
    events which _point to_ this room should still be included.
 
-The response body remains unchanged from the client format.
+The response body remains unchanged from the client format. Servers are unable to verify the auth chain of the returned events
+as they are typically not joined to the rooms returned. Servers MUST NOT persist these events in any potential room DAG that may
+be created if the server were to join the room.
 
 Sending server behaviour:
  - When walking the spaces graph, if the server is not joined to a given room, remember the `via` server names and the room ID.
