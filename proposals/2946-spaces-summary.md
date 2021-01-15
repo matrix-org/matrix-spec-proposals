@@ -86,10 +86,9 @@ which returns:
             }
         },
         {
-            "type": "m.room.parent",
-            "state_key": "",
+            "type": "m.space.parent",
+            "state_key": "!space:example.com",
             "content": {
-                "room_id": "!space:example.com",
                 "via": ["example.com"]
             }
         }
@@ -127,11 +126,11 @@ Justifications for the response API shape are as follows:
    as the information displayed to users is the same. There are two _additional_ keys
    which are:
      * `num_refs` which is the total number of state events which point to or from this room (inbound/outbound edges).
-        This includes all `m.space.child` events in the room, _in addition to_ `m.room.parent` events which point to
+        This includes all `m.space.child` events in the room, _in addition to_ `m.space.parent` events which point to
         this room as a parent.
      * `room_type` which is the room type, which is `m.space` for subspaces. It can be omitted if there is no room type
        in which case it should be interpreted as a normal room.
- - `events`: These are the edges of the graph. The objects in the array are complete (or stripped?) `m.room.parent`
+ - `events`: These are the edges of the graph. The objects in the array are complete (or stripped?) `m.space.parent`
    or `m.space.child` events.
  - `next_batch`: Its presence indicates that there are more results to return.
 
@@ -146,10 +145,13 @@ Server behaviour:
       If no, skip this room. If yes, continue.
     * If this room has not ever been in `rooms` (across multiple requests), extract the
       `PublicRoomsChunk` for this room.
-    * Get all `m.space.child` and `m.room.parent` state events for the room. *In addition*, get
-      all `m.space.child` and `m.room.parent` state events which *point to* (via `state_key` or `content.room_id`)
+    * Get all `m.space.child` and `m.space.parent` state events for the room. *In addition*, get
+      all `m.space.child` and `m.space.parent` state events which *point to* (via `state_key`)
       this room. This requires servers to store reverse lookups. Add the total number of events
       to `PublicRoomsChunk` under `num_refs`. Add `PublicRoomsChunk` to `rooms`.
+      Do NOT include state events which are missing the `content.via` field, as this indicates
+      a redacted link. These events do not contribute to `num_refs` and should not be returned
+      to the caller.
     * If this is the root room from the original request, insert all these events into `events` if
       they haven't been added before (across multiple requests).
     * Else add them to `events` honouring the `limit` and `max_rooms_per_space` values. If either
@@ -171,9 +173,9 @@ Client behaviour:
  - Decide which room should be the root of the tree, then call this endpoint with the root room ID.
  - The data in `rooms` determines _what_ to show. The events in `events` determine _where_ to show it.
    Take all the data in `rooms` and key them by room ID.
- - Loop through the `events` and keep track of parent->child relationships by looking at the `room_id`
-   of the event and the `state_key` which is the child room ID. Clients may want to treat
-   child->parent relationships (`m.room.parent` events) the same way or differently. Treating them the
+ - Loop through the `events` and keep track of parent->child relationships by looking at the `state_key`
+   which is the child room ID. Clients may want to treat child->parent relationships
+   (`m.space.parent` events) the same way or differently. Treating them the
    same way will guarantee that the entire graph is exposed on the UI, but can cause issues because it
    can result in multiple roots (a child can refer to a new unknown parent). If a child->parent relationship
    exists but a corresponding parent->child relationship does not exist, this room is a "secret" room which
