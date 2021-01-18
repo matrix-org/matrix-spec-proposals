@@ -1,4 +1,5 @@
 /api/node_modules
+/assets
 /assets.tar.gz
 /env*
 /node_modules
