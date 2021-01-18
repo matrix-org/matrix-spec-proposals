@@ -46,40 +46,14 @@ implementations of Matrix without the need for external reference.
 Matrix 1.0 (released June 10th, 2019) consists of the following minimum
 API versions:
 
-<table>
-<thead>
-<tr class="header">
-<th>API/Specification</th>
-<th>Version</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Client-Server API</td>
-<td>r0.5.0</td>
-</tr>
-<tr class="even">
-<td>Server-Server API</td>
-<td>r0.1.2</td>
-</tr>
-<tr class="odd">
-<td>Application Service API</td>
-<td>r0.1.1</td>
-</tr>
-<tr class="even">
-<td>Identity Service API</td>
-<td>r0.1.1</td>
-</tr>
-<tr class="odd">
-<td>Push Gateway API</td>
-<td>r0.1.0</td>
-</tr>
-<tr class="even">
-<td>Room Version</td>
-<td>v5</td>
-</tr>
-</tbody>
-</table>
+| API/Specification       | Version |
+|-------------------------|---------|
+| Client-Server API       | r0.5.0  |
+| Server-Server API       | r0.1.2  |
+| Application Service API | r0.1.1  |
+| Identity Service API    | r0.1.1  |
+| Push Gateway API        | r0.1.0  |
+| Room Version            | v5      |
 
 ## Introduction to the Matrix APIs
 
