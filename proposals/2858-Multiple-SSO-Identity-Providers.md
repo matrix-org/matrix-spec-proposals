@@ -30,12 +30,12 @@ experience. This would look like this:
                 {
                     "id": "google",
                     "name": "Google",
-                    "icon": "https://..."
+                    "icon": "mxc://..."
                 },
                 {
                     "id": "github",
                     "name": "Github",
-                    "icon": "https://..."
+                    "icon": "mxc://..."
                 }
             ]
         },
@@ -46,18 +46,13 @@ experience. This would look like this:
 }
 ```
 
-The `id` field would be opaque with the accepted characters matching unreserved URI characters
-as defined in [RFC3986](http://www.ietf.org/rfc/rfc3986.txt) - this was chosen to avoid
-having to encode special characters in the URL. Max length 128. Defined as:
-```
-ALPHA  DIGIT  "-" / "." / "_" / "~"
-```
+The `id` field is a string using the common identifier grammar as defined in
+https://github.com/matrix-org/matrix-doc/pull/2858.
 
 The `name` field should be the human readable string intended for printing by the client.
 
 The `icon` field is the only optional field and should point to an icon representing the IdP.
-If present then it must be an HTTPS URL to an image resource. This should be hosted by the
-homeserver service provider to not leak the client's IP address unnecessarily.
+If present then it must be an MXC URI to an image resource.
 
 
 A new endpoint would be needed to support redirecting directly to one of the IDPs:
@@ -67,7 +62,7 @@ A new endpoint would be needed to support redirecting directly to one of the IDP
 This would behave identically to the existing endpoint without the last argument
 except would allow the server to forward the user directly to the correct IdP.
 
-For the case of backwards compatibility the existing endpoint should remain,
+For the case of backwards compatibility the existing endpoint is to remain,
 and if the server supports multiple SSO IDPs it should offer the user a page
 which lets them choose between the available IdP options as a fallback.
 
