@@ -235,10 +235,15 @@ For the sake of integrity future `nonid-segment` extensions must follow
 
 This MSC defines the following `type` specifiers:
 `user` (user id, sigil `@`), `roomid` (room id, sigil `!`),
-`room` (room alias, sigil `#`), and `event` (event id, sigil `$`).
-The type `group` (group/community id, sigil `+`) is reserved for future use.
+`room` (room alias, sigil `#`), and `event` (event id, sigil `$`). This MSC
+does not define a type specifier for sigil `+`
+([groups](https://github.com/matrix-org/matrix-doc/issues/1513) aka communities
+or, in the more recent incarnation,
+[spaces](https://github.com/matrix-org/matrix-doc/pull/1772)); a separate MSC
+can introduce the specifier, along with the parsing/construction logic and
+relevant CS API invocations, following the framework of this proposal.
 
-As of this MSC, `user`, `roomid`, `room`, and `group` can only be at the top
+As of this MSC, `user`, `roomid`, and `room` can only be at the top
 level. The type `event` can only be used on the 2nd level and only under `room`
 or `roomid`; this is driven by the current shape of Client-Server API that
 does not provide a non-deprecated way to retrieve an event without knowing
@@ -360,7 +365,6 @@ comparisons are case-INsensitive.
       - `user` -> `@`
       - `roomid` -> `!`
       - `room` -> `#`
-      - `group` -> `+`
       - any other string, including an empty one -> fail parsing:
         the Matrix URI is invalid.
 
@@ -417,7 +421,6 @@ performed on behalf (using the access token) of the user `@me:example.org`:
 | Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:room/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>`GET /rooms/!rid:example.org/...`<br/>the respective room section of `GET /sync` |
 | Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:room/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
 | Event:<br/>`matrix:room/us:example.org/event/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | `GET `<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org` |
-| Group:<br/>`matrix:group/them:matrix.org` | Reserved for future use |
 
 * Event ID (as used in
   [room version 3](https://matrix.org/docs/spec/rooms/v3) and later):
@@ -447,7 +450,6 @@ For room and user identifiers (including room aliases):
    - `@` -> `user/`
    - `!` -> `roomid/`
    - `#` -> `room/`
-   - `+` -> `group/`
 2. Build the Matrix URI as a concatenation of:
    - literal `matrix:`;
    - `prefix-1`;
