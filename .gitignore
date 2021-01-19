@@ -2,6 +2,8 @@
 /assets
 /assets.tar.gz
 /env*
+/node_modules
+/resources
 /scripts/gen
 /scripts/continuserv/continuserv
 /scripts/speculator/speculator
