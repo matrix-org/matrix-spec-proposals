@@ -4,7 +4,7 @@ weight: 70
 type: docs
 ---
 
-# Unpadded Base64
+## Unpadded Base64
 
 *Unpadded* Base64 refers to 'standard' Base64 encoding as defined in
 [RFC 4648](https://tools.ietf.org/html/rfc4648), without "=" padding.
@@ -47,7 +47,7 @@ When decoding Base64, implementations SHOULD accept input with or
 without padding characters wherever possible, to ensure maximum
 interoperability.
 
-# Signing JSON
+## Signing JSON
 
 Various points in the Matrix specification require JSON objects to be
 cryptographically signed. This requires us to encode the JSON as a
@@ -60,7 +60,7 @@ bytes using [Canonical JSON](#canonical-json), computing the signature
 for that sequence and then adding the signature to the original JSON
 object.
 
-## Canonical JSON
+### Canonical JSON
 
 We define the canonical JSON encoding for a value to be the shortest
 UTF-8 JSON encoding with dictionary keys lexicographically sorted by
@@ -101,7 +101,7 @@ Float values are not permitted by this encoding.
             # Encode the resulting Unicode as UTF-8 bytes.
         ).encode("UTF-8")
 
-### Grammar
+#### Grammar
 
 Adapted from the grammar in <http://tools.ietf.org/html/rfc7159>
 removing insignificant whitespace, fractions, exponents and redundant
@@ -130,7 +130,7 @@ character escapes.
               / %x75.30.30.30 (%x30-37 / %x62 / %x65-66) ; u000X
               / %x75.30.30.31 (%x30-39 / %x61-66)        ; u001X
 
-### Examples
+#### Examples
 
 To assist in the development of compatible implementations, the
 following test values may be useful for verifying the canonical
@@ -241,7 +241,7 @@ The following canonical JSON should be produced:
 
     {"a":null}
 
-## Signing Details
+### Signing Details
 
 JSON is signed by encoding the JSON object without `signatures` or keys
 grouped as `unsigned`, using the canonical encoding described above. The
@@ -294,7 +294,7 @@ timestamps and additional signatures.
 
         return json_object
 
-## Checking for a Signature
+### Checking for a Signature
 
 To check if an entity has signed a JSON object an implementation does
 the following:
@@ -318,13 +318,13 @@ the following:
     *verification key*. If this fails then the check fails. Otherwise
     the check succeeds.
 
-# Identifier Grammar
+## Identifier Grammar
 
 Some identifiers are specific to given room versions, please refer to
 the [room versions specification](index.html#room-versions) for more
 information.
 
-## Server Name
+### Server Name
 
 A homeserver is uniquely identified by its server name. This value is
 used in a number of identifiers, as described below.
@@ -389,7 +389,7 @@ Some recommendations for a choice of server name follow:
     characters.
 -   Server names should not use upper-case characters.
 
-## Common Identifier Format
+### Common Identifier Format
 
 The Matrix protocol uses a common format to assign unique identifiers to
 a number of entities, including users, events and rooms. Each identifier
@@ -422,7 +422,7 @@ depends on the type of identifier. For example, event IDs can sometimes
 be represented with a `domain` component under some conditions - see the
 [Event IDs](#room-ids-and-event-ids) section below for more information.
 
-### User Identifiers
+#### User Identifiers
 
 Users within Matrix are uniquely identified by their Matrix user ID. The
 user ID is namespaced to the homeserver which allocated the account and
@@ -486,7 +486,7 @@ over the actual content of the events.
 
 Matrix user IDs are sometimes informally referred to as MXIDs.
 
-#### Historical User IDs
+##### Historical User IDs
 
 Older versions of this specification were more tolerant of the
 characters permitted in user ID localparts. There are currently active
@@ -498,7 +498,7 @@ character set:
 
     extended_user_id_char = %x21-39 / %x3B-7E  ; all ASCII printing chars except :
 
-#### Mapping from other character sets
+##### Mapping from other character sets
 
 In certain circumstances it will be desirable to map from a wider
 character set onto the limited character set allowed in a user ID
@@ -529,7 +529,7 @@ simple ASCII identifiers (unlike, for example, base-32), whilst still
 allowing representation of *any* character (unlike punycode, which
 provides no way to encode ASCII punctuation).
 
-### Room IDs and Event IDs
+#### Room IDs and Event IDs
 
 A room has exactly one room ID. A room ID has the format:
 
@@ -548,7 +548,7 @@ Event IDs and Room IDs are case-sensitive. They are not meant to be
 human-readable. They are intended to be treated as fully opaque strings
 by clients.
 
-### Group Identifiers
+#### Group Identifiers
 
 Groups within Matrix are uniquely identified by their group ID. The
 group ID is namespaced to the group server which hosts this group and
@@ -574,7 +574,7 @@ The complete grammar for a legal group ID is:
                  / %x61-7A                   ; a-z
                  / "-" / "." / "=" / "_" / "/"
 
-### Room Aliases
+#### Room Aliases
 
 A room may have zero or more aliases. A room alias has the format:
 
@@ -587,7 +587,7 @@ homeserver to look up the alias.
 Room aliases MUST NOT exceed 255 bytes (including the `#` sigil and the
 domain).
 
-### matrix.to navigation
+#### matrix.to navigation
 
 Note
 
@@ -648,7 +648,7 @@ extra slashes appearing due to some [room
 versions](index.html#room-versions). These slashes should normally be
 encoded when producing matrix.to URIs, however.
 
-#### Routing
+##### Routing
 
 Room IDs are not routable on their own as there is no reliable domain to
 send requests to. This is partially mitigated with the addition of a
@@ -702,7 +702,7 @@ unique servers based on the following criteria:
     specify the servers it can. For example, a room with only 2 users in
     it would result in maximum 2 `via` parameters.
 
-# 3PID Types
+## 3PID Types
 
 Third Party Identifiers (3PIDs) represent identifiers on other
 namespaces that might be associated with a particular person. They
@@ -722,7 +722,7 @@ rather than `bob@Example.com`.
 The namespaces defined by this specification are listed below. More
 namespaces may be defined in future versions of this specification.
 
-## E-Mail
+### E-Mail
 
 Medium: `email`
 
@@ -730,7 +730,7 @@ Represents E-Mail addresses. The `address` is the raw email address in
 `user@domain` form with the domain in lowercase. It must not contain
 other text such as real name, angle brackets or a mailto: prefix.
 
-## PSTN Phone numbers
+### PSTN Phone numbers
 
 Medium: `msisdn`
 
@@ -739,9 +739,9 @@ The `address` is the telephone number represented as a MSISDN (Mobile
 Station International Subscriber Directory Number) as defined by the
 E.164 numbering plan. Note that MSISDNs do not include a leading '+'.
 
-# Security Threat Model
+## Security Threat Model
 
-## Denial of Service
+### Denial of Service
 
 The attacker could attempt to prevent delivery of messages to or from
 the victim in order to:
@@ -750,18 +750,18 @@ the victim in order to:
 -   Censor a discussion or censor a participant in a discussion.
 -   Perform general vandalism.
 
-### Threat: Resource Exhaustion
+#### Threat: Resource Exhaustion
 
 An attacker could cause the victim's server to exhaust a particular
 resource (e.g. open TCP connections, CPU, memory, disk storage)
 
-### Threat: Unrecoverable Consistency Violations
+#### Threat: Unrecoverable Consistency Violations
 
 An attacker could send messages which created an unrecoverable
 "split-brain" state in the cluster such that the victim's servers could
 no longer derive a consistent view of the chatroom state.
 
-### Threat: Bad History
+#### Threat: Bad History
 
 An attacker could convince the victim to accept invalid messages which
 the victim would then include in their view of the chatroom history.
@@ -769,22 +769,22 @@ Other servers in the chatroom would reject the invalid messages and
 potentially reject the victims messages as well since they depended on
 the invalid messages.
 
-### Threat: Block Network Traffic
+#### Threat: Block Network Traffic
 
 An attacker could try to firewall traffic between the victim's server
 and some or all of the other servers in the chatroom.
 
-### Threat: High Volume of Messages
+#### Threat: High Volume of Messages
 
 An attacker could send large volumes of messages to a chatroom with the
 victim making the chatroom unusable.
 
-### Threat: Banning users without necessary authorisation
+#### Threat: Banning users without necessary authorisation
 
 An attacker could attempt to ban a user from a chatroom without the
 necessary authorisation.
 
-## Spoofing
+### Spoofing
 
 An attacker could try to send a message claiming to be from the victim
 without the victim having sent the message in order to:
@@ -792,17 +792,17 @@ without the victim having sent the message in order to:
 -   Impersonate the victim while performing illicit activity.
 -   Obtain privileges of the victim.
 
-### Threat: Altering Message Contents
+#### Threat: Altering Message Contents
 
 An attacker could try to alter the contents of an existing message from
 the victim.
 
-### Threat: Fake Message "origin" Field
+#### Threat: Fake Message "origin" Field
 
 An attacker could try to send a new message purporting to be from the
 victim with a phony "origin" field.
 
-## Spamming
+### Spamming
 
 The attacker could try to send a high volume of solicited or unsolicited
 messages to the victim in order to:
@@ -810,16 +810,16 @@ messages to the victim in order to:
 -   Find victims for scams.
 -   Market unwanted products.
 
-### Threat: Unsolicited Messages
+#### Threat: Unsolicited Messages
 
 An attacker could try to send messages to victims who do not wish to
 receive them.
 
-### Threat: Abusive Messages
+#### Threat: Abusive Messages
 
 An attacker could send abusive or threatening messages to the victim
 
-## Spying
+### Spying
 
 The attacker could try to access message contents or metadata for
 messages sent by the victim or to the victim that were not intended to
@@ -830,29 +830,29 @@ reach the attacker in order to:
     (e.g. password reset messages)
 -   Discover who the victim was talking to and when.
 
-### Threat: Disclosure during Transmission
+#### Threat: Disclosure during Transmission
 
 An attacker could try to expose the message contents or metadata during
 transmission between the servers.
 
-### Threat: Disclosure to Servers Outside Chatroom
+#### Threat: Disclosure to Servers Outside Chatroom
 
 An attacker could try to convince servers within a chatroom to send
 messages to a server it controls that was not authorised to be within
 the chatroom.
 
-### Threat: Disclosure to Servers Within Chatroom
+#### Threat: Disclosure to Servers Within Chatroom
 
 An attacker could take control of a server within a chatroom to expose
 message contents or metadata for messages in that room.
 
-# Cryptographic Test Vectors
+## Cryptographic Test Vectors
 
 To assist in the development of compatible implementations, the
 following test values may be useful for verifying the cryptographic
 event signing code.
 
-## Signing Key
+### Signing Key
 
 The following test vectors all use the 32-byte value given by the
 following Base64-encoded string as the seed for generating the `ed25519`
@@ -868,7 +868,7 @@ In each case, the server name and key ID are as follows:
 
     KEY_ID = "ed25519:1"
 
-## JSON Signing
+### JSON Signing
 
 Given an empty JSON object:
 
@@ -903,7 +903,7 @@ The JSON signing algorithm should emit the following signed JSON:
         "two": "Two"
     }
 
-## Event Signing
+### Event Signing
 
 Given the following minimally-sized event:
 
