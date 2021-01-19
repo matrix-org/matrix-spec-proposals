@@ -1940,3 +1940,692 @@ never succeeds without auth. Homeservers may allow requests that don't
 require auth by offering a stage with only the `m.login.dummy` auth
 type, but they must still give a 401 response to requests with no auth
 data.
+
+## Modules
+
+Modules are parts of the Client-Server API which are not universal to
+all endpoints. Modules are strictly defined within this specification
+and should not be mistaken for experimental extensions or optional
+features. A compliant server implementation MUST support all modules and
+supporting specification (unless the implementation only targets clients
+of certain profiles, in which case only the required modules for those
+feature profiles MUST be implemented). A compliant client implementation
+MUST support all the required modules and supporting specification for
+the [Feature Profile](#feature-profiles) it targets.
+
+### Feature Profiles
+
+Matrix supports many different kinds of clients: from embedded IoT
+devices to desktop clients. Not all clients can provide the same feature
+sets as other clients e.g. due to lack of physical hardware such as not
+having a screen. Clients can fall into one of several profiles and each
+profile contains a set of features that the client MUST support. This
+section details a set of "feature profiles". Clients are expected to
+implement a profile in its entirety in order for it to be classified as
+that profile.
+
+#### Summary
+
+<table>
+<thead>
+<tr class="header">
+<th>Module / Profile</th>
+<th>Web</th>
+<th>Mobile</th>
+<th>Desktop</th>
+<th>CLI</th>
+<th>Embedded</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Instant Messaging</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Direct Messaging</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Mentions</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Presence</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Push Notifications</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Receipts</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Fully read markers</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Typing Notifications</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">VoIP</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Ignoring Users</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Reporting Content</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Content Repository</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Managing History Visibility</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Server Side Search</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Room Upgrades</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Required</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Server Administration</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Event Context</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Third Party Networks</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Send-to-Device Messaging</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Device Management</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">End-to-End Encryption</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Guest Accounts</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Room Previews</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Client Config</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">SSO Login</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">OpenID</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Stickers</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Server ACLs</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="odd">
+<td><blockquote>
+<p><a href="">Server Notices</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+<tr class="even">
+<td><blockquote>
+<p><a href="">Moderation policies</a></p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+<td><blockquote>
+<p>Optional</p>
+</blockquote></td>
+</tr>
+</tbody>
+</table>
+
+*Please see each module for more details on what clients need to
+implement.*
+
+#### Clients
+
+##### Stand-alone web (`Web`)
+
+This is a web page which heavily uses Matrix for communication.
+Single-page web apps would be classified as a stand-alone web client, as
+would multi-page web apps which use Matrix on nearly every page.
+
+##### Mobile (`Mobile`)
+
+This is a Matrix client specifically designed for consumption on mobile
+devices. This is typically a mobile app but need not be so provided the
+feature set can be reached (e.g. if a mobile site could display push
+notifications it could be classified as a mobile client).
+
+##### Desktop (`Desktop`)
+
+This is a native GUI application which can run in its own environment
+outside a browser.
+
+##### Command Line Interface (`CLI`)
+
+This is a client which is used via a text-based terminal.
+
+##### Embedded (`Embedded`)
+
+This is a client which is embedded into another application or an
+embedded device.
+
+###### Application
+
+This is a Matrix client which is embedded in another website, e.g. using
+iframes. These embedded clients are typically for a single purpose
+related to the website in question, and are not intended to be
+fully-fledged communication apps.
+
+###### Device
+
+This is a client which is typically running on an embedded device such
+as a kettle, fridge or car. These clients tend to perform a few
+operations and run in a resource constrained environment. Like embedded
+applications, they are not intended to be fully-fledged communication
+systems.
+
+{{% cs-modules %}}
