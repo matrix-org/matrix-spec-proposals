@@ -10,8 +10,6 @@ Clients may want to receive push notifications when events are received
 at the homeserver. This is managed by a distinct entity called the Push
 Gateway.
 
-Table of Contents
-
 ## Changelog
 
 **Version: %PUSH\_GATEWAY\_RELEASE\_LABEL%**

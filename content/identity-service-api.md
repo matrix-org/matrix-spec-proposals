@@ -15,8 +15,6 @@ can be established, validated, and used. This description technically
 may apply to any 3PID, but in practice has only been applied
 specifically to email addresses and phone numbers.
 
-Table of Contents
-
 ## Changelog
 
 **Version: %IDENTITY\_RELEASE\_LABEL%**

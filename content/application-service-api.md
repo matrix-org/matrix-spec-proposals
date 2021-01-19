@@ -14,8 +14,6 @@ Application Service API (AS API) defines a standard API to allow such
 extensible functionality to be implemented irrespective of the
 underlying homeserver implementation.
 
-Table of Contents
-
 ## Changelog
 
 **Version: %APPSERVICE\_RELEASE\_LABEL%**

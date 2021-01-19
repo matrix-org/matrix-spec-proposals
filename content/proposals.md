@@ -8,8 +8,6 @@ type: docs
 
 Proposals for Spec Changes to Matrix
 
-Table of Contents
-
 If you are interested in submitting a change to the Matrix
 Specification, please take note of the following guidelines.
 

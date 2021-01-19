@@ -12,8 +12,6 @@ designed to support both lightweight clients which store no state and
 lazy-load data from the server as required - as well as heavyweight
 clients which maintain a full local persistent copy of server state.
 
-Table of Contents
-
 ## Changelog
 
 **Version: %CLIENT\_RELEASE\_LABEL%**
