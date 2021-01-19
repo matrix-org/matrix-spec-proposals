@@ -83,14 +83,18 @@ which returns:
                 "present": true,
                 "order": "abcd",
                 "auto_join": true
-            }
+            },
+            "room_id": "!ol19s:bleecker.street",
+            "sender": "@alice:bleecker.street"
         },
         {
             "type": "m.space.parent",
             "state_key": "!space:example.com",
             "content": {
                 "via": ["example.com"]
-            }
+            },
+            "room_id": "!ol19s:bleecker.street",
+            "sender": "@alice:bleecker.street"
         }
     ]
 }
@@ -130,8 +134,9 @@ Justifications for the response API shape are as follows:
         this room as a parent.
      * `room_type` which is the room type, which is `m.space` for subspaces. It can be omitted if there is no room type
        in which case it should be interpreted as a normal room.
- - `events`: These are the edges of the graph. The objects in the array are complete (or stripped?) `m.space.parent`
-   or `m.space.child` events.
+ - `events`: These are the edges of the graph. The objects in the array are stripped `m.space.parent`
+   or `m.space.child` events. This means that they only contain the `type`, `state_key`, `content`, `room_id` and `sender`
+   keys, similar to `invite_state` in the `/sync` API.
  - `next_batch`: Its presence indicates that there are more results to return.
 
 Server behaviour:
@@ -225,10 +230,16 @@ Justifications for the request API shape are the same as before with one excepti
    the server should not return node information under `rooms` nor should it return _any state events in this room_. NB: state
    events which _point to_ this room should still be included.
 
-The response body remains unchanged from the client format with the exception of a `version` field added to each room object under `rooms`.
-Servers MUST use this field to determine how to decode the events in `events`. If the room version is unknown, the server may ignore these
-events/rooms. Servers are unable to verify the auth chain of the returned events as they are typically not joined to the rooms returned.
-Servers MUST NOT persist these events in any potential room DAG that may be created if the server were to join the room.
+The response body remains unchanged from the client format. Servers are unable to verify the auth chain of the returned events
+as they are typically not joined to the rooms returned. Servers MUST NOT persist these events in any potential room DAG that
+may be created if the server were to join the room. The decision to use stripped state events instead of the actual events
+was made because:
+ - Clients just care about the data, and servers shouldn't be persisting the unverified events in the DAG, meaning data like
+   `prev_events` and `auth_events` would be useless.
+ - Events deserialise differently based on the room version which would need to be injected into the response if we decided
+   to use full events. In addition, because this endpoint returns events from multiple rooms then servers would need to partially
+   deserialise the event to extract the `room_id` field to work out which room version to use. This is bad because it relies on
+   the `room_id` field never changing in a future room version.
 
 Sending server behaviour:
  - When walking the spaces graph, if the server is not joined to a given room, remember the `via` server names and the room ID.
