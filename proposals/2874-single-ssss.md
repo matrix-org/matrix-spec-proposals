@@ -7,7 +7,7 @@ decrypt different subsets of the secrets.  However, the vast majority of users
 do not need this feature.
 
 This proposal defines how clients should behave if they only wish to support a
-single key by defining which key clients should use if multiple keys are
+single key, by defining which key clients should use if multiple keys are
 present.  It also makes the `name` field in the `m.secret_storage.key.*` events
 optional, as this field was mainly added to allow a user to select between
 different keys.
@@ -48,7 +48,7 @@ None
 ## Unstable prefix
 
 An unstable prefix is not needed for a behaviour change in choosing the key to
-use as there are not event/endpoint changes.
+use as there are no event/endpoint changes.
 
 Some clients already omit the `name` field (notably, matrix-js-sdk
 unintentionally does this -- mea culpa), and this does not seem to be causing
