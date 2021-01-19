@@ -4,8 +4,6 @@ weight: 40
 type: docs
 ---
 
-# Identity Service API
-
 {{unstable\_warning\_block\_IDENTITY\_RELEASE\_LABEL}}
 
 The Matrix client-server and server-server APIs are largely expressed in

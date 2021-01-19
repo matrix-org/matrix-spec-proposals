@@ -4,8 +4,6 @@ weight: 30
 type: docs
 ---
 
-# Application Service API
-
 {{unstable\_warning\_block\_APPSERVICE\_RELEASE\_LABEL}}
 
 The Matrix client-server API and server-server APIs provide the means to

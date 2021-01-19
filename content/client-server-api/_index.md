@@ -4,8 +4,6 @@ weight: 10
 type: docs
 ---
 
-# Client-Server API
-
 {{unstable\_warning\_block\_CLIENT\_RELEASE\_LABEL}}
 
 The client-server API provides a simple lightweight API to let clients

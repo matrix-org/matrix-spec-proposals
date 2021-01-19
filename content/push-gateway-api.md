@@ -4,8 +4,6 @@ weight: 50
 type: docs
 ---
 
-# Push Gateway API
-
 {{unstable\_warning\_block\_PUSH\_GATEWAY\_RELEASE\_LABEL}}
 
 Clients may want to receive push notifications when events are received

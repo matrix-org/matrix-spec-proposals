@@ -4,8 +4,6 @@ weight: 20
 type: docs
 ---
 
-# Federation API
-
 {{unstable\_warning\_block\_SERVER\_RELEASE\_LABEL}}
 
 Matrix homeservers use the Federation APIs (also known as server-server
