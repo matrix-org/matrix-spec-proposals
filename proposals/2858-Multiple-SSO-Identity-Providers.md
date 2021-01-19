@@ -66,35 +66,10 @@ For the case of backwards compatibility the existing endpoint is to remain,
 and if the server supports multiple SSO IDPs it should offer the user a page
 which lets them choose between the available IdP options as a fallback.
 
-For the case of User Interactive Auth the server would just give the appropriate
-identity provider as an option, that being the same as the user used to login with.
-An example UIA 401 response is shown below:
-```json
-{
-    "session": "session_id",
-    "flows":[
-        {
-            "stages": ["m.login.sso"]
-        }
-    ],
-    "params": {
-        "m.login.sso": {
-            "identity_providers": [
-                {
-                    "id": "google",
-                    "name": "Google",
-                    "icon": "https://..."
-                }
-            ]
-        }
-    }
-}
-```
-
-The exact format of `identity_providers` is kept between Login flows and UIA,
-this allows better code reuse and in future for multiple IdPs to map to the
-same Matrix account and the user having the ability to use either to complete
-UIA. 
+For the case of User Interactive Auth the server would just give the standard
+SSO flow option without any identity_providers as there is no method for
+a client to choose an idp within that flow at this time nor is it as
+essential.
 
 
 ## Potential issues
