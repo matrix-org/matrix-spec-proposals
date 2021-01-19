@@ -418,25 +418,10 @@ performed on behalf (using the access token) of the user `@me:example.org`:
 | ----------------- | --------------------- | --------------------------------------------- |
 | User Id (no `action` in URI):<br/>`matrix:user/her:example.org` | _Outside the room context_: show user profile<br/>_Inside the room context:_ mention the user in the current room (client-local operation) | No default non-interactive operation<br/>`GET /profile/@her:example.org/display_name`<br/>`GET /profile/@her:example.org/avatar_url` |
 | User Id (`action=chat`):<br/>`matrix:user/her:example.org?action=chat` | Open a direct chat with the user (see the next column on identifying the room) | If [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199) are supported: `GET /_matrix/client/r0/user/@me:example.org/dm?involves=@her:example.org`<br/>Without canonical direct chats:<br/>1. `GET /user/@me:example.org/account_data/m.direct`<br/>2. Find the room id for `@her:example.org` in the event content<br/>3. if found, return this room id; if not, `POST /createRoom` with `"is_direct": true` and return id of the created room |
-| Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:room/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>`GET /rooms/!rid:example.org/...`<br/>the respective room section of `GET /sync` |
+| Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:room/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>API: Find the respective room in the local `/sync` cache or<br/>`GET /rooms/!rid:example.org/...`<br/> |
 | Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:room/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
-| Event:<br/>`matrix:room/us:example.org/event/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | `GET `<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org` |
+| Event:<br/>`matrix:room/us:example.org/event/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | Non-interactive operation: return event or event content, depending on context<br/>API: find the event in the local `/sync` cache or<br/>`GET /directory/room/%23us:example.org` (to resolve alias to id)<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org`<br/> |
 
-* Event ID (as used in
-  [room version 3](https://matrix.org/docs/spec/rooms/v3) and later):
-  - URI example (aka "event permalink"):
-    `matrix:room/us:example.org/event/UnpaddedBase64` or
-    (additional routing is needed for room id)
-    `matrix:roomid/rid:example.org/event/UnpaddedBase64?via=example2.org`
-  - Default action:
-    1. For room aliases, resolve an alias to a room id (see above)
-    1. If the event is in the room that the user has joined, retrieve
-       the event contents (`GET /rooms/!rid:example.org/event/UnpaddedBase64` or
-       `GET /rooms/!rid:example.org/context/UnpaddedBase64`) and display them
-       to the user 
-    1. Otherwise try to retrieve the event in the same way but in case of
-       access failure the client MAY offer the user to join the room; if
-       the user agrees and joining succeeds, retry the step above.
 
 #### URI construction algorithm
 
