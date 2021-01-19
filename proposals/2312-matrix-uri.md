@@ -220,7 +220,7 @@ of a given Matrix entity:
 ```text
 path = entity-descriptor ["/" entity-descriptor]
 entity-descriptor = nonid-segment / type-qualifier id-without-sigil
-non-id-segment = segment-nz ; as defined in RFC 3986, see also below
+nonid-segment = segment-nz ; as defined in RFC 3986, see also below
 type-qualifier = segment-nz "/" ; as defined in RFC 3986, see also below
 id-without-sigil = string ; as defined in Matrix identifier spec, see below
 ```
@@ -310,10 +310,11 @@ it is not proposed here to generate or read the authority part of the URI.
 
 Clients MAY introduce and recognise custom query items, according to
 the following rules:
-- the name of the item MUST follow the reverse-DNS (aka "Java package")
-  naming convention - e.g., a custom action item for Element clients would be
-  named `io.element.action`, for Quaternion - `com.github.quaternion.action`,
-  etc.
+- the name of a custom item MUST follow the reverse-DNS (aka "Java package")
+  naming convention, as per
+  [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758) - e.g.,
+  a custom action item for Element clients would be named `io.element.action`,
+  for Quaternion - `com.github.quaternion.action`, etc.
 - the value of the item can be any content but its representation in the URI
   MUST follow the general RFC requirements for the query part; on top of that,
   if the raw value contains `&` it MUST be percent-encoded.
