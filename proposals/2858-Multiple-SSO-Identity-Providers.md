@@ -47,7 +47,7 @@ experience. This would look like this:
 ```
 
 The `id` field is a string using the common identifier grammar as defined in
-https://github.com/matrix-org/matrix-doc/pull/2858.
+https://github.com/matrix-org/matrix-doc/pull/2758.
 
 The `name` field should be the human readable string intended for printing by the client.
 
