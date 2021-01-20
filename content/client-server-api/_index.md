@@ -582,6 +582,7 @@ in the 'completed' array indicating whether that stage is complete.
 At a high level, the requests made for an API call completing an auth
 flow with three stages will resemble the following diagram:
 
+```
     _______________________
     |       Stage 0         |
     | No auth               |
@@ -616,6 +617,7 @@ flow with three stages will resemble the following diagram:
     |  ___________________  |
     | |_Request_1_________| | <-- Returns API response
     |_______________________|
+```
 
 ##### Authentication types
 
@@ -1244,6 +1246,7 @@ the start and end of the data sets respectively.
 For example, if an endpoint had events E1 -&gt; E15. The client wants
 the last 5 events and doesn't know any previous events:
 
+```
     S                                                    E
     |-E1-E2-E3-E4-E5-E6-E7-E8-E9-E10-E11-E12-E13-E14-E15-|
     |                               |                    |
@@ -1253,11 +1256,13 @@ the last 5 events and doesn't know any previous events:
      GET /somepath?to=START&limit=5&dir=b&from=END
      Returns:
        E15,E14,E13,E12,E11
+```
 
 Another example: a public room list has rooms R1 -&gt; R17. The client
 is showing 5 rooms at a time on screen, and is on page 2. They want to
 now show page 3 (rooms R11 -&gt; 15):
 
+```
     S                                                           E
     |  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16 | stream token
     |-R1-R2-R3-R4-R5-R6-R7-R8-R9-R10-R11-R12-R13-R14-R15-R16-R17| room
@@ -1268,6 +1273,7 @@ now show page 3 (rooms R11 -&gt; 15):
                                              |
                              GET /roomslist?from=9&to=END&limit=5
                              Returns: R11,R12,R13,R14,R15
+```
 
 Note that tokens are treated in an *exclusive*, not inclusive, manner.
 The end token from the initial request was '9' which corresponded to
@@ -1511,10 +1517,12 @@ messages.
 
 You can visualise the range of events being returned as:
 
+```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
                ^                      ^
                |                      |
          prev_batch: '1-2-3'        next_batch: 'a-b-c'
+```
 
 Clients then receive new events by "long-polling" the homeserver via the
 `/sync` API, passing the value of the `next_batch` field from the
@@ -1526,11 +1534,13 @@ deprecated `/events` API) support long-polling in this way.
 
 The response for such an incremental sync can be visualised as:
 
+```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]
                                       ^     ^
                                       |     |
                                       |  next_batch: 'x-y-z'
                                     prev_batch: 'a-b-c'
+```
 
 Normally, all new events which are visible to the client will appear in
 the response to the `/sync` API. However, if a large number of events
@@ -1541,12 +1551,14 @@ timeline. The client may therefore end up with "gaps" in its knowledge
 of the message timeline. The client can fill these gaps using the
 `/rooms/<room_id>/messages`\_ API. This situation looks like this:
 
+```
     | gap |
     | <-> |
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
           ^                        ^
           |                        |
      prev_batch: 'd-e-f'       next_batch: 'u-v-w'
+```
 
 Warning
 
@@ -1785,32 +1797,34 @@ This room can only be joined if you were invited.
 
 The allowable state transitions of membership are:
 
-    /ban
-    +------------------------------------------------------+
-    |                                                      |
-    |  +----------------+  +----------------+              |
-    |  |    /leave      |  |                |              |
-    |  |                v  v                |              |
+```
+                                       /ban
+                  +------------------------------------------------------+
+                  |                                                      |
+                  |  +----------------+  +----------------+              |
+                  |  |    /leave      |  |                |              |
+                  |  |                v  v                |              |
     /invite    +--------+           +-------+             |              |
-    ------------>| invite |<----------| leave |----+        |              |
-    +--------+  /invite  +-------+    |        |              |
-    |                   |    ^      |        |              |
-    |                   |    |      |        |              |
-    /join |   +---------------+    |      |        |              |
-    |   | /join if           |      |        |              |
-    |   | join_rules         |      | /ban   | /unban       |
-    |   | public      /leave |      |        |              |
-    v   v               or   |      |        |              |
-    +------+            /kick  |      |        |              |
-    ------------>| join |-------------------+      |        |              |
-    /join       +------+                          v        |              |
-    if             |                           +-----+     |              |
-    join_rules     +-------------------------->| ban |-----+              |
-    public                   /ban              +-----+                    |
-             ^ ^                      |
-             | |                      |
-    ----------------------------------------------+ +----------------------+
-    /ban
+  ------------>| invite |<----------| leave |----+        |              |
+               +--------+  /invite  +-------+    |        |              |
+                 |                   |    ^      |        |              |
+                 |                   |    |      |        |              |
+           /join |   +---------------+    |      |        |              |
+                 |   | /join if           |      |        |              |
+                 |   | join_rules         |      | /ban   | /unban       |
+                 |   | public      /leave |      |        |              |
+                 v   v               or   |      |        |              |
+               +------+            /kick  |      |        |              |
+  ------------>| join |-------------------+      |        |              |
+   /join       +------+                          v        |              |
+   if             |                           +-----+     |              |
+   join_rules     +-------------------------->| ban |-----+              |
+   public                   /ban              +-----+                    |
+                                                ^ ^                      |
+                                                | |                      |
+  ----------------------------------------------+ +----------------------+
+                  /ban
+```
 
 {{list\_joined\_rooms\_cs\_http\_api}}
 

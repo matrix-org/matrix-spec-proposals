@@ -36,26 +36,28 @@ A client's homeserver forwards information about received events to the
 push gateway. The gateway then submits a push notification to the push
 notification provider (e.g. APNS, GCM).
 
-    +--------------------+  +-------------------+
-    Matrix HTTP      |                    |  |                   |
-    Notification Protocol |   App Developer    |  |   Device Vendor   |
-    |                    |  |                   |
-    +-------------------+   | +----------------+ |  | +---------------+ |
-    |                   |   | |                | |  | |               | |
-    | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
-    |                   |   | |                | |  | |               | |
-    +-^-----------------+   | +----------------+ |  | +----+----------+ |
-    |                     |                    |  |      |            |
+```
+                                   +--------------------+  +-------------------+
+                  Matrix HTTP      |                    |  |                   |
+             Notification Protocol |   App Developer    |  |   Device Vendor   |
+                                   |                    |  |                   |
+           +-------------------+   | +----------------+ |  | +---------------+ |
+           |                   |   | |                | |  | |               | |
+           | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
+           |                   |   | |                | |  | |               | |
+           +-^-----------------+   | +----------------+ |  | +----+----------+ |
+             |                     |                    |  |      |            |
     Matrix   |                     |                    |  |      |            |
-    Client/Server API  +              |                    |  |      |            |
-    |      |              +--------------------+  +-------------------+
-    |   +--+-+                                           |
-    |   |    <-------------------------------------------+
-    +---+    |
-    |    |          Provider Push Protocol
-    +----+
+ Client/Server API  +              |                    |  |      |            |
+             |      |              +--------------------+  +-------------------+
+             |   +--+-+                                           |
+             |   |    <-------------------------------------------+
+             +---+    |
+                 |    |          Provider Push Protocol
+                 +----+
 
-    Mobile Device or Client
+         Mobile Device or Client
+```
 
 ## Homeserver behaviour
 

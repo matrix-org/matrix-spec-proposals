@@ -21,6 +21,7 @@ send call events to rooms with exactly two participants.
 
 A call is set up with message events exchanged as follows:
 
+```
     Caller                    Callee
     [Place Call]
     m.call.invite ----------->
@@ -30,15 +31,18 @@ A call is set up with message events exchanged as follows:
            <--------------- m.call.answer
      [Call is active and ongoing]
            <--------------- m.call.hangup
+```
 
 Or a rejected call:
 
+```
     Caller                      Callee
     m.call.invite ------------>
     m.call.candidate --------->
     [..candidates..] --------->
                              [Rejects call]
              <-------------- m.call.hangup
+```
 
 Calls are negotiated according to the WebRTC specification.
 

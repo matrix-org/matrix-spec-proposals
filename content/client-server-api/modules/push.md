@@ -5,26 +5,27 @@ weight: 130
 
 ### Push Notifications
 
-    +--------------------+  +-------------------+
-    Matrix HTTP      |                    |  |                   |
-    Notification Protocol |   App Developer    |  |   Device Vendor   |
-    |                    |  |                   |
-    +-------------------+   | +----------------+ |  | +---------------+ |
-    |                   |   | |                | |  | |               | |
-    | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
-    |                   |   | |                | |  | |               | |
-    +-^-----------------+   | +----------------+ |  | +----+----------+ |
-    |                     |                    |  |      |            |
+```
+                                   +--------------------+  +-------------------+
+                  Matrix HTTP      |                    |  |                   |
+             Notification Protocol |   App Developer    |  |   Device Vendor   |
+                                   |                    |  |                   |
+           +-------------------+   | +----------------+ |  | +---------------+ |
+           |                   |   | |                | |  | |               | |
+           | Matrix homeserver +----->  Push Gateway  +------> Push Provider | |
+           |                   |   | |                | |  | |               | |
+           +-^-----------------+   | +----------------+ |  | +----+----------+ |
+             |                     |                    |  |      |            |
     Matrix   |                     |                    |  |      |            |
-    Client/Server API  +              |                    |  |      |            |
-    |      |              +--------------------+  +-------------------+
-    |   +--+-+                                           |
-    |   |    <-------------------------------------------+
-    +---+    |
-    |    |          Provider Push Protocol
-    +----+
-
-    Mobile Device or Client
+ Client/Server API  +              |                    |  |      |            |
+             |      |              +--------------------+  +-------------------+
+             |   +--+-+                                           |
+             |   |    <-------------------------------------------+
+             +---+    |
+                 |    |          Provider Push Protocol
+                 +----+
+          Mobile Device or Client
+```
 
 This module adds support for push notifications. Homeservers send
 notifications of events to user-configured HTTP endpoints. Users may

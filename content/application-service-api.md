@@ -274,10 +274,13 @@ The application service API provides a transaction API for sending a
 list of events. Each list of events includes a transaction ID, which
 works as follows:
 
+```
     Typical
     HS ---> AS : Homeserver sends events with transaction ID T.
        <---    : Application Service sends back 200 OK.
+```
 
+```
     AS ACK Lost
     HS ---> AS : Homeserver sends events with transaction ID T.
        <-/-    : AS 200 OK is lost.
@@ -285,6 +288,7 @@ works as follows:
        <---    : Application Service sends back 200 OK. If the AS had processed these
                  events already, it can NO-OP this request (and it knows if it is the
                  same events based on the transaction ID).
+```
 
 The events sent to the application service should be linearised, as if
 they were from the event stream. The homeserver MUST maintain a queue of

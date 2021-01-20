@@ -46,6 +46,7 @@ third party identifier with the provided identity server. If the lookup
 yields a result for a Matrix User ID then the normal invite process can
 be initiated. This process ends up looking like this:
 
+```
     +---------+                         +-------------+                                    +-----------------+
     | Client  |                         | Homeserver  |                                    | IdentityServer  |
     +---------+                         +-------------+                                    +-----------------+
@@ -67,12 +68,14 @@ be initiated. This process ends up looking like this:
         |        Complete the /invite request |                                                    |
         |<------------------------------------|                                                    |
         |                                     |                                                    |
+```
 
 However, if the lookup does not yield a bound User ID, the homeserver
 must store the invite on the identity server and emit a valid
 `m.room.third_party_invite` event to the room. This process ends up
 looking like this:
 
+```
     +---------+                         +-------------+                                               +-----------------+
     | Client  |                         | Homeserver  |                                               | IdentityServer  |
     +---------+                         +-------------+                                               +-----------------+
@@ -100,6 +103,7 @@ looking like this:
         |        Complete the /invite request |                                                               |
         |<------------------------------------|                                                               |
         |                                     |                                                               |
+```
 
 All homeservers MUST verify the signature in the event's
 `content.third_party_invite.signed` object.
@@ -127,6 +131,7 @@ and an identity server IS, the full sequence for a third party invite
 would look like the following. This diagram assumes H1 and H2 are
 residents of the room while H3 is attempting to join.
 
+```
     +-------+ +-----------------+         +-----+                                          +-----+           +-----+                      +-----+
     | UserA | | ThirdPartyUser  |         | H1  |                                          | H2  |           | H3  |                      | IS  |
     +-------+ +-----------------+         +-----+                                          +-----+           +-----+                      +-----+
@@ -181,6 +186,7 @@ residents of the room while H3 is attempting to join.
         |              |                     |                                                |                 |                       |    |
         |              |                     |                                                |                 |<-----------------------    |
         |              |                     |                                                |                 |                            |
+```
 
 Note that when H1 sends the `m.room.member` event to H2 and H3 it does
 not have to block on either server's receipt of the event. Likewise, H1

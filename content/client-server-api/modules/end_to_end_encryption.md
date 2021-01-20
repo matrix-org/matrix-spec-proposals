@@ -18,34 +18,40 @@ exchange fingerprints between users to build a web of trust.
 
 ##### Overview
 
-    1) Bob publishes the public keys and supported algorithms for his
-       device. This may include long-term identity keys, and/or one-time
-       keys.
+1) Bob publishes the public keys and supported algorithms for his
+device. This may include long-term identity keys, and/or one-time
+keys.
 
-                                          +----------+  +--------------+
-                                          | Bob's HS |  | Bob's Device |
-                                          +----------+  +--------------+
-                                                |              |
-                                                |<=============|
-                                                  /keys/upload
+```
+      +----------+  +--------------+
+      | Bob's HS |  | Bob's Device |
+      +----------+  +--------------+
+            |              |
+            |<=============|
+              /keys/upload
+```
 
-    2) Alice requests Bob's public identity keys and supported algorithms.
+2) Alice requests Bob's public identity keys and supported algorithms.
 
+```
       +----------------+  +------------+  +----------+
       | Alice's Device |  | Alice's HS |  | Bob's HS |
       +----------------+  +------------+  +----------+
              |                  |               |
              |=================>|==============>|
                /keys/query        <federation>
+```
 
-    3) Alice selects an algorithm and claims any one-time keys needed.
+3) Alice selects an algorithm and claims any one-time keys needed.
 
+```
       +----------------+  +------------+  +----------+
       | Alice's Device |  | Alice's HS |  | Bob's HS |
       +----------------+  +------------+  +----------+
              |                  |               |
              |=================>|==============>|
                /keys/claim         <federation>
+```
 
 ##### Key algorithms
 
@@ -452,6 +458,7 @@ request, and Alice's second device initiates the request. Note how
 Alice's first device is not involved in the request or verification
 process.
 
+```
     +---------------+ +---------------+                    +-------------+ +-------------+
     | AliceDevice1  | | AliceDevice2  |                    | BobDevice1  | | BobDevice2  |
     +---------------+ +---------------+                    +-------------+ +-------------+
@@ -468,6 +475,7 @@ process.
             |                 | m.key.verification.cancel         |               |
             |                 |-------------------------------------------------->|
             |                 |                                   |               |
+```
 
 After the handshake, the verification process begins.
 
@@ -571,6 +579,7 @@ The process between Alice and Bob verifying each other would be:
 The wire protocol looks like the following between Alice and Bob's
 devices:
 
+```
     +-------------+                    +-----------+
     | AliceDevice |                    | BobDevice |
     +-------------+                    +-----------+
@@ -593,6 +602,7 @@ devices:
           |          m.key.verification.mac |
           |<--------------------------------|
           |                                 |
+```
 
 ###### Error and exception handling
 
@@ -805,6 +815,7 @@ she can trust Bob's device if:
 
 The following diagram illustrates how keys are signed:
 
+```
     +------------------+                ..................   +----------------+
     | +--------------+ |   ..................            :   | +------------+ |
     | |              v v   v            :   :            v   v v            | |
@@ -825,6 +836,7 @@ The following diagram illustrates how keys are signed:
     | |      |  ...  |                                         |  ...  |    | |
     | +------+       |                                         |       +----+ |
     +----------------+                                         +--------------+
+```
 
 In the diagram, boxes represent keys and lines represent signatures with
 the arrows pointing from the signing key to the key being signed. Dotted
@@ -834,6 +846,7 @@ the user who created them.
 The following diagram illustrates Alice's view, hiding the keys and
 signatures that she cannot see:
 
+```
     +------------------+                +----------------+   +----------------+
     | +--------------+ |                |                |   | +------------+ |
     | |              v v                |                v   v v            | |
@@ -854,6 +867,7 @@ signatures that she cannot see:
     | |      |  ...  |                                         |  ...  |    | |
     | +------+       |                                         |       +----+ |
     +----------------+                                         +--------------+
+```
 
 [Verification methods](#device-verification) can be used to verify a
 user's master key by using the master public key, encoded using unpadded

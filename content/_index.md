@@ -159,20 +159,21 @@ contents and then adds it to its copy of the room's event graph. Client
 B then receives the message from his homeserver via a long-lived GET
 request.
 
-    How data flows between clients
-    ==============================
+How data flows between clients:
 
+```
     { Matrix client A }                             { Matrix client B }
-    ^          |                                    ^          |
-    |  events  |  Client-Server API                 |  events  |
-    |          V                                    |          V
+        ^          |                                    ^          |
+        |  events  |  Client-Server API                 |  events  |
+        |          V                                    |          V
     +------------------+                            +------------------+
     |                  |---------( HTTPS )--------->|                  |
     |   homeserver     |                            |   homeserver     |
     |                  |<--------( HTTPS )----------|                  |
     +------------------+      Server-Server API     +------------------+
-         History Synchronisation
-             (Federation)
+                          History Synchronisation
+                              (Federation)
+```
 
 ### Users
 

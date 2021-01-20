@@ -64,6 +64,7 @@ opening an embedded web view.
 
 These steps are illustrated as follows:
 
+```
     Matrix Client                        Matrix Homeserver      Auth Server
         |                                       |                   |
         |-------------(0) GET /login----------->|                   |
@@ -82,6 +83,7 @@ These steps are illustrated as follows:
         |                                       |                   |
         |---(5) POST /login with login token--->|                   |
         |<-------------access token-------------|                   |
+```
 
 Note
 

@@ -690,6 +690,7 @@ candidate may be used at each time. Thus, any join handshake can
 potentially involve anywhere from two to four homeservers, though most
 in practice will use just two.
 
+```
     Client         Joining                Directory       Resident
                    Server                 Server          Server
 
@@ -705,6 +706,7 @@ in practice will use just two.
                    <------------------------------- send_join response
                    |
     <---------- join response
+```
 
 The first part of the handshake usually involves using the directory
 server to request the room ID and join candidates through the
