@@ -4,8 +4,6 @@ weight: 30
 type: docs
 ---
 
-{{unstable\_warning\_block\_APPSERVICE\_RELEASE\_LABEL}}
-
 The Matrix client-server API and server-server APIs provide the means to
 implement a consistent self-contained federated messaging fabric.
 However, they provide limited means of implementing custom server-side

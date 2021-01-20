@@ -4,8 +4,6 @@ weight: 20
 type: docs
 ---
 
-{{unstable\_warning\_block\_SERVER\_RELEASE\_LABEL}}
-
 Matrix homeservers use the Federation APIs (also known as server-server
 APIs) to communicate with each other. Homeservers use these APIs to push
 messages to each other in real-time, to retrieve historic messages from
