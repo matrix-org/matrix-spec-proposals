@@ -125,19 +125,21 @@ This module adds the following properties to the \_ response:
 
 Example response:
 
-    {
-      "next_batch": "s72595_4483_1934",
-      "rooms": {"leave": {}, "join": {}, "invite": {}},
-      "to_device": {
-        "events": [
-          {
-            "sender": "@alice:example.com",
-            "type": "m.new_device",
-            "content": {
-              "device_id": "XYZABCDE",
-              "rooms": ["!726s6s6q:example.com"]
-            }
-          }
-        ]
+```json
+{
+  "next_batch": "s72595_4483_1934",
+  "rooms": {"leave": {}, "join": {}, "invite": {}},
+  "to_device": {
+    "events": [
+      {
+        "sender": "@alice:example.com",
+        "type": "m.new_device",
+        "content": {
+          "device_id": "XYZABCDE",
+          "rooms": ["!726s6s6q:example.com"]
+        }
       }
-    }
+    ]
+  }
+}
+```

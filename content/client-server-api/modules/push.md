@@ -282,15 +282,17 @@ user. By default this rule is disabled.
 
 Definition
 
-    {
-        "rule_id": ".m.rule.master",
-        "default": true,
-        "enabled": false,
-        "conditions": [],
-        "actions": [
-            "dont_notify"
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.master",
+    "default": true,
+    "enabled": false,
+    "conditions": [],
+    "actions": [
+        "dont_notify"
+    ]
+}
+```
 
 ######## `.m.rule.suppress_notices`
 
@@ -298,21 +300,23 @@ Matches messages with a `msgtype` of `notice`.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.suppress_notices",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "event_match",
-                "key": "content.msgtype",
-                "pattern": "m.notice",
-            }
-        ],
-        "actions": [
-            "dont_notify",
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.suppress_notices",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "event_match",
+            "key": "content.msgtype",
+            "pattern": "m.notice",
+        }
+    ],
+    "actions": [
+        "dont_notify",
+    ]
+}
+```
 
 ######## `.m.rule.invite_for_me`
 
@@ -320,35 +324,37 @@ Matches any invites to a new room for this user.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.invite_for_me",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "key": "type",
-                "kind": "event_match",
-                "pattern": "m.room.member"
-            },
-            {
-                "key": "content.membership",
-                "kind": "event_match",
-                "pattern": "invite"
-            },
-            {
-                "key": "state_key",
-                "kind": "event_match",
-                "pattern": "[the user's Matrix ID]"
-            }
-        ],
-        "actions": [
-           "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.invite_for_me",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "key": "type",
+            "kind": "event_match",
+            "pattern": "m.room.member"
+        },
+        {
+            "key": "content.membership",
+            "kind": "event_match",
+            "pattern": "invite"
+        },
+        {
+            "key": "state_key",
+            "kind": "event_match",
+            "pattern": "[the user's Matrix ID]"
+        }
+    ],
+    "actions": [
+       "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        }
+    ]
+}
+```
 
 ######## `.m.rule.member_event`
 
@@ -356,21 +362,23 @@ Matches any `m.room.member_event`.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.member_event",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "key": "type",
-                "kind": "event_match",
-                "pattern": "m.room.member"
-            }
-        ],
-        "actions": [
-            "dont_notify"
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.member_event",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "key": "type",
+            "kind": "event_match",
+            "pattern": "m.room.member"
+        }
+    ],
+    "actions": [
+        "dont_notify"
+    ]
+}
+```
 
 ######## `.m.rule.contains_display_name`
 
@@ -379,26 +387,28 @@ current display name in the room in which it was sent.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.contains_display_name",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "contains_display_name"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            },
-            {
-                "set_tweak": "highlight"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.contains_display_name",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "contains_display_name"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        },
+        {
+            "set_tweak": "highlight"
+        }
+    ]
+}
+```
 
 ######## `.m.rule.tombstone`
 
@@ -408,29 +418,31 @@ an `@room` notification would accomplish.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.tombstone",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "event_match",
-                "key": "type",
-                "pattern": "m.room.tombstone"
-            },
-            {
-                "kind": "event_match",
-                "key": "state_key",
-                "pattern": ""
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.tombstone",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "event_match",
+            "key": "type",
+            "pattern": "m.room.tombstone"
+        },
+        {
+            "kind": "event_match",
+            "key": "state_key",
+            "pattern": ""
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "highlight"
+        }
+    ]
+}
+```
 
 ######## `.m.rule.roomnotif`
 
@@ -439,28 +451,30 @@ Matches any message whose content is unencrypted and contains the text
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.roomnotif",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "event_match",
-                "key": "content.body",
-                "pattern": "@room"
-            },
-            {
-                "kind": "sender_notification_permission",
-                "key": "room"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "highlight"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.roomnotif",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "event_match",
+            "key": "content.body",
+            "pattern": "@room"
+        },
+        {
+            "kind": "sender_notification_permission",
+            "key": "room"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "highlight"
+        }
+    ]
+}
+```
 
 ####### Default Content Rules
 
@@ -471,22 +485,24 @@ part of the user's Matrix ID, separated by word boundaries.
 
 Definition (as a `content` rule):
 
-    {
-        "rule_id": ".m.rule.contains_user_name",
-        "default": true,
-        "enabled": true,
-        "pattern": "[the local part of the user's Matrix ID]",
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            },
-            {
-                "set_tweak": "highlight"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.contains_user_name",
+    "default": true,
+    "enabled": true,
+    "pattern": "[the local part of the user's Matrix ID]",
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        },
+        {
+            "set_tweak": "highlight"
+        }
+    ]
+}
+```
 
 ####### Default Underride Rules
 
@@ -496,25 +512,27 @@ Matches any incoming VOIP call.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.call",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "key": "type",
-                "kind": "event_match",
-                "pattern": "m.call.invite"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "sound",
-                "value": "ring"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.call",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "key": "type",
+            "kind": "event_match",
+            "pattern": "m.call.invite"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "ring"
+        }
+    ]
+}
+```
 
 ######## `.m.rule.encrypted_room_one_to_one`
 
@@ -526,29 +544,31 @@ encrypted (in 1:1 rooms) or none.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.encrypted_room_one_to_one",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "room_member_count",
-                "is": "2"
-            },
-            {
-                "kind": "event_match",
-                "key": "type",
-                "pattern": "m.room.encrypted"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.encrypted_room_one_to_one",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "room_member_count",
+            "is": "2"
+        },
+        {
+            "kind": "event_match",
+            "key": "type",
+            "pattern": "m.room.encrypted"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        }
+    ]
+}
+```
 
 ######## `.m.rule.room_one_to_one`
 
@@ -556,29 +576,31 @@ Matches any message sent in a room with exactly two members.
 
 Definition:
 
-    {
-        "rule_id": ".m.rule.room_one_to_one",
-        "default": true,
-        "enabled": true,
-        "conditions": [
-            {
-                "kind": "room_member_count",
-                "is": "2"
-            },
-            {
-                "kind": "event_match",
-                "key": "type",
-                "pattern": "m.room.message"
-            }
-        ],
-        "actions": [
-            "notify",
-            {
-                "set_tweak": "sound",
-                "value": "default"
-            }
-        ]
-    }
+```json
+{
+    "rule_id": ".m.rule.room_one_to_one",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "room_member_count",
+            "is": "2"
+        },
+        {
+            "kind": "event_match",
+            "key": "type",
+            "pattern": "m.room.message"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        }
+    ]
+}
+```
 
 ######## `.m.rule.message`
 
@@ -586,21 +608,23 @@ Matches all chat messages.
 
 Definition:
 
-    {
-         "rule_id": ".m.rule.message",
-         "default": true,
-         "enabled": true,
-         "conditions": [
-             {
-                 "kind": "event_match",
-                 "key": "type",
-                 "pattern": "m.room.message"
-             }
-         ],
-         "actions": [
-             "notify"
-         ]
-    }
+```json
+{
+     "rule_id": ".m.rule.message",
+     "default": true,
+     "enabled": true,
+     "conditions": [
+         {
+             "kind": "event_match",
+             "key": "type",
+             "pattern": "m.room.message"
+         }
+     ],
+     "actions": [
+         "notify"
+     ]
+}
+```
 
 ######## `.m.rule.encrypted`
 
@@ -611,21 +635,23 @@ either matches *all* events that are encrypted (in group rooms) or none.
 
 Definition:
 
-    {
-         "rule_id": ".m.rule.encrypted",
-         "default": true,
-         "enabled": true,
-         "conditions": [
-             {
-                 "kind": "event_match",
-                 "key": "type",
-                 "pattern": "m.room.encrypted"
-             }
-         ],
-         "actions": [
-             "notify"
-         ]
-    }
+```json
+{
+     "rule_id": ".m.rule.encrypted",
+     "default": true,
+     "enabled": true,
+     "conditions": [
+         {
+             "kind": "event_match",
+             "key": "type",
+             "pattern": "m.room.encrypted"
+         }
+     ],
+     "actions": [
+         "notify"
+     ]
+}
+```
 
 ##### Push Rules: API
 

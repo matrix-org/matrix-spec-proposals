@@ -87,19 +87,21 @@ Note
 
 Float values are not permitted by this encoding.
 
-    import json
+```py
+import json
 
-    def canonical_json(value):
-        return json.dumps(
-            value,
-            # Encode code-points outside of ASCII as UTF-8 rather than \u escapes
-            ensure_ascii=False,
-            # Remove unnecessary white space.
-            separators=(',',':'),
-            # Sort the keys of dictionaries.
-            sort_keys=True,
-            # Encode the resulting Unicode as UTF-8 bytes.
-        ).encode("UTF-8")
+def canonical_json(value):
+    return json.dumps(
+        value,
+        # Encode code-points outside of ASCII as UTF-8 rather than \u escapes
+        ensure_ascii=False,
+        # Remove unnecessary white space.
+        separators=(',',':'),
+        # Sort the keys of dictionaries.
+        sort_keys=True,
+        # Encode the resulting Unicode as UTF-8 bytes.
+    ).encode("UTF-8")
+```
 
 #### Grammar
 
@@ -138,108 +140,144 @@ transformation code.
 
 Given the following JSON object:
 
-    {}
+```json
+{}
+```
 
 The following canonical JSON should be produced:
 
-    {}
+```json
+{}
+```
 
 Given the following JSON object:
 
-    {
-        "one": 1,
-        "two": "Two"
-    }
+```json
+{
+    "one": 1,
+    "two": "Two"
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"one":1,"two":"Two"}
+```json
+{"one":1,"two":"Two"}
+```
 
 Given the following JSON object:
 
-    {
-        "b": "2",
-        "a": "1"
-    }
+```json
+{
+    "b": "2",
+    "a": "1"
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"a":"1","b":"2"}
+```json
+{"a":"1","b":"2"}
+```
 
 Given the following JSON object:
 
-    {"b":"2","a":"1"}
+```json
+{"b":"2","a":"1"}
+```
 
 The following canonical JSON should be produced:
 
-    {"a":"1","b":"2"}
+```json
+{"a":"1","b":"2"}
+```
 
 Given the following JSON object:
 
-    {
-        "auth": {
-            "success": true,
-            "mxid": "@john.doe:example.com",
-            "profile": {
-                "display_name": "John Doe",
-                "three_pids": [
-                    {
-                        "medium": "email",
-                        "address": "john.doe@example.org"
-                    },
-                    {
-                        "medium": "msisdn",
-                        "address": "123456789"
-                    }
-                ]
-            }
+```json
+{
+    "auth": {
+        "success": true,
+        "mxid": "@john.doe:example.com",
+        "profile": {
+            "display_name": "John Doe",
+            "three_pids": [
+                {
+                    "medium": "email",
+                    "address": "john.doe@example.org"
+                },
+                {
+                    "medium": "msisdn",
+                    "address": "123456789"
+                }
+            ]
         }
     }
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"auth":{"mxid":"@john.doe:example.com","profile":{"display_name":"John Doe","three_pids":[{"address":"john.doe@example.org","medium":"email"},{"address":"123456789","medium":"msisdn"}]},"success":true}}
+```json
+{"auth":{"mxid":"@john.doe:example.com","profile":{"display_name":"John Doe","three_pids":[{"address":"john.doe@example.org","medium":"email"},{"address":"123456789","medium":"msisdn"}]},"success":true}}
+```
 
 Given the following JSON object:
 
-    {
-        "a": "日本語"
-    }
+```json
+{
+    "a": "日本語"
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"a":"日本語"}
+```json
+{"a":"日本語"}
+```
 
 Given the following JSON object:
 
-    {
-        "本": 2,
-        "日": 1
-    }
+```json
+{
+    "本": 2,
+    "日": 1
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"日":1,"本":2}
+```json
+{"日":1,"本":2}
+```
 
 Given the following JSON object:
 
-    {
-        "a": "\u65E5"
-    }
+```json
+{
+    "a": "\u65E5"
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"a":"日"}
+```json
+{"a":"日"}
+```
 
 Given the following JSON object:
 
-    {
-        "a": null
-    }
+```json
+{
+    "a": null
+}
+```
 
 The following canonical JSON should be produced:
 
-    {"a":null}
+```json
+{"a":null}
+```
 
 ### Signing Details
 
@@ -263,36 +301,40 @@ The `unsigned` object and the `signatures` object are not covered by the
 signature. Therefore intermediate entities can add unsigned data such as
 timestamps and additional signatures.
 
-    {
-       "name": "example.org",
-       "signing_keys": {
-         "ed25519:1": "XSl0kuyvrXNj6A+7/tkrB9sxSbRi08Of5uRhxOqZtEQ"
-       },
-       "unsigned": {
-          "age_ts": 922834800000
-       },
-       "signatures": {
-          "example.org": {
-             "ed25519:1": "s76RUgajp8w172am0zQb/iPTHsRnb4SkrzGoeCOSFfcBY2V/1c8QfrmdXHpvnc2jK5BD1WiJIxiMW95fMjK7Bw"
-          }
-       }
-    }
+```json
+{
+   "name": "example.org",
+   "signing_keys": {
+     "ed25519:1": "XSl0kuyvrXNj6A+7/tkrB9sxSbRi08Of5uRhxOqZtEQ"
+   },
+   "unsigned": {
+      "age_ts": 922834800000
+   },
+   "signatures": {
+      "example.org": {
+         "ed25519:1": "s76RUgajp8w172am0zQb/iPTHsRnb4SkrzGoeCOSFfcBY2V/1c8QfrmdXHpvnc2jK5BD1WiJIxiMW95fMjK7Bw"
+      }
+   }
+}
+```
 
-    def sign_json(json_object, signing_key, signing_name):
-        signatures = json_object.pop("signatures", {})
-        unsigned = json_object.pop("unsigned", None)
+```py
+def sign_json(json_object, signing_key, signing_name):
+    signatures = json_object.pop("signatures", {})
+    unsigned = json_object.pop("unsigned", None)
 
-        signed = signing_key.sign(encode_canonical_json(json_object))
-        signature_base64 = encode_base64(signed.signature)
+    signed = signing_key.sign(encode_canonical_json(json_object))
+    signature_base64 = encode_base64(signed.signature)
 
-        key_id = "%s:%s" % (signing_key.alg, signing_key.version)
-        signatures.setdefault(signing_name, {})[key_id] = signature_base64
+    key_id = "%s:%s" % (signing_key.alg, signing_key.version)
+    signatures.setdefault(signing_name, {})[key_id] = signature_base64
 
-        json_object["signatures"] = signatures
-        if unsigned is not None:
-            json_object["unsigned"] = unsigned
+    json_object["signatures"] = signatures
+    if unsigned is not None:
+        json_object["unsigned"] = unsigned
 
-        return json_object
+    return json_object
+```
 
 ### Checking for a Signature
 
@@ -872,122 +914,138 @@ In each case, the server name and key ID are as follows:
 
 Given an empty JSON object:
 
-    {}
+```json
+{}
+```
 
 The JSON signing algorithm should emit the following signed data:
 
-    {
-        "signatures": {
-            "domain": {
-                "ed25519:1": "K8280/U9SSy9IVtjBuVeLr+HpOB4BQFWbg+UZaADMtTdGYI7Geitb76LTrr5QV/7Xg4ahLwYGYZzuHGZKM5ZAQ"
-            }
+```json
+{
+    "signatures": {
+        "domain": {
+            "ed25519:1": "K8280/U9SSy9IVtjBuVeLr+HpOB4BQFWbg+UZaADMtTdGYI7Geitb76LTrr5QV/7Xg4ahLwYGYZzuHGZKM5ZAQ"
         }
     }
+}
+```
 
 Given the following JSON object with data values in it:
 
-    {
-        "one": 1,
-        "two": "Two"
-    }
+```json
+{
+    "one": 1,
+    "two": "Two"
+}
+```
 
 The JSON signing algorithm should emit the following signed JSON:
 
-    {
-        "one": 1,
-        "signatures": {
-            "domain": {
-                "ed25519:1": "KqmLSbO39/Bzb0QIYE82zqLwsA+PDzYIpIRA2sRQ4sL53+sN6/fpNSoqE7BP7vBZhG6kYdD13EIMJpvhJI+6Bw"
-            }
-        },
-        "two": "Two"
-    }
+```json
+{
+    "one": 1,
+    "signatures": {
+        "domain": {
+            "ed25519:1": "KqmLSbO39/Bzb0QIYE82zqLwsA+PDzYIpIRA2sRQ4sL53+sN6/fpNSoqE7BP7vBZhG6kYdD13EIMJpvhJI+6Bw"
+        }
+    },
+    "two": "Two"
+}
+```
 
 ### Event Signing
 
 Given the following minimally-sized event:
 
-    {
-        "room_id": "!x:domain",
-        "sender": "@a:domain",
-        "origin": "domain",
-        "origin_server_ts": 1000000,
-        "signatures": {},
-        "hashes": {},
-        "type": "X",
-        "content": {},
-        "prev_events": [],
-        "auth_events": [],
-        "depth": 3,
-        "unsigned": {
-            "age_ts": 1000000
-        }
+```json
+{
+    "room_id": "!x:domain",
+    "sender": "@a:domain",
+    "origin": "domain",
+    "origin_server_ts": 1000000,
+    "signatures": {},
+    "hashes": {},
+    "type": "X",
+    "content": {},
+    "prev_events": [],
+    "auth_events": [],
+    "depth": 3,
+    "unsigned": {
+        "age_ts": 1000000
     }
+}
+```
 
 The event signing algorithm should emit the following signed event:
 
-    {
-        "auth_events": [],
-        "content": {},
-        "depth": 3,
-        "hashes": {
-            "sha256": "5jM4wQpv6lnBo7CLIghJuHdW+s2CMBJPUOGOC89ncos"
-        },
-        "origin": "domain",
-        "origin_server_ts": 1000000,
-        "prev_events": [],
-        "room_id": "!x:domain",
-        "sender": "@a:domain",
-        "signatures": {
-            "domain": {
-                "ed25519:1": "KxwGjPSDEtvnFgU00fwFz+l6d2pJM6XBIaMEn81SXPTRl16AqLAYqfIReFGZlHi5KLjAWbOoMszkwsQma+lYAg"
-            }
-        },
-        "type": "X",
-        "unsigned": {
-            "age_ts": 1000000
+```json
+{
+    "auth_events": [],
+    "content": {},
+    "depth": 3,
+    "hashes": {
+        "sha256": "5jM4wQpv6lnBo7CLIghJuHdW+s2CMBJPUOGOC89ncos"
+    },
+    "origin": "domain",
+    "origin_server_ts": 1000000,
+    "prev_events": [],
+    "room_id": "!x:domain",
+    "sender": "@a:domain",
+    "signatures": {
+        "domain": {
+            "ed25519:1": "KxwGjPSDEtvnFgU00fwFz+l6d2pJM6XBIaMEn81SXPTRl16AqLAYqfIReFGZlHi5KLjAWbOoMszkwsQma+lYAg"
         }
+    },
+    "type": "X",
+    "unsigned": {
+        "age_ts": 1000000
     }
+}
+```
 
 Given the following event containing redactable content:
 
-    {
-        "content": {
-            "body": "Here is the message content"
-        },
-        "event_id": "$0:domain",
-        "origin": "domain",
-        "origin_server_ts": 1000000,
-        "type": "m.room.message",
-        "room_id": "!r:domain",
-        "sender": "@u:domain",
-        "signatures": {},
-        "unsigned": {
-            "age_ts": 1000000
-        }
+```json
+{
+    "content": {
+        "body": "Here is the message content"
+    },
+    "event_id": "$0:domain",
+    "origin": "domain",
+    "origin_server_ts": 1000000,
+    "type": "m.room.message",
+    "room_id": "!r:domain",
+    "sender": "@u:domain",
+    "signatures": {},
+    "unsigned": {
+        "age_ts": 1000000
     }
+}
+```
 
 The event signing algorithm should emit the following signed event:
 
-    {
-        "content": {
-            "body": "Here is the message content"
-        },
-        "event_id": "$0:domain",
-        "hashes": {
-            "sha256": "onLKD1bGljeBWQhWZ1kaP9SorVmRQNdN5aM2JYU2n/g"
-        },
-        "origin": "domain",
-        "origin_server_ts": 1000000,
-        "type": "m.room.message",
-        "room_id": "!r:domain",
-        "sender": "@u:domain",
-        "signatures": {
-            "domain": {
-                "ed25519:1": "Wm+VzmOUOz08Ds+0NTWb1d4CZrVsJSikkeRxh6aCcUwu6pNC78FunoD7KNWzqFn241eYHYMGCA5McEiVPdhzBA"
-            }
-        },
-        "unsigned": {
-            "age_ts": 1000000
+```json
+{
+    "content": {
+        "body": "Here is the message content"
+    },
+    "event_id": "$0:domain",
+    "hashes": {
+        "sha256": "onLKD1bGljeBWQhWZ1kaP9SorVmRQNdN5aM2JYU2n/g"
+    },
+    "origin": "domain",
+    "origin_server_ts": 1000000,
+    "type": "m.room.message",
+    "room_id": "!r:domain",
+    "sender": "@u:domain",
+    "signatures": {
+        "domain": {
+            "ed25519:1": "Wm+VzmOUOz08Ds+0NTWb1d4CZrVsJSikkeRxh6aCcUwu6pNC78FunoD7KNWzqFn241eYHYMGCA5McEiVPdhzBA"
         }
+    },
+    "unsigned": {
+        "age_ts": 1000000
     }
+}
+```

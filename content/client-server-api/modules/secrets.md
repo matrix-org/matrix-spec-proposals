@@ -114,37 +114,43 @@ Some secret is encrypted using keys with ID `key_id_1` and `key_id_2`:
 
 `org.example.some.secret`:
 
-    {
-      "encrypted": {
-        "key_id_1": {
-          "ciphertext": "base64+encoded+encrypted+data",
-          "mac": "base64+encoded+mac",
-          // ... other properties according to algorithm property in
-          // m.secret_storage.key.key_id_1
-        },
-        "key_id_2": {
-          // ...
-        }
-      }
+```
+{
+  "encrypted": {
+    "key_id_1": {
+      "ciphertext": "base64+encoded+encrypted+data",
+      "mac": "base64+encoded+mac",
+      // ... other properties according to algorithm property in
+      // m.secret_storage.key.key_id_1
+    },
+    "key_id_2": {
+      // ...
     }
+  }
+}
+```
 
 and the key descriptions for the keys would be:
 
 `m.secret_storage.key.key_id_1`:
 
-    {
-      "name": "Some key",
-      "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
-      // ... other properties according to algorithm
-    }
+```
+{
+  "name": "Some key",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
+  // ... other properties according to algorithm
+}
+```
 
 `m.secret_storage.key.key_id_2`:
 
-    {
-      "name": "Some other key",
-      "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
-      // ... other properties according to algorithm
-    }
+```
+{
+  "name": "Some other key",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
+  // ... other properties according to algorithm
+}
+```
 
 ###### `m.secret_storage.v1.aes-hmac-sha2`
 
@@ -247,24 +253,28 @@ correctly entered the key, clients should:
 For example, the `m.secret_storage.key.key_id` for a key using this
 algorithm could look like:
 
-    {
-      "name": "m.default",
-      "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
-      "iv": "random+data",
-      "mac": "mac+of+encrypted+zeros"
-    }
+```json
+{
+  "name": "m.default",
+  "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
+  "iv": "random+data",
+  "mac": "mac+of+encrypted+zeros"
+}
+```
 
 and data encrypted using this algorithm could look like this:
 
-    {
-      "encrypted": {
-          "key_id": {
-            "iv": "16+bytes+base64",
-            "ciphertext": "base64+encoded+encrypted+data",
-            "mac": "base64+encoded+mac"
-          }
+```json
+{
+  "encrypted": {
+      "key_id": {
+        "iv": "16+bytes+base64",
+        "ciphertext": "base64+encoded+encrypted+data",
+        "mac": "base64+encoded+mac"
       }
-    }
+  }
+}
+```
 
 ###### Key representation
 
@@ -339,15 +349,17 @@ in the `iterations` parameter.
 
 Example:
 
-    {
-        "passphrase": {
-            "algorithm": "m.pbkdf2",
-            "salt": "MmMsAlty",
-            "iterations": 100000,
-            "bits": 256
-        },
-        ...
-    }
+```
+{
+    "passphrase": {
+        "algorithm": "m.pbkdf2",
+        "salt": "MmMsAlty",
+        "iterations": 100000,
+        "bits": 256
+    },
+    ...
+}
+```
 
 #### Sharing
 
@@ -407,12 +419,14 @@ previous request. It is sent as an unencrypted to-device event.
 
 Example:
 
-    {
-      "name": "org.example.some.secret",
-      "action": "request",
-      "requesting_device_id": "ABCDEFG",
-      "request_id": "randomly_generated_id_9573"
-    }
+```json
+{
+  "name": "org.example.some.secret",
+  "action": "request",
+  "requesting_device_id": "ABCDEFG",
+  "request_id": "randomly_generated_id_9573"
+}
+```
 
 ###### `m.secret.send`
 
@@ -444,7 +458,9 @@ an `m.secret.request` event. It must be encrypted as an
 
 Example:
 
-    {
-      "request_id": "randomly_generated_id_9573",
-      "secret": "ThisIsASecretDon'tTellAnyone"
-    }
+```json
+{
+  "request_id": "randomly_generated_id_9573",
+  "secret": "ThisIsASecretDon'tTellAnyone"
+}
+```

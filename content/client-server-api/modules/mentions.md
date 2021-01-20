@@ -18,12 +18,14 @@ Mentions apply only to [m.room.message]() events where the `msgtype` is
 To make a mention, reference the entity being mentioned in the
 `formatted_body` using an anchor, like so:
 
-    {
-        "body": "Hello Alice!",
-        "msgtype": "m.text",
-        "format": "org.matrix.custom.html",
-        "formatted_body": "Hello <a href='https://matrix.to/#/@alice:example.org'>Alice</a>!"
-    }
+```json
+{
+    "body": "Hello Alice!",
+    "msgtype": "m.text",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "Hello <a href='https://matrix.to/#/@alice:example.org'>Alice</a>!"
+}
+```
 
 #### Client behaviour
 

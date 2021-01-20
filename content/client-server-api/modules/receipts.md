@@ -68,15 +68,17 @@ before delivering them to clients.
 Receipts are sent across federation as EDUs with type `m.receipt`. The
 format of the EDUs are:
 
-    {
-        <room_id>: {
-            <receipt_type>: {
-                <user_id>: { <content> }
-            },
-            ...
+```
+{
+    <room_id>: {
+        <receipt_type>: {
+            <user_id>: { <content> }
         },
         ...
-    }
+    },
+    ...
+}
+```
 
 These are always sent as deltas to previously sent receipts. Currently
 only a single `<receipt_type>` should be used: `m.read`.

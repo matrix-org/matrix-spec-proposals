@@ -69,10 +69,12 @@ communication, and all API calls use a Content-Type of
 Any errors which occur at the Matrix API level MUST return a "standard
 error response". This is a JSON object which looks like:
 
-    {
-      "errcode": "<error code>",
-      "error": "<error message>"
-    }
+```json
+{
+  "errcode": "<error code>",
+  "error": "<error message>"
+}
+```
 
 The `error` string will be a human-readable error message, usually a
 sentence explaining what went wrong. The `errcode` string will be a

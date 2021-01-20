@@ -332,21 +332,23 @@ a rich reply, infinitely.
 
 An `m.in_reply_to` relationship looks like the following:
 
-    {
-      ...
-      "type": "m.room.message",
-      "content": {
-        "msgtype": "m.text",
-        "body": "<body including fallback>",
-        "format": "org.matrix.custom.html",
-        "formatted_body": "<HTML including fallback>",
-        "m.relates_to": {
-          "m.in_reply_to": {
-            "event_id": "$another:event.com"
-          }
-        }
+```
+{
+  ...
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "<body including fallback>",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<HTML including fallback>",
+    "m.relates_to": {
+      "m.in_reply_to": {
+        "event_id": "$another:event.com"
       }
     }
+  }
+}
+```
 
 ####### Fallbacks and event representation
 
