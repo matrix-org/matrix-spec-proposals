@@ -33,13 +33,13 @@ The four options for the `m.room.history_visibility` event are:
     point they joined the room onwards. Events stop being accessible
     when the member's state changes to something other than `join`.
 
-Warning
-
+{{% boxes/warning %}}
 These options are applied at the point an event is *sent*. Checks are
 performed with the state of the `m.room.history_visibility` event when
 the event in question is added to the DAG. This means clients cannot
 retrospectively choose to show or hide history to new users if the
 setting at that time was more restrictive.
+{{% /boxes/warning %}}
 
 #### Events
 

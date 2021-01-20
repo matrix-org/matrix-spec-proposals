@@ -194,8 +194,7 @@ process:
     those already flagged as outdated, and initiates a `/keys/query`\_
     request for all of them.
 
-Warning
-
+{{% boxes/warning %}}
 Bob may update one of his devices while Alice has a request to
 `/keys/query` in flight. Alice's client may therefore see Bob's user ID
 in the `device_lists` field of the `/sync` response while the first
@@ -218,9 +217,9 @@ each user, by queuing additional requests until the first completes.
 Alternatively, the client could make a new request immediately, but
 ensure that the first request's results are ignored (possibly by
 cancelling the request).
+{{% /boxes/warning %}}
 
-Note
-
+{{% boxes/note %}}
 When Bob and Alice share a room, with Bob tracking Alice's devices, she
 may leave the room and then add a new device. Bob will not be notified
 of this change, as he doesn't share a room anymore with Alice. When they
@@ -231,6 +230,7 @@ thus Bob will update his list of Alice's devices as part of his normal
 processing. Note that Bob can also be notified when he stops sharing any
 room with Alice by inspecting the `left` property of the `device_lists`
 field, and as a result should remove her from its list of tracked users.
+{{% /boxes/note %}}
 
 ##### Sending encrypted attachments
 
@@ -243,12 +243,12 @@ AES key, and encrypt the file using AES-CTR. The counter should be
 Initialization Vector (IV), which together form a 128-bit unique counter
 block.
 
-Warning
-
+{{% boxes/warning %}}
 An IV must never be used multiple times with the same key. This implies
 that if there are multiple files to encrypt in the same message,
 typically an image and its thumbnail, the files must not share both the
 same key and IV.
+{{% /boxes/warning %}}
 
 Then, the encrypted file can be uploaded to the homeserver. The key and
 the IV must be included in the room event along with the resulting
@@ -392,13 +392,13 @@ Device verification may reach one of several conclusions. For example:
     reason to suspect otherwise. The encryption protocol continues to
     protect against passive eavesdroppers.
 
-Note
-
+{{% boxes/note %}}
 Once the signing key has been verified, it is then up to the encryption
 protocol to verify that a given message was sent from a device holding
 that Ed25519 private key, or to encrypt a message so that it may only be
 decrypted by such a device. For the Olm protocol, this is documented at
 <https://matrix.org/docs/olm_signing.html>.
+{{% /boxes/note %}}
 
 ##### Key verification framework
 
@@ -700,10 +700,10 @@ the info parameter is the concatenation of:
 New implementations are discouraged from implementing the `curve25519`
 method.
 
-Rationale
-
+{{% boxes/rationale %}}
 HKDF is used over the plain shared secret as it results in a harder
 attack as well as more uniform data to work with.
+{{% /boxes/rationale %}}
 
 For verification of each party's device keys, HKDF is as defined in RFC
 5869 and uses SHA-256 as the hash function. The shared secret is
@@ -746,13 +746,12 @@ following table to get the corresponding emoji:
 
 {{sas\_emoji\_table}}
 
-Note
-
+{{% boxes/note %}}
 This table is available as JSON at
 <https://github.com/matrix-org/matrix-doc/blob/master/data-definitions/sas-emoji.json>
+{{% /boxes/note %}}
 
-Rationale
-
+{{% boxes/rationale %}}
 The emoji above were chosen to:
 
 -   Be recognisable without colour.
@@ -762,17 +761,18 @@ The emoji above were chosen to:
 -   Easily described by a few words.
 -   Avoid symbols with negative connotations.
 -   Be likely similar across multiple platforms.
+{{% /boxes/rationale %}}
 
 Clients SHOULD show the emoji with the descriptions from the table, or
 appropriate translation of those descriptions. Client authors SHOULD
 collaborate to create a common set of translations for all languages.
 
-Note
-
+{{% boxes/note %}}
 Known translations for the emoji are available from
 <https://github.com/matrix-org/matrix-doc/blob/master/data-definitions/>
 and can be translated online:
 <https://translate.riot.im/projects/matrix-doc/sas-emoji-v1>
+{{% /boxes/note %}}
 
 ##### Cross-signing
 
@@ -950,11 +950,11 @@ indicate this by sending an [m.room\_key.withheld]() to-device message,
 as described in [Reporting that decryption keys are
 withheld](#reporting-that-decryption-keys-are-withheld).
 
-Note
-
+{{% boxes/note %}}
 Key sharing can be a big attack vector, thus it must be done very
 carefully. A reasonable strategy is for a user's client to only send
 keys requested by the verified devices of the same user.
+{{% /boxes/note %}}
 
 ##### Server-side key backups
 
@@ -1388,13 +1388,13 @@ of reasons. When this happens to an Olm-encrypted message, the client
 should assume that the Olm session has become corrupted and create a new
 one to replace it.
 
-Note
-
+{{% boxes/note %}}
 Megolm-encrypted messages generally do not have the same problem.
 Usually the key for an undecryptable Megolm-encrypted message will come
 later, allowing the client to decrypt it successfully. Olm does not have
 a way to recover from the failure, making this session replacement
 process required.
+{{% /boxes/note %}}
 
 To establish a new session, the client sends an [m.dummy](#m-dummy)
 to-device event to the other party to notify them of the new session
@@ -1555,14 +1555,14 @@ difference with the `one_time_key_counts` property in the
 </tbody>
 </table>
 
-Note
-
+{{% boxes/note %}}
 For optimal performance, Alice should be added to `changed` in Bob's
 sync only when she updates her devices or cross-signing keys, or when
 Alice and Bob now share a room but didn't share any room previously.
 However, for the sake of simpler logic, a server may add Alice to
 `changed` when Alice and Bob share a new room, even if they previously
 already shared a room.
+{{% /boxes/note %}}
 
 Example response:
 

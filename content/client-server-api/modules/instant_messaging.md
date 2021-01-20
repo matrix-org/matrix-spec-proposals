@@ -110,11 +110,11 @@ treated similar to a `div`. Clients that support rich replies will end
 up stripping the tag and its contents and therefore may wish to exclude
 the tag entirely.
 
-Note
-
+{{% boxes/note %}}
 A future iteration of the specification will support more powerful and
 extensible message formatting options, such as the proposal
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767).
+{{% /boxes/note %}}
 
 {{msgtype\_events}}
 

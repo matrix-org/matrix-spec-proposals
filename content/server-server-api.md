@@ -184,12 +184,12 @@ Transparency](https://www.certificate-transparency.org/) project.
 
 ### Retrieving server keys
 
-Note
-
+{{% boxes/note %}}
 There was once a "version 1" of the key exchange. It has been removed
 from the specification due to lack of significance. It may be reviewed
 [from the historical
 draft](https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1).
+{{% /boxes/note %}}
 
 Each homeserver publishes its public keys under
 `/_matrix/key/v2/server/{keyId}`. Homeservers query for keys by either
@@ -451,21 +451,20 @@ rejected event where it is a state event.
 If an event in an incoming transaction is rejected, this should not
 cause the transaction request to be responded to with an error response.
 
-Note
-
+{{% boxes/note %}}
 This means that events may be included in the room DAG even though they
 should be rejected.
+{{% /boxes/note %}}
 
-Note
-
+{{% boxes/note %}}
 This is in contrast to redacted events which can still affect the state
 of the room. For example, a redacted `join` event will still result in
 the user being considered joined.
+{{% /boxes/note %}}
 
 #### Soft failure
 
-Rationale
-
+{{% boxes/rationale %}}
 It is important that we prevent users from evading bans (or other power
 restrictions) by creating events which reference old parts of the DAG.
 For example, a banned user could continue to send messages to a room by
@@ -486,6 +485,7 @@ clients about the new event.
 
 This discourages servers from sending events that evade bans etc. in
 this way, as end users won't actually see the events.
+{{% /boxes/rationale %}}
 
 When the homeserver receives a new event over federation it should also
 check whether the event passes auth checks based on the current state of
@@ -499,28 +499,28 @@ nor be referenced by new events created by the homeserver (i.e. they
 should not be added to the server's list of forward extremities of the
 room). Soft failed events are otherwise handled as usual.
 
-Note
-
+{{% boxes/note %}}
 Soft failed events participate in state resolution as normal if further
 events are received which reference it. It is the job of the state
 resolution algorithm to ensure that malicious events cannot be injected
 into the room state via this mechanism.
+{{% /boxes/note %}}
 
-Note
-
+{{% boxes/note %}}
 Because soft failed state events participate in state resolution as
 normal, it is possible for such events to appear in the current state of
 the room. In that case the client should be told about the soft failed
 event in the usual way (e.g. by sending it down in the `state` section
 of a sync response).
+{{% /boxes/note %}}
 
-Note
-
+{{% boxes/note %}}
 A soft failed event should be returned in response to federation
 requests where appropriate (e.g. in `/event/<event_id>`). Note that soft
 failed events are returned in `/backfill` and `/get_missing_events`
 responses only if the requests include events referencing the soft
 failed events.
+{{% /boxes/note %}}
 
 Example
 
@@ -783,11 +783,11 @@ the event to other servers in the room.
 
 ## Third-party invites
 
-Note
-
+{{% boxes/note %}}
 More information about third party invites is available in the
 [Client-Server API](../client_server/%CLIENT_RELEASE_LABEL%.html) under
 the Third Party Invites module.
+{{% /boxes/note %}}
 
 When a user wants to invite another user in a room but doesn't know the
 Matrix ID to invite, they can do so using a third-party identifier (e.g.

@@ -74,18 +74,18 @@ to be in the range where they can be accurately represented using IEEE
 double precision floating point numbers since a number of JSON libraries
 represent all numbers using this representation.
 
-Warning
-
+{{% boxes/warning %}}
 Events in room versions 1, 2, 3, 4, and 5 might not be fully compliant
 with these restrictions. Servers SHOULD be capable of handling JSON
 which is considered invalid by these restrictions where possible.
 
 The most notable consideration is that integers might not be in the
 range specified above.
+{{% /boxes/warning %}}
 
-Note
-
+{{% boxes/note %}}
 Float values are not permitted by this encoding.
+{{% /boxes/note %}}
 
 ```py
 import json
@@ -415,12 +415,12 @@ Examples of valid server names are:
 -   `[1234:5678::abcd]` (IPv6 literal)
 -   `[1234:5678::abcd]:5678` (IPv6 literal with explicit port)
 
-Note
-
+{{% boxes/note %}}
 This grammar is based on the standard for internet host names, as
 specified by [RFC1123, section
 2.1](https://tools.ietf.org/html/rfc1123#page-13), with an extension for
 IPv6 literals.
+{{% /boxes/note %}}
 
 Server names must be treated case-sensitively: in other words,
 `@user:matrix.org` is a different person from `@user:MATRIX.ORG`.
@@ -490,8 +490,7 @@ The complete grammar for a legal user ID is:
                  / %x61-7A                   ; a-z
                  / "-" / "." / "=" / "_" / "/"
 
-Rationale
-
+{{% boxes/rationale %}}
 A number of factors were considered when defining the allowable
 characters for a user ID.
 
@@ -525,6 +524,7 @@ The length restriction is derived from the limit on the length of the
 `sender` key on events; since the user ID appears in every event sent by
 the user, it is limited to ensure that the user ID does not dominate
 over the actual content of the events.
+{{% /boxes/rationale %}}
 
 Matrix user IDs are sometimes informally referred to as MXIDs.
 
@@ -564,12 +564,12 @@ consistently. However, we suggest the following algorithm:
     well as `=`, as their hexadecimal value, prefixed with `=`. For
     example, `#` becomes `=23`; `á` becomes `=c3=a1`.
 
-Rationale
-
+{{% boxes/rationale %}}
 The suggested mapping is an attempt to preserve human-readability of
 simple ASCII identifiers (unlike, for example, base-32), whilst still
 allowing representation of *any* character (unlike punycode, which
 provides no way to encode ASCII punctuation).
+{{% /boxes/rationale %}}
 
 #### Room IDs and Event IDs
 
@@ -631,11 +631,11 @@ domain).
 
 #### matrix.to navigation
 
-Note
-
+{{% boxes/note %}}
 This namespacing is in place pending a `matrix://` (or similar) URI
 scheme. This is **not** meant to be interpreted as an available web
 service - see below for more details.
+{{% /boxes/note %}}
 
 Rooms, users, aliases, and groups may be represented as a "matrix.to"
 URI. This URI can be used to reference particular objects in a given
@@ -676,19 +676,19 @@ Examples of matrix.to URIs are:
 -   User: `https://matrix.to/#/%40alice%3Aexample.org`
 -   Group: `https://matrix.to/#/%2Bexample%3Aexample.org`
 
-Note
-
+{{% boxes/note %}}
 Historically, clients have not produced URIs which are fully encoded.
 Clients should try to interpret these cases to the best of their
 ability. For example, an unencoded room alias should still work within
 the client if possible.
+{{% /boxes/note %}}
 
-Note
-
+{{% boxes/note %}}
 Clients should be aware that decoding a matrix.to URI may result in
 extra slashes appearing due to some [room
 versions](index.html#room-versions). These slashes should normally be
 encoded when producing matrix.to URIs, however.
+{{% /boxes/note %}}
 
 ##### Routing
 

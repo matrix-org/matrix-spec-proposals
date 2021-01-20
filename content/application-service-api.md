@@ -48,8 +48,7 @@ service.
 
 ### Registration
 
-Note
-
+{{% boxes/note %}}
 Previously, application services could register with a homeserver via
 HTTP APIs. This was removed as it was seen as a security risk. A
 compromised application service could re-register for a global `*` regex
@@ -58,6 +57,7 @@ application services now have to register via configuration files which
 are linked to the homeserver configuration file. The addition of
 configuration files allows homeserver admins to sanity check the
 registration for suspicious regex strings.
+{{% /boxes/note %}}
 
 Application services register "namespaces" of user IDs, room aliases and
 room IDs. These namespaces are represented as regular expressions. An
@@ -213,12 +213,12 @@ below:
           regex: "#_irc_bridge_.*"
       rooms: []
 
-Warning
-
+{{% boxes/warning %}}
 If the homeserver in question has multiple application services, each
 `as_token` and `id` MUST be unique per application service as these are
 used to identify the application service. The homeserver MUST enforce
 this.
+{{% /boxes/warning %}}
 
 ### Homeserver -&gt; Application Service API
 
@@ -314,8 +314,7 @@ homeserver should retry several times before timing out. This should
 result in an HTTP status 408 "Request Timeout" on the client which
 initiated this request (e.g. to join a room alias).
 
-Rationale
-
+{{% boxes/rationale %}}
 Blocking the homeserver and expecting the application service to create
 the entity using the client-server API is simpler and more flexible than
 alternative methods such as returning an initial sync style JSON blob
@@ -323,6 +322,7 @@ and get the HS to provision the room/user. This also meant that there
 didn't need to be a "backchannel" to inform the application service
 about information about the entity such as room ID to room alias
 mappings.
+{{% /boxes/rationale %}}
 
 {{query\_user\_as\_http\_api}}
 

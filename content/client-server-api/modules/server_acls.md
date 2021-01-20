@@ -18,19 +18,19 @@ any other server, similar to setting the `m.federate` value on the
 
 {{m\_room\_server\_acl\_event}}
 
-Note
-
+{{% boxes/note %}}
 Port numbers are not supported because it is unclear to parsers whether
 a port number should be matched or an IP address literal. Additionally,
 it is unlikely that one would trust a server running on a particular
 domain's port but not a different port, especially considering the
 server host can easily change ports.
+{{% /boxes/note %}}
 
-Note
-
+{{% boxes/note %}}
 CIDR notation is not supported for IP addresses because Matrix does not
 encourage the use of IPs for identifying servers. Instead, a blanket
 `allow_ip_literals` is provided to cover banning them.
+{{% /boxes/note %}}
 
 #### Client behaviour
 

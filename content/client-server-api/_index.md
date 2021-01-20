@@ -62,11 +62,11 @@ convention of using underscores to separate words (for example
 `/delete_devices`). The key names in JSON objects passed over the API
 also follow this convention.
 
-Note
-
+{{% boxes/note %}}
 There are a few historical exceptions to this rule, such as
 `/createRoom`. A future version of this specification will address the
 inconsistency.
+{{% /boxes/note %}}
 
 Any errors which occur at the Matrix API level MUST return a "standard
 error response". This is a JSON object which looks like:
@@ -296,10 +296,10 @@ conscientious decision what to do next.
 
 ### Well-known URI
 
-Note
-
+{{% boxes/note %}}
 Servers hosting the `.well-known` JSON file SHOULD offer CORS headers,
 as per the [CORS](#CORS) section in this specification.
+{{% /boxes/note %}}
 
 The `.well-known` method uses a JSON file at a predetermined location to
 specify parameter values. The flow for this method is as follows:
@@ -344,12 +344,12 @@ parameter or through an Authorization Header of `Bearer $access_token`.
 An access token is typically obtained via the [Login](#login) or
 [Registration](#Registration) processes.
 
-Note
-
+{{% boxes/note %}}
 This specification does not mandate a particular format for the access
 token. Clients should treat it as an opaque byte sequence. Servers are
 free to choose an appropriate format. Server implementors may like to
 investigate [macaroons](http://research.google.com/pubs/pub41892.html).
+{{% /boxes/note %}}
 
 ### Using access tokens
 
@@ -1096,12 +1096,12 @@ the login endpoint during the login process. For example:
 
 ##### Notes on password management
 
-Warning
-
+{{% boxes/warning %}}
 Clients SHOULD enforce that the password provided is suitably complex.
 The password SHOULD include a lower-case letter, an upper-case letter, a
 number and a symbol and be at a minimum 8 characters in length. Servers
 MAY reject weak passwords with an error code `M_WEAK_PASSWORD`.
+{{% /boxes/warning %}}
 
 ### Adding Account Administrative Contact Information
 
@@ -1109,13 +1109,13 @@ A homeserver may keep some contact information for administrative use.
 This is independent of any information kept by any identity servers,
 though can be proxied (bound) to the identity server in many cases.
 
-Note
-
+{{% boxes/note %}}
 This section deals with two terms: "add" and "bind". Where "add" (or
 "remove") is used, it is speaking about an identifier that was not bound
 to an identity server. As a result, "bind" (or "unbind") references an
 identifier that is found in an identity server. Note that an identifier
 can be added and bound at the same time, depending on context.
+{{% /boxes/note %}}
 
 {{administrative\_contact\_cs\_http\_api}}
 
@@ -1261,10 +1261,10 @@ default and only stable `available` room version.
 
 ## Pagination
 
-Note
-
+{{% boxes/note %}}
 The paths referred to in this section are not actual endpoints. They
 only serve as examples to explain how pagination functions.
+{{% /boxes/note %}}
 
 Pagination is the process of dividing a dataset into multiple discrete
 pages. Matrix makes use of pagination to allow clients to view extremely
@@ -1415,8 +1415,7 @@ any given point in time:
 
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
-Warning
-
+{{% boxes/warning %}}
 The format of events can change depending on room version. Check the
 [room version specification](../index.html#room-versions) for specific
 details on what to expect for event formats. Examples contained within
@@ -1428,6 +1427,7 @@ the event ID format being different depending on room version. Clients
 should not be parsing the event ID, and instead be treating it as an
 opaque string. No changes should be required to support the currently
 available room versions.
+{{% /boxes/warning %}}
 
 ### Types of room events
 
@@ -1453,13 +1453,13 @@ follow the Java package naming convention, e.g.
 `com.example.myapp.event`. This ensures event types are suitably
 namespaced for each application and reduces the risk of clashes.
 
-Note
-
+{{% boxes/note %}}
 Events are not limited to the types defined in this specification. New
 or custom event types can be created on a whim using the Java package
 naming convention. For example, a `com.example.game.score` event can be
 sent by clients and other clients would receive it through Matrix,
 assuming the client has access to the `com.example` namespace.
+{{% /boxes/note %}}
 
 Note that the structure of these events may be different than those in
 the server-server API.
@@ -1522,9 +1522,9 @@ than that implied by the total 65 KB limit on events.
 
 ### Room Events
 
-Note
-
+{{% boxes/note %}}
 This section is a work in progress.
+{{% /boxes/note %}}
 
 This specification outlines several standard event types, all of which
 are prefixed with `m.`
@@ -1607,17 +1607,16 @@ of the message timeline. The client can fill these gaps using the
      prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
 
-Warning
-
+{{% boxes/warning %}}
 Events are ordered in this API according to the arrival time of the
 event on the homeserver. This can conflict with other APIs which order
 events based on their partial ordering in the event graph. This can
 result in duplicate events being received (once per distinct API
 called). Clients SHOULD de-duplicate events based on the event ID when
 this happens.
+{{% /boxes/warning %}}
 
-Note
-
+{{% boxes/note %}}
 The `/sync` API returns a `state` list which is separate from the
 `timeline`. This `state` list allows clients to keep their model of the
 room state in sync with that on the server. In the case of an initial
@@ -1635,9 +1634,9 @@ In both cases, it should be noted that the events returned in the
 `state` list did **not** necessarily take place just before the returned
 `timeline`, so clients should not display them to the user in the
 timeline.
+{{% /boxes/note %}}
 
-Rationale
-
+{{% boxes/rationale %}}
 An early design of this specification made the `state` list represent
 the room state at the end of the returned timeline, instead of the
 start. This was unsatisfactory because it led to duplication of events
@@ -1650,6 +1649,7 @@ where that user changes their displayname. If the `state` list
 represents the room state at the end of the timeline, the client must
 take a copy of the state dictionary, and *rewind* S1, in order to
 correctly calculate the display name for M0.
+{{% /boxes/rationale %}}
 
 {{sync\_cs\_http\_api}}
 
@@ -1739,8 +1739,7 @@ property of the redacted event, under the `redacted_because` key. When a
 client receives a redaction event it should change the redacted event in
 the same way a server does.
 
-Note
-
+{{% boxes/note %}}
 Redacted events can still affect the state of the room. When redacted,
 state events behave as though their properties were simply not
 specified, except those protected by the redaction algorithm. For
@@ -1748,6 +1747,7 @@ example, a redacted `join` event will still result in the user being
 considered joined. Similarly, a redacted topic does not necessarily
 cause the topic to revert to what it was prior to the event - it causes
 the topic to be removed from the room.
+{{% /boxes/note %}}
 
 ##### Events
 
@@ -1804,9 +1804,9 @@ request.
 
 ### Permissions
 
-Note
-
+{{% boxes/note %}}
 This section is a work in progress.
+{{% /boxes/note %}}
 
 Permissions for rooms are done via the concept of power levels - to do
 any action in a room a user must have a suitable power level. Power

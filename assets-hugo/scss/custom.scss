@@ -209,6 +209,39 @@ footer {
 
 }
 
+/* Styles for alert boxes */
+.alert {
+  &.note {
+    &:not(.omit-title):before {
+      content: "INFO: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $note;
+    border-left-width: 5px;
+    background: $note-background;
+  }
+
+  &.rationale {
+    &:not(.omit-title):before {
+      content: "RATIONALE: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $note;
+    border-left-width: 5px;
+    background: $note-background;
+  }
+
+  &.warning {
+    &:not(.omit-title):before {
+      content: "WARNING: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $warning;
+    border-left-width: 5px;
+    background: $warning-background;
+  }
+}
+
 /* Miscellaneous custom bits */
 
 /* Update link colours for MAtrix style */

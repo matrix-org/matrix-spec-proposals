@@ -35,13 +35,13 @@ browsing the Client-Server API.
 
 ### Matrix versions
 
-Note
-
+{{% boxes/note %}}
 As of June 10th 2019, the Matrix specification is considered out of beta
 -indicating that all currently released APIs are considered stable and
 secure to the best of our knowledge, and the spec should contain the
 complete information necessary to develop production-grade
 implementations of Matrix without the need for external reference.
+{{% /boxes/note %}}
 
 Matrix 1.0 (released June 10th, 2019) consists of the following minimum
 API versions:
@@ -335,13 +335,13 @@ participating servers in a room, currently using full mesh topology.
 Servers may also request backfill of events over federation from the
 other servers participating in a room.
 
-Note
-
+{{% boxes/note %}}
 Events are not limited to the types defined in this specification. New
 or custom event types can be created on a whim using the Java package
 naming convention. For example, a `com.example.game.score` event can be
 sent by clients and other clients would receive it through Matrix,
 assuming the client has access to the `com.example` namespace.
+{{% /boxes/note %}}
 
 #### Room Aliases
 

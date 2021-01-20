@@ -85,8 +85,7 @@ These steps are illustrated as follows:
         |<-------------access token-------------|                   |
 ```
 
-Note
-
+{{% boxes/note %}}
 In the older [r0.4.0
 version](https://matrix.org/docs/spec/client_server/r0.4.0.html#cas-based-client-login)
 of this specification it was possible to authenticate via CAS when the
@@ -96,6 +95,7 @@ which is the same process with the only change being which redirect
 endpoint to use: for `m.login.cas`, use `/cas/redirect` and for
 `m.login.sso` use `/sso/redirect` (described below). The endpoints are
 otherwise the same.
+{{% /boxes/note %}}
 
 ##### Client behaviour
 

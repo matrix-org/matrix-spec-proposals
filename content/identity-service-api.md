@@ -254,10 +254,10 @@ characteristics than the service's long-term keys.
 
 ### Client behaviour
 
-Note
-
+{{% boxes/note %}}
 This section only covers the v2 lookup endpoint. The v1 endpoint is
 described in isolation above.
+{{% /boxes/note %}}
 
 Prior to performing a lookup clients SHOULD make a request to the
 `/hash_details` endpoint to determine what algorithms the server
@@ -269,10 +269,10 @@ Clients MUST support at least the `sha256` algorithm.
 
 ### Server behaviour
 
-Note
-
+{{% boxes/note %}}
 This section only covers the v2 lookup endpoint. The v1 endpoint is
 described in isolation above.
+{{% /boxes/note %}}
 
 Servers, upon receipt of a `/lookup` request, will compare the query
 against known bindings it has, hashing the identifiers it knows about as
@@ -299,11 +299,11 @@ the 3PID to search for. For example, if the client wanted to know about
 `alice@example.org`'s bindings, it would first format the query as
 `alice@example.org email ThePepperGoesHere`.
 
-Rationale
-
+{{% boxes/rationale %}}
 Mediums and peppers are appended to the address to prevent a common
 prefix for each 3PID, helping prevent attackers from pre-computing the
 internal state of the hash function.
+{{% /boxes/rationale %}}
 
 After formatting each query, the string is run through SHA-256 as
 defined by [RFC 4634](https://tools.ietf.org/html/rfc4634). The
@@ -342,12 +342,12 @@ the client has made an appropriate request to `/hash_details` first.
 
 ### Security considerations
 
-Note
-
+{{% boxes/note %}}
 [MSC2134](https://github.com/matrix-org/matrix-doc/pull/2134) has much
 more information about the security considerations made for this section
 of the specification. This section covers the high-level details for why
 the specification is the way it is.
+{{% /boxes/note %}}
 
 Typically the lookup endpoint is used when a client has an unknown 3PID
 it wants to find a Matrix User ID for. Clients normally do this kind of
@@ -359,8 +359,7 @@ protect the privacy of users who might not have a Matrix identifier
 bound to their 3PID addresses, the specification attempts to make it
 difficult to harvest 3PIDs.
 
-Rationale
-
+{{% boxes/rationale %}}
 Hashing identifiers, while not perfect, helps make the effort required
 to harvest identifiers significantly higher. Phone numbers in particular
 are still difficult to protect with hashing, however hashing is
@@ -369,6 +368,7 @@ objectively better than not.
 An alternative to hashing would be using bcrypt or similar with many
 rounds, however by nature of needing to serve mobile clients and clients
 on limited hardware the solution needs be kept relatively lightweight.
+{{% /boxes/rationale %}}
 
 Clients should be cautious of servers not rotating their pepper very
 often, and potentially of servers which use a weak pepper - these
