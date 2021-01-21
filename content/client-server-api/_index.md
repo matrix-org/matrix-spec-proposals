@@ -1094,7 +1094,7 @@ the login endpoint during the login process. For example:
 
 {{registration\_cs\_http\_api}}
 
-##### Notes on password management
+#### Notes on password management
 
 {{% boxes/warning %}}
 Clients SHOULD enforce that the password provided is suitably complex.
@@ -1123,7 +1123,7 @@ can be added and bound at the same time, depending on context.
 
 {{whoami\_cs\_http\_api}}
 
-##### Notes on identity servers
+#### Notes on identity servers
 
 Identity servers in Matrix store bindings (relationships) between a
 user's third party identifier, typically email or phone number, and
@@ -1468,7 +1468,7 @@ the server-server API.
 
 {{common\_room\_event\_fields}}
 
-##### State Event Fields
+#### State Event Fields
 
 In addition to the fields of a Room Event, State Events have the
 following fields.
@@ -1539,7 +1539,7 @@ are prefixed with `m.`
 
 {{m\_room\_power\_levels\_event}}
 
-##### Historical events
+#### Historical events
 
 Some events within the `m.` namespace might appear in rooms, however
 they serve no significant meaning in this version of the specification.
@@ -1749,11 +1749,11 @@ cause the topic to revert to what it was prior to the event - it causes
 the topic to be removed from the room.
 {{% /boxes/note %}}
 
-##### Events
+#### Events
 
 {{m\_room\_redaction\_event}}
 
-##### Client behaviour
+#### Client behaviour
 
 {{redaction\_cs\_http\_api}}
 
@@ -1887,13 +1887,13 @@ The allowable state transitions of membership are:
 
 {{list\_joined\_rooms\_cs\_http\_api}}
 
-##### Joining rooms
+#### Joining rooms
 
 {{inviting\_cs\_http\_api}}
 
 {{joining\_cs\_http\_api}}
 
-##### Leaving rooms
+#### Leaving rooms
 
 A user can leave a room to stop receiving events for that room. A user
 must have been invited to or have joined the room before they are
@@ -1969,7 +1969,7 @@ re-invited.
 
 {{profile\_cs\_http\_api}}
 
-##### Events on Change of Profile Information
+#### Events on Change of Profile Information
 
 Because the profile display name and avatar information are likely to be
 used in many places of a client's display, changes to these fields cause
