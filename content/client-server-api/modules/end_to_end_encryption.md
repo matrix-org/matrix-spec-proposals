@@ -666,36 +666,36 @@ supplied as the input keying material. No salt is used. When the
 `key_agreement_protocol` is `curve25519-hkdf-sha256`, the info parameter
 is the concatenation of:
 
-> -   The string `MATRIX_KEY_VERIFICATION_SAS|`.
-> -   The Matrix ID of the user who sent the `m.key.verification.start`
->     message, followed by `|`.
-> -   The Device ID of the device which sent the
->     `m.key.verification.start` message, followed by `|`.
-> -   The public key from the `m.key.verification.key` message sent by
->     the device which sent the `m.key.verification.start` message,
->     followed by `|`.
-> -   The Matrix ID of the user who sent the `m.key.verification.accept`
->     message, followed by `|`.
-> -   The Device ID of the device which sent the
->     `m.key.verification.accept` message, followed by `|`.
-> -   The public key from the `m.key.verification.key` message sent by
->     the device which sent the `m.key.verification.accept` message,
->     followed by `|`.
-> -   The `transaction_id` being used.
+-   The string `MATRIX_KEY_VERIFICATION_SAS|`.
+-   The Matrix ID of the user who sent the `m.key.verification.start`
+    message, followed by `|`.
+-   The Device ID of the device which sent the
+    `m.key.verification.start` message, followed by `|`.
+-   The public key from the `m.key.verification.key` message sent by
+    the device which sent the `m.key.verification.start` message,
+    followed by `|`.
+-   The Matrix ID of the user who sent the `m.key.verification.accept`
+    message, followed by `|`.
+-   The Device ID of the device which sent the
+    `m.key.verification.accept` message, followed by `|`.
+-   The public key from the `m.key.verification.key` message sent by
+    the device which sent the `m.key.verification.accept` message,
+    followed by `|`.
+-   The `transaction_id` being used.
 
 When the `key_agreement_protocol` is the deprecated method `curve25519`,
 the info parameter is the concatenation of:
 
-> -   The string `MATRIX_KEY_VERIFICATION_SAS`.
-> -   The Matrix ID of the user who sent the `m.key.verification.start`
->     message.
-> -   The Device ID of the device which sent the
->     `m.key.verification.start` message.
-> -   The Matrix ID of the user who sent the `m.key.verification.accept`
->     message.
-> -   The Device ID of the device which sent the
->     `m.key.verification.accept` message.
-> -   The `transaction_id` being used.
+-   The string `MATRIX_KEY_VERIFICATION_SAS`.
+-   The Matrix ID of the user who sent the `m.key.verification.start`
+    message.
+-   The Device ID of the device which sent the
+    `m.key.verification.start` message.
+-   The Matrix ID of the user who sent the `m.key.verification.accept`
+    message.
+-   The Device ID of the device which sent the
+    `m.key.verification.accept` message.
+-   The `transaction_id` being used.
 
 New implementations are discouraged from implementing the `curve25519`
 method.
@@ -710,14 +710,14 @@ For verification of each party's device keys, HKDF is as defined in RFC
 supplied as the input keying material. No salt is used, and in the info
 parameter is the concatenation of:
 
-> -   The string `MATRIX_KEY_VERIFICATION_MAC`.
-> -   The Matrix ID of the user whose key is being MAC-ed.
-> -   The Device ID of the device sending the MAC.
-> -   The Matrix ID of the other user.
-> -   The Device ID of the device receiving the MAC.
-> -   The `transaction_id` being used.
-> -   The Key ID of the key being MAC-ed, or the string `KEY_IDS` if the
->     item being MAC-ed is the list of key IDs.
+-   The string `MATRIX_KEY_VERIFICATION_MAC`.
+-   The Matrix ID of the user whose key is being MAC-ed.
+-   The Device ID of the device sending the MAC.
+-   The Matrix ID of the other user.
+-   The Device ID of the device receiving the MAC.
+-   The `transaction_id` being used.
+-   The Key ID of the key being MAC-ed, or the string `KEY_IDS` if the
+    item being MAC-ed is the list of key IDs.
 
 ###### SAS method: `decimal`
 

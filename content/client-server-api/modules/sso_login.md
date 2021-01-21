@@ -14,13 +14,13 @@ This module allows a Matrix homeserver to delegate user authentication
 to an external authentication server supporting one of these protocols.
 In this process, there are three systems involved:
 
-> -   A Matrix client, using the APIs defined this specification, which
->     is seeking to authenticate a user to a Matrix homeserver.
-> -   A Matrix homeserver, implementing the APIs defined in this
->     specification, but which is delegating user authentication to the
->     authentication server.
-> -   An "authentication server", which is responsible for
->     authenticating the user.
+-   A Matrix client, using the APIs defined this specification, which
+    is seeking to authenticate a user to a Matrix homeserver.
+-   A Matrix homeserver, implementing the APIs defined in this
+    specification, but which is delegating user authentication to the
+    authentication server.
+-   An "authentication server", which is responsible for
+    authenticating the user.
 
 This specification is concerned only with communication between the
 Matrix client and the homeserver, and is independent of the SSO protocol
