@@ -253,7 +253,7 @@ Parameters:
 
 -   `key`: A string that determines the power level the sender must have
     to trigger notifications of a given type, such as `room`. Refer to
-    the [m.room.power\_levels]() event schema for information about what
+    the [m.room.power\_levels](#mroompower_levels) event schema for information about what
     the defaults are and how to interpret the event. The `key` is used
     to look up the power level required to send a notification type from
     the `notifications` object in the power level event content.

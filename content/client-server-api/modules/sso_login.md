@@ -28,7 +28,7 @@ used to communicate with the authentication server. Different Matrix
 homeserver implementations might support different SSO protocols.
 
 Clients and homeservers implementing the SSO flow will need to consider
-both [login]() and [user-interactive authentication](). The flow is
+both [login](#login) and [user-interactive authentication](#user-interactive-authentication-api). The flow is
 similar in both cases, but there are slight differences.
 
 Typically, SSO systems require a single "callback" URI to be configured
@@ -170,9 +170,9 @@ The homeserver then proceeds as follows:
 
 1.  The homeserver MUST map the user details received from the
     authentication server to a valid [Matrix user
-    identifier](../appendices.html#user-identifiers). The guidance in
+    identifier](/appendices#user-identifiers). The guidance in
     [Mapping from other character
-    sets](../appendices.html#mapping-from-other-character-sets) may be
+    sets](/appendices#mapping-from-other-character-sets) may be
     useful.
 2.  If the generated user identifier represents a new user, it should be
     registered as a new user.
@@ -212,7 +212,7 @@ The homeserver then proceeds as follows:
 
     It may be appropriate to whitelist a set of known-trusted client
     URLs in this process. In particular, the homeserver's own [login
-    fallback]() implementation could be excluded.
+    fallback](#login-fallback) implementation could be excluded.
 
 2.  For added security, homeservers SHOULD guard against unsolicited
     authentication attempts by tracking pending requests. One way to do
@@ -223,14 +223,14 @@ The homeserver then proceeds as follows:
 
 #### SSO during User-Interactive Authentication
 
-[User-interactive authentication]() is used by client-server endpoints
+[User-interactive authentication](#user-interactive-authentication-api) is used by client-server endpoints
 which require additional confirmation of the user's identity (beyond
 holding an access token). Typically this means that the user must
 re-enter their password, but for homeservers which delegate to an SSO
 server, this means redirecting to the authentication server during
 user-interactive auth.
 
-The implemementation of this is based on the [Fallback]() mechanism for
+The implemementation of this is based on the [Fallback](#fallback) mechanism for
 user-interactive auth.
 
 #### Client behaviour
@@ -274,7 +274,7 @@ may require additional calls to the authentication server, and/or may
 require checking a signature on the response.
 
 The homeserver then returns the [user-interactive authentication
-fallback completion]() page to the user's browser.
+fallback completion](#fallback) page to the user's browser.
 
 ###### Security considerations
 

@@ -12,7 +12,7 @@ should interact with servers in order to participate in rooms as guests.
 
 Guest users retrieve access tokens from a homeserver using the ordinary
 [register
-endpoint](#post-matrix-client-%CLIENT_MAJOR_VERSION%-register),
+endpoint](#post_matrixclientr0register),
 specifying the `kind` parameter as `guest`. They may then interact with
 the client-server API as any other user would, but will only have access
 to a subset of the API as described the Client behaviour subsection
@@ -39,55 +39,38 @@ rather than allowing all homeservers to enforce the rules on each other.
 The following API endpoints are allowed to be accessed by guest accounts
 for retrieving events:
 
--   [GET
-    /rooms/:room\_id/state](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state)
--   [GET
-    /rooms/:room\_id/context/:event\_id](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-context-eventid)
--   [GET
-    /rooms/:room\_id/event/:event\_id](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-event-eventid)
--   [GET
-    /rooms/:room\_id/state/:event\_type/:state\_key](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype-statekey)
--   [GET
-    /rooms/:room\_id/messages](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages)
--   [GET
-    /rooms/:room\_id/members](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-members)
--   [GET
-    /rooms/:room\_id/initialSync](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync)
--   [GET /sync](#get-matrix-client-%CLIENT_MAJOR_VERSION%-sync)
--   [GET /events]() as used for room previews.
+-   [GET /rooms/:room\_id/state](#get_matrixclientr0roomsroomidstate)
+-   [GET /rooms/:room\_id/context/:event\_id](#get_matrixclientr0roomsroomidcontexteventid)
+-   [GET /rooms/:room\_id/event/:event\_id](#get_matrixclientr0roomsroomideventeventid)
+-   [GET /rooms/:room\_id/state/:event\_type/:state\_key](#get_matrixclientr0roomsroomidstateeventtypestatekey)
+-   [GET /rooms/:room\_id/messages](#get_matrixclientr0roomsroomidmessages)
+-   [GET /rooms/:room\_id/members](#get_matrixclientr0roomsroomidmembers)
+-   [GET /rooms/:room\_id/initialSync](#get_matrixclientr0roomsroomidinitialsync)
+-   [GET /sync](#get_matrixclientr0sync)
+-   [GET /events](#get_matrixclientr0events) as used for room previews.
 
 The following API endpoints are allowed to be accessed by guest accounts
 for sending events:
 
--   [POST
-    /rooms/:room\_id/join](#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-join)
--   [POST
-    /rooms/:room\_id/leave](#post-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-leave)
--   [PUT
-    /rooms/:room\_id/send/m.room.message/:txn\_id](#put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-send-eventtype-txnid)
--   [PUT
-    /sendToDevice/{eventType}/{txnId}](#put-matrix-client-%CLIENT_MAJOR_VERSION%-sendtodevice-eventtype-txnid)
+-   [POST /rooms/:room\_id/join](#post_matrixclientr0roomsroomidjoin)
+-   [POST /rooms/:room\_id/leave](#post_matrixclientr0roomsroomidleave)
+-   [PUT /rooms/:room\_id/send/m.room.message/:txn\_id](#put_matrixclientr0roomsroomidsendeventtypetxnid)
+-   [PUT /sendToDevice/{eventType}/{txnId}](#put_matrixclientr0sendtodeviceeventtypetxnid)
 
 The following API endpoints are allowed to be accessed by guest accounts
 for their own account maintenance:
 
--   [PUT
-    /profile/:user\_id/displayname](#put-matrix-client-%CLIENT_MAJOR_VERSION%-profile-userid-displayname)
--   [GET /devices](#get-matrix-client-%CLIENT_MAJOR_VERSION%-devices)
--   [GET
-    /devices/{deviceId}](#get-matrix-client-%CLIENT_MAJOR_VERSION%-devices-deviceid)
--   [PUT
-    /devices/{deviceId}](#put-matrix-client-%CLIENT_MAJOR_VERSION%-devices-deviceid)
+-   [PUT /profile/:user\_id/displayname](#put_matrixclientr0profileuseriddisplayname)
+-   [GET /devices](#get_matrixclientr0devices)
+-   [GET /devices/{deviceId}](#get_matrixclientr0devicesdeviceid)
+-   [PUT /devices/{deviceId}](#put_matrixclientr0devicesdeviceid)
 
 The following API endpoints are allowed to be accessed by guest accounts
 for end-to-end encryption:
 
--   [POST
-    /keys/upload](#post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-upload)
--   [POST
-    /keys/query](#post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-query)
--   [POST
-    /keys/claim](#post-matrix-client-%CLIENT_MAJOR_VERSION%-keys-claim)
+-   [POST /keys/upload](#post_matrixclientr0keysupload)
+-   [POST /keys/query](#post_matrixclientr0keysquery)
+-   [POST /keys/claim](#post_matrixclientr0keysclaim)
 
 #### Server behaviour
 

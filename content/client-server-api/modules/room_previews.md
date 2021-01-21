@@ -7,22 +7,22 @@ weight: 170
 
 It is sometimes desirable to offer a preview of a room, where a user can
 "lurk" and read messages posted to the room, without joining the room.
-This can be particularly effective when combined with [Guest Access]().
+This can be particularly effective when combined with [Guest Access](#guest-access).
 
 Previews are implemented via the `world_readable` [Room History
-Visibility](). setting, along with a special version of the [GET
-/events](#get-matrix-client-%CLIENT_MAJOR_VERSION%-events) endpoint.
+Visibility](#room-history-visibility). setting, along with a special version of the [GET
+/events](#get_matrixclientr0events) endpoint.
 
 #### Client behaviour
 
 A client wishing to view a room without joining it should call [GET
-/rooms/:room\_id/initialSync](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-initialsync),
-followed by [GET /events](#peeking_events_api). Clients will need to do
+/rooms/:room\_id/initialSync](#get_matrixclientr0roomsroomidinitialsync),
+followed by [GET /events](#get_matrixclientr0events). Clients will need to do
 this in parallel for each room they wish to view.
 
 Clients can of course also call other endpoints such as [GET
-/rooms/:room\_id/messages](#get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-messages)
-and [GET /search](#get-matrix-client-%CLIENT_MAJOR_VERSION%-search) to
+/rooms/:room\_id/messages](#get_matrixclientr0roomsroomidmessages)
+and [GET /search](#post_matrixclientr0search) to
 access events outside the `/events` stream.
 
 {{peeking\_events\_cs\_http\_api}}

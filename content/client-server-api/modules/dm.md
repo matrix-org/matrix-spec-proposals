@@ -32,7 +32,7 @@ a person's profile picture would imply the `is_direct` flag should be
 set.
 
 The invitee's client may use the `is_direct` flag in the
-[m.room.member]() event to automatically mark the room as a direct chat
+[m.room.member](#mroommember) event to automatically mark the room as a direct chat
 but this is not required: it may for example, prompt the user, or ignore
 the flag altogether.
 

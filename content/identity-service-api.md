@@ -56,7 +56,7 @@ not necessarily provide evidence that they have validated associations,
 but claim to have done so. Establishing the trustworthiness of an
 individual identity server is left as an exercise for the client.
 
-3PID types are described in [3PID Types](../appendices.html#pid-types)
+3PID types are described in [3PID Types](/appendices#pid-types)
 Appendix.
 
 ## API standards
@@ -236,7 +236,7 @@ has just accepted are appended to `m.accepted_terms`.
 An identity server has some long-term public-private keypairs. These are
 named in a scheme `algorithm:identifier`, e.g. `ed25519:0`. When signing
 an association, the standard [Signing
-JSON](../appendices.html#signing-json) algorithm applies.
+JSON](/appendices#signing-json) algorithm applies.
 
 The identity server may also keep track of some short-term
 public-private keypairs, which may have different usage and lifetime
@@ -308,8 +308,8 @@ internal state of the hash function.
 After formatting each query, the string is run through SHA-256 as
 defined by [RFC 4634](https://tools.ietf.org/html/rfc4634). The
 resulting bytes are then encoded using URL-Safe [Unpadded
-Base64](../appendices.html#unpadded-base64) (similar to [room version
-4's event ID format](../rooms/v4.html#event-ids)).
+Base64](/appendices#unpadded-base64) (similar to [room version
+4's event ID format](/rooms/v4#event-ids)).
 
 An example set of queries when using the pepper `matrixrocks` would be:
 
@@ -448,7 +448,7 @@ is associated with a Matrix user ID.
 At a later point, if the owner of that particular 3PID binds it with a
 Matrix user ID, the identity server will attempt to make an HTTP POST to
 the Matrix user's homeserver via the
-[/3pid/onbind](../server_server/%SERVER_RELEASE_LABEL%.html#put-matrix-federation-v1-3pid-onbind)
+[/3pid/onbind](/server-server-api#put_matrixfederationv13pidonbind)
 endpoint. The request MUST be signed with a long-term private key for
 the identity server.
 

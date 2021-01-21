@@ -42,7 +42,7 @@ encouraged to treat syncing users as "active".
 
 Clients can identify the server notices room by the `m.server_notice`
 tag on the room. Active notices are represented by the [pinned
-events](#m-room-pinned-events) in the server notices room. Server notice
+events](#mroompinned_events) in the server notices room. Server notice
 events pinned in that room should be shown to the user through special
 UI and not through the normal pinned events interface in the client. For
 example, clients may show warning banners or bring up dialogs to get the

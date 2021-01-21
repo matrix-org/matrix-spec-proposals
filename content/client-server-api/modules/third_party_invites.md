@@ -27,7 +27,7 @@ it should insert an `m.room.member` event into the room's graph for that
 user, with `content.membership` = `invite`, as well as a
 `content.third_party_invite` property which contains proof that the
 invitee does indeed own that third party identifier. See the
-[m.room.member](#m-room-member) schema for more information.
+[m.room.member](#mroommember) schema for more information.
 
 #### Events
 
@@ -198,7 +198,7 @@ at any time - the completion is not shown in the diagram.
 H1 MUST verify the request from H3 to ensure the `signed` property is
 correct as well as the `key_validity_url` as still being valid. This is
 done by making a request to the [identity server
-/isvalid](../identity_service/%IDENTITY_RELEASE_LABEL%.html#get-matrix-identity-v2-pubkey-isvalid)
+/isvalid](/identity-service-api/#get_matrixidentityv2pubkeyisvalid)
 endpoint, using the provided URL rather than constructing a new one. The
 query string and response for the provided URL must match the Identity
 Service Specification.

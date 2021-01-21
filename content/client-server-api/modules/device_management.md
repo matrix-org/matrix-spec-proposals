@@ -5,7 +5,7 @@ weight: 90
 
 ### Device Management
 
-This module provides a means for a user to manage their [devices]().
+This module provides a means for a user to manage their [devices](/#devices).
 
 #### Client behaviour
 

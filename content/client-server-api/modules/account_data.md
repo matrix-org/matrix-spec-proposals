@@ -29,4 +29,4 @@ These events can also be received in a `/events` response or in the
 
 Servers MUST reject clients from setting account data for event types
 that the server manages. Currently, this only includes
-[m.fully\_read]().
+[m.fully\_read](#mfully_read).

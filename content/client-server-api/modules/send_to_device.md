@@ -3,7 +3,7 @@ type: module
 weight: 80
 ---
 
-### Send-to-Device messaging<span id="module:to_device"></span>
+### Send-to-Device messaging
 
 This module provides a means by which clients can exchange signalling
 messages without them being stored permanently as part of a shared
@@ -48,7 +48,7 @@ recommended as a reasonable limit.
 
 If the client sends messages to users on remote domains, those messages
 should be sent on to the remote servers via
-[federation](../server_server/%SERVER_RELEASE_LABEL%.html#send-to-device-messaging).
+[federation](/server-server-api#send-to-device-messaging).
 
 #### Protocol definitions
 

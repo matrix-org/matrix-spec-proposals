@@ -7,14 +7,14 @@ weight: 290
 
 In some scenarios room operators may wish to prevent a malicious or
 untrusted server from participating in their room. Sending an
-[m.room.server\_acl]() state event into a room is an effective way to
+[m.room.server\_acl](#mroomserver_acl) state event into a room is an effective way to
 prevent the server from participating in the room at the federation
 level.
 
 Server ACLs can also be used to make rooms only federate with a limited
 set of servers, or retroactively make the room no longer federate with
 any other server, similar to setting the `m.federate` value on the
-[m.room.create]() event.
+[m.room.create](#mroomcreate) event.
 
 {{m\_room\_server\_acl\_event}}
 
@@ -46,7 +46,7 @@ excluded from the room.
 #### Server behaviour
 
 Servers MUST prevent blacklisted servers from sending events or
-participating in the room when an [m.room.server\_acl]() event is
+participating in the room when an [m.room.server\_acl](#mroomserver_acl) event is
 present in the room state. Which APIs are specifically affected are
 described in the Server-Server API specification.
 

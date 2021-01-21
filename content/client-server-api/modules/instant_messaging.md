@@ -18,7 +18,7 @@ room itself such as a room name and topic.
 Usage of this event is discouraged for several reasons:  
 -   The number of feedback events will grow very quickly with the number
     of users in the room. This event provides no way to "batch"
-    feedback, unlike the [receipts module]().
+    feedback, unlike the [receipts module](#receipts).
 -   Pairing feedback to messages gets complicated when paginating as
     feedback arrives before the message it is acknowledging.
 -   There are no guarantees that the client has seen the event ID being
@@ -34,7 +34,7 @@ Usage of this event is discouraged for several reasons:
 
 ##### m.room.message msgtypes
 
-Each [m.room.message]() MUST have a `msgtype` key which identifies the
+Each [m.room.message](#m.room.message) MUST have a `msgtype` key which identifies the
 type of message being sent. Each type has their own required and
 optional keys, as outlined below. If a client cannot display the given
 `msgtype` then it SHOULD display the fallback plain text `body` key
@@ -74,7 +74,7 @@ scheme matching one of: `https`, `http`, `ftp`, `mailto`, `magnet`)
 
 `img`  
 `width`, `height`, `alt`, `title`, `src` (provided it is a [Matrix
-Content (MXC) URI]())
+Content (MXC) URI](#matrix-content-mxc-uris))
 
 `ol`  
 `start`
@@ -128,15 +128,16 @@ can either be replaced with placeholder text (e.g. "\[REDACTED\]") or
 the redacted message can be removed entirely from the messages view.
 
 Events which have attachments (e.g. `m.image`, `m.file`) SHOULD be
-uploaded using the [content repository module]() where available. The
-resulting `mxc://` URI can then be used in the `url` key.
+uploaded using the [content repository module](#content-repository)
+where available. The resulting `mxc://` URI can then be used in the `url`
+key.
 
 Clients MAY include a client generated thumbnail image for an attachment
 under a `info.thumbnail_url` key. The thumbnail SHOULD also be a
 `mxc://` URI. Clients displaying events with attachments can either use
 the client generated thumbnail or ask its homeserver to generate a
 thumbnail from the original attachment using the [content repository
-module]().
+module](#content-repository).
 
 ##### Recommendations when sending messages
 
@@ -259,15 +260,15 @@ number of possibilities for choosing a useful name. To ensure that rooms
 are named consistently across clients, clients SHOULD use the following
 algorithm to choose a name:
 
-1.  If the room has an [m.room.name]() state event with a non-empty
+1.  If the room has an [m.room.name](#m.room.name) state event with a non-empty
     `name` field, use the name given by that field.
-2.  If the room has an [m.room.canonical\_alias]() state event with a
+2.  If the room has an [m.room.canonical\_alias](#m.room.canonical_alias) state event with a
     valid `alias` field, use the alias given by that field as the name.
     Note that clients should avoid using `alt_aliases` when calculating
     the room name.
 3.  If none of the above conditions are met, a name should be composed
     based on the members of the room. Clients should consider
-    [m.room.member]() events for users other than the logged-in user, as
+    [m.room.member](#m.room.member) events for users other than the logged-in user, as
     defined below.
     1.  If the number of `m.heroes` for the room are greater or equal to
         `m.joined_member_count + m.invited_member_count - 1`, then use
@@ -382,7 +383,7 @@ The `formatted_body` should use the following template:
 If the related event does not have a `formatted_body`, the event's
 `body` should be considered after encoding any HTML special characters.
 Note that the `href` in both of the anchors use a [matrix.to
-URI](../appendices.html#matrix-to-navigation).
+URI](/appendices#matrixto-navigation).
 
 ######## Stripping the fallback
 
@@ -477,7 +478,7 @@ status code of 400.
 #### Security considerations
 
 Messages sent using this module are not encrypted, although end to end
-encryption is in development (see [E2E module]()).
+encryption is in development (see [E2E module](#end-to-end-encryption)).
 
 Clients should sanitise **all displayed keys** for unsafe HTML to
 prevent Cross-Site Scripting (XSS) attacks. This includes room names and

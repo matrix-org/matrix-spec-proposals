@@ -74,6 +74,6 @@ the homeserver is performing a push where the `format` is
 
 Note that most of the values and behaviour of this endpoint is described
 by the Client-Server API's [Push
-Module](../client_server/%CLIENT_RELEASE_LABEL%.html#module-push).
+Module](/client-server-api#push-notifications).
 
 {{push\_notifier\_push\_http\_api}}

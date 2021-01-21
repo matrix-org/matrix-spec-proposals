@@ -7,11 +7,11 @@ weight: 300
 
 This module allows users to mention other users, rooms, and groups
 within a room message. This is achieved by including a [matrix.to
-URI](../appendices.html#matrix-to-navigation) in the HTML body of an
-[m.room.message]() event. This module does not have any server-specific
+URI](/appendices/#matrixto-navigation) in the HTML body of an
+[m.room.message](#mroommessage) event. This module does not have any server-specific
 behaviour to it.
 
-Mentions apply only to [m.room.message]() events where the `msgtype` is
+Mentions apply only to [m.room.message](#mroommessage) events where the `msgtype` is
 `m.text`, `m.emote`, or `m.notice`. The `format` for the event must be
 `org.matrix.custom.html` and therefore requires a `formatted_body`.
 

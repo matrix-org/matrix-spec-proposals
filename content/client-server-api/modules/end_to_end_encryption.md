@@ -57,13 +57,13 @@ keys.
 
 The name `ed25519` corresponds to the
 [Ed25519](http://ed25519.cr.yp.to/) signature algorithm. The key is a
-32-byte Ed25519 public key, encoded using [unpadded Base64](). Example:
+32-byte Ed25519 public key, encoded using [unpadded Base64](/appendices/#unpadded-base64). Example:
 
     "SogYyrkTldLz0BXP+GYWs0qaYacUI0RleEqNT8J3riQ"
 
 The name `curve25519` corresponds to the
 [Curve25519](https://cr.yp.to/ecdh.html) ECDH algorithm. The key is a
-32-byte Curve25519 public key, encoded using [unpadded Base64]().
+32-byte Curve25519 public key, encoded using [unpadded Base64](/appendices/#unpadded-base64).
 Example:
 
     "JGLn/yafz74HB2AbPLYJWIVGnKAtqECOBf11yyXac2Y"
@@ -92,7 +92,7 @@ with the following properties:
 <td><p>signatures</p></td>
 <td><p>Signatures</p></td>
 <td><p><strong>Required.</strong> Signatures of the key object.</p>
-<p>The signature is calculated using the process described at <a href="../appendices.html#signing-json">Signing JSON</a>.</p></td>
+<p>The signature is calculated using the process described at <a href="/appendices/#signing-json">Signing JSON</a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -134,7 +134,7 @@ A device uploads the public parts of identity keys to their homeserver
 as a signed JSON object, using the `/keys/upload`\_ API. The JSON object
 must include the public part of the device's Ed25519 key, and must be
 signed by that key, as described in [Signing
-JSON](../appendices.html#signing-json).
+JSON](/appendices/#signing-json).
 
 One-time keys are also uploaded to the homeserver using the
 `/keys/upload`\_ API.
@@ -270,7 +270,7 @@ Extensions to `m.room.message` msgtypes
 
 This module adds `file` and `thumbnail_file` properties, of type
 `EncryptedFile`, to `m.room.message` msgtypes that reference files, such
-as [m.file]() and [m.image](), replacing the `url` and `thumbnail_url`
+as [m.file](#mfile) and [m.image](#mimage), replacing the `url` and `thumbnail_url`
 properties.
 
 `EncryptedFile`
@@ -508,7 +508,7 @@ example, if we verify 40 bits, then an attacker has a 1 in
 success. A failed attack would result in a mismatched Short
 Authentication String, alerting users to the attack.
 
-The verification process takes place over [to-device]() messages in two
+The verification process takes place over [to-device](#send-to-device-messaging) messages in two
 phases:
 
 1.  Key agreement phase (based on [ZRTP key
@@ -566,7 +566,7 @@ The process between Alice and Bob verifying each other would be:
     hash function. HMAC is defined in [RFC
     2104](https://tools.ietf.org/html/rfc2104). The key for the HMAC is
     different for each item and is calculated by generating 32 bytes
-    (256 bits) using [the key verification HKDF](#sas-hkdf).
+    (256 bits) using [the key verification HKDF](#hkdf-calculation).
 18. Alice's device sends Bob's device an `m.key.verification.mac`
     message containing the MAC of Alice's device keys and the MAC of her
     key IDs to be verified. Bob's device does the same for Bob's device
@@ -721,7 +721,7 @@ parameter is the concatenation of:
 
 ###### SAS method: `decimal`
 
-Generate 5 bytes using [HKDF](#sas-hkdf) then take sequences of 13 bits
+Generate 5 bytes using [HKDF](#hkdf-calculation) then take sequences of 13 bits
 to convert to decimal numbers (resulting in 3 numbers between 0 and 8191
 inclusive each). Add 1000 to each calculated number.
 
@@ -739,7 +739,7 @@ separator, such as dashes, or with the numbers on individual lines.
 
 ###### SAS method: `emoji`
 
-Generate 6 bytes using [HKDF](#sas-hkdf) then split the first 42 bits
+Generate 6 bytes using [HKDF](#hkdf-calculation) then split the first 42 bits
 into 7 groups of 6 bits, similar to how one would base64 encode
 something. Convert each group of 6 bits to a number and use the
 following table to get the corresponding emoji:
@@ -933,20 +933,20 @@ device to another.
 ##### Key requests
 
 When a device is missing keys to decrypt messages, it can request the
-keys by sending [m.room\_key\_request]() to-device messages to other
+keys by sending [m.room\_key\_request](#mroom_key_request) to-device messages to other
 devices with `action` set to `request`.
 
 If a device wishes to share the keys with that device, it can forward
 the keys to the first device by sending an encrypted
-[m.forwarded\_room\_key]() to-device message. The first device should
-then send an [m.room\_key\_request]() to-device message with `action`
+[m.forwarded\_room\_key](#mforwarded_room_key) to-device message. The first device should
+then send an [m.room\_key\_request](#mroom_key_request) to-device message with `action`
 set to `request_cancellation` to the other devices that it had
 originally sent the key request to; a device that receives a
 `request_cancellation` should disregard any previously-received
 `request` message with the same `request_id` and `requesting_device_id`.
 
 If a device does not wish to share keys with that device, it can
-indicate this by sending an [m.room\_key.withheld]() to-device message,
+indicate this by sending an [m.room\_key.withheld](#mroom_key.withheld) to-device message,
 as described in [Reporting that decryption keys are
 withheld](#reporting-that-decryption-keys-are-withheld).
 
@@ -969,17 +969,17 @@ However, as the session keys are stored on the server encrypted, it
 requires users to enter a decryption key to decrypt the session keys.
 
 To create a backup, a client will call [POST
-/\_matrix/client/r0/room\_keys/version]() and define how the keys are to
+/\_matrix/client/r0/room\_keys/version](#post_matrixclientr0room_keysversion) and define how the keys are to
 be encrypted through the backup's `auth_data`; other clients can
 discover the backup by calling [GET
-/\_matrix/client/r0/room\_keys/version](). Keys are encrypted according
+/\_matrix/client/r0/room\_keys/version](#get_matrixclientr0room_keysversion). Keys are encrypted according
 to the backup's `auth_data` and added to the backup by calling [PUT
 /\_matrix/client/r0/room\_keys/keys]() or one of its variants, and can
-be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys]() or
+be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys](#put_matrixclientr0room_keyskeys) or
 one of its variants. Keys can only be written to the most recently
 created version of the backup. Backups can also be deleted using [DELETE
-/\_matrix/client/r0/room\_keys/version/{version}](), or individual keys
-can be deleted using [DELETE /\_matrix/client/r0/room\_keys/keys]() or
+/\_matrix/client/r0/room\_keys/version/{version}](#delete_matrixclientr0room_keysversionversion), or individual keys
+can be deleted using [DELETE /\_matrix/client/r0/room\_keys/keys](#delete_matrixclientr0room_keyskeys) or
 one of its variants.
 
 Clients must only store keys in backups after they have ensured that the
@@ -1071,7 +1071,7 @@ The `session_data` field in the backups is constructed as follows:
     <tr class="even">
     <td><p>forwarding_curve25519_key_chain</p></td>
     <td><p>[string]</p></td>
-    <td><p><strong>Required.</strong> Chain of Curve25519 keys through which this session was forwarded, via <a href="">m.forwarded_room_key</a> events.</p></td>
+    <td><p><strong>Required.</strong> Chain of Curve25519 keys through which this session was forwarded, via <a href="#mforwarded_room_key">m.forwarded_room_key</a> events.</p></td>
     </tr>
     <tr class="odd">
     <td><p>sender_key</p></td>
@@ -1205,7 +1205,7 @@ objects described as follows:
 <tr class="even">
 <td><p>forwarding_curve25519_key_chain</p></td>
 <td><p>[string]</p></td>
-<td><p>Required. Chain of Curve25519 keys through which this session was forwarded, via <a href="">m.forwarded_room_key</a> events.</p></td>
+<td><p>Required. Chain of Curve25519 keys through which this session was forwarded, via <a href="#mforwarded_room_key">m.forwarded_room_key</a> events.</p></td>
 </tr>
 <tr class="odd">
 <td><p>room_id</p></td>
@@ -1396,7 +1396,7 @@ a way to recover from the failure, making this session replacement
 process required.
 {{% /boxes/note %}}
 
-To establish a new session, the client sends an [m.dummy](#m-dummy)
+To establish a new session, the client sends an [m.dummy](#mdummy)
 to-device event to the other party to notify them of the new session
 details.
 

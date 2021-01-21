@@ -20,7 +20,7 @@ as a string.
 #### Storage
 
 When secrets are stored on the server, they are stored in the user's
-[account-data](#module-account-data), using an event type equal to the
+[account-data](#client-config), using an event type equal to the
 secret's identifier. The keys that secrets are encrypted with are
 described by data that is also stored in the user's account-data. Users
 can have multiple keys, allowing them to control what sets of secrets
@@ -103,7 +103,7 @@ of the data.
 <tr class="odd">
 <td><p>encrypted</p></td>
 <td><p>{string: object}</p></td>
-<td><p><strong>Required.</strong> Map from key ID the encrypted data. The exact format for the encrypted data is dependent on the key algorithm. See the definition of <code>AesHmacSha2EncryptedData</code> in the <a href="#m.secret_storage.v1.aes-hmac-sha2">m.secret_storage.v1.aes-hmac-sha2</a> section.</p></td>
+<td><p><strong>Required.</strong> Map from key ID the encrypted data. The exact format for the encrypted data is dependent on the key algorithm. See the definition of <code>AesHmacSha2EncryptedData</code> in the <a href="#msecret_storagev1aes-hmac-sha2">m.secret_storage.v1.aes-hmac-sha2</a> section.</p></td>
 </tr>
 </tbody>
 </table>

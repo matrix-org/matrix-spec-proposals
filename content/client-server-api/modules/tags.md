@@ -57,7 +57,7 @@ tags are defined in the `m.*` namespace:
 -   `m.lowpriority`: These should be shown with lower precedence than
     others.
 -   `m.server_notice`: Used to identify [Server Notice
-    Rooms](#module-server-notices).
+    Rooms](#server-notices).
 
 {{m\_tag\_event}}
 

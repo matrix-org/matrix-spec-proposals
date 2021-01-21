@@ -298,7 +298,7 @@ conscientious decision what to do next.
 
 {{% boxes/note %}}
 Servers hosting the `.well-known` JSON file SHOULD offer CORS headers,
-as per the [CORS](#CORS) section in this specification.
+as per the [CORS](#web-browser-clients) section in this specification.
 {{% /boxes/note %}}
 
 The `.well-known` method uses a JSON file at a predetermined location to
@@ -342,7 +342,7 @@ Most API endpoints require the user to identify themselves by presenting
 previously obtained credentials in the form of an `access_token` query
 parameter or through an Authorization Header of `Bearer $access_token`.
 An access token is typically obtained via the [Login](#login) or
-[Registration](#Registration) processes.
+[Registration](#account-registration-and-management) processes.
 
 {{% boxes/note %}}
 This specification does not mandate a particular format for the access
@@ -374,7 +374,7 @@ Client [devices](../index.html#devices) are closely related to access
 tokens. Matrix servers should record which device each access token is
 assigned to, so that subsequent requests can be handled correctly.
 
-By default, the [Login](#login) and [Registration](#Registration)
+By default, the [Login](#login) and [Registration](#account-registration-and-management)
 processes auto-generate a new `device_id`. A client is also free to
 generate its own `device_id` or, provided the user remains the same,
 reuse a device: in either case the client should pass the `device_id` in
@@ -732,7 +732,7 @@ sign-on provider.
 
 A client wanting to complete authentication using SSO should use the
 [Fallback](#fallback) mechanism. See [SSO during User-Interactive
-Authentication]() for more information.
+Authentication](#sso-during-user-interactive-authentication) for more information.
 
 #### Email-based (identity / homeserver)
 
@@ -970,7 +970,7 @@ form.
 A client can identify a user using a 3PID associated with the user's
 account on the homeserver, where the 3PID was previously associated
 using the `/account/3pid`\_ API. See the [3PID
-Types](../appendices.html#pid-types) Appendix for a list of Third-party
+Types](/appendices#3pid-types) Appendix for a list of Third-party
 ID media.
 
 ```json
@@ -1065,7 +1065,7 @@ respond with `403 Forbidden` and an error code of `M_FORBIDDEN`.
 
 If the homeserver advertises `m.login.sso` as a viable flow, and the
 client supports it, the client should redirect the user to the
-`/redirect` endpoint for [client login via SSO](). After authentication
+`/redirect` endpoint for [client login via SSO](#client-login-via-sso). After authentication
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
@@ -1504,9 +1504,9 @@ following fields.
 
 The complete event MUST NOT be larger than 65535 bytes, when formatted
 as a [PDU for the Server-Server
-protocol](../server_server/%SERVER_RELEASE_LABEL%#pdus), including any
+protocol](/server-server-api/#pdus), including any
 signatures, and encoded as [Canonical
-JSON](../appendices.html#canonical-json).
+JSON](/appendices#canonical-json).
 
 There are additional restrictions on sizes per key:
 
@@ -1821,7 +1821,7 @@ of user B to a maximum of level 50. Power levels for users are tracked
 per-room even if the user is not present in the room. The keys contained
 in `m.room.power_levels` determine the levels required for certain
 operations such as kicking, banning and sending state events. See
-[m.room.power\_levels]() for more information.
+[m.room.power\_levels](#room-events) for more information.
 
 Clients may wish to assign names to particular power levels. A suggested
 mapping is as follows: - 0 User - 50 Moderator - 100 Admin
@@ -2043,620 +2043,38 @@ that profile.
 
 #### Summary
 
-<table>
-<thead>
-<tr class="header">
-<th>Module / Profile</th>
-<th>Web</th>
-<th>Mobile</th>
-<th>Desktop</th>
-<th>CLI</th>
-<th>Embedded</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Instant Messaging</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Direct Messaging</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Mentions</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Presence</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Push Notifications</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Receipts</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Fully read markers</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Typing Notifications</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">VoIP</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Ignoring Users</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Reporting Content</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Content Repository</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Managing History Visibility</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Server Side Search</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Room Upgrades</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Required</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Server Administration</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Event Context</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Third Party Networks</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Send-to-Device Messaging</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Device Management</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">End-to-End Encryption</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Guest Accounts</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Room Previews</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Client Config</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">SSO Login</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">OpenID</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Stickers</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Server ACLs</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="odd">
-<td><blockquote>
-<p><a href="">Server Notices</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-<tr class="even">
-<td><blockquote>
-<p><a href="">Moderation policies</a></p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-<td><blockquote>
-<p>Optional</p>
-</blockquote></td>
-</tr>
-</tbody>
-</table>
+| Module / Profile                                           | Web       | Mobile   | Desktop  | CLI      | Embedded |
+|------------------------------------------------------------|-----------|----------|----------|----------|----------|
+| [Instant Messaging](#instant-messaging)                    | Required  | Required | Required | Required | Optional |
+| [Direct Messaging](#direct-messaging)                      | Required  | Required | Required | Required | Optional |
+| [Mentions](#user-room-and-group-mentions)                  | Required  | Required | Required | Optional | Optional |
+| [Presence](#presence)                                      | Required  | Required | Required | Required | Optional |
+| [Push Notifications](#push-notifications)                  | Optional  | Required | Optional | Optional | Optional |
+| [Receipts](#receipts)                                      | Required  | Required | Required | Required | Optional |
+| [Fully read markers](#fully-read-markers)                  | Optional  | Optional | Optional | Optional | Optional |
+| [Typing Notifications](#typing-notifications)              | Required  | Required | Required | Required | Optional |
+| [VoIP](#voice-over-ip)                                     | Required  | Required | Required | Optional | Optional |
+| [Ignoring Users](#ignoring-users)                          | Required  | Required | Required | Optional | Optional |
+| [Reporting Content](#reporting-content)                    | Optional  | Optional | Optional | Optional | Optional |
+| [Content Repository](#content-repository)                  | Required  | Required | Required | Optional | Optional |
+| [Managing History Visibility](#room-history-visibility)    | Required  | Required | Required | Required | Optional |
+| [Server Side Search](#server-side-search)                  | Optional  | Optional | Optional | Optional | Optional |
+| [Room Upgrades](#room-upgrades)                            | Required  | Required | Required | Required | Optional |
+| [Server Administration](#server-administration)            | Optional  | Optional | Optional | Optional | Optional |
+| [Event Context](#event-context)                            | Optional  | Optional | Optional | Optional | Optional |
+| [Third Party Networks](#third-party-networks)              | Optional  | Optional | Optional | Optional | Optional |
+| [Send-to-Device Messaging](#send-to-device-messaging)      | Optional  | Optional | Optional | Optional | Optional |
+| [Device Management](#device-management)                    | Optional  | Optional | Optional | Optional | Optional |
+| [End-to-End Encryption](#end-to-end-encryption)            | Optional  | Optional | Optional | Optional | Optional |
+| [Guest Accounts](#guest-access)                            | Optional  | Optional | Optional | Optional | Optional |
+| [Room Previews](#room-previews)                            | Optional  | Optional | Optional | Optional | Optional |
+| [Client Config](#client-config)                            | Optional  | Optional | Optional | Optional | Optional |
+| [SSO Login](#sso-client-loginauthentication)               | Optional  | Optional | Optional | Optional | Optional |
+| [OpenID](#openid)                                          | Optional  | Optional | Optional | Optional | Optional |
+| [Stickers](#sticker-messages)                              | Optional  | Optional | Optional | Optional | Optional |
+| [Server ACLs](#server-access-control-lists-acls-for-rooms) | Optional  | Optional | Optional | Optional | Optional |
+| [Server Notices](#server-notices)                          | Optional  | Optional | Optional | Optional | Optional |
+| [Moderation policies](#moderation-policy-lists)            | Optional  | Optional | Optional | Optional | Optional |
 
 *Please see each module for more details on what clients need to
 implement.*

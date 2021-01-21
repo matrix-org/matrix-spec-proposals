@@ -284,7 +284,7 @@ The following canonical JSON should be produced:
 JSON is signed by encoding the JSON object without `signatures` or keys
 grouped as `unsigned`, using the canonical encoding described above. The
 JSON bytes are then signed using the signature algorithm and the
-signature is encoded using [unpadded Base64](). The resulting base64
+signature is encoded using [unpadded Base64](#unpadded-base64). The resulting base64
 signature is added to an object under the *signing key identifier* which
 is added to the `signatures` object under the name of the entity signing
 it which is added back to the original JSON object along with the
@@ -363,7 +363,7 @@ the following:
 ## Identifier Grammar
 
 Some identifiers are specific to given room versions, please refer to
-the [room versions specification](index.html#room-versions) for more
+the [room versions specification](/#room-versions) for more
 information.
 
 ### Server Name
@@ -578,7 +578,7 @@ A room has exactly one room ID. A room ID has the format:
     !opaque_id:domain
 
 An event has exactly one event ID. The format of an event ID depends
-upon the [room version specification](index.html#room-versions).
+upon the [room version specification](/#room-versions).
 
 The `domain` of a room ID is the [server name](#server-name) of the
 homeserver which created the room/event. The domain is used only for
@@ -686,7 +686,7 @@ the client if possible.
 {{% boxes/note %}}
 Clients should be aware that decoding a matrix.to URI may result in
 extra slashes appearing due to some [room
-versions](index.html#room-versions). These slashes should normally be
+versions](/#room-versions). These slashes should normally be
 encoded when producing matrix.to URIs, however.
 {{% /boxes/note %}}
 
