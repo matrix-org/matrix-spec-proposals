@@ -8,28 +8,6 @@ Clients may want to receive push notifications when events are received
 at the homeserver. This is managed by a distinct entity called the Push
 Gateway.
 
-## Changelog
-
-**Version: %PUSH\_GATEWAY\_RELEASE\_LABEL%**
-
-{{push\_gateway\_changelog}}
-
-This version of the specification is generated from
-[matrix-doc](https://github.com/matrix-org/matrix-doc) as of Git commit
-[{{git\_version}}](https://github.com/matrix-org/matrix-doc/tree/%7B%7Bgit_rev%7D%7D).
-
-For the full historical changelog, see
-<https://github.com/matrix-org/matrix-doc/blob/master/changelogs/push_gateway.rst>
-
-### Other versions of this specification
-
-The following other versions are also available, in reverse
-chronological order:
-
--   [HEAD](https://matrix.org/docs/spec/push_gateway/unstable.html):
-    Includes all changes since the latest versioned release.
--   [r0.1.0](https://matrix.org/docs/spec/push_gateway/r0.1.0.html)
-
 ## Overview
 
 A client's homeserver forwards information about received events to the

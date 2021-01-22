@@ -10,39 +10,6 @@ designed to support both lightweight clients which store no state and
 lazy-load data from the server as required - as well as heavyweight
 clients which maintain a full local persistent copy of server state.
 
-## Changelog
-
-**Version: %CLIENT\_RELEASE\_LABEL%**
-
-{{client\_server\_changelog}}
-
-This version of the specification is generated from
-[matrix-doc](https://github.com/matrix-org/matrix-doc) as of Git commit
-[{{git\_version}}](https://github.com/matrix-org/matrix-doc/tree/%7B%7Bgit_rev%7D%7D).
-
-For the full historical changelog, see
-<https://github.com/matrix-org/matrix-doc/blob/master/changelogs/client_server.rst>
-
-### Other versions of this specification
-
-The following other versions are also available, in reverse
-chronological order:
-
--   [HEAD](https://matrix.org/docs/spec/client_server/unstable.html):
-    Includes all changes since the latest versioned release.
--   [r0.6.1](https://matrix.org/docs/spec/client_server/r0.6.1.html)
--   [r0.6.0](https://matrix.org/docs/spec/client_server/r0.6.0.html)
--   [r0.5.0](https://matrix.org/docs/spec/client_server/r0.5.0.html)
--   [r0.4.0](https://matrix.org/docs/spec/client_server/r0.4.0.html)
--   [r0.3.0](https://matrix.org/docs/spec/client_server/r0.3.0.html)
--   [r0.2.0](https://matrix.org/docs/spec/client_server/r0.2.0.html)
--   [r0.1.0](https://matrix.org/docs/spec/client_server/r0.1.0.html)
--   [r0.0.1](https://matrix.org/docs/spec/r0.0.1/client_server.html)
--   [r0.0.0](https://matrix.org/docs/spec/r0.0.0/client_server.html)
--   [Legacy](https://matrix.org/docs/spec/legacy/#client-server-api):
-    The last draft before the spec was formally released in version
-    r0.0.0.
-
 ## API Standards
 
 The mandatory baseline for client-server communication in Matrix is

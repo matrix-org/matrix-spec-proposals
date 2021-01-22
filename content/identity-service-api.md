@@ -13,31 +13,6 @@ can be established, validated, and used. This description technically
 may apply to any 3PID, but in practice has only been applied
 specifically to email addresses and phone numbers.
 
-## Changelog
-
-**Version: %IDENTITY\_RELEASE\_LABEL%**
-
-{{identity\_service\_changelog}}
-
-This version of the specification is generated from
-[matrix-doc](https://github.com/matrix-org/matrix-doc) as of Git commit
-[{{git\_version}}](https://github.com/matrix-org/matrix-doc/tree/%7B%7Bgit_rev%7D%7D).
-
-For the full historical changelog, see
-<https://github.com/matrix-org/matrix-doc/blob/master/changelogs/identity_service.rst>
-
-### Other versions of this specification
-
-The following other versions are also available, in reverse
-chronological order:
-
--   [HEAD](https://matrix.org/docs/spec/identity_service/unstable.html):
-    Includes all changes since the latest versioned release.
--   [r0.3.0](https://matrix.org/docs/spec/identity_service/r0.3.0.html)
--   [r0.2.1](https://matrix.org/docs/spec/identity_service/r0.2.1.html)
--   [r0.2.0](https://matrix.org/docs/spec/identity_service/r0.2.0.html)
--   [r0.1.0](https://matrix.org/docs/spec/identity_service/r0.1.0.html)
-
 ## General principles
 
 The purpose of an identity server is to validate, store, and answer

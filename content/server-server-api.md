@@ -45,32 +45,6 @@ EDUs and PDUs are further wrapped in an envelope called a Transaction,
 which is transferred from the origin to the destination homeserver using
 an HTTPS PUT request.
 
-## Changelog
-
-**Version: %SERVER\_RELEASE\_LABEL%**
-
-{{server\_server\_changelog}}
-
-This version of the specification is generated from
-[matrix-doc](https://github.com/matrix-org/matrix-doc) as of Git commit
-[{{git\_version}}](https://github.com/matrix-org/matrix-doc/tree/%7B%7Bgit_rev%7D%7D).
-
-For the full historical changelog, see
-<https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst>
-
-### Other versions of this specification
-
-The following other versions are also available, in reverse
-chronological order:
-
--   [HEAD](https://matrix.org/docs/spec/server_server/unstable.html):
-    Includes all changes since the latest versioned release.
--   [r0.1.4](https://matrix.org/docs/spec/server_server/r0.1.4.html)
--   [r0.1.3](https://matrix.org/docs/spec/server_server/r0.1.3.html)
--   [r0.1.2](https://matrix.org/docs/spec/server_server/r0.1.2.html)
--   [r0.1.1](https://matrix.org/docs/spec/server_server/r0.1.1.html)
--   [r0.1.0](https://matrix.org/docs/spec/server_server/r0.1.0.html)
-
 ## API standards
 
 The mandatory baseline for client-server communication in Matrix is

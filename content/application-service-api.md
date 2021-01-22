@@ -12,29 +12,6 @@ Application Service API (AS API) defines a standard API to allow such
 extensible functionality to be implemented irrespective of the
 underlying homeserver implementation.
 
-## Changelog
-
-**Version: %APPSERVICE\_RELEASE\_LABEL%**
-
-{{application\_service\_changelog}}
-
-This version of the specification is generated from
-[matrix-doc](https://github.com/matrix-org/matrix-doc) as of Git commit
-[{{git\_version}}](https://github.com/matrix-org/matrix-doc/tree/%7B%7Bgit_rev%7D%7D).
-
-For the full historical changelog, see
-<https://github.com/matrix-org/matrix-doc/blob/master/changelogs/application_service.rst>
-
-### Other versions of this specification
-
-The following other versions are also available, in reverse
-chronological order:
-
--   [HEAD](https://matrix.org/docs/spec/application_service/unstable.html):
-    Includes all changes since the latest versioned release.
--   [r0.1.1](https://matrix.org/docs/spec/application_service/r0.1.1.html)
--   [r0.1.0](https://matrix.org/docs/spec/application_service/r0.1.0.html)
-
 ## Application Services
 
 Application services are passive and can only observe events from
