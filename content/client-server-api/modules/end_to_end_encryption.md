@@ -517,27 +517,27 @@ The process between Alice and Bob verifying each other would be:
     method supported by Alice's device.
 7.  Bob's device ensures it has a copy of Alice's device key.
 8.  Bob's device creates an ephemeral Curve25519 key pair
-    (*K*<sub>*B*</sub><sup>*p**r**i**v**a**t**e*</sup>, *K*<sub>*B*</sub><sup>*p**u**b**l**i**c*</sup>),
+    (*K<sub>B</sub><sup>private</sup>*, *K<sub>B</sub><sup>public</sup>*),
     and calculates the hash (using the chosen algorithm) of the public
-    key *K*<sub>*B*</sub><sup>*p**u**b**l**i**c*</sup>.
+    key *K<sub>B</sub><sup>public</sup>*.
 9.  Bob's device replies to Alice's device with an
     `m.key.verification.accept` message.
 10. Alice's device receives Bob's message and stores the commitment hash
     for later use.
 11. Alice's device creates an ephemeral Curve25519 key pair
-    (*K*<sub>*A*</sub><sup>*p**r**i**v**a**t**e*</sup>, *K*<sub>*A*</sub><sup>*p**u**b**l**i**c*</sup>)
+    (*K<sub>A</sub><sup>private</sup>*, *K<sub>A</sub><sup>public</sup>*)
     and replies to Bob's device with an `m.key.verification.key`,
     sending only the public key
-    *K*<sub>*A*</sub><sup>*p**u**b**l**i**c*</sup>.
+    *K<sub>A</sub><sup>public</sup>*.
 12. Bob's device receives Alice's message and replies with its own
     `m.key.verification.key` message containing its public key
-    *K*<sub>*B*</sub><sup>*p**u**b**l**i**c*</sup>.
+    *K<sub>B</sub><sup>public</sup>*.
 13. Alice's device receives Bob's message and verifies the commitment
     hash from earlier matches the hash of the key Bob's device just sent
     and the content of Alice's `m.key.verification.start` message.
 14. Both Alice and Bob's devices perform an Elliptic-curve
     Diffie-Hellman
-    (*E**C**D**H*(*K*<sub>*A*</sub><sup>*p**r**i**v**a**t**e*</sup>, *K*<sub>*B*</sub><sup>*p**u**b**l**i**c*</sup>)),
+    (*ECDH(K<sub>A</sub><sup>private</sup>*, *K<sub>B</sub><sup>public</sup>*)),
     using the result as the shared secret.
 15. Both Alice and Bob's devices display a SAS to their users, which is
     derived from the shared key using one of the methods in this
@@ -711,13 +711,13 @@ to convert to decimal numbers (resulting in 3 numbers between 0 and 8191
 inclusive each). Add 1000 to each calculated number.
 
 The bitwise operations to get the numbers given the 5 bytes
-*B*<sub>0</sub>, *B*<sub>1</sub>, *B*<sub>2</sub>, *B*<sub>3</sub>, *B*<sub>4</sub>
+*B<sub>0</sub>*, *B<sub>1</sub>*, *B<sub>2</sub>*, *B<sub>3</sub>*, *B<sub>4</sub>*
 would be:
 
--   First: (*B*<sub>0</sub> ≪ 5|*B*<sub>1</sub> ≫ 3) + 1000
+-   First: (*B<sub>0</sub>* ≪ 5|*B<sub>1</sub>* ≫ 3) + 1000
 -   Second:
-    ((*B*<sub>1</sub>&0*x*7) ≪ 10|*B*<sub>2</sub> ≪ 2|*B*<sub>3</sub> ≫ 6) + 1000
--   Third: ((*B*<sub>3</sub>&0*x*3*F*) ≪ 7|*B*<sub>4</sub> ≫ 1) + 1000
+    ((*B<sub>1</sub>*&0x7) ≪ 10|*B<sub>2</sub>* ≪ 2|*B<sub>3</sub>* ≫ 6) + 1000
+-   Third: ((*B<sub>3</sub>*&0x3F) ≪ 7|*B<sub>4</sub>* ≫ 1) + 1000
 
 The digits are displayed to the user either with an appropriate
 separator, such as dashes, or with the numbers on individual lines.
