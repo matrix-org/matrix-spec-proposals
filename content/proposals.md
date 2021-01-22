@@ -4,10 +4,6 @@ weight: 60
 type: docs
 ---
 
-%proposalscssinjection%
-
-Proposals for Spec Changes to Matrix
-
 If you are interested in submitting a change to the Matrix
 Specification, please take note of the following guidelines.
 
@@ -30,7 +26,7 @@ long-winded, and generally try to act towards the benefit of everyone.
 As a majority, team members have the ability to change the state of a
 proposal, and individually have the final say in proposal discussion.
 
-# Guiding Principles
+## Guiding Principles
 
 Proposals **must** act to the greater benefit of the entire Matrix
 ecosystem, rather than benefiting or privileging any single player or
@@ -83,7 +79,7 @@ Please [see
 MSC1779](https://github.com/matrix-org/matrix-doc/blob/master/proposals/1779-open-governance.md)
 for full details of the project's Guiding Principles.
 
-# Technical notes
+## Technical notes
 
 Proposals **must** develop Matrix as a layered protocol: with new
 features building on layers of shared abstractions rather than
@@ -169,7 +165,7 @@ which would clearly benefit the whole Matrix ecosystem, and cannot be
 implemented in an interoperable way using the current spec; so they
 necessitate a spec change.
 
-# Process
+## Process
 
 The process for submitting a Matrix Spec Change (MSC) Proposal in detail
 is as follows:
@@ -327,25 +323,25 @@ request trackers.
                            +                          +
 ```
 
-# Lifetime States
+## Lifetime States
 
 **Note:** All labels are to be placed on the proposal PR.
 
-| Name                            | GitHub Label                    | Description                                                                                              |
-|---------------------------------|---------------------------------|----------------------------------------------------------------------------------------------------------|
-| Proposal Drafting and Feedback  | N/A                             | A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with `[WIP]` to make it easier for reviewers to skim their notifications list. |
-| Proposal In Review              | proposal-in-review              | A proposal document which is now ready and waiting for review by the Spec Core Team and community        |
-| Proposed Final Comment Period   | proposed-final-comment-period   | Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period  |
-| Final Comment Period            | final-comment-period            | A proposal document which has reached final comment period either for merge, closure or postponement     |
-| Final Comment Period Complete   | finished-final-comment-period   | The final comment period has been completed. Waiting for a demonstration implementation                  |
-| Spec PR Missing                 | spec-pr-missing                 | The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec |
-| Spec PR In Review               | spec-pr-in-review               | The spec PR has been written, and is currently under review                                              |
-| Spec PR Merged                  | merged                          | A proposal with a sufficient working implementation and whose Spec PR has been merged!                   |
-| Postponed                       | proposal-postponed              | A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future |
-| Closed                          | proposal-closed                 | A proposal which has been reviewed and deemed unsuitable for acceptance                                  |
-| Obsolete                        | obsolete                        | A proposal which has been made obsolete by another proposal or decision elsewhere.                       |
+| Name                            | GitHub Label                    | Description                                                                                                                                                                                                                          |
+|---------------------------------|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Proposal Drafting and Feedback  | [No label](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+-label%3Aabandoned+-label%3Afinal-comment-period+-label%3Afinished-final-comment-period+-label%3Amerged+-label%3Aobsolete+-label%3Aproposal-postponed+-label%3Aproposed-final-comment-period+-label%3Aproposal-in-review+-label%3Aspec-pr-in-review+-label%3Aspec-pr-missing) | A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with `[WIP]` to make it easier for reviewers to skim their notifications list. |
+| Proposal In Review              | [proposal-in-review](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aproposal-in-review)                          | A proposal document which is now ready and waiting for review by the Spec Core Team and community                       |
+| Proposed Final Comment Period   | [proposed-final-comment-period](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aproposed-final-comment-period+)   | Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period                 |
+| Final Comment Period            | [final-comment-period](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Afinal-comment-period+)                     | A proposal document which has reached final comment period either for merge, closure or postponement                    |
+| Final Comment Period Complete   | [finished-final-comment-period](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Afinished-final-comment-period+)   | The final comment period has been completed. Waiting for a demonstration implementation                                 |
+| Spec PR Missing                 | [spec-pr-missing](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aspec-pr-missing)                                | The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec         |
+| Spec PR In Review               | [spec-pr-in-review](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aspec-pr-in-review+)                           | The spec PR has been written, and is currently under review                                                             |
+| Spec PR Merged                  | [merged](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Amerged)                                                  | A proposal with a sufficient working implementation and whose Spec PR has been merged!                                  |
+| Postponed                       | [proposal-postponed](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aproposal-postponed+)                         | A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future |
+| Abandoned                       | [proposal-closed](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aabandoned)                                      | A proposal where the author/shepherd is not responsive                                                                  |
+| Obsolete                        | [obsolete](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aobsolete+)                                             | A proposal which has been made obsolete by another proposal or decision elsewhere.                                      |
 
-# Categories
+## Categories
 
 We use category labels on MSCs to place them into a track of work. The
 Spec Core Team decides which of the tracks they are focusing on for the
@@ -375,7 +371,7 @@ priorities evolve. We still encourage that MSCs be opened, even if not
 the focus for the time being, as they can still make progress and even
 be merged without the Spec Core Team focusing on them specifically.
 
-# Implementing a proposal
+## Implementing a proposal
 
 As part of the proposal process the spec core team will require evidence
 of the MSC working in order for it to move into FCP. This can usually be
@@ -385,7 +381,7 @@ small enough to be considered proven. Where it's unclear if an MSC will
 require an implementation proof, ask in
 [\#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org).
 
-## Early release of an MSC/idea
+### Early release of an MSC/idea
 
 To help facilitate early releases of software dependent on a spec
 release, implementations are required to use the following process to
@@ -458,14 +454,12 @@ that a particular MSC works) do not have to follow this process.
     started supporting the new spec release, some noise should be raised
     in the general direction of the implementation.
 
-Note
-
+{{% boxes/note %}}
 MSCs MUST still describe what the stable endpoints/feature looks like
 with a note towards the bottom for what the unstable feature
-flag/prefixes are. For example, an MSC would propose <span
-class="title-ref">/\_matrix/client/r0/new/endpoint</span>, not <span
-class="title-ref">/\_matrix/client/unstable/
-com.example/new/endpoint</span>.
+flag/prefixes are. For example, an MSC would propose */_matrix/client/r0/new/endpoint*, not */_matrix/client/unstable/
+com.example/new/endpoint*.
+{{% /boxes/note %}}
 
 In summary:
 
@@ -479,45 +473,9 @@ In summary:
     incurring by moving faster than the spec.
 -   The vendor prefix is chosen by the developer of the feature, using
     the Java package naming convention. The foundation's preferred
-    vendor prefix is <span class="title-ref">org.matrix</span>.
+    vendor prefix is *org.matrix*.
 -   The vendor prefixes, unstable feature flags, and unstable endpoints
     should be included in the MSC, though the MSC MUST be written in a
     way that proposes new stable endpoints. Typically this is solved by
     a small table at the bottom mapping the various values from stable
     to unstable.
-
-# Proposal Tracking
-
-This is a living document generated from the list of proposals on the
-issue and pull request trackers of the
-[matrix-doc](https://github.com/matrix-org/matrix-doc) repo.
-
-We use labels and some metadata in MSC PR descriptions to generate this
-page. Labels are assigned by the Spec Core Team whilst triaging the
-proposals based on those which exist in the
-[matrix-doc](https://github.com/matrix-org/matrix-doc) repo already.
-
-It is worth mentioning that a previous version of the MSC process used a
-mixture of GitHub issues and PRs, leading to some MSC numbers deriving
-from GitHub issue IDs instead. A useful feature of GitHub is that it
-does automatically resolve to an issue, if an issue ID is placed in a
-pull URL. This means that
-<https://github.com/matrix-org/matrix-doc/pull/$MSCID> will correctly
-resolve to the desired MSC, whether it started as an issue or a PR.
-
-Other metadata:
-
--   The MSC number is taken from the GitHub Pull Request ID. This is
-    carried for the lifetime of the proposal. These IDs do not
-    necessarily represent a chronological order.
--   The GitHub PR title will act as the MSC's title.
--   Please link to the spec PR (if any) by adding a "PRs: \#1234" line
-    in the issue description.
--   The creation date is taken from the GitHub PR, but can be overridden
-    by adding a "Date: yyyy-mm-dd" line in the PR description.
--   Updated Date is taken from GitHub.
--   Author is the creator of the MSC PR, but can be overridden by adding
-    an "Author: @username" line in the body of the issue description.
-    Please make sure @username is a GitHub user (include the @!)
--   A shepherd can be assigned by adding a "Shepherd: @username" line in
-    the issue description. Again, make sure this is a real GitHub user.
