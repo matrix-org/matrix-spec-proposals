@@ -40,32 +40,11 @@ passphrases](#deriving-keys-from-passphrases).
 
 `KeyDescription`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>name</td>
-<td>string</td>
-<td><strong>Required.</strong> The name of the key.</td>
-</tr>
-<tr class="even">
-<td><p>algorithm</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The encryption algorithm to be used for this key. Currently, only <code>m.secret_storage.v1.aes-hmac-sha2</code> is supported.</p></td>
-</tr>
-<tr class="odd">
-<td><p>passphrase</p></td>
-<td><p>string</p></td>
-<td><p>See <a href="#deriving-keys-from-passphrases">deriving keys from passphrases</a> section for a description of this property.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type      | Description
+|------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| name       | string    | **Required.** The name of the key.                                                                                                  |
+| algorithm  | string    | **Required.** The encryption algorithm to be used for this key. Currently, only `m.secret_storage.v1.aes-hmac-sha2` is supported.   |
+| passphrase | string    | See [deriving keys from passphrases](#deriving-keys-from-passphrases) section for a description of this property.                   |
 
 Other properties depend on the encryption algorithm, and are described
 below.
@@ -91,22 +70,9 @@ of the data.
 
 `Secret`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>encrypted</p></td>
-<td><p>{string: object}</p></td>
-<td><p><strong>Required.</strong> Map from key ID the encrypted data. The exact format for the encrypted data is dependent on the key algorithm. See the definition of <code>AesHmacSha2EncryptedData</code> in the <a href="#msecret_storagev1aes-hmac-sha2">m.secret_storage.v1.aes-hmac-sha2</a> section.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter | Type             | Description |
+|-----------|------------------|-------------|
+| encrypted | {string: object} | **Required.** Map from key ID the encrypted data. The exact format for the encrypted data is dependent on the key algorithm. See the definition of `AesHmacSha2EncryptedData` in the [m.secret_storage.v1.aes-hmac-sha2](#msecret_storagev1aes-hmac-sha2) section. |
 
 Example:
 
@@ -175,32 +141,11 @@ HMAC-SHA-256. The secret is encrypted as follows:
 
 `AesHmacSha2EncryptedData`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>iv</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The 16-byte initialization vector, encoded as base64.</p></td>
-</tr>
-<tr class="even">
-<td><p>ciphertext</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The AES-CTR-encrypted data, encoded as base64.</p></td>
-</tr>
-<tr class="odd">
-<td>mac</td>
-<td>string</td>
-<td><strong>Required.</strong> The MAC, encoded as base64.</td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type    | Description
+|------------|---------|------------------------------------------------------------------------|
+| iv         | string  |   **Required.** The 16-byte initialization vector, encoded as base64.  |
+| ciphertext | string  |   **Required.** The AES-CTR-encrypted data, encoded as base64.         |
+| mac        | string  |   **Required.** The MAC, encoded as base64.                            |
 
 For the purposes of allowing clients to check whether a user has
 correctly entered the key, clients should:
@@ -213,42 +158,13 @@ correctly entered the key, clients should:
 
 `AesHmacSha2KeyDescription`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>name</td>
-<td>string</td>
-<td><strong>Required.</strong> The name of the key.</td>
-</tr>
-<tr class="even">
-<td><p>algorithm</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The encryption algorithm to be used for this key. Currently, only <code>m.secret_storage.v1.aes-hmac-sha2</code> is supported.</p></td>
-</tr>
-<tr class="odd">
-<td><p>passphrase</p></td>
-<td><p>object</p></td>
-<td><p>See <a href="#deriving-keys-from-passphrases">deriving keys from passphrases</a> section for a description of this property.</p></td>
-</tr>
-<tr class="even">
-<td>iv</td>
-<td>string</td>
-<td>The 16-byte initialization vector, encoded as base64.</td>
-</tr>
-<tr class="odd">
-<td><p>mac</p></td>
-<td><p>string</p></td>
-<td><p>The MAC of the result of encrypting 32 bytes of 0, encoded as base64.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter   | Type   | Description                                                                                                                       |
+|-------------|--------|-----------------------------------------------------------------------------------------------------------------------------------|
+| name        | string | **Required.** The name of the key.                                                                                                |
+| algorithm   | string | **Required.** The encryption algorithm to be used for this key. Currently, only `m.secret_storage.v1.aes-hmac-sha2` is supported. |
+| passphrase  | object | See [deriving keys from passphrases](#deriving-keys-from-passphrases) section for a description of this property.                 |
+| iv          | string | The 16-byte initialization vector, encoded as base64.                                                                             |
+| mac         | string | The MAC of the result of encrypting 32 bytes of 0, encoded as base64.                                                             |
 
 For example, the `m.secret_storage.key.key_id` for a key using this
 algorithm could look like:
@@ -311,37 +227,12 @@ defined by the `algorithm` specified.
 For the `m.pbkdf2` algorithm, the `passphrase` property has the
 following properties:
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>algorithm</td>
-<td>string</td>
-<td><strong>Required.</strong> Must be <code>m.pbkdf2</code></td>
-</tr>
-<tr class="even">
-<td>salt</td>
-<td>string</td>
-<td><strong>Required.</strong> The salt used in PBKDF2.</td>
-</tr>
-<tr class="odd">
-<td>iterations</td>
-<td>integer</td>
-<td><strong>Required.</strong> The number of iterations to use in PBKDF2.</td>
-</tr>
-<tr class="even">
-<td><p>bits</p></td>
-<td><p>integer</p></td>
-<td><p>Optional. The number of bits to generate for the key. Defaults to 256.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type    | Description                                                            |
+|------------|---------|------------------------------------------------------------------------|
+| algorithm  | string  | **Required.** Must be `m.pbkdf2`                                       |
+| salt       | string  | **Required.** The salt used in PBKDF2.                                 |
+| iterations | integer | **Required.** The number of iterations to use in PBKDF2.               |
+| bits       | integer | Optional. The number of bits to generate for the key. Defaults to 256. |
 
 The key is generated using PBKDF2 with SHA-512 as the hash, using the
 salt given in the `salt` parameter, and the number of iterations given
@@ -385,37 +276,12 @@ confirm sharing the secret.
 Sent by a client to request a secret from another device or to cancel a
 previous request. It is sent as an unencrypted to-device event.
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Required if <code>action</code> is <code>request</code>. The name of the secret that is being requested.</p></td>
-</tr>
-<tr class="even">
-<td>action</td>
-<td>enum</td>
-<td><strong>Required.</strong> One of ["request", "request_cancellation"].</td>
-</tr>
-<tr class="odd">
-<td>requesting_device_id</td>
-<td>string</td>
-<td><strong>Required.</strong> The ID of the device requesting the secret.</td>
-</tr>
-<tr class="even">
-<td><p>request_id</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> A random string uniquely identifying (with respect to the requester and the target) the target for a secret. If the secret is requested from multiple devices at the same time, the same ID may be used for every target. The same ID is also used in order to cancel a previous request.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter             | Type   | Description                                                                            |
+|-----------------------|--------|----------------------------------------------------------------------------------------|
+| name                  | string | Required if ``action`` is ``request``. The name of the secret that is being requested. |
+| action                | enum   | **Required.** One of ["request", "request_cancellation"].                              |
+| requesting_device_id  | string | **Required.** The ID of the device requesting the secret.                              |
+| request_id            | string | **Required.** A random string uniquely identifying (with respect to the requester and the target) the target for a secret. If the secret is requested from multiple devices at the same time, the same ID may be used for every target. The same ID is also used in order to cancel a previous request.                                                  |
 
 Example:
 
@@ -434,27 +300,10 @@ Sent by a client to share a secret with another device, in response to
 an `m.secret.request` event. It must be encrypted as an
 `m.room.encrypted` event, then sent as a to-device event.
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>request_id</td>
-<td>string</td>
-<td><strong>Required.</strong> The ID of the request that this a response to.</td>
-</tr>
-<tr class="even">
-<td>secret</td>
-<td>string</td>
-<td><strong>Required.</strong> The contents of the secret.</td>
-</tr>
-</tbody>
-</table>
+| Parameter   | Type   | Description                                                  |
+|-------------|--------|--------------------------------------------------------------|
+| request_id  | string | **Required.** The ID of the request that this a response to. |
+|  secret     | string | **Required.** The contents of the secret.                    |
 
 Example:
 

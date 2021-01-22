@@ -58,70 +58,23 @@ should be sent on to the remote servers via
 
 This module adds the following properties to the \_ response:
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>to_device</p></td>
-<td><p>ToDevice</p></td>
-<td><p>Optional. Information on the send-to-device messages for the client device.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter | Type      | Description                                                                 |
+|-----------|-----------|-----------------------------------------------------------------------------|
+| to_device | ToDevice  | Optional. Information on the send-to-device messages for the client device. |
 
 `ToDevice`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>events</td>
-<td>[Event]</td>
-<td>List of send-to-device messages.</td>
-</tr>
-</tbody>
-</table>
+| Parameter | Type      | Description                      |
+|-----------|-----------|----------------------------------|
+| events    | [Event]   | List of send-to-device messages. |
 
 `Event`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>content</p></td>
-<td><p>EventContent</p></td>
-<td><p>The content of this event. The fields in this object will vary depending on the type of event.</p></td>
-</tr>
-<tr class="even">
-<td><p>sender</p></td>
-<td><p>string</p></td>
-<td><p>The Matrix user ID of the user who sent this event.</p></td>
-</tr>
-<tr class="odd">
-<td>type</td>
-<td>string</td>
-<td>The type of event.</td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type         | Description                                                                                     |
+|------------|--------------|-------------------------------------------------------------------------------------------------|
+| content    | EventContent | The content of this event. The fields in this object will vary depending on the type of event.  |
+| sender     | string       | The Matrix user ID of the user who sent this event.                                             |
+| type       | string       | The type of event.                                                                              |
 
 Example response:
 

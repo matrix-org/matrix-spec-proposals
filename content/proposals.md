@@ -331,72 +331,19 @@ request trackers.
 
 **Note:** All labels are to be placed on the proposal PR.
 
-<table>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>GitHub Label</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Proposal Drafting and Feedback</td>
-<td>N/A</td>
-<td>A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with <code>[WIP]</code> to make it easier for reviewers to skim their notifications list.</td>
-</tr>
-<tr class="even">
-<td>Proposal In Review</td>
-<td>proposal-in-review</td>
-<td>A proposal document which is now ready and waiting for review by the Spec Core Team and community</td>
-</tr>
-<tr class="odd">
-<td>Proposed Final Comment Period</td>
-<td>proposed-final-comment-period</td>
-<td>Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period</td>
-</tr>
-<tr class="even">
-<td>Final Comment Period</td>
-<td>final-comment-period</td>
-<td>A proposal document which has reached final comment period either for merge, closure or postponement</td>
-</tr>
-<tr class="odd">
-<td>Final Comment Period Complete</td>
-<td>finished-final-comment-period</td>
-<td>The final comment period has been completed. Waiting for a demonstration implementation</td>
-</tr>
-<tr class="even">
-<td>Spec PR Missing</td>
-<td>spec-pr-missing</td>
-<td>The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec</td>
-</tr>
-<tr class="odd">
-<td>Spec PR In Review</td>
-<td>spec-pr-in-review</td>
-<td>The spec PR has been written, and is currently under review</td>
-</tr>
-<tr class="even">
-<td>Spec PR Merged</td>
-<td>merged</td>
-<td>A proposal with a sufficient working implementation and whose Spec PR has been merged!</td>
-</tr>
-<tr class="odd">
-<td><p>Postponed</p></td>
-<td><p>proposal-postponed</p></td>
-<td><p>A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future</p></td>
-</tr>
-<tr class="even">
-<td>Closed</td>
-<td>proposal-closed</td>
-<td>A proposal which has been reviewed and deemed unsuitable for acceptance</td>
-</tr>
-<tr class="odd">
-<td>Obsolete</td>
-<td>obsolete</td>
-<td>A proposal which has been made obsolete by another proposal or decision elsewhere.</td>
-</tr>
-</tbody>
-</table>
+| Name                            | GitHub Label                    | Description                                                                                              |
+|---------------------------------|---------------------------------|----------------------------------------------------------------------------------------------------------|
+| Proposal Drafting and Feedback  | N/A                             | A proposal document which is still work-in-progress but is being shared to incorporate feedback. Please prefix your proposal's title with `[WIP]` to make it easier for reviewers to skim their notifications list. |
+| Proposal In Review              | proposal-in-review              | A proposal document which is now ready and waiting for review by the Spec Core Team and community        |
+| Proposed Final Comment Period   | proposed-final-comment-period   | Currently awaiting signoff of a 75% majority of team members in order to enter the final comment period  |
+| Final Comment Period            | final-comment-period            | A proposal document which has reached final comment period either for merge, closure or postponement     |
+| Final Comment Period Complete   | finished-final-comment-period   | The final comment period has been completed. Waiting for a demonstration implementation                  |
+| Spec PR Missing                 | spec-pr-missing                 | The proposal has been agreed, and proven with a demonstration implementation. Waiting for a PR against the Spec |
+| Spec PR In Review               | spec-pr-in-review               | The spec PR has been written, and is currently under review                                              |
+| Spec PR Merged                  | merged                          | A proposal with a sufficient working implementation and whose Spec PR has been merged!                   |
+| Postponed                       | proposal-postponed              | A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future |
+| Closed                          | proposal-closed                 | A proposal which has been reviewed and deemed unsuitable for acceptance                                  |
+| Obsolete                        | obsolete                        | A proposal which has been made obsolete by another proposal or decision elsewhere.                       |
 
 # Categories
 
@@ -407,32 +354,11 @@ category when possible.
 
 The current categories are:
 
-<table>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>GitHub Label</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Core</td>
-<td>kind:core</td>
-<td>Important for the protocol's success.</td>
-</tr>
-<tr class="even">
-<td>Feature</td>
-<td>kind:feature</td>
-<td>Nice to have additions to the spec.</td>
-</tr>
-<tr class="odd">
-<td>Maintenance</td>
-<td>kind:maintenance</td>
-<td>Fixes or clarifies existing spec.</td>
-</tr>
-</tbody>
-</table>
+| Name        | GitHub Label     | Description                           |
+|-------------|------------------|---------------------------------------|
+| Core        | kind:core        | Important for the protocol's success. |
+| Feature     | kind:feature     | Nice to have additions to the spec.   |
+| Maintenance | kind:maintenance | Fixes or clarifies existing spec.     |
 
 Some examples of core MSCs would be aggregations, cross-signing, and
 groups/communities. These are the sorts of things that if not

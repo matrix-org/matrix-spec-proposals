@@ -74,28 +74,10 @@ with the following properties:
 
 `KeyObject`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>key</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The unpadded Base64-encoded 32-byte Curve25519 public key.</p></td>
-</tr>
-<tr class="even">
-<td><p>signatures</p></td>
-<td><p>Signatures</p></td>
-<td><p><strong>Required.</strong> Signatures of the key object.</p>
-<p>The signature is calculated using the process described at <a href="/appendices/#signing-json">Signing JSON</a>.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type       | Description                                                                                                                                       |
+|------------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| key        | string     | **Required.** The unpadded Base64-encoded 32-byte Curve25519 public key.                                                                          |
+| signatures | Signatures | **Required.** Signatures of the key object. The signature is calculated using the process described at [Signing JSON](/appendices/#signing-json). |
 
 Example:
 
@@ -275,81 +257,23 @@ properties.
 
 `EncryptedFile`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>url</td>
-<td>string</td>
-<td><strong>Required.</strong> The URL to the file.</td>
-</tr>
-<tr class="even">
-<td>key</td>
-<td>JWK</td>
-<td><strong>Required.</strong> A <a href="https://tools.ietf.org/html/rfc7517#appendix-A.3">JSON Web Key</a> object.</td>
-</tr>
-<tr class="odd">
-<td><p>iv</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The 128-bit unique counter block used by AES-CTR, encoded as unpadded base64.</p></td>
-</tr>
-<tr class="even">
-<td><p>hashes</p></td>
-<td><p>{string: string}</p></td>
-<td><p><strong>Required.</strong> A map from an algorithm name to a hash of the ciphertext, encoded as unpadded base64. Clients should support the SHA-256 hash, which uses the key <code>sha256</code>.</p></td>
-</tr>
-<tr class="odd">
-<td><p>v</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> Version of the encrypted attachments protocol. Must be <code>v2</code>.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter | Type             | Description                                                                                    |
+|-----------|------------------|------------------------------------------------------------------------------------------------|
+| url       | string           | **Required.** The URL to the file.                                                             |
+| key       | JWK              | **Required.** A [JSON Web Key](https://tools.ietf.org/html/rfc7517#appendix-A.3) object.       |
+| iv        | string           | **Required.** The 128-bit unique counter block used by AES-CTR, encoded as unpadded base64.    |
+| hashes    | {string: string} | **Required.** A map from an algorithm name to a hash of the ciphertext, encoded as unpadded base64. Clients should support the SHA-256 hash, which uses the key `sha256`. |
+| v         | string           | **Required.** Version of the encrypted attachments protocol. Must be `v2`.                     |
 
 `JWK`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>kty</td>
-<td>string</td>
-<td><strong>Required.</strong> Key type. Must be <code>oct</code>.</td>
-</tr>
-<tr class="even">
-<td><p>key_ops</p></td>
-<td><p>[string]</p></td>
-<td><p><strong>Required.</strong> Key operations. Must at least contain <code>encrypt</code> and <code>decrypt</code>.</p></td>
-</tr>
-<tr class="odd">
-<td>alg</td>
-<td>string</td>
-<td><strong>Required.</strong> Algorithm. Must be <code>A256CTR</code>.</td>
-</tr>
-<tr class="even">
-<td>k</td>
-<td>string</td>
-<td><strong>Required.</strong> The key, encoded as urlsafe unpadded base64.</td>
-</tr>
-<tr class="odd">
-<td><p>ext</p></td>
-<td><p>boolean</p></td>
-<td><p><strong>Required.</strong> Extractable. Must be <code>true</code>. This is a <a href="https://w3c.github.io/webcrypto/#iana-section-jwk">W3C extension</a>.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter | Type     | Description                                                                                                              |
+| --------- |----------|--------------------------------------------------------------------------------------------------------------------------|
+| kty       | string   | **Required.** Key type. Must be `oct`.                                                                                   |
+| key_ops   | [string] | **Required.** Key operations. Must at least contain `encrypt` and `decrypt`.                                             |
+| alg       | string   | **Required.** Algorithm. Must be `A256CTR`.                                                                              |
+| k         | string   | **Required.** The key, encoded as urlsafe unpadded base64.                                                               |
+| ext       | boolean  | **Required.** Extractable. Must be `true`. This is a [W3C extension](https://w3c.github.io/webcrypto/#iana-section-jwk). |
 
 Example:
 
@@ -1027,69 +951,23 @@ the following format:
 
 `AuthData`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>public_key</p></td>
-<td><p>string</p></td>
-<td><p><strong>Required.</strong> The curve25519 public key used to encrypt the backups, encoded in unpadded base64.</p></td>
-</tr>
-<tr class="even">
-<td><p>signatures</p></td>
-<td><p>Signatures</p></td>
-<td><p>Optional. Signatures of the <code>auth_data</code>, as Signed JSON</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type       | Description                                                                                      |
+| -----------| -----------|--------------------------------------------------------------------------------------------------|
+| public_key | string     | **Required.** The curve25519 public key used to encrypt the backups, encoded in unpadded base64. |
+| signatures | Signatures | Optional. Signatures of the ``auth_data``, as Signed JSON                                        |
 
 The `session_data` field in the backups is constructed as follows:
 
 1.  Encode the session key to be backed up as a JSON object with the
     properties:
 
-    <table>
-    <thead>
-    <tr class="header">
-    <th>Parameter</th>
-    <th>Type</th>
-    <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr class="odd">
-    <td><p>algorithm</p></td>
-    <td><p>string</p></td>
-    <td><p><strong>Required.</strong> The end-to-end message encryption algorithm that the key is for. Must be <code>m.megolm.v1.aes-sha2</code>.</p></td>
-    </tr>
-    <tr class="even">
-    <td><p>forwarding_curve25519_key_chain</p></td>
-    <td><p>[string]</p></td>
-    <td><p><strong>Required.</strong> Chain of Curve25519 keys through which this session was forwarded, via <a href="#mforwarded_room_key">m.forwarded_room_key</a> events.</p></td>
-    </tr>
-    <tr class="odd">
-    <td><p>sender_key</p></td>
-    <td><p>string</p></td>
-    <td><p><strong>Required.</strong> Unpadded base64-encoded device curve25519 key.</p></td>
-    </tr>
-    <tr class="even">
-    <td><p>sender_claimed_keys</p></td>
-    <td><p>{string: string}</p></td>
-    <td><p><strong>Required.</strong> A map from algorithm name (<code>ed25519</code>) to the identity key for the sending device.</p></td>
-    </tr>
-    <tr class="odd">
-    <td><p>session_key</p></td>
-    <td><p>string</p></td>
-    <td><p><strong>Required.</strong> Unpadded base64-encoded session key in <a href="https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format">session-sharing format</a>.</p></td>
-    </tr>
-    </tbody>
-    </table>
+| Parameter                       | Type              | Description                                                                                                                                                                 |
+| --------------------------------|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| algorithm                       | string            | **Required.** The end-to-end message encryption algorithm that the key is for.  Must be `m.megolm.v1.aes-sha2`.                                                             |
+| forwarding_curve25519_key_chain | [string]          | **Required.** Chain of Curve25519 keys through which this session was forwarded, via [m.forwarded_room_key](#mforwarded_room_key) events.                                   |
+| sender_key                      | string            | **Required.** Unpadded base64-encoded device curve25519 key.                                                                                                                |
+| sender_claimed_keys             | {string: string}  | **Required.** A map from algorithm name (`ed25519`) to the identity key for the sending device.                                                                             |
+| session_key                     | string            | **Required.** Unpadded base64-encoded session key in [session-sharing format](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format).  |
 
 2.  Generate an ephemeral curve25519 key, and perform an ECDH with the
     ephemeral key and the backup's public key to generate a shared
@@ -1138,40 +1016,14 @@ user-supplied passphrase, and is created as follows:
 
 4.  Concatenate the following data:
 
-    <table>
-    <thead>
-    <tr class="header">
-    <th>Size (bytes)</th>
-    <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr class="odd">
-    <td>1</td>
-    <td>Export format version, which must be <code>0x01</code>.</td>
-    </tr>
-    <tr class="even">
-    <td>16</td>
-    <td>The salt S.</td>
-    </tr>
-    <tr class="odd">
-    <td>16</td>
-    <td>The initialization vector IV.</td>
-    </tr>
-    <tr class="even">
-    <td>4</td>
-    <td>The number of rounds N, as a big-endian unsigned 32-bit integer.</td>
-    </tr>
-    <tr class="odd">
-    <td>variable</td>
-    <td>The encrypted JSON object.</td>
-    </tr>
-    <tr class="even">
-    <td><p>32</p></td>
-    <td><p>The HMAC-SHA-256 of all the above string concatenated together, using K' as the key.</p></td>
-    </tr>
-    </tbody>
-    </table>
+| Size (bytes)| Description                                                                             |
+| ------------|-----------------------------------------------------------------------------------------|
+| 1           | Export format version, which must be `0x01`.                                            |
+| 16          | The salt S.                                                                             |
+| 16          | The initialization vector IV.                                                           |
+| 4           | The number of rounds N, as a big-endian unsigned 32-bit integer.                        |
+| variable    | The encrypted JSON object.                                                              |
+| 32          | The HMAC-SHA-256 of all the above string concatenated together, using K' as the key.    |
 
 5.  Base64-encode the string above. Newlines may be added to avoid
     overly long lines.
@@ -1188,52 +1040,15 @@ objects described as follows:
 
 `SessionData`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>algorithm</p></td>
-<td><p>string</p></td>
-<td><p>Required. The encryption algorithm that the session uses. Must be <code>m.megolm.v1.aes-sha2</code>.</p></td>
-</tr>
-<tr class="even">
-<td><p>forwarding_curve25519_key_chain</p></td>
-<td><p>[string]</p></td>
-<td><p>Required. Chain of Curve25519 keys through which this session was forwarded, via <a href="#mforwarded_room_key">m.forwarded_room_key</a> events.</p></td>
-</tr>
-<tr class="odd">
-<td><p>room_id</p></td>
-<td><p>string</p></td>
-<td><p>Required. The room where the session is used.</p></td>
-</tr>
-<tr class="even">
-<td><p>sender_key</p></td>
-<td><p>string</p></td>
-<td><p>Required. The Curve25519 key of the device which initiated the session originally.</p></td>
-</tr>
-<tr class="odd">
-<td><p>sender_claimed_keys</p></td>
-<td><p>{string: string}</p></td>
-<td><p>Required. The Ed25519 key of the device which initiated the session originally.</p></td>
-</tr>
-<tr class="even">
-<td>session_id</td>
-<td>string</td>
-<td>Required. The ID of the session.</td>
-</tr>
-<tr class="odd">
-<td>session_key</td>
-<td>string</td>
-<td>Required. The key for the session.</td>
-</tr>
-</tbody>
-</table>
+| Parameter                         | Type             | Description                                                                                                                           |
+|-----------------------------------|------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| algorithm                         | string           | Required. The encryption algorithm that the session uses. Must be `m.megolm.v1.aes-sha2`.                                             |
+| forwarding_curve25519_key_chain   | [string]         | Required. Chain of Curve25519 keys through which this session was forwarded, via [m.forwarded_room_key](#mforwarded_room_key) events. |
+| room_id                           | string           | Required. The room where the session is used.                                                                                         |
+| sender_key                        | string           | Required. The Curve25519 key of the device which initiated the session originally.                                                    |
+| sender_claimed_keys               | {string: string} | Required. The Ed25519 key of the device which initiated the session originally.                                                       |
+| session_id                        | string           | Required. The ID of the session.                                                                                                      |
+| session_key                       | string           | Required. The key for the session.                                                                                                    |
 
 This is similar to the format before encryption used for the session
 keys in [Server-side key backups](#server-side-key-backups) but adds the
@@ -1509,51 +1324,17 @@ It also adds a `one_time_keys_count` property. Note the spelling
 difference with the `one_time_key_counts` property in the
 `/keys/upload`\_ response.
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>device_lists</p></td>
-<td><p>DeviceLists</p></td>
-<td><p>Optional. Information on e2e device updates. Note: only present on an incremental sync.</p></td>
-</tr>
-<tr class="even">
-<td><p>device_one_time_keys_count</p></td>
-<td><p>{string: integer}</p></td>
-<td><p>Optional. For each key algorithm, the number of unclaimed one-time keys currently held on the server for this device.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter                  | Type               | Description                                                                                                            |
+|----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+| device_lists               | DeviceLists        | Optional. Information on e2e device updates. Note: only present on an incremental sync.                                |
+| device_one_time_keys_count | {string: integer}  | Optional. For each key algorithm, the number of unclaimed one-time keys currently held on the server for this device.  |
 
 `DeviceLists`
 
-<table>
-<thead>
-<tr class="header">
-<th>Parameter</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>changed</p></td>
-<td><p>[string]</p></td>
-<td><p>List of users who have updated their device identity or cross-signing keys, or who now share an encrypted room with the client since the previous sync response.</p></td>
-</tr>
-<tr class="even">
-<td><p>left</p></td>
-<td><p>[string]</p></td>
-<td><p>List of users with whom we do not share any encrypted rooms anymore since the previous sync response.</p></td>
-</tr>
-</tbody>
-</table>
+| Parameter  | Type      | Description                                                                                                                                                      |
+|------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| changed    | [string]  | List of users who have updated their device identity or cross-signing keys, or who now share an encrypted room with the client since the previous sync response. |
+| left       | [string]  | List of users with whom we do not share any encrypted rooms anymore since the previous sync response.                                                            |
 
 {{% boxes/note %}}
 For optimal performance, Alice should be added to `changed` in Bob's

@@ -1473,32 +1473,11 @@ the server-server API.
 In addition to the fields of a Room Event, State Events have the
 following fields.
 
-<table>
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 67%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Key</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>state_key</td>
-<td>string</td>
-<td><strong>Required.</strong> A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an <code>@</code> are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.</td>
-</tr>
-<tr class="even">
-<td>prev_content</td>
-<td>EventContent</td>
-<td>Optional. The previous <code>content</code> for this event. If there is no previous content, this key will be missing.</td>
-</tr>
-</tbody>
-</table>
+
+| Key          | Type         | Description                                                                                                  |
+|--------------|--------------|--------------------------------------------------------------------------------------------------------------|
+| state_key    | string       | **Required.** A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an `@` are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.         |
+| prev_content | EventContent | Optional. The previous `content` for this event. If there is no previous content, this key will be missing.  |
 
 ### Size limits
 

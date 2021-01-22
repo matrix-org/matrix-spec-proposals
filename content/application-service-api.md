@@ -86,57 +86,18 @@ by POSIX extended regular expressions and look like:
 Application services may define the following namespaces (with none
 being explicitly required):
 
-<table>
-<colgroup>
-<col style="width: 24%" />
-<col style="width: 75%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>users</td>
-<td>Events which are sent from certain users.</td>
-</tr>
-<tr class="even">
-<td>aliases</td>
-<td>Events which are sent in rooms with certain room aliases.</td>
-</tr>
-<tr class="odd">
-<td>rooms</td>
-<td>Events which are sent in rooms with certain room IDs.</td>
-</tr>
-</tbody>
-</table>
+| Name     | Description                                                |
+|----------|------------------------------------------------------------|
+| users    | Events which are sent from certain users.                  |
+| aliases  | Events which are sent in rooms with certain room aliases.  |
+| rooms    | Events which are sent in rooms with certain room IDs.      |
 
 Each individual namespace MUST declare the following fields:
 
-<table>
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 87%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>exclusive</td>
-<td><strong>Required</strong> A true or false value stating whether this application service has exclusive access to events within this namespace.</td>
-</tr>
-<tr class="even">
-<td>regex</td>
-<td><strong>Required</strong> A regular expression defining which values this namespace includes.</td>
-</tr>
-</tbody>
-</table>
+| Name       | Description                                                                                                                        |
+|------------|------------------------------------------------------------------------------------------------------------------------------------|
+| exclusive  | **Required** A true or false value stating whether this application service has exclusive access to events within this namespace.  |
+| regex      | **Required** A regular expression defining which values this namespace includes.                                                   |
 
 Exclusive user and alias namespaces should begin with an underscore
 after the sigil to avoid collisions with other users on the homeserver.
@@ -149,52 +110,17 @@ The registration is represented by a series of key-value pairs, which
 this specification will present as YAML. See below for the possible
 options along with their explanation:
 
-<table>
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 88%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>id</td>
-<td><strong>Required.</strong> A unique, user-defined ID of the application service which will never change.</td>
-</tr>
-<tr class="even">
-<td>url</td>
-<td><strong>Required.</strong> The URL for the application service. May include a path after the domain name. Optionally set to <code>null</code> if no traffic is required.</td>
-</tr>
-<tr class="odd">
-<td>as_token</td>
-<td><strong>Required.</strong> A unique token for application services to use to authenticate requests to Homeservers.</td>
-</tr>
-<tr class="even">
-<td>hs_token</td>
-<td><strong>Required.</strong> A unique token for Homeservers to use to authenticate requests to application services.</td>
-</tr>
-<tr class="odd">
-<td>sender_localpart</td>
-<td><strong>Required.</strong> The localpart of the user associated with the application service.</td>
-</tr>
-<tr class="even">
-<td>namespaces</td>
-<td><strong>Required.</strong> A list of <code>users</code>, <code>aliases</code> and <code>rooms</code> namespaces that the application service controls.</td>
-</tr>
-<tr class="odd">
-<td>rate_limited</td>
-<td>Whether requests from masqueraded users are rate-limited. The sender is excluded.</td>
-</tr>
-<tr class="even">
-<td>protocols</td>
-<td>The external protocols which the application service provides (e.g. IRC).</td>
-</tr>
-</tbody>
-</table>
+
+| Name              | Description                                                                                                                                   |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| id                | **Required** A unique, user-defined ID of the application service which will never change.                                                    |
+| url               | **Required** The URL for the application service. May include a path after the domain name. Optionally set to null if no traffic is required. |
+| as_token          | **Required** A unique token for application services to use to authenticate requests to Homeservers.                                          |
+| hs_token          | **Required** A unique token for Homeservers to use to authenticate requests to application services.                                          |
+| sender_localpart  | **Required** The localpart of the user associated with the application service.                                                               |
+| namespaces        | **Required** A list of `users`, `aliases` and `rooms` namespaces that the application service controls.                                       |
+| rate_limited      | Whether requests from masqueraded users are rate-limited. The sender is excluded.                                                             |
+| protocols         | The external protocols which the application service provides (e.g. IRC).                                                                     |
 
 An example registration file for an IRC-bridging application service is
 below:
