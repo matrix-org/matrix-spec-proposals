@@ -729,7 +729,7 @@ into 7 groups of 6 bits, similar to how one would base64 encode
 something. Convert each group of 6 bits to a number and use the
 following table to get the corresponding emoji:
 
-{{sas\_emoji\_table}}
+{{% sas-emojis %}}
 
 {{% boxes/note %}}
 This table is available as JSON at
