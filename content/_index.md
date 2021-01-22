@@ -19,7 +19,11 @@ To propose a change to the Matrix Spec, see the explanations at
 
 The specification consists of the following parts:
 
-{{apis}}
+* [Client-Server API](client-server-api)
+* [Server-Server API](server-server-api)
+* [Application Service API](application-service-api)
+* [Identity Service API](identity-service-api)
+* [Push Gateway API](push-gateway-api)
 
 Additionally, this introduction page contains the key baseline
 information required to understand the specific APIs, including the
