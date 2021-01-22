@@ -2,7 +2,7 @@
 
 This is a proposal of a URI scheme to identify Matrix resources in a wide
 range of applications (web, desktop, or mobile) both throughout Matrix software
-and (especially) outside of it. It supersedes 
+and (especially) outside it. It supersedes 
 [MSC455](https://github.com/matrix-org/matrix-doc/issues/455) in order
 to continue the discussion in the modern GFM style.
 
@@ -28,7 +28,7 @@ Specific use cases include:
 
 Matrix identifiers as defined by the current specification have a form distinct
 enough from other identifiers to mostly fulfil the representation use case.
-Since they are not URIs they can not cover the two integration use cases.
+Since they are not URIs, they can not cover the two integration use cases.
 https://matrix.to somehow compensates for this; however:
 * it requires a web browser to run JavaScript code that resolves identifiers
   (basically limiting first-class support to browser-based clients), and
@@ -50,7 +50,7 @@ it merely defines a mapping between URIs with the scheme name `matrix:`
 and Matrix identifiers, as well as operations on them. The MSC should be
 sufficient to produce an implementation that would convert Matrix URIs to
 a series of CS API calls, entirely on the client side. It is recognised,
-however, that most of URI processing logic can and should (eventually)
+however, that most of the URI processing logic can and should (eventually)
 be on the server side in order to facilitate adoption of Matrix URIs;
 further MSCs are needed to define details for that, as well as to extend
 the mapping to more resources (including those without equivalent
@@ -59,7 +59,7 @@ Matrix identifiers, such as room state or user profile data).
 The Matrix identifier (or identifiers) can be reconstructed from
 `{id without sigil}` by prepending a sigil character corresponding to `{type}`.
 To support a hierarchy of Matrix resources, more `/{type}/{id without sigil}`
-pairs can be appended, identifying resources inside of other resources.
+pairs can be appended, identifying resources within other resources.
 As of now, there's only one such case, with exactly one additional pair -
 pointing to an event in a room.
 
@@ -92,7 +92,7 @@ Further text uses the following terms:
 
 The following considerations drive the requirements for Matrix URIs:
 1. Follow existing standards and practices.
-1. Endorse the principle of least surprise.
+1. Endorse the principle of the least surprise.
 1. Humans first, machines second.
 1. Cover as many entities as practical.
 1. URIs are expected to be extremely portable and stable;
@@ -117,9 +117,8 @@ The following requirements resulted from these drivers:
    1. Event IDs (`$arbitrary_eventid_with_or_without_serverpart`)
 1. The mapping MUST take into account that some identifiers
    (e.g. aliases) can have non-ASCII characters - reusing
-   [RFC 3987](https://tools.ietf.org/html/rfc3987) is RECOMMENDED
-   but an alternative encoding can be used if there are reasons
-   for that.
+   [RFC 3987](https://tools.ietf.org/html/rfc3987) is RECOMMENDED,
+   but an alternative encoding can be used if there are reasons for that.
 1. The mapping between Matrix identifiers and Matrix URIs MUST
    be extensible (without invalidating previous URIs) to:
    1. new classes of identifiers (there MUST be a meta-rule to produce
@@ -136,7 +135,7 @@ The following requirements resulted from these drivers:
 1. Matrix URI SHOULD have a human-readable, if not necessarily
    human-friendly, representation - to allow visual sanity-checks.
    In particular, characters escaping/encoding should be reduced
-   to bare minimum in that representation. As a food for thought, see
+   to bare minimum in that representation. As food for thought, see
    [Wikipedia: Clean URL, aka SEF URL](https://en.wikipedia.org/wiki/Clean_URL) and
    [a use case from RFC 3986](https://tools.ietf.org/html/rfc3986#section-1.2.1).
 1. It SHOULD be easy to parse Matrix URI in popular programming
@@ -181,7 +180,7 @@ The proposed scheme name is `matrix`.
 Other considered options were `mx` and `web+matrix`;
 [comments to MSC455](https://github.com/matrix-org/matrix-doc/issues/455)
 mention two scheme names proposed and one more has been mentioned
-in `#matrix-core:matrix.org`).
+in `#matrix-core:matrix.org`.
 
 The scheme name is a definitive indication of a Matrix URI and MUST NOT
 be omitted. As can be seen below, Matrix URI rely heavily on [relative
@@ -225,7 +224,7 @@ type-qualifier = segment-nz "/" ; as defined in RFC 3986, see also below
 id-without-sigil = string ; as defined in Matrix identifier spec, see below
 ```
 The path component consists of 1 or more descriptors separated by a slash
-(`/`) character. This is a generic pattern intended for reuse in future
+(`/`) character. This is a generic pattern intended for reusing in future
 extensions.
 
 This MSC only proposes mappings along `type-qualifier id-without-sigil` syntax;
@@ -346,8 +345,9 @@ comparisons are case-INsensitive.
    `query`, and `fragment`), decoding special or international characters
    as directed by [RFC 3986](https://tools.ietf.org/html/rfc3986) and
    (for IRIs) [RFC 3987](https://tools.ietf.org/html/rfc3987). Authors are
-   strongly RECOMMENDED to find an existing implementation of that step for
-   their language and SDK, rather than implement it from scratch based on RFCs.
+   strongly RECOMMENDED that they find an existing implementation of that step
+   for their language and SDK, rather than implement it from scratch based
+   on RFCs.
 
 1. Check that `scheme name` is exactly `matrix`, case-insensitive. If
    the scheme name doesn't match, exit parsing: this is not a Matrix URI.
@@ -466,7 +466,7 @@ extensions. Here are a few ideas:
 
 * Add specifying a segment of the room timeline (`from=$evtid1&to=$evtid2`).
 
-* Unlock bare event ids (`matrix:event/$event_id`) - subject to changes in
+* Unlock bare event ids (`matrix:event/$event_id`) - subject to change in
   other areas of the specification.
 
 * Bring tangible semantics to the authority part. The main purpose of
@@ -569,7 +569,7 @@ further discussion should happen in GitHub comments.
 Reddit style (`matrix:r/matrix:matrix.org`, `matrix:u/me:example.org` etc.)
 is almost as compact as original Matrix identifiers, while still rather
 clearly conveys the type and nicely avoids the singular vs. plural confusion
-described in the previos section. However, in the context of high requirements
+described in the previous section. However, in the context of high requirements
 to URL grammar stability, Reddit-style prefixes would eventually produce
 bigger ambiguity as a primary notation; but they can be handy as shortcuts.
 As discussed in "Future evolution", the current proposal provides enough space
@@ -598,9 +598,9 @@ the type signifier?).
 
 #### "Full REST" 
 
-Yet another alternative considered was to go "full REST" and build
-a more traditionally looking URL structure with serverparts coming first
-followed by type grouping (sic - not specifiers) and then by localparts,
+Yet another alternative considered was to go "full REST" and structure
+URLs in a more traditional way with serverparts coming first, followed
+by type grouping (sic - not specifiers), and then by localparts,
 i.e. `matrix://example.org/rooms/roomalias`. This is even more
 difficult to comprehend for a Matrix user than the previous alternative
 and besides it conflates the notion of an authority server with
@@ -618,7 +618,7 @@ correctly. As laid out in the beginning of this proposal, Matrix URIs are
 not striving to preempt Matrix identifiers; instead of trying to produce
 an equally readable string, one should just use identifiers where they work.
 
-#### Minimal syntax based on path and percent-encoding
+#### Minimal syntax based on the path component and percent-encoding
 
 A simple modification of the previous option is much more viable:
 proper percent-encoding of the Matrix identifier allows to use it as
@@ -629,8 +629,8 @@ to be encoded). This is considerably more concise and encoding is only
 needed for `#`.
 
 Quite unfortunately, `#` is one of the two sigils in Matrix most relevant
-to integration cases. The other one is `@`; it doesn't need encoding outside
-of the authority part - which is why the form above uses a leading `/` that
+to integration cases. The other one is `@`; it doesn't need encoding except
+in the authority part - which is why the form above uses a leading `/` that
 puts the identifier in the path part instead of what parsers treat as
 the authority part. `#` has to be encoded wherever it appears, making a URI
 for Matrix HQ, the first chat room many new users join, look like
@@ -644,7 +644,7 @@ instances, from pen-and-paper to other instant messengers.
 
 Putting the whole id to the URI fragment (`matrix:#id_with_sigil` or,
 following on the `matrix.to` tradition, `matrix:#/id_with_sigil` for
-readability) allows to use `#` without encoding on many URI parsers. It is
+readability) allows using `#` without encoding on many URI parsers. It is
 still not fully RFC-compliant and rules out using URIs by homeservers
 (see also "Past discussion points").
 
@@ -656,7 +656,7 @@ warrant a dedicated sigil but that cannot be ruled out. Rather than rely
 on the institute of sigils, this proposal gives an alternative more
 extensible syntax that can be used for more advanced cases - as a uniform way
 to represent arbitrary sub-objects (with or without Matrix identifier) such as
-user profiles or a notifications feed for the room - and also, if ever needed,
+user profiles, or a notifications feed for the room - and also, if ever needed,
 as an escape hatch to a bigger namespace if we hit shortage of sigils.
 
 The current proposal is also flexible enough to incorporate the minimal
@@ -669,7 +669,7 @@ MSC could enable `matrix:id/%23matrix:matrix.org` as a synonym for
 
 Despite the limited functionality of URIs as proposed in this MSC,
 Matrix authors are advised to use tools that would process URIs just
-like an http(s) URI instead of making home-baked parsers/emitters.
+like an HTTP(S) URI instead of making home-baked parsers/emitters.
 Even with that in mind, not all tools normalise and sanitise all cases
 in a fully RFC-compliant way. This MSC tries to keep the required
 transformations to the minimum and will likely not bring much grief even
@@ -693,7 +693,7 @@ information in URIs.
 
 The MSC strives to not be prescriptive in treating URIs except the `action`
 query parameter. Actions without user confirmation may lead to unintended
-leaks of certain metadata so this MSC recommends to ask for a user consent -
+leaks of certain metadata so this MSC recommends asking for a user consent -
 recognising that not all clients are in position for that.
 
 
