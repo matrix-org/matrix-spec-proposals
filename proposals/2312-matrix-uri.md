@@ -302,6 +302,21 @@ confirmation or at least notify the user before joining or creating a new room.
 Conversely, no additional confirmation/notification is necessary when
 the action leads to opening a room the user is already a member of.
 
+It is worth reiterating on the (blurry) distinction between URIs with `action`
+and those without:
+- a URI with no `action` simply _identifies_ the resource; if the context
+  implies an operation, it is usually focused on the retrieval of the resource,
+  in line with RFC 3986 (see also the next paragraph);
+- a URI with `action` in the query means that a client application should (but
+  is not obliged to) perform that action, with precautions as described above.
+
+In some cases a client application may have no meaningful way to immediately
+perform the default operation suggested by this MSC (see below); e.g.,
+the client may be unable to display a room before joining it, while the URI
+doesn't have `action=join`. In these cases client applications are free to do
+what's best for user experience (e.g., suggest joining the room), even if that
+means performing an action on a URI with no `action` in the query. 
+
 The routing query (`via=`) indicates servers that are likely involved in
 the room (see also
 [the feature of matrix.to](https://matrix.org/docs/spec/appendices#routing)).
