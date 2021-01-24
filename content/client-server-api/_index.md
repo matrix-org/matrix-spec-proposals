@@ -402,8 +402,8 @@ what authentication data it requires via the body of an HTTP 401
 response, and the client submits that authentication data via the `auth`
 request parameter.
 
-A client should first make a request with no `auth` parameter[1]. The
-homeserver returns an HTTP 401 response, with a JSON body, as follows:
+A client should first make a request with no `auth` parameter.
+The homeserver returns an HTTP 401 response, with a JSON body, as follows:
 
     HTTP/1.1 401 Unauthorized
     Content-Type: application/json
@@ -429,15 +429,14 @@ homeserver returns an HTTP 401 response, with a JSON body, as follows:
 
 In addition to the `flows`, this object contains some extra information:
 
-params  
-This section contains any information that the client will need to know
-in order to use a given type of authentication. For each authentication
-type presented, that type may be present as a key in this dictionary.
-For example, the public part of an OAuth client ID could be given here.
+* `params`: This section contains any information that the client will
+need to know in order to use a given type of authentication. For each
+authentication type presented, that type may be present as a key in this
+dictionary. For example, the public part of an OAuth client ID could be
+given here.
 
-session  
-This is a session identifier that the client must pass back to the
-homeserver, if one is provided, in subsequent attempts to authenticate
+* `session`: This is a session identifier that the client must pass back
+to the homeserver, if one is provided, in subsequent attempts to authenticate
 in the same API call.
 
 The client then chooses a flow and attempts to complete the first stage.
@@ -556,7 +555,14 @@ to complete an auth state normally, i.e. the request will either
 complete or request auth, with the presence or absence of that auth type
 in the 'completed' array indicating whether that stage is complete.
 
-##### Example
+{{% boxes/note %}}
+A request to an endpoint that uses User-Interactive Authentication never
+succeeds without auth. Homeservers may allow requests that don't require
+auth by offering a stage with only the `m.login.dummy` auth type, but they
+must still give a 401 response to requests with no auth data.
+{{% /boxes/note %}}
+
+#### Example
 
 At a high level, the requests made for an API call completing an auth
 flow with three stages will resemble the following diagram:
@@ -598,7 +604,7 @@ flow with three stages will resemble the following diagram:
     |_______________________|
 ```
 
-##### Authentication types
+#### Authentication types
 
 This specification defines the following auth types:  
 -   `m.login.password`
@@ -608,14 +614,12 @@ This specification defines the following auth types:
 -   `m.login.msisdn`
 -   `m.login.dummy`
 
-#### Password-based
+##### Password-based
 
-Type  
-`m.login.password`
 
-Description  
-The client submits an identifier and secret password, both sent in
-plain-text.
+| Type               | Description                                                                    |
+|--------------------|--------------------------------------------------------------------------------|
+| `m.login.password` | The client submits an identifier and secret password, both sent in plain-text. |
 
 To use this authentication type, clients should submit an auth dict as
 follows:
@@ -669,13 +673,11 @@ explicitly as follows:
 In the case that the homeserver does not know about the supplied 3PID,
 the homeserver must respond with 403 Forbidden.
 
-#### Google ReCaptcha
+##### Google ReCaptcha
 
-Type  
-`m.login.recaptcha`
-
-Description  
-The user completes a Google ReCaptcha 2.0 challenge
+| Type                | Description                                          |
+|---------------------|------------------------------------------------------|
+| `m.login.recaptcha` | The user completes a Google ReCaptcha 2.0 challenge. |
 
 To use this authentication type, clients should submit an auth dict as
 follows:
@@ -688,27 +690,21 @@ follows:
 }
 ```
 
-#### Single Sign-On
+##### Single Sign-On
 
-Type  
-`m.login.sso`
-
-Description  
-Authentication is supported by authorising with an external single
-sign-on provider.
+| Type          | Description                                                                          |
+|---------------|--------------------------------------------------------------------------------------|
+| `m.login.sso` | Authentication is supported by authorising with an external single sign-on provider. |
 
 A client wanting to complete authentication using SSO should use the
 [Fallback](#fallback) mechanism. See [SSO during User-Interactive
 Authentication](#sso-during-user-interactive-authentication) for more information.
 
-#### Email-based (identity / homeserver)
+##### Email-based (identity / homeserver)
 
-Type  
-`m.login.email.identity`
-
-Description  
-Authentication is supported by authorising an email address with an
-identity server, or homeserver if supported.
+| Type                     | Description                                                                                                      |
+|--------------------------|------------------------------------------------------------------------------------------------------------------|
+| `m.login.email.identity` | Authentication is supported by authorising an email address with an identity server, or homeserver if supported. |
 
 Prior to submitting this, the client should authenticate with an
 identity server (or homeserver). After authenticating, the session
@@ -735,14 +731,11 @@ follows:
 Note that `id_server` (and therefore `id_access_token`) is optional if
 the `/requestToken` request did not include them.
 
-#### Phone number/MSISDN-based (identity / homeserver)
+##### Phone number/MSISDN-based (identity / homeserver)
 
-Type  
-`m.login.msisdn`
-
-Description  
-Authentication is supported by authorising a phone number with an
-identity server, or homeserver if supported.
+| Type             | Description                                                                                                    |
+|------------------|----------------------------------------------------------------------------------------------------------------|
+| `m.login.msisdn` | Authentication is supported by authorising a phone number with an identity server, or homeserver if supported. |
 
 Prior to submitting this, the client should authenticate with an
 identity server (or homeserver). After authenticating, the session
@@ -769,14 +762,13 @@ follows:
 Note that `id_server` (and therefore `id_access_token`) is optional if
 the `/requestToken` request did not include them.
 
-#### Dummy Auth
+##### Dummy Auth
 
-Type  
-`m.login.dummy`
+| Type             | Description                                                            |
+|------------------|------------------------------------------------------------------------|
+| `m.login.dummy`  | Dummy authentication always succeeds and requires no extra parameters. |
 
-Description  
-Dummy authentication always succeeds and requires no extra parameters.
-Its purpose is to allow servers to not require any form of
+The purpose of dummy authentication is to allow servers to not require any form of
 User-Interactive Authentication to perform a request. It can also be
 used to differentiate flows where otherwise one flow would be a subset
 of another flow. e.g. if a server offers flows `m.login.recaptcha` and
@@ -796,7 +788,7 @@ just the type and session, if provided:
 }
 ```
 
-##### Fallback
+#### Fallback
 
 Clients cannot be expected to be able to know how to process every
 single login type. If a client does not know how to handle a given login
@@ -837,7 +829,7 @@ with just the session ID:
 }
 ```
 
-#### Example
+##### Example
 
 A client webapp might use the following JavaScript to open a popup
 window which will handle unknown login types:
@@ -893,7 +885,7 @@ function unknownLoginType(homeserverUrl, apiEndpoint, loginType, sessionID, onCo
 }
 ```
 
-##### Identifier types
+#### Identifier types
 
 Some authentication mechanisms use a user identifier object to identify
 a user. The user identifier object has a `type` field to indicate the
@@ -906,13 +898,11 @@ This specification defines the following identifier types:
 -   `m.id.thirdparty`
 -   `m.id.phone`
 
-#### Matrix User ID
+##### Matrix User ID
 
-Type  
-`m.id.user`
-
-Description  
-The user is identified by their Matrix ID.
+| Type        | Description                                |
+|-------------|--------------------------------------------|
+| `m.id.user` | The user is identified by their Matrix ID. |
 
 A client can identify a user using their Matrix ID. This can either be
 the fully qualified Matrix user ID, or just the localpart of the user
@@ -925,14 +915,11 @@ ID.
 }
 ```
 
-#### Third-party ID
+##### Third-party ID
 
-Type  
-`m.id.thirdparty`
-
-Description  
-The user is identified by a third-party identifier in canonicalised
-form.
+| Type              | Description                                                               |
+|-------------------|---------------------------------------------------------------------------|
+| `m.id.thirdparty` | The user is identified by a third-party identifier in canonicalised form. |
 
 A client can identify a user using a 3PID associated with the user's
 account on the homeserver, where the 3PID was previously associated
@@ -948,13 +935,11 @@ ID media.
 }
 ```
 
-#### Phone number
+##### Phone number
 
-Type  
-`m.id.phone`
-
-Description  
-The user is identified by a phone number.
+| Type         | Description                               |
+|--------------|-------------------------------------------|
+| `m.id.phone` | The user is identified by a phone number. |
 
 A client can identify a user using a phone number associated with the
 user's account, where the phone number was previously associated using
@@ -1957,12 +1942,6 @@ return a standard error response of the form:
 
 The `retry_after_ms` key SHOULD be included to tell the client how long
 they have to wait in milliseconds before they can try again.
-
-[1] A request to an endpoint that uses User-Interactive Authentication
-never succeeds without auth. Homeservers may allow requests that don't
-require auth by offering a stage with only the `m.login.dummy` auth
-type, but they must still give a 401 response to requests with no auth
-data.
 
 ## Modules
 
