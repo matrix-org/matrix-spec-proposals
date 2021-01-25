@@ -154,6 +154,7 @@ For example:
            "type": "offer",
            "sdp": [...],
         },
+        "version": 1,
     },
 }
 ```
