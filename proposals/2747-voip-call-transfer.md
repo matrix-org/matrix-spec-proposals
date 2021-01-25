@@ -158,7 +158,7 @@ For example:
 }
 ```
 
-If this key is absent or set to anything othet than the boolean, `true`, or if
+If this key is absent or set to anything other than the boolean, `true`, or if
 the `capabilities` object is missing altogether, it should be assumed that the
 sender of the invite or answer does not support call transfers and clients should
 reflect this in the UI accordingly.
