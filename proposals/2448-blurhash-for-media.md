@@ -30,7 +30,7 @@ in parallel.
 
 Example `m.room.message` content field:
 
-```
+```json
 {
   "body": "image.png",
   "info": {
@@ -58,6 +58,33 @@ as such should only be used in conjunction with the following
 
 * `m.image`
 * `m.video`
+
+### URL previews
+
+An optional attribute is added to the OpenGraph data returned by a call
+to
+[`GET /_matrix/media/r0/preview_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-media-r0-preview-url)
+called `matrix:image:blurhash`. The value
+of this attribute is the blurhash representation of the media specified
+by `og:image`.
+
+Note that `matrix:image:blurhash` MUST NOT be returned if `og:image` is omitted
+in the response.
+
+Example response to `GET /_matrix/media/r0/preview_url`:
+
+```json
+{
+  "og:title": "Matrix Blog Post",
+  "og:description": "This is a really cool blog post from matrix.org",
+  "og:image": "mxc://example.com/ascERGshawAWawugaAcauga",
+  "og:image:type": "image/png",
+  "og:image:height": 48,
+  "og:image:width": 48,
+  "matrix:image:size": 102400,
+  "matrix:image:blurhash": "oyp8ky2BWn7VHEL"
+}
+```
 
 ### Inline images
 
