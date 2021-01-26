@@ -59,6 +59,35 @@ as such should only be used in conjunction with the following
 * `m.image`
 * `m.video`
 
+### m.sticker
+
+An optional field is added to `m.sticker`'s `content.info` dictionary with
+the key `blurhash`. It's value is a BlurHash of the sticker media.
+
+Example `m.sticker` content:
+
+```json
+{
+  "body": "Landing",
+  "info": {
+    "h": 200,
+    "mimetype": "image/png",
+    "size": 73602,
+    "thumbnail_info": {
+      "h": 200,
+      "mimetype": "image/png",
+      "size": 73602,
+      "w": 140
+    },
+    "thumbnail_url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP",
+    "w": 140,
+    "blurhash": "JadR*.7kCMdnj"
+  },
+  "url": "mxc://matrix.org/sHhqkFCvSkFwtmvtETOtKnLP"
+}
+```
+
+
 ### URL previews
 
 An optional attribute is added to the OpenGraph data returned by a call
