@@ -258,8 +258,8 @@ ID) until the user's actual avatar loads.
 Implementations wishing to add this before this MSC is merged can do so with
 the following:
 
-The `blurhash` key in `m.room.message` should be replaced with
-`xyz.amorgan.blurhash`.
+The `blurhash` key in `m.room.message`, `m.room.avatar`, `m.sticker` and
+`m.room.member` should be replaced with `xyz.amorgan.blurhash`.
 
 `/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
 containing the blurhash instead of `blurhash`. This is preferred to adding
