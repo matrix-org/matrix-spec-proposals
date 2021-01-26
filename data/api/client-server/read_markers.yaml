@@ -1,0 +1,79 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Read Marker API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/read_markers":
+    post:
+      summary: Set the position of the read marker for a room.
+      description: |-
+        Sets the position of the read marker for a given room, and optionally
+        the read receipt's location.
+      operationId: setReadMarker
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room ID to set the read marker in for the user.
+          required: true
+          x-example: "!somewhere:example.org"
+        - in: body
+          name: body
+          description: The read marker and optional read receipt locations.
+          required: true
+          schema:
+            type: object
+            properties:
+              "m.fully_read":
+                type: string
+                description: |-
+                  The event ID the read marker should be located at. The
+                  event MUST belong to the room.
+                example: "$somewhere:example.org"
+              "m.read":
+                type: string
+                description: |-
+                  The event ID to set the read receipt location at. This is
+                  equivalent to calling ``/receipt/m.read/$elsewhere:example.org``
+                  and is provided here to save that extra call.
+                example: "$elsewhere:example.org"
+            required: ['m.fully_read']
+      responses:
+        200:
+          description: |-
+            The read marker, and read receipt if provided, have been updated.
+          schema:
+            type: object
+            properties: {}
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Read Markers

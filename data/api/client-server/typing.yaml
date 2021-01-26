@@ -1,0 +1,87 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Typing API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/typing/{userId}":
+    put:
+      summary: Informs the server that the user has started or stopped typing.
+      description: |-
+        This tells the server that the user is typing for the next N
+        milliseconds where N is the value specified in the ``timeout`` key.
+        Alternatively, if ``typing`` is ``false``, it tells the server that the
+        user has stopped typing.
+      operationId: setTyping
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          description: The user who has started to type.
+          required: true
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          description: The room in which the user is typing.
+          required: true
+          x-example: "!wefh3sfukhs:example.com"
+        - in: body
+          name: typingState
+          description: The current typing state.
+          required: true
+          schema:
+            type: object
+            example: {
+                "typing": true,
+                "timeout": 30000
+              }
+            properties:
+              typing:
+                type: boolean
+                description: |-
+                  Whether the user is typing or not. If ``false``, the ``timeout``
+                  key can be omitted.
+              timeout:
+                type: integer
+                description: The length of time in milliseconds to mark this user as typing.
+            required: ["typing"]
+      responses:
+        200:
+          description: The new typing state was set.
+          examples:
+            application/json: {
+              }
+          schema:
+            type: object  # empty json object
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Room participation

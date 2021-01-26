@@ -1,0 +1,78 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Voice over IP API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/voip/turnServer":
+    get:
+      summary: Obtain TURN server credentials.
+      description: |-
+        This API provides credentials for the client to use when initiating
+        calls.
+      operationId: getTurnServer
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: The TURN server credentials.
+          examples:
+            application/json: {
+                "username":"1443779631:@user:example.com",
+                "password":"JlKfBy1QwLrO20385QyAtEyIv0=",
+                "uris":[
+                  "turn:turn.example.com:3478?transport=udp",
+                  "turn:10.20.30.40:3478?transport=tcp",
+                  "turns:10.20.30.40:443?transport=tcp"
+                ],
+                "ttl":86400
+              }
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: |-
+                  The username to use.
+              password:
+                type: string
+                description: |-
+                  The password to use.
+              uris:
+                type: array
+                items:
+                  type: string
+                description: A list of TURN URIs
+              ttl:
+                type: integer
+                description: The time-to-live in seconds
+            required: ["username", "password", "uris", "ttl"]
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - VOIP

@@ -1,0 +1,156 @@
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Rooms API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/initialSync":
+    get:
+      summary: Snapshot the current state of a room and its most recent messages.
+      description: |-
+        Get a copy of the current state and the most recent messages in a room.
+
+        This endpoint was deprecated in r0 of this specification. There is no
+        direct replacement; the relevant information is returned by the
+        |/sync|_ API. See the `migration guide
+        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+      operationId: roomInitialSync
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to get the data.
+          required: true
+          x-example: "!636q39766251:example.com"
+      responses:
+        200:
+          description: The current state of the room
+          examples:
+            application/json: {
+                "membership": "join",
+                "messages": {
+                  "chunk": [
+                    {
+                      "room_id": "!636q39766251:example.com",
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                    },
+                    {
+                      "room_id": "!636q39766251:example.com",
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
+                    }
+                  ],
+                  "end": "s3456_9_0",
+                  "start": "t44-3453_9_0"
+                },
+                "room_id": "!636q39766251:example.com",
+                "state": [
+                  {
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.join_rules"
+                  },
+                  {
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.member"
+                  },
+                  {
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.create"
+                  },
+                  {
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.power_levels"
+                  }
+                ],
+                "visibility": "private",
+                "account_data": [{
+                    "type": "m.tag",
+                    "content": {"tags": {"work": {"order": "1"}}}
+                }]
+              }
+          schema:
+            title: RoomInfo
+            type: object
+            properties:
+              room_id:
+                type: string
+                description: "The ID of this room."
+              membership:
+                type: string
+                description: "The user's membership state in this room."
+                enum: ["invite", "join", "leave", "ban"]
+              messages:
+                type: object
+                title: PaginationChunk
+                description: "The pagination chunk for this room."
+                properties:
+                  start:
+                    type: string
+                    description: |-
+                      A token which correlates to the first value in ``chunk``.
+                      Used for pagination.
+                  end:
+                    type: string
+                    description: |-
+                      A token which correlates to the last value in ``chunk``.
+                      Used for pagination.
+                  chunk:
+                    type: array
+                    description: |-
+                      If the user is a member of the room this will be a
+                      list of the most recent messages for this room. If
+                      the user has left the room this will be the
+                      messages that preceeded them leaving. This array
+                      will consist of at most ``limit`` elements.
+                    items:
+                      type: object
+                      title: RoomEvent
+                      allOf:
+                        - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                required: ["start", "end", "chunk"]
+              state:
+                type: array
+                description: |-
+                  If the user is a member of the room this will be the
+                  current state of the room as a list of events. If the
+                  user has left the room this will be the state of the
+                  room when they left it.
+                items:
+                  title: StateEvent
+                  type: object
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+              visibility:
+                type: string
+                enum: ["private", "public"]
+                description: |-
+                  Whether this room is visible to the ``/publicRooms`` API
+                  or not."
+              account_data:
+                type: array
+                description: |-
+                  The private data that this user has attached to this room.
+                items:
+                  title: Event
+                  type: object
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+            required: ["room_id"]
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
+      deprecated: true

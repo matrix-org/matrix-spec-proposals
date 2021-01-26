@@ -1,0 +1,106 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Sync Guest API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/events":
+    get:
+      summary: Listen on the event stream.
+      description: |-
+        This will listen for new events related to a particular room and return
+        them to the caller. This will block until an event is received, or until
+        the ``timeout`` is reached.
+
+        This API is the same as the normal ``/events`` endpoint, but can be
+        called by users who have not joined the room.
+
+        Note that the normal ``/events`` endpoint has been deprecated. This
+        API will also be deprecated at some point, but its replacement is not
+        yet known.
+      operationId: peekEvents
+      security:
+        - accessToken: []
+      parameters:
+        - in: query
+          type: string
+          name: from
+          description: |-
+            The token to stream from. This token is either from a previous
+            request to this API or from the initial sync API.
+          required: false
+          x-example: "s3456_9_0"
+        - in: query
+          type: integer
+          name: timeout
+          description: The maximum time in milliseconds to wait for an event.
+          required: false
+          x-example: "35000"
+        - in: query
+          type: string
+          name: room_id
+          description: |-
+            The room ID for which events should be returned.
+          x-example:
+            - "!somewhere:over.the.rainbow"
+      responses:
+        200:
+          description: "The events received, which may be none."
+          examples:
+            application/json: {
+                "start": "s3456_9_0",
+                "end": "s3457_9_0",
+                "chunk": [
+                  {
+                    "room_id": "!somewhere:over.the.rainbow",
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                  }
+                ]
+              }
+          schema:
+            type: object
+            properties:
+              start:
+                type: string
+                description: |-
+                  A token which correlates to the first value in ``chunk``. This
+                  is usually the same token supplied to ``from=``.
+              end:
+                type: string
+                description: |-
+                  A token which correlates to the last value in ``chunk``. This
+                  token should be used in the next request to ``/events``.
+              chunk:
+                type: array
+                description: "An array of events."
+                items:
+                  type: object
+                  title: Event
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+        400:
+          description: "Bad pagination ``from`` parameter."
+        # No tags to exclude this from the swagger UI - use the normal version instead.

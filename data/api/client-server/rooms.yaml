@@ -1,0 +1,314 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Rooms API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/event/{eventId}":
+    get:
+      summary: Get a single event by event ID.
+      description: |-
+        Get a single event based on ``roomId/eventId``. You must have permission to
+        retrieve this event e.g. by being a member in the room for this event.
+      operationId: getOneRoomEvent
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The ID of the room the event is in.
+          required: true
+          x-example: "!636q39766251:matrix.org"
+        - in: path
+          type: string
+          name: eventId
+          description: The event ID to get.
+          required: true
+          x-example: "$asfDuShaf7Gafaw:matrix.org"
+      responses:
+        200:
+          description: The full event.
+          examples:
+            application/json: {
+              "room_id": "!636q39766251:matrix.org",
+              "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+            }
+          schema:
+            allOf:
+              - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+        404:
+          description: The event was not found or you do not have permission to read this event.
+          examples:
+            application/json: {
+                "errcode": "M_NOT_FOUND",
+                "error": "Event not found."
+              }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+      tags:
+        - Room participation
+  "/rooms/{roomId}/state/{eventType}/{stateKey}":
+    get:
+      summary: Get the state identified by the type and key.
+      description: |-
+        .. For backwards compatibility with older links...
+        .. _`get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype`:
+
+        Looks up the contents of a state event in a room. If the user is
+        joined to the room then the state is taken from the current
+        state of the room. If the user has left the room then the state is
+        taken from the state of the room when they left.
+      operationId: getRoomStateWithKey
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to look up the state in.
+          required: true
+          x-example: "!636q39766251:example.com"
+        - in: path
+          type: string
+          name: eventType
+          description: The type of state to look up.
+          required: true
+          x-example: "m.room.name"
+        - in: path
+          type: string
+          name: stateKey
+          description: |-
+            The key of the state to look up. Defaults to an empty string. When
+            an empty string, the trailing slash on this endpoint is optional.
+          required: true
+          x-example: ""
+      responses:
+        200:
+          description: The content of the state event.
+          examples:
+            application/json: {
+              "name": "Example room name"}
+          schema:
+            type: object
+        404:
+          description: The room has no state with the given type or key.
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
+  "/rooms/{roomId}/state":
+    get:
+      summary: Get all state events in the current state of a room.
+      description: |-
+        Get the state events for the current state of a room.
+      operationId: getRoomState
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to look up the state for.
+          required: true
+          x-example: "!636q39766251:example.com"
+      responses:
+        200:
+          description: The current state of the room
+          examples:
+            application/json: [
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.join_rules"
+              },
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.member"
+              },
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.create"
+              },
+              {
+                "room_id": "!636q39766251:example.com",
+                "$ref": "definitions/event-schemas/examples/m.room.power_levels"
+              }
+            ]
+          schema:
+            type: array
+            title: RoomState
+            description: |-
+              If the user is a member of the room this will be the
+              current state of the room as a list of events. If the user
+              has left the room then this will be the state of the room
+              when they left as a list of events.
+            items:
+              title: StateEvent
+              type: object
+              allOf:
+                - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
+  "/rooms/{roomId}/members":
+    get:
+      summary: Get the m.room.member events for the room.
+      description:
+        Get the list of members for this room.
+      operationId: getMembersByRoom
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to get the member events for.
+          required: true
+          x-example: "!636q39766251:example.com"
+        - in: query
+          name: at
+          type: string
+          description: |-
+            The point in time (pagination token) to return members for in the room.
+            This token can be obtained from a ``prev_batch`` token returned for
+            each room by the sync API. Defaults to the current state of the room,
+            as determined by the server.
+          x-example: "YWxsCgpOb25lLDM1ODcwOA"
+        # XXX: As mentioned in MSC1227, replacing `[not_]membership` with a JSON
+        # filter might be a better alternative.
+        # See https://github.com/matrix-org/matrix-doc/issues/1337
+        - in: query
+          name: membership
+          type: string
+          enum:
+            - join
+            - invite
+            - leave
+            - ban
+          description: |-
+            The kind of membership to filter for. Defaults to no filtering if
+            unspecified. When specified alongside ``not_membership``, the two
+            parameters create an 'or' condition: either the membership *is*
+            the same as ``membership`` **or** *is not* the same as ``not_membership``.
+          x-example: "join"
+        - in: query
+          name: not_membership
+          type: string
+          enum:
+            - join
+            - invite
+            - leave
+            - ban
+          description: |-
+            The kind of membership to exclude from the results. Defaults to no
+            filtering if unspecified.
+          x-example: leave
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: |-
+            A list of members of the room. If you are joined to the room then
+            this will be the current members of the room. If you have left the
+            room then this will be the members of the room when you left.
+          examples:
+            application/json: {
+                "chunk": [
+                  {
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.member"
+                  }
+                ]
+              }
+          schema:
+            type: object
+            properties:
+              chunk:
+                type: array
+                items:
+                  title: MemberEvent
+                  type: object
+                  allOf:
+                    - "$ref": "definitions/event-schemas/schema/m.room.member"
+        403:
+          description: >
+            You aren't a member of the room and weren't previously a
+            member of the room.
+      tags:
+        - Room participation
+  "/rooms/{roomId}/joined_members":
+    get:
+      summary: Gets the list of currently joined users and their profile data.
+      description:
+        This API returns a map of MXIDs to member info objects for members of the room. The current user must be in the room for it to work, unless it is an Application Service in which case any of the AS's users must be in the room.
+        This API is primarily for Application Services and should be faster to respond than ``/members`` as it can be implemented more efficiently on the server.
+      operationId: getJoinedMembersByRoom
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room to get the members of.
+          required: true
+          x-example: "!636q39766251:example.com"
+      security:
+        - accessToken: []
+      responses:
+        200:
+          description: |-
+            A map of MXID to room member objects.
+          examples:
+            application/json: {
+                "joined": {
+                  "@bar:example.com": {
+                    "display_name": "Bar",
+                    "avatar_url": "mxc://riot.ovh/printErCATzZijQsSDWorRaK"
+                  }
+                }
+              }
+          schema:
+            type: object
+            properties:
+              joined:
+                additionalProperties:
+                  title: RoomMember
+                  type: object
+                  properties:
+                    display_name:
+                      type: string
+                      description: The display name of the user this object is representing.
+                    avatar_url:
+                      type: string
+                      description: The mxc avatar url of the user this object is representing.
+                description: A map from user ID to a RoomMember object.
+                type: object
+        403:
+          description: >
+            You aren't a member of the room.
+      tags:
+        - Room participation

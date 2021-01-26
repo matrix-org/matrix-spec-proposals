@@ -1,0 +1,75 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: object
+title: m.direct_to_device
+description: |-
+  An EDU that lets servers push send events directly to a specific device on
+  a remote server - for instance, to maintain an Olm E2E encrypted message channel
+  between a local and remote device.
+allOf:
+  - $ref: ../edu.yaml
+  - type: object
+    properties:
+      edu_type:
+        type: enum
+        enum: ['m.direct_to_device']
+        description: The string ``m.direct_to_device``.
+        example: "m.direct_to_device"
+      content:
+        type: object
+        description: The description of the direct-to-device message.
+        title: To Device Message
+        properties:
+          sender:
+            type: string
+            description: User ID of the sender.
+            example: "john@example.com"
+          type:
+            type: string
+            description: Event type for the message.
+            example: "m.room_key_request"
+          message_id:
+            type: string
+            description: Unique ID for the message, used for idempotence.  Arbitrary
+              utf8 string, of maximum length 32 codepoints.
+            example: "hiezohf6Hoo7kaev"
+          messages:
+            type: object
+            description: |-
+              The contents of the messages to be sent.  These are arranged in
+              a map of user IDs to a map of device IDs to message bodies.
+              The device ID may also be ``*``, meaning all known devices for the user.
+            additionalProperties:
+              type: object
+              title: User Devices
+              additionalProperties:
+                type: object
+                title: Device Message Contents
+                properties: {}
+            example: {
+              "alice@example.org": {
+                "IWHQUZUIAH": {
+                  "algorithm": "m.megolm.v1.aes-sha2",
+                  "room_id": "!Cuyf34gef24t:localhost",
+                  "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ",
+                  "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8LlfJL7qNBEY..."
+                }
+              }
+            }
+        required:
+          - sender
+          - type
+          - message_id
+          - messages

@@ -1,0 +1,82 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: object
+title: m.receipt
+description: |-
+  An EDU representing receipt updates for users of the sending homeserver.
+  When receiving receipts, the server should only update entries that are
+  listed in the EDU. Receipts previously received that do not appear in the
+  EDU should not be removed or otherwise manipulated.
+allOf:
+  - $ref: ../edu.yaml
+  - type: object
+    properties:
+      edu_type:
+        type: enum
+        enum: ['m.receipt']
+        description: The string ``m.receipt``
+        example: "m.receipt"
+      content:
+        type: object
+        description: |-
+          Receipts for a particular room. The string key is the room ID for
+          which the receipts under it belong.
+        additionalProperties:
+          type: object
+          title: Room Receipts
+          properties:
+            # We strongly define the receipt type to help spec future ones later
+            # on. At that point, m.read can become optional (maybe).
+            "m.read":
+              type: object
+              description: Read receipts for users in the room.
+              title: User Read Receipt
+              properties:
+                event_ids:
+                  type: array
+                  description: |-
+                    The extremity event IDs that the user has read up to.
+                  minItems: 1
+                  maxItems: 1
+                  items:
+                    type: string
+                  example: ['$read_this_event:matrix.org']
+                data:
+                  type: object
+                  description: Metadata for the read receipt.
+                  title: Read Receipt Metadata
+                  properties:
+                    ts:
+                      type: integer
+                      format: int64
+                      description: |-
+                        A POSIX timestamp in milliseconds for when the user read
+                        the event specified in the read receipt.
+                      example: 1533358089009
+                  required: ['ts']
+              required: ['event_ids', 'data']
+          required: ['m.read']
+        example: {
+          "!some_room:example.org": {
+            "m.read": {
+              "@john:matrix.org": {
+                "event_ids": ["$read_this_event:matrix.org"],
+                "data": {
+                  "ts": 1533358089009
+                }
+              }
+            }
+          }
+        }

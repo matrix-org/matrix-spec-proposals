@@ -1,0 +1,81 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Receipts API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/receipt/{receiptType}/{eventId}":
+    post:
+      summary: Send a receipt for the given event ID.
+      description: |-
+        This API updates the marker for the given receipt type to the event ID
+        specified.
+      operationId: postReceipt
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room in which to send the event.
+          required: true
+          x-example: "!wefuh21ffskfuh345:example.com"
+        - in: path
+          type: string
+          name: receiptType
+          description: The type of receipt to send.
+          required: true
+          x-example: "m.read"
+          enum: ["m.read"]
+        - in: path
+          type: string
+          name: eventId
+          description: The event ID to acknowledge up to.
+          required: true
+          x-example: "$1924376522eioj:example.com"
+        - in: body
+          name: receipt
+          description: |-
+            Extra receipt information to attach to ``content`` if any. The
+            server will automatically set the ``ts`` field.
+          schema:
+            type: object
+            example: {
+              }
+      responses:
+        200:
+          description: The receipt was sent.
+          examples:
+            application/json: {
+              }
+          schema:
+            type: object  # empty json object
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Room participation

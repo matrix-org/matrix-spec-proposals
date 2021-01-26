@@ -1,0 +1,80 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Versions API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client
+produces:
+  - application/json
+paths:
+  "/versions":
+    get:
+      summary: Gets the versions of the specification supported by the server.
+      description: |-
+        Gets the versions of the specification supported by the server.
+
+        Values will take the form ``rX.Y.Z``.
+
+        Only the latest ``Z`` value will be reported for each supported ``X.Y`` value.
+        i.e. if the server implements ``r0.0.0``, ``r0.0.1``, and ``r1.2.0``, it will report ``r0.0.1`` and ``r1.2.0``.
+
+        The server may additionally advertise experimental features it supports
+        through ``unstable_features``. These features should be namespaced and
+        may optionally include version information within their name if desired.
+        Features listed here are not for optionally toggling parts of the Matrix
+        specification and should only be used to advertise support for a feature
+        which has not yet landed in the spec. For example, a feature currently
+        undergoing the proposal process may appear here and eventually be taken
+        off this list once the feature lands in the spec and the server deems it
+        reasonable to do so. Servers may wish to keep advertising features here
+        after they've been released into the spec to give clients a chance to
+        upgrade appropriately. Additionally, clients should avoid using unstable
+        features in their stable releases.
+      operationId: getVersions
+      responses:
+        200:
+          description: The versions supported by the server.
+          examples:
+            application/json: {
+                "versions": ["r0.0.1"],
+                "unstable_features": {
+                  "org.example.my_feature": true
+                }
+              }
+          schema:
+            type: object
+            properties:
+              versions:
+                type: array
+                description: The supported versions.
+                items:
+                  type: string
+                  description: The supported versions
+              unstable_features:
+                type: object
+                description: |-
+                  Experimental features the server supports. Features not listed here,
+                  or the lack of this property all together, indicate that a feature is
+                  not supported.
+                additionalProperties:
+                  type: boolean
+                  description: Whether or not the namespaced feature is supported.
+            required: ['versions']
+      tags:
+        - Server administration

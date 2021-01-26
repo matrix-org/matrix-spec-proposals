@@ -1,0 +1,133 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Key Exchange API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/key/v2
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  "/query/{serverName}/{keyId}":
+    get:
+      summary: Query for another server's keys
+      description: |-
+        Query for another server's keys. The receiving (notary) server must
+        sign the keys returned by the queried server.
+      operationId: perspectivesKeyQuery
+      parameters:
+        - in: path
+          name: serverName
+          type: string
+          description: The server's DNS name to query
+          required: true
+          x-example: matrix.org
+        - in: path
+          name: keyId
+          type: string
+          description: |-
+            **Deprecated**. Servers should not use this parameter and instead
+            opt to return all keys, not just the requested one. The key ID to
+            look up.
+
+            When excluded, the trailing slash on this endpoint is optional.
+          required: false
+          x-example: "ed25519:abc123"
+        - in: query
+          name: minimum_valid_until_ts
+          type: integer
+          format: int64
+          description: |-
+            A millisecond POSIX timestamp in milliseconds indicating when the returned
+            certificates will need to be valid until to be useful to the requesting server.
+
+            If not supplied, the current time as determined by the notary server is used.
+          required: false
+          x-example: 1234567890
+      responses:
+        200:
+          description: |-
+            The keys for the server, or an empty array if the server could not be reached
+            and no cached keys were available.
+          schema:
+            $ref: "definitions/keys_query_response.yaml"
+  "/query":
+    post:
+      summary: Query for several server's keys
+      description: |-
+        Query for keys from multiple servers in a batch format. The receiving (notary)
+        server must sign the keys returned by the queried servers.
+      operationId: bulkPerspectivesKeyQuery
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: {
+              "server_keys": {
+                "example.org": {
+                  "ed25519:abc123": {
+                    "minimum_valid_until_ts": 1234567890
+                  }
+                }
+              }
+            }
+            properties:
+              server_keys:
+                type: object
+                description: |-
+                  The query criteria. The outer ``string`` key on the object is the
+                  server name (eg: ``matrix.org``). The inner ``string`` key is the
+                  Key ID to query for the particular server. If no key IDs are given
+                  to be queried, the notary server should query for all keys. If no
+                  servers are given, the notary server must return an empty ``server_keys``
+                  array in the response.
+
+                  The notary server may return multiple keys regardless of the Key IDs
+                  given.
+                additionalProperties:
+                  type: object
+                  name: ServerName
+                  description: The server names to query.
+                  additionalProperties:
+                    type: object
+                    title: Query Criteria
+                    description: The server key IDs to query.
+                    properties:
+                      minimum_valid_until_ts:
+                        type: integer
+                        format: int64
+                        description: |-
+                          A millisecond POSIX timestamp in milliseconds indicating when
+                          the returned certificates will need to be valid until to be
+                          useful to the requesting server.
+
+                          If not supplied, the current time as determined by the notary
+                          server is used.
+                        example: 1234567890
+            required: ['server_keys']
+      responses:
+        200:
+          description: |-
+            The keys for the queried servers, signed by the notary server. Servers which
+            are offline and have no cached keys will not be included in the result. This
+            may result in an empty array.
+          schema:
+            $ref: "definitions/keys_query_response.yaml"

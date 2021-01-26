@@ -1,0 +1,49 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+title: PushCondition
+type: object
+properties:
+  kind:
+    type: string
+    description: |-
+      The kind of condition to apply. See `conditions <#conditions>`_ for
+      more information on the allowed kinds and how they work.
+  key:
+    type: string
+    description: |-
+      Required for ``event_match`` conditions. The dot-separated field of the
+      event to match.
+
+      Required for ``sender_notification_permission`` conditions. The field in
+      the power level event the user needs a minimum power level for. Fields
+      must be specified under the ``notifications`` property in the power level
+      event's ``content``.
+    x-example: content.body
+  pattern:
+    type: string
+    description: |-
+      Required for ``event_match`` conditions. The glob-style pattern to
+      match against. Patterns with no special glob characters should be
+      treated as having asterisks prepended and appended when testing the
+      condition.
+  is:
+    type: string
+    description: |-
+      Required for ``room_member_count`` conditions. A decimal integer
+      optionally prefixed by one of, ==, <, >, >= or <=. A prefix of < matches
+      rooms where the member count is strictly less than the given number and
+      so forth. If no prefix is present, this parameter defaults to ==.
+required:
+  - kind

@@ -1,0 +1,175 @@
+# Copyright 2017 Kamax.io
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Query API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/query/{queryType}":
+    get:
+      summary: Query for information
+      description: |-
+        Performs a single query request on the receiving homeserver. The query string
+        arguments are dependent on which type of query is being made. Known query types
+        are specified as their own endpoints as an extension to this definition.
+      operationId: queryInfo
+      security:
+        - signedRequest: []
+      parameters:
+        - in: path
+          name: queryType
+          type: string
+          description: The type of query to make
+          required: true
+          x-example: profile
+      responses:
+        200:
+          description: |-
+            The query response. The schema varies depending on the query being made.
+  "/query/directory":
+    get:
+      summary: Query for the room ID and resident homeservers for a room alias
+      description: |-
+        Performs a query to get the mapped room ID and list of resident homeservers in
+        the room for a given room alias. Homeservers should only query room aliases
+        that belong to the target server (identified by the DNS Name in the alias).
+
+        Servers may wish to cache the response to this query to avoid requesting the
+        information too often.
+      operationId: queryRoomDirectory
+      security:
+        - signedRequest: []
+      parameters:
+        - in: query
+          name: room_alias
+          type: string
+          description: The room alias to query.
+          required: true
+          x-example: "#room_alias:example.org"
+      responses:
+        200:
+          description: |-
+            The corresponding room ID and list of known resident homeservers for the room.
+          schema:
+            type: object
+            properties:
+              room_id:
+                type: string
+                description: The room ID mapped to the queried room alias.
+                x-example: "!roomid1234:example.org"
+              servers:
+                type: array
+                description: |-
+                  An array of server names that are likely to hold the given room. This
+                  list may or may not include the server answering the query.
+                items:
+                  type: string
+            required:
+              - "room_id"
+              - "servers"
+          examples:
+            application/json: {
+              "room_id": "!roomid1234:example.org",
+              "servers": [
+                "example.org",
+                "example.com",
+                "another.example.com:8449",
+              ]
+            }
+        404:
+          description: The room alias was not found.
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "Room alias not found."
+            }
+  "/query/profile":
+    get:
+      summary: Query for profile information about a given user
+      description: |-
+        Performs a query to get profile information, such as a display name or avatar,
+        for a given user. Homeservers should only query profiles for users that belong
+        to the target server (identified by the DNS Name in the user ID).
+
+        Servers may wish to cache the response to this query to avoid requesting the
+        information too often.
+      operationId: queryProfile
+      security:
+        - signedRequest: []
+      parameters:
+        - in: query
+          name: user_id
+          type: string
+          description: The user ID to query.
+          required: true
+          x-example: "@someone:example.org"
+        - in: query
+          name: field
+          type: string
+          enum: ['displayname', 'avatar_url']
+          description: |-
+            The field to query. If specified, the server will only return the given field
+            in the response. If not specified, the server will return the full profile for
+            the user.
+      responses:
+        200:
+          description: |-
+            The profile for the user. If a ``field`` is specified in the request, only the
+            matching field should be included in the response. If no ``field`` was specified,
+            the response should include the fields of the user's profile that can be made
+            public, such as the display name and avatar.
+
+            If the user does not have a particular field set on their profile, the server
+            should exclude it from the response body or give it the value ``null``.
+          schema:
+            type: object
+            properties:
+              displayname:
+                type: string
+                description: |-
+                  The display name of the user. May be omitted if the user does not have a
+                  display name set.
+                x-example: "John Doe"
+              avatar_url:
+                type: string
+                description: |-
+                  The avatar URL for the user's avatar. May be omitted if the user does not
+                  have an avatar set.
+                x-example: "mxc://matrix.org/MyC00lAvatar"
+          examples:
+            application/json: {
+              "displayname": "John Doe",
+              "avatar_url": "mxc://matrix.org/MyC00lAvatar"
+            }
+        404:
+          description: The user does not exist or does not have a profile.
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "User does not exist."
+            }

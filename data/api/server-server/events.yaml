@@ -1,0 +1,159 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+swagger: '2.0'
+info:
+  title: "Matrix Federation Events API"
+  version: "1.0.0"
+host: localhost:8448
+schemes:
+  - https
+basePath: /_matrix/federation/v1
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/state/{roomId}":
+    get:
+      summary: Get all the state of a given room
+      description: |-
+        Retrieves a snapshot of a room's state at a given event.
+      operationId: getRoomState
+      security:
+        - signedRequest: []
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to get state for.
+          required: true
+          x-example: "!abc123:matrix.org"
+        - in: query
+          name: event_id
+          type: string
+          description: An event ID in the room to retrieve the state at.
+          required: true
+          x-example: "$helloworld:matrix.org"
+      responses:
+        200:
+          description: |-
+            The fully resolved state for the room, prior to considering any state
+            changes induced by the requested event. Includes the authorization
+            chain for the events.
+          schema:
+            type: object
+            properties:
+              auth_chain:
+                type: array
+                description: |-
+                  The full set of authorization events that make up the state
+                  of the room, and their authorization events, recursively. Note that
+                  events have a different format depending on the room version -
+                  check the `room version specification`_ for precise event formats.
+                items:
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ contained in the auth chain. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
+              pdus:
+                type: array
+                description: |-
+                  The fully resolved state of the room at the given event. Note that
+                  events have a different format depending on the room version -
+                  check the `room version specification`_ for precise event formats.
+                items:
+                  type: object
+                  title: PDU
+                  description: |-
+                    The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format
+                    varies depending on the room version - check the `room version specification`_
+                    for precise event formats.
+                  properties: []
+                  example:
+                    $ref: "examples/minimal_pdu.json"
+            required: ['auth_chain', 'pdus']
+  "/state_ids/{roomId}":
+    get:
+      summary: Get all the state event IDs of a given room
+      description: |-
+        Retrieves a snapshot of a room's state at a given event, in the form of
+        event IDs. This performs the same function as calling ``/state/{roomId}``,
+        however this returns just the event IDs rather than the full events.
+      operationId: getRoomStateIds
+      security:
+        - signedRequest: []
+      parameters:
+        - in: path
+          name: roomId
+          type: string
+          description: The room ID to get state for.
+          required: true
+          x-example: "!abc123:matrix.org"
+        - in: query
+          name: event_id
+          type: string
+          description: An event ID in the room to retrieve the state at.
+          required: true
+          x-example: "$helloworld:matrix.org"
+      responses:
+        200:
+          description: |-
+            The fully resolved state for the room, prior to considering any state
+            changes induced by the requested event. Includes the authorization
+            chain for the events.
+          schema:
+            type: object
+            properties:
+              auth_chain_ids:
+                type: array
+                description: |-
+                  The full set of authorization events that make up the state
+                  of the room, and their authorization events, recursively.
+                items:
+                  type: string
+                example: ["$an_event:example.org"]
+              pdu_ids:
+                type: array
+                description: |-
+                  The fully resolved state of the room at the given event.
+                items:
+                  type: string
+                example: ["$an_event:example.org"]
+            required: ['auth_chain_ids', 'pdu_ids']
+  "/event/{eventId}":
+    get:
+      summary: Get a single event
+      description: |-
+        Retrieves a single event.
+      operationId: getEvent
+      security:
+        - signedRequest: []
+      parameters:
+        - in: path
+          name: eventId
+          type: string
+          description: The event ID to get.
+          required: true
+          x-example: "$abc123:matrix.org"
+      responses:
+        200:
+          description: A transaction containing a single PDU which is the event requested.
+          schema:
+            $ref: "definitions/single_pdu_transaction.yaml"

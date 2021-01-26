@@ -1,0 +1,88 @@
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Application Service Room Directory API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  # Note: this is the same access_token definition used elsewhere in the client
+  # server API, however this expects an access token for an application service.
+  $ref: definitions/security.yaml
+paths:
+  "/directory/list/appservice/{networkId}/{roomId}":
+    put:
+      summary: |-
+        Updates a room's visibility in the application service's room directory.
+      description: |-
+        Updates the visibility of a given room on the application service's room
+        directory.
+
+        This API is similar to the room directory visibility API used by clients
+        to update the homeserver's more general room directory.
+
+        This API requires the use of an application service access token (``as_token``)
+        instead of a typical client's access_token. This API cannot be invoked by
+        users who are not identified as application services.
+      operationId: updateAppserviceRoomDirectoryVsibility
+      parameters:
+        - in: path
+          type: string
+          name: networkId
+          description: |-
+            The protocol (network) ID to update the room list for. This would
+            have been provided by the application service as being listed as
+            a supported protocol.
+          required: true
+          x-example: "irc"
+        - in: path
+          type: string
+          name: roomId
+          description: The room ID to add to the directory.
+          required: true
+          x-example: "!somewhere:example.org"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              visibility:
+                type: string
+                enum: ["public", "private"]
+                description: |-
+                  Whether the room should be visible (public) in the directory
+                  or not (private).
+                example: "public"
+            required: ['visibility']
+      security:
+        # again, this is the appservice's token - not a typical client's
+        - accessToken: []
+      responses:
+        200:
+          description: The room's directory visibility has been updated.
+          schema:
+            type: object
+          examples:
+            application/json: {}
+      tags:
+        - Application service room directory management

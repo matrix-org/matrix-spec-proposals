@@ -1,0 +1,62 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+title: Authentication response
+description: |-
+  Used by servers to indicate that additional authentication information is required,
+type: object
+properties:
+  flows:
+    description: A list of the login flows supported by the server for this API.
+    title: Flow information
+    type: array
+    items:
+      type: object
+      properties:
+        stages:
+          description: |-
+            The login type of each of the stages required to complete this
+            authentication flow
+          type: array
+          items:
+            type: string
+            example: "example.type.foo"
+      required:
+        - stages
+  params:
+    type: object
+    description: |-
+      Contains any information that the client will need to know in order to
+      use a given type of authentication. For each login type presented,
+      that type may be present as a key in this dictionary. For example, the
+      public part of an OAuth client ID could be given here.
+    additionalProperties:
+      type: object
+    example:
+      "example.type.baz": { "example_key": "foobar" }
+  session:
+    type: string
+    description: |-
+      This is a session identifier that the client must pass back to the home
+      server, if one is provided, in subsequent attempts to authenticate in the
+      same API call.
+    example: "xxxxxxyz"
+  completed:
+    type: array
+    description: |-
+      A list of the stages the client has completed successfully
+    items:
+      type: string
+      example: "example.type.foo"
+required:
+  - flows

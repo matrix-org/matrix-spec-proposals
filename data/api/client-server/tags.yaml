@@ -1,0 +1,183 @@
+# Copyright 2016 OpenMarket Ltd
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server tag API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/user/{userId}/rooms/{roomId}/tags":
+    get:
+      summary: List the tags for a room.
+      description: |-
+        List the tags set by a user on a room.
+      operationId: getRoomTags
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to get tags for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The ID of the room to get tags for.
+          x-example: "!726s6s6q:example.com"
+      responses:
+        200:
+          description:
+            The list of tags for the user for the room.
+          schema:
+            type: object
+            properties:
+              tags:
+                type: object
+                additionalProperties:
+                  title: Tag
+                  type: object
+                  properties:
+                    order:
+                      type: number
+                      format: float
+                      description: |-
+                        A number in a range ``[0,1]`` describing a relative
+                        position of the room under the given tag.
+                  additionalProperties: true
+          examples:
+            application/json: {
+              "tags": {
+                "m.favourite": {"order": 0.1},
+                "u.Work": {"order": 0.7},
+                "u.Customers": {}
+              }
+            }
+      tags:
+        - User data
+  "/user/{userId}/rooms/{roomId}/tags/{tag}":
+    put:
+      summary: Add a tag to a room.
+      description: |-
+        Add a tag to the room.
+      operationId: setRoomTag
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to add a tag for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The ID of the room to add a tag to.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: tag
+          required: true
+          description: |-
+            The tag to add.
+          x-example: "u.work"
+        - in: body
+          name: body
+          required: true
+          description: |-
+            Extra data for the tag, e.g. ordering.
+          schema:
+            type: object
+            properties:
+              order:
+                type: number
+                format: float
+                description: |-
+                  A number in a range ``[0,1]`` describing a relative
+                  position of the room under the given tag.
+            additionalProperties: true
+            example: {
+              "order": 0.25
+            }
+      responses:
+        200:
+          description:
+            The tag was successfully added.
+          schema:
+            type: object
+          examples:
+            application/json: {}
+      tags:
+        - User data
+    delete:
+      summary: Remove a tag from the room.
+      description: |-
+        Remove a tag from the room.
+      operationId: deleteRoomTag
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The id of the user to remove a tag for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The ID of the room to remove a tag from.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: tag
+          required: true
+          description: |-
+            The tag to remove.
+          x-example: "u.work"
+      responses:
+        200:
+          description:
+            The tag was successfully removed.
+          schema:
+            type: object
+          examples:
+            application/json: {}
+      tags:
+        - User data

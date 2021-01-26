@@ -1,0 +1,197 @@
+# Copyright 2016 OpenMarket Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Client Config API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/user/{userId}/account_data/{type}":
+    put:
+      summary: Set some account_data for the user.
+      description: |-
+        Set some account_data for the client. This config is only visible to the user
+        that set the account_data. The config will be synced to clients in the
+        top-level ``account_data``.
+      operationId: setAccountData
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The ID of the user to set account_data for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: type
+          required: true
+          description: |-
+            The event type of the account_data to set. Custom types should be
+            namespaced to avoid clashes.
+          x-example: "org.example.custom.config"
+        - in: body
+          name: content
+          required: true
+          description: |-
+            The content of the account_data
+          schema:
+            type: object
+            example: {
+              "custom_account_data_key": "custom_config_value"}
+      responses:
+        200:
+          description:
+            The account_data was successfully added.
+      tags:
+        - User data
+    get:
+      summary: Get some account_data for the user.
+      description: |-
+        Get some account_data for the client. This config is only visible to the user
+        that set the account_data.
+      operationId: getAccountData
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The ID of the user to get account_data for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: type
+          required: true
+          description: |-
+            The event type of the account_data to get. Custom types should be
+            namespaced to avoid clashes.
+          x-example: "org.example.custom.config"
+      responses:
+        200:
+          description:
+            The account data content for the given type.
+          schema:
+            type: object
+            example: {
+              "custom_account_data_key": "custom_config_value"}
+      tags:
+        - User data
+  "/user/{userId}/rooms/{roomId}/account_data/{type}":
+    put:
+      summary: Set some account_data for the user.
+      description: |-
+        Set some account_data for the client on a given room. This config is only
+        visible to the user that set the account_data. The config will be synced to
+        clients in the per-room ``account_data``.
+      operationId: setAccountDataPerRoom
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The ID of the user to set account_data for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The ID of the room to set account_data on.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: type
+          required: true
+          description: |-
+            The event type of the account_data to set. Custom types should be
+            namespaced to avoid clashes.
+          x-example: "org.example.custom.room.config"
+        - in: body
+          name: content
+          required: true
+          description: |-
+            The content of the account_data
+          schema:
+            type: object
+            example: {
+              "custom_account_data_key": "custom_account_data_value"}
+      responses:
+        200:
+          description:
+            The account_data was successfully added.
+      tags:
+        - User data
+    get:
+      summary: Get some account_data for the user.
+      description: |-
+        Get some account_data for the client on a given room. This config is only
+        visible to the user that set the account_data.
+      operationId: getAccountDataPerRoom
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: userId
+          required: true
+          description: |-
+            The ID of the user to set account_data for. The access token must be
+            authorized to make requests for this user ID.
+          x-example: "@alice:example.com"
+        - in: path
+          type: string
+          name: roomId
+          required: true
+          description: |-
+            The ID of the room to get account_data for.
+          x-example: "!726s6s6q:example.com"
+        - in: path
+          type: string
+          name: type
+          required: true
+          description: |-
+            The event type of the account_data to get. Custom types should be
+            namespaced to avoid clashes.
+          x-example: "org.example.custom.room.config"
+      responses:
+        200:
+          description:
+            The account data content for the given type.
+          schema:
+            type: object
+            example: {
+              "custom_account_data_key": "custom_config_value"}
+      tags:
+        - User data
