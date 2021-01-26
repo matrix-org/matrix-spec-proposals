@@ -279,6 +279,8 @@ be defined by a BlurHash. This may be in the higher range for low-resource
 (or unoptimised) clients, and clients are free to refuse to render a BlurHash
 with a large component count, but it shouldn't be a cause for concern.
 
+Invalid BlurHashes should not be rendered.
+
 ## Links
 
 BlurHash's algorithm description can be found
