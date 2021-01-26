@@ -205,6 +205,9 @@ Example response:
 }
 ```
 
+Servers will obviously not be able to return a BlurHash string for encrypted
+media.
+
 In addition, the server can return the BlurHash string for an image when
 given an MXC URL. This would be through something like the Media Information
 API (specified in
