@@ -3,7 +3,7 @@
 [BlurHash](https://blurha.sh) is a compact representation of a placeholder
 for an image (or the frame of a video). Currently in Matrix, clients must
 display a placeholder image in the message timeline while a piece of media is
-loading. Some clients, such as Riot, simply display an empty space.
+loading. Some clients, such as Element, simply display an empty space.
 
 While thumbnails exist to combat this to some degree, they still need to be
 downloaded from a homeserver, which is not instantaneous.
@@ -223,7 +223,7 @@ Once the image loads:
 
 ![the image has loaded](images/2448-loaded-image.png)
 
-For reference, the current state of things in Riot is:
+For reference, the current state of things in Element is:
 
 ![boo, sad](images/2448-current-state.png)
 
