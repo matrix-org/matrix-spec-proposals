@@ -205,33 +205,6 @@ Example response:
 }
 ```
 
-A server MUST also be able to render a BlurHash image from a BlurHash string.
-This is to support clients that do not have a BlurHash client implementation
-or are otherwise unable to do so themselves.
-
-This takes the form of a new endpoint, `GET
-/_matrix/media/r0/blurhash/{encodedBlurHash}`. This endpoint supports the following query parameters:
-
-* `width` - The width in pixels of the returned BlurHash image
-* `height` - The height in pixels of the returned BlurHash image
-
-Note that implementations should be careful to limit the size of accepted
-BlurHash strings, as not to overload the server with processing an obscenely
-long string. If this is the case, the server should return a `400
-M_TOO_LARGE`.
-
-Example request:
-
-```
-GET /_matrix/media/r0/blurhash/LG.F5%5D%3B%2BYk%5E6%23%25*%2B%2CK-%3A9%3D%3F%40%5B
-```
-
-Example response:
-
-```
-<bytes representing BlurHash image>
-```
-
 In addition, the server can return the BlurHash string for an image when
 given an MXC URL. This would be through something like the Media Information
 API (specified in
@@ -281,10 +254,6 @@ replaced with `xyz.amorgan.blurhash`.
 `/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
 containing the blurhash instead of `blurhash`. This is preferred to adding
 another endpoint, which is messier to later remove.
-
-`/_matrix/media/r0/blurhash/{serverName}/{mediaId}` should be
-replaced with
-`/_matrix/media/unstable/xyz.amorgan/blurhash/{serverName}/{mediaId}`.
 
 The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
