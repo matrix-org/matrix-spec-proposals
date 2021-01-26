@@ -20,9 +20,9 @@ before the thumbnail is downloaded.
 
 ### m.room.message
 
-A new optional field is added in `m.room.message`'s `content.info` dictionary called
-`blurhash`. It is a BlurHash of the original piece of media. Clients could
-then render this using [one of the available BlurHash
+A optional field is added in `m.room.message`'s `content.info` dictionary
+with the key `blurhash`. It is a BlurHash of the original piece of media.
+Clients could then render this using [one of the available BlurHash
 implementations](https://github.com/woltapp/blurhash).
 
 This would be optionally displayed while the thumbnail of the media is loaded
