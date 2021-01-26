@@ -106,6 +106,24 @@ Example `m.room.member` event content:
 }
 ```
 
+### m.room.avatar
+
+Much like `m.room.member`, room avatars should have blurhashes as well. This
+will be especially useful when viewing a server's Public Rooms directory.
+
+An optional field is added to `m.room.avatar`'s `content` dictionary with the
+key `blurhash`. Its value is a BlurHash of the media that is pointed to by
+`url`.
+
+Example `m.room.avatar` content:
+
+```json
+{
+  "url": "mxc://amorgan.xyz/a59ee02f180677d83d1b57d366127f8e1afdd4ed",
+  "blurhash": "JadR*.7kCMdnj"
+}
+```
+
 ### URL previews
 
 An optional attribute is added to the OpenGraph data returned by a call
