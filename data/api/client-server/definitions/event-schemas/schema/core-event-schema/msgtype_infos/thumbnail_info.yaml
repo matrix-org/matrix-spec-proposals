@@ -1,0 +1,21 @@
+$schema: http://json-schema.org/draft-04/schema#
+description: Metadata about a thumbnail image.
+properties:
+  h:
+    description: |-
+      The intended display height of the image in pixels. This may
+      differ from the intrinsic dimensions of the image file.
+    type: integer
+  w:
+    description: |-
+      The intended display width of the image in pixels. This may
+      differ from the intrinsic dimensions of the image file.
+    type: integer
+  mimetype:
+    description: The mimetype of the image, e.g. ``image/jpeg``.
+    type: string
+  size:
+    description: Size of the image in bytes.
+    type: integer
+title: ThumbnailInfo
+type: object

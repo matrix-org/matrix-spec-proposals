@@ -1,0 +1,36 @@
+$schema: http://json-schema.org/draft-04/schema#
+description: Metadata about an image.
+properties:
+  h:
+    description: |-
+      The intended display height of the image in pixels. This may
+      differ from the intrinsic dimensions of the image file.
+    type: integer
+  w:
+    description: |-
+      The intended display width of the image in pixels. This may
+      differ from the intrinsic dimensions of the image file.
+    type: integer
+  mimetype:
+    description: The mimetype of the image, e.g. ``image/jpeg``.
+    type: string
+  size:
+    description: Size of the image in bytes.
+    type: integer
+  thumbnail_url:
+    description: |-
+      The URL (typically `MXC URI`_) to a thumbnail of the image.
+      Only present if the thumbnail is unencrypted.
+    type: string
+  thumbnail_file:
+    description: |-
+      Information on the encrypted thumbnail file, as specified in
+      |encrypted_files|_. Only present if the thumbnail is encrypted.
+    title: EncryptedFile
+    type: object
+  thumbnail_info:
+    allOf:
+      - $ref: thumbnail_info.yaml
+    description: Metadata about the image referred to in ``thumbnail_url``.
+title: ImageInfo
+type: object

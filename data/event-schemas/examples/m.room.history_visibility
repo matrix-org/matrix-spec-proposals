@@ -1,0 +1,8 @@
+{
+  "$ref": "core/state_event.json",
+  "type": "m.room.history_visibility",
+  "state_key": "",
+  "content": {
+    "history_visibility": "shared"
+  }
+}

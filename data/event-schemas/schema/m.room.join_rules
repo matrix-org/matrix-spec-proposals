@@ -1,0 +1,28 @@
+---
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+description: 'A room may be ``public`` meaning anyone can join the room without any prior action. Alternatively, it can be ``invite`` meaning that a user who wishes to join the room must first receive an invite to the room from someone already inside of the room. Currently, ``knock`` and ``private`` are reserved keywords which are not implemented.'
+properties:
+  content:
+    properties:
+      join_rule:
+        description: The type of rules used for users wishing to join this room.
+        enum:
+          - public
+          - knock
+          - invite
+          - private
+        type: string
+    required:
+      - join_rule
+    type: object
+  state_key:
+    description: A zero-length string.
+    pattern: '^$'
+    type: string
+  type:
+    enum:
+      - m.room.join_rules
+    type: string
+title: Describes how users are allowed to join the room.
+type: object
