@@ -267,9 +267,17 @@ another endpoint, which is messier to later remove.
 
 ## Security considerations
 
-Blurhash entries in encrypted events, be it as part of the `info` property,
+BlurHash entries in encrypted events, be it as part of the `info` property,
 or `<img>` tags, should be encrypted along with the rest of the event
 content.
+
+A [discussion in
+#matrix-spec](https://matrix.to/#/!NasysSDfxKxZBzJJoE:matrix.org/$Cfa0dtF3DenIUAbC5aeg3Xo10gAF54mAJLZ6VzvYNfo?via=matrix.org&via=amorgan.xyz&via=pixie.town)
+questioned whether massive BlurHashes may be a potential DoS vector for
+clients. The discussion found that only a maximum of 100 x 100 components can
+be defined by a BlurHash. This may be in the higher range for low-resource
+(or unoptimised) clients, and clients are free to refuse to render a BlurHash
+with a large component count, but it shouldn't be a cause for concern.
 
 ## Links
 
