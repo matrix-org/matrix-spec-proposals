@@ -1,4 +1,4 @@
-# MSC2448: Using BlurHash in Media Events
+# MSC2448: Using BlurHash as a Placeholder for Media in Matrix
 
 [BlurHash](https://blurha.sh) is a compact representation of a placeholder
 for an image (or the frame of a video). Currently in Matrix, clients must
