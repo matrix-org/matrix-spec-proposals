@@ -235,7 +235,7 @@ Older clients would ignore the new `blurhash` parameter.
 
 Newer clients would only show it if it exists.
 
-Users who have not specified `blurhash` in the `m.room.member` event yet may
+Users who have not specified `blurhash` in their `m.room.member` event yet may
 stand out from users who have while both are loading. This is entirely up to
 clients to handle, though a suggestion may be to "fake" a blurhash by
 blurring some placeholder image (perhaps something with variation between
