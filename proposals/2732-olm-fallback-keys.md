@@ -12,7 +12,7 @@ of a one-time key when no one-time keys are available.
 ## Proposal
 
 A new request parameter, `fallback_keys`, is added to the body of the
-`/keys/upload` client-server API, which is in the same format as the
+[`/keys/upload` client-server API](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-keys-upload), which is in the same format as the
 `one_time_keys` parameter with the exception that there must be at most one key
 per key algorithm.  If the user had previously uploaded a fallback key for a
 given algorithm, it is replaced -- the server will only keep one fallback key
