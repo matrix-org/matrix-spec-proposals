@@ -87,7 +87,29 @@ Example `m.sticker` content:
 }
 ```
 
+### m.room.avatar
+
+Room avatars having BlurHashes available will be especially useful when
+viewing a server's Public Rooms directory.
+
+An optional field is added to `m.room.avatar`'s `content` dictionary with the
+key `blurhash`. Its value is a BlurHash of the media that is pointed to by
+`url`.
+
+Example `m.room.avatar` content:
+
+```json
+{
+  "url": "mxc://amorgan.xyz/a59ee02f180677d83d1b57d366127f8e1afdd4ed",
+  "blurhash": "JadR*.7kCMdnj"
+}
+```
+
 ### m.room.member
+
+Much like room avatars, user avatars can have BlurHashes as well. There is a
+little more required to implement this, but the outcome of no longer having
+missing avatars upon opening a room is worthwhile.
 
 An optional field is added to `m.room.member`'s `content` dictionary with
 the key `blurhash`. Its value is a BlurHash of the media that is pointed
@@ -106,23 +128,18 @@ Example `m.room.member` event content:
 }
 ```
 
-### m.room.avatar
+### Profile endpoints
 
-Much like `m.room.member`, room avatars should have blurhashes as well. This
-will be especially useful when viewing a server's Public Rooms directory.
+Endpoints that return profile information, and thus MXC URLs to user avatars, are
+extended to optionally include BlurHashes as well.
 
-An optional field is added to `m.room.avatar`'s `content` dictionary with the
-key `blurhash`. Its value is a BlurHash of the media that is pointed to by
-`url`.
+[`GET /_matrix/client/r0/profile/{userId}`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid) has an optional field added with
+the key `blurhash`. Its value is a BlurHash of the media that is pointed to
+by `avatar_url`. `blurhash` MUST be omitted if `avatar_url` is not present.
+The same applies to [`GET /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid-avatar-url), and to the federation endpoint [`GET /_matrix/federation/v1/query/profile`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-query-profile).
 
-Example `m.room.avatar` content:
-
-```json
-{
-  "url": "mxc://amorgan.xyz/a59ee02f180677d83d1b57d366127f8e1afdd4ed",
-  "blurhash": "JadR*.7kCMdnj"
-}
-```
+[`PUT /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#put-matrix-client-r0-profile-userid-avatar-url) has an optional field added
+to the request body with the key `blurhash`. Its value is a BlurHash of the media that is pointed to by the value of the `avatar_url` field in the same request.
 
 ### URL previews
 
@@ -258,8 +275,8 @@ ID) until the user's actual avatar loads.
 Implementations wishing to add this before this MSC is merged can do so with
 the following:
 
-The `blurhash` key in `m.room.message`, `m.room.avatar`, `m.sticker` and
-`m.room.member` should be replaced with `xyz.amorgan.blurhash`.
+The `blurhash` key in any events, request or response bodies should be
+replaced with `xyz.amorgan.blurhash`.
 
 `/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
 containing the blurhash instead of `blurhash`. This is preferred to adding
