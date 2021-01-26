@@ -248,17 +248,17 @@ ID) until the user's actual avatar loads.
 Implementations wishing to add this before this MSC is merged can do so with
 the following:
 
-The `blurhash` key in any events, request or response bodies should be
+* The `blurhash` key in any events, request or response bodies should be
 replaced with `xyz.amorgan.blurhash`.
 
-`/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
+* `/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
 containing the blurhash instead of `blurhash`. This is preferred to adding
 another endpoint, which is messier to later remove.
 
-The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
+* The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
 
-And finally, an entry should be added to the homeserver's `GET
+* And finally, an entry should be added to the homeserver's `GET
 /_matrix/client/versions` endpoint, in `unstable_features`, with the key
 `xyz.amorgan.blurhash` set to `true`.
 
