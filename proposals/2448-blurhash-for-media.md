@@ -62,7 +62,7 @@ as such should only be used in conjunction with the following
 ### m.sticker
 
 An optional field is added to `m.sticker`'s `content.info` dictionary with
-the key `blurhash`. It's value is a BlurHash of the sticker media.
+the key `blurhash`. Its value is a BlurHash of the sticker media.
 
 Example `m.sticker` content:
 
@@ -87,6 +87,24 @@ Example `m.sticker` content:
 }
 ```
 
+### m.room.member
+
+An optional field is added to `m.room.member`'s `content` dictionary with
+the key `blurhash`. Its value is a BlurHash of the media that is pointed
+to by `avatar_url`.
+
+Note that `blurhash` SHOULD be omitted if `avatar_url` is not present.
+
+Example `m.room.member` event content:
+
+```json
+{
+  "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",
+  "displayname": "Alice Margatroid",
+  "membership": "join",
+  "blurhash": "JadR*.7kCMdnj"
+}
+```
 
 ### URL previews
 
@@ -97,7 +115,7 @@ called `matrix:image:blurhash`. The value
 of this attribute is the blurhash representation of the media specified
 by `og:image`.
 
-Note that `matrix:image:blurhash` MUST NOT be returned if `og:image` is omitted
+Note that `matrix:image:blurhash` MUST be omitted if `og:image` is not present
 in the response.
 
 Example response to `GET /_matrix/media/r0/preview_url`:
@@ -208,6 +226,14 @@ produces much more efficient textual representations.
 Older clients would ignore the new `blurhash` parameter.
 
 Newer clients would only show it if it exists.
+
+Users who have not specified `blurhash` in the `m.room.member` event yet may
+stand out from users who have while both are loading. This is entirely up to
+clients to handle, though a suggestion may be to "fake" a blurhash by
+blurring some placeholder image (perhaps something with variation between
+users like Element's coloured backgrounds with letters in them, or [an
+identicon](https://en.wikipedia.org/wiki/Identicon) derived from the user's
+ID) until the user's actual avatar loads.
 
 ## Unstable prefixes
 
