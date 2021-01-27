@@ -32,7 +32,7 @@ paths:
       summary: Set the user's display name.
       description: |-
         This API sets the given user's display name. You must have permission to
-        set this user's display name, e.g. you need to have their ``access_token``.
+        set this user's display name, e.g. you need to have their `access_token`.
       operationId: setDisplayName
       security:
         - accessToken: []
@@ -106,7 +106,7 @@ paths:
       summary: Set the user's avatar URL.
       description: |-
         This API sets the given user's avatar URL. You must have permission to
-        set this user's avatar URL, e.g. you need to have their ``access_token``.
+        set this user's avatar URL, e.g. you need to have their `access_token`.
       operationId: setAvatarUrl
       security:
         - accessToken: []
@@ -182,7 +182,7 @@ paths:
         Get the combined profile information for this user. This API may be used
         to fetch the user's own profile information or other users; either
         locally or on remote homeservers. This API may return keys which are not
-        limited to ``displayname`` or ``avatar_url``.
+        limited to `displayname` or `avatar_url`.
       operationId: getUserProfile
       parameters:
         - in: path

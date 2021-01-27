@@ -11,10 +11,10 @@ properties:
       base_url:
         type: string
         description: |-
-          The URL of the identity server the user prefers to use, or ``null``
+          The URL of the identity server the user prefers to use, or `null`
           if the user does not want to use an identity server. This value is
-          similar in structure to the ``base_url`` for identity servers in the
-          ``.well-known/matrix/client`` schema.
+          similar in structure to the `base_url` for identity servers in the
+          `.well-known/matrix/client` schema.
   type:
     enum:
       - m.identity_server

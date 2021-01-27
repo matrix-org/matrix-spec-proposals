@@ -124,7 +124,7 @@ paths:
               etag:
                 description: |-
                   An opaque string representing stored keys in the backup.
-                  Clients can compare it with the ``etag`` value they received
+                  Clients can compare it with the `etag` value they received
                   in the request of their last key storage request.  If not
                   equal, another client has modified the backup.
                 type: string
@@ -168,7 +168,7 @@ paths:
           type: string
           name: version
           description: |-
-            The backup version to get, as returned in the ``version`` parameter
+            The backup version to get, as returned in the `version` parameter
             of the response in `POST /_matrix/client/r0/room_keys/version`_ or
             this endpoint.
           required: true
@@ -206,7 +206,7 @@ paths:
               etag:
                 description: |-
                   An opaque string representing stored keys in the backup.
-                  Clients can compare it with the ``etag`` value they received
+                  Clients can compare it with the `etag` value they received
                   in the request of their last key storage request.  If not
                   equal, another client has modified the backup.
                 type: string
@@ -240,7 +240,7 @@ paths:
     put:
       summary: Update information about an existing backup.
       description: |-
-        Update information about an existing backup.  Only ``auth_data`` can be modified.
+        Update information about an existing backup.  Only `auth_data` can be modified.
       operationId: putRoomKeysVersion
       security:
         - accessToken: []
@@ -249,7 +249,7 @@ paths:
           type: string
           name: version
           description: |-
-            The backup version to update, as returned in the ``version``
+            The backup version to update, as returned in the `version`
             parameter in the response of `POST
             /_matrix/client/r0/room_keys/version`_ or `GET
             /_matrix/client/r0/room_keys/version/{version}`_.
@@ -300,9 +300,9 @@ paths:
             properties: {}
         400:
           description: |-
-            A parameter was incorrect.  For example, the ``algorithm`` does not
-            match the current backup algorithm, or the ``version`` in the body
-            does not match the ``version`` in the path.
+            A parameter was incorrect.  For example, the `algorithm` does not
+            match the current backup algorithm, or the `version` in the body
+            does not match the `version` in the path.
           examples:
             application/json: {
               "errcode": "M_INVALID_PARAM",
@@ -338,7 +338,7 @@ paths:
           type: string
           name: version
           description: |-
-            The backup version to delete, as returned in the ``version``
+            The backup version to delete, as returned in the `version`
             parameter in the response of `POST
             /_matrix/client/r0/room_keys/version`_ or `GET
             /_matrix/client/r0/room_keys/version/{version}`_.
@@ -412,7 +412,7 @@ paths:
               etag:
                 description: |-
                   The new etag value representing stored keys in the backup.
-                  See ``GET /room_keys/version/{version}`` for more details.
+                  See `GET /room_keys/version/{version}` for more details.
                 type: string
                 example: "abcdefg"
               count:
@@ -425,7 +425,7 @@ paths:
         403:
           description: |-
             The version specified does not match the current backup version.
-            The current version will be included in the ``current_version``
+            The current version will be included in the `current_version`
             field.
           examples:
             application/json: {
@@ -522,7 +522,7 @@ paths:
               etag:
                 description: |-
                   The new etag value representing stored keys in the backup.
-                  See ``GET /room_keys/version/{version}`` for more details.
+                  See `GET /room_keys/version/{version}` for more details.
                 type: string
                 example: "abcdefg"
               count:
@@ -583,7 +583,7 @@ paths:
               etag:
                 description: |-
                   The new etag value representing stored keys in the backup.
-                  See ``GET /room_keys/version/{version}`` for more details.
+                  See `GET /room_keys/version/{version}` for more details.
                 type: string
                 example: "abcdefg"
               count:
@@ -596,7 +596,7 @@ paths:
         403:
           description: |-
             The version specified does not match the current backup version.
-            The current version will be included in the ``current_version``
+            The current version will be included in the `current_version`
             field.
           examples:
             application/json: {
@@ -647,7 +647,7 @@ paths:
         200:
           description: |-
             The key data.  If no keys are found, then an object with an empty
-            ``sessions`` property will be returned (``{"sessions": {}}``).
+            `sessions` property will be returned (`{"sessions": {}}`).
           schema:
             type: object
             $ref: "definitions/room_key_backup.yaml"
@@ -695,7 +695,7 @@ paths:
               etag:
                 description: |-
                   The new etag value representing stored keys in the backup.
-                  See ``GET /room_keys/version/{version}`` for more details.
+                  See `GET /room_keys/version/{version}` for more details.
                 type: string
                 example: "abcdefg"
               count:
@@ -776,7 +776,7 @@ paths:
               etag:
                 description: |-
                   The new etag value representing stored keys in the backup.
-                  See ``GET /room_keys/version/{version}`` for more details.
+                  See `GET /room_keys/version/{version}` for more details.
                 type: string
                 example: "abcdefg"
               count:
@@ -789,7 +789,7 @@ paths:
         403:
           description: |-
             The version specified does not match the current backup version.
-            The current version will be included in the ``current_version``
+            The current version will be included in the `current_version`
             field.
           examples:
             application/json: {
@@ -834,7 +834,7 @@ paths:
         200:
           description: |-
             The key data.  If no keys are found, then an object with an empty
-            ``rooms`` property will be returned (``{"rooms": {}}``).
+            `rooms` property will be returned (`{"rooms": {}}`).
           schema:
             type: object
             properties:
@@ -898,7 +898,7 @@ paths:
               etag:
                 description: |-
                   The new etag value representing stored keys in the backup.
-                  See ``GET /room_keys/version/{version}`` for more details.
+                  See `GET /room_keys/version/{version}` for more details.
                 type: string
                 example: "abcdefg"
               count:

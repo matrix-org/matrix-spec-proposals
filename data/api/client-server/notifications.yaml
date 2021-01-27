@@ -54,7 +54,7 @@ paths:
           name: only
           type: string
           description: |-
-            Allows basic filtering of events returned. Supply ``highlight``
+            Allows basic filtering of events returned. Supply `highlight`
             to return only events where the notification had the highlight
             tweak set.
           required: false
@@ -87,8 +87,8 @@ paths:
               next_token:
                 type: string
                 description: |-
-                  The token to supply in the ``from`` param of the next
-                  ``/notifications`` request in order to request more
+                  The token to supply in the `from` param of the next
+                  `/notifications` request in order to request more
                   events. If this is absent, there are no more results.
               notifications:
                 type: array

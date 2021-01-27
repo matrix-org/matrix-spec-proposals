@@ -1,7 +1,7 @@
 ---
 allOf:
   - $ref: core-event-schema/room_event.yaml
-description: "This message is similar to ``m.text`` except that the sender is 'performing' the action contained in the ``body`` key, similar to ``/me`` in IRC. This message should be prefixed by the name of the sender. This message could also be represented in a different colour to distinguish it from regular ``m.text`` messages."
+description: "This message is similar to `m.text` except that the sender is 'performing' the action contained in the `body` key, similar to `/me` in IRC. This message should be prefixed by the name of the sender. This message could also be represented in a different colour to distinguish it from regular `m.text` messages."
 properties:
   content:
     properties:
@@ -14,12 +14,12 @@ properties:
         type: string
       format:
         description: |-
-          The format used in the ``formatted_body``. Currently only
-          ``org.matrix.custom.html`` is supported.
+          The format used in the `formatted_body`. Currently only
+          `org.matrix.custom.html` is supported.
         type: string
       formatted_body:
         description: |-
-          The formatted version of the ``body``. This is required if ``format``
+          The formatted version of the `body`. This is required if `format`
           is specified.
         type: string
     required:

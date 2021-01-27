@@ -44,8 +44,8 @@ properties:
         format: int64
         type: integer
       prev_content:
-        description: Optional. The previous ``content`` for this state. This will
-          be present only for state events appearing in the ``timeline``. If this
+        description: Optional. The previous `content` for this state. This will
+          be present only for state events appearing in the `timeline`. If this
           is not a state event, or there is no previous content, this key will be
           missing.
         title: EventContent

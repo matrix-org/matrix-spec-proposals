@@ -19,10 +19,10 @@ properties:
     description: |-
       An access token the consumer may use to verify the identity of
       the person who generated the token. This is given to the federation
-      API ``GET /openid/userinfo`` to verify the user's identity.
+      API `GET /openid/userinfo` to verify the user's identity.
   token_type:
     type: string
-    description: The string ``Bearer``.
+    description: The string `Bearer`.
   matrix_server_name:
     type: string
     description: |-

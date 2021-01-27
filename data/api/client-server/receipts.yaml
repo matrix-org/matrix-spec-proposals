@@ -59,8 +59,8 @@ paths:
         - in: body
           name: receipt
           description: |-
-            Extra receipt information to attach to ``content`` if any. The
-            server will automatically set the ``ts`` field.
+            Extra receipt information to attach to `content` if any. The
+            server will automatically set the `ts` field.
           schema:
             type: object
             example: {

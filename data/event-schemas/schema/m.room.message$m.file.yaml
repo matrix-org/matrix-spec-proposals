@@ -12,10 +12,10 @@ properties:
         description: The original filename of the uploaded file.
         type: string
       info:
-        description: Information about the file referred to in ``url``.
+        description: Information about the file referred to in `url`.
         properties:
           mimetype:
-            description: The mimetype of the file e.g. ``application/msword``.
+            description: The mimetype of the file e.g. `application/msword`.
             type: string
           size:
             description: The size of the file in bytes.
@@ -34,7 +34,7 @@ properties:
           thumbnail_info:
             allOf:
               - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
-            description: Metadata about the image referred to in ``thumbnail_url``.
+            description: Metadata about the image referred to in `thumbnail_url`.
         title: FileInfo
         type: object
       msgtype:

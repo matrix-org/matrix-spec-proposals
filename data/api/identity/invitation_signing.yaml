@@ -30,8 +30,8 @@ paths:
       description: |-
         Sign invitation details.
 
-        The identity server will look up ``token`` which was stored in a call
-        to ``store-invite``, and fetch the sender of the invite.
+        The identity server will look up `token` which was stored in a call
+        to `store-invite`, and fetch the sender of the invite.
       operationId: blindlySignStuff
       deprecated: true
       parameters:
@@ -50,7 +50,7 @@ paths:
                 description: The Matrix user ID of the user accepting the invitation.
               token:
                 type: string
-                description: The token from the call to ``store-invite``.
+                description: The token from the call to `store-invite`.
               private_key:
                 type: string
                 description: The private key, encoded as `Unpadded base64`_.

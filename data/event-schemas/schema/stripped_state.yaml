@@ -21,21 +21,21 @@
 title: StrippedState
 type: object
 description: |-
-  A stripped down state event, with only the ``type``, ``state_key``,
-  ``sender``, and ``content`` keys.
+  A stripped down state event, with only the `type`, `state_key`,
+  `sender`, and `content` keys.
 properties:
   content:
-    description: The ``content`` for the event.
+    description: The `content` for the event.
     title: EventContent
     type: object
   state_key:
-    description: The ``state_key`` for the event.
+    description: The `state_key` for the event.
     type: string
   type:
-    description: The ``type`` for the event.
+    description: The `type` for the event.
     type: string
   sender:
-    description: The ``sender`` for the event.
+    description: The `sender` for the event.
     type: string
 required:
   - type

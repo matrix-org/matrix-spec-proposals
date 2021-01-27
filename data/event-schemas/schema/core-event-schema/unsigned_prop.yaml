@@ -29,6 +29,6 @@ properties:
   transaction_id:
     description: |
       The client-supplied transaction ID, for example, provided via
-      ``PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}``,
+      `PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}`,
       if the client being given the event is the same one which sent it.
     type: string

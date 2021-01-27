@@ -34,10 +34,10 @@ paths:
         Kick a user from the room.
 
         The caller must have the required power level in order to perform this operation.
-        
-        Kicking a user adjusts the target member's membership state to be ``leave`` with an
-        optional ``reason``. Like with other membership changes, a user can directly adjust
-        the target member's state by making a request to ``/rooms/<room id>/state/m.room.member/<user id>``.
+
+        Kicking a user adjusts the target member's membership state to be `leave` with an
+        optional `reason`. Like with other membership changes, a user can directly adjust
+        the target member's state by making a request to `/rooms/<room id>/state/m.room.member/<user id>`.
       operationId: kick
       security:
         - accessToken: []
@@ -64,8 +64,8 @@ paths:
               reason:
                 type: string
                 description: |-
-                  The reason the user has been kicked. This will be supplied as the 
-                  ``reason`` on the target's updated `m.room.member`_ event.
+                  The reason the user has been kicked. This will be supplied as the
+                  `reason` on the target's updated `m.room.member`_ event.
             required: ["user_id"]
       responses:
         200:
@@ -77,7 +77,7 @@ paths:
             type: object
         403:
           description: |-
-            You do not have permission to kick the user from the room. A meaningful ``errcode`` and
+            You do not have permission to kick the user from the room. A meaningful `errcode` and
             description error text will be returned. Example reasons for rejections are:
 
             - The kicker is not currently in the room.

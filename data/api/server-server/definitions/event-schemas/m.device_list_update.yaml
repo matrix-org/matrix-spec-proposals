@@ -32,7 +32,7 @@ allOf:
       edu_type:
         type: enum
         enum: ['m.device_list_update']
-        description: The string ``m.device_list_update``.
+        description: The string `m.device_list_update`.
         example: "m.device_list_update"
       content:
         type: object
@@ -57,7 +57,7 @@ allOf:
             type: integer
             description: |-
               An ID sent by the server for this update, unique for a given
-              user_id.  Used to identify any gaps in the sequence of ``m.device_list_update``
+              user_id.  Used to identify any gaps in the sequence of `m.device_list_update`
               EDUs broadcast by a server.
             example: 6
           prev_id:
@@ -67,7 +67,7 @@ allOf:
               which have not been referred to already in an EDU's prev_id field.  If the
               receiving server does not recognise any of the prev_ids, it means an EDU
               has been lost and the server should query a snapshot of the device list
-              via ``/user/keys/query`` in order to correctly interpret future ``m.device_list_update``
+              via `/user/keys/query` in order to correctly interpret future `m.device_list_update`
               EDUs.  May be missing or empty for the first EDU in a sequence.
             items:
               type: integer

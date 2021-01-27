@@ -20,7 +20,7 @@ properties:
   origin:
     type: string
     description: |-
-      The ``server_name`` of the homeserver sending this transaction.
+      The `server_name` of the homeserver sending this transaction.
     example: "example.org"
   origin_server_ts:
     type: integer

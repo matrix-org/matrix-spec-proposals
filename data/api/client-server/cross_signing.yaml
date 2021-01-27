@@ -110,9 +110,9 @@ paths:
             The input was invalid in some way. This can include one of the
             following error codes:
 
-            * ``M_INVALID_SIGNATURE``: For example, the self-signing or
+            * `M_INVALID_SIGNATURE`: For example, the self-signing or
               user-signing key had an incorrect signature.
-            * ``M_MISSING_PARAM``: No master key is available.
+            * `M_MISSING_PARAM`: No master key is available.
           schema:
             type: object
             example: {
@@ -207,8 +207,8 @@ paths:
                 type: object
                 description: |-
                   A map from user ID to key ID to an error for any signatures
-                  that failed.  If a signature was invalid, the ``errcode`` will
-                  be set to ``M_INVALID_SIGNATURE``.
+                  that failed.  If a signature was invalid, the `errcode` will
+                  be set to `M_INVALID_SIGNATURE`.
                 additionalProperties:
                   type: object
                   additionalProperties:

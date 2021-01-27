@@ -9,7 +9,7 @@ properties:
         description: "A description of the video e.g. 'Gangnam style', or some kind of content description for accessibility e.g. 'video attachment'."
         type: string
       info:
-        description: Metadata about the video clip referred to in ``url``.
+        description: Metadata about the video clip referred to in `url`.
         properties:
           duration:
             description: The duration of the video in milliseconds.
@@ -21,7 +21,7 @@ properties:
             description: The width of the video in pixels.
             type: integer
           mimetype:
-            description: The mimetype of the video e.g. ``video/mp4``.
+            description: The mimetype of the video e.g. `video/mp4`.
             type: string
           size:
             description: The size of the video in bytes.
@@ -40,7 +40,7 @@ properties:
           thumbnail_info:
             allOf:
               - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
-            description: Metadata about the image referred to in ``thumbnail_url``.
+            description: Metadata about the image referred to in `thumbnail_url`.
         title: VideoInfo
         type: object
       msgtype:

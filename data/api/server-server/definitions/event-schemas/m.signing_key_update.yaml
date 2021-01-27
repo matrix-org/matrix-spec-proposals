@@ -24,7 +24,7 @@ allOf:
       edu_type:
         type: enum
         enum: ['m.signing_key_update']
-        description: The string ``m.signing_update``.
+        description: The string `m.signing_update`.
         example: "m.signing_key_update"
       content:
         type: object

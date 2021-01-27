@@ -12,7 +12,7 @@ properties:
       differ from the intrinsic dimensions of the image file.
     type: integer
   mimetype:
-    description: The mimetype of the image, e.g. ``image/jpeg``.
+    description: The mimetype of the image, e.g. `image/jpeg`.
     type: string
   size:
     description: Size of the image in bytes.

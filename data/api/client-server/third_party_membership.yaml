@@ -48,7 +48,7 @@ paths:
         join that room.
 
         If the identity server did know the Matrix user identifier for the
-        third party identifier, the homeserver will append a ``m.room.member``
+        third party identifier, the homeserver will append a `m.room.member`
         event to the room.
 
         If the identity server does not know a Matrix user identifier for the
@@ -56,7 +56,7 @@ paths:
         which can be accepted upon providing proof of ownership of the third
         party identifier. This is achieved by the identity server generating a
         token, which it gives to the inviting homeserver. The homeserver will
-        add an ``m.room.third_party_invite`` event into the graph for the room,
+        add an `m.room.third_party_invite` event into the graph for the room,
         containing that token.
 
         When the invitee binds the invited third party identifier to a Matrix
@@ -72,7 +72,7 @@ paths:
         - The matrix user ID who invited them to the room
 
         If a token is requested from the identity server, the homeserver will
-        append a ``m.room.third_party_invite`` event to the room.
+        append a `m.room.third_party_invite` event to the room.
 
         .. _joining rooms section: `invite-by-user-id-endpoint`_
       operationId: inviteBy3PID
@@ -109,7 +109,7 @@ paths:
               medium:
                 type: string
                 # TODO: Link to Identity Service spec when it eixsts
-                description: The kind of address being passed in the address field, for example ``email``.
+                description: The kind of address being passed in the address field, for example `email`.
               address:
                 type: string
                 description: The invitee's third party identifier.
@@ -124,7 +124,7 @@ paths:
             type: object
         403:
           description: |-
-            You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+            You do not have permission to invite the user to the room. A meaningful `errcode` and description error text will be returned. Example reasons for rejections are:
 
             - The invitee has been banned from the room.
             - The invitee is already a member of the room.

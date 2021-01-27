@@ -10,8 +10,8 @@ properties:
     properties:
       body:
         description: |-
-          Information about the requested key. Required when ``action`` is
-          ``request``.
+          Information about the requested key. Required when `action` is
+          `request`.
         properties:
           algorithm:
             type: string

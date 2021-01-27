@@ -32,9 +32,9 @@ paths:
       summary: Retrieve all push rulesets.
       description: |-
         Retrieve all push rulesets for this user. Clients can "drill-down" on
-        the rulesets by suffixing a ``scope`` to this path e.g.
-        ``/pushrules/global/``. This will return a subset of this data under the
-        specified key e.g. the ``global`` key.
+        the rulesets by suffixing a `scope` to this path e.g.
+        `/pushrules/global/`. This will return a subset of this data under the
+        specified key e.g. the `global` key.
       operationId: getPushRules
       security:
         - accessToken: []
@@ -263,7 +263,7 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            `global` to specify global rules.
         - in: path
           type: string
           name: kind
@@ -283,7 +283,7 @@ paths:
         200:
           description: |-
             The specific push rule. This will also include keys specific to the
-            rule itself such as the rule's ``actions`` and ``conditions`` if set.
+            rule itself such as the rule's `actions` and `conditions` if set.
           examples:
             application/json: {
                 "actions": [
@@ -326,7 +326,7 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            `global` to specify global rules.
         - in: path
           type: string
           name: kind
@@ -380,7 +380,7 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            `global` to specify global rules.
         - in: path
           type: string
           name: kind
@@ -402,7 +402,7 @@ paths:
           required: false
           x-example: someRuleId
           description: |-
-            Use 'before' with a ``rule_id`` as its value to make the new rule the
+            Use 'before' with a `rule_id` as its value to make the new rule the
             next-most important rule with respect to the given user defined rule.
             It is not possible to add a rule relative to a predefined server rule.
         - in: query
@@ -418,7 +418,7 @@ paths:
           name: pushrule
           description: |-
             The push rule data. Additional top-level keys may be present depending
-            on the parameters for the rule ``kind``.
+            on the parameters for the rule `kind`.
           required: true
           schema:
             type: object
@@ -440,14 +440,14 @@ paths:
                 description: |-
                   The conditions that must hold true for an event in order for a
                   rule to be applied to an event. A rule with no conditions
-                  always matches. Only applicable to ``underride`` and ``override`` rules.
+                  always matches. Only applicable to `underride` and `override` rules.
                 items:
                   type: object
                   allOf: [ "$ref": "definitions/push_condition.yaml" ]
               pattern:
                 type: string
                 description: |-
-                  Only applicable to ``content`` rules. The glob-style pattern to match against.
+                  Only applicable to `content` rules. The glob-style pattern to match against.
             required: ["actions"]
       responses:
         200:
@@ -497,8 +497,8 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            Either ``global`` or ``device/<profile_tag>`` to specify global
-            rules or device rules for the given ``profile_tag``.
+            Either `global` or `device/<profile_tag>` to specify global
+            rules or device rules for the given `profile_tag`.
         - in: path
           type: string
           name: kind
@@ -554,7 +554,7 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            `global` to specify global rules.
         - in: path
           type: string
           name: kind
@@ -620,8 +620,8 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            Either ``global`` or ``device/<profile_tag>`` to specify global
-            rules or device rules for the given ``profile_tag``.
+            Either `global` or `device/<profile_tag>` to specify global
+            rules or device rules for the given `profile_tag`.
         - in: path
           type: string
           name: kind
@@ -685,7 +685,7 @@ paths:
           required: true
           x-example: "global"
           description: |-
-            ``global`` to specify global rules.
+            `global` to specify global rules.
         - in: path
           type: string
           name: kind

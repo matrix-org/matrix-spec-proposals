@@ -24,7 +24,7 @@
                 "type": "number",
                 "format": "float",
                 "description":
-                  "A number in a range ``[0,1]`` describing a relative position of the room under the given tag."
+                  "A number in a range `[0,1]` describing a relative position of the room under the given tag."
               }
             }
           }

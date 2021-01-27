@@ -34,7 +34,7 @@ paths:
       description: |-
         This endpoint is invoked by the homeserver on an application service to query
         the existence of a given user ID. The homeserver will only query user IDs
-        inside the application service's ``users`` namespace. The homeserver will
+        inside the application service's `users` namespace. The homeserver will
         send this request when it receives an event for an unknown user ID in
         the application service's namespace, such as a room invite.
       operationId: queryUserById

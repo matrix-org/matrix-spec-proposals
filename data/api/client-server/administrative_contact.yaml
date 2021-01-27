@@ -93,13 +93,13 @@ paths:
       description: |-
         Adds contact information to the user's account.
 
-        This endpoint is deprecated in favour of the more specific ``/3pid/add``
-        and ``/3pid/bind`` endpoints.
+        This endpoint is deprecated in favour of the more specific `/3pid/add`
+        and `/3pid/bind` endpoints.
 
         **Note:**
-        Previously this endpoint supported a ``bind`` parameter. This parameter
-        has been removed, making this endpoint behave as though it was ``false``.
-        This results in this endpoint being an equivalent to ``/3pid/bind`` rather
+        Previously this endpoint supported a `bind` parameter. This parameter
+        has been removed, making this endpoint behave as though it was `false`.
+        This results in this endpoint being an equivalent to `/3pid/bind` rather
         than dual-purpose.
       operationId: post3PIDs
       deprecated: true
@@ -157,8 +157,8 @@ paths:
                   description: |-
                     An optional field containing a URL where the client must
                     submit the validation token to, with identical parameters
-                    to the Identity Service API's ``POST
-                    /validate/email/submitToken`` endpoint (without the requirement
+                    to the Identity Service API's `POST
+                    /validate/email/submitToken` endpoint (without the requirement
                     for an access token). The homeserver must send this token to the
                     user (if applicable), who should then be prompted to provide it
                     to the client.
@@ -166,7 +166,7 @@ paths:
                     If this field is not present, the client can assume that
                     verification will happen without the client's involvement
                     provided the homeserver advertises this specification version
-                    in the ``/versions`` response (ie: r0.5.0).
+                    in the `/versions` response (ie: r0.5.0).
                   example: "https://example.org/path/to/submitToken"
         403:
           description: The credentials could not be verified with the identity server.
@@ -294,7 +294,7 @@ paths:
         Removes a third party identifier from the user's account. This might not
         cause an unbind of the identifier from the identity server.
 
-        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        Unlike other endpoints, this endpoint does not take an `id_access_token`
         parameter because the homeserver is expected to sign the request to the
         identity server instead.
       operationId: delete3pidFromAccount
@@ -311,9 +311,9 @@ paths:
                 type: string
                 description: |-
                     The identity server to unbind from. If not provided, the homeserver
-                    MUST use the ``id_server`` the identifier was added through. If the
-                    homeserver does not know the original ``id_server``, it MUST return
-                    a ``id_server_unbind_result`` of ``no-support``.
+                    MUST use the `id_server` the identifier was added through. If the
+                    homeserver does not know the original `id_server`, it MUST return
+                    a `id_server_unbind_result` of `no-support`.
                 example: "example.org"
               medium:
                 type: string
@@ -342,8 +342,8 @@ paths:
                   - "success"
                 description: |-
                   An indicator as to whether or not the homeserver was able to unbind
-                  the 3PID from the identity server. ``success`` indicates that the
-                  indentity server has unbound the identifier whereas ``no-support``
+                  the 3PID from the identity server. `success` indicates that the
+                  indentity server has unbound the identifier whereas `no-support`
                   indicates that the identity server refuses to support the request
                   or the homeserver was not able to determine an identity server to
                   unbind from.
@@ -359,7 +359,7 @@ paths:
         Removes a user's third party identifier from the provided identity server
         without removing it from the homeserver.
 
-        Unlike other endpoints, this endpoint does not take an ``id_access_token``
+        Unlike other endpoints, this endpoint does not take an `id_access_token`
         parameter because the homeserver is expected to sign the request to the
         identity server instead.
       operationId: unbind3pidFromAccount
@@ -376,9 +376,9 @@ paths:
                 type: string
                 description: |-
                     The identity server to unbind from. If not provided, the homeserver
-                    MUST use the ``id_server`` the identifier was added through. If the
-                    homeserver does not know the original ``id_server``, it MUST return
-                    a ``id_server_unbind_result`` of ``no-support``.
+                    MUST use the `id_server` the identifier was added through. If the
+                    homeserver does not know the original `id_server`, it MUST return
+                    a `id_server_unbind_result` of `no-support`.
                 example: "example.org"
               medium:
                 type: string
@@ -407,8 +407,8 @@ paths:
                   - "success"
                 description: |-
                   An indicator as to whether or not the identity server was able to unbind
-                  the 3PID. ``success`` indicates that the identity server has unbound the
-                  identifier whereas ``no-support`` indicates that the identity server
+                  the 3PID. `success` indicates that the identity server has unbound the
+                  identifier whereas `no-support` indicates that the identity server
                   refuses to support the request or the homeserver was not able to determine
                   an identity server to unbind from.
                 example: "success"
@@ -456,7 +456,7 @@ paths:
         400:
           description: |-
             The third party identifier is already in use on the homeserver, or
-            the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            the request was invalid. The error code `M_SERVER_NOT_TRUSTED`
             can be returned if the server does not trust/support the identity server
             provided in the request.
           schema:
@@ -503,7 +503,7 @@ paths:
         400:
           description: |-
             The third party identifier is already in use on the homeserver, or
-            the request was invalid. The error code ``M_SERVER_NOT_TRUSTED``
+            the request was invalid. The error code `M_SERVER_NOT_TRUSTED`
             can be returned if the server does not trust/support the identity server
             provided in the request.
           schema:

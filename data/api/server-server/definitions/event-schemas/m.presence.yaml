@@ -23,7 +23,7 @@ allOf:
       edu_type:
         type: enum
         enum: ['m.presence']
-        description: The string ``m.presence``
+        description: The string `m.presence`
         example: "m.presence"
       content:
         type: object
@@ -63,8 +63,8 @@ allOf:
                   type: boolean
                   description: |-
                     True if the user is likely to be interacting with their
-                    client. This may be indicated by the user having a 
-                    ``last_active_ago`` within the last few minutes. Defaults
+                    client. This may be indicated by the user having a
+                    `last_active_ago` within the last few minutes. Defaults
                     to false.
                   example: true
               required: ['user_id', 'presence', 'last_active_ago']

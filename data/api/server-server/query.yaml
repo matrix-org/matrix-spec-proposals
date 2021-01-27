@@ -137,13 +137,13 @@ paths:
       responses:
         200:
           description: |-
-            The profile for the user. If a ``field`` is specified in the request, only the
-            matching field should be included in the response. If no ``field`` was specified,
+            The profile for the user. If a `field` is specified in the request, only the
+            matching field should be included in the response. If no `field` was specified,
             the response should include the fields of the user's profile that can be made
             public, such as the display name and avatar.
 
             If the user does not have a particular field set on their profile, the server
-            should exclude it from the response body or give it the value ``null``.
+            should exclude it from the response body or give it the value `null`.
           schema:
             type: object
             properties:
