@@ -112,14 +112,14 @@ paths:
           x-example: matrix.org
           required: true
           description: |
-            The server name from the ``mxc://`` URI (the authoritory component)
+            The server name from the `mxc://` URI (the authoritory component)
         - in: path
           type: string
           name: mediaId
           x-example: ascERGshawAWawugaAcauga
           required: true
           description: |
-            The media ID from the ``mxc://`` URI (the path component)
+            The media ID from the `mxc://` URI (the path component)
         - in: query
           type: boolean
           name: allow_remote
@@ -177,20 +177,20 @@ paths:
           x-example: matrix.org
           required: true
           description: |
-            The server name from the ``mxc://`` URI (the authoritory component)
+            The server name from the `mxc://` URI (the authoritory component)
         - in: path
           type: string
           name: mediaId
           x-example: ascERGshawAWawugaAcauga
           required: true
           description: |
-            The media ID from the ``mxc://`` URI (the path component)
+            The media ID from the `mxc://` URI (the path component)
         - in: path
           type: string
           name: fileName
           x-example: filename.jpg
           required: true
-          description: A filename to give in the ``Content-Disposition`` header.
+          description: A filename to give in the `Content-Disposition` header.
         - in: query
           type: boolean
           name: allow_remote
@@ -210,7 +210,7 @@ paths:
               type: "string"
             Content-Disposition:
               description: |-
-                The ``fileName`` requested or the name of the file that was previously
+                The `fileName` requested or the name of the file that was previously
                 uploaded, if set.
               type: "string"
           schema:
@@ -248,14 +248,14 @@ paths:
           required: true
           x-example: example.org
           description: |
-            The server name from the ``mxc://`` URI (the authoritory component)
+            The server name from the `mxc://` URI (the authoritory component)
         - in: path
           type: string
           name: mediaId
           x-example: ascERGshawAWawugaAcauga
           required: true
           description: |
-            The media ID from the ``mxc://`` URI (the path component)
+            The media ID from the `mxc://` URI (the path component)
         - in: query
           type: integer
           x-example: 64

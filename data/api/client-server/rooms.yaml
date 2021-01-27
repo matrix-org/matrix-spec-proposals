@@ -31,7 +31,7 @@ paths:
     get:
       summary: Get a single event by event ID.
       description: |-
-        Get a single event based on ``roomId/eventId``. You must have permission to
+        Get a single event based on `roomId/eventId`. You must have permission to
         retrieve this event e.g. by being a member in the room for this event.
       operationId: getOneRoomEvent
       security:
@@ -196,7 +196,7 @@ paths:
           type: string
           description: |-
             The point in time (pagination token) to return members for in the room.
-            This token can be obtained from a ``prev_batch`` token returned for
+            This token can be obtained from a `prev_batch` token returned for
             each room by the sync API. Defaults to the current state of the room,
             as determined by the server.
           x-example: "YWxsCgpOb25lLDM1ODcwOA"
@@ -213,9 +213,9 @@ paths:
             - ban
           description: |-
             The kind of membership to filter for. Defaults to no filtering if
-            unspecified. When specified alongside ``not_membership``, the two
+            unspecified. When specified alongside `not_membership`, the two
             parameters create an 'or' condition: either the membership *is*
-            the same as ``membership`` **or** *is not* the same as ``not_membership``.
+            the same as `membership` **or** *is not* the same as `not_membership`.
           x-example: "join"
         - in: query
           name: not_membership
@@ -267,7 +267,7 @@ paths:
       summary: Gets the list of currently joined users and their profile data.
       description:
         This API returns a map of MXIDs to member info objects for members of the room. The current user must be in the room for it to work, unless it is an Application Service in which case any of the AS's users must be in the room.
-        This API is primarily for Application Services and should be faster to respond than ``/members`` as it can be implemented more efficiently on the server.
+        This API is primarily for Application Services and should be faster to respond than `/members` as it can be implemented more efficiently on the server.
       operationId: getJoinedMembersByRoom
       parameters:
         - in: path

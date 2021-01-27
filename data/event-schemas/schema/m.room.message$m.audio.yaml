@@ -9,13 +9,13 @@ properties:
         description: "A description of the audio e.g. 'Bee Gees - Stayin' Alive', or some kind of content description for accessibility e.g. 'audio attachment'."
         type: string
       info:
-        description: Metadata for the audio clip referred to in ``url``.
+        description: Metadata for the audio clip referred to in `url`.
         properties:
           duration:
             description: The duration of the audio in milliseconds.
             type: integer
           mimetype:
-            description: The mimetype of the audio e.g. ``audio/aac``.
+            description: The mimetype of the audio e.g. `audio/aac`.
             type: string
           size:
             description: The size of the audio clip in bytes.

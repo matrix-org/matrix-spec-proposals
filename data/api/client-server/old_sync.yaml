@@ -32,10 +32,10 @@ paths:
       summary: Listen on the event stream.
       description: |-
         This will listen for new events and return them to the caller. This will
-        block until an event is received, or until the ``timeout`` is reached.
+        block until an event is received, or until the `timeout` is reached.
 
         This endpoint was deprecated in r0 of this specification. Clients
-        should instead call the |/sync|_ API with a ``since`` parameter. See
+        should instead call the |/sync|_ API with a `since` parameter. See
         the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
       operationId: getEvents
@@ -73,13 +73,13 @@ paths:
               start:
                 type: string
                 description: |-
-                  A token which correlates to the first value in ``chunk``. This
-                  is usually the same token supplied to ``from=``.
+                  A token which correlates to the first value in `chunk`. This
+                  is usually the same token supplied to `from=`.
               end:
                 type: string
                 description: |-
-                  A token which correlates to the last value in ``chunk``. This
-                  token should be used in the next request to ``/events``.
+                  A token which correlates to the last value in `chunk`. This
+                  token should be used in the next request to `/events`.
               chunk:
                 type: array
                 description: "An array of events."
@@ -89,7 +89,7 @@ paths:
                   allOf:
                     - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
-          description: "Bad pagination ``from`` parameter."
+          description: "Bad pagination `from` parameter."
       tags:
         - Room participation
       deprecated: true
@@ -101,7 +101,7 @@ paths:
         number of messages per room to return.
 
         This endpoint was deprecated in r0 of this specification. Clients
-        should instead call the |/sync|_ API with no ``since`` parameter. See
+        should instead call the |/sync|_ API with no `since` parameter. See
         the `migration guide
         <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
       operationId: initialSync
@@ -118,10 +118,10 @@ paths:
           type: boolean
           name: archived
           description: |-
-            Whether to include rooms that the user has left. If ``false`` then
+            Whether to include rooms that the user has left. If `false` then
             only rooms that the user has been invited to or has joined are
-            included. If set to ``true`` then rooms that the user has left are
-            included as well. By default this is ``false``.
+            included. If set to `true` then rooms that the user has left are
+            included as well. By default this is `false`.
           required: false
           x-example: "true"
       responses:
@@ -199,8 +199,8 @@ paths:
               end:
                 type: string
                 description: |-
-                  A token which correlates to the last value in ``chunk``. This
-                  token should be used with the ``/events`` API to listen for new
+                  A token which correlates to the last value in `chunk`. This
+                  token should be used with the `/events` API to listen for new
                   events.
               presence:
                 type: array
@@ -226,7 +226,7 @@ paths:
                     invite:
                         type: object
                         title: "InviteEvent"
-                        description: "The invite event if ``membership`` is ``invite``"
+                        description: "The invite event if `membership` is `invite`"
                         allOf:
                           - "$ref": "../../event-schemas/schema/m.room.member.yaml"
                     messages:
@@ -237,12 +237,12 @@ paths:
                         start:
                           type: string
                           description: |-
-                            A token which correlates to the first value in ``chunk``.
+                            A token which correlates to the first value in `chunk`.
                             Used for pagination.
                         end:
                           type: string
                           description: |-
-                            A token which correlates to the last value in ``chunk``.
+                            A token which correlates to the last value in `chunk`.
                             Used for pagination.
                         chunk:
                           type: array
@@ -251,7 +251,7 @@ paths:
                             list of the most recent messages for this room. If
                             the user has left the room this will be the
                             messages that preceeded them leaving. This array
-                            will consist of at most ``limit`` elements.
+                            will consist of at most `limit` elements.
                           items:
                             type: object
                             title: RoomEvent
@@ -274,7 +274,7 @@ paths:
                       type: string
                       enum: ["private", "public"]
                       description: |-
-                        Whether this room is visible to the ``/publicRooms`` API
+                        Whether this room is visible to the `/publicRooms` API
                         or not."
                     account_data:
                       type: array
@@ -306,7 +306,7 @@ paths:
     get:
       summary: Get a single event by event ID.
       description: |-
-        Get a single event based on ``event_id``. You must have permission to
+        Get a single event based on `event_id`. You must have permission to
         retrieve this event e.g. by being a member in the room for this event.
 
         This endpoint was deprecated in r0 of this specification. Clients

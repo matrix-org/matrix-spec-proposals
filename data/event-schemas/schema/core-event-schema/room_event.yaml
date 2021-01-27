@@ -5,7 +5,7 @@ properties:
   room_id:
     description: |-
       The ID of the room associated with this event. Will not be present on events
-      that arrive through ``/sync``, despite being required everywhere else.
+      that arrive through `/sync`, despite being required everywhere else.
     type: string
 required:
 - room_id

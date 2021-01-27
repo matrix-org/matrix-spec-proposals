@@ -39,8 +39,8 @@ paths:
         query remote users as part of the search.
 
         The search is performed case-insensitively on user IDs and display
-        names preferably using a collation determined based upon the 
-        ``Accept-Language`` header provided in the request, if present.
+        names preferably using a collation determined based upon the
+        `Accept-Language` header provided in the request, if present.
       operationId: searchUserDirectory
       security:
         - accessToken: []

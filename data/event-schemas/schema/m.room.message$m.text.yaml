@@ -14,12 +14,12 @@ properties:
         type: string
       format:
         description: |-
-          The format used in the ``formatted_body``. Currently only
-          ``org.matrix.custom.html`` is supported.
+          The format used in the `formatted_body`. Currently only
+          `org.matrix.custom.html` is supported.
         type: string
       formatted_body:
         description: |-
-          The formatted version of the ``body``. This is required if ``format``
+          The formatted version of the `body`. This is required if `format`
           is specified.
         type: string
     required:

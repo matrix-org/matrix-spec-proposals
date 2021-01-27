@@ -17,7 +17,7 @@ properties:
       alt_aliases:
         description: |
           Alternative aliases the room advertises. This list can have aliases
-          despite the ``alias`` field being null, empty, or otherwise not present.
+          despite the `alias` field being null, empty, or otherwise not present.
         type: array
         items:
           type: string

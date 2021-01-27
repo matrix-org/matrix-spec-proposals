@@ -6,13 +6,13 @@ properties:
   content:
     properties:
       creator:
-        description: The ``user_id`` of the room creator. This is set by the homeserver.
+        description: The `user_id` of the room creator. This is set by the homeserver.
         type: string
       m.federate:
-        description: Whether users on other servers can join this room. Defaults to ``true`` if key does not exist.
+        description: Whether users on other servers can join this room. Defaults to `true` if key does not exist.
         type: boolean
       room_version:
-        description: The version of the room. Defaults to ``"1"`` if the key does not exist.
+        description: The version of the room. Defaults to `"1"` if the key does not exist.
         type: string
       predecessor:
         description: A reference to the room this room replaces, if the previous room was upgraded.

@@ -13,6 +13,6 @@
 # limitations under the License.
 homeserverAccessToken:
   type: apiKey
-  description: The ``hs_token`` provided by the application service's registration.
+  description: The `hs_token` provided by the application service's registration.
   name: access_token
   in: query

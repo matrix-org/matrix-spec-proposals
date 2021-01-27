@@ -26,7 +26,7 @@ allOf:
       edu_type:
         type: enum
         enum: ['m.receipt']
-        description: The string ``m.receipt``
+        description: The string `m.receipt`
         example: "m.receipt"
       content:
         type: object

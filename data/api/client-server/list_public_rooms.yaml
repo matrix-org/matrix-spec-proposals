@@ -48,7 +48,7 @@ paths:
                 type: string
                 enum: ['private', 'public']
                 description: The visibility of the room in the directory.
-          examples: 
+          examples:
             application/json: {
               "visibility": "public"
             }
@@ -68,7 +68,7 @@ paths:
         directory.
 
         Servers may choose to implement additional access control checks
-        here, for instance that room visibility can only be changed by 
+        here, for instance that room visibility can only be changed by
         the room creator or a server administrator.
       operationId: setRoomVisibilityOnDirectory
       security:
@@ -92,7 +92,7 @@ paths:
                 type: string
                 enum: ["private", "public"]
                 description: |-
-                  The new visibility setting for the room. 
+                  The new visibility setting for the room.
                   Defaults to 'public'.
             example: {
                "visibility": "public"
@@ -100,7 +100,7 @@ paths:
       responses:
         200:
           description: The visibility was updated, or no change was needed.
-          examples: 
+          examples:
             application/json: {}
         404:
           description: The room is not known to the server
@@ -204,10 +204,10 @@ paths:
                 type: string
                 description: |-
                   The specific third party network/protocol to request from the
-                  homeserver. Can only be used if ``include_all_networks`` is false.
+                  homeserver. Can only be used if `include_all_networks` is false.
                 example: "irc"
             example: {
-              "limit": 10, 
+              "limit": 10,
               "filter": {
                 "generic_search_term": "foo"
               },

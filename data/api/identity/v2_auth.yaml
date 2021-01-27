@@ -32,7 +32,7 @@ paths:
       description: |-
         Exchanges an OpenID token from the homeserver for an access token to
         access the identity server. The request body is the same as the values
-        returned by ``/openid/request_token`` in the Client-Server API.
+        returned by `/openid/request_token` in the Client-Server API.
       operationId: registerAccount
       parameters:
         - in: body
@@ -83,7 +83,7 @@ paths:
         403:
           description: |
             The user must do something in order to use this endpoint. One example
-            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+            is an `M_TERMS_NOT_SIGNED` error where the user must `agree to more terms`_.
           examples:
             application/json: {
               "errcode": "M_TERMS_NOT_SIGNED",
@@ -121,7 +121,7 @@ paths:
         403:
           description: |
             The user must do something in order to use this endpoint. One example
-            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+            is an `M_TERMS_NOT_SIGNED` error where the user must `agree to more terms`_.
           examples:
             application/json: {
               "errcode": "M_TERMS_NOT_SIGNED",

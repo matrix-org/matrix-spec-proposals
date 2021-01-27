@@ -58,8 +58,8 @@ paths:
                 type: integer
                 description: |-
                   A unique ID for a given user_id which describes the version of
-                  the returned device list.  This is matched with the ``stream_id``
-                  field in ``m.device_list_update`` EDUs in order to incrementally
+                  the returned device list.  This is matched with the `stream_id`
+                  field in `m.device_list_update` EDUs in order to incrementally
                   update the returned device_list.
                 example: 5
               devices:

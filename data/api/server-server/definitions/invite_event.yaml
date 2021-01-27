@@ -22,7 +22,7 @@ allOf:
       sender:
         type: string
         description: |-
-          The matrix ID of the user who sent the original ``m.room.third_party_invite``.
+          The matrix ID of the user who sent the original `m.room.third_party_invite`.
         example: "@someone:example.org"
       origin:
         type: string
@@ -35,7 +35,7 @@ allOf:
         example: 1234567890
       type:
         type: string
-        description: The value ``m.room.member``.
+        description: The value `m.room.member`.
         example: "m.room.member"
       state_key:
         type: string
@@ -46,12 +46,12 @@ allOf:
         title: Membership Event Content
         description: |-
           The content of the event, matching what is available in the
-          `Client-Server API`_. Must include a ``membership`` of ``invite``.
+          `Client-Server API`_. Must include a `membership` of `invite`.
         example: {"membership": "invite"}
         properties:
           membership:
             type: string
-            description: The value ``invite``.
+            description: The value `invite`.
             example: "invite"
         required: ['membership']
     required:

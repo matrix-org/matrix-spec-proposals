@@ -34,7 +34,7 @@ paths:
         (or batch of events) to the application service.
 
         Note that the application service should distinguish state events
-        from message events via the presence of a ``state_key``, rather than
+        from message events via the presence of a `state_key`, rather than
         via the event type.
       operationId: sendTransaction
       security:

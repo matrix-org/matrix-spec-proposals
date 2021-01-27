@@ -19,12 +19,12 @@ properties:
       admin_contact:
         description: |-
           A URI giving a contact method for the server administrator. Required if the
-          notice type is ``m.server_notice.usage_limit_reached``.
+          notice type is `m.server_notice.usage_limit_reached`.
         type: string
       limit_type:
         description: |-
           The kind of usage limit the server has exceeded. Required if the notice type is
-          ``m.server_notice.usage_limit_reached``.
+          `m.server_notice.usage_limit_reached`.
         type: string
     required:
       - msgtype

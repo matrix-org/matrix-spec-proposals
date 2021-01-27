@@ -94,7 +94,7 @@ paths:
       summary: Get all the state event IDs of a given room
       description: |-
         Retrieves a snapshot of a room's state at a given event, in the form of
-        event IDs. This performs the same function as calling ``/state/{roomId}``,
+        event IDs. This performs the same function as calling `/state/{roomId}`,
         however this returns just the event IDs rather than the full events.
       operationId: getRoomStateIds
       security:

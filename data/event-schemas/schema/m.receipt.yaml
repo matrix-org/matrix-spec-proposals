@@ -18,7 +18,7 @@
                         "m.read": {
                             "type": "object",
                             "title": "Users",
-                            "description": "A collection of users who have sent ``m.read`` receipts for this event.",
+                            "description": "A collection of users who have sent `m.read` receipts for this event.",
                             "patternProperties": {
                                 "^@": {
                                     "type": "object",

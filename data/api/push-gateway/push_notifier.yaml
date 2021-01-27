@@ -39,7 +39,7 @@ paths:
 
         Notifications about a particular event will normally cause the user to be
         alerted in some way. It is therefore necessary to perform duplicate
-        suppression for such notifications using the ``event_id`` field to avoid
+        suppression for such notifications using the `event_id` field to avoid
         retries of this HTTP API causing duplicate alerts. The operation of
         updating counts of unread notifications should be idempotent and
         therefore do not require duplicate suppression.
@@ -111,7 +111,7 @@ paths:
                   type:
                     type: string
                     description: |-
-                      The type of the event as in the event's ``type`` field.
+                      The type of the event as in the event's `type` field.
                   sender:
                     type: string
                     description: |-
@@ -131,13 +131,13 @@ paths:
                     type: boolean
                     description: |-
                       This is true if the user receiving the notification is the
-                      subject of a member event (i.e. the ``state_key`` of the
+                      subject of a member event (i.e. the `state_key` of the
                       member event is equal to the user's Matrix ID).
                   prio:
                     type: string
                     enum: ["high", "low"]
                     description: |-
-                      The priority of the notification. If omitted, ``high`` is
+                      The priority of the notification. If omitted, `high` is
                       assumed. This may be used by push gateways to deliver less
                       time-sensitive notifications in a way that will preserve
                       battery power on mobile devices.
@@ -145,7 +145,7 @@ paths:
                     type: object
                     title: EventContent
                     description: |-
-                      The ``content`` field from the event, if present. The pusher
+                      The `content` field from the event, if present. The pusher
                       may omit this if the event had no content or for any other
                       reason.
                   counts:
@@ -178,10 +178,10 @@ paths:
                         app_id:
                           type: string
                           description: |-
-                            The ``app_id`` given when the pusher was created.
+                            The `app_id` given when the pusher was created.
                         pushkey:
                           type: string
-                          description: The ``pushkey`` given when the pusher was created.
+                          description: The `pushkey` given when the pusher was created.
                         pushkey_ts:
                           type: integer
                           description: |-
@@ -193,7 +193,7 @@ paths:
                           description: |-
                             A dictionary of additional pusher-specific data. For
                             'http' pushers, this is the data dictionary passed in at
-                            pusher creation minus the ``url`` key.
+                            pusher creation minus the `url` key.
                         tweaks:
                           type: object
                           title: Tweaks

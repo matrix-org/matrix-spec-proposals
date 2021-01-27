@@ -55,7 +55,7 @@ paths:
                 type: string
                 description: |-
                   The pepper the client MUST use in hashing identifiers, and MUST
-                  supply to the ``/lookup`` endpoint when performing lookups.
+                  supply to the `/lookup` endpoint when performing lookups.
 
                   Servers SHOULD rotate this string often.
               algorithms:
@@ -63,7 +63,7 @@ paths:
                 items:
                   type: string
                 description: |-
-                  The algorithms the server supports. Must contain at least ``sha256``.
+                  The algorithms the server supports. Must contain at least `sha256`.
             required: ['lookup_pepper', 'algorithms']
   "/lookup":
     post:
@@ -84,14 +84,14 @@ paths:
               algorithm:
                 type: string
                 description: |-
-                  The algorithm the client is using to encode the ``addresses``. This
-                  should be one of the available options from ``/hash_details``.
+                  The algorithm the client is using to encode the `addresses`. This
+                  should be one of the available options from `/hash_details`.
                 example: "sha256"
               pepper:
                 type: string
                 description: |-
-                  The pepper from ``/hash_details``. This is required even when the
-                  ``algorithm`` does not make use of it.
+                  The pepper from `/hash_details`. This is required even when the
+                  `algorithm` does not make use of it.
                 example: "matrixrocks"
               addresses:
                 type: array
@@ -99,7 +99,7 @@ paths:
                   type: string
                 description: |-
                   The addresses to look up. The format of the entries here depend on
-                  the ``algorithm`` used. Note that queries which have been incorrectly
+                  the `algorithm` used. Note that queries which have been incorrectly
                   hashed or formatted will lead to no matches.
                 example: [
                   "4kenr7N9drpCJ4AfalmlGQVsOn3o2RHjkADUpXJWZUc",
@@ -109,7 +109,7 @@ paths:
       responses:
         200:
           description:
-            The associations for any matched ``addresses``.
+            The associations for any matched `addresses`.
           examples:
             application/json: {
               "mappings": {
@@ -122,7 +122,7 @@ paths:
               mappings:
                 type: object
                 description: |-
-                  Any applicable mappings of ``addresses`` to Matrix User IDs. Addresses
+                  Any applicable mappings of `addresses` to Matrix User IDs. Addresses
                   which do not have associations will not be included, which can make
                   this property be an empty object.
                 title: AssociatedMappings
@@ -132,13 +132,13 @@ paths:
         400:
           description:
             The client's request was invalid in some way. One possible problem could
-            be the ``pepper`` being invalid after the server has rotated it - this is
-            presented with the ``M_INVALID_PEPPER`` error code. Clients SHOULD make
-            a call to ``/hash_details`` to get a new pepper in this scenario, being
+            be the `pepper` being invalid after the server has rotated it - this is
+            presented with the `M_INVALID_PEPPER` error code. Clients SHOULD make
+            a call to `/hash_details` to get a new pepper in this scenario, being
             careful to avoid retry loops.
 
-            ``M_INVALID_PARAM`` can also be returned to indicate the client supplied
-            an ``algorithm`` that is unknown to the server.
+            `M_INVALID_PARAM` can also be returned to indicate the client supplied
+            an `algorithm` that is unknown to the server.
           examples:
             application/json: {
               "errcode": "M_INVALID_PEPPER",

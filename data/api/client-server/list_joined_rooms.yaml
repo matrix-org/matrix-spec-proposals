@@ -45,7 +45,7 @@ paths:
               joined_rooms:
                 type: array
                 description: |-
-                  The ID of each room in which the user has ``joined`` membership.
+                  The ID of each room in which the user has `joined` membership.
                 items:
                   type: string
           examples:
