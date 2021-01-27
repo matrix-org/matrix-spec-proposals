@@ -72,7 +72,7 @@ of an object with the following fields:
    specified.
 
  * The `icon` field is **optional**. It should point to an icon representing
-   the IdP.  If present then it must be an MXC URI to an image resource.
+   the IdP. If present then it must be an MXC URI to an image resource.
 
  * The `brand` field is **optional**. It allows the client to style the login
    button to suit a particular brand. It should be a string matching the
