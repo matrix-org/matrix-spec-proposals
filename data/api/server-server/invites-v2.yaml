@@ -31,9 +31,9 @@ paths:
     put:
       summary: Invites a remote user to a room
       description: |-
-        .. Note::
-           This API is nearly identical to the v1 API with the exception of the request
-           body being different, and the response format fixed.
+        **Note:**
+        This API is nearly identical to the v1 API with the exception of the request
+        body being different, and the response format fixed.
 
         Invites a remote user to a room. Once the event has been  signed by both the inviting
         homeserver and the invited homeserver, it can be sent to all of the servers in the

@@ -31,16 +31,16 @@ description: |-
   ``m.room.power_levels`` event, or if the room contains no ``m.room.power_levels``
   event.
 
-  .. NOTE::
+  **Note:**
 
-    As noted above, in the absence of an ``m.room.power_levels`` event, the
-    ``state_default`` is 0, and all users are considered to have power level 0.
-    That means that **any** member of the room can send an
-    ``m.room.power_levels`` event, changing the permissions in the room.
+  As noted above, in the absence of an ``m.room.power_levels`` event, the
+  ``state_default`` is 0, and all users are considered to have power level 0.
+  That means that **any** member of the room can send an
+  ``m.room.power_levels`` event, changing the permissions in the room.
 
-    Server implementations should therefore ensure that each room has an
-    ``m.room.power_levels`` event as soon as it is created. See also the
-    documentation of the ``/createRoom`` API.
+  Server implementations should therefore ensure that each room has an
+  ``m.room.power_levels`` event as soon as it is created. See also the
+  documentation of the ``/createRoom`` API.
 
 properties:
   content:

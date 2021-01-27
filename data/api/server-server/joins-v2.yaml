@@ -33,9 +33,9 @@ paths:
     put:
       summary: Submit a signed join event to a resident server
       description: |-
-        .. Note::
-           This API is nearly identical to the v1 API with the
-           exception of the response format being fixed.
+        **Note:**
+        This API is nearly identical to the v1 API with the
+        exception of the response format being fixed.
 
         This endpoint is preferred over the v1 API as it provides
         a more standarised response format. Senders which receive

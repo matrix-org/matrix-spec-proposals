@@ -143,9 +143,8 @@ paths:
     put:
       summary: Submit a signed leave event to a resident server
       description: |-
-        .. Note::
-           Servers should instead prefer to use the v2 ``/send_leave``
-           endpoint.
+        **Note:**
+        Servers should instead prefer to use the v2 ``/send_leave`` endpoint.
 
         Submits a signed leave event to the resident server for it
         to accept it into the room's graph. Note that events have

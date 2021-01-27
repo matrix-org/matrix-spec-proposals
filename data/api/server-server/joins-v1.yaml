@@ -171,14 +171,13 @@ paths:
               "errcode": "M_NOT_FOUND",
               "error": "Unknown room",
             }
-  
+
   "/send_join/{roomId}/{eventId}":
     put:
       summary: Submit a signed join event to a resident server
       description: |-
-        .. Note::
-           Servers should instead prefer to use the v2 ``/send_join``
-           endpoint.
+        **Note:**
+        Servers should instead prefer to use the v2 ``/send_join`` endpoint.
 
         Submits a signed join event to the resident server for it
         to accept it into the room's graph. Note that events have
