@@ -96,11 +96,11 @@ paths:
         This endpoint is deprecated in favour of the more specific ``/3pid/add``
         and ``/3pid/bind`` endpoints.
 
-        .. Note::
-           Previously this endpoint supported a ``bind`` parameter. This parameter
-           has been removed, making this endpoint behave as though it was ``false``.
-           This results in this endpoint being an equivalent to ``/3pid/bind`` rather
-           than dual-purpose.
+        **Note:**
+        Previously this endpoint supported a ``bind`` parameter. This parameter
+        has been removed, making this endpoint behave as though it was ``false``.
+        This results in this endpoint being an equivalent to ``/3pid/bind`` rather
+        than dual-purpose.
       operationId: post3PIDs
       deprecated: true
       security:
