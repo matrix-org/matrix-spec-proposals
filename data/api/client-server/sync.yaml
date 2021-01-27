@@ -355,7 +355,7 @@ paths:
                 "next_batch": "s72595_4483_1934",
                 "presence": {
                   "events": [
-                    {"$ref": "definitions/event-schemas/examples/m.presence"}
+                    {"$ref": "definitions/event-schemas/examples/m.presence.yaml"}
                   ]
                 },
                 "account_data": {
@@ -382,17 +382,17 @@ paths:
                       "state": {
                         "events": [
                           {
-                            "$ref": "definitions/event-schemas/examples/m.room.member"
+                            "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
                           }
                         ]
                       },
                       "timeline": {
                         "events": [
                           {
-                            "$ref": "definitions/event-schemas/examples/m.room.member"
+                            "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
                           },
                           {
-                            "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                            "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
                           }
                         ],
                         "limited": true,
@@ -400,12 +400,12 @@ paths:
                       },
                       "ephemeral": {
                         "events": [
-                          {"$ref": "definitions/event-schemas/examples/m.typing"}
+                          {"$ref": "definitions/event-schemas/examples/m.typing.yaml"}
                         ]
                       },
                       "account_data": {
                         "events": [
-                          {"$ref": "definitions/event-schemas/examples/m.tag"},
+                          {"$ref": "definitions/event-schemas/examples/m.tag.yaml"},
                           {
                             "type": "org.example.custom.room.config",
                             "content": {

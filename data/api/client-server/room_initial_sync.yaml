@@ -44,11 +44,11 @@ paths:
                   "chunk": [
                     {
                       "room_id": "!636q39766251:example.com",
-                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
                     },
                     {
                       "room_id": "!636q39766251:example.com",
-                      "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
+                      "$ref": "definitions/event-schemas/examples/m.room.message$m.file.yaml"
                     }
                   ],
                   "end": "s3456_9_0",
@@ -58,19 +58,19 @@ paths:
                 "state": [
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.join_rules"
+                    "$ref": "definitions/event-schemas/examples/m.room.join_rules.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.member"
+                    "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.create"
+                    "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.power_levels"
+                    "$ref": "definitions/event-schemas/examples/m.room.power_levels.yaml"
                   }
                 ],
                 "visibility": "private",
