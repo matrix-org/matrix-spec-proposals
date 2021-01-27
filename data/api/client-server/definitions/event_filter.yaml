@@ -19,14 +19,14 @@ properties:
   not_senders:
     description: A list of sender IDs to exclude. If this list is absent then no senders
       are excluded. A matching sender will be excluded even if it is listed in the
-      ``'senders'`` filter.
+      `'senders'` filter.
     items:
       type: string
     type: array
   not_types:
     description: A list of event types to exclude. If this list is absent then no
       event types are excluded. A matching type will be excluded even if it is listed
-      in the ``'types'`` filter. A '*' can be used as a wildcard to match any sequence
+      in the `'types'` filter. A '*' can be used as a wildcard to match any sequence
       of characters.
     items:
       type: string
@@ -39,7 +39,7 @@ properties:
     type: array
   types:
     description: A list of event types to include. If this list is absent then all
-      event types are included. A ``'*'`` can be used as a wildcard to match any sequence
+      event types are included. A `'*'` can be used as a wildcard to match any sequence
       of characters.
     items:
       type: string

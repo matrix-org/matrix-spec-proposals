@@ -12,7 +12,7 @@ properties:
       differ from the intrinsic dimensions of the image file.
     type: integer
   mimetype:
-    description: The mimetype of the image, e.g. ``image/jpeg``.
+    description: The mimetype of the image, e.g. `image/jpeg`.
     type: string
   size:
     description: Size of the image in bytes.
@@ -31,6 +31,6 @@ properties:
   thumbnail_info:
     allOf:
       - $ref: thumbnail_info.yaml
-    description: Metadata about the image referred to in ``thumbnail_url``.
+    description: Metadata about the image referred to in `thumbnail_url`.
 title: ImageInfo
 type: object

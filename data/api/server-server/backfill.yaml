@@ -32,8 +32,8 @@ paths:
       summary: Retrieves the events which precede the given event
       description: |-
         Retrieves a sliding-window history of previous PDUs that occurred in the given room.
-        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs given in ``v`` and
-        the PDUs that preceded them are retrieved, up to the total number given by the ``limit``.
+        Starting from the PDU ID(s) given in the `v` argument, the PDUs given in `v` and
+        the PDUs that preceded them are retrieved, up to the total number given by the `limit`.
       operationId: backfillRoom
       security:
         - signedRequest: []
@@ -65,12 +65,12 @@ paths:
             event(s), up to the given limit.
 
             **Note:**
-            Though the PDU definitions require that ``prev_events`` and ``auth_events`` be limited
+            Though the PDU definitions require that `prev_events` and `auth_events` be limited
             in number, the response of backfill MUST NOT be validated on these specific restrictions.
 
             Due to historical reasons, it is possible that events which were previously accepted
             would now be rejected by these limitations. The events should be rejected per usual by
-            the ``/send``, ``/get_missing_events``, and remaining endpoints.
+            the `/send`, `/get_missing_events`, and remaining endpoints.
           schema:
             $ref: "definitions/unlimited_pdu_transaction.yaml"
   "/get_missing_events/{roomId}":
@@ -78,8 +78,8 @@ paths:
       summary: Retrieves events that the sender is missing
       description: |-
         Retrieves previous events that the sender is missing. This is done by doing a breadth-first
-        walk of the ``prev_events`` for the ``latest_events``, ignoring any events in ``earliest_events``
-        and stopping at the ``limit``.
+        walk of the `prev_events` for the `latest_events`, ignoring any events in `earliest_events`
+        and stopping at the `limit`.
       operationId: getMissingPreviousEvents
       security:
         - signedRequest: []
@@ -107,7 +107,7 @@ paths:
                 type: array
                 description: |-
                   The latest event IDs that the sender already has. These are skipped when retrieving
-                  the previous events of ``latest_events``.
+                  the previous events of `latest_events`.
                 items:
                   type: string
                 example: ["$missing_event:example.org"]
@@ -121,8 +121,8 @@ paths:
       responses:
         200:
           description: |-
-            The previous events for ``latest_events``, excluding any ``earliest_events``, up to the
-            provided ``limit``.
+            The previous events for `latest_events`, excluding any `earliest_events`, up to the
+            provided `limit`.
           schema:
             type: object
             properties:

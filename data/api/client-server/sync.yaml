@@ -36,20 +36,20 @@ paths:
         incremental deltas to the state, and to receive new messages.
 
         *Note*: This endpoint supports lazy-loading. See `Filtering <#filtering>`_
-        for more information. Lazy-loading members is only supported on a ``StateFilter``
+        for more information. Lazy-loading members is only supported on a `StateFilter`
         for this endpoint. When lazy-loading is enabled, servers MUST include the
         syncing user's own membership event when they join a room, or when the
         full state of rooms is requested, to aid discovering the user's avatar &
         displayname.
 
         Further, like other members, the user's own membership event is eligible
-        for being considered redundant by the server. When a sync is ``limited``,
+        for being considered redundant by the server. When a sync is `limited`,
         the server MUST return membership events for events in the gap
-        (between ``since`` and the start of the returned timeline), regardless
+        (between `since` and the start of the returned timeline), regardless
         as to whether or not they are redundant. This ensures that joins/leaves
         and profile changes which occur during the gap are not lost.
 
-        Note that the default behaviour of ``state`` is to include all membership
+        Note that the default behaviour of `state` is to include all membership
         events, alongside other state, when lazy-loading is not enabled.
       operationId: sync
       security:
@@ -61,7 +61,7 @@ paths:
           description: |-
             The ID of a filter created using the filter API or a filter JSON
             object encoded as a string. The server will detect whether it is
-            an ID or a JSON object by whether the first character is a ``"{"``
+            an ID or a JSON object by whether the first character is a `"{"`
             open brace. Passing the JSON inline is best suited to one off
             requests. Creating a filter using the filter API is recommended for
             clients that reuse the same filter multiple times, for example in
@@ -82,16 +82,16 @@ paths:
             Controls whether to include the full state for all rooms the user
             is a member of.
 
-            If this is set to ``true``, then all state events will be returned,
-            even if ``since`` is non-empty. The timeline will still be limited
-            by the ``since`` parameter. In this case, the ``timeout`` parameter
+            If this is set to `true`, then all state events will be returned,
+            even if `since` is non-empty. The timeline will still be limited
+            by the `since` parameter. In this case, the `timeout` parameter
             will be ignored and the query will return immediately, possibly with
             an empty timeline.
 
-            If ``false``, and ``since`` is non-empty, only state which has
-            changed since the point indicated by ``since`` will be returned.
+            If `false`, and `since` is non-empty, only state which has
+            changed since the point indicated by `since` will be returned.
 
-            By default, this is ``false``.
+            By default, this is `false`.
           x-example: "false"
         - in: query
           name: set_presence
@@ -113,7 +113,7 @@ paths:
             request. If no events (or other data) become available before this
             time elapses, the server will return a response with empty fields.
 
-            By default, this is ``0``, so the server will return immediately
+            By default, this is `0`, so the server will return immediately
             even if the response is empty.
           x-example: 30000
       responses:
@@ -127,8 +127,8 @@ paths:
               next_batch:
                 type: string
                 description: |-
-                  The batch token to supply in the ``since`` param of the next
-                  ``/sync`` request.
+                  The batch token to supply in the `since` param of the next
+                  `/sync` request.
               rooms:
                 title: Rooms
                 type: object
@@ -157,7 +157,7 @@ paths:
                               description: |-
                                 The users which can be used to generate a room name
                                 if the room does not have one. Required if the room's
-                                ``m.room.name`` or ``m.room.canonical_alias`` state events
+                                `m.room.name` or `m.room.canonical_alias` state events
                                 are unset or empty.
 
                                 This should be the first 5 members of the room, ordered
@@ -169,7 +169,7 @@ paths:
                                 when there are less than 5 members to represent.
 
                                 When lazy-loading room members is enabled, the membership
-                                events for the heroes MUST be included in the ``state``,
+                                events for the heroes MUST be included in the `state`,
                                 unless they are redundant. When the list of users changes,
                                 the server notifies the client by sending a fresh list of
                                 heroes. If there are no changes since the last sync, this
@@ -179,14 +179,14 @@ paths:
                             "m.joined_member_count":
                               type: integer
                               description: |-
-                                 The number of users with ``membership`` of ``join``,
+                                 The number of users with `membership` of `join`,
                                  including the client's own user ID. If this field has
                                  not changed since the last sync, it may be omitted.
                                  Required otherwise.
                             "m.invited_member_count":
                               type: integer
                               description: |-
-                                 The number of users with ``membership`` of ``invite``.
+                                 The number of users with `membership` of `invite`.
                                  If this field has not changed since the last sync, it
                                  may be omitted. Required otherwise.
                         state:
@@ -194,14 +194,14 @@ paths:
                           type: object
                           description: |-
                             Updates to the state, between the time indicated by
-                            the ``since`` parameter, and the start of the
-                            ``timeline`` (or all state up to the start of the
-                            ``timeline``, if ``since`` is not given, or
-                            ``full_state`` is true).
+                            the `since` parameter, and the start of the
+                            `timeline` (or all state up to the start of the
+                            `timeline`, if `since` is not given, or
+                            `full_state` is true).
 
-                            N.B. state updates for ``m.room.member`` events will
-                            be incomplete if ``lazy_load_members`` is enabled in
-                            the ``/sync`` filter, and only return the member events
+                            N.B. state updates for `m.room.member` events will
+                            be incomplete if `lazy_load_members` is enabled in
+                            the `/sync` filter, and only return the member events
                             required to display the senders of the timeline events
                             in this response.
                           allOf:
@@ -264,17 +264,17 @@ paths:
                           type: object
                           description: |-
                             The state of a room that the user has been invited
-                            to. These state events may only have the ``sender``,
-                            ``type``, ``state_key`` and ``content`` keys
+                            to. These state events may only have the `sender`,
+                            `type`, `state_key` and `content` keys
                             present. These events do not replace any state that
                             the client already has for the room, for example if
                             the client has archived the room. Instead the
                             client should keep two separate copies of the
-                            state: the one from the ``invite_state`` and one
-                            from the archived ``state``. If the client joins
+                            state: the one from the `invite_state` and one
+                            from the archived `state`. If the client joins
                             the room then the current state will be given as a
-                            delta against the archived ``state`` not the
-                            ``invite_state``.
+                            delta against the archived `state` not the
+                            `invite_state`.
                           properties:
                             events:
                               description: The StrippedState events that form the invite state.

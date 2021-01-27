@@ -71,13 +71,13 @@ paths:
                     pushkey:
                       type: string
                       description: |-
-                        This is a unique identifier for this pusher. See ``/set`` for
+                        This is a unique identifier for this pusher. See `/set` for
                         more detail.
                         Max length, 512 bytes.
                     kind:
                       type: string
                       description: |-
-                        The kind of pusher. ``"http"`` is a pusher that
+                        The kind of pusher. `"http"` is a pusher that
                         sends HTTP pokes.
                     app_id:
                       type: string
@@ -114,7 +114,7 @@ paths:
                         url:
                           type: string
                           description: |-
-                            Required if ``kind`` is ``http``. The URL to use to send
+                            Required if `kind` is `http`. The URL to use to send
                             notifications to.
                         format:
                           type: string
@@ -173,14 +173,14 @@ paths:
                   client has no such concept, use any unique identifier.
                   Max length, 512 bytes.
 
-                  If the ``kind`` is ``"email"``, this is the email address to
+                  If the `kind` is `"email"`, this is the email address to
                   send notifications to.
               kind:
                 type: string
                 description: |-
-                  The kind of pusher to configure. ``"http"`` makes a pusher that
-                  sends HTTP pokes. ``"email"`` makes a pusher that emails the
-                  user with unread notifications. ``null`` deletes the pusher.
+                  The kind of pusher to configure. `"http"` makes a pusher that
+                  sends HTTP pokes. `"email"` makes a pusher that emails the
+                  user with unread notifications. `null` deletes the pusher.
               app_id:
                 type: string
                 description: |-
@@ -189,7 +189,7 @@ paths:
                   different platform versions get different app identifiers.
                   Max length, 64 chars.
 
-                  If the ``kind`` is ``"email"``, this is ``"m.email"``.
+                  If the `kind` is `"email"`, this is `"m.email"`.
               app_display_name:
                 type: string
                 description: |-
@@ -214,22 +214,22 @@ paths:
                 type: object
                 description: |-
                   A dictionary of information for the pusher implementation
-                  itself. If ``kind`` is ``http``, this should contain ``url``
+                  itself. If `kind` is `http`, this should contain `url`
                   which is the URL to use to send notifications to.
                 title: PusherData
                 properties:
                   url:
                     type: string
                     description: |-
-                      Required if ``kind`` is ``http``. The URL to use to send
-                      notifications to. MUST be an HTTPS URL with a path of 
-                      ``/_matrix/push/v1/notify``.
+                      Required if `kind` is `http`. The URL to use to send
+                      notifications to. MUST be an HTTPS URL with a path of
+                      `/_matrix/push/v1/notify`.
                     example: "https://push-gateway.location.here/_matrix/push/v1/notify"
                   format:
                     type: string
                     description: |-
                       The format to send notifications in to Push Gateways if the
-                      ``kind`` is ``http``. The details about what fields the
+                      `kind` is `http`. The details about what fields the
                       homeserver should send to the push gateway are defined in the
                       `Push Gateway Specification`_. Currently the only format
                       available is 'event_id_only'.
@@ -240,7 +240,7 @@ paths:
                   given pushkey and App ID in addition to any others with
                   different user IDs. Otherwise, the homeserver must remove any
                   other pushers with the same App ID and pushkey for different
-                  users. The default is ``false``.
+                  users. The default is `false`.
             required: ['kind', 'app_id', 'app_display_name',
                 'device_display_name', 'pushkey', 'lang', 'data']
       responses:

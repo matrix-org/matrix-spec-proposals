@@ -36,8 +36,8 @@ paths:
         room by the inviting homeserver.
 
         Servers should prefer to use the v2 API for invites instead of the v1 API. Servers
-        which receive a v1 invite request must assume that the room version is either ``"1"``
-        or ``"2"``.
+        which receive a v1 invite request must assume that the room version is either `"1"`
+        or `"2"`.
 
         Note that events have a different format depending on the room version - check the
         `room version specification`_ for precise event formats. **The request and response
@@ -113,7 +113,7 @@ paths:
             maxItems: 2
             items:
               - type: integer
-                description: The value ``200``.
+                description: The value `200`.
                 example: 200
               - type: object
                 description: An object containing the signed invite event.

@@ -106,7 +106,7 @@ paths:
                           all three criteria to avoid conflicts when the policy is updated
                           in the future: for example, if this was "https://example.org/terms.html"
                           then the server would be unable to update it because the client would
-                          have already added that URL to the ``m.accepted_terms`` collection.
+                          have already added that URL to the `m.accepted_terms` collection.
                     required: ['name', 'url']
             required: ['policies']
     post:
@@ -121,7 +121,7 @@ paths:
         to the user. Servers SHOULD consider acceptance of any one language's URL as
         acceptance for all other languages of that policy.
 
-        The server should avoid returning ``M_TERMS_NOT_SIGNED`` because the client
+        The server should avoid returning `M_TERMS_NOT_SIGNED` because the client
         may not be accepting all terms at once.
       operationId: agreeToTerms
       security:

@@ -35,18 +35,18 @@ paths:
         .. _`put-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype`:
 
         State events can be sent using this endpoint.  These events will be
-        overwritten if ``<room id>``, ``<event type>`` and ``<state key>`` all
+        overwritten if `<room id>`, `<event type>` and `<state key>` all
         match.
 
         Requests to this endpoint **cannot use transaction IDs**
-        like other ``PUT`` paths because they cannot be differentiated from the
-        ``state_key``. Furthermore, ``POST`` is unsupported on state paths.
+        like other `PUT` paths because they cannot be differentiated from the
+        `state_key`. Furthermore, `POST` is unsupported on state paths.
 
         The body of the request should be the content object of the event; the
         fields in this object will vary depending on the type of event. See
-        `Room Events`_ for the ``m.`` event specification.
+        `Room Events`_ for the `m.` event specification.
 
-        If the event type being sent is ``m.room.canonical_alias`` servers
+        If the event type being sent is `m.room.canonical_alias` servers
         SHOULD ensure that any new aliases being listed in the event are valid
         per their grammar/syntax and that they point to the room ID where the
         state event is to be sent. Servers do not validate aliases which are
@@ -116,10 +116,10 @@ paths:
 
             Some example error codes include:
 
-            * ``M_INVALID_PARAMETER``: One or more aliases within the ``m.room.canonical_alias``
+            * `M_INVALID_PARAMETER`: One or more aliases within the `m.room.canonical_alias`
               event have invalid syntax.
 
-            * ``M_BAD_ALIAS``: One or more aliases within the ``m.room.canonical_alias`` event
+            * `M_BAD_ALIAS`: One or more aliases within the `m.room.canonical_alias` event
               do not point to the room ID for which the state event is to be sent to.
           schema:
             $ref: "definitions/errors/error.yaml"

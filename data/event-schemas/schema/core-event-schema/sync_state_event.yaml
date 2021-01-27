@@ -20,7 +20,7 @@ description: In addition to the Room Event fields, State Events have the followi
   additional fields.
 properties:
   prev_content:
-    description: Optional. The previous ``content`` for this event. If there is no
+    description: Optional. The previous `content` for this event. If there is no
       previous content, this key will be missing.
     title: EventContent
     type: object
@@ -29,7 +29,7 @@ properties:
       of room state. This value is often a zero-length string. The presence of this
       key makes this event a State Event.
 
-      State keys starting with an ``@`` are reserved for referencing user IDs, such
+      State keys starting with an `@` are reserved for referencing user IDs, such
       as room members. With the exception of a few events, state events set with a
       given user's ID as the state key MUST only be set by that user.
     type: string

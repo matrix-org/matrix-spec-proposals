@@ -29,13 +29,13 @@ paths:
     get:
       summary: Gets information about the owner of an access token.
       description: |-
-        Gets information about the owner of a given access token. 
-        
-        Note that, as with the rest of the Client-Server API, 
-        Application Services may masquerade as users within their 
-        namespace by giving a ``user_id`` query parameter. In this 
-        situation, the server should verify that the given ``user_id``
-        is registered by the appservice, and return it in the response 
+        Gets information about the owner of a given access token.
+
+        Note that, as with the rest of the Client-Server API,
+        Application Services may masquerade as users within their
+        namespace by giving a `user_id` query parameter. In this
+        situation, the server should verify that the given `user_id`
+        is registered by the appservice, and return it in the response
         body.
       operationId: getTokenOwner
       security:

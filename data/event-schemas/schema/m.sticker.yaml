@@ -15,11 +15,11 @@ properties:
         allOf:
           - $ref: core-event-schema/msgtype_infos/image_info.yaml
         description: |-
-          Metadata about the image referred to in ``url`` including a thumbnail
+          Metadata about the image referred to in `url` including a thumbnail
           representation.
       url:
         description: |-
-          The URL to the sticker image. This must be a valid ``mxc://`` URI.
+          The URL to the sticker image. This must be a valid `mxc://` URI.
         type: string
     required:
       - body

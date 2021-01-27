@@ -8,7 +8,7 @@ properties:
       info:
         allOf:
           - $ref: core-event-schema/msgtype_infos/image_info.yaml
-        description: Metadata about the image referred to in ``url``.
+        description: Metadata about the image referred to in `url`.
       url:
         description: The URL to the image.
         type: string

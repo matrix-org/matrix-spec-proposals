@@ -164,7 +164,7 @@ paths:
         400:
           description: |-
             The request is invalid or the room the server is attempting
-            to join has a version that is not listed in the ``ver``
+            to join has a version that is not listed in the `ver`
             parameters.
 
             The error should be passed through to clients so that they
@@ -177,8 +177,8 @@ paths:
                   room_version:
                     type: string
                     description: |-
-                      The version of the room. Required if the ``errcode``
-                      is ``M_INCOMPATIBLE_ROOM_VERSION``.
+                      The version of the room. Required if the `errcode`
+                      is `M_INCOMPATIBLE_ROOM_VERSION`.
           examples:
             application/json: {
               "errcode": "M_INCOMPATIBLE_ROOM_VERSION",

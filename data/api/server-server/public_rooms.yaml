@@ -61,7 +61,7 @@ paths:
           type: string
           description: |-
             The specific third party network/protocol to request from the homeserver.
-            Can only be used if ``include_all_networks`` is false.
+            Can only be used if `include_all_networks` is false.
           x-example: "irc"
       responses:
         200:
@@ -77,7 +77,7 @@ paths:
         of joined members, with the largest rooms first.
 
         Note that this endpoint receives and returns the same format that is seen
-        in the Client-Server API's ``POST /publicRooms`` endpoint.
+        in the Client-Server API's `POST /publicRooms` endpoint.
       operationId: queryPublicRooms
       security:
         - signedRequest: []
@@ -122,7 +122,7 @@ paths:
                 type: string
                 description: |-
                   The specific third party network/protocol to request from the
-                  homeserver. Can only be used if ``include_all_networks`` is false.
+                  homeserver. Can only be used if `include_all_networks` is false.
                 example: "irc"
             example: {
               "limit": 10,

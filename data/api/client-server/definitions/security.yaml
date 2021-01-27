@@ -13,6 +13,6 @@
 # limitations under the License.
 accessToken:
   type: apiKey
-  description: The access_token returned by a call to ``/login`` or ``/register``
+  description: The access_token returned by a call to `/login` or `/register`
   name: access_token
   in: query

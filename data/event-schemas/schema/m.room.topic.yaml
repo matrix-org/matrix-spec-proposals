@@ -1,7 +1,7 @@
 ---
 allOf:
   - $ref: core-event-schema/state_event.yaml
-description: 'A topic is a short message detailing what is currently being discussed in the room.  It can also be used as a way to display extra information about the room, which may not be suitable for the room name. The room topic can also be set when creating a room using ``/createRoom`` with the ``topic`` key.'
+description: 'A topic is a short message detailing what is currently being discussed in the room.  It can also be used as a way to display extra information about the room, which may not be suitable for the room name. The room topic can also be set when creating a room using `/createRoom` with the `topic` key.'
 properties:
   content:
     properties:

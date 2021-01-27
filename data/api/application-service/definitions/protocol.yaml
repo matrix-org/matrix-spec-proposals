@@ -43,9 +43,9 @@ properties:
   field_types:
     title: Field Types
     description: |-
-      The type definitions for the fields defined in the ``user_fields`` and 
-      ``location_fields``. Each entry in those arrays MUST have an entry here. The
-      ``string`` key for this object is field name itself.
+      The type definitions for the fields defined in the `user_fields` and
+      `location_fields`. Each entry in those arrays MUST have an entry here. The
+      `string` key for this object is field name itself.
 
       May be an empty object if no fields are defined.
     type: object
@@ -101,7 +101,7 @@ properties:
           example: "mxc://example.org/JkLmNoPq"
         fields:
           type: object
-          description: Preset values for ``fields`` the client may use to search by.
+          description: Preset values for `fields` the client may use to search by.
           example: {
             "network": "freenode"
           }

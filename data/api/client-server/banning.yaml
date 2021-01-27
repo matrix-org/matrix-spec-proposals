@@ -62,7 +62,7 @@ paths:
               reason:
                 type: string
                 description: The reason the user has been banned. This will be supplied as the
-                  ``reason`` on the target's updated `m.room.member`_ event.
+                  `reason` on the target's updated `m.room.member`_ event.
             required: ["user_id"]
       responses:
         200:
@@ -74,7 +74,7 @@ paths:
             type: object
         403:
           description: |-
-            You do not have permission to ban the user from the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+            You do not have permission to ban the user from the room. A meaningful `errcode` and description error text will be returned. Example reasons for rejections are:
 
             - The banner is not currently in the room.
             - The banner's power level is insufficient to ban users from the room.
@@ -121,7 +121,7 @@ paths:
               reason:
                 type: string
                 description: |-
-                  Optional reason to be included as the ``reason`` on the subsequent
+                  Optional reason to be included as the `reason` on the subsequent
                   membership event.
             required: ["user_id"]
       responses:
@@ -134,7 +134,7 @@ paths:
             type: object
         403:
           description: |-
-            You do not have permission to unban the user from the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+            You do not have permission to unban the user from the room. A meaningful `errcode` and description error text will be returned. Example reasons for rejections are:
 
             - The unbanner's power level is insufficient to unban users from the room.
           examples:

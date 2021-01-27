@@ -32,7 +32,7 @@ properties:
           thumbnail_info:
             allOf:
               - $ref: core-event-schema/msgtype_infos/thumbnail_info.yaml
-            description:  Metadata about the image referred to in ``thumbnail_url``.
+            description:  Metadata about the image referred to in `thumbnail_url`.
         title: LocationInfo
     required:
       - msgtype

@@ -64,7 +64,7 @@ paths:
               reason:
                 type: string
                 description: |-
-                  Optional reason to be included as the ``reason`` on the subsequent
+                  Optional reason to be included as the `reason` on the subsequent
                   membership event.
       responses:
         200:

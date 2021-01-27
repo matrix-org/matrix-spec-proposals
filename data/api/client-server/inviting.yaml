@@ -48,7 +48,7 @@ paths:
         join that room.
 
         If the user was invited to the room, the homeserver will append a
-        ``m.room.member`` event to the room.
+        `m.room.member` event to the room.
 
         .. _third party invites section: `invite-by-third-party-id-endpoint`_
       operationId: inviteUser
@@ -77,7 +77,7 @@ paths:
               reason:
                 type: string
                 description: |-
-                  Optional reason to be included as the ``reason`` on the subsequent
+                  Optional reason to be included as the `reason` on the subsequent
                   membership event.
             required: ["user_id"]
       responses:
@@ -91,20 +91,20 @@ paths:
         400:
           description: |-
 
-            The request is invalid. A meaningful ``errcode`` and description
+            The request is invalid. A meaningful `errcode` and description
             error text will be returned. Example reasons for rejection include:
 
-            - The request body is malformed (``errcode`` set to ``M_BAD_JSON``
-              or ``M_NOT_JSON``).
+            - The request body is malformed (`errcode` set to `M_BAD_JSON`
+              or `M_NOT_JSON`).
 
             - One or more users being invited to the room are residents of a
               homeserver which does not support the requested room version. The
-              ``errcode`` will be ``M_UNSUPPORTED_ROOM_VERSION`` in these cases.
+              `errcode` will be `M_UNSUPPORTED_ROOM_VERSION` in these cases.
           schema:
             "$ref": "definitions/errors/error.yaml"
         403:
           description: |-
-            You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:
+            You do not have permission to invite the user to the room. A meaningful `errcode` and description error text will be returned. Example reasons for rejections are:
 
             - The invitee has been banned from the room.
             - The invitee is already a member of the room.

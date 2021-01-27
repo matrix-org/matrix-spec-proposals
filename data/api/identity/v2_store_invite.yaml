@@ -40,23 +40,23 @@ paths:
         The service will generate a random token and an ephemeral key used for
         accepting the invite.
 
-        The service also generates a ``display_name`` for the inviter, which is
-        a redacted version of ``address`` which does not leak the full contents
-        of the ``address``.
+        The service also generates a `display_name` for the inviter, which is
+        a redacted version of `address` which does not leak the full contents
+        of the `address`.
 
         The service records persistently all of the above information.
 
         It also generates an email containing all of this data, sent to the
-        ``address`` parameter, notifying them of the invitation.
+        `address` parameter, notifying them of the invitation.
 
         Also, the generated ephemeral public key will be listed as valid on
-        requests to ``/_matrix/identity/v2/pubkey/ephemeral/isvalid``.
+        requests to `/_matrix/identity/v2/pubkey/ephemeral/isvalid`.
 
-        Currently, invites may only be issued for 3pids of the ``email`` medium.
+        Currently, invites may only be issued for 3pids of the `email` medium.
 
         Optional fields in the request should be populated to the best of the
         server's ability. Identity servers may use these variables when notifying
-        the ``address`` of the pending invite for display purposes.
+        the `address` of the pending invite for display purposes.
       operationId: storeInviteV2
       security:
         - accessToken: []
@@ -68,7 +68,7 @@ paths:
             properties:
               medium:
                 type: string
-                description: The literal string ``email``.
+                description: The literal string `email`.
                 example: "email"
               address:
                 type: string
@@ -86,26 +86,26 @@ paths:
                 type: string
                 description: |-
                   The Matrix room alias for the room to which the user is
-                  invited. This should be retrieved from the ``m.room.canonical_alias``
+                  invited. This should be retrieved from the `m.room.canonical_alias`
                   state event.
                 example: "#somewhere:exmaple.org"
               room_avatar_url:
                 type: string
                 description: |-
                   The Content URI for the room to which the user is invited. This should
-                  be retrieved from the ``m.room.avatar`` state event.
+                  be retrieved from the `m.room.avatar` state event.
                 example: "mxc://example.org/s0meM3dia"
               room_join_rules:
                 type: string
                 description: |-
-                  The ``join_rule`` for the room to which the user is invited. This should
-                  be retrieved from the ``m.room.join_rules`` state event.
+                  The `join_rule` for the room to which the user is invited. This should
+                  be retrieved from the `m.room.join_rules` state event.
                 example: "public"
               room_name:
                 type: string
                 description: |-
                   The name of the room to which the user is invited. This should be retrieved
-                  from the ``m.room.name`` state event.
+                  from the `m.room.name` state event.
                 example: "Bob's Emporium of Messages"
               sender_display_name:
                 type: string
@@ -126,7 +126,7 @@ paths:
                 type: string
                 description: |
                   The generated token. Must be a string consisting of the
-                  characters ``[0-9a-zA-Z.=_-]``. Its length must not exceed
+                  characters `[0-9a-zA-Z.=_-]`. Its length must not exceed
                   255 characters and it must not be empty.
               public_keys:
                 type: array
@@ -153,8 +153,8 @@ paths:
             An error has occured.
 
             If the 3pid is already bound to a Matrix user ID, the error code
-            will be ``M_THREEPID_IN_USE``.  If the medium is unsupported, the
-            error code will be ``M_UNRECOGNIZED``.
+            will be `M_THREEPID_IN_USE`.  If the medium is unsupported, the
+            error code will be `M_UNRECOGNIZED`.
           examples:
             application/json: {
               "errcode": "M_THREEPID_IN_USE",
@@ -166,7 +166,7 @@ paths:
         403:
           description: |
             The user must do something in order to use this endpoint. One example
-            is an ``M_TERMS_NOT_SIGNED`` error where the user must `agree to more terms`_.
+            is an `M_TERMS_NOT_SIGNED` error where the user must `agree to more terms`_.
           examples:
             application/json: {
               "errcode": "M_TERMS_NOT_SIGNED",

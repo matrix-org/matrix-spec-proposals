@@ -60,7 +60,7 @@ paths:
                 type: string
                 description: |-
                   The event ID to set the read receipt location at. This is
-                  equivalent to calling ``/receipt/m.read/$elsewhere:example.org``
+                  equivalent to calling `/receipt/m.read/$elsewhere:example.org`
                   and is provided here to save that extra call.
                 example: "$elsewhere:example.org"
             required: ['m.fully_read']

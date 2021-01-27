@@ -87,7 +87,7 @@ paths:
                 example: 1234567890
               type:
                 type: string
-                description: The value ``m.room.member``.
+                description: The value `m.room.member`.
                 example: "m.room.member"
               state_key:
                 type: string
@@ -101,7 +101,7 @@ paths:
                 properties:
                   membership:
                     type: string
-                    description: The value ``leave``.
+                    description: The value `leave`.
                     example: "leave"
                 required: ['membership']
               depth:

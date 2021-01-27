@@ -131,8 +131,8 @@ paths:
                     - type: string
                     - type: string
                 description: |-
-                  An array of arrays containing the `3PID Types`_ with the ``medium``
-                  in first position and the ``address`` in second position.
+                  An array of arrays containing the `3PID Types`_ with the `medium`
+                  in first position and the `address` in second position.
             required:
               - "threepids"
       responses:
@@ -164,8 +164,8 @@ paths:
                     - type: string
                     - type: string
                 description: |-
-                  An array of array containing the `3PID Types`_ with the ``medium``
-                  in first position, the ``address`` in second position and Matrix user
+                  An array of array containing the `3PID Types`_ with the `medium`
+                  in first position, the `address` in second position and Matrix user
                   ID in third position.
             required:
               - "threepids"

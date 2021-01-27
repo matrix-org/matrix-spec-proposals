@@ -33,7 +33,7 @@ properties:
       type: string
     description: |-
       The public key.  The object must have exactly one property, whose name is
-      in the form ``<algorithm>:<unpadded_base64_public_key>``, and whose value
+      in the form `<algorithm>:<unpadded_base64_public_key>`, and whose value
       is the unpadded base64 public key.
     example:
       "ed25519:alice+base64+public+key": "alice+base64+public+key"

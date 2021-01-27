@@ -22,7 +22,7 @@ allOf:
       edu_type:
         type: enum
         enum: ['m.typing']
-        description: The string ``m.typing``
+        description: The string `m.typing`
         example: "m.typing"
       content:
         type: object

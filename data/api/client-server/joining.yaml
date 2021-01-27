@@ -32,7 +32,7 @@ paths:
       summary: Start the requesting user participating in a particular room.
       description: |-
         *Note that this API requires a room ID, not alias.*
-        ``/join/{roomIdOrAlias}`` *exists if you have a room alias.*
+        `/join/{roomIdOrAlias}` *exists if you have a room alias.*
 
         This API starts a user participating in a particular room, if that user
         is allowed to participate in that room. After this call, the client is
@@ -62,12 +62,12 @@ paths:
                 - $ref: "definitions/third_party_signed.yaml"
                 description: |-
                   If supplied, the homeserver must verify that it matches a pending
-                  ``m.room.third_party_invite`` event in the room, and perform
+                  `m.room.third_party_invite` event in the room, and perform
                   key validity checking if required by the event.
               reason:
                 type: string
                 description: |-
-                  Optional reason to be included as the ``reason`` on the subsequent
+                  Optional reason to be included as the `reason` on the subsequent
                   membership event.
                 example: "Looking for support"
       responses:
@@ -75,7 +75,7 @@ paths:
           description: |-
             The room has been joined.
 
-            The joined room ID must be returned in the ``room_id`` field.
+            The joined room ID must be returned in the `room_id` field.
           examples:
             application/json: {
               "room_id": "!d41d8cd:matrix.org"}
@@ -88,7 +88,7 @@ paths:
             required: ["room_id"]
         403:
           description: |-
-            You do not have permission to join the room. A meaningful ``errcode``
+            You do not have permission to join the room. A meaningful `errcode`
             and description error text will be returned. Example reasons for rejection are:
 
             - The room is invite-only and the user was not invited.
@@ -108,7 +108,7 @@ paths:
     post:
       summary: Start the requesting user participating in a particular room.
       description: |-
-        *Note that this API takes either a room ID or alias, unlike* ``/room/{roomId}/join``.
+        *Note that this API takes either a room ID or alias, unlike* `/room/{roomId}/join`.
 
         This API starts a user participating in a particular room, if that user
         is allowed to participate in that room. After this call, the client is
@@ -146,13 +146,13 @@ paths:
                 allOf:
                   - $ref: "definitions/third_party_signed.yaml"
                 description: |-
-                  If a ``third_party_signed`` was supplied, the homeserver must verify
-                  that it matches a pending ``m.room.third_party_invite`` event in the
+                  If a `third_party_signed` was supplied, the homeserver must verify
+                  that it matches a pending `m.room.third_party_invite` event in the
                   room, and perform key validity checking if required by the event.
               reason:
                 type: string
                 description: |-
-                  Optional reason to be included as the ``reason`` on the subsequent
+                  Optional reason to be included as the `reason` on the subsequent
                   membership event.
                 example: "Looking for support"
       responses:
@@ -160,7 +160,7 @@ paths:
           description: |-
             The room has been joined.
 
-            The joined room ID must be returned in the ``room_id`` field.
+            The joined room ID must be returned in the `room_id` field.
           examples:
             application/json: {
               "room_id": "!d41d8cd:matrix.org"}
@@ -173,7 +173,7 @@ paths:
             required: ["room_id"]
         403:
           description: |-
-            You do not have permission to join the room. A meaningful ``errcode``
+            You do not have permission to join the room. A meaningful `errcode`
             and description error text will be returned. Example reasons for rejection are:
 
             - The room is invite-only and the user was not invited.
