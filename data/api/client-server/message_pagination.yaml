@@ -132,15 +132,15 @@ paths:
                 "chunk": [
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.name"
+                    "$ref": "definitions/event-schemas/examples/m.room.name.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.message$m.video"
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.video.yaml"
                   }
                 ]
               }

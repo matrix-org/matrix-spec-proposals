@@ -76,7 +76,7 @@ paths:
                 "chunk": [
                   {
                     "room_id": "!somewhere:over.the.rainbow",
-                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
                   }
                 ]
               }

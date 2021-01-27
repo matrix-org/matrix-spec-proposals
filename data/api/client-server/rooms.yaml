@@ -55,7 +55,7 @@ paths:
           examples:
             application/json: {
               "room_id": "!636q39766251:matrix.org",
-              "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+              "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
             }
           schema:
             allOf:
@@ -144,19 +144,19 @@ paths:
             application/json: [
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.join_rules"
+                "$ref": "definitions/event-schemas/examples/m.room.join_rules.yaml"
               },
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.member"
+                "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
               },
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.create"
+                "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
               },
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.power_levels"
+                "$ref": "definitions/event-schemas/examples/m.room.power_levels.yaml"
               }
             ]
           schema:
@@ -242,7 +242,7 @@ paths:
                 "chunk": [
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.member"
+                    "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
                   }
                 ]
               }
@@ -255,7 +255,7 @@ paths:
                   title: MemberEvent
                   type: object
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/m.room.member"
+                    - "$ref": "definitions/event-schemas/schema/m.room.member.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a

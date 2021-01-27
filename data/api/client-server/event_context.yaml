@@ -65,8 +65,8 @@ paths:
           description: |-
             A JSON ``RoomEventFilter`` to filter the returned events with. The
             filter is only applied to ``events_before``, ``events_after``, and
-            ``state``. It is not applied to the ``event`` itself. The filter may 
-            be applied before or/and after the ``limit`` parameter - whichever the 
+            ``state``. It is not applied to the ``event`` itself. The filter may
+            be applied before or/and after the ``limit`` parameter - whichever the
             homeserver prefers.
 
             See `Filtering <#filtering>`_ for more information.
@@ -120,29 +120,29 @@ paths:
               "events_after": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
+                  "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
                 }
               ],
               "event": {
                 "event_id": "$f3h4d129462ha:example.com",
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.message$m.image"
+                "$ref": "definitions/event-schemas/examples/m.room.message$m.image.yaml"
               },
               "events_before": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.message$m.file"
+                  "$ref": "definitions/event-schemas/examples/m.room.message$m.file.yaml"
                 }
               ],
               "start": "t27-54_2_0_2",
               "state": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.create"
+                  "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
                 },
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.member"
+                  "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
                 }
               ]
             }
