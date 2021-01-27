@@ -1,25 +1,30 @@
 # MSC2858: Multiple SSO Identity Providers
 
 Matrix already has generic SSO support, but it does not yield the best user experience especially for
-instances which wish to offer multiple identity providers. This MSC provides a simple and fully
+instances which wish to offer multiple identity providers (IdPs). This MSC provides a simple and fully
 backwards compatible way to extend the current spec which would allow clients to give users options
 like `Continue with Google` and `Continue with Github` side-by-side.
-
-
-## Proposal
 
 Currently, Matrix supports `m.login.sso`, `m.login.token` and `/login/sso/redirect` for clients to
 pass their user to the configured Identity provider and for them to come back with something which
 is exchangeable for a Matrix access token. This flow offers no insight to the user as to what
-Identity providers are available. It allows clients to offer a super generic `Sign in with SSO`
-button only. With the currently possible solutions and workarounds the experience is far from great 
+Identity providers are available: clients can offer only a very generic `Sign in with SSO`
+button. With the currently possible solutions and workarounds the experience is far from great
 and user's have to blindly click `Sign in with SSO` without any clue as to what's hiding on the other
 side of the door. Some users will definitely not be familiar with `SSO` but will be with the concept of
 "Continue with Google" or similar.
 
-By augmenting the `m.login.sso` flow discovery definition to include metadata on the supported IDPs
-the client can show a button for each of the supported providers, yielding a much more usable
-experience. This would look like this:
+## Proposal
+
+We extend the [login
+flow](https://matrix.org/docs/spec/client_server/r0.6.1#login) to allow clients
+to choose an SSO Identity provider before control is handed over to the server.
+
+### Extensions to login flow discovery
+
+The response to [`GET /_matrix/client/r0/login`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-login)
+is extended to **optionally** include an `identity_providers` property for
+flows whose type `m.login.sso`. This would look like this:
 
 ```json
 {
@@ -46,16 +51,22 @@ experience. This would look like this:
 }
 ```
 
-The `id` field is a string using the common identifier grammar as defined in
-https://github.com/matrix-org/matrix-doc/pull/2758.
+The value of the `identity_providers` property is a list, each entry consisting
+of an object with the following fields:
 
-The `name` field should be the human readable string intended for printing by the client.
+ * The `id` field is **required**. It should be a string using the common
+   identifier grammar as defined in
+   https://github.com/matrix-org/matrix-doc/pull/2758.
 
-The `icon` field is the only optional field and should point to an icon representing the IdP.
-If present then it must be an MXC URI to an image resource.
+ * The `name` field is **required**. It should be the human readable string
+   intended for printing by the client.
 
+ * The `icon` field is **optional**. It should point to an icon representing
+   the IdP.  If present then it must be an MXC URI to an image resource.
 
-A new endpoint would be needed to support redirecting directly to one of the IDPs:
+### Extend the `/login/sso/redirect` endpoint
+
+A new endpoint is added to support redirecting directly to one of the IdPs:
 
 `GET /_matrix/client/r0/login/sso/redirect/{idp_id}`
 
@@ -63,14 +74,15 @@ This would behave identically to the existing endpoint without the last argument
 except would allow the server to forward the user directly to the correct IdP.
 
 For the case of backwards compatibility the existing endpoint is to remain,
-and if the server supports multiple SSO IDPs it should offer the user a page
+and if the server supports multiple SSO IdPs it should offer the user a page
 which lets them choose between the available IdP options as a fallback.
 
-For the case of User Interactive Auth the server would just give the standard
-SSO flow option without any identity_providers as there is no method for
-a client to choose an idp within that flow at this time nor is it as
-essential.
+### Notes on user-interactive auth
 
+For the case of User Interactive Auth the server would just give the standard
+SSO flow option without any `identity_providers` as there is no method for
+a client to choose an IdP within that flow at this time nor is it as
+essential.
 
 ## Potential issues
 
