@@ -54,12 +54,20 @@ flows whose type `m.login.sso`. This would look like this:
 The value of the `identity_providers` property is a list, each entry consisting
 of an object with the following fields:
 
- * The `id` field is **required**. It should be a string using the common
-   identifier grammar as defined in
-   https://github.com/matrix-org/matrix-doc/pull/2758.
+ * The `id` field is **required**. It is an opaque string chosen by the
+   homeserver implementation, and uniquely identifies the identity provider on
+   that server. Clients should not infer any semantic meaning from the
+   identifier. The identifier should be between 1 and 255 characters in length,
+   and should consist of the characters matching unreserved URI characters as
+   defined in [RFC3986](http://www.ietf.org/rfc/rfc3986.txt):
 
- * The `name` field is **required**. It should be the human readable string
-   intended for printing by the client.
+   ```
+   ALPHA  DIGIT  "-" / "." / "_" / "~"
+   ```
+
+ * The `name` field is **required**. It should be a human readable string
+   intended for printing by the client. No explicit length limit or grammar is
+   specified.
 
  * The `icon` field is **optional**. It should point to an icon representing
    the IdP.  If present then it must be an MXC URI to an image resource.
