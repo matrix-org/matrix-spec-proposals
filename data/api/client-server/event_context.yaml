@@ -93,12 +93,12 @@ paths:
                   requested event, in reverse-chronological order.
                 items:
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
               event:
                 description: |-
                   Details of the requested event.
                 allOf:
-                  - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                  - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
               events_after:
                 type: array
                 description: |-
@@ -106,43 +106,43 @@ paths:
                   requested event, in chronological order.
                 items:
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
               state:
                 type: array
                 description: |-
                   The state of the room at the last event returned.
                 items:
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
             application/json: {
               "end": "t29-57_2_0_2",
               "events_after": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+                  "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
                 }
               ],
               "event": {
                 "event_id": "$f3h4d129462ha:example.com",
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.message$m.image.yaml"
+                "$ref": "../../event-schemas/examples/m.room.message$m.image.yaml"
               },
               "events_before": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.message$m.file.yaml"
+                  "$ref": "../../event-schemas/examples/m.room.message$m.file.yaml"
                 }
               ],
               "start": "t27-54_2_0_2",
               "state": [
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
+                  "$ref": "../../event-schemas/examples/m.room.create.yaml"
                 },
                 {
                   "room_id": "!636q39766251:example.com",
-                  "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
+                  "$ref": "../../event-schemas/examples/m.room.member.yaml"
                 }
               ]
             }

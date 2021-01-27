@@ -135,7 +135,7 @@ paths:
                   "sender": "@someone:example.org",
                   "unsigned": {
                     "invite_room_state": {
-                      "$ref": "../../../event-schemas/examples/invite_room_state.json"
+                      "$ref": "../../event-schemas/examples/invite_room_state.json"
                     }
                   },
                   "content": {

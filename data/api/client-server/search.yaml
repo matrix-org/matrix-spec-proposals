@@ -208,7 +208,7 @@ paths:
                               type: object
                               title: Event
                               description: The event that matched.
-                              "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                              "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                             context:
                               type: object
                               title: Event Context
@@ -250,7 +250,7 @@ paths:
                                   items:
                                     title: Event
                                     type: object
-                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                                    "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                                 events_after:
                                   type: array
                                   title: Events After
@@ -258,7 +258,7 @@ paths:
                                   items:
                                     title: Event
                                     type: object
-                                    "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                                    "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                       state:
                         type: object
                         title: Current state
@@ -274,7 +274,7 @@ paths:
                           title: Room State
                           items:
                             type: object
-                            "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                            "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
                       groups:
                         type: object
                         title: Groups
@@ -351,7 +351,7 @@ paths:
                           "result": {
                             "room_id": "!qPewotXpIctQySfjSy:localhost",
                             "event_id": "$144429830826TWwbB:localhost",
-                            "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+                            "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
                           }
                         }
                       ]

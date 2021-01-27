@@ -76,7 +76,7 @@ paths:
                 "chunk": [
                   {
                     "room_id": "!somewhere:over.the.rainbow",
-                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
                   }
                 ]
               }
@@ -100,7 +100,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination ``from`` parameter."
         # No tags to exclude this from the swagger UI - use the normal version instead.

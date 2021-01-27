@@ -55,11 +55,11 @@ paths:
           examples:
             application/json: {
               "room_id": "!636q39766251:matrix.org",
-              "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+              "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
             }
           schema:
             allOf:
-              - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+              - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
           examples:
@@ -144,19 +144,19 @@ paths:
             application/json: [
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.join_rules.yaml"
+                "$ref": "../../event-schemas/examples/m.room.join_rules.yaml"
               },
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
+                "$ref": "../../event-schemas/examples/m.room.member.yaml"
               },
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
+                "$ref": "../../event-schemas/examples/m.room.create.yaml"
               },
               {
                 "room_id": "!636q39766251:example.com",
-                "$ref": "definitions/event-schemas/examples/m.room.power_levels.yaml"
+                "$ref": "../../event-schemas/examples/m.room.power_levels.yaml"
               }
             ]
           schema:
@@ -171,7 +171,7 @@ paths:
               title: StateEvent
               type: object
               allOf:
-                - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a
@@ -242,7 +242,7 @@ paths:
                 "chunk": [
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.member.yaml"
                   }
                 ]
               }
@@ -255,7 +255,7 @@ paths:
                   title: MemberEvent
                   type: object
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/m.room.member.yaml"
+                    - "$ref": "../../event-schemas/schema/m.room.member.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a

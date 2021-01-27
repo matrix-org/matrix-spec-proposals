@@ -16,7 +16,7 @@ properties:
     description: List of events.
     items:
       allOf:
-      - $ref: event-schemas/schema/core-event-schema/sync_room_event.yaml
+      - $ref: ../../../event-schemas/schema/core-event-schema/sync_room_event.yaml
       type: object
       required:
       - event_id

@@ -111,7 +111,7 @@ paths:
                   for ``dir=f`` in chronological order, so that events start
                   at the ``from`` point.
                 items:
-                  "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                  "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
               state:
                 type: array
                 description: |-
@@ -124,7 +124,7 @@ paths:
                   sent to the client in prior calls to this endpoint, assuming
                   the membership of those members has not changed.
                 items:
-                  $ref: "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                  $ref: "../../event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
             application/json: {
                 "start": "t47429-4392820_219380_26003_2265",
@@ -132,15 +132,15 @@ paths:
                 "chunk": [
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.name.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.name.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.message$m.video.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.message$m.video.yaml"
                   }
                 ]
               }

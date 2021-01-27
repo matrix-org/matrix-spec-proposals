@@ -64,7 +64,7 @@ paths:
                 "start": "s3456_9_0",
                 "end": "s3457_9_0",
                 "chunk": [
-                  {"$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"}
+                  {"$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"}
                 ]
               }
           schema:
@@ -87,7 +87,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination ``from`` parameter."
       tags:
@@ -131,7 +131,7 @@ paths:
             application/json: {
                   "end": "s3456_9_0",
                   "presence": [
-                      {"$ref": "definitions/event-schemas/examples/m.presence.yaml"}
+                      {"$ref": "../../event-schemas/examples/m.presence.yaml"}
                   ],
                   "account_data": [
                     {
@@ -148,11 +148,11 @@ paths:
                               "chunk": [
                                   {
                                     "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+                                    "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
                                   },
                                   {
                                     "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                                    "$ref": "definitions/event-schemas/examples/m.room.message$m.video.yaml"
+                                    "$ref": "../../event-schemas/examples/m.room.message$m.video.yaml"
                                   }
                               ],
                               "end": "s3456_9_0",
@@ -162,19 +162,19 @@ paths:
                           "state": [
                               {
                                 "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                                "$ref": "definitions/event-schemas/examples/m.room.join_rules.yaml"
+                                "$ref": "../../event-schemas/examples/m.room.join_rules.yaml"
                               },
                               {
                                 "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                                "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
+                                "$ref": "../../event-schemas/examples/m.room.member.yaml"
                               },
                               {
                                 "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                                "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
+                                "$ref": "../../event-schemas/examples/m.room.create.yaml"
                               },
                               {
                                 "room_id": "!TmaZBKYIFrIPVGoUYp:localhost",
-                                "$ref": "definitions/event-schemas/examples/m.room.power_levels.yaml"
+                                "$ref": "../../event-schemas/examples/m.room.power_levels.yaml"
                               }
                           ],
                           "visibility": "private",
@@ -209,7 +209,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
               rooms:
                 type: array
                 items:
@@ -228,7 +228,7 @@ paths:
                         title: "InviteEvent"
                         description: "The invite event if ``membership`` is ``invite``"
                         allOf:
-                          - "$ref": "definitions/event-schemas/schema/m.room.member.yaml"
+                          - "$ref": "../../event-schemas/schema/m.room.member.yaml"
                     messages:
                       type: object
                       title: PaginationChunk
@@ -256,7 +256,7 @@ paths:
                             type: object
                             title: RoomEvent
                             allOf:
-                              - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                       required: ["start", "end", "chunk"]
                     state:
                       type: array
@@ -269,7 +269,7 @@ paths:
                         title: StateEvent
                         type: object
                         allOf:
-                          - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -285,7 +285,7 @@ paths:
                         title: Event
                         type: object
                         allOf:
-                          - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+                          - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
                   required: ["room_id", "membership"]
               account_data:
                 type: array
@@ -295,7 +295,7 @@ paths:
                   title: Event
                   type: object
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
             required: ["end", "rooms", "presence"]
         404:
           description: There is no avatar URL for this user or this user does not exist.
@@ -326,10 +326,10 @@ paths:
         200:
           description: The full event.
           examples:
-            application/json: {"$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"}
+            application/json: {"$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"}
           schema:
             allOf:
-              - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+              - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
       tags:
