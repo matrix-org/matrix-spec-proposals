@@ -1,9 +1,0 @@
-{
-  "$ref": "core/state_event.json",
-  "type": "m.room.tombstone",
-  "state_key": "",
-  "content": {
-    "body": "This room has been replaced",
-    "replacement_room": "!newroom:example.org"
-  }
-}

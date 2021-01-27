@@ -44,11 +44,11 @@ paths:
                   "chunk": [
                     {
                       "room_id": "!636q39766251:example.com",
-                      "$ref": "definitions/event-schemas/examples/m.room.message$m.text.yaml"
+                      "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
                     },
                     {
                       "room_id": "!636q39766251:example.com",
-                      "$ref": "definitions/event-schemas/examples/m.room.message$m.file.yaml"
+                      "$ref": "../../event-schemas/examples/m.room.message$m.file.yaml"
                     }
                   ],
                   "end": "s3456_9_0",
@@ -58,19 +58,19 @@ paths:
                 "state": [
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.join_rules.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.join_rules.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.member.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.member.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.create.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.create.yaml"
                   },
                   {
                     "room_id": "!636q39766251:example.com",
-                    "$ref": "definitions/event-schemas/examples/m.room.power_levels.yaml"
+                    "$ref": "../../event-schemas/examples/m.room.power_levels.yaml"
                   }
                 ],
                 "visibility": "private",
@@ -117,7 +117,7 @@ paths:
                       type: object
                       title: RoomEvent
                       allOf:
-                        - "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+                        - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
                 required: ["start", "end", "chunk"]
               state:
                 type: array
@@ -130,7 +130,7 @@ paths:
                   title: StateEvent
                   type: object
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
               visibility:
                 type: string
                 enum: ["private", "public"]
@@ -145,7 +145,7 @@ paths:
                   title: Event
                   type: object
                   allOf:
-                    - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
+                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
             required: ["room_id"]
         403:
           description: >
