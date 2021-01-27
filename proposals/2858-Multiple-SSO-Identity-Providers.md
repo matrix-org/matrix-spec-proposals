@@ -94,6 +94,8 @@ of an object with the following fields:
    any of the above, but are expected to apply a sensible unbranded fallback
    for any brand they do not recognise/support.
 
+   Where `icon` and `brand` are both present, it is recommended that clients
+   which support the `brand` give precedence to `brand` over `icon`.
 
 ### Extend the `/login/sso/redirect` endpoint
 
@@ -115,10 +117,6 @@ SSO flow option without any `identity_providers` as there is no method for
 a client to choose an IdP within that flow at this time nor is it as
 essential.
 
-## Potential issues
-
-None discovered at this time
-
 
 ## Alternatives
 
@@ -131,6 +129,29 @@ for the server to deterministically always pick one, maybe the first option and 
 old clients only auth via that one but that means potentially locking users out of their
 accounts.
 
+### Styling information as an alternative to `brand`
+
+The `brand` field is intended to allow clients to style "login" buttons according
+to the identity provider in question. For example, a mobile application might
+show:
+
+![login buttons](images/2858-login.png)
+
+Some identity providers have very specific rules about how such buttons should
+be presented, so a fine level of control is important.
+
+An alternative way to achieve this would be for the server to give full details
+about the styling: icon, font colour, border colour, background colour,
+etc. However, this soon becomes unscalable. For example, it might be desirable
+to offer each logo at a range of resolutions to suit different screen sizes.
+Likewise, some brands need different styling depending on the background
+colour, so a complete second set of colours must be specified to account for
+dark or light themes.
+
+## Potential issues
+
+ * New Identity Providers added by server administators will be unbranded until
+   clients adopt support for the new brand.
 
 ## Security considerations
 
