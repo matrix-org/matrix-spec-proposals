@@ -35,12 +35,14 @@ flows whose type `m.login.sso`. This would look like this:
                 {
                     "id": "google",
                     "name": "Google",
-                    "icon": "mxc://..."
+                    "icon": "mxc://...",
+                    "brand": "org.matrix.google"
                 },
                 {
                     "id": "github",
                     "name": "Github",
-                    "icon": "mxc://..."
+                    "icon": "mxc://...",
+                    "brand": "org.matrix.github"
                 }
             ]
         },
@@ -71,6 +73,27 @@ of an object with the following fields:
 
  * The `icon` field is **optional**. It should point to an icon representing
    the IdP.  If present then it must be an MXC URI to an image resource.
+
+ * The `brand` field is **optional**. It allows the client to style the login
+   button to suit a particular brand. It should be a string matching the
+   "Common namespaced identifier grammar" as defined in
+   [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758).
+
+   Initially the following identifiers are specified:
+    * `org.matrix.gitlab`
+    * `org.matrix.github`
+    * `org.matrix.apple`
+    * `org.matrix.google`
+    * `org.matrix.facebook`
+    * `org.matrix.twitter`
+
+   Server implementations are free to add additional brands, though they should
+   be mindful of clients which do not recognise any given brand.
+
+   Clients are free to implement any set of brands they wish, including all or
+   any of the above, but are expected to apply a sensible unbranded fallback
+   for any brand they do not recognise/support.
+
 
 ### Extend the `/login/sso/redirect` endpoint
 
