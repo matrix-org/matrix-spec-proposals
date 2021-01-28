@@ -117,4 +117,6 @@ continually denying the widget's capabilities request on behalf of the widget.
 ## Unstable prefix
 
 Until this MSC is in a release version of the specification, implementations should use `org.matrix.msc2974`
-in the `supported_versions` request/response to detect support.
+in the `supported_versions` request/response to detect support. The `action` becomes 
+`org.matrix.msc2974.request_capabilities` under this convention - the capabilities return defined by MSC2871
+is unchanged.
