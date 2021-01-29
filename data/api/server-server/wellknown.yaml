@@ -50,4 +50,4 @@ paths:
                 description: |-
                   The server name to delegate server-server communciations to, with optional
                   port. The delegated server name uses the same grammar as
-                  `server names in the appendices <../appendices.html#server-name>`_.
+                  [server names in the appendices](/appendices/#server-name).

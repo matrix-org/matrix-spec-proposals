@@ -173,7 +173,7 @@ paths:
                 type: object
                 description: |-
                   Extra keys, such as `m.federate`, to be added to the content
-                  of the `m.room.create`_ event. The server will clobber the following
+                  of the [`m.room.create`](client-server-api/#mroomcreate) event. The server will clobber the following
                   keys: `creator`, `room_version`. Future versions of the specification
                   may allow the server to clobber other keys.
               initial_state:
@@ -216,13 +216,14 @@ paths:
                 description: |-
                   This flag makes the server set the `is_direct` flag on the
                   `m.room.member` events sent to the users in `invite` and
-                  `invite_3pid`. See `Direct Messaging`_ for more information.
+                  `invite_3pid`. See [Direct Messaging](/client-server-api/#direct-messaging) for more information.
               power_level_content_override:
                 title: Power Level Event Content
                 type: object
                 description: |-
                   The power level content to override in the default power level
-                  event. This object is applied on top of the generated `m.room.power_levels`_
+                  event. This object is applied on top of the generated
+                  [`m.room.power_levels`](client-server-api/#mroompower_levels)
                   event content prior to it being sent to the room. Defaults to
                   overriding nothing.
       responses:

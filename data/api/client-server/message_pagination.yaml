@@ -35,7 +35,7 @@ paths:
         pagination query parameters to paginate history in the room.
 
         *Note*: This endpoint supports lazy-loading of room member events. See
-        `Lazy-loading room members <#lazy-loading-room-members>`_ for more information.
+        [Lazy-loading room members](/client-server-api/#lazy-loading-room-members) for more information.
       operationId: getRoomEvents
       security:
         - accessToken: []

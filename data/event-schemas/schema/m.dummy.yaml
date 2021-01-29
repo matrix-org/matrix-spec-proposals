@@ -4,7 +4,7 @@ allOf:
 
 description: |-
   This event type is used to indicate new Olm sessions for end-to-end encryption.
-  Typically it is encrypted as an `m.room.encrypted` event, then sent as a `to-device`_
+  Typically it is encrypted as an `m.room.encrypted` event, then sent as a [to-device](/client-server-api/#send-to-device-messaging)
   event.
 
   The event does not have any content associated with it. The sending client is expected

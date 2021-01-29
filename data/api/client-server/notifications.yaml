@@ -101,7 +101,7 @@ paths:
                       type: array
                       description: |-
                         The action(s) to perform when the conditions for this rule are met.
-                        See `Push Rules: API`_.
+                        See [Push Rules: API](/client-server-api/#push-rules-api).
                       items:
                         type:
                         - object

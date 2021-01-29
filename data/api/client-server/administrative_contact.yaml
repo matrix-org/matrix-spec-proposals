@@ -183,7 +183,7 @@ paths:
     post:
       summary: Adds contact information to the user's account.
       description: |-
-        This API endpoint uses the `User-Interactive Authentication API`_.
+        This API endpoint uses the [User-Interactive Authentication API](/client-server-api/#user-interactive-authentication-api).
 
         Adds contact information to the user's account. Homeservers should use 3PIDs added
         through this endpoint for password resets instead of relying on the identity server.
@@ -424,7 +424,8 @@ paths:
         already associated with an account on this homeserver. This API should
         be used to request validation tokens when adding an email address to an
         account. This API's parameters and response are identical to that of
-        the |/register/email/requestToken|_ endpoint. The homeserver should validate
+        the [`/register/email/requestToken`](/client-server-api/#post_matrixclientr0registeremailrequesttoken)
+        endpoint. The homeserver should validate
         the email itself, either by sending a validation email itself or by using
         a service it has control over.
       operationId: requestTokenTo3PIDEmail
@@ -474,7 +475,8 @@ paths:
         already associated with an account on this homeserver. This API should
         be used to request validation tokens when adding a phone number to an
         account. This API's parameters and response are identical to that of
-        the |/register/msisdn/requestToken|_ endpoint. The homeserver should validate
+        the [`/register/msisdn/requestToken`](/client-server-api/#post_matrixclientr0registermsisdnrequesttoken)
+        endpoint. The homeserver should validate
         the phone number itself, either by sending a validation message itself or by using
         a service it has control over.
       operationId: requestTokenTo3PIDMSISDN

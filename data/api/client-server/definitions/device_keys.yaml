@@ -52,8 +52,7 @@ properties:
        Signatures for the device key object. A map from user ID, to a map from
        `<algorithm>:<device_id>` to the signature.
 
-       The signature is calculated using the process described at `Signing
-       JSON`_.
+       The signature is calculated using the process described at [Signing JSON](/appendices/#signing-json).
     additionalProperties:
       type: object
       additionalProperties:

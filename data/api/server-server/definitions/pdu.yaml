@@ -24,7 +24,7 @@ allOf:
         type: object
         title: Event Hash
         description: |-
-          Content hashes of the PDU, following the algorithm specified in `Signing Events`_.
+          Content hashes of the PDU, following the algorithm specified in [Signing Events](/server-server-api/#signing-events).
         example: {
           "sha256": "ThisHashCoversAllFieldsInCaseThisIsRedacted"
         }
@@ -37,7 +37,7 @@ allOf:
       signatures:
         type: object
         description: |-
-          Signatures for the PDU, following the algorithm specified in `Signing Events`_.
+          Signatures for the PDU, following the algorithm specified in [Signing Events](/server-server-api/#signing-events).
         example: {
           "example.com": {
             "ed25519:key_version:": "86BytesOfSignatureOfTheRedactedEvent"

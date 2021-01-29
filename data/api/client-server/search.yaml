@@ -90,12 +90,8 @@ paths:
                       filter:
                         type: object
                         title: Filter
-                        # Within the C-S spec document, `filter`_ is picked up
-                        # as a link to the filtering section. In OpenAPI 3.0,
-                        # we could use the link feature, but we're still on 2.0
-                        # for now :/
                         description: |-
-                          This takes a `filter`_.
+                          This takes a [filter](/client-server-api/#filtering).
                         allOf:
                           - $ref: "definitions/room_event_filter.yaml"
                       order_by:

@@ -38,13 +38,13 @@ paths:
           type: string
           name: medium
           required: true
-          description: The medium type of the 3pid. See the `3PID Types`_ Appendix.
+          description: The medium type of the 3pid. See the [3PID Types](/appendices/#3pid-types) Appendix.
           x-example: "email"
         - in: query
           type: string
           name: address
           required: true
-          description: The address of the 3pid being looked up. See the `3PID Types`_ Appendix.
+          description: The address of the 3pid being looked up. See the [3PID Types](/appendices/#3pid-types) Appendix.
           x-example: "louise@bobs.burgers"
       responses:
         200:
@@ -72,7 +72,7 @@ paths:
                 description: The 3pid address of the user being looked up, matching the address requested.
               medium:
                 type: string
-                description: A medium from the `3PID Types`_ Appendix, matching the medium requested.
+                description: A medium from the [3PID Types](/appendices/#3pid-types) Appendix, matching the medium requested.
               mxid:
                 type: string
                 description: The Matrix user ID associated with the 3pid.
@@ -131,7 +131,7 @@ paths:
                     - type: string
                     - type: string
                 description: |-
-                  An array of arrays containing the `3PID Types`_ with the `medium`
+                  An array of arrays containing the [3PID Types](/appendices/#3pid-types) with the `medium`
                   in first position and the `address` in second position.
             required:
               - "threepids"
@@ -164,7 +164,7 @@ paths:
                     - type: string
                     - type: string
                 description: |-
-                  An array of array containing the `3PID Types`_ with the `medium`
+                  An array of array containing the [3PID Types](/appendices/#3pid-types) with the `medium`
                   in first position, the `address` in second position and Matrix user
                   ID in third position.
             required:

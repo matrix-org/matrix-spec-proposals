@@ -4,7 +4,7 @@ allOf:
 
 description: |-
   This event type is used to request keys for end-to-end encryption. It is sent as an
-  unencrypted `to-device`_ event.
+  unencrypted [to-device](/client-server-api/#send-to-device-messaging) event.
 properties:
   content:
     properties:

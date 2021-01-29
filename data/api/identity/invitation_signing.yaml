@@ -53,7 +53,7 @@ paths:
                 description: The token from the call to `store-invite`.
               private_key:
                 type: string
-                description: The private key, encoded as `Unpadded base64`_.
+                description: The private key, encoded as [Unpadded base64](/appendices/#unpadded-base64).
             required: ["mxid", "token", "private_key"]
       responses:
         200:
