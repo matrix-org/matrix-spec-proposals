@@ -37,7 +37,7 @@ enum of one of the following:
 Clients can manually set/get their presence using the HTTP APIs listed
 below.
 
-{{presence\_cs\_http\_api}}
+{{% http-api spec="client-server" api="presence" %}}
 
 ##### Last active ago
 

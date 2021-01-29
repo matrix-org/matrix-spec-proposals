@@ -205,7 +205,7 @@ Some API endpoints may allow or require the use of `POST` requests
 without a transaction ID. Where this is optional, the use of a `PUT`
 request is strongly recommended.
 
-{{versions\_cs\_http\_api}}
+{{% http-api spec="client-server" api="versions" %}}
 
 ## Web Browser Clients
 
@@ -301,7 +301,7 @@ specify parameter values. The flow for this method is as follows:
         `m.identity_server` property is present, but does not have a
         `base_url` value, then `FAIL_ERROR`.
 
-{{wellknown\_cs\_http\_api}}
+{{% http-api spec="client-server" api="wellknown" %}}
 
 ## Client Authentication
 
@@ -1021,9 +1021,9 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
-{{login\_cs\_http\_api}}
+{{% http-api spec="client-server" api="login" %}}
 
-{{logout\_cs\_http\_api}}
+{{% http-api spec="client-server" api="logout" %}}
 
 #### Login Fallback
 
@@ -1044,7 +1044,7 @@ the login endpoint during the login process. For example:
 
 ### Account registration and management
 
-{{registration\_cs\_http\_api}}
+{{% http-api spec="client-server" api="registration" %}}
 
 #### Notes on password management
 
@@ -1069,11 +1069,11 @@ identifier that is found in an identity server. Note that an identifier
 can be added and bound at the same time, depending on context.
 {{% /boxes/note %}}
 
-{{administrative\_contact\_cs\_http\_api}}
+{{% http-api spec="client-server" api="administrative_contact" %}}
 
 ### Current account information
 
-{{whoami\_cs\_http\_api}}
+{{% http-api spec="client-server" api="whoami" %}}
 
 #### Notes on identity servers
 
@@ -1148,7 +1148,7 @@ Matrix specification while other values may be used by servers using the
 Java package naming convention. The capabilities supported by the Matrix
 specification are defined later in this section.
 
-{{capabilities\_cs\_http\_api}}
+{{% http-api spec="client-server" api="capabilities" %}}
 
 ### `m.change_password` capability
 
@@ -1356,7 +1356,7 @@ The current endpoints which support lazy-loading room members are:
 
 ### API endpoints
 
-{{filter\_cs\_http\_api}}
+{{% http-api spec="client-server" api="filter" %}}
 
 ## Events
 
@@ -1582,23 +1582,23 @@ take a copy of the state dictionary, and *rewind* S1, in order to
 correctly calculate the display name for M0.
 {{% /boxes/rationale %}}
 
-{{sync\_cs\_http\_api}}
+{{% http-api spec="client-server" api="sync" %}}
 
-{{old\_sync\_cs\_http\_api}}
+{{% http-api spec="client-server" api="old_sync" %}}
 
 ### Getting events for a room
 
 There are several APIs provided to `GET` events for a room:
 
-{{rooms\_cs\_http\_api}}
+{{% http-api spec="client-server" api="rooms" %}}
 
-{{message\_pagination\_cs\_http\_api}}
+{{% http-api spec="client-server" api="message_pagination" %}}
 
-{{room\_initial\_sync\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_initial_sync" %}}
 
 ### Sending events to a room
 
-{{room\_state\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_state" %}}
 
 **Examples**
 
@@ -1647,7 +1647,7 @@ PUT /rooms/!roomid:domain/state/m.room.bgd.color
 { "color": "red", "hex": "#ff0000" }
 ```
 
-{{room\_send\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_send" %}}
 
 ### Redactions
 
@@ -1686,7 +1686,7 @@ the topic to be removed from the room.
 
 #### Client behaviour
 
-{{redaction\_cs\_http\_api}}
+{{% http-api spec="client-server" api="redaction" %}}
 
 ## Rooms
 
@@ -1706,7 +1706,7 @@ permissions in this room. This includes:
 See [Room Events](#room-events) for more information on these events. To
 create a room, a client has to use the following API.
 
-{{create\_room\_cs\_http\_api}}
+{{% http-api spec="client-server" api="create_room" %}}
 
 ### Room aliases
 
@@ -1731,7 +1731,7 @@ have a room alias of `#alias:example.com`, this SHOULD be checked to
 make sure that the room's ID matches the `room_id` returned from the
 request.
 
-{{directory\_cs\_http\_api}}
+{{% http-api spec="client-server" api="directory" %}}
 
 ### Permissions
 
@@ -1816,13 +1816,13 @@ The allowable state transitions of membership are:
                   /ban
 ```
 
-{{list\_joined\_rooms\_cs\_http\_api}}
+{{% http-api spec="client-server" api="list_joined_rooms" %}}
 
 #### Joining rooms
 
-{{inviting\_cs\_http\_api}}
+{{% http-api spec="client-server" api="inviting" %}}
 
-{{joining\_cs\_http\_api}}
+{{% http-api spec="client-server" api="joining" %}}
 
 #### Leaving rooms
 
@@ -1848,9 +1848,9 @@ behaviour is the same as if they had left of their own accord. In
 particular, the user is free to re-join if the room is not
 "invite-only".
 
-{{leaving\_cs\_http\_api}}
+{{% http-api spec="client-server" api="leaving" %}}
 
-{{kicking\_cs\_http\_api}}
+{{% http-api spec="client-server" api="kicking" %}}
 
 ##### Banning users in a room
 
@@ -1884,21 +1884,21 @@ A user must be explicitly unbanned with a request to
 `/rooms/<room_id>/unban`\_ before they can re-join the room or be
 re-invited.
 
-{{banning\_cs\_http\_api}}
+{{% http-api spec="client-server" api="banning" %}}
 
 ### Listing rooms
 
-{{list\_public\_rooms\_cs\_http\_api}}
+{{% http-api spec="client-server" api="list_public_rooms" %}}
 
 ## User Data
 
 ### User Directory
 
-{{users\_cs\_http\_api}}
+{{% http-api spec="client-server" api="users" %}}
 
 ### Profiles
 
-{{profile\_cs\_http\_api}}
+{{% http-api spec="client-server" api="profile" %}}
 
 #### Events on Change of Profile Information
 

@@ -37,7 +37,7 @@ invitee does indeed own that third party identifier. See the
 
 A client asks a server to invite a user by their third party identifier.
 
-{{third\_party\_membership\_cs\_http\_api}}
+{{% http-api spec="client-server" api="third_party_membership" %}}
 
 #### Server behaviour
 

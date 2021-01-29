@@ -104,7 +104,7 @@ The client starts the process by instructing the browser to navigate to
 authentication is successful, the browser will be redirected to that
 `redirectUrl`.
 
-{{sso\_login\_redirect\_cs\_http\_api}}
+{{% http-api spec="client-server" api="sso_login_redirect" %}}
 
 ###### Security considerations
 

@@ -39,7 +39,7 @@ commonly updated at the same time, and therefore the client might wish
 to save an extra HTTP call. Providing an `m.read` location performs the
 same task as a request to `/receipt/m.read/$event:example.org`.
 
-{{read\_markers\_cs\_http\_api}}
+{{% http-api spec="client-server" api="read_markers" %}}
 
 #### Server behaviour
 
