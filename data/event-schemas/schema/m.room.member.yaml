@@ -31,18 +31,13 @@ description: |-
   from the `prev_content` object on an event. If not present, the user's previous membership must be assumed
   as `leave`.
 
-  .. TODO: Improve how this table is written? We use a csv-table to get around vertical header restrictions.
-
-  .. csv-table::
-    :header-rows: 1
-    :stub-columns: 1
-
-    "","to `invite`","to `join`","to `leave`","to `ban`","to `knock`"
-    "from `invite`","No change.","User joined the room.","If the `state_key` is the same as the `sender`, the user rejected the invite. Otherwise, the `state_key` user had their invite revoked.","User was banned.","Not implemented."
-    "from `join`","Must never happen.","`displayname` or `avatar_url` changed.","If the `state_key` is the same as the `sender`, the user left. Otherwise, the `state_key` user was kicked.","User was kicked and banned.","Not implemented."
-    "from `leave`","New invitation sent.","User joined.","No change.","User was banned.","Not implemented."
-    "from `ban`","Must never happen.","Must never happen.","User was unbanned.","No change.","Not implemented."
-    "from `knock`","Not implemented.","Not implemented.","Not implemented.","Not implemented.","Not implemented."
+  |                   | to `invite`         | to `join`                              | to `leave`                                                                                                                              | to `ban`                    | to `knock`       |
+  |-------------------|---------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|------------------|
+  | **from `invite`** | No change.          | User joined the room.                  | If the `state_key` is the same as the `sender`, the user rejected the invite. Otherwise, the `state_key` user had their invite revoked. | User was banned.            | Not implemented. |
+  | **from `join`**   |Must never happen.   | `displayname` or `avatar_url` changed. | If the `state_key` is the same as the `sender`, the user left. Otherwise, the `state_key` user was kicked.                              | User was kicked and banned. | Not implemented. |
+  | **from `leave`**  |New invitation sent. | User joined.                           | No change.                                                                                                                              | User was banned.            | Not implemented. |
+  | **from `ban`**    |Must never happen.   | Must never happen.                     | User was unbanned.                                                                                                                      | No change.                  | Not implemented. |
+  | **from `knock`**  |Not implemented.     | Not implemented.                       | Not implemented.                                                                                                                        | Not implemented.            | Not implemented. |
 
 properties:
   content:
