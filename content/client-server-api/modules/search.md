@@ -15,7 +15,7 @@ it won't include events in rooms that happened after you left.
 There is a single HTTP API for performing server-side search, documented
 below.
 
-{{search\_cs\_http\_api}}
+{{% http-api spec="client-server" api="search" %}}
 
 #### Search Categories
 

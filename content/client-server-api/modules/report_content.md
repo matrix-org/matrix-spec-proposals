@@ -14,7 +14,7 @@ offensive" and 0 is "inoffensive".
 
 #### Client behaviour
 
-{{report\_content\_cs\_http\_api}}
+{{% http-api spec="client-server" api="report_content" %}}
 
 #### Server behaviour
 

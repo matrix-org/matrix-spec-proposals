@@ -905,7 +905,7 @@ To avoid leaking of social graphs, servers will only allow users to see:
 Users will not be able to see signatures made by other users'
 user-signing keys.
 
-{{cross\_signing\_cs\_http\_api}}
+{{% http-api spec="client-server" api="cross_signing" %}}
 
 #### Sharing keys between devices
 
@@ -1050,7 +1050,7 @@ The `session_data` field in the backups is constructed as follows:
     the resulting MAC are base64-encoded, and become the `mac` property
     of the `session_data`.
 
-{{key\_backup\_cs\_http\_api}}
+{{% http-api spec="client-server" api="key_backup" %}}
 
 ##### Key exports
 
@@ -1369,7 +1369,7 @@ messages.
 
 ##### Key management API
 
-{{keys\_cs\_http\_api}}
+{{% http-api spec="client-server" api="keys" %}}
 
 ##### Extensions to /sync
 

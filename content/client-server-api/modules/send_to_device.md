@@ -52,7 +52,7 @@ should be sent on to the remote servers via
 
 #### Protocol definitions
 
-{{to\_device\_cs\_http\_api}}
+{{% http-api spec="client-server" api="to_device" %}}
 
 ##### Extensions to /sync
 
