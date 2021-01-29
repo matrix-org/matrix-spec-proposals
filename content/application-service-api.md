@@ -204,7 +204,7 @@ NOT alter (e.g. add more) events they were going to send within that
 transaction ID on retries, as the application service may have already
 processed the events.
 
-{{transactions\_as\_http\_api}}
+{{% http-api spec="application-service" api="transactions" %}}
 
 #### Querying
 
@@ -227,9 +227,9 @@ about information about the entity such as room ID to room alias
 mappings.
 {{% /boxes/rationale %}}
 
-{{query\_user\_as\_http\_api}}
+{{% http-api spec="application-service" api="query_user" %}}
 
-{{query\_room\_as\_http\_api}}
+{{% http-api spec="application-service" api="query_room" %}}
 
 #### Third party networks
 
@@ -251,7 +251,7 @@ request the homeserver to search in a particular "network" (protocol),
 the search fields will be passed along to the application service for
 filtering.
 
-{{protocols\_as\_http\_api}}
+{{% http-api spec="application-service" api="protocols" %}}
 
 ### Client-Server API Extensions
 
@@ -356,7 +356,7 @@ defined third party protocols. These room directories may be accessed by
 clients through additional parameters on the `/publicRooms`
 client-server endpoint.
 
-{{appservice\_room\_directory\_cs\_http\_api}}
+{{% http-api spec="client-server" api="appservice_room_directory" %}}
 
 ### Referencing messages from a third party network
 

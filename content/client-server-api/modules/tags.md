@@ -63,4 +63,4 @@ tags are defined in the `m.*` namespace:
 
 #### Client Behaviour
 
-{{tags\_cs\_http\_api}}
+{{% http-api spec="client-server" api="tags" %}}

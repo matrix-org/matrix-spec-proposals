@@ -33,7 +33,7 @@ recommended. When the user stops typing, the state change of the
 `boolean` to `false` should trigger another HTTP request to inform the
 server that the user has stopped typing.
 
-{{typing\_cs\_http\_api}}
+{{% http-api spec="client-server" api="typing" %}}
 
 #### Security considerations
 

@@ -23,7 +23,7 @@ These events can also be received in a `/events` response or in the
 
 #### Client Behaviour
 
-{{account\_data\_cs\_http\_api}}
+{{% http-api spec="client-server" api="account-data" %}}
 
 #### Server Behaviour
 

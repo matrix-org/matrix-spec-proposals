@@ -10,4 +10,4 @@ server state and data.
 
 #### Client Behaviour
 
-{{admin\_cs\_http\_api}}
+{{% http-api spec="client-server" api="admin" %}}

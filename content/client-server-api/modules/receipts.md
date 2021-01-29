@@ -58,7 +58,7 @@ for events sent by their own user.
 A client can update the markers for its user by interacting with the
 following HTTP APIs.
 
-{{receipts\_cs\_http\_api}}
+{{% http-api spec="client-server" api="receipts" %}}
 
 #### Server behaviour
 

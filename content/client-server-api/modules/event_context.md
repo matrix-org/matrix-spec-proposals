@@ -14,7 +14,7 @@ an event.
 There is a single HTTP API for retrieving event context, documented
 below.
 
-{{event\_context\_cs\_http\_api}}
+{{% http-api spec="client-server" api="event_context" %}}
 
 #### Security considerations
 

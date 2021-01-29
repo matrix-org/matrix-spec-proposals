@@ -24,7 +24,7 @@ old room. Another approach may be to virtually merge the rooms such that
 the old room's timeline seamlessly continues into the new timeline
 without the user having to jump between the rooms.
 
-{{room\_upgrades\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_upgrades" %}}
 
 #### Server behaviour
 
