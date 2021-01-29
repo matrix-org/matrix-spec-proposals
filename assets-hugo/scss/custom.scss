@@ -209,6 +209,39 @@ footer {
 
 }
 
+/* Styles for alert boxes */
+.alert {
+  &.note {
+    &:not(.omit-title):before {
+      content: "INFO: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $note;
+    border-left-width: 5px;
+    background: $note-background;
+  }
+
+  &.rationale {
+    &:not(.omit-title):before {
+      content: "RATIONALE: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $note;
+    border-left-width: 5px;
+    background: $note-background;
+  }
+
+  &.warning {
+    &:not(.omit-title):before {
+      content: "WARNING: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $warning;
+    border-left-width: 5px;
+    background: $warning-background;
+  }
+}
+
 /* Miscellaneous custom bits */
 
 /* Update link colours for MAtrix style */
@@ -226,8 +259,18 @@ a, a:hover {
   max-width: 100%;
 }
 
+/* The default CSS applies a style for blockquotes but only to immediate children
+of .td-content. This applies the same style to any blockquotes that descend from
+.td-content. */
+.td-content blockquote {
+  padding: 0 0 0 1rem;
+  margin-bottom: $spacer;
+  color: $gray-600;
+  border-left: 6px solid $secondary;
+}
+
 /*
-Make padding symmetrical (this selector is used to apply padding-left: 3rem)
+Make padding symmetrical (this selector is used in the default styles to apply padding-left: 3rem)
 */
 .pl-md-5, .px-md-5 {
   padding-right: 3rem;
