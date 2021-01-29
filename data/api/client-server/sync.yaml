@@ -35,7 +35,7 @@ paths:
         of the state on the server, and then continue to call this API to get
         incremental deltas to the state, and to receive new messages.
 
-        *Note*: This endpoint supports lazy-loading. See `Filtering <#filtering>`_
+        *Note*: This endpoint supports lazy-loading. See [Filtering](/client-server-api/#filtering)
         for more information. Lazy-loading members is only supported on a `StateFilter`
         for this endpoint. When lazy-loading is enabled, servers MUST include the
         syncing user's own membership event when they join a room, or when the
@@ -67,7 +67,7 @@ paths:
             clients that reuse the same filter multiple times, for example in
             long poll requests.
 
-            See `Filtering <#filtering>`_ for more information.
+            See [Filtering](/client-server-api/#filtering) for more information.
           x-example: "66696p746572"
         - in: query
           name: since
@@ -236,7 +236,7 @@ paths:
                           type: object
                           description: |-
                             Counts of unread notifications for this room. See the
-                            `Receiving notifications section <#receiving-notifications>`_
+                            [Receiving notifications](/client-server-api/#receiving-notifications) section
                             for more information on how these are calculated.
                           properties:
                             highlight_count:
@@ -333,13 +333,13 @@ paths:
                 type: object
                 description: |-
                   Information on the send-to-device messages for the client
-                  device, as defined in |send_to_device_sync|_.
+                  device, as defined in [Send-to-Device messaging](/client-server-api/#extensions-to-sync).
               device_lists:
                 title: DeviceLists
                 type: object
                 description: |-
                   Information on end-to-end device updates, as specified in
-                  |device_lists_sync|_.
+                  [End-to-end encryption](/client-server-api/#extensions-to-sync-1).
               device_one_time_keys_count:
                 title: One-time keys count
                 type: object
@@ -347,7 +347,7 @@ paths:
                   type: integer
                 description: |-
                   Information on end-to-end encryption keys, as specified
-                  in |device_lists_sync|_.
+                  in [End-to-end encryption](/client-server-api/#extensions-to-sync-1).
             required:
               - next_batch
           examples:

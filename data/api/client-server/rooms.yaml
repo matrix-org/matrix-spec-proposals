@@ -75,9 +75,6 @@ paths:
     get:
       summary: Get the state identified by the type and key.
       description: |-
-        .. For backwards compatibility with older links...
-        .. _`get-matrix-client-%CLIENT_MAJOR_VERSION%-rooms-roomid-state-eventtype`:
-
         Looks up the contents of a state event in a room. If the user is
         joined to the room then the state is taken from the current
         state of the room. If the user has left the room then the state is

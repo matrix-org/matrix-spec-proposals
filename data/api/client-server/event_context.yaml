@@ -36,7 +36,7 @@ paths:
         surrounding an event.
 
         *Note*: This endpoint supports lazy-loading of room member events. See
-        `Lazy-loading room members <#lazy-loading-room-members>`_ for more information.
+        [Lazy-loading room members](/client-server-api/#lazy-loading-room-members) for more information.
       operationId: getEventContext
       security:
         - accessToken: []
@@ -69,7 +69,7 @@ paths:
             be applied before or/and after the `limit` parameter - whichever the
             homeserver prefers.
 
-            See `Filtering <#filtering>`_ for more information.
+            See [Filtering](/client-server-api/#filtering) for more information.
           x-example: "66696p746572"
       responses:
         200:

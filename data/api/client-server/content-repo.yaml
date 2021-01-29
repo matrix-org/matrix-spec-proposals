@@ -59,14 +59,14 @@ paths:
             format: byte
       responses:
         200:
-          description: The `MXC URI`_ for the uploaded content.
+          description: The [MXC URI](/client-server-api/#matrix-content-mxc-uris) for the uploaded content.
           schema:
             type: object
             required: ["content_uri"]
             properties:
               content_uri:
                 type: string
-                description: "The `MXC URI`_ to the uploaded content."
+                description: "The [MXC URI](/client-server-api/#matrix-content-mxc-uris) to the uploaded content."
           examples:
             application/json: {
               "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
@@ -238,7 +238,7 @@ paths:
       summary: Download a thumbnail of content from the content repository
       description: |-
         Download a thumbnail of content from the content repository.
-        See the `thumbnailing <#thumbnails>`_ section for more information.
+        See the [Thumbnails](/client-server-api/#thumbnails) section for more information.
       operationId: getContentThumbnail
       produces: ["image/jpeg", "image/png"]
       parameters:
@@ -278,7 +278,7 @@ paths:
           name: method
           x-example: "scale"
           description: |-
-            The desired resizing method. See the `thumbnailing <#thumbnails>`_
+            The desired resizing method. See the [Thumbnails](/client-server-api/#thumbnails)
             section for more information.
         - in: query
           type: boolean
@@ -390,7 +390,7 @@ paths:
               "og:image":
                 type: string
                 description: |-
-                  An `MXC URI`_ to the image. Omitted if there is no image.
+                  An [MXC URI](/client-server-api/#matrix-content-mxc-uris) to the image. Omitted if there is no image.
           examples:
             application/json: {
                 "og:title": "Matrix Blog Post",

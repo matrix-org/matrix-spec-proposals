@@ -166,7 +166,7 @@ paths:
         403:
           description: |
             The user must do something in order to use this endpoint. One example
-            is an `M_TERMS_NOT_SIGNED` error where the user must `agree to more terms`_.
+            is an `M_TERMS_NOT_SIGNED` error where the user must [agree to more terms](/identity-service-api/#terms-of-service).
           examples:
             application/json: {
               "errcode": "M_TERMS_NOT_SIGNED",

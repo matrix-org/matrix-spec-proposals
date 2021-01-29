@@ -33,7 +33,7 @@ paths:
       description: |-
         The receiving server will verify the partial `m.room.member` event
         given in the request body. If valid, the receiving server will issue
-        an invite as per the `Inviting to a room`_ section before returning a
+        an invite as per the [Inviting to a room](/server-server-api/#inviting-to-a-room) section before returning a
         response to this request.
       operationId: exchangeThirdPartyInvite
       security:
@@ -111,7 +111,7 @@ paths:
                               The server signatures for this event.
 
                               The signature is calculated using the process
-                              described at `Signing JSON`_.
+                              described at [Signing JSON](/appendices/#signing-json).
                             example: {
                               "magic.forest": {
                                 "ed25519:3": "fQpGIW1Snz+pwLZu6sTy2aHy/DYWWTspTJRPyNp0PKkymfIsNffysMl6ObMMFdIJhk6g6pwlIqZ54rxo8SLmAg"

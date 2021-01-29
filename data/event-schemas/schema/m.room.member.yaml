@@ -65,7 +65,7 @@ properties:
           - ban
         type: string
       is_direct:
-        description: Flag indicating if the room containing this event was created with the intention of being a direct chat. See `Direct Messaging`_.
+        description: Flag indicating if the room containing this event was created with the intention of being a direct chat. See [Direct Messaging](/client-server-api/#direct-messaging).
         type: boolean
       reason:
         type: string

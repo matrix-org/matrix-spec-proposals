@@ -26,7 +26,8 @@ properties:
           thumbnail_file:
             description: |-
               Information on the encrypted thumbnail file, as specified in
-              |encrypted_files|_. Only present if the thumbnail is encrypted.
+              [End-to-end encryption](/client-server-api/#sending-encrypted-attachments).
+              Only present if the thumbnail is encrypted.
             title: EncryptedFile
             type: object
           thumbnail_info:

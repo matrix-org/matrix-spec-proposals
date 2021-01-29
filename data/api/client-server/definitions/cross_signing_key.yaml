@@ -41,8 +41,8 @@ properties:
     type: object
     title: Signatures
     description: |-
-      Signatures of the key, calculated using the process described at `Signing
-      JSON`_. Optional for the master key. Other keys must be signed by the
+      Signatures of the key, calculated using the process described at [Signing JSON](/appendices/#signing-json).
+      Optional for the master key. Other keys must be signed by the
       user\'s master key.
     example: {
         "@alice:example.com": {

@@ -35,9 +35,9 @@ paths:
         block until an event is received, or until the `timeout` is reached.
 
         This endpoint was deprecated in r0 of this specification. Clients
-        should instead call the |/sync|_ API with a `since` parameter. See
-        the `migration guide
-        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+        should instead call the [`/sync`](/client-server-api/#get_matrixclientr0sync)
+        API with a `since` parameter. See
+        the [migration guide](https://matrix.org/docs/guides/migrating-from-client-server-api-v-1#deprecated-endpoints).
       operationId: getEvents
       security:
         - accessToken: []
@@ -101,9 +101,9 @@ paths:
         number of messages per room to return.
 
         This endpoint was deprecated in r0 of this specification. Clients
-        should instead call the |/sync|_ API with no `since` parameter. See
-        the `migration guide
-        <https://matrix.org/docs/guides/client-server-migrating-from-v1.html#deprecated-endpoints>`_.
+        should instead call the [`/sync`](/client-server-api/#get_matrixclientr0sync)
+        API with no `since` parameter. See
+        the [migration guide](https://matrix.org/docs/guides/migrating-from-client-server-api-v-1#deprecated-endpoints).
       operationId: initialSync
       security:
         - accessToken: []
@@ -310,8 +310,9 @@ paths:
         retrieve this event e.g. by being a member in the room for this event.
 
         This endpoint was deprecated in r0 of this specification. Clients
-        should instead call the |/rooms/{roomId}/event/{eventId}|_ API
-        or the |/rooms/{roomId}/context/{eventId}|_ API.
+        should instead call the
+        [/rooms/{roomId}/event/{eventId}](/client-server-api/#get_matrixclientr0roomsroomideventeventid) API
+        or the [/rooms/{roomId}/context/{eventId](/client-server-api/#get_matrixclientr0roomsroomidcontexteventid) API.
       operationId: getOneEvent
       security:
         - accessToken: []

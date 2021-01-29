@@ -19,13 +19,13 @@ properties:
     type: array
     description: |-
       A single PDU. Note that events have a different format depending on the room
-      version - check the `room version specification`_ for precise event formats.
+      version - check the [room version specification](/#room-versions) for precise event formats.
     items:
       type: object
       title: PDU
       description: |-
-        The `PDUs <#pdus>`_ contained in the transaction. The event format varies depending
-        on the room version - check the `room version specification`_ for precise event formats.
+        The [PDUs](/server-server-api/#pdus) contained in the transaction. The event format varies depending
+        on the room version - check the [room version specification](/#room-versions) for precise event formats.
       properties: []
       example:
         $ref: "../examples/minimal_pdu.json"

@@ -98,7 +98,7 @@ paths:
         403:
           description: |
             The user must do something in order to use this endpoint. One example
-            is an `M_TERMS_NOT_SIGNED` error where the user must `agree to more terms`_.
+            is an `M_TERMS_NOT_SIGNED` error where the user must [agree to more terms](/identity-service-api/#terms-of-service).
           examples:
             application/json: {
               "errcode": "M_TERMS_NOT_SIGNED",
@@ -222,7 +222,7 @@ paths:
         403:
           description: |
             The user must do something in order to use this endpoint. One example
-            is an `M_TERMS_NOT_SIGNED` error where the user must `agree to more terms`_.
+            is an `M_TERMS_NOT_SIGNED` error where the user must [agree to more terms](/identity-service-api/#terms-of-service).
           examples:
             application/json: {
               "errcode": "M_TERMS_NOT_SIGNED",
@@ -286,7 +286,7 @@ paths:
                   medium:
                     type: string
                     description: |-
-                      A medium from the `3PID Types`_ Appendix, matching the medium
+                      A medium from the [3PID Types](/appendices/#3pid-types) Appendix, matching the medium
                       of the identifier to unbind.
                   address:
                     type: string
@@ -318,7 +318,7 @@ paths:
             unbinding identifiers).
 
             Another common error code is `M_TERMS_NOT_SIGNED` where the user
-            needs to `agree to more terms`_ in order to continue.
+            needs to [agree to more terms](/identity-service-api/#terms-of-service) in order to continue.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN",

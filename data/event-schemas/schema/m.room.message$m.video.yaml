@@ -28,13 +28,14 @@ properties:
             type: integer
           thumbnail_url:
             description: |-
-              The URL (typically `MXC URI`_) to an image thumbnail of
+              The URL (typically [MXC URI](/client-server-api/#matrix-content-mxc-uris)) to an image thumbnail of
               the video clip. Only present if the thumbnail is unencrypted.
             type: string
           thumbnail_file:
             description: |-
               Information on the encrypted thumbnail file, as specified in
-              |encrypted_files|_. Only present if the thumbnail is encrypted.
+              [End-to-end encryption](/client-server-api/#sending-encrypted-attachments).
+              Only present if the thumbnail is encrypted.
             title: EncryptedFile
             type: object
           thumbnail_info:
@@ -49,13 +50,14 @@ properties:
         type: string
       url:
         description: |-
-          Required if the file is unencrypted. The URL (typically `MXC URI`_)
+          Required if the file is unencrypted. The URL (typically [MXC URI](/client-server-api/#matrix-content-mxc-uris))
           to the video clip.
         type: string
       file:
         description: |-
           Required if the file is encrypted. Information on the encrypted
-          file, as specified in |encrypted_files|_.
+          file, as specified in
+          [End-to-end encryption](/client-server-api/#sending-encrypted-attachments).
         title: EncryptedFile
         type: object
     required:

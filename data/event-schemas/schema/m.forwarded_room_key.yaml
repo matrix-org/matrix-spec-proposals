@@ -4,7 +4,7 @@ allOf:
 
 description: |-
   This event type is used to forward keys for end-to-end encryption. Typically
-  it is encrypted as an `m.room.encrypted` event, then sent as a `to-device`_
+  it is encrypted as an `m.room.encrypted` event, then sent as a [to-device](/client-server-api/#send-to-device-messaging)
   event.
 properties:
   content:
@@ -48,7 +48,7 @@ properties:
         description: |-
           Indicates that the key cannot be used to decrypt all the messages
           from the session because a portion of the session was withheld as
-          described in `Reporting that decryption keys are withheld`_. This
+          described in [Reporting that decryption keys are withheld](/client-server-api/#reporting-that-decryption-keys-are-withheld). This
           object must include the `code` and `reason` properties from the
           `m.room_key.withheld` message that was received by the sender of
           this message.

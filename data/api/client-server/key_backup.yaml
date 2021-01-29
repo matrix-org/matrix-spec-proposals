@@ -51,7 +51,7 @@ paths:
               auth_data:
                 description: |-
                   Algorithm-dependent data. See the documentation for the backup
-                  algorithms in `Server-side key backups`_ for more information on the
+                  algorithms in [Server-side key backups](/client-server-api/#server-side-key-backups) for more information on the
                   expected format of the data.
                 type: object
                 example: {
@@ -106,7 +106,7 @@ paths:
               auth_data:
                 description: |-
                   Algorithm-dependent data. See the documentation for the backup
-                  algorithms in `Server-side key backups`_ for more information on the
+                  algorithms in [Server-side key backups](/client-server-api/#server-side-key-backups) for more information on the
                   expected format of the data.
                 type: object
                 example: {
@@ -169,8 +169,9 @@ paths:
           name: version
           description: |-
             The backup version to get, as returned in the `version` parameter
-            of the response in `POST /_matrix/client/r0/room_keys/version`_ or
-            this endpoint.
+            of the response in
+            [`POST /_matrix/client/r0/room_keys/version`](/client-server/#post_matrixclientr0room_keysversion)
+            or this endpoint.
           required: true
           x-example: "1"
       responses:
@@ -188,7 +189,7 @@ paths:
               auth_data:
                 description: |-
                   Algorithm-dependent data. See the documentation for the backup
-                  algorithms in `Server-side key backups`_ for more information on the
+                  algorithms in [Server-side key backups](/client-server-api/#server-side-key-backups) for more information on the
                   expected format of the data.
                 type: object
                 example: {
@@ -250,9 +251,9 @@ paths:
           name: version
           description: |-
             The backup version to update, as returned in the `version`
-            parameter in the response of `POST
-            /_matrix/client/r0/room_keys/version`_ or `GET
-            /_matrix/client/r0/room_keys/version/{version}`_.
+            parameter in the response of
+            [`POST /_matrix/client/r0/room_keys/version`](/client-server-api/#post_matrixclientr0room_keysversion)
+            or [`GET /_matrix/client/r0/room_keys/version/{version}`](/client-server-api/#get_matrixclientr0room_keysversionversion).
           required: true
           x-example: "1"
         - in: body
@@ -272,7 +273,7 @@ paths:
               auth_data:
                 description: |-
                   Algorithm-dependent data. See the documentation for the backup
-                  algorithms in `Server-side key backups`_ for more information on the
+                  algorithms in [Server-side key backups](/client-server-api/#server-side-key-backups) for more information on the
                   expected format of the data.
                 type: object
                 example: {
@@ -339,9 +340,9 @@ paths:
           name: version
           description: |-
             The backup version to delete, as returned in the `version`
-            parameter in the response of `POST
-            /_matrix/client/r0/room_keys/version`_ or `GET
-            /_matrix/client/r0/room_keys/version/{version}`_.
+            parameter in the response of
+            [`POST /_matrix/client/r0/room_keys/version`](/client-server-api/#post_matrixclientr0room_keysversion)
+            or [`GET /_matrix/client/r0/room_keys/version/{version}`](/client-server-api/#get_matrixclientr0room_keysversionversion).
           required: true
           x-example: "1"
       responses:

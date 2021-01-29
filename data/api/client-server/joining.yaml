@@ -40,7 +40,8 @@ paths:
         events associated with the room until the user leaves the room.
 
         After a user has joined a room, the room will appear as an entry in the
-        response of the |/initialSync|_ and |/sync|_ APIs.
+        response of the [`/initialSync`](/client-server-api/#get_matrixclientr0initialsync)
+        and [`/sync`](/client-server-api/#get_matrixclientr0sync) APIs.
       operationId: joinRoomById
       security:
         - accessToken: []
@@ -116,7 +117,8 @@ paths:
         events associated with the room until the user leaves the room.
 
         After a user has joined a room, the room will appear as an entry in the
-        response of the |/initialSync|_ and |/sync|_ APIs.
+        response of the [`/initialSync`](/client-server-api/#get_matrixclientr0initialsync)
+        and [`/sync`](/client-server-api/#get_matrixclientr0sync) APIs.
       operationId: joinRoom
       security:
         - accessToken: []
