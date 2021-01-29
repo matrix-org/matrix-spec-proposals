@@ -457,8 +457,8 @@ that a particular MSC works) do not have to follow this process.
 {{% boxes/note %}}
 MSCs MUST still describe what the stable endpoints/feature looks like
 with a note towards the bottom for what the unstable feature
-flag/prefixes are. For example, an MSC would propose */_matrix/client/r0/new/endpoint*, not */_matrix/client/unstable/
-com.example/new/endpoint*.
+flag/prefixes are. For example, an MSC would propose `/_matrix/client/r0/new/endpoint`, not `/_matrix/client/unstable/
+com.example/new/endpoint`.
 {{% /boxes/note %}}
 
 In summary:
@@ -473,7 +473,7 @@ In summary:
     incurring by moving faster than the spec.
 -   The vendor prefix is chosen by the developer of the feature, using
     the Java package naming convention. The foundation's preferred
-    vendor prefix is *org.matrix*.
+    vendor prefix is `org.matrix`.
 -   The vendor prefixes, unstable feature flags, and unstable endpoints
     should be included in the MSC, though the MSC MUST be written in a
     way that proposes new stable endpoints. Typically this is solved by
