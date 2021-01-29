@@ -65,7 +65,7 @@ paths:
                 type: string
                 description: |-
                   The reason the user has been kicked. This will be supplied as the
-                  `reason` on the target's updated `m.room.member`_ event.
+                  `reason` on the target's updated [`m.room.member`](/client-server-api/#mroommember) event.
             required: ["user_id"]
       responses:
         200:

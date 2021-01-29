@@ -62,7 +62,7 @@ paths:
               reason:
                 type: string
                 description: The reason the user has been banned. This will be supplied as the
-                  `reason` on the target's updated `m.room.member`_ event.
+                  `reason` on the target's updated [`m.room.member`](/client-server-api/#mroommember) event.
             required: ["user_id"]
       responses:
         200:

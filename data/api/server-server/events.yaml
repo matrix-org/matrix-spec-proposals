@@ -61,13 +61,13 @@ paths:
                   The full set of authorization events that make up the state
                   of the room, and their authorization events, recursively. Note that
                   events have a different format depending on the room version -
-                  check the `room version specification`_ for precise event formats.
+                  check the [room version specification](/#room-versions) for precise event formats.
                 items:
                   type: object
                   title: PDU
                   description: |-
-                    The `PDUs <#pdus>`_ contained in the auth chain. The event format
-                    varies depending on the room version - check the `room version specification`_
+                    The [PDUs](/server-server-api/#pdus) contained in the auth chain. The event format
+                    varies depending on the room version - check the [room version specification](/#room-versions)
                     for precise event formats.
                   properties: []
                   example:
@@ -77,13 +77,13 @@ paths:
                 description: |-
                   The fully resolved state of the room at the given event. Note that
                   events have a different format depending on the room version -
-                  check the `room version specification`_ for precise event formats.
+                  check the [room version specification](/#room-versions) for precise event formats.
                 items:
                   type: object
                   title: PDU
                   description: |-
-                    The `PDUs <#pdus>`_ for the fully resolved state of the room. The event format
-                    varies depending on the room version - check the `room version specification`_
+                    The [PDUs](/server-server-api/#pdus) for the fully resolved state of the room. The event format
+                    varies depending on the room version - check the [room version specification](/#room-versions)
                     for precise event formats.
                   properties: []
                   example:

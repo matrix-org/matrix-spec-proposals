@@ -18,13 +18,14 @@ properties:
         type: string
       url:
         description: |-
-          Required if the file is unencrypted. The URL (typically `MXC URI`_)
+          Required if the file is unencrypted. The URL (typically [MXC URI](/client-server-api/#matrix-content-mxc-uris))
           to the image.
         type: string
       file:
         description: |-
           Required if the file is encrypted. Information on the encrypted
-          file, as specified in |encrypted_files|_.
+          file, as specified in
+          [End-to-end encryption](/client-server-api/#sending-encrypted-attachments).
         title: EncryptedFile
         type: object
     required:

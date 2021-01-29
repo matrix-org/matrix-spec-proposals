@@ -33,7 +33,7 @@ paths:
       description: |-
         Publishes cross-signing keys for the user.
 
-        This API endpoint uses the `User-Interactive Authentication API`_.
+        This API endpoint uses the [User-Interactive Authentication API](/client-server-api/#user-interactive-authentication-api).
       operationId: uploadCrossSigningKeys
       security:
         - accessToken: []

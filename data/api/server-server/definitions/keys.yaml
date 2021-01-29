@@ -41,7 +41,7 @@ properties:
       properties:
         key:
           type: string
-          description: The `Unpadded Base64`_ encoded key.
+          description: The [Unpadded base64](/appendices/#unpadded-base64) encoded key.
           example: "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA"
       required: ["key"]
   old_verify_keys:
@@ -70,7 +70,7 @@ properties:
           example: 1532645052628
         key:
           type: string
-          description: The `Unpadded Base64`_ encoded key.
+          description: The [Unpadded base64](/appendices/#unpadded-base64) encoded key.
           example: "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg"
       required: ["expired_ts", "key"]
   signatures:
@@ -78,8 +78,7 @@ properties:
     description: |-
       Digital signatures for this object signed using the `verify_keys`.
 
-      The signature is calculated using the process described at `Signing
-      JSON`_.
+      The signature is calculated using the process described at [Signing JSON](/appendices/#signing-json).
     title: Signatures
     additionalProperties:
       type: object
@@ -91,7 +90,7 @@ properties:
     description: |-
       POSIX timestamp when the list of valid keys should be refreshed. This field MUST
       be ignored in room versions 1, 2, 3, and 4. Keys used beyond this timestamp MUST
-      be considered invalid, depending on the `room version specification`_.
+      be considered invalid, depending on the [room version specification](/#room-versions).
 
       Servers MUST use the lesser of this field and 7 days into the future when
       determining if a key is valid. This is to avoid a situation where an attacker

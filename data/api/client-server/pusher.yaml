@@ -135,7 +135,7 @@ paths:
     post:
       summary: Modify a pusher for this user on the homeserver.
       description: |-
-        This endpoint allows the creation, modification and deletion of `pushers`_
+        This endpoint allows the creation, modification and deletion of [pushers](/client-server-api/#push-notifications)
         for this user ID. The behaviour of this endpoint varies depending on the
         values in the JSON body.
       operationId: postPusher
@@ -231,7 +231,7 @@ paths:
                       The format to send notifications in to Push Gateways if the
                       `kind` is `http`. The details about what fields the
                       homeserver should send to the push gateway are defined in the
-                      `Push Gateway Specification`_. Currently the only format
+                      [Push Gateway Specification](/push-gateway-api/). Currently the only format
                       available is 'event_id_only'.
               append:
                 type: boolean

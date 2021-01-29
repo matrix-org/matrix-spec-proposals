@@ -55,7 +55,7 @@ paths:
           description: |-
             A template to be used to call `/send_leave`. Note that
             events have a different format depending on the room version - check the
-            `room version specification`_ for precise event formats. **The response body
+            [room version specification](/#room-versions) for precise event formats. **The response body
             here describes the common event fields in more detail and may be missing other
             required fields for a PDU.**
           schema:
@@ -70,7 +70,7 @@ paths:
               event:
                 description: |-
                   An unsigned template event. Note that events have a different format
-                  depending on the room version - check the `room version specification`_
+                  depending on the room version - check the [room version specification](/#room-versions)
                   for precise event formats.
                 type: object
                 title: Event Template
@@ -149,7 +149,7 @@ paths:
         Submits a signed leave event to the resident server for it
         to accept it into the room's graph. Note that events have
         a different format depending on the room version - check
-        the `room version specification`_ for precise event formats.
+        the [room version specification](/#room-versions) for precise event formats.
         **The request and response body here describe the common
         event fields in more detail and may be missing other required
         fields for a PDU.**

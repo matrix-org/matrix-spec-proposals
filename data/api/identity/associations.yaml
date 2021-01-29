@@ -258,7 +258,7 @@ paths:
                   medium:
                     type: string
                     description: |-
-                      A medium from the `3PID Types`_ Appendix, matching the medium
+                      A medium from the [3PID Types](/appendices/#3pid-types) Appendix, matching the medium
                       of the identifier to unbind.
                   address:
                     type: string

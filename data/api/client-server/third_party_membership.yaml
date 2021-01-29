@@ -31,14 +31,12 @@ paths:
     post:
       summary: Invite a user to participate in a particular room.
       description: |-
-        .. _invite-by-third-party-id-endpoint:
-
         *Note that there are two forms of this API, which are documented separately.
         This version of the API does not require that the inviter know the Matrix
         identifier of the invitee, and instead relies on third party identifiers.
         The homeserver uses an identity server to perform the mapping from
         third party identifier to a Matrix identifier. The other is documented in the*
-        `joining rooms section`_.
+        [joining rooms section](/client-server-api/#post_matrixclientr0roomsroomidinvite).
 
         This API invites a user to participate in a particular room.
         They do not start participating in the room until they actually join the
@@ -74,7 +72,6 @@ paths:
         If a token is requested from the identity server, the homeserver will
         append a `m.room.third_party_invite` event to the room.
 
-        .. _joining rooms section: `invite-by-user-id-endpoint`_
       operationId: inviteBy3PID
       security:
         - accessToken: []

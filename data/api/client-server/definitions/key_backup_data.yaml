@@ -35,7 +35,7 @@ properties:
   session_data:
     description: |-
       Algorithm-dependent data.  See the documentation for the backup
-      algorithms in `Server-side key backups`_ for more information on the
+      algorithms in [Server-side key backups](/client-server-api/#server-side-key-backups) for more information on the
       expected format of the data.
     type: object
     example: {
