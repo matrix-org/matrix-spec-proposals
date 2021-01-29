@@ -13,20 +13,24 @@ together existing communication silos - providing the basis of a new
 open real-time communication ecosystem.
 
 To propose a change to the Matrix Spec, see the explanations at
-[Proposals for Spec Changes to Matrix](proposals).
+[Proposals for Spec Changes to Matrix](/proposals).
 
 ## Matrix APIs
 
 The specification consists of the following parts:
 
-{{apis}}
+* [Client-Server API](client-server-api)
+* [Server-Server API](server-server-api)
+* [Application Service API](application-service-api)
+* [Identity Service API](identity-service-api)
+* [Push Gateway API](push-gateway-api)
 
 Additionally, this introduction page contains the key baseline
 information required to understand the specific APIs, including the
 sections on [room versions](#room-versions) and [overall
 architecture](#architecture).
 
-The [Appendices](appendices.html) contain supplemental information not
+The [Appendices](/appendices) contain supplemental information not
 specific to one of the above APIs.
 
 The [Matrix Client-Server API Swagger
@@ -35,13 +39,13 @@ browsing the Client-Server API.
 
 ### Matrix versions
 
-Note
-
+{{% boxes/note %}}
 As of June 10th 2019, the Matrix specification is considered out of beta
 -indicating that all currently released APIs are considered stable and
 secure to the best of our knowledge, and the spec should contain the
 complete information necessary to develop production-grade
 implementations of Matrix without the need for external reference.
+{{% /boxes/note %}}
 
 Matrix 1.0 (released June 10th, 2019) consists of the following minimum
 API versions:
@@ -123,7 +127,7 @@ an interoperable and federated manner.
 ### Spec Change Proposals
 
 To propose a change to the Matrix Spec, see the explanations at
-[Proposals for Spec Changes to Matrix](proposals).
+[Proposals for Spec Changes to Matrix](/proposals).
 
 ## Architecture
 
@@ -159,20 +163,21 @@ contents and then adds it to its copy of the room's event graph. Client
 B then receives the message from his homeserver via a long-lived GET
 request.
 
-    How data flows between clients
-    ==============================
+How data flows between clients:
 
+```
     { Matrix client A }                             { Matrix client B }
-    ^          |                                    ^          |
-    |  events  |  Client-Server API                 |  events  |
-    |          V                                    |          V
+        ^          |                                    ^          |
+        |  events  |  Client-Server API                 |  events  |
+        |          V                                    |          V
     +------------------+                            +------------------+
     |                  |---------( HTTPS )--------->|                  |
     |   homeserver     |                            |   homeserver     |
     |                  |<--------( HTTPS )----------|                  |
     +------------------+      Server-Server API     +------------------+
-         History Synchronisation
-             (Federation)
+                          History Synchronisation
+                              (Federation)
+```
 
 ### Users
 
@@ -183,7 +188,7 @@ which allocated the account and has the form:
     @localpart:domain
 
 See ['Identifier Grammar' in the
-appendices](appendices.html#identifier-grammar) for full details of the
+appendices](/appendices#identifier-grammar) for full details of the
 structure of user IDs.
 
 ### Devices
@@ -265,7 +270,7 @@ contain a domain, it is simply for globally namespacing room IDs. The
 room does NOT reside on the domain specified.
 
 See ['Identifier Grammar' in the
-appendices](appendices.html#identifier-grammar) for full details of the
+appendices](/appendices#identifier-grammar) for full details of the
 structure of a room ID.
 
 The following conceptual diagram shows an `m.room.message` event being
@@ -334,13 +339,13 @@ participating servers in a room, currently using full mesh topology.
 Servers may also request backfill of events over federation from the
 other servers participating in a room.
 
-Note
-
+{{% boxes/note %}}
 Events are not limited to the types defined in this specification. New
 or custom event types can be created on a whim using the Java package
 naming convention. For example, a `com.example.game.score` event can be
 sent by clients and other clients would receive it through Matrix,
 assuming the client has access to the `com.example` namespace.
+{{% /boxes/note %}}
 
 #### Room Aliases
 
@@ -349,7 +354,7 @@ Each room can also have multiple "Room Aliases", which look like:
     #room_alias:domain
 
 See ['Identifier Grammar' in the
-appendices](appendices.html#identifier-grammar) for full details of the
+appendices](/appendices#identifier-grammar) for full details of the
 structure of a room alias.
 
 A room alias "points" to a room ID and is the human-readable label by
@@ -493,17 +498,17 @@ the default room version when creating new rooms.
 
 The available room versions are:
 
--   [Version 1](rooms/v1.html) - **Stable**. The current version of most
+-   [Version 1](/rooms/v1) - **Stable**. The current version of most
     rooms.
--   [Version 2](rooms/v2.html) - **Stable**. Implements State Resolution
+-   [Version 2](/rooms/v2) - **Stable**. Implements State Resolution
     Version 2.
--   [Version 3](rooms/v3.html) - **Stable**. Introduces events whose IDs
+-   [Version 3](/rooms/v3) - **Stable**. Introduces events whose IDs
     are the event's hash.
--   [Version 4](rooms/v4.html) - **Stable**. Builds on v3 by using
+-   [Version 4](/rooms/v4) - **Stable**. Builds on v3 by using
     URL-safe base64 for event IDs.
--   [Version 5](rooms/v5.html) - **Stable**. Introduces enforcement of
+-   [Version 5](/rooms/v5) - **Stable**. Introduces enforcement of
     signing key validity periods.
--   [Version 6](rooms/v6.html) - **Stable**. Alters several
+-   [Version 6](/rooms/v6) - **Stable**. Alters several
     authorization rules for events.
 
 ## Specification Versions
