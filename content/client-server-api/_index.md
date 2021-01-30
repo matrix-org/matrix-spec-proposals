@@ -287,7 +287,7 @@ specify parameter values. The flow for this method is as follows:
         1.  Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
         2.  Clients SHOULD validate that the URL points to a valid
             homeserver before accepting it by connecting to the
-            `/_matrix/client/versions`\_ endpoint, ensuring that it does
+            [`/_matrix/client/versions`](/client-server-api/#get_matrixclientversions) endpoint, ensuring that it does
             not return an error, and parsing and validating that the
             data conforms with the expected response format. If any step
             in the validation fails, then `FAIL_ERROR`. Validation is
@@ -1350,9 +1350,9 @@ The expected pattern for using lazy-loading is currently:
 
 The current endpoints which support lazy-loading room members are:
 
--   `/sync`\_
--   `/rooms/<room_id>/messages`\_
--   `/rooms/{roomId}/context/{eventId}`\_
+-   [`/sync`](/client-server-api/#get_matrixclientr0sync)
+-   [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages)
+-   [`/rooms/{roomId}/context/{eventId}`](/client-server-api/#get_matrixclientr0roomsroomidcontexteventid)
 
 ### API endpoints
 
@@ -1486,13 +1486,13 @@ events.
 ### Syncing
 
 To read events, the intended flow of operation is for clients to first
-call the `/sync`\_ API without a `since` parameter. This returns the
+call the [`/sync`](/client-server-api/#get_matrixclientr0sync) API without a `since` parameter. This returns the
 most recent message events for each room, as well as the state of the
 room at the start of the returned timeline. The response also includes a
 `next_batch` field, which should be used as the value of the `since`
 parameter in the next call to `/sync`. Finally, the response includes,
 for each room, a `prev_batch` field, which can be passed as a `start`
-parameter to the `/rooms/<room_id>/messages`\_ API to retrieve earlier
+parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages) API to retrieve earlier
 messages.
 
 You can visualise the range of events being returned as:
@@ -1529,7 +1529,7 @@ containing only the most recent message events. A state "delta" is also
 returned, summarising any state changes in the omitted part of the
 timeline. The client may therefore end up with "gaps" in its knowledge
 of the message timeline. The client can fill these gaps using the
-`/rooms/<room_id>/messages`\_ API. This situation looks like this:
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages) API. This situation looks like this:
 
 ```
     | gap |
@@ -1832,7 +1832,7 @@ A user can leave a room to stop receiving events for that room. A user
 must have been invited to or have joined the room before they are
 eligible to leave the room. Leaving a room to which the user has been
 invited rejects the invite. Once a user leaves a room, it will no longer
-appear in the response to the `/sync`\_ API unless it is explicitly
+appear in the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is explicitly
 requested via a filter with the `include_leave` field set to `true`.
 
 Whether or not they actually joined the room, if the room is an
@@ -1840,7 +1840,7 @@ Whether or not they actually joined the room, if the room is an
 re-join the room.
 
 A user can also forget a room which they have left. Rooms which have
-been forgotten will never appear the response to the `/sync`\_ API,
+been forgotten will never appear the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API,
 until the user re-joins or is re-invited.
 
 A user may wish to force another user to leave a room. This can be done
@@ -1861,7 +1861,7 @@ target user to leave the room and prevents them from re-joining the
 room. A banned user will not be treated as a joined user, and so will
 not be able to send or receive events in the room. In order to ban
 someone, the user performing the ban MUST have the required power level.
-To ban a user, a request should be made to `/rooms/<room_id>/ban`\_
+To ban a user, a request should be made to [`/rooms/<room_id>/ban`](/client-server-api/#post_matrixclientr0roomsroomidban)
 with:
 
 ```json
@@ -1883,7 +1883,7 @@ target member's state, by making a request to
 ```
 
 A user must be explicitly unbanned with a request to
-`/rooms/<room_id>/unban`\_ before they can re-join the room or be
+[`/rooms/<room_id>/unban`](/client-server-api/#post_matrixclientr0roomsroomidunban) before they can re-join the room or be
 re-invited.
 
 {{% http-api spec="client-server" api="banning" %}}
