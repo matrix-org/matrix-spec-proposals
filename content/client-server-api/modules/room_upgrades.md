@@ -11,7 +11,7 @@ to upgrade to a different room version when needed.
 
 #### Events
 
-{{m\_room\_tombstone\_event}}
+{{% event event="m.room.tombstone" %}}
 
 #### Client behaviour
 

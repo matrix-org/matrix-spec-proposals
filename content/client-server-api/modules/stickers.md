@@ -22,7 +22,7 @@ when the sticker image is clicked.
 Sticker events are received as a single `m.sticker` event in the
 `timeline` section of a room, in a `/sync`.
 
-{{m\_sticker\_event}}
+{{% event event="m.sticker" %}}
 
 #### Client behaviour
 

@@ -31,7 +31,7 @@ invitee does indeed own that third party identifier. See the
 
 #### Events
 
-{{m\_room\_third\_party\_invite\_event}}
+{{% event event="m.room.third_party_invite" %}}
 
 #### Client behaviour
 

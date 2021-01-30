@@ -24,7 +24,7 @@ The fully read marker is kept under an `m.fully_read` event. If the
 event does not exist on the user's account data, the fully read marker
 should be considered to be the user's read receipt location.
 
-{{m\_fully\_read\_event}}
+{{% event event="m.fully_read" %}}
 
 #### Client behaviour
 

@@ -12,7 +12,7 @@ events scoped to a `room_id`. This means they do not form part of the
 
 #### Events
 
-{{m\_typing\_event}}
+{{% event event="m.typing" %}}
 
 #### Client behaviour
 

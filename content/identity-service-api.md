@@ -196,7 +196,7 @@ the client should not expect that the server will not respond with
 another `M_TERMS_NOT_SIGNED` on their next request. The terms the user
 has just accepted are appended to `m.accepted_terms`.
 
-{{m\_accepted\_terms\_event}}
+{{% event event="m.accepted_terms" %}}
 
 {{% http-api spec="identity" api="v2_terms" %}}
 
