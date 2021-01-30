@@ -13,26 +13,27 @@ client device.
 The primary motivation for this API is exchanging data that is
 meaningless or undesirable to persist in the room DAG - for example,
 one-time authentication tokens or key data. It is not intended for
-conversational data, which should be sent using the normal \_ API for
+conversational data, which should be sent using the normal [`/rooms/<room_id>/send`](/client-server-api/#put_matrixclientr0roomsroomidsendeventtypetxnid) API for
 consistency throughout Matrix.
 
 #### Client behaviour
 
 To send a message to other devices, a client should call
-`/sendToDevice`\_. Only one message can be sent to each device per
+[`/sendToDevice`](/client-server-api/#put_matrixclientr0sendtodeviceeventtypetxnid). Only one message can be sent to each device per
 transaction, and they must all have the same event type. The device ID
 in the request body can be set to `*` to request that the message be
 sent to all known devices.
 
 If there are send-to-device messages waiting for a client, they will be
-returned by \_, as detailed in Extensions to /sync\_. Clients should
+returned by [`/sync`](/client-server-api/#get_matrixclientr0sync), as detailed in [Extensions to /sync](/client-server-api/#extensions-to-sync). Clients should
 inspect the `type` of each returned event, and ignore any they do not
 understand.
 
 #### Server behaviour
 
 Servers should store pending messages for local users until they are
-successfully delivered to the destination device. When a client calls \_
+successfully delivered to the destination device. When a client calls
+[`/sync`](/client-server-api/#get_matrixclientr0sync)
 with an access token which corresponds to a device with pending
 messages, the server should list the pending messages, in order of
 arrival, in the response body.
@@ -56,7 +57,7 @@ should be sent on to the remote servers via
 
 ##### Extensions to /sync
 
-This module adds the following properties to the \_ response:
+This module adds the following properties to the [`/sync`](/client-server-api/#get_matrixclientr0sync) response:
 
 | Parameter | Type      | Description                                                                 |
 |-----------|-----------|-----------------------------------------------------------------------------|
