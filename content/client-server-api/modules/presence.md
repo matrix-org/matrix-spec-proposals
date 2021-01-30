@@ -30,7 +30,7 @@ enum of one of the following:
 
 #### Events
 
-{{presence\_events}}
+{{% event-group group_name="m.presence" %}}
 
 #### Client behaviour
 

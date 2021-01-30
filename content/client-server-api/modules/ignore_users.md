@@ -11,7 +11,7 @@ and servers can implement the ignoring of users.
 
 #### Events
 
-{{m\_ignored\_user\_list\_event}}
+{{% event event="m.ignored_user_list" %}}
 
 #### Client behaviour
 

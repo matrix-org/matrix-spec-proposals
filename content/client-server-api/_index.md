@@ -1111,7 +1111,7 @@ which has no `m.identity_server` account data event should not end up
 with the client's default identity server in their account data, unless
 the user first visits their account settings to set the identity server.
 
-{{m\_identity\_server\_event}}
+{{% event event="m.identity_server" %}}
 
 ## Capabilities negotiation
 
@@ -1385,14 +1385,12 @@ available room versions.
 
 Room events are split into two categories:
 
-State Events  
-These are events which update the metadata state of the room (e.g. room
+* **State events**: These are events which update the metadata state of the room (e.g. room
 topic, room membership etc). State is keyed by a tuple of event `type`
 and a `state_key`. State in the room with the same key-tuple will be
 overwritten.
 
-Message events  
-These are events which describe transient "once-off" activity in a room:
+* **Message events**: These are events which describe transient "once-off" activity in a room:
 typically communication such as sending an instant message or setting up
 a VoIP call.
 
@@ -1416,11 +1414,15 @@ assuming the client has access to the `com.example` namespace.
 Note that the structure of these events may be different than those in
 the server-server API.
 
-{{common\_event\_fields}}
+#### Event fields
 
-{{common\_room\_event\_fields}}
+{{% event-fields event_type="event" %}}
 
-#### State Event Fields
+#### Room event fields
+
+{{% event-fields event_type="room_event" %}}
+
+#### State event fields
 
 In addition to the fields of a Room Event, State Events have the
 following fields.
@@ -1460,15 +1462,15 @@ This section is a work in progress.
 This specification outlines several standard event types, all of which
 are prefixed with `m.`
 
-{{m\_room\_canonical\_alias\_event}}
+{{% event event="m.room.canonical_alias" %}}
 
-{{m\_room\_create\_event}}
+{{% event event="m.room.create" %}}
 
-{{m\_room\_join\_rules\_event}}
+{{% event event="m.room.join_rules" %}}
 
-{{m\_room\_member\_event}}
+{{% event event="m.room.member" %}}
 
-{{m\_room\_power\_levels\_event}}
+{{% event event="m.room.power_levels" %}}
 
 #### Historical events
 
@@ -1682,7 +1684,7 @@ the topic to be removed from the room.
 
 #### Events
 
-{{m\_room\_redaction\_event}}
+{{% event event="m.room.redaction" %}}
 
 #### Client behaviour
 

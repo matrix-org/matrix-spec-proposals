@@ -466,11 +466,11 @@ process.
 
 After the handshake, the verification process begins.
 
-{{m\_key\_verification\_request\_event}}
+{{% event event="m.key.verification.request" %}}
 
-{{m\_key\_verification\_start\_event}}
+{{% event event="m.key.verification.start" %}}
 
-{{m\_key\_verification\_cancel\_event}}
+{{% event event="m.key.verification.cancel" %}}
 
 ##### Short Authentication String (SAS) verification
 
@@ -634,13 +634,13 @@ following error codes are used in addition to those already specified:
 -   `m.mismatched_commitment`: The hash commitment did not match.
 -   `m.mismatched_sas`: The SAS did not match.
 
-{{m\_key\_verification\_start\_m\_sas\_v1\_event}}
+{{% event event="m.key.verification.start$m.sas.v1" %}}
 
-{{m\_key\_verification\_accept\_event}}
+{{% event event="m.key.verification.accept" %}}
 
-{{m\_key\_verification\_key\_event}}
+{{% event event="m.key.verification.key" %}}
 
-{{m\_key\_verification\_mac\_event}}
+{{% event event="m.key.verification.mac" %}}
 
 ###### HKDF calculation
 
@@ -1355,17 +1355,17 @@ messages.
 
 ##### Events
 
-{{m\_room\_encryption\_event}}
+{{% event event="m.room.encryption" %}}
 
-{{m\_room\_encrypted\_event}}
+{{% event event="m.room.encrypted" %}}
 
-{{m\_room\_key\_event}}
+{{% event event="m.room_key" %}}
 
-{{m\_room\_key\_request\_event}}
+{{% event event="m.room_key_request" %}}
 
-{{m\_forwarded\_room\_key\_event}}
+{{% event event="m.room_key" %}}
 
-{{m\_dummy\_event}}
+{{% event event="m.dummy" %}}
 
 ##### Key management API
 
@@ -1451,4 +1451,4 @@ by including a `withheld` property in the `m.forwarded_room_key` message
 that is an object with the `code` and `reason` properties from the
 `m.room_key.withheld` message.
 
-{{m\_room\_key\_withheld\_event}}
+{{% event event="m.room_key.withheld" %}}

@@ -43,7 +43,7 @@ setting at that time was more restrictive.
 
 #### Events
 
-{{m\_room\_history\_visibility\_event}}
+{{% event event="m.room.history_visibility" %}}
 
 #### Client behaviour
 

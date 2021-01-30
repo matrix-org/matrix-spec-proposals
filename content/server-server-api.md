@@ -567,7 +567,7 @@ EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
 "previous" IDs. They are intended to be non-persistent data such as user
 presence, typing notifications, etc.
 
-{{definition\_ss\_edu}}
+{{% definition path="api/server-server/definitions/edu" %}}
 
 ## Room State Resolution
 
@@ -850,7 +850,7 @@ need to be sent to other servers in the room so their users are aware of
 the same state. Receiving servers should verify that the user is in the
 room, and is a user belonging to the sending server.
 
-{{definition\_ss\_event\_schemas\_m\_typing}}
+{{% definition path="api/server-server/definitions/event-schemas/m.typing" %}}
 
 ## Presence
 
@@ -861,7 +861,7 @@ Servers should only send presence updates for users that the receiving
 server would be interested in. Such as the receiving server sharing a
 room with a given user.
 
-{{definition\_ss\_event\_schemas\_m\_presence}}
+{{% definition path="api/server-server/definitions/event-schemas/m.presence" %}}
 
 ## Receipts
 
@@ -872,7 +872,7 @@ where in the event graph the user has read up to.
 Read receipts for events that a user sent do not need to be sent. It is
 implied that by sending the event the user has read up to the event.
 
-{{definition\_ss\_event\_schemas\_m\_receipt}}
+{{% definition path="api/server-server/definitions/event-schemas/m.receipt" %}}
 
 ## Querying for information
 
@@ -945,7 +945,7 @@ recognise, it must resynchronise its list by calling the
 
 {{% http-api spec="server-server" api="user_devices" %}}
 
-{{definition\_ss\_event\_schemas\_m\_device\_list\_update}}
+{{% definition path="api/server-server/definitions/event-schemas/m.device_list_update" %}}
 
 ## End-to-End Encryption
 
@@ -960,7 +960,7 @@ proxied through to the client.
 
 {{% http-api spec="server-server" api="user_keys" %}}
 
-{{definition\_ss\_event\_schemas\_m\_signing\_key\_update}}
+{{% definition path="api/server-server/definitions/event-schemas/m.signing_key_update" %}}
 
 ## Send-to-device messaging
 
@@ -971,7 +971,7 @@ involved.
 Each send-to-device message should be sent to the destination server
 using the following EDU:
 
-{{definition\_ss\_event\_schemas\_m\_direct\_to\_device}}
+{{% definition path="api/server-server/definitions/event-schemas/m.direct_to_device" %}}
 
 ## Content Repository
 

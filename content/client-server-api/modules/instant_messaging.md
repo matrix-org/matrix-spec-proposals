@@ -11,9 +11,9 @@ room itself such as a room name and topic.
 
 #### Events
 
-{{m\_room\_message\_event}}
+{{% event event="m.room.message" %}}
 
-{{m\_room\_message\_feedback\_event}}
+{{% event event="m.room.message.feedback" %}}
 
 Usage of this event is discouraged for several reasons:  
 -   The number of feedback events will grow very quickly with the number
@@ -24,13 +24,13 @@ Usage of this event is discouraged for several reasons:
 -   There are no guarantees that the client has seen the event ID being
     acknowledged.
 
-{{m\_room\_name\_event}}
+{{% event event="m.room.name" %}}
 
-{{m\_room\_topic\_event}}
+{{% event event="m.room.topic" %}}
 
-{{m\_room\_avatar\_event}}
+{{% event event="m.room.avatar" %}}
 
-{{m\_room\_pinned\_events\_event}}
+{{% event event="m.room.pinned_events" %}}
 
 ##### m.room.message msgtypes
 
@@ -116,7 +116,7 @@ extensible message formatting options, such as the proposal
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767).
 {{% /boxes/note %}}
 
-{{msgtype\_events}}
+{{% msgtypes %}}
 
 #### Client behaviour
 

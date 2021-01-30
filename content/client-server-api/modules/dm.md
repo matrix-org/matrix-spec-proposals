@@ -19,7 +19,7 @@ whether a chat is 'direct' to an invitee.
 
 #### Events
 
-{{m\_direct\_event}}
+{{% event event="m.direct" %}}
 
 #### Client behaviour
 
