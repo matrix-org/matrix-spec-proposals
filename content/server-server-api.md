@@ -688,7 +688,7 @@ in practice will use just two.
 
 The first part of the handshake usually involves using the directory
 server to request the room ID and join candidates through the
-`/query/directory`\_ API endpoint. In the case of a new user joining a
+[`/query/directory`](/server-server-api/#get_matrixfederationv1querydirectory) API endpoint. In the case of a new user joining a
 room as a result of a received invite, the joining user's homeserver
 could optimise this step away by picking the origin server of that
 invite message as the join candidate. However, the joining server should
