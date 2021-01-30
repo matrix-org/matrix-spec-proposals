@@ -15,7 +15,7 @@ send call events to rooms with exactly two participants.
 
 #### Events
 
-{{voip\_events}}
+{{% event-group group_name="m.call" %}}
 
 #### Client behaviour
 

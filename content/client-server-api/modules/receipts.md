@@ -24,7 +24,7 @@ information on how read receipts affect notification counts.
 Each `user_id`, `receipt_type` pair must be associated with only a
 single `event_id`.
 
-{{m\_receipt\_event}}
+{{% event event="m.receipt" %}}
 
 #### Client behaviour
 
