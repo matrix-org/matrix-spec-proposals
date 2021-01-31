@@ -62,13 +62,11 @@ paths:
 
         The available presets do the following with respect to room state:
 
-        ========================  ==============  ======================  ================  =========
-                 Preset           `join_rules`  `history_visibility`  `guest_access`  Other
-        ========================  ==============  ======================  ================  =========
-        `private_chat`          `invite`      `shared`              `can_join`
-        `trusted_private_chat`  `invite`      `shared`              `can_join`      All invitees are given the same power level as the room creator.
-        `public_chat`           `public`      `shared`              `forbidden`
-        ========================  ==============  ======================  ================  =========
+        | Preset                 | `join_rules` | `history_visibility` | `guest_access` | Other |
+        |------------------------|--------------|----------------------|----------------|-------|
+        | `private_chat`         | `invite`     | `shared`             | `can_join`     |       |
+        | `trusted_private_chat` | `invite`     | `shared`             | `can_join`     | All invitees are given the same power level as the room creator. |
+        | `public_chat`          | `public`     | `shared`             | `forbidden`    |       |
 
         The server will create a `m.room.create` event in the room with the
         requesting user as the creator, alongside other keys provided in the
