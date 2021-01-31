@@ -1363,7 +1363,7 @@ messages.
 
 {{% event event="m.room_key_request" %}}
 
-{{% event event="m.room_key" %}}
+{{% event event="m.forwarded_room_key" %}}
 
 {{% event event="m.dummy" %}}
 
