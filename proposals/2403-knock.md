@@ -315,6 +315,41 @@ Response:
 }
 ```
 
+### Changes regarding the Public Rooms Directory
+
+A problem arises for discovery of knockable rooms. Ideally one wouldn't have
+to send their colleagues a room ID for a room that they need to knock on. One
+of these methods for room discovery is the public rooms directory, which
+allows us to explore a list of rooms we may be able to join.
+
+The spec does not prevent us from adding rooms with 'knock' join_rules to the
+public rooms directory. However, there is a problem in that a user attempting
+to join a room in the directory will not know whether to directly attempt a
+join, or to knock first. The current content of a `PublicRoomsChunk` does not
+contain this information:
+
+```json
+{
+  "aliases": [
+    "#murrays:cheese.bar"
+  ],
+  "avatar_url": "mxc://bleeker.street/CHEDDARandBRIE",
+  "guest_can_join": false,
+  "name": "CHEESE",
+  "num_joined_members": 37,
+  "room_id": "!ol19s:bleecker.street",
+  "topic": "Tasty tasty cheese",
+  "world_readable": true
+}
+```
+
+Therefore this proposal adds `join_rule` as a new, required field to a
+`PublicRoomsChunk`. The `join_rule` of knockable rooms will be `knock`, thus
+giving clients the information they need to know how to attempt entry of
+a room when a client selects it, as well as allowing clients to display
+knockable rooms differently than publicly joinable ones.
+
+
 ## Server-Server API
 Similarly to join and leave over federation, a ping-pong game with two new
 endpoints is introduced: `make_knock` and `send_knock`. Both endpoints must
