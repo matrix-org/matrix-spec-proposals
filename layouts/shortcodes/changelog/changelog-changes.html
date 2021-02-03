@@ -1,0 +1,108 @@
+{{/*
+
+  This template is used to render the set of changes in the changelog page.
+
+  If this version of the spec is unstable, it expects to find a
+  "changelog/newsfragments" directory containing all unreleased changes,
+  and renders them all.
+
+  Otherwise it expects to find a "changelog/releases" directory, under which
+  is one or more directories whose name is a patch number, like "0", "1", and so on.
+
+  It renders each of these subdirectories as a separate patch, including
+  a table containing basic info about that patch and the set of changes in it.
+
+*/}}
+
+{{ $path := path.Join "changelogs" }}
+
+{{ $status := .Site.Params.version.status }}
+
+{{ if eq $status "unstable" }}
+<h2 id=api-changes>Changes since last release</h2>
+    {{ partial "render-api-changes" (dict "title" "Client-Server API" "id" "client-server-api" "path" (path.Join $path "client_server")) }}
+    {{ partial "render-api-changes" (dict "title" "Server-Server API" "id" "server-server-api" "path" (path.Join $path "server_server")) }}
+    {{ partial "render-api-changes" (dict "title" "Application Service API" "id" "application-service-api" "path" (path.Join $path "application_service")) }}
+    {{ partial "render-api-changes" (dict "title" "Identity Service API" "id" "identity-service-api" "path" (path.Join $path "identity_service")) }}
+    {{ partial "render-api-changes" (dict "title" "Push Gateway API" "id" "push-gateway-api" "path" (path.Join $path "push_gateway")) }}
+{{ else }}
+    {{ $releases_path := path.Join $path "releases" }}
+    {{ $major_version := .Site.Params.version.major_version }}
+    {{ $minor_version := .Site.Params.version.minor_version }}
+    {{ $releases := partial "reverse-slice" (readDir $releases_path) }}
+    {{ range $releases }}
+        {{ if .IsDir }}
+<h2 id="{{ .Name }}">Version {{ $major_version }}.{{ $minor_version }}.{{ .Name }}</h2>
+        {{ $release_path := path.Join $releases_path .Name}}
+        {{ $release_info := readFile (path.Join $release_path "release.yaml") | transform.Unmarshal }}
+<table class="release-info">
+<tr><th>Git commit</th><td><a href="https://github.com/matrix-org/matrix-doc/tree/{{ $release_info.tag }}">https://github.com/matrix-org/matrix-doc/tree/{{ $release_info.tag }}</a></td>
+<tr><th>Release date</th><td>{{ $release_info.date }}</td>
+</table>
+            {{ partial "render-api-changes" (dict "title" "Client-Server API" "id" "client-server-api" "path" (path.Join $release_path "client_server")) }}
+            {{ partial "render-api-changes" (dict "title" "Server-Server API" "id" "server-server-api" "path" (path.Join $release_path "server_server")) }}
+            {{ partial "render-api-changes" (dict "title" "Application Service API" "id" "application-service-api" "path" (path.Join $release_path "application_service")) }}
+            {{ partial "render-api-changes" (dict "title" "Identity Service API" "id" "identity-service-api" "path" (path.Join $release_path "identity_service")) }}
+            {{ partial "render-api-changes" (dict "title" "Push Gateway API" "id" "push-gateway-api" "path" (path.Join $release_path "push_gateway")) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ define "partials/reverse-slice" }}
+{{ $sliceOriginal := . }}
+{{ $len := len $sliceOriginal }}
+{{ $sliceReversed := slice }}
+{{ range seq $len }}
+    {{ $sliceReversed = $sliceReversed | append (index $sliceOriginal (sub $len .)) }}
+{{ end }}
+{{ return $sliceReversed }}
+{{ end }}
+
+{{ define "partials/render-api-changes" }}
+<h3 id="{{.id}}">{{ .title }}</h3>
+    {{ $api_path := .path }}
+    {{ $config_file := path.Join $api_path "pyproject.toml" }}
+    {{ $config := readFile $config_file | transform.Unmarshal }}
+    {{ $news_path := path.Join $api_path "newsfragments" }}
+    {{ partial "render-newsfragments"  (dict "config" $config "news_path" $news_path )}}
+{{ end }}
+
+{{ define "partials/render-newsfragments" }}
+{{ $config := .config }}
+{{ $news_path := .news_path }}
+
+{{ $types := dict }}
+{{ range $config.tool.towncrier.type }}
+    {{ $types = merge $types (dict .directory (slice)) }}
+{{ end }}
+
+{{ range (readDir $news_path) }}
+
+    {{ $pieces := split .Name "." }}
+
+    {{ $ticket := index $pieces 0 }}
+    {{ $description := readFile (path.Join $news_path .Name ) }}
+    {{ $change_info := (dict "ticket" $ticket "description" $description )}}
+
+    {{ $type := index $pieces 1 }}
+    {{ $instances := index $types $type }}
+    {{ $instances = $instances | append $change_info }}
+    {{ $types = merge $types (dict $type $instances) }}
+
+{{ end }}
+
+<ul>
+{{ range $config.tool.towncrier.type }}
+    {{ $changes_of_type := (index $types .directory) }}
+    {{ if $changes_of_type }}
+<li><strong>{{.name}}</strong>
+<p><ul>
+        {{ range $changes_of_type }}
+<li><a href="https://github.com/matrix-org/matrix-doc/issues/{{.ticket}}"><strong>{{ .ticket }}: </strong></a>{{ .description | markdownify }}</li>
+        {{ end }}
+</ul></p>
+</li>
+    {{ end }}
+{{ end }}
+</ul>
+{{ end }}
