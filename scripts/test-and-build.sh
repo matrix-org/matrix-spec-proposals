@@ -14,9 +14,9 @@ pip --version
 pip install -r scripts/requirements.txt
 
 # do sanity checks on the examples and swagger
-(cd event-schemas/ && ./check_examples.py)
-(cd api && ./check_examples.py)
-(cd api && npm install && node validator.js -s "client-server")
+scripts/check-event-schema-examples.py
+scripts/check-swagger-sources.py
+(cd event-schemas/api && npm install && node validator.js -s "client-server")
 
 : ${GOPATH:=${WORKSPACE}/.gopath}
 mkdir -p "${GOPATH}"
