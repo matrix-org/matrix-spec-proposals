@@ -128,7 +128,14 @@ def check_example_dir(exampledir, schemadir):
 
 
 if __name__ == '__main__':
+    # Get the directory that this script is residing in
+    script_directory = os.path.dirname(os.path.realpath(__file__))
+
+    # Resolve the directories to check, relative to the script path
+    examples_directory = os.path.join(script_directory, "../event-schemas/examples")
+    schema_directory = os.path.join(script_directory, "../event-schemas/schema")
+
     try:
-        check_example_dir("examples", "schema")
+        check_example_dir(examples_directory, schema_directory)
     except:
         sys.exit(1)

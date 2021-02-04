@@ -108,13 +108,36 @@ def check_swagger_file(filepath):
 
 
 def resolve_references(path, schema):
+    """Recurse through a given schema until we find a $ref key. Upon doing so,
+    check that the referenced file exists, then load it up and check all of the
+    references in that file. Continue on until we've hit all dead ends.
+
+    $ref values are deleted from schemas as they are validated, to prevent
+    duplicate work.
+    """
     if isinstance(schema, dict):
         # do $ref first
         if '$ref' in schema:
-            value = schema['$ref']
-            path = os.path.abspath(os.path.join(os.path.dirname(path), value))
-            ref = load_file("file://" + path)
-            result = resolve_references(path, ref)
+            # Pull the referenced filepath from the schema
+            referenced_file = schema['$ref']
+
+            # Referenced filepaths are relative, so take the current path's
+            # directory and append the relative, referenced path to it.
+            inner_path = os.path.join(os.path.dirname(path), referenced_file)
+
+            # Then convert the path (which may contiain '../') into a
+            # normalised, absolute path
+            inner_path = os.path.abspath(inner_path)
+
+            # Load the referenced file
+            ref = load_file("file://" + inner_path)
+
+            # Check that the references in *this* file are valid
+            result = resolve_references(inner_path, ref)
+
+            # They were valid, and so were the sub-references. Delete
+            # the reference here to ensure we don't pass over it again
+            # when checking other files
             del schema['$ref']
         else:
             result = {}
@@ -143,15 +166,22 @@ def load_file(path):
 
 
 if __name__ == '__main__':
-    paths = sys.argv[1:]
-    if not paths:
-        paths = []
-        for (root, dirs, files) in os.walk(os.curdir):
-            for filename in files:
-                if filename.endswith(".yaml"):
-                    paths.append(os.path.join(root, filename))
-    for path in paths:
-        try:
-            check_swagger_file(path)
-        except Exception as e:
-            raise ValueError("Error checking file %r" % (path,), e)
+    # Get the directory that this script is residing in
+    script_directory = os.path.dirname(os.path.realpath(__file__))
+
+    # Resolve the directory containing the swagger sources,
+    # relative to the script path
+    source_files_directory = os.path.realpath(os.path.join(script_directory, "../data"))
+
+    # Walk the source path directory, looking for YAML files to check
+    for (root, dirs, files) in os.walk(source_files_directory):
+        for filename in files:
+            if not filename.endswith(".yaml"):
+                continue
+
+            path = os.path.join(root, filename)
+
+            try:
+                check_swagger_file(path)
+            except Exception as e:
+                raise ValueError("Error checking file %s" % (path,), e)
