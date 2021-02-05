@@ -21,7 +21,7 @@
 {{ $excluded := slice "m.room.message$m.server_notice" }}
 
 {{/*
-  It then adds any other events that start `m.room.message`.
+  It then adds any other events that start with `m.room.message`.
 */}}
 {{ $events := index .Site.Data "event-schemas" "schema" }}
 {{ $expected_prefix := "m.room.message$"}}
