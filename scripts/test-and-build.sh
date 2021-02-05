@@ -11,12 +11,16 @@ virtualenv -p python3 env
 python --version
 pip --version
 
+# Install python dependencies
 pip install -r scripts/requirements.txt
+
+# Install node dependencies
+npm install --prefix=scripts
 
 # do sanity checks on the examples and swagger
 scripts/check-event-schema-examples.py
 scripts/check-swagger-sources.py
-(cd event-schemas/api && npm install && node validator.js -s "client-server")
+node scripts/validator.js --schema "data/api/client-server"
 
 : ${GOPATH:=${WORKSPACE}/.gopath}
 mkdir -p "${GOPATH}"
