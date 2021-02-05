@@ -39,9 +39,9 @@ genmatrixassets: &genmatrixassets
 validateapi: &validateapi
   name: Validate OpenAPI specifications
   command: |
-    cd api
+    cd scripts
     npm install
-    node validator.js -s "client-server"
+    node validator.js -s "../data/api/client-server"
 
 buildspeculator: &buildspeculator
   name: Build Speculator
