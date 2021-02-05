@@ -85,7 +85,7 @@
 {{/*
   Only copy the bits of the object that we actually care about.
   This is needed for uniqify to work - otherwise objects that are the same
-  but with (for example) different examples will be considered differen.
+  but with (for example) different examples will be considered different.
 */}}
 {{ define "partials/clean-object" }}
     {{ return (dict "title" .title "properties" .properties "required" .required "enum" .enum) }}
