@@ -1,13 +1,11 @@
-# MSC2416: Enhance m.login.token authentication type
+# MSC2416: Add m.login.jwt authentication type
 An appservice might want to log in to the homeserver as another user or a system administrator might
 want an easy way to authenticating as someone else to be able to investigate an issue. Currently
 two solutions for that exist: either using [shared secret auth](https://github.com/devture/matrix-synapse-shared-secret-auth)
-or synapses undocumented and unspeced `org.matrix.login.jwt`. Neither solution seems good: The shared secret
-auth provider seems like a hack on `m.login.password` and `org.matrix.login.jwt` is neither documented nor
-speced. Instead, it is proposed to add a new type of token allowed to the `m.login.token` type.
+or synapses undocumented and unspeced `org.matrix.login.jwt`. This proposal adds `m.login.jwt` properly.
 
 ## Proposal
-The proposal adds JWTs ([Json Web Token](https://jwt.io/)) to the authentication type `m.login.token` upon login.
+The proposal adds JWTs ([Json Web Token](https://jwt.io/)) to the authentication type `m.login.jwt` upon login.
 It is expected that the tokens are signed by a secret key. The algorithm of the JWT can be
 configured by the homeserver. As this endpoint is meant to be used by automated processes like
 application services there is no need to provide a mechanism to generate such tokens for clients.
@@ -36,24 +34,25 @@ Payload:
 A POST request to the `/_matrix/client/r0/login` endpoint could look as follows:
 ```json
 {
-  "type": "m.login.token",
+  "type": "m.login.jwt",
   "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZSIsImV4cCI6MTU3OTM3Mzc4OH0.4YXhRYNfzdns8qf60fE7pu9RKFt3uhxqj6y-Gy4d2bbDkQ5-mTbTNgDdi350ZMrY5VV22WHp_-BOjtGFkwOqgA"
 }
 ```
 
 ## Potential Issues
-The homeserver implementation might have to implement multiple token validators. If one successfully
-validates that token, that one should be used. Compareable to synapses auth providers.
+A new login method is added which adds complexity.
 
 ## Alternatives
 A `m.login.password` auth provider could be used to log in as someone as a special user. This,
 however, feels rather hacky and not the intended purpose of `m.login.password`.
 
-Synapses `org.matrix.login.jwt` could be introduced properly in the spec as `m.login.jwt`, however,
-as it seems to be identical to `m.login.token` it makes sense to merge it into `m.login.token`.
-(Note: Only got a very weak opinion on this, can also see arguments for the two being separate and
-would gladly adapt the MSC, if wanted)
+Instead of introducing a new `m.login.jwt`, the existing `m.login.token` could be expanded to accept both
+a jwt and an sso token. This, however, seems unneededly complicated.
 
 ## Security considerations
 Possession of the secret allows you to be logged in as anyone on that homeserver. As such, this
 secret has to be kept securely.
+
+## Unstable prefix
+Instead of `m.login.jwt`, `org.matrix.login.jwt` is used, to have compatability with the existing synapse
+jwt format
