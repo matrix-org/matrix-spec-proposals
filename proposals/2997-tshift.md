@@ -1,4 +1,4 @@
-# MSC2996: "There's an MSC for that!"
+# MSC2997: "There's an MSC for that!"
 
 Throughout fosdem 2021 multiple different features or ideas around matrix were discussed. As it turns
 out, most of them already had an MSC for that! One feature that was keep being brought up, was to get
