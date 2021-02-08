@@ -547,7 +547,7 @@ This is to help users in case they knocked on a room accidentally, or simply
 no longer want to join a room they've knocked on. While this is a useful
 feature, it also allows users to spam a room by knocking and rescinding their
 knocks over and over. Particularly note-worthy is that this will generate
-state events that homeserver in the room will need to process. And while
+state events that homeservers in the room will need to process. And while
 join/leave state changes will do the same in a public room, the act of
 knocking is much lighter than the act of joining a room.
 
