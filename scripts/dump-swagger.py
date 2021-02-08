@@ -31,7 +31,7 @@ import yaml
 
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
 templating_dir = os.path.join(scripts_dir, "templating")
-api_dir = os.path.join(os.path.dirname(scripts_dir), "api")
+api_dir = os.path.join(os.path.dirname(scripts_dir), "data", "api")
 
 sys.path.insert(0, templating_dir)
 

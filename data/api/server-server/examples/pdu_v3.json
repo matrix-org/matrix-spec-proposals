@@ -1,0 +1,20 @@
+{
+    "$ref": "unsigned_pdu_base.json",
+    "hashes": {
+        "sha256": "thishashcoversallfieldsincasethisisredacted"
+    },
+    "signatures": {
+        "example.com": {
+            "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+        }
+    },
+    "auth_events": [
+        "$base64encodedeventid",
+        "$adifferenteventid"
+    ],
+    "prev_events": [
+        "$base64encodedeventid",
+        "$adifferenteventid"
+    ],
+    "redacts": "$some/old+event"
+}

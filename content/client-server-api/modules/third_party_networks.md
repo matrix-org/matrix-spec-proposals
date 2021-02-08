@@ -19,4 +19,4 @@ A client may wish to provide a rich interface for joining third party
 locations and connecting with third party users. Information necessary
 for such an interface is provided by third party lookups.
 
-{{third\_party\_lookup\_cs\_http\_api}}
+{{% http-api spec="client-server" api="third_party_lookup" %}}

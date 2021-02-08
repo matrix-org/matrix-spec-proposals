@@ -59,8 +59,8 @@ tags are defined in the `m.*` namespace:
 -   `m.server_notice`: Used to identify [Server Notice
     Rooms](#server-notices).
 
-{{m\_tag\_event}}
+{{% event event="m.tag" %}}
 
 #### Client Behaviour
 
-{{tags\_cs\_http\_api}}
+{{% http-api spec="client-server" api="tags" %}}

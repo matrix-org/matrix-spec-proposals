@@ -90,7 +90,7 @@ Clients MUST configure a Pusher before they will receive push
 notifications. There is a single API endpoint for this, as described
 below.
 
-{{pusher\_cs\_http\_api}}
+{{% http-api spec="client-server" api="pusher" %}}
 
 ##### Listing Notifications
 
@@ -98,7 +98,7 @@ A client can retrieve a list of events that it has been notified about.
 This may be useful so that users can see a summary of what important
 messages they have received.
 
-{{notifications\_cs\_http\_api}}
+{{% http-api spec="client-server" api="notifications" %}}
 
 ##### Receiving notifications
 
@@ -658,7 +658,7 @@ Definition:
 Clients can retrieve, add, modify and remove push rules globally or
 per-device using the APIs below.
 
-{{pushrules\_cs\_http\_api}}
+{{% http-api spec="client-server" api="pushrules" %}}
 
 ##### Push Rules: Events
 
@@ -666,7 +666,7 @@ When a user changes their push rules a `m.push_rules` event is sent to
 all clients in the `account_data` section of their next `/sync` request.
 The content of the event is the current push rules for the user.
 
-{{m\_push\_rules\_event}}
+{{% event event="m.push_rules" %}}
 
 ###### Examples
 

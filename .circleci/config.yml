@@ -5,9 +5,10 @@ gendoc: &gendoc
     scripts/gendoc.py
 
 genswagger: &genswagger
-  name: Generate the swagger
+  name: Validate sources and generate swagger json
   command: |
     source /env/bin/activate
+    scripts/check-swagger-sources.py
     scripts/dump-swagger.py
 
 buildswaggerui: &buildswaggerui
@@ -27,10 +28,7 @@ checkexamples: &checkexamples
   name: Check Event Examples
   command: |
     source /env/bin/activate
-    cd event-schemas
-    ./check_examples.py
-    cd ../api
-    ./check_examples.py
+    scripts/check-event-schema-examples.py
 
 genmatrixassets: &genmatrixassets
   name: Generate/Verify matrix.org assets
@@ -41,9 +39,9 @@ genmatrixassets: &genmatrixassets
 validateapi: &validateapi
   name: Validate OpenAPI specifications
   command: |
-    cd api
+    cd scripts
     npm install
-    node validator.js -s "client-server"
+    node validator.js -s "../data/api/client-server"
 
 buildspeculator: &buildspeculator
   name: Build Speculator

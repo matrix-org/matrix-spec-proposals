@@ -1,0 +1,8 @@
+{
+  "$ref": "core/room_event.json",
+  "type": "m.call.hangup",
+  "content": {
+    "version" : 0,
+    "call_id": "12345"
+  }
+}
