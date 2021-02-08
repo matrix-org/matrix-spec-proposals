@@ -13,7 +13,7 @@ Clients that implement this module should offer the user a list of
 registered devices, as well as the means to update their display names.
 Clients should also allow users to delete disused devices.
 
-{{device\_management\_cs\_http\_api}}
+{{% http-api spec="client-server" api="device_management" %}}
 
 #### Security considerations
 

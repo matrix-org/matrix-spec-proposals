@@ -172,7 +172,7 @@ header is inaccessible for the client.
 When credentials are required but missing or invalid, the HTTP call will
 return with a status of 401 and the error code `M_UNAUTHORIZED`.
 
-{{v2\_auth\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_auth" %}}
 
 ## Terms of service
 
@@ -196,15 +196,15 @@ the client should not expect that the server will not respond with
 another `M_TERMS_NOT_SIGNED` on their next request. The terms the user
 has just accepted are appended to `m.accepted_terms`.
 
-{{m\_accepted\_terms\_event}}
+{{% event event="m.accepted_terms" %}}
 
-{{v2\_terms\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_terms" %}}
 
 ## Status check
 
-{{ping\_is\_http\_api}}
+{{% http-api spec="identity" api="ping" %}}
 
-{{v2\_ping\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_ping" %}}
 
 ## Key management
 
@@ -217,15 +217,15 @@ The identity server may also keep track of some short-term
 public-private keypairs, which may have different usage and lifetime
 characteristics than the service's long-term keys.
 
-{{pubkey\_is\_http\_api}}
+{{% http-api spec="identity" api="pubkey" %}}
 
-{{v2\_pubkey\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_pubkey" %}}
 
 ## Association lookup
 
-{{lookup\_is\_http\_api}}
+{{% http-api spec="identity" api="lookup" %}}
 
-{{v2\_lookup\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_lookup" %}}
 
 ### Client behaviour
 
@@ -398,21 +398,21 @@ through without modification.
 
 ### Email associations
 
-{{email\_associations\_is\_http\_api}}
+{{% http-api spec="identity" api="email_associations" %}}
 
-{{v2\_email\_associations\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_email_associations" %}}
 
 ### Phone number associations
 
-{{phone\_associations\_is\_http\_api}}
+{{% http-api spec="identity" api="phone_associations" %}}
 
-{{v2\_phone\_associations\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_phone_associations" %}}
 
 ### General
 
-{{associations\_is\_http\_api}}
+{{% http-api spec="identity" api="associations" %}}
 
-{{v2\_associations\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_associations" %}}
 
 ## Invitation storage
 
@@ -427,9 +427,9 @@ the Matrix user's homeserver via the
 endpoint. The request MUST be signed with a long-term private key for
 the identity server.
 
-{{store\_invite\_is\_http\_api}}
+{{% http-api spec="identity" api="store_invite" %}}
 
-{{v2\_store\_invite\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_store_invite" %}}
 
 ## Ephemeral invitation signing
 
@@ -438,6 +438,6 @@ identity server offers some crypto functionality to help in accepting
 invitations. This is less secure than the client doing it itself, but
 may be useful where this isn't possible.
 
-{{invitation\_signing\_is\_http\_api}}
+{{% http-api spec="identity" api="invitation_signing" %}}
 
-{{v2\_invitation\_signing\_is\_http\_api}}
+{{% http-api spec="identity" api="v2_invitation_signing" %}}

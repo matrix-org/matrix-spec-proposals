@@ -150,11 +150,11 @@ SNI is not supported and should not be sent.
 Servers are encouraged to make use of the [Certificate
 Transparency](https://www.certificate-transparency.org/) project.
 
-{{wellknown\_ss\_http\_api}}
+{{% http-api spec="server-server" api="wellknown" %}}
 
 ### Server implementation
 
-{{version\_ss\_http\_api}}
+{{% http-api spec="server-server" api="version" %}}
 
 ### Retrieving server keys
 
@@ -190,7 +190,7 @@ Homeservers publish their signing keys in a JSON object at
 homeserver and for signing events. It contains a list of
 `old_verify_keys` which are only valid for signing events.
 
-{{keys\_server\_ss\_http\_api}}
+{{% http-api spec="server-server" api="keys_server" %}}
 
 #### Querying Keys Through Another Server
 
@@ -205,7 +205,7 @@ Notary servers can return keys for servers that are offline or having
 issues serving their own keys by using cached responses. Keys can be
 queried from multiple servers to mitigate against DNS spoofing.
 
-{{keys\_query\_ss\_http\_api}}
+{{% http-api spec="server-server" api="keys_query" %}}
 
 ## Authentication
 
@@ -308,7 +308,7 @@ pair of homeservers that exchanged it; they are not globally-meaningful.
 Transactions are limited in size; they can have at most 50 PDUs and 100
 EDUs.
 
-{{transactions\_ss\_http\_api}}
+{{% http-api spec="server-server" api="transactions" %}}
 
 ## PDUs
 
@@ -559,7 +559,7 @@ to check with other servers to ensure it is receiving the correct auth
 chain. These APIs give the homeserver an avenue for getting the
 information it needs.
 
-{{event\_auth\_ss\_http\_api}}
+{{% http-api spec="server-server" api="event_auth" %}}
 
 ## EDUs
 
@@ -567,7 +567,7 @@ EDUs, by comparison to PDUs, do not have an ID, a room ID, or a list of
 "previous" IDs. They are intended to be non-persistent data such as user
 presence, typing notifications, etc.
 
-{{definition\_ss\_edu}}
+{{% definition path="api/server-server/definitions/edu" %}}
 
 ## Room State Resolution
 
@@ -623,7 +623,7 @@ Similar to backfilling a room's history, a server may not have all the
 events in the graph. That server may use the `/get_missing_events` API
 to acquire the events it is missing.
 
-{{backfill\_ss\_http\_api}}
+{{% http-api spec="server-server" api="backfill" %}}
 
 ## Retrieving events
 
@@ -632,7 +632,7 @@ information about the room which cannot be easily determined from
 backfilling. These APIs provide homeservers with the option of getting
 events and the state of the room at a given point in the timeline.
 
-{{events\_ss\_http\_api}}
+{{% http-api spec="server-server" api="events" %}}
 
 ## Joining Rooms
 
@@ -688,7 +688,7 @@ in practice will use just two.
 
 The first part of the handshake usually involves using the directory
 server to request the room ID and join candidates through the
-`/query/directory`\_ API endpoint. In the case of a new user joining a
+[`/query/directory`](/server-server-api/#get_matrixfederationv1querydirectory) API endpoint. In the case of a new user joining a
 room as a result of a received invite, the joining user's homeserver
 could optimise this step away by picking the origin server of that
 invite message as the join candidate. However, the joining server should
@@ -716,9 +716,9 @@ graph, and responds to the joining server with the full set of state for
 the newly-joined room. The resident server must also send the event to
 other servers participating in the room.
 
-{{joins\_v1\_ss\_http\_api}}
+{{% http-api spec="server-server" api="joins-v1" %}}
 
-{{joins\_v2\_ss\_http\_api}}
+{{% http-api spec="server-server" api="joins-v2" %}}
 
 ## Inviting to a room
 
@@ -728,9 +728,9 @@ the process defined here. However, when a user invites another user on a
 different homeserver, a request to that homeserver to have the event
 signed and verified must be made.
 
-{{invites\_v1\_ss\_http\_api}}
+{{% http-api spec="server-server" api="invites-v1" %}}
 
-{{invites\_v2\_ss\_http\_api}}
+{{% http-api spec="server-server" api="invites-v2" %}}
 
 ## Leaving Rooms (Rejecting Invites)
 
@@ -751,9 +751,9 @@ and replaces the `event_id` with its own. This is then sent to the
 resident server via `/send_leave`. The resident server will then send
 the event to other servers in the room.
 
-{{leaving\_v1\_ss\_http\_api}}
+{{% http-api spec="server-server" api="leaving-v1" %}}
 
-{{leaving\_v2\_ss\_http\_api}}
+{{% http-api spec="server-server" api="leaving-v2" %}}
 
 ## Third-party invites
 
@@ -806,7 +806,7 @@ auth the event and send it.
 However, if the invited homeserver isn't in the room the invite came
 from, it will need to request the room's homeserver to auth the event.
 
-{{third\_party\_invite\_ss\_http\_api}}
+{{% http-api spec="server-server" api="third_party_invite" %}}
 
 #### Verifying the invite
 
@@ -841,7 +841,7 @@ homeservers need a way to query the public rooms for another server.
 This can be done by making a request to the `/publicRooms` endpoint for
 the server the room directory should be retrieved for.
 
-{{public\_rooms\_ss\_http\_api}}
+{{% http-api spec="server-server" api="public_rooms" %}}
 
 ## Typing Notifications
 
@@ -850,7 +850,7 @@ need to be sent to other servers in the room so their users are aware of
 the same state. Receiving servers should verify that the user is in the
 room, and is a user belonging to the sending server.
 
-{{definition\_ss\_event\_schemas\_m\_typing}}
+{{% definition path="api/server-server/definitions/event-schemas/m.typing" %}}
 
 ## Presence
 
@@ -861,7 +861,7 @@ Servers should only send presence updates for users that the receiving
 server would be interested in. Such as the receiving server sharing a
 room with a given user.
 
-{{definition\_ss\_event\_schemas\_m\_presence}}
+{{% definition path="api/server-server/definitions/event-schemas/m.presence" %}}
 
 ## Receipts
 
@@ -872,7 +872,7 @@ where in the event graph the user has read up to.
 Read receipts for events that a user sent do not need to be sent. It is
 implied that by sending the event the user has read up to the event.
 
-{{definition\_ss\_event\_schemas\_m\_receipt}}
+{{% definition path="api/server-server/definitions/event-schemas/m.receipt" %}}
 
 ## Querying for information
 
@@ -885,7 +885,7 @@ There are several types of queries that can be made. The generic
 endpoint to represent all queries is described first, followed by the
 more specific queries that can be made.
 
-{{query\_ss\_http\_api}}
+{{% http-api spec="server-server" api="query" %}}
 
 ## OpenID
 
@@ -897,7 +897,7 @@ without granting full access to the user's account.
 Access tokens generated by the OpenID API are only good for the OpenID
 API and nothing else.
 
-{{openid\_ss\_http\_api}}
+{{% http-api spec="server-server" api="openid" %}}
 
 ## Device Management
 
@@ -943,9 +943,9 @@ recognise, it must resynchronise its list by calling the
 `stream_id` which should be used to correlate with subsequent
 `m.device_list_update` EDUs.
 
-{{user\_devices\_ss\_http\_api}}
+{{% http-api spec="server-server" api="user_devices" %}}
 
-{{definition\_ss\_event\_schemas\_m\_device\_list\_update}}
+{{% definition path="api/server-server/definitions/event-schemas/m.device_list_update" %}}
 
 ## End-to-End Encryption
 
@@ -958,9 +958,9 @@ The APIs defined here are designed to be able to proxy much of the
 client's request through to federation, and have the response also be
 proxied through to the client.
 
-{{user\_keys\_ss\_http\_api}}
+{{% http-api spec="server-server" api="user_keys" %}}
 
-{{definition\_ss\_event\_schemas\_m\_signing\_key\_update}}
+{{% definition path="api/server-server/definitions/event-schemas/m.signing_key_update" %}}
 
 ## Send-to-device messaging
 
@@ -971,7 +971,7 @@ involved.
 Each send-to-device message should be sent to the destination server
 using the following EDU:
 
-{{definition\_ss\_event\_schemas\_m\_direct\_to\_device}}
+{{% definition path="api/server-server/definitions/event-schemas/m.direct_to_device" %}}
 
 ## Content Repository
 

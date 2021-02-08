@@ -97,11 +97,11 @@ rules against rooms can describe a room ID or room alias - the
 subscriber is responsible for resolving the alias to a room ID if
 desired.
 
-{{m\_policy\_rule\_user\_event}}
+{{% event event="m.policy.rule.user" %}}
 
-{{m\_policy\_rule\_room\_event}}
+{{% event event="m.policy.rule.room" %}}
 
-{{m\_policy\_rule\_server\_event}}
+{{% event event="m.policy.rule.server" %}}
 
 #### Client behaviour
 

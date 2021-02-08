@@ -24,7 +24,7 @@ The fully read marker is kept under an `m.fully_read` event. If the
 event does not exist on the user's account data, the fully read marker
 should be considered to be the user's read receipt location.
 
-{{m\_fully\_read\_event}}
+{{% event event="m.fully_read" %}}
 
 #### Client behaviour
 
@@ -39,7 +39,7 @@ commonly updated at the same time, and therefore the client might wish
 to save an extra HTTP call. Providing an `m.read` location performs the
 same task as a request to `/receipt/m.read/$event:example.org`.
 
-{{read\_markers\_cs\_http\_api}}
+{{% http-api spec="client-server" api="read_markers" %}}
 
 #### Server behaviour
 

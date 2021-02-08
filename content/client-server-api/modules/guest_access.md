@@ -32,7 +32,7 @@ rather than allowing all homeservers to enforce the rules on each other.
 
 #### Events
 
-{{m\_room\_guest\_access\_event}}
+{{% event event="m.room.guest_access" %}}
 
 #### Client behaviour
 

@@ -242,6 +242,130 @@ footer {
   }
 }
 
+/* Styles for sections that are rendered from data, such as HTTP APIs and event schemas */
+.rendered-data {
+  margin: 1rem 0 3rem 0;
+  padding: 1rem;
+
+  details {
+
+    summary {
+      padding: .5rem 0;
+      list-style-position: outside;
+    }
+  }
+
+  .deprecated-inline {
+
+    &:after {
+      content: " — DEPRECATED";
+      color: $warning;
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  h1 {
+    display: inline-block;
+    font-size: 1.3rem;
+
+    .endpoint {
+      color: $secondary;
+    }
+  }
+
+  h2 {
+    font-weight: $font-weight-bold;
+    font-size: 1.3rem;
+    margin: 3rem 0 .5rem 0;
+  }
+
+  h3 {
+    font-weight: $font-weight-bold;
+    font-size: 1.1rem;
+    margin: 1.5rem 0 .75rem 0;
+  }
+
+  h2 + table, h3 + table, h3 + div.highlight {
+    margin-top: 0;
+  }
+
+  hr {
+    border-bottom: 2px solid $dark;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    margin: .5rem;
+    max-width: 80%;
+  }
+
+  p code, table code {
+    background-color: $white;
+  }
+
+  table {
+    table-layout: fixed;
+    width: 100%;
+    margin: 4rem 0;
+
+    caption {
+      caption-side: top;
+      color: $dark;
+      font-size: 1rem;
+      font-weight: $font-weight-bold;
+    }
+
+    th, td, caption {
+      padding: 1rem;
+    }
+
+    th {
+      background-color: $white;
+    }
+
+    caption, tr {
+      background-color: $table-row-default;
+    }
+
+    tr:nth-child(even) {
+      background-color: $table-row-alternate;
+    }
+
+    &.basic-info, &.basic-info th, &.basic-info td {
+      table-layout: fixed;
+      margin: 1rem 0 .5rem 0;
+      background-color: $white;
+    }
+
+    &.basic-info th {
+      width: 15rem;
+    }
+
+    .col-name, .col-type, .col-status {
+      width: 25%;
+    }
+
+    .col-description {
+      width: 50%;
+    }
+
+    .col-status-description {
+      width: 75%;
+    }
+
+  }
+
+  pre {
+    border: 0;
+    border-left: solid 5px $secondary;
+  }
+
+  .http-api-method {
+    font-weight: $font-weight-bold;
+  }
+
+}
+
 /* Miscellaneous custom bits */
 
 /* Update link colours for MAtrix style */

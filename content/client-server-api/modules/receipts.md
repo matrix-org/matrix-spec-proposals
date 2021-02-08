@@ -24,7 +24,7 @@ information on how read receipts affect notification counts.
 Each `user_id`, `receipt_type` pair must be associated with only a
 single `event_id`.
 
-{{m\_receipt\_event}}
+{{% event event="m.receipt" %}}
 
 #### Client behaviour
 
@@ -58,7 +58,7 @@ for events sent by their own user.
 A client can update the markers for its user by interacting with the
 following HTTP APIs.
 
-{{receipts\_cs\_http\_api}}
+{{% http-api spec="client-server" api="receipts" %}}
 
 #### Server behaviour
 

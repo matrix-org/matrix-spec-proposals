@@ -205,7 +205,7 @@ Some API endpoints may allow or require the use of `POST` requests
 without a transaction ID. Where this is optional, the use of a `PUT`
 request is strongly recommended.
 
-{{versions\_cs\_http\_api}}
+{{% http-api spec="client-server" api="versions" %}}
 
 ## Web Browser Clients
 
@@ -287,7 +287,7 @@ specify parameter values. The flow for this method is as follows:
         1.  Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
         2.  Clients SHOULD validate that the URL points to a valid
             homeserver before accepting it by connecting to the
-            `/_matrix/client/versions`\_ endpoint, ensuring that it does
+            [`/_matrix/client/versions`](/client-server-api/#get_matrixclientversions) endpoint, ensuring that it does
             not return an error, and parsing and validating that the
             data conforms with the expected response format. If any step
             in the validation fails, then `FAIL_ERROR`. Validation is
@@ -301,7 +301,7 @@ specify parameter values. The flow for this method is as follows:
         `m.identity_server` property is present, but does not have a
         `base_url` value, then `FAIL_ERROR`.
 
-{{wellknown\_cs\_http\_api}}
+{{% http-api spec="client-server" api="wellknown" %}}
 
 ## Client Authentication
 
@@ -1021,9 +1021,9 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
-{{login\_cs\_http\_api}}
+{{% http-api spec="client-server" api="login" %}}
 
-{{logout\_cs\_http\_api}}
+{{% http-api spec="client-server" api="logout" %}}
 
 #### Login Fallback
 
@@ -1044,7 +1044,7 @@ the login endpoint during the login process. For example:
 
 ### Account registration and management
 
-{{registration\_cs\_http\_api}}
+{{% http-api spec="client-server" api="registration" %}}
 
 #### Notes on password management
 
@@ -1069,11 +1069,11 @@ identifier that is found in an identity server. Note that an identifier
 can be added and bound at the same time, depending on context.
 {{% /boxes/note %}}
 
-{{administrative\_contact\_cs\_http\_api}}
+{{% http-api spec="client-server" api="administrative_contact" %}}
 
 ### Current account information
 
-{{whoami\_cs\_http\_api}}
+{{% http-api spec="client-server" api="whoami" %}}
 
 #### Notes on identity servers
 
@@ -1111,7 +1111,7 @@ which has no `m.identity_server` account data event should not end up
 with the client's default identity server in their account data, unless
 the user first visits their account settings to set the identity server.
 
-{{m\_identity\_server\_event}}
+{{% event event="m.identity_server" %}}
 
 ## Capabilities negotiation
 
@@ -1148,7 +1148,7 @@ Matrix specification while other values may be used by servers using the
 Java package naming convention. The capabilities supported by the Matrix
 specification are defined later in this section.
 
-{{capabilities\_cs\_http\_api}}
+{{% http-api spec="client-server" api="capabilities" %}}
 
 ### `m.change_password` capability
 
@@ -1350,13 +1350,13 @@ The expected pattern for using lazy-loading is currently:
 
 The current endpoints which support lazy-loading room members are:
 
--   `/sync`\_
--   `/rooms/<room_id>/messages`\_
--   `/rooms/{roomId}/context/{eventId}`\_
+-   [`/sync`](/client-server-api/#get_matrixclientr0sync)
+-   [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages)
+-   [`/rooms/{roomId}/context/{eventId}`](/client-server-api/#get_matrixclientr0roomsroomidcontexteventid)
 
 ### API endpoints
 
-{{filter\_cs\_http\_api}}
+{{% http-api spec="client-server" api="filter" %}}
 
 ## Events
 
@@ -1385,14 +1385,12 @@ available room versions.
 
 Room events are split into two categories:
 
-State Events  
-These are events which update the metadata state of the room (e.g. room
+* **State events**: These are events which update the metadata state of the room (e.g. room
 topic, room membership etc). State is keyed by a tuple of event `type`
 and a `state_key`. State in the room with the same key-tuple will be
 overwritten.
 
-Message events  
-These are events which describe transient "once-off" activity in a room:
+* **Message events**: These are events which describe transient "once-off" activity in a room:
 typically communication such as sending an instant message or setting up
 a VoIP call.
 
@@ -1416,11 +1414,15 @@ assuming the client has access to the `com.example` namespace.
 Note that the structure of these events may be different than those in
 the server-server API.
 
-{{common\_event\_fields}}
+#### Event fields
 
-{{common\_room\_event\_fields}}
+{{% event-fields event_type="event" %}}
 
-#### State Event Fields
+#### Room event fields
+
+{{% event-fields event_type="room_event" %}}
+
+#### State event fields
 
 In addition to the fields of a Room Event, State Events have the
 following fields.
@@ -1460,15 +1462,15 @@ This section is a work in progress.
 This specification outlines several standard event types, all of which
 are prefixed with `m.`
 
-{{m\_room\_canonical\_alias\_event}}
+{{% event event="m.room.canonical_alias" %}}
 
-{{m\_room\_create\_event}}
+{{% event event="m.room.create" %}}
 
-{{m\_room\_join\_rules\_event}}
+{{% event event="m.room.join_rules" %}}
 
-{{m\_room\_member\_event}}
+{{% event event="m.room.member" %}}
 
-{{m\_room\_power\_levels\_event}}
+{{% event event="m.room.power_levels" %}}
 
 #### Historical events
 
@@ -1484,13 +1486,13 @@ events.
 ### Syncing
 
 To read events, the intended flow of operation is for clients to first
-call the `/sync`\_ API without a `since` parameter. This returns the
+call the [`/sync`](/client-server-api/#get_matrixclientr0sync) API without a `since` parameter. This returns the
 most recent message events for each room, as well as the state of the
 room at the start of the returned timeline. The response also includes a
 `next_batch` field, which should be used as the value of the `since`
 parameter in the next call to `/sync`. Finally, the response includes,
 for each room, a `prev_batch` field, which can be passed as a `start`
-parameter to the `/rooms/<room_id>/messages`\_ API to retrieve earlier
+parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages) API to retrieve earlier
 messages.
 
 You can visualise the range of events being returned as:
@@ -1527,7 +1529,7 @@ containing only the most recent message events. A state "delta" is also
 returned, summarising any state changes in the omitted part of the
 timeline. The client may therefore end up with "gaps" in its knowledge
 of the message timeline. The client can fill these gaps using the
-`/rooms/<room_id>/messages`\_ API. This situation looks like this:
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages) API. This situation looks like this:
 
 ```
     | gap |
@@ -1582,23 +1584,23 @@ take a copy of the state dictionary, and *rewind* S1, in order to
 correctly calculate the display name for M0.
 {{% /boxes/rationale %}}
 
-{{sync\_cs\_http\_api}}
+{{% http-api spec="client-server" api="sync" %}}
 
-{{old\_sync\_cs\_http\_api}}
+{{% http-api spec="client-server" api="old_sync" %}}
 
 ### Getting events for a room
 
 There are several APIs provided to `GET` events for a room:
 
-{{rooms\_cs\_http\_api}}
+{{% http-api spec="client-server" api="rooms" %}}
 
-{{message\_pagination\_cs\_http\_api}}
+{{% http-api spec="client-server" api="message_pagination" %}}
 
-{{room\_initial\_sync\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_initial_sync" %}}
 
 ### Sending events to a room
 
-{{room\_state\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_state" %}}
 
 **Examples**
 
@@ -1647,7 +1649,7 @@ PUT /rooms/!roomid:domain/state/m.room.bgd.color
 { "color": "red", "hex": "#ff0000" }
 ```
 
-{{room\_send\_cs\_http\_api}}
+{{% http-api spec="client-server" api="room_send" %}}
 
 ### Redactions
 
@@ -1682,11 +1684,11 @@ the topic to be removed from the room.
 
 #### Events
 
-{{m\_room\_redaction\_event}}
+{{% event event="m.room.redaction" %}}
 
 #### Client behaviour
 
-{{redaction\_cs\_http\_api}}
+{{% http-api spec="client-server" api="redaction" %}}
 
 ## Rooms
 
@@ -1706,7 +1708,7 @@ permissions in this room. This includes:
 See [Room Events](#room-events) for more information on these events. To
 create a room, a client has to use the following API.
 
-{{create\_room\_cs\_http\_api}}
+{{% http-api spec="client-server" api="create_room" %}}
 
 ### Room aliases
 
@@ -1731,7 +1733,7 @@ have a room alias of `#alias:example.com`, this SHOULD be checked to
 make sure that the room's ID matches the `room_id` returned from the
 request.
 
-{{directory\_cs\_http\_api}}
+{{% http-api spec="client-server" api="directory" %}}
 
 ### Permissions
 
@@ -1816,13 +1818,13 @@ The allowable state transitions of membership are:
                   /ban
 ```
 
-{{list\_joined\_rooms\_cs\_http\_api}}
+{{% http-api spec="client-server" api="list_joined_rooms" %}}
 
 #### Joining rooms
 
-{{inviting\_cs\_http\_api}}
+{{% http-api spec="client-server" api="inviting" %}}
 
-{{joining\_cs\_http\_api}}
+{{% http-api spec="client-server" api="joining" %}}
 
 #### Leaving rooms
 
@@ -1830,7 +1832,7 @@ A user can leave a room to stop receiving events for that room. A user
 must have been invited to or have joined the room before they are
 eligible to leave the room. Leaving a room to which the user has been
 invited rejects the invite. Once a user leaves a room, it will no longer
-appear in the response to the `/sync`\_ API unless it is explicitly
+appear in the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is explicitly
 requested via a filter with the `include_leave` field set to `true`.
 
 Whether or not they actually joined the room, if the room is an
@@ -1838,7 +1840,7 @@ Whether or not they actually joined the room, if the room is an
 re-join the room.
 
 A user can also forget a room which they have left. Rooms which have
-been forgotten will never appear the response to the `/sync`\_ API,
+been forgotten will never appear the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API,
 until the user re-joins or is re-invited.
 
 A user may wish to force another user to leave a room. This can be done
@@ -1848,9 +1850,9 @@ behaviour is the same as if they had left of their own accord. In
 particular, the user is free to re-join if the room is not
 "invite-only".
 
-{{leaving\_cs\_http\_api}}
+{{% http-api spec="client-server" api="leaving" %}}
 
-{{kicking\_cs\_http\_api}}
+{{% http-api spec="client-server" api="kicking" %}}
 
 ##### Banning users in a room
 
@@ -1859,7 +1861,7 @@ target user to leave the room and prevents them from re-joining the
 room. A banned user will not be treated as a joined user, and so will
 not be able to send or receive events in the room. In order to ban
 someone, the user performing the ban MUST have the required power level.
-To ban a user, a request should be made to `/rooms/<room_id>/ban`\_
+To ban a user, a request should be made to [`/rooms/<room_id>/ban`](/client-server-api/#post_matrixclientr0roomsroomidban)
 with:
 
 ```json
@@ -1881,24 +1883,24 @@ target member's state, by making a request to
 ```
 
 A user must be explicitly unbanned with a request to
-`/rooms/<room_id>/unban`\_ before they can re-join the room or be
+[`/rooms/<room_id>/unban`](/client-server-api/#post_matrixclientr0roomsroomidunban) before they can re-join the room or be
 re-invited.
 
-{{banning\_cs\_http\_api}}
+{{% http-api spec="client-server" api="banning" %}}
 
 ### Listing rooms
 
-{{list\_public\_rooms\_cs\_http\_api}}
+{{% http-api spec="client-server" api="list_public_rooms" %}}
 
 ## User Data
 
 ### User Directory
 
-{{users\_cs\_http\_api}}
+{{% http-api spec="client-server" api="users" %}}
 
 ### Profiles
 
-{{profile\_cs\_http\_api}}
+{{% http-api spec="client-server" api="profile" %}}
 
 #### Events on Change of Profile Information
 

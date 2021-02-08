@@ -113,13 +113,13 @@ key, and a number of signed Curve25519 one-time keys.
 ##### Uploading keys
 
 A device uploads the public parts of identity keys to their homeserver
-as a signed JSON object, using the `/keys/upload`\_ API. The JSON object
+as a signed JSON object, using the [`/keys/upload`](/client-server-api/#post_matrixclientr0keysupload) API. The JSON object
 must include the public part of the device's Ed25519 key, and must be
 signed by that key, as described in [Signing
 JSON](/appendices/#signing-json).
 
 One-time keys are also uploaded to the homeserver using the
-`/keys/upload`\_ API.
+[`/keys/upload`](/client-server-api/#post_matrixclientr0keysupload) API.
 
 Devices must store the private part of each key they upload. They can
 discard the private part of a one-time key when they receive a message
@@ -134,12 +134,12 @@ too many private keys may discard keys starting with the oldest.
 Before Alice can send an encrypted message to Bob, she needs a list of
 each of his devices and the associated identity keys, so that she can
 establish an encryption session with each device. This list can be
-obtained by calling `/keys/query`\_, passing Bob's user ID in the
+obtained by calling [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery), passing Bob's user ID in the
 `device_keys` parameter.
 
 From time to time, Bob may add new devices, and Alice will need to know
 this so that she can include his new devices for later encrypted
-messages. A naive solution to this would be to call `/keys/query`\_
+messages. A naive solution to this would be to call [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery)
 before sending each message -however, the number of users and devices
 may be large and this would be inefficient.
 
@@ -157,23 +157,23 @@ process:
     list, and a separate flag to indicate that its list of Bob's devices
     is outdated. Both flags should be in storage which persists over
     client restarts.
-2.  It then makes a request to `/keys/query`\_, passing Bob's user ID in
+2.  It then makes a request to [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery), passing Bob's user ID in
     the `device_keys` parameter. When the request completes, it stores
     the resulting list of devices in persistent storage, and clears the
     'outdated' flag.
-3.  During its normal processing of responses to \_, Alice's client
-    inspects the `changed` property of the `device_lists`\_ field. If it
+3.  During its normal processing of responses to [`/sync`](/client-server-api/#get_matrixclientr0sync), Alice's client
+    inspects the `changed` property of the [`device_lists`](/client-server-api/#extensions-to-sync-1) field. If it
     is tracking the device lists of any of the listed users, then it
     marks the device lists for those users outdated, and initiates
-    another request to `/keys/query`\_ for them.
+    another request to [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery) for them.
 4.  Periodically, Alice's client stores the `next_batch` field of the
-    result from \_ in persistent storage. If Alice later restarts her
+    result from [`/sync`](/client-server-api/#get_matrixclientr0sync) in persistent storage. If Alice later restarts her
     client, it can obtain a list of the users who have updated their
-    device list while it was offline by calling `/keys/changes`\_,
+    device list while it was offline by calling [`/keys/changes`](/client-server-api/#get_matrixclientr0keyschanges),
     passing the recorded `next_batch` field as the `from` parameter. If
     the client is tracking the device list of any of the users listed in
     the response, it marks them as outdated. It combines this list with
-    those already flagged as outdated, and initiates a `/keys/query`\_
+    those already flagged as outdated, and initiates a [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery)
     request for all of them.
 
 {{% boxes/warning %}}
@@ -342,7 +342,7 @@ Example:
 
 A client wanting to set up a session with another device can claim a
 one-time key for that device. This is done by making a request to the
-`/keys/claim`\_ API.
+[`/keys/claim`](/client-server-api/#post_matrixclientr0keysclaim) API.
 
 A homeserver should rate-limit the number of one-time keys that a given
 user or remote server can claim. A homeserver should discard the public
@@ -466,11 +466,11 @@ process.
 
 After the handshake, the verification process begins.
 
-{{m\_key\_verification\_request\_event}}
+{{% event event="m.key.verification.request" %}}
 
-{{m\_key\_verification\_start\_event}}
+{{% event event="m.key.verification.start" %}}
 
-{{m\_key\_verification\_cancel\_event}}
+{{% event event="m.key.verification.cancel" %}}
 
 ##### Short Authentication String (SAS) verification
 
@@ -634,13 +634,13 @@ following error codes are used in addition to those already specified:
 -   `m.mismatched_commitment`: The hash commitment did not match.
 -   `m.mismatched_sas`: The SAS did not match.
 
-{{m\_key\_verification\_start\_m\_sas\_v1\_event}}
+{{% event event="m.key.verification.start$m.sas.v1" %}}
 
-{{m\_key\_verification\_accept\_event}}
+{{% event event="m.key.verification.accept" %}}
 
-{{m\_key\_verification\_key\_event}}
+{{% event event="m.key.verification.key" %}}
 
-{{m\_key\_verification\_mac\_event}}
+{{% event event="m.key.verification.mac" %}}
 
 ###### HKDF calculation
 
@@ -784,11 +784,11 @@ key, then Alice's device can trust Bob's master key, and she can sign it
 with her user-signing key.
 
 Users upload their cross-signing keys to the server using [POST
-/\_matrix/client/r0/keys/device\_signing/upload](). When Alice uploads
+/\_matrix/client/r0/keys/device\_signing/upload](/client-server-api/#post_matrixclientr0keysdevice_signingupload). When Alice uploads
 new cross-signing keys, her user ID will appear in the `changed`
 property of the `device_lists` field of the `/sync` of response of all
 users who share an encrypted room with her. When Bob sees Alice's user
-ID in his `/sync`, he will call [POST /\_matrix/client/r0/keys/query]()
+ID in his `/sync`, he will call [POST /\_matrix/client/r0/keys/query](/client-server-api/#post_matrixclientr0keysquery)
 to retrieve Alice's device and cross-signing keys.
 
 If Alice has a device and wishes to send an encrypted message to Bob,
@@ -905,7 +905,7 @@ To avoid leaking of social graphs, servers will only allow users to see:
 Users will not be able to see signatures made by other users'
 user-signing keys.
 
-{{cross\_signing\_cs\_http\_api}}
+{{% http-api spec="client-server" api="cross_signing" %}}
 
 #### Sharing keys between devices
 
@@ -959,8 +959,8 @@ be encrypted through the backup's `auth_data`; other clients can
 discover the backup by calling [GET
 /\_matrix/client/r0/room\_keys/version](#get_matrixclientr0room_keysversion). Keys are encrypted according
 to the backup's `auth_data` and added to the backup by calling [PUT
-/\_matrix/client/r0/room\_keys/keys]() or one of its variants, and can
-be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys](#put_matrixclientr0room_keyskeys) or
+/\_matrix/client/r0/room\_keys/keys](#put_matrixclientr0room_keyskeys) or one of its variants, and can
+be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys](#get_matrixclientr0room_keyskeys) or
 one of its variants. Keys can only be written to the most recently
 created version of the backup. Backups can also be deleted using [DELETE
 /\_matrix/client/r0/room\_keys/version/{version}](#delete_matrixclientr0room_keysversionversion), or individual keys
@@ -1050,7 +1050,7 @@ The `session_data` field in the backups is constructed as follows:
     the resulting MAC are base64-encoded, and become the `mac` property
     of the `session_data`.
 
-{{key\_backup\_cs\_http\_api}}
+{{% http-api spec="client-server" api="key_backup" %}}
 
 ##### Key exports
 
@@ -1241,7 +1241,7 @@ correspond to the user who sent the event, `recipient` to the local
 user, and `recipient_keys` to the local ed25519 key.
 
 Clients must confirm that the `sender_key` and the `ed25519` field value
-under the `keys` property match the keys returned by `/keys/query`\_ for
+under the `keys` property match the keys returned by [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery) for
 the given user, and must also verify the signature of the payload.
 Without this check, a client cannot be sure that the sender device owns
 the private part of the ed25519 key it claims to have in the Olm
@@ -1355,35 +1355,35 @@ messages.
 
 ##### Events
 
-{{m\_room\_encryption\_event}}
+{{% event event="m.room.encryption" %}}
 
-{{m\_room\_encrypted\_event}}
+{{% event event="m.room.encrypted" %}}
 
-{{m\_room\_key\_event}}
+{{% event event="m.room_key" %}}
 
-{{m\_room\_key\_request\_event}}
+{{% event event="m.room_key_request" %}}
 
-{{m\_forwarded\_room\_key\_event}}
+{{% event event="m.forwarded_room_key" %}}
 
-{{m\_dummy\_event}}
+{{% event event="m.dummy" %}}
 
 ##### Key management API
 
-{{keys\_cs\_http\_api}}
+{{% http-api spec="client-server" api="keys" %}}
 
 ##### Extensions to /sync
 
-This module adds an optional `device_lists` property to the \_ response,
+This module adds an optional `device_lists` property to the [`/sync`](/client-server-api/#get_matrixclientr0sync)  response,
 as specified below. The server need only populate this property for an
 incremental `/sync` (i.e., one where the `since` parameter was
-specified). The client is expected to use `/keys/query`\_ or
-`/keys/changes`\_ for the equivalent functionality after an initial
+specified). The client is expected to use [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery) or
+[`/keys/changes`](/client-server-api/#get_matrixclientr0keyschanges) for the equivalent functionality after an initial
 sync, as documented in [Tracking the device list for a
 user](#tracking-the-device-list-for-a-user).
 
 It also adds a `one_time_keys_count` property. Note the spelling
 difference with the `one_time_key_counts` property in the
-`/keys/upload`\_ response.
+[`/keys/upload`](/client-server-api/#post_matrixclientr0keysupload) response.
 
 | Parameter                  | Type               | Description                                                                                                            |
 |----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------|
@@ -1451,4 +1451,4 @@ by including a `withheld` property in the `m.forwarded_room_key` message
 that is an object with the `code` and `reason` properties from the
 `m.room_key.withheld` message.
 
-{{m\_room\_key\_withheld\_event}}
+{{% event event="m.room_key.withheld" %}}
