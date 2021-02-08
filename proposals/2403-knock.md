@@ -70,8 +70,10 @@ rules from room version 5 are:
       has been banned from the room, has already knocked on the room, is
       invited to the room or if they are already in the room.
     - Knocks are not restricted by power level like invites are. The `join_rules`
-      are already used to enforce whether someone can or cannot knock.
-  
+      are already used to enforce whether someone can or cannot knock. However,
+      power level rules do apply when approving or denying the knock, as discussed
+      in the Membership Changes section below.
+
 Additionally, note that redactions of knock events are not a concern, as
 `membership` keys are excluded from being redacted as defined by all current
 room versions.
