@@ -1,0 +1,8 @@
+{
+  "$ref": "core/room_event.json",
+  "type": "m.room.message.feedback",
+  "content": {
+    "type": "delivered",
+    "target_event_id": "$WEIGFHFW:localhost"
+  }
+}

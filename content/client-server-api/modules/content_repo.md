@@ -34,7 +34,7 @@ look like:
 
 Clients can upload and download content using the following HTTP APIs.
 
-{{content\_repo\_cs\_http\_api}}
+{{% http-api spec="client-server" api="content-repo" %}}
 
 ##### Thumbnails
 

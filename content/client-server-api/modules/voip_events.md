@@ -15,7 +15,7 @@ send call events to rooms with exactly two participants.
 
 #### Events
 
-{{voip\_events}}
+{{% event-group group_name="m.call" %}}
 
 #### Client behaviour
 
@@ -82,7 +82,7 @@ The homeserver MAY provide a TURN server which clients can use to
 contact the remote party. The following HTTP API endpoints will be used
 by clients in order to get information about the TURN server.
 
-{{voip\_cs\_http\_api}}
+{{% http-api spec="client-server" api="voip" %}}
 
 #### Security considerations
 

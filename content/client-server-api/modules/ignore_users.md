@@ -11,13 +11,13 @@ and servers can implement the ignoring of users.
 
 #### Events
 
-{{m\_ignored\_user\_list\_event}}
+{{% event event="m.ignored_user_list" %}}
 
 #### Client behaviour
 
 To ignore a user, effectively blocking them, the client should add the
 target user to the `m.ignored_user_list` event in their account data
-using \_. Once ignored, the client will no longer receive events sent by
+using [`/user/<user_id>/account_data/<type>`](/client-server-api/#put_matrixclientr0useruseridaccount_datatype). Once ignored, the client will no longer receive events sent by
 that user, with the exception of state events. The client should either
 hide previous content sent by the newly ignored user or perform a new
 `/sync` with no previous token.

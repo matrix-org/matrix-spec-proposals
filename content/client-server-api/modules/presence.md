@@ -30,14 +30,14 @@ enum of one of the following:
 
 #### Events
 
-{{presence\_events}}
+{{% event-group group_name="m.presence" %}}
 
 #### Client behaviour
 
 Clients can manually set/get their presence using the HTTP APIs listed
 below.
 
-{{presence\_cs\_http\_api}}
+{{% http-api spec="client-server" api="presence" %}}
 
 ##### Last active ago
 
