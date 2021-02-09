@@ -11,14 +11,5 @@
 <p>This is the <strong>unstable</strong> version of the Matrix specification.</p>
 <p>This changelog lists changes made since the last release of the specification.</p>
 {{ else }}
-<p>This is version <strong>{{ .Site.Params.version.major_version}}.{{ .Site.Params.version.minor_version}}.{{ .Site.Params.version.patch_version}}</strong> of the Matrix specification.</p>
-
-
-<p>Versions for the Matrix specification follow a three-part format like `major.minor.patch`.</p>
-
-* `major` version increments are reserved for very significant changes.
-* `minor` version increments may signal additions, deprecations, or breaking changes.
-* `patch` version increments are for clarifications to the specification and don't affect implementations.
-
-<p>This changelog lists changes made in the initial <strong>{{ .Site.Params.version.major_version}}.{{ .Site.Params.version.minor_version}}</strong> release and any subsequent patch releases to that version.</p>
+<p>This is version <strong>{{ .Site.Params.version.number }}</strong> of the Matrix specification.</p>
 {{ end }}

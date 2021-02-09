@@ -45,8 +45,7 @@
     {{ $status := .Site.Params.version.status }}
 
     {{ if ne $status "unstable"}}
-        {{ $version_pieces := slice .Site.Params.version.major_version .Site.Params.version.minor_version .Site.Params.version.patch_version}}
-        {{ $ret = delimit $version_pieces "." }}
+        {{ $ret = .Site.Params.version.number }}
         {{ $ret = delimit (slice "version" $ret) " " }}
     {{ end }}
 
