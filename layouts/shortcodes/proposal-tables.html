@@ -9,13 +9,13 @@
   * `label`: the GitHub label used for the state, like "proposal-in-review"
   * `proposals`: an array of objects, each of which represents an MSC and contains:
       * `number`: GitHub issue number
-			* `url`: GitHub URL for this issue
-			* `title`: Issue title
-		  * `created_at`: issue creation date
-			* `updated_at`: issue last-updated date
-			* `authors`: array of GitHub user names representing authors of this MSC
-			* `shepherd`: GitHub user name representing the shepherd of this MSC, or null
-			* `documentation`: Links to further documentation referenced in the GitHub issue
+      * `url`: GitHub URL for this issue
+      * `title`: Issue title
+      * `created_at`: issue creation date
+      * `updated_at`: issue last-updated date
+      * `authors`: array of GitHub user names representing authors of this MSC
+      * `shepherd`: GitHub user name representing the shepherd of this MSC, or null
+      * `documentation`: Links to further documentation referenced in the GitHub issue
 
   This data is scraped from GitHub using the /scripts/proposals.js Node script.
   The script is run in CI: so typically if you run a local server the data will
