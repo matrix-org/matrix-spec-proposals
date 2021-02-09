@@ -325,7 +325,7 @@ of these methods for room discovery is the public rooms directory, which
 allows us to explore a list of rooms we may be able to join.
 
 The spec does not prevent us from adding rooms with 'knock' join_rules to the
-public rooms directory. However, there is a problem in that a user attempting
+public rooms directory. However, a user attempting
 to join a room in the directory will not know whether to directly attempt a
 join, or to knock first. The current content of a `PublicRoomsChunk` does not
 contain this information:
@@ -347,9 +347,13 @@ contain this information:
 
 Therefore this proposal adds `join_rule` as a new, required field to a
 `PublicRoomsChunk`. The `join_rule` of knockable rooms will be `knock`, thus
-giving clients the information they need to know how to attempt entry of
-a room when a client selects it, as well as allowing clients to display
+giving clients the information they need to attempt entry of
+a room when a client selects it. It also allows clients to display
 knockable rooms differently than publicly joinable ones.
+
+For backwards compatibility with old servers, if a client does not find a
+`join_rule` key in a chunk, then it should assume a `join_rule` key with
+value `public`.
 
 
 ## Server-Server API
