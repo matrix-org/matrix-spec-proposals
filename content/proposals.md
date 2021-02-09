@@ -338,7 +338,7 @@ request trackers.
 | Spec PR In Review               | [spec-pr-in-review](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aspec-pr-in-review+)                           | The spec PR has been written, and is currently under review                                                             |
 | Spec PR Merged                  | [merged](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Amerged)                                                  | A proposal with a sufficient working implementation and whose Spec PR has been merged!                                  |
 | Postponed                       | [proposal-postponed](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aproposal-postponed+)                         | A proposal that is temporarily blocked or a feature that may not be useful currently but perhaps sometime in the future |
-| Abandoned                       | [proposal-closed](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aabandoned)                                      | A proposal where the author/shepherd is not responsive                                                                  |
+| Abandoned                       | [abandoned](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aabandoned)                                      | A proposal where the author/shepherd is not responsive                                                                  |
 | Obsolete                        | [obsolete](https://github.com/matrix-org/matrix-doc/issues?q=label%3Aproposal+label%3Aobsolete+)                                             | A proposal which has been made obsolete by another proposal or decision elsewhere.                                      |
 
 ## Categories
@@ -479,3 +479,41 @@ In summary:
     way that proposes new stable endpoints. Typically this is solved by
     a small table at the bottom mapping the various values from stable
     to unstable.
+
+## Proposal Tracking
+
+This is a living document generated from the list of proposals on the
+issue and pull request trackers of the
+[matrix-doc](https://github.com/matrix-org/matrix-doc) repo.
+
+We use labels and some metadata in MSC PR descriptions to generate this
+page. Labels are assigned by the Spec Core Team whilst triaging the
+proposals based on those which exist in the
+[matrix-doc](https://github.com/matrix-org/matrix-doc) repo already.
+
+It is worth mentioning that a previous version of the MSC process used a
+mixture of GitHub issues and PRs, leading to some MSC numbers deriving
+from GitHub issue IDs instead. A useful feature of GitHub is that it
+does automatically resolve to an issue, if an issue ID is placed in a
+pull URL. This means that
+<https://github.com/matrix-org/matrix-doc/pull/$MSCID> will correctly
+resolve to the desired MSC, whether it started as an issue or a PR.
+
+Other metadata:
+
+-   The MSC number is taken from the GitHub Pull Request ID. This is
+    carried for the lifetime of the proposal. These IDs do not necessary
+    represent a chronological order.
+-   The GitHub PR title will act as the MSC's title.
+-   Please link to the spec PR (if any) by adding a "PRs: \#1234" line
+    in the issue description.
+-   The creation date is taken from the GitHub PR, but can be overridden
+    by adding a "Date: yyyy-mm-dd" line in the PR description.
+-   Updated Date is taken from GitHub.
+-   Author is the creator of the MSC PR, but can be overridden by adding
+    a "Author: @username" line in the body of the issue description.
+    Please make sure @username is a GitHub user (include the @!)
+-   A shepherd can be assigned by adding a "Shepherd: @username" line in
+    the issue description. Again, make sure this is a real GitHub user.
+
+{{% proposal-tables %}}
