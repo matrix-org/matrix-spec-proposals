@@ -43,6 +43,7 @@ Custom SCSS for the Matrix spec
 /* Styles for the sidebar nav */
 .td-sidebar-nav {
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
 
   /* This overrides calc(100vh - 10rem);, which gives us a blank space at the bottom of the sidebar */
   max-height: calc(100vh - 6rem);
