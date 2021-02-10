@@ -25,7 +25,7 @@ A connecting server must include `X-Matrix-Origin-Server` in their request to th
 
 *Anything included in square brackets is a proposal, not fully thought-out*
 
-#### Leading-type-number frame
+#### Leading-type-byte frame
 
 In the WebSocket stream, a frame must be interpreted in the following fashion;
 
@@ -33,7 +33,11 @@ In the WebSocket stream, a frame must be interpreted in the following fashion;
 
 *or*
 
+#### Leading-type-word frame
+
 [The leading null-terminated string denotes what type and format the data following it will be.]
+
+#### Bytes/Words and their Meanings
 
 *The first option, `01` and such, are in hexadecimal for the first byte of the frame.*
 
