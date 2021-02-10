@@ -557,7 +557,7 @@ knocking is much lighter than the act of joining a room.
 
 In both cases, room admins should employ typical abuse mitigation tools, such
 as user bans and server ACLs. Clients are encouraged to ease employing these
-tools easy even if the offensive user or server is present not in the room.
+tools easy even if the offensive user or server is not present in the room.
 
 # Unstable prefix
 
