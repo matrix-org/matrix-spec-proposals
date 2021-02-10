@@ -1,4 +1,4 @@
-# MSCXXXX: Federation over WebSockets
+# MSC3005: Federation over WebSockets
 
 Currently, Matrix Federation works via
 [transactions](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v1-send-txnid),
@@ -137,6 +137,6 @@ None that aren't already applicable to `v1/send`.
 
 ## Unstable prefix
 
-For experimental implementations of this spec, `/federation/unstable/nl.jboi.mscXXXX/stream` should
+For experimental implementations of this spec, `/federation/unstable/nl.jboi.msc3005/stream` should
 be used. This endpoint can be queried with the same mechanics as the proposed
 `/federation/v2/stream` defined in [here](#proposal).
