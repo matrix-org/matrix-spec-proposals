@@ -52,7 +52,7 @@ connection.
 
 The hello-greetings handshake can be front-loaded when using other protocols to upgrade to a stream,
 such as HTTP-to-WebSocket. The definition of how these protocols encode front-loading is out of
-scope of this document, but the following is be a recommendation;
+scope of this document, but the following can be a recommendation;
 
 > In the specific example of HTTP-to-WS, the `hello` frame's options can be encoded in the GET/POST
 > request via it's body, or via it's headers. The server can respond the `greetings` frame in
