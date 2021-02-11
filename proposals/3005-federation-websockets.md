@@ -39,21 +39,19 @@ In the WebSocket stream, a frame must be interpreted in the following fashion;
 
 #### Bytes/Words and their Meanings
 
-*The first option, `01` and such, are in hexadecimal for the first byte of the frame.*
-
-`FF` *or* `ctrl` denotes a "control event", the data following it will contain information about the
+`0xFF` *or* `ctrl` denotes a "control event", the data following it will contain information about the
 stream connection itself, such as time synchronization, event sequencing, or other (to be defined)
 control events. It's payload definition is described [down below](#control-events).
 
-`01` *or* `pdu` denotes a PDU being sent over the stream, the receiving server should perceive the
+`0x01` *or* `pdu` denotes a PDU being sent over the stream, the receiving server should perceive the
 origin server time to be offset by its own internal clock. The PDU must be replied to with an
 acknowledgement or an error, using "ID of the PDU" semantics similar to `/v1/send` . It's payload is
 the full PDU object.
 
-`02` *or* `edu` denotes a EDU being sent over the stream, this (with parity to `/v1/send` ) is not
+`0x02` *or* `edu` denotes a EDU being sent over the stream, this (with parity to `/v1/send` ) is not
 acknowledged. It's payload is the full EDU object.
 
-`10` *or* `pack` acknowledges a PDU, it's payload is the "ID of a PDU" in string form.
+`0x10` *or* `pack` acknowledges a PDU, it's payload is the "ID of a PDU" in string form.
 
 *or*
 
@@ -65,7 +63,7 @@ It's payload is defined as follows;
 }
 ```
 
-`11` *or* `perr` returns an error for a PDU, it's payload is defined as follows;
+`0x11` *or* `perr` returns an error for a PDU, it's payload is defined as follows;
 
 ``` json
 [
