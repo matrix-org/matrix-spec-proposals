@@ -10,7 +10,7 @@ the entire HTTP request chain for every single transaction, which can hamper Tim
 
 ## Proposal
 
-The proposal as thus is to then standardize a full-duplex streaming convention to be used with
+The proposal as thus is to then standardize a full-duplex streaming convention, to be used with
 matrix federation. This is optionally implementable, and the scope of this document is not to define
 specific ways to implement this stream (such as WebSockets, TCP/TLS, or other specific
 bi-directional network channels)
@@ -20,29 +20,30 @@ of data is streamed in-order.
 
 The Federation Stream is intended as a faster-yet-compatible carrier alternative to
 `/federation/v1/send`, and is thus intended to not receive exclusive features that also aren't able
-to be used in HTTP-REST format. (Until a day comes where Federation Streaming is the primary way of
+to be used in HTTP-REST format, that partain to the basic way federation is done, and aren't
+executable with `v1/send`. (Until a day comes where Federation Streaming is the primary way of
 federation-event-sending).
 
 Federation Streams are **unidirectional by default**, meaning that events are sent only by the
-side that initiated the stream ("requesting side", see [glossary](#glossary)), this can be changed
-with [a proposed extension](#proposed-extensions), though.
+side that initiated the stream ("requesting side", see [glossary](#glossary)), though this can be
+changed with [a proposed extension](#proposed-extensions).
 
 ### Basic Frame
 
 The basic frame of the stream consists of 5 leading bytes, and then a payload.
 
-The first byte denotes the [opcode](#opcodes), effectively a `u8`/`uint8`.
+The first byte denotes the [opcode](#opcodes), effectively a `u8`/`uint8`/`byte`.
 
-The next 4 bytes denote the length of the remaining payload, effectively `u32`/`uint32`.
+The next 4 bytes denote the length of the remaining payload, effectively `u32`/`uint32`/`uint`.
 
 The remaining payload is defined per opcode, with formatting defined per-connection (see
-[`hello`](#hello) below).
+[opcodes](#opcodes) and [`hello`](#hello) below).
 
 ### Handshake
 
 Upon establishing a federation streaming connection, the requesting side needs to first send a
-[`hello`](#hello) frame denoting various possible options the requesting side supports, and to
-propose several options (and possible extensions) to continue working with.
+[`hello`](#hello) frame denoting various possible options it supports, and to propose several
+options (and possible extensions) to start working with.
 
 The responding side will send a [`greetings`](#greetings) frame, after which actual data can be sent
 over the connection, the greetings frame will contain accepted options and extensions to use on the
@@ -66,7 +67,7 @@ illustration of how front-loading could work.
 #### Control Frames
 
 Control frames denote a change, notification, or other event happening on the current stream, these
-must be processed synchronously (i.e. as soon as possible).
+should be processed synchronously (i.e. as soon as possible).
 
 The opcode prefix is `0xF~`.
 
@@ -185,7 +186,8 @@ and half of tested averaged RTT latency value)*
 
 #### Data Frames
 
-Data frames contain the most central information for federation; PDUs and EDUs.
+Data frames contain the most central information for federation; PDUs and EDUs. These can be
+processed asynchronously.
 
 The opcode prefix is `0x0~`.
 
