@@ -366,6 +366,18 @@ it means (per wikipedia);
 
 Nonces are there to ensure an event isn't possible to be duplicated.
 
+### Optimizations
+
+An optimization strategy might be this: when sending an event out of nowhere to a server, it'll
+likely be less intensive (for a one-time event) to utilize `v1/send`, however, when a server detects
+it is sending a few events per hour to that server, it should try to find ways to establish a
+Federation Stream, to lower the overhead for future events.
+
+The tradeoff between establishing a Federation Stream immediately and "just" utilizing `v1/send`
+should be researched and weighed for every individual implementation, and there is no one singular
+optimization strategy that may be possible, and this proposal does not try to restrict these
+possibilities, only suggest and guide them.
+
 ## Potential issues
 
 Not all servers could implement this, so support must never be primarily assumed, a server must be
