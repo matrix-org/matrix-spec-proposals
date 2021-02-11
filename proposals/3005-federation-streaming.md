@@ -23,7 +23,7 @@ The Federation Stream is intended as a faster-yet-compatible carrier alternative
 to be used in HTTP-REST format. (Until a day comes where Federation Streaming is the primary way of
 federation-event-sending).
 
-Federation Streams **unidirectional by default**, meaning that events are sent only by the
+Federation Streams are **unidirectional by default**, meaning that events are sent only by the
 side that initiated the stream ("requesting side", see [glossary](#glossary)), this can be changed
 with [a proposed extension](#proposed-extensions), though.
 
