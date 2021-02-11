@@ -80,12 +80,12 @@ The payload of the `Hello` frame MUST be encoded in UTF-8 `JSON`. This is for co
 and makes it's easier for implementations to always fall-back to simple methods, yet switch to
 faster formatting when possible.
 
-|   Field   | Description                  | Type                    | Omit default |
-| :-------: | ---------------------------- | ----------------------- | ------------ |
-|   `fmt`   | Standard format support      | `array[integer]`        | `[0]`        |
-| `fmt_ext` | Extended (custom) formatting | `array[string]`         | `[]`         |
-|   `ext`   | Extension settings           | `object{string: value}` | `{}`         |
-| `origin` | Origin server domain | `string` | (cannot be omitted) |
+|   Field   | Description                  | Type                    | Omit default        |
+| :-------: | ---------------------------- | ----------------------- | ------------------- |
+|   `fmt`   | Standard format support      | `array[integer]`        | `[0]`               |
+| `fmt_ext` | Extended (custom) formatting | `array[string]`         | `[]`                |
+|   `ext`   | Extension settings           | `object{string: value}` | `{}`                |
+| `origin`  | Origin server domain         | `string`                | (cannot be omitted) |
 
 If a field is missing from the JSON, the omit default must be assumed (with the exception of
 `origin`, which is required.)
@@ -215,7 +215,7 @@ sent again, or must be sent again after re-establishing the Stream.
 
 `opcode: 0x03`
 
-For a EDU to be sent to the other side, to be responded with with an [`EDU Ack`](#edu-ack).
+For an EDU to be sent to the other side, to be responded with with an [`EDU Ack`](#edu-ack).
 
 The payload data must be a free `object` value to the definition of the "Ephemeral Data Unit" in [in
 the `v1/send`
@@ -223,7 +223,7 @@ spec](https://matrix.org/docs/spec/server_server/latest#put-matrix-federation-v1
 one caveat; an additional `nonce` field is added, with type `integer`, this `nonce` must be unique
 over the course of the entire Federation Stream's lifetime, for the side that sends these nonces.
 
-For clarity, here is the full abridged definition of a EDU, all fields required;
+For clarity, here is the full abridged definition of an EDU, all fields required;
 
 |   Field    | Type      | Description                                                 |
 | :--------: | --------- | ----------------------------------------------------------- |
