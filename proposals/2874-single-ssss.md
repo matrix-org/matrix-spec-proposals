@@ -26,6 +26,13 @@ a user and a given key does not have a `name` field, the client may use a
 default name as the key's name, such as "Unnamed key", or "Default key" if the
 key is marked as default.
 
+For example, when a client creates a key with ID `abcdefg`, it will create an
+`m.secret_storage.key.abcdefg` account data event to store information about
+the key.  It will then mark it as the default key by setting the
+`m.secret_storage.default_key` account data to `{"key": "abcdefg"}`.  When
+another client logs in after this, it will see that the default key has been
+set, and will know to use that key as the SSSS key.
+
 ## Potential issues
 
 If secrets are encrypted using a key that is not marked as default, a client
