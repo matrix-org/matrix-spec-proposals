@@ -40,7 +40,7 @@ The remaining payload is defined per opcode, with formatting defined per-connect
 
 ### Handshake
 
-Upon establishing a federation websocket connection, the requesting side needs to first send a
+Upon establishing a federation streaming connection, the requesting side needs to first send a
 [`hello`](#hello) frame denoting various possible options the requesting side supports, and to
 propose several options (and possible extensions) to continue working with.
 
