@@ -403,6 +403,13 @@ that include these mechanics, this proposal does not specify how these would wor
 WebTransport *can* be complementary to future proposals detailing how exactly Federation Streams must
 or could be established.
 
+**HTTP/2**: A new HTTP paradigm, utilizing one connection, multiplexing streams that handle HTTP
+requests with compressed headers in binary.
+
+HTTP2 offers many optimization strategies, and has some interesting potential applications in
+parallelizing federation transactions, but eventually, the best optimization is simply to eliminate
+the HTTP request router-matching stack through which all those requests must eventually go through.
+
 **Do Nothing**: Do Nothing, keep the current HTTP-`v1/send` mechanic.
 
 While a viable option, and keeping as a reliable always-existing fallback, this is not fast, as
