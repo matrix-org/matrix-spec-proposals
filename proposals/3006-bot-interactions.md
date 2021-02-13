@@ -1,6 +1,6 @@
 # MSC3006: Bot Interactions
 
-Bots are currently only possible in irc style. They are entirely text based and not interactive like for example Telegram.
+Bots are currently only possible in IRC style. They are entirely text based and not interactive like, for example, Telegram bots.
 This is trying to solve that issue by using a similar backwards compatible way like the one in Telegram.
 
 This is highly inspired by https://core.telegram.org/bots#keyboards and is trying to allow similar types 
