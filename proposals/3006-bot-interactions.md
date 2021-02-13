@@ -11,7 +11,7 @@ of keyboards for bots to allow more "fancy" bots while keeping full backwards co
 The proposal is to have multiple interaction events. Which tell the client what kind of interactions the 
 bot has and the client replies with a specific format on that.
 
-_Note a deeper explanation of the events will be below the interaction flow_
+_Note: a deeper explanation of the events will be below the interaction flow_
 
 ### Interaction Flow
 
@@ -77,7 +77,7 @@ this command
 }
 ```
 
-6. The both now directly shows the new custom keyboard indicating the user currently is in a stage of the previous command.
+6. The bot now directly shows the new custom keyboard, indicating that the user currently is in a stage of the previous command.
 Additionally a way of exiting that stage should be available.
 
 7a. The user selects the exit way and the client now sends a stage end event and returns to normal chat operation.
@@ -183,7 +183,7 @@ Example:
 
 Both `m.interaction.command` and `m.interaction.button` are required to be an object consisting of:
 
-* It's `type`
+* Its `type`
 * A useful `description` which might be used to be displayed to the user
 * A `name` which is used for displaying in the UI. Be aware this is also used as lowercase for the fallback!
 
@@ -252,7 +252,7 @@ This event can be sent by both the client as well as the bot.
 If a client sends the event the bot should think of this as if the user aborted the current action entirely.
 If a bot sends the event the client should think of this as having completed a flow fully.
 
-This event should be ignored when the user not started a command or the user has not previously received a stage start event. 
+This event should be ignored when the user has not started a command or the user has not previously received a stage start event. 
 This can happen either because of abusive bots or because someone else started a command. Possible ways to check this are:
 
 * Track the commands locally in the client
@@ -273,7 +273,7 @@ Example:
 
 ## What is `m.interaction.button`?
 
-This type is meant to be like telegrams custom keyboard feature. It is used to display a button in the UI which behaves like a custom keyboard with fixed functions.
+This type is meant to be like Telegram's custom keyboard feature. It is used to display a button in the UI which behaves like a custom keyboard with fixed functions.
 It is however in this MSC not meant to support inline buttons on events but those in theory can be done by reusing this type.
 
 ## How are stages meant to work
