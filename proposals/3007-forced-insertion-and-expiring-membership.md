@@ -20,10 +20,14 @@ Unless greater than or equal to the power level required to invite, this operati
 disallowed in said room.
 
 Change the auth rules for the member state transistions as follows:
+* from anything to `ban`: allowed only if the banning user has the power to perform `ban` or banning
+and banned users are the same (the latter case is termed a self-ban, and is irreversible)
 * from `ban` to `invite`: allowed only if the inviter has power to perform both `ban` and `invite`,
-ill-formed if the user attempts to invite oneself
+ill-formed if the user attempts to invite oneself, or user has self-banned
 * from `ban` to `join`: allowed only if the member attempting to insert has power to perform
-both `ban` and `insert_member`
+both `ban` and `insert_member`, unless user has self-banned
+* from `ban` to `leave`: allowed only if the member attempting to unban has power to perform `ban`,
+and the ban on the user is not a self-ban
 * from `leave` to `join`: allowed only if join rule is `public` or the member attempting to insert
 has power to perform `insert_member`
 
