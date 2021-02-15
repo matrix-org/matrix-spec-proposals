@@ -58,7 +58,8 @@ membership status transtioning to `leave` at the time specified at `expires` fie
 
 ## Potential issues
 
-Repeated ban-invite or ban-insert cycles by room moderators, causing an event spam on clients.
+* Repeated ban-invite or ban-insert cycles by room moderators, causing an event spam on clients.
+* Users accidentally blocking rooms by self-banning.
 
 ## Alternatives
 
