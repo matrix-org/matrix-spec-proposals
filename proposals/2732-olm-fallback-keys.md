@@ -93,5 +93,5 @@ to detect replays.
 
 ## Unstable prefix
 
-The `fallback_key` request parameter and the `device_unused_fallback_key_types`
+The `fallback_keys` request parameter and the `device_unused_fallback_key_types`
 response parameter will be prefixed by `org.matrix.msc2732.`.
