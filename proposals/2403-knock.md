@@ -532,6 +532,9 @@ After a knock is received in a room, it is expected to be displayed in the
 timeline, similar to other membership changes. Clients can optionally add a way
 for users of a room to review all current knocks.
 
+Please also note the recommendations for clients in the "Security considerations"
+section below.
+
 # Security considerations
 Clients must take care when implementing this feature in order to prevent
 simple abuse vectors that can be accomplished by individual users. For
@@ -544,7 +547,15 @@ essentially allow outsiders to send messages into the room.
 
 It is still theoretically possible for a homeserver admin to create many users
 with different user IDs or display names, all spelling out an abusive
-message, and then having each of them knock in order. 
+message, and then having each of them knock in order.
+
+Clients should also do their best to prevent impersonation attacks. Similar to
+joins, users can set any displayname or avatar URL they'd like when knocking on
+a room. Clients SHOULD display further information to help identify the user,
+such as User ID, encryption verification status, rooms you share with the user,
+etc. Care should be taken to balance the importance of preventing attacks while
+avoiding overloading the user with too much information or raising false
+positives.
 
 Another abuse vector is allowed by the ability for users to rescind knocks.
 This is to help users in case they knocked on a room accidentally, or simply
