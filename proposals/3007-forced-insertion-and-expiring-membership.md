@@ -1,4 +1,4 @@
-# MSC3007: Forced insertion and expiring memberships
+# MSC3007: Forced member insertion, expiring memberships and room blocking by self-banning
 
 This proposal is going to change the auth rules to allow for users to forcibly add other users into
 public or knockable rooms if they have a newly proposed power to `insert_member`. In addition,
@@ -8,7 +8,7 @@ or a temporary room membership.
 
 ## Proposal
 
-### Forced member insertion and inviting from ban
+### Forced member insertion, self-banning and inviting from ban
 
 The current auth rules do not allow `ban` to `join` or `ban` to `invite` transistion in the member
 state machine in any case. This proposal seeks to add well-defined rules on who can reverse a ban to
