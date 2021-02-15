@@ -240,6 +240,13 @@ wish to treat it as a rejection if there are no more users in the room who could
 
 The same behaviour applies when a client is looking at historic calls.
 
+### Clarify that supported codecs should follow the WebRTC spec
+The Matrix spec does not mandate particular audio or video codecs, but instead defers to the
+WebRTC spec. A compliant matrix VoIP client will behave in the same wau as a supported 'browser'
+in terms of what codecs it supports and what variants thereof. The latest WebRTC specification
+applies, so clients should keeps up to date with new versions of the WebRTC specification whether
+or not there have been any changes to the Matrix spec.
+
 ## Potential issues
  * The ability to call yourself makes the protocol a little more complex for clients to implement,
    and is somewhat of a special case. However, some of the necessary additions are also required for
