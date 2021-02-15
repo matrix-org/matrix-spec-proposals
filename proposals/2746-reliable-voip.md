@@ -242,9 +242,9 @@ The same behaviour applies when a client is looking at historic calls.
 
 ### Clarify that supported codecs should follow the WebRTC spec
 The Matrix spec does not mandate particular audio or video codecs, but instead defers to the
-WebRTC spec. A compliant matrix VoIP client will behave in the same wau as a supported 'browser'
+WebRTC spec. A compliant matrix VoIP client will behave in the same way as a supported 'browser'
 in terms of what codecs it supports and what variants thereof. The latest WebRTC specification
-applies, so clients should keeps up to date with new versions of the WebRTC specification whether
+applies, so clients should keep up to date with new versions of the WebRTC specification whether
 or not there have been any changes to the Matrix spec.
 
 ## Potential issues
