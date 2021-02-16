@@ -298,7 +298,7 @@ when using the `m.heroes` to calculate the name. Clients SHOULD use
 minimum 5 heroes to calculate room names where possible, but may use
 more or less to fit better with their user experience.
 
-##### Forming relationships between events
+##### Rich replies
 
 In some cases, events may wish to reference other events. This could be
 to form a thread of messages for the user to follow along with, or to
@@ -310,14 +310,6 @@ Relationships are defined under an `m.relates_to` key in the event's
 `content`. If the event is of the type `m.room.encrypted`, the
 `m.relates_to` key MUST NOT be covered by the encryption and instead be
 put alongside the encryption information held in the `content`.
-
-###### Rich replies
-
-Users may wish to reference another message when forming their own
-message, and clients may wish to better embed the referenced message for
-the user to have a better context for the conversation being had. This
-sort of embedding another message in a message is known as a "rich
-reply", or occasionally just a "reply".
 
 A rich reply is formed through use of an `m.relates_to` relation for
 `m.in_reply_to` where a single key, `event_id`, is used to reference the
@@ -351,7 +343,7 @@ An `m.in_reply_to` relationship looks like the following:
 }
 ```
 
-####### Fallbacks and event representation
+##### Fallbacks for rich replies
 
 Some clients may not have support for rich replies and therefore need a
 fallback to use instead. Clients that do not support rich replies should
@@ -385,7 +377,7 @@ If the related event does not have a `formatted_body`, the event's
 Note that the `href` in both of the anchors use a [matrix.to
 URI](/appendices#matrixto-navigation).
 
-######## Stripping the fallback
+###### Stripping the fallback
 
 Clients which support rich replies MUST strip the fallback from the
 event before rendering the event. This is because the text provided in
@@ -405,7 +397,7 @@ a line is encountered without the prefix. This prefix is known as the
 To strip the fallback on the `formatted_body`, the client should remove
 the entirety of the `mx-reply` tag.
 
-######## Fallback for `m.text`, `m.notice`, and unrecognised message types
+###### Fallback for `m.text`, `m.notice`, and unrecognised message types
 
 Using the prefix sequence, the first line of the related event's `body`
 should be prefixed with the user's ID, followed by each line being
@@ -418,7 +410,7 @@ prefixed with the fallback prefix sequence. For example:
 
 The `formatted_body` uses the template defined earlier in this section.
 
-######## Fallback for `m.emote`
+###### Fallback for `m.emote`
 
 Similar to the fallback for `m.text`, each line gets prefixed with the
 fallback prefix sequence. However an asterisk should be inserted before
@@ -441,7 +433,7 @@ asterisk is also inserted ahead of the user's ID:
     </mx-reply>
     This is where the reply goes.
 
-######## Fallback for `m.image`, `m.video`, `m.audio`, and `m.file`
+###### Fallback for `m.image`, `m.video`, `m.audio`, and `m.file`
 
 The related event's `body` would be a file name, which may not be very
 descriptive. The related event should additionally not have a `format`

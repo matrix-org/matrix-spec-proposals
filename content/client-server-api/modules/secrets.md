@@ -222,9 +222,7 @@ has an `algorithm` property that indicates how to generate the key from
 the passphrase. Other properties of the `passphrase` property are
 defined by the `algorithm` specified.
 
-####### `m.pbkdf2`
-
-For the `m.pbkdf2` algorithm, the `passphrase` property has the
+Currently, the only algorithm defined is `m.pbkdf2`. For the `m.pbkdf2` algorithm, the `passphrase` property has the
 following properties:
 
 | Parameter  | Type    | Description                                                            |
