@@ -85,5 +85,7 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+            required:
+              - event_id
       tags:
         - Room participation

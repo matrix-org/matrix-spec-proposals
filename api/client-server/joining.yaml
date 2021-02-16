@@ -31,7 +31,8 @@ paths:
     post:
       summary: Start the requesting user participating in a particular room.
       description: |-
-        *Note that this API requires a room ID, not alias.* ``/join/{roomIdOrAlias}`` *exists if you have a room alias.*
+        *Note that this API requires a room ID, not alias.*
+        ``/join/{roomIdOrAlias}`` *exists if you have a room alias.*
 
         This API starts a user participating in a particular room, if that user
         is allowed to participate in that room. After this call, the client is
@@ -40,10 +41,6 @@ paths:
 
         After a user has joined a room, the room will appear as an entry in the
         response of the |/initialSync|_ and |/sync|_ APIs.
-
-        If a ``third_party_signed`` was supplied, the homeserver must verify
-        that it matches a pending ``m.room.third_party_invite`` event in the
-        room, and perform key validity checking if required by the event.
       operationId: joinRoomById
       security:
         - accessToken: []
@@ -55,41 +52,24 @@ paths:
           required: true
           x-example: "!d41d8cd:matrix.org"
         - in: body
-          name: third_party_signed
+          name: body
+          required: true
           schema:
             type: object
-            example: {
-                "third_party_signed": {
-                  "sender": "@cat:the.hat",
-                  "mxid": "@green:eggs.ham",
-                  "token": "random8nonce",
-                  "signatures": {
-                    "horton.hears": {
-                      "ed25519:0": "some9signature"
-                    }
-                  }
-                }
-              }
             properties:
               third_party_signed:
-                type: object
-                title: ThirdPartySigned
-                description: A signature of an ``m.third_party_invite`` token to prove that this user owns a third party identity which has been invited to the room.
-                properties:
-                  sender:
-                    type: string
-                    description: The Matrix ID of the user who issued the invite.
-                  mxid:
-                    type: string
-                    description: The Matrix ID of the invitee.
-                  token:
-                    type: string
-                    description: The state key of the m.third_party_invite event.
-                  signatures:
-                    type: object
-                    description: A signatures object containing a signature of the entire signed object.
-                    title: Signatures
-                required: ["sender", "mxid", "token", "signatures"]
+                allOf:
+                - $ref: "definitions/third_party_signed.yaml"
+                description: |-
+                  If supplied, the homeserver must verify that it matches a pending
+                  ``m.room.third_party_invite`` event in the room, and perform
+                  key validity checking if required by the event.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
+                example: "Looking for support"
       responses:
         200:
           description: |-
@@ -101,9 +81,15 @@ paths:
               "room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object
+            properties:
+              room_id:
+                type: string
+                description: The joined room ID.
+            required: ["room_id"]
         403:
           description: |-
-            You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
+            You do not have permission to join the room. A meaningful ``errcode``
+            and description error text will be returned. Example reasons for rejection are:
 
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.
@@ -131,10 +117,6 @@ paths:
 
         After a user has joined a room, the room will appear as an entry in the
         response of the |/initialSync|_ and |/sync|_ APIs.
-
-        If a ``third_party_signed`` was supplied, the homeserver must verify
-        that it matches a pending ``m.room.third_party_invite`` event in the
-        room, and perform key validity checking if required by the event.
       operationId: joinRoom
       security:
         - accessToken: []
@@ -155,48 +137,24 @@ paths:
             must be participating in the room.
           x-example: ["matrix.org", "elsewhere.ca"]
         - in: body
-          name: third_party_signed
+          name: body
+          required: true
           schema:
             type: object
-            example: {
-                "third_party_signed": {
-                  "signed": {
-                    "sender": "@cat:the.hat",
-                    "mxid": "@green:eggs.ham",
-                    "token": "random8nonce",
-                    "signatures": {
-                      "horton.hears": {
-                        "ed25519:0": "some9signature"
-                      }
-                    }
-                  }
-                }
-              }
             properties:
               third_party_signed:
-                type: object
-                title: ThirdPartySigned
-                description: A signature of an ``m.third_party_invite`` token to prove that this user owns a third party identity which has been invited to the room.
-                properties:
-                  signed:
-                    type: object
-                    title: Signed
-                    properties:
-                      sender:
-                        type: string
-                        description: The Matrix ID of the user who issued the invite.
-                      mxid:
-                        type: string
-                        description: The Matrix ID of the invitee.
-                      token:
-                        type: string
-                        description: The state key of the m.third_party_invite event.
-                      signatures:
-                        type: object
-                        description: A signatures object containing a signature of the entire signed object.
-                        title: Signatures
-                    required: ["sender", "mxid", "token", "signatures"]
-                required: ["signed"]
+                allOf:
+                  - $ref: "definitions/third_party_signed.yaml"
+                description: |-
+                  If a ``third_party_signed`` was supplied, the homeserver must verify
+                  that it matches a pending ``m.room.third_party_invite`` event in the
+                  room, and perform key validity checking if required by the event.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
+                example: "Looking for support"
       responses:
         200:
           description: |-
@@ -208,9 +166,15 @@ paths:
               "room_id": "!d41d8cd:matrix.org"}
           schema:
             type: object
+            properties:
+              room_id:
+                type: string
+                description: The joined room ID.
+            required: ["room_id"]
         403:
           description: |-
-            You do not have permission to join the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejection are:
+            You do not have permission to join the room. A meaningful ``errcode``
+            and description error text will be returned. Example reasons for rejection are:
 
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.

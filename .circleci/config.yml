@@ -5,9 +5,10 @@ gendoc: &gendoc
     scripts/gendoc.py
 
 genswagger: &genswagger
-  name: Generate the swagger
+  name: Validate sources and generate swagger json
   command: |
     source /env/bin/activate
+    scripts/check-swagger-sources.py
     scripts/dump-swagger.py
 
 buildswaggerui: &buildswaggerui
@@ -27,10 +28,7 @@ checkexamples: &checkexamples
   name: Check Event Examples
   command: |
     source /env/bin/activate
-    cd event-schemas
-    ./check_examples.py
-    cd ../api
-    ./check_examples.py
+    scripts/check-event-schema-examples.py
 
 genmatrixassets: &genmatrixassets
   name: Generate/Verify matrix.org assets
@@ -41,9 +39,9 @@ genmatrixassets: &genmatrixassets
 validateapi: &validateapi
   name: Validate OpenAPI specifications
   command: |
-    cd api
+    cd scripts
     npm install
-    node validator.js -s "client-server"
+    node validator.js -s "../data/api/client-server"
 
 buildspeculator: &buildspeculator
   name: Build Speculator
@@ -97,7 +95,7 @@ jobs:
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
   build-dev-scripts:
     docker:
-      - image: golang:1.8
+      - image: golang:1.10
     steps:
       - checkout
       - run:
@@ -121,4 +119,4 @@ workflows:
 
 notify:
   webhooks:
-    - url: https://giles.cadair.com/circleci
+    - url: https://giles.cadair.dev/circleci

@@ -1,0 +1,13 @@
+graph {
+A1 [label="A's PDP-11"]
+AV [label="A's virtual device"]
+A2 [label="A's Osborne 2"]
+B1 [label="B's Dynabook"]
+BV [label="B's virtual device"]
+B2 [label="B's VAX"]
+A1 -- AV
+AV -- A2
+A2 -- B1
+B1 -- BV
+BV -- B2
+}

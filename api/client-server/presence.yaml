@@ -62,7 +62,7 @@ paths:
                 description: The new presence state.
               status_msg:
                 type: string
-                description: "The status message to attach to this state."
+                description: The status message to attach to this state.
             required: ["presence"]
       responses:
         200:
@@ -134,105 +134,5 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
-      tags:
-        - Presence
-  "/presence/list/{userId}":
-    post:
-      summary: Add or remove users from this presence list.
-      description: |-
-        Adds or removes users from this presence list.
-      operationId: modifyPresenceList
-      security:
-        - accessToken: []
-      parameters:
-        - in: path
-          type: string
-          name: userId
-          description: The user whose presence list is being modified.
-          required: true
-          x-example: "@alice:example.com"
-        - in: body
-          name: presence_diff
-          description: The modifications to make to this presence list.
-          required: true
-          schema:
-            type: object
-            example: {
-                "invite": [
-                  "@bob:matrix.org"
-                ],
-                "drop": [
-                  "@alice:matrix.org"
-                ]
-              }
-            properties:
-              invite:
-                type: array
-                description: A list of user IDs to add to the list.
-                items:
-                  type: string
-                  description: A list of user IDs.
-              drop:
-                type: array
-                description: A list of user IDs to remove from the list.
-                items:
-                  type: string
-                  description: A list of user IDs.
-      responses:
-        200:
-          description: The list was updated.
-          examples:
-            application/json: {
-              }
-          schema:
-            type: object  # empty json object
-        429:
-          description: This request was rate-limited.
-          schema:
-            "$ref": "definitions/errors/rate_limited.yaml"
-      tags:
-        - Presence
-    get:
-      summary: Get presence events for this presence list.
-      description: |-
-        Retrieve a list of presence events for every user on this list.
-      operationId: getPresenceForList
-      parameters:
-        - in: path
-          type: string
-          name: userId
-          description: The user whose presence list should be retrieved.
-          required: true
-          x-example: "@alice:example.com"
-      responses:
-        200:
-          description: A list of presence events for this list.
-          examples:
-            application/json: [
-                {
-                  "content": {
-                    "last_active_ago": 395,
-                    "presence": "offline",
-                    "user_id": "@alice:matrix.org"
-                  },
-                  "type": "m.presence"
-                },
-                {
-                  "content": {
-                    "last_active_ago": 16874,
-                    "presence": "online",
-                    "user_id": "@marisa:matrix.org",
-                    "currently_active": true
-                  },
-                  "type": "m.presence"
-                }
-              ]
-          schema:
-            type: array
-            items:
-              type: object
-              title: PresenceEvent
-              allOf:
-                - "$ref": "definitions/event-schemas/schema/core-event-schema/event.yaml"
       tags:
         - Presence

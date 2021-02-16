@@ -33,6 +33,9 @@ paths:
       description: |-
         This API returns a list of message and state events for a room. It uses
         pagination query parameters to paginate history in the room.
+
+        *Note*: This endpoint supports lazy-loading of room member events. See
+        `Lazy-loading room members <#lazy-loading-room-members>`_ for more information.
       operationId: getRoomEvents
       security:
         - accessToken: []
@@ -103,54 +106,41 @@ paths:
               chunk:
                 type: array
                 description: |-
-                  A list of room events.
+                  A list of room events. The order depends on the ``dir`` parameter.
+                  For ``dir=b`` events will be in reverse-chronological order,
+                  for ``dir=f`` in chronological order, so that events start
+                  at the ``from`` point.
                 items:
-                  type: object
-                  title: RoomEvent
                   "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
+              state:
+                type: array
+                description: |-
+                  A list of state events relevant to showing the ``chunk``. For example, if
+                  ``lazy_load_members`` is enabled in the filter then this may contain
+                  the membership events for the senders of events in the ``chunk``.
+
+                  Unless ``include_redundant_members`` is ``true``, the server
+                  may remove membership events which would have already been
+                  sent to the client in prior calls to this endpoint, assuming
+                  the membership of those members has not changed.
+                items:
+                  $ref: "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
             application/json: {
                 "start": "t47429-4392820_219380_26003_2265",
                 "end": "t47409-4357353_219380_26003_2265",
                 "chunk": [
                   {
-                    "origin_server_ts": 1444812213737,
-                    "sender": "@alice:example.com",
-                    "event_id": "$1444812213350496Caaaa:example.com",
-                    "content": {
-                      "body": "hello world",
-                      "msgtype":"m.text"
-                    },
-                    "room_id":"!Xq3620DUiqCaoxq:example.com",
-                    "type":"m.room.message",
-                    "age": 1042
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                   },
                   {
-                    "origin_server_ts": 1444812194656 ,
-                    "sender": "@bob:example.com",
-                    "event_id": "$1444812213350496Cbbbb:example.com",
-                    "content": {
-                      "body": "the world is big",
-                      "msgtype":"m.text"
-                    },
-                    "room_id":"!Xq3620DUiqCaoxq:example.com",
-                    "type":"m.room.message",
-                    "age": 20123
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.name"
                   },
                   {
-                    "origin_server_ts": 1444812163990,
-                    "sender": "@bob:example.com",
-                    "event_id": "$1444812213350496Ccccc:example.com",
-                    "content": {
-                      "name": "New room name"
-                    },
-                    "prev_content": {
-                      "name": "Old room name"
-                    },
-                    "state_key": "",
-                    "room_id":"!Xq3620DUiqCaoxq:example.com",
-                    "type":"m.room.name",
-                    "age": 50789
+                    "room_id": "!636q39766251:example.com",
+                    "$ref": "definitions/event-schemas/examples/m.room.message$m.video"
                   }
                 ]
               }

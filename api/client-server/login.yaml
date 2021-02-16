@@ -82,6 +82,7 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             example: {
@@ -99,7 +100,6 @@ paths:
                 enum: ["m.login.password", "m.login.token"]
                 description: The login type being used.
               identifier:
-                description: Identification information for the user.
                 "$ref": "definitions/user_identifier.yaml"
               user:
                 type: string
@@ -123,8 +123,10 @@ paths:
                 type: string
                 description: |-
                   ID of the client device. If this does not correspond to a
-                  known client device, a new device will be created. The server
-                  will auto-generate a device_id if this is not specified.
+                  known client device, a new device will be created. The given
+                  device ID must not be the same as a `cross-signing key ID
+                  <#cross-signing>`_. The server will auto-generate a device_id
+                  if this is not specified.
               initial_device_display_name:
                 type: string
                 description: |-
@@ -139,14 +141,22 @@ paths:
             application/json: {
                 "user_id": "@cheeky_monkey:matrix.org",
                 "access_token": "abc123",
-                "device_id": "GHTYAJCE"
+                "device_id": "GHTYAJCE",
+                "well_known": {
+                  "m.homeserver": {
+                    "base_url": "https://example.org"
+                  },
+                  "m.identity_server": {
+                    "base_url": "https://id.example.org"
+                  }
+                }
               }
           schema:
             type: object
             properties:
               user_id:
                 type: string
-                description: The fully-qualified Matrix ID that has been registered.
+                description: The fully-qualified Matrix ID for the account.
               access_token:
                 type: string
                 description: |-
@@ -166,6 +176,14 @@ paths:
                 description: |-
                   ID of the logged-in device. Will be the same as the
                   corresponding parameter in the request, if one was specified.
+              well_known:
+                description: |-
+                  Optional client configuration provided by the server. If present,
+                  clients SHOULD use the provided object to reconfigure themselves,
+                  optionally validating the URLs within. This object takes the same
+                  form as the one returned from .well-known autodiscovery.
+                allOf:
+                  - "$ref": "definitions/wellknown/full.yaml"
         400:
           description: |-
             Part of the request was invalid. For example, the login type may not be recognised.
@@ -178,10 +196,15 @@ paths:
             "$ref": "definitions/errors/error.yaml"
         403:
           description: |-
-            The login attempt failed. For example, the password may have been incorrect.
+            The login attempt failed. This can include one of the following error codes:
+              * ``M_FORBIDDEN``: The provided authentication data was incorrect
+                or the requested device ID is the same as a cross-signing key
+                ID.
+              * ``M_USER_DEACTIVATED``: The user has been deactivated.
           examples:
             application/json: {
-              "errcode": "M_FORBIDDEN"}
+              "errcode": "M_FORBIDDEN"
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
         429:

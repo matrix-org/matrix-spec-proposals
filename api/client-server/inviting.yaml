@@ -67,12 +67,18 @@ paths:
           schema:
             type: object
             example: {
-                "user_id": "@cheeky_monkey:matrix.org"
-              }
+              "user_id": "@cheeky_monkey:matrix.org",
+              "reason": "Welcome to the team!"
+            }
             properties:
               user_id:
                 type: string
                 description: The fully qualified user ID of the invitee.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
             required: ["user_id"]
       responses:
         200:
@@ -82,6 +88,20 @@ paths:
               }
           schema:
             type: object
+        400:
+          description: |-
+
+            The request is invalid. A meaningful ``errcode`` and description
+            error text will be returned. Example reasons for rejection include:
+
+            - The request body is malformed (``errcode`` set to ``M_BAD_JSON``
+              or ``M_NOT_JSON``).
+
+            - One or more users being invited to the room are residents of a
+              homeserver which does not support the requested room version. The
+              ``errcode`` will be ``M_UNSUPPORTED_ROOM_VERSION`` in these cases.
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         403:
           description: |-
             You do not have permission to invite the user to the room. A meaningful ``errcode`` and description error text will be returned. Example reasons for rejections are:

@@ -119,7 +119,7 @@ paths:
       responses:
         200:
           description: |-
-            "The filter defintion"
+            The filter definition.
           examples:
             application/json: {
                 "room": {

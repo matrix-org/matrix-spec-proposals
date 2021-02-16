@@ -18,16 +18,20 @@ The remainder of the process is as follows:
 1. Activate your Python 3 virtual environment.
 1. Having checked out the new release branch, navigate your way over to `./changelogs`.
 1. Follow the release instructions provided in the README.md located there.
-1. Update the changelog section of the specification you're releasing to make a reference
-   to the new version.
 1. Update any version/link references across all specifications.
-1. Ensure the `targets.yml` file lists the version correctly.
-1. Commit the changes and PR them to master.
-1. Tag the release with the format `client_server/r0.4.0`.
-1. Add the changes to the matrix-org/matrix.org repository (for historic tracking).
+1. From translate.riot.im, push repository changes and merge the subsequent PR.
+1. Run `./scripts/i18n.py` to ensure all translatable files are up to date.
+1. Generate the specification using `./scripts/gendoc.py`, specifying all the
+   API versions at the time of generation. For example: `./scripts/gendoc.py -c r0.4.0 -s r0.1.0 -i r0.1.0 #etc`
+1. PR the changes to the matrix-org/matrix.org repository (for historic tracking).
    * This is done by making a PR to the `unstyled_docs/spec` folder for the version and
      specification you're releasing.
    * Don't forget to symlink the new release as `latest`.
+   * For the client-server API, don't forget to generate the swagger JSON by using
+     `./scripts/dump-swagger.py -c r0.4.0`. This will also need symlinking to `latest`.
+1. Commit the changes and PR them to master. **Wait for review from the spec core team.**
+   * Link to your matrix-org/matrix.org so both can be reviewed at the same time.
+1. Tag the release with the format `client_server/r0.4.0`.
 1. Perform a release on GitHub to tag the release.
 1. Yell from the mountaintop to the world about the new release.
 

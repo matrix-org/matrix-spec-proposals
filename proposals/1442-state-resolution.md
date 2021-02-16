@@ -1,5 +1,11 @@
-# State Resolution: Reloaded
+- **Author**: Erik Johnston
+- **Created**: 2018-07-20
+- **Updated**:
+    - #1693: Clarify how to handle rejected events ─ Erik Johnston, 2018-10-30
 
+
+
+# State Resolution: Reloaded
 
 Thoughts on the next iteration of the state resolution algorithm that aims to
 mitigate currently known attacks
@@ -47,7 +53,7 @@ which can be summarized into two separate cases:
 
 1.  Moderation evasion ─ where an attacker can avoid e.g. bans by forking and
     joining the room DAG in particular ways.
-1.  State resets ─ where a server (often innocently) sends an event that points
+2.  State resets ─ where a server (often innocently) sends an event that points
     to disparate parts of the graph, causing state resolution to pick old state
     rather than later versions.
 
@@ -279,8 +285,8 @@ First we define:
     events, the auth check algorithm is applied to each event in turn. The state
     events used to auth are built up from previous events that passed the auth
     checks, starting from a base set of state. If a required auth key doesn't
-    exist in the state, then the one in the event's auth_events is used. (See
-    _Variations_ and _Attack Vectors_ below).
+    exist in the state, then the one in the event's auth_events is used if the
+    auth event is not rejected. (See _Variations_ and _Attack Vectors_ below).
 
 The algorithm proceeds as follows:
 
@@ -436,6 +442,43 @@ a separate auth chain, and the difficulties that entails (like having to
 reapply the unconflicted state at the end).
 
 
+### Rejected Events
+
+Events that have been rejected due to failing auth based on the state at the
+event (rather than based on their auth chain) are handled as usual by the
+algorithm, unless otherwise specified.
+
+Note that no events rejected due to failure to auth against their auth chain
+should appear in the process, as they should not appear in state (the algorithm
+only uses events that appear in either the state sets or in the auth chain of
+the events in the state sets).
+
+This helps ensure that different servers' view of state is more likely to
+converge, since rejection state of an event may be different. This can happen if
+a third server gives an incorrect version of the state when a server joins a
+room via it (either due to being faulty or malicious). Convergence of state is a
+desirable property as it ensures that all users in the room have a (mostly)
+consistent view of the state of the room. If the view of the state on different
+servers diverges it can lead to bifurcation of the room due to e.g. servers
+disagreeing on who is in the room.
+
+Intuitively, using rejected events feels dangerous, however:
+
+1. Servers cannot arbitrarily make up state, since they still need to pass the
+   auth checks based on the event's auth chain (e.g. they can't grant themselves
+   power levels if they didn't have them before).
+2. For a previously rejected event to pass auth there must be a set of state
+   that allows said event. A malicious server could therefore produce a
+   fork where it claims the state is that particular set of state, duplicate the
+   rejected event to point to that fork, and send the event. The
+   duplicated event would then pass the auth checks. Ignoring rejected events
+   would therefore not eliminate any potential attack vectors.
+
+Rejected auth events are deliberately excluded from use in the iterative auth
+checks, as auth events aren't re-authed (although non-auth events are) during
+the iterative auth checks.
+
+
 ### Attack Vectors
 
 The main potential attack vector that needs to be considered is in the
@@ -445,6 +488,12 @@ event.
 
 
 # Appendix
+
+The following are some worked examples to illustrate some of the mechanisms in
+the algorithm. In each we're interested in what happens to the topic.
+
+
+## Example 1 - Mainline
 
 The following is an example room DAG, where time flows down the page. We shall
 work through resolving the state at both _Message 2_ and _Message 3_.
@@ -499,6 +548,23 @@ Step 4: Iteratively applying the auth rules results in both topics passing the
 auth checks, and so the last topic, _Topic 4_, is chosen.
 
 This gives the resolved state at _Message 3_ to be _Topic 4_.
+
+
+## Example 2  - Rejected Events
+
+The following is an example room DAG, where time flows down the page. The event
+`D` is initially rejected by the server (due to not passing auth against the
+state), but does pass auth against its auth chain.
+
+![state-res-rejected.png](images/state-res-rejected.png)
+
+(Note that the blue lines are the power levels pointed to in the event's auth
+events)
+
+At `F` we first resolve the power levels, which results in `E`. When we then go
+to resolve the topics against the partially resolved state, Bob has ops and so
+the resolved state includes the topic change `D`, even though it was initially
+rejected.
 
 
 ## Notes

@@ -92,6 +92,7 @@ paths:
             type: object
             example: {
                 "id_server": "matrix.org",
+                "id_access_token": "abc123_OpaqueString",
                 "medium": "email",
                 "address": "cheeky@monkey.com"
               }
@@ -99,6 +100,12 @@ paths:
               id_server:
                 type: string
                 description: The hostname+port of the identity server which should be used for third party identifier lookups.
+              id_access_token:
+                type: string
+                description: |-
+                  An access token previously registered with the identity server. Servers
+                  can treat this as optional to distinguish between r0.5-compatible clients
+                  and this specification version.
               medium:
                 type: string
                 # TODO: Link to Identity Service spec when it eixsts
@@ -106,7 +113,7 @@ paths:
               address:
                 type: string
                 description: The invitee's third party identifier.
-            required: ["id_server", "medium", "address"]
+            required: ["id_server", "id_access_token", "medium", "address"]
       responses:
         200:
           description: The user has been invited to join the room.

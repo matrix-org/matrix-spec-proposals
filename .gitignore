@@ -1,7 +1,10 @@
 /api/node_modules
 /assets
 /assets.tar.gz
+/data/msc
 /env*
+/node_modules
+/resources
 /scripts/gen
 /scripts/continuserv/continuserv
 /scripts/speculator/speculator
@@ -11,3 +14,5 @@
 *.pyc
 *.swp
 _rendered.rst
+/.vscode/
+/.idea/

@@ -285,3 +285,11 @@ div.admonition-rationale {
     border: 1px solid #ccc;
 }
 
+div.admonition-example {
+    background-color: #eef;
+    border: 1px solid #ccc;
+}
+
+div#table-of-contents ul {
+    list-style-type: none;
+}

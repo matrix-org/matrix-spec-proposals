@@ -1,0 +1,8 @@
+{
+  "$ref": "core/state_event.json",
+  "type": "m.room.join_rules",
+  "state_key": "",
+  "content": {
+    "join_rule": "public"
+  }
+}

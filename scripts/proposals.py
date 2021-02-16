@@ -1,61 +1,80 @@
-#! /usr/bin/env python
-
+#!/usr/bin/env python
+#
 # proposals.py: generate an RST file (proposals.rst) from queries to github.com/matrix.org/matrix-doc/issues.
-# v0.0.1
 
 import requests
 import re
 from datetime import datetime
 
-pagecount = 1
+# a list of the labels we care about
+LABELS_LIST=[
+    'proposal-in-review',
+    'proposed-final-comment-period',
+    'final-comment-period',
+    'finished-final-comment-period',
+    'spec-pr-missing',
+    'spec-pr-in-review',
+    'merged',
+    'proposal-postponed',
+    'abandoned',
+    'obsolete',
+]
+
+
 authors = set()
 prs = set()
 
-def getpage(url, page):
-    url = url + str(page)
+def getpage(url):
+    """Request the given URL, and extract the pagecount from the response headers
+
+    Args:
+        url (str): URL to fetch
+
+    Returns:
+        Tuple[int, list]: number of pages, and the list of items on this page
+    """
     resp = requests.get(url)
 
+    pagecount = 1
     for link in resp.links.values():
         if link['rel'] == 'last':
-            pagecount = re.search('page=(.+?)', link['url']).group(1)
+            # we extract the pagecount from the `page` param of the last url
+            # in the response, eg
+            # 'https://api.github.com/repositories/24998719/issues?state=all&labels=proposal&page=10'
+            pagecount = int(re.search('page=(\d+)', link['url']).group(1))
 
     val = resp.json()
     if not isinstance(val, list):
         print(val) # Just dump the raw (likely error) response to the log
         raise Exception("Error calling %s" % url)
-    return val
+    return (pagecount, val)
 
 def getbylabel(label):
-    pagecount = 1
-    json = list()
-    urlbase = 'https://api.github.com/repos/matrix-org/matrix-doc/issues?state=all&labels=proposal,' + label + '&page='
-    print(urlbase)
-    json.extend(getpage(urlbase, 1))
-    for page in range(2, int(pagecount) + 1):
-        json.extend(getpage(urlbase, page))
+    """Fetch all the issues with a given label
 
-    return json
+    Args:
+        label (str): label to fetch
 
-# new status labels:
-labels = ['proposal-wip', 'proposal-ready-for-review',
-    'proposal-in-review', 'proposal-passed-review', 'spec-pr-missing',
-    'spec-pr-ready-for-review', 'spec-pr-in-review', 'merged', 'abandoned', 'rejected', 'blocked', 'obsolete' ]
-#labels = ['p1', 'p2', 'p3', 'p4', 'p5']
-issues = {}
+    Returns:
+        Iterator[dict]: an iterator over the issue list.
+    """
+    urlbase = 'https://api.github.com/repos/matrix-org/matrix-doc/issues?state=all&labels=' + label + '&page='
+    page = 1
+    while True:
+        (pagecount, results) = getpage(urlbase + str(page))
+        for i in results:
+            yield i
+        page += 1
+        if page > pagecount:
+            return
 
-for label in labels:
-    issues[label] = getbylabel(label)
-
-text_file = open("specification/proposals.rst", "w")
-
-text_file.write("Tables of Tracked Proposals\n---------------------------\n\n")
-
-
-for label in labels:
-    if (len(issues[label]) == 0):
-        continue
-
+def print_issue_list(text_file, label, issues):
     text_file.write(label + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
+
+    if (len(issues) == 0):
+        text_file.write("No proposals.\n\n")
+        return
+
     text_file.write(".. list-table::\n   :header-rows: 1\n   :widths: auto\n   :stub-columns: 1\n\n")
     text_file.write("   * - MSC\n")
     text_file.write("     - Proposal Title\n")
@@ -66,7 +85,7 @@ for label in labels:
     text_file.write("     - Shepherd\n")
     text_file.write("     - PRs\n")
 
-    for item in issues[label]:
+    for item in issues:
         # set the created date, find local field, otherwise Github
         body = str(item['body'])
         created = re.search('^Date: (.+?)\n', body, flags=re.MULTILINE)
@@ -87,8 +106,7 @@ for label in labels:
             created = created.strftime('%Y-%m-%d')
         item['created'] = created
 
-    issues_to_print = list(issues[label])
-    issues_to_print.sort(key=lambda issue_sort: issue_sort["created"])
+    issues_to_print = sorted(issues, key=lambda issue_sort: issue_sort["created"])
 
     for item in issues_to_print:
         # MSC number
@@ -161,6 +179,33 @@ for label in labels:
             text_file.write("     - \n")
 
     text_file.write("\n\n\n")
+
+
+# first get all of the issues, filtering by label
+issues = {n: [] for n in LABELS_LIST}
+# use the magic 'None' key for a proposal in progress
+issues[None] = []
+
+for prop in getbylabel('proposal'):
+    print("%s: %s" % (prop['number'], [l['name'] for l in prop['labels']]))
+    found_label = False
+    for label in prop['labels']:
+        label_name = label['name']
+        if label_name in issues:
+            issues[label_name].append(prop)
+            found_label = True
+
+    # if it doesn't have any other label, assume it's work-in-progress
+    if not found_label:
+        issues[None].append(prop)
+
+text_file = open("specification/proposals.rst", "w")
+
+text_file.write("Tables of Tracked Proposals\n---------------------------\n\n")
+
+print_issue_list(text_file, "<work-in-progress>", issues[None])
+for label in LABELS_LIST:
+    print_issue_list(text_file, label, issues[label])
 
 text_file.write("\n")
 

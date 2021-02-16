@@ -34,6 +34,23 @@ paths:
         Clients use this API when they first log in to get an initial snapshot
         of the state on the server, and then continue to call this API to get
         incremental deltas to the state, and to receive new messages.
+
+        *Note*: This endpoint supports lazy-loading. See `Filtering <#filtering>`_
+        for more information. Lazy-loading members is only supported on a ``StateFilter``
+        for this endpoint. When lazy-loading is enabled, servers MUST include the
+        syncing user's own membership event when they join a room, or when the
+        full state of rooms is requested, to aid discovering the user's avatar &
+        displayname.
+
+        Further, like other members, the user's own membership event is eligible
+        for being considered redundant by the server. When a sync is ``limited``,
+        the server MUST return membership events for events in the gap
+        (between ``since`` and the start of the returned timeline), regardless
+        as to whether or not they are redundant. This ensures that joins/leaves
+        and profile changes which occur during the gap are not lost.
+
+        Note that the default behaviour of ``state`` is to include all membership
+        events, alongside other state, when lazy-loading is not enabled.
       operationId: sync
       security:
         - accessToken: []
@@ -49,6 +66,8 @@ paths:
             requests. Creating a filter using the filter API is recommended for
             clients that reuse the same filter multiple times, for example in
             long poll requests.
+
+            See `Filtering <#filtering>`_ for more information.
           x-example: "66696p746572"
         - in: query
           name: since
@@ -120,11 +139,56 @@ paths:
                     title: Joined Rooms
                     type: object
                     description: |-
-                      The rooms that the user has joined.
+                      The rooms that the user has joined, mapped as room ID to
+                      room information.
                     additionalProperties:
                       title: Joined Room
                       type: object
                       properties:
+                        summary:
+                          title: RoomSummary
+                          type: object
+                          description: |-
+                            Information about the room which clients may need to
+                            correctly render it to users.
+                          properties:
+                            "m.heroes":
+                              type: array
+                              description: |-
+                                The users which can be used to generate a room name
+                                if the room does not have one. Required if the room's
+                                ``m.room.name`` or ``m.room.canonical_alias`` state events
+                                are unset or empty.
+
+                                This should be the first 5 members of the room, ordered
+                                by stream ordering, which are joined or invited. The
+                                list must never include the client's own user ID. When
+                                no joined or invited members are available, this should
+                                consist of the banned and left users. More than 5 members
+                                may be provided, however less than 5 should only be provided
+                                when there are less than 5 members to represent.
+
+                                When lazy-loading room members is enabled, the membership
+                                events for the heroes MUST be included in the ``state``,
+                                unless they are redundant. When the list of users changes,
+                                the server notifies the client by sending a fresh list of
+                                heroes. If there are no changes since the last sync, this
+                                field may be omitted.
+                              items:
+                                type: string
+                            "m.joined_member_count":
+                              type: integer
+                              description: |-
+                                 The number of users with ``membership`` of ``join``,
+                                 including the client's own user ID. If this field has
+                                 not changed since the last sync, it may be omitted.
+                                 Required otherwise.
+                            "m.invited_member_count":
+                              type: integer
+                              description: |-
+                                 The number of users with ``membership`` of ``invite``.
+                                 If this field has not changed since the last sync, it
+                                 may be omitted. Required otherwise.
                         state:
                           title: State
                           type: object
@@ -134,6 +198,12 @@ paths:
                             ``timeline`` (or all state up to the start of the
                             ``timeline``, if ``since`` is not given, or
                             ``full_state`` is true).
+
+                            N.B. state updates for ``m.room.member`` events will
+                            be incomplete if ``lazy_load_members`` is enabled in
+                            the ``/sync`` filter, and only return the member events
+                            required to display the senders of the timeline events
+                            in this response.
                           allOf:
                             - $ref: "definitions/state_event_batch.yaml"
                         timeline:
@@ -161,11 +231,13 @@ paths:
                             this room.
                           allOf:
                           - $ref: "definitions/event_batch.yaml"
-                        "unread_notifications":
+                        unread_notifications:
                           title: Unread Notification Counts
                           type: object
                           description: |-
-                            Counts of unread notifications for this room
+                            Counts of unread notifications for this room. See the
+                            `Receiving notifications section <#receiving-notifications>`_
+                            for more information on how these are calculated.
                           properties:
                             highlight_count:
                                 title: Highlighted notification count
@@ -181,7 +253,8 @@ paths:
                     title: Invited Rooms
                     type: object
                     description: |-
-                      The rooms that the user has been invited to.
+                      The rooms that the user has been invited to, mapped as room ID to
+                      room information.
                     additionalProperties:
                       title: Invited Room
                       type: object
@@ -206,36 +279,14 @@ paths:
                             events:
                               description: The StrippedState events that form the invite state.
                               items:
-                                description: |-
-                                  A stripped down state event, with only the ``type``, ``state_key``,
-                                  ``sender``, and ``content`` keys.
-                                properties:
-                                  content:
-                                    description: The ``content`` for the event.
-                                    title: EventContent
-                                    type: object
-                                  state_key:
-                                    description: The ``state_key`` for the event.
-                                    type: string
-                                  type:
-                                    description: The ``type`` for the event.
-                                    type: string
-                                  sender:
-                                    description: The ``sender`` for the event.
-                                    type: string
-                                required:
-                                  - type
-                                  - state_key
-                                  - content
-                                  - sender
-                                title: StrippedState
-                                type: object
+                                $ref: "definitions/event-schemas/schema/stripped_state.yaml"
                               type: array
                   leave:
                     title: Left rooms
                     type: object
                     description: |-
-                      The rooms that the user has left or been banned from.
+                      The rooms that the user has left or been banned from, mapped as room ID to
+                      room information.
                     additionalProperties:
                       title: Left Room
                       type: object
@@ -304,11 +355,7 @@ paths:
                 "next_batch": "s72595_4483_1934",
                 "presence": {
                   "events": [
-                    {
-                      "sender": "@alice:example.com",
-                      "type": "m.presence",
-                      "content": {"presence": "online"}
-                    }
+                    {"$ref": "definitions/event-schemas/examples/m.presence"}
                   ]
                 },
                 "account_data": {
@@ -324,39 +371,28 @@ paths:
                 "rooms": {
                   "join": {
                     "!726s6s6q:example.com": {
+                      "summary": {
+                        "m.heroes": [
+                          "@alice:example.com",
+                          "@bob:example.com"
+                        ],
+                        "m.joined_member_count": 2,
+                        "m.invited_member_count": 0
+                      },
                       "state": {
                         "events": [
                           {
-                            "sender": "@alice:example.com",
-                            "type": "m.room.member",
-                            "state_key": "@alice:example.com",
-                            "content": {"membership": "join"},
-                            "origin_server_ts": 1417731086795,
-                            "event_id": "$66697273743031:example.com"
+                            "$ref": "definitions/event-schemas/examples/m.room.member"
                           }
                         ]
                       },
                       "timeline": {
                         "events": [
                           {
-                            "sender": "@bob:example.com",
-                            "type": "m.room.member",
-                            "state_key": "@bob:example.com",
-                            "content": {"membership": "join"},
-                            "prev_content": {"membership": "invite"},
-                            "origin_server_ts": 1417731086795,
-                            "event_id": "$7365636s6r6432:example.com"
+                            "$ref": "definitions/event-schemas/examples/m.room.member"
                           },
                           {
-                            "sender": "@alice:example.com",
-                            "type": "m.room.message",
-                            "txn_id": "1234",
-                            "content": {
-                              "body": "I am a fish",
-                              "msgtype": "m.text"
-                            },
-                            "origin_server_ts": 1417731086797,
-                            "event_id": "$74686972643033:example.com"
+                            "$ref": "definitions/event-schemas/examples/m.room.message$m.text"
                           }
                         ],
                         "limited": true,
@@ -364,18 +400,12 @@ paths:
                       },
                       "ephemeral": {
                         "events": [
-                          {
-                            "type": "m.typing",
-                            "content": {"user_ids": ["@alice:example.com"]}
-                          }
+                          {"$ref": "definitions/event-schemas/examples/m.typing"}
                         ]
                       },
                       "account_data": {
                         "events": [
-                          {
-                            "type": "m.tag",
-                            "content": {"tags": {"work": {"order": 1}}}
-                          },
+                          {"$ref": "definitions/event-schemas/examples/m.tag"},
                           {
                             "type": "org.example.custom.room.config",
                             "content": {
