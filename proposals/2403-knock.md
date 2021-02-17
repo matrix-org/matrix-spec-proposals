@@ -374,7 +374,11 @@ Request format:
 | roomId | string | Required. The room ID that should receive the knock.
 | userId | string | Required. The user ID the knock event will be for.
 | Query Parameters:
-| ver | [string] | The room versions the sending server has support for. Defaults to `[1]`.
+| ver | [string] | Required. The room versions the sending server has support for.
+
+Note that `GET /_matrix/federation/v1/make_join/{roomId}/{userId}` does not make `ver`
+a required query parameter for backwards compatibility reasons. We have no such restrictions.
+
 
 Response Format:
 
