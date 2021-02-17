@@ -39,7 +39,7 @@ To cover the use cases above, the following scheme is proposed for Matrix URIs
 ```text
 matrix:[//{authority}/]{type}/{id without sigil}[/{type}/{id without sigil}...][?{query}][#{fragment}]
 ```
-with `{type}` defining the resource type (such as `user` or `roomid` - see
+with `{type}` defining the resource type (such as `r`, `u` or `roomid` - see
 the "Path" section in the proposal) and `{query}` containing additional hints
 or request details on the Matrix entity (see "Query" in the proposal).
 `{authority}` and `{fragment}` parts are reserved for future use; this proposal
@@ -65,11 +65,11 @@ pointing to an event in a room.
 
 Examples:
 * Room `#someroom:example.org`:
-  `matrix:room/someroom:example.org`
+  `matrix:r/someroom:example.org`
 * User `@me:example.org`:
-  `matrix:user/me:example.org`
+  `matrix:u/me:example.org`
 * Event in a room:
-  `matrix:room/someroom:example.org/event/Arbitrary_Event_Id`
+  `matrix:r/someroom:example.org/e/Arbitrary_Event_Id`
 * [A commit like this](https://github.com/her001/steamlug.org/commit/2bd69441e1cf21f626e699f0957193f45a1d560f)
   could make use of a Matrix URI in the form of
   `<a href="{Matrix URI}">{Matrix identifier}</a>`.
@@ -187,7 +187,7 @@ be omitted. As can be seen below, Matrix URI rely heavily on [relative
 references](https://tools.ietf.org/html/rfc3986#section-4.2) and
 omitting the scheme name makes them indistinguishable from a local path
 that might have nothing to do with Matrix. Clients MUST NOT try to
-parse pieces like `room/MyRoom:example.org` as Matrix URIs; instead,
+parse pieces like `r/MyRoom:example.org` as Matrix URIs; instead,
 users should be encouraged to use Matrix identifiers for in-text references
 (`#MyRoom:example.org`) and client applications SHOULD turn them into
 hyperlinks to Matrix URIs.
@@ -232,29 +232,38 @@ This MSC only proposes mappings along `type-qualifier id-without-sigil` syntax;
 For the sake of integrity future `nonid-segment` extensions must follow
 [the ABNF for `segment-nz` as defined in RFC 3986](https://tools.ietf.org/html/rfc3986#appendix-A).
 
-This MSC defines the following `type` specifiers:
-`user` (user id, sigil `@`), `roomid` (room id, sigil `!`),
-`room` (room alias, sigil `#`), and `event` (event id, sigil `$`). This MSC
-does not define a type specifier for sigil `+`
+This MSC defines the following `type` specifiers: `u` (user id, sigil `@`),
+`r` (room alias, sigil `#`), `roomid` (room id, sigil `!`),  and
+`e` (event id, sigil `$`). This MSC does not define a type specifier for sigil `+`
 ([groups](https://github.com/matrix-org/matrix-doc/issues/1513) aka communities
 or, in the more recent incarnation,
 [spaces](https://github.com/matrix-org/matrix-doc/pull/1772)); a separate MSC
 can introduce the specifier, along with the parsing/construction logic and
 relevant CS API invocations, following the framework of this proposal.
 
-As of this MSC, `user`, `roomid`, and `room` can only be at the top
-level. The type `event` can only be used on the 2nd level and only under `room`
-or `roomid`; this is driven by the current shape of Client-Server API that
-does not provide a non-deprecated way to retrieve an event without knowing
+The following type specifiers proposed in earlier editions of this MSC and
+already in use in several implementations, are deprecated: `user`, `room`, and
+`event`. Client applications MAY parse these specifiers as if they were
+`u`, `r`, and `e` respectively; they MUST NOT emit URIs with the deprecated
+specifiers. The rationale behind the switch is laid out in "Alternatives".
+
+As of this MSC, `u`, `r`, and `roomid` can only be at the top
+level. The type `e` (event) can only be used on the 2nd level and only under
+`r` or `roomid`; this is driven by the current shape of Client-Server API
+that does not provide a non-deprecated way to retrieve an event without knowing
 the room (see [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
 [MSC2779](https://github.com/matrix-org/matrix-doc/issues/2779) that may
-change this). 
+change this).
 
 Further MSCs may introduce navigation to more top-level as well as
 non-top-level objects; see "Further evolution" for some ideas. These new
 proposals SHOULD follow the generic grammar laid out above, adding new `type`
 and `nonid-segment` specifiers and/or allowing them in other levels, rather
-than introduce a new grammar.
+than introduce a new grammar. It is recommended to only use abbreviated
+single-letter specifiers if they are expected to be user visible and convenient
+for type-in; if a URI for a given resource type is usually generated
+(e.g. because the corresponding identifier is not human-friendly), it's
+RECOMMENDED to use full (though short) words to avoid ambiguity and confusion.
 
 `id-without-sigil` is defined as the `string` part of Matrix
 [Common identifier format](https://matrix.org/docs/spec/appendices#common-identifier-format)
@@ -377,9 +386,9 @@ comparisons are case-INsensitive.
    
    a. Pick the leftmost segment of `path` until `/` (path segment) and match
       it against the following list to produce `sigil-1`:
-      - `user` -> `@`
+      - `u` (or, optionally, `user` - see "Path") -> `@`
+      - `r` (or, optionally, `room`) -> `#`
       - `roomid` -> `!`
-      - `room` -> `#`
       - any other string, including an empty one -> fail parsing:
         the Matrix URI is invalid.
 
@@ -393,7 +402,7 @@ comparisons are case-INsensitive.
    point to an event inside the room identified by `mxid-1`:
 
    a. Pick the next (3rd) path segment:
-      - if the segment is exactly `event`, proceed;
+      - if the segment is exactly `e` (or, optionally, `event`), proceed;
       - otherwise, including the case of an empty segment (trailing `/`, e.g.),
         fail parsing.
     
@@ -431,11 +440,11 @@ performed on behalf (using the access token) of the user `@me:example.org`:
 
 | URI class/example | Interactive operation | Non-interactive operation / Involved CS API |
 | ----------------- | --------------------- | --------------------------------------------- |
-| User Id (no `action` in URI):<br/>`matrix:user/her:example.org` | _Outside the room context_: show user profile<br/>_Inside the room context:_ mention the user in the current room (client-local operation) | No default non-interactive operation<br/>`GET /profile/@her:example.org/display_name`<br/>`GET /profile/@her:example.org/avatar_url` |
-| User Id (`action=chat`):<br/>`matrix:user/her:example.org?action=chat` | Open a direct chat with the user (see the next column on identifying the room) | If [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199) are supported: `GET /_matrix/client/r0/user/@me:example.org/dm?involves=@her:example.org`<br/>Without canonical direct chats:<br/>1. `GET /user/@me:example.org/account_data/m.direct`<br/>2. Find the room id for `@her:example.org` in the event content<br/>3. if found, return this room id; if not, `POST /createRoom` with `"is_direct": true` and return id of the created room |
-| Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:room/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>API: Find the respective room in the local `/sync` cache or<br/>`GET /rooms/!rid:example.org/...`<br/> |
-| Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:room/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
-| Event:<br/>`matrix:room/us:example.org/event/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | Non-interactive operation: return event or event content, depending on context<br/>API: find the event in the local `/sync` cache or<br/>`GET /directory/room/%23us:example.org` (to resolve alias to id)<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org`<br/> |
+| User Id (no `action` in URI):<br/>`matrix:u/her:example.org` | _Outside the room context_: show user profile<br/>_Inside the room context:_ mention the user in the current room (client-local operation) | No default non-interactive operation<br/>`GET /profile/@her:example.org/display_name`<br/>`GET /profile/@her:example.org/avatar_url` |
+| User Id (`action=chat`):<br/>`matrix:u/her:example.org?action=chat` | Open a direct chat with the user (see the next column on identifying the room) | If [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199) are supported: `GET /_matrix/client/r0/user/@me:example.org/dm?involves=@her:example.org`<br/>Without canonical direct chats:<br/>1. `GET /user/@me:example.org/account_data/m.direct`<br/>2. Find the room id for `@her:example.org` in the event content<br/>3. if found, return this room id; if not, `POST /createRoom` with `"is_direct": true` and return id of the created room |
+| Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:r/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>API: Find the respective room in the local `/sync` cache or<br/>`GET /rooms/!rid:example.org/...`<br/> |
+| Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:r/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
+| Event:<br/>`matrix:r/us:example.org/e/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | Non-interactive operation: return event or event content, depending on context<br/>API: find the event in the local `/sync` cache or<br/>`GET /directory/room/%23us:example.org` (to resolve alias to id)<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org`<br/> |
 
 
 #### URI construction algorithm
@@ -447,9 +456,9 @@ compliance of identifiers passed to this algorithm.
 For room and user identifiers (including room aliases):
 1. Remove the sigil character from the identifier and match it against
    the following list to produce `prefix-1`:
-   - `@` -> `user/`
+   - `@` -> `u/`
+   - `#` -> `r/`
    - `!` -> `roomid/`
-   - `#` -> `room/`
 2. Build the Matrix URI as a concatenation of:
    - literal `matrix:`;
    - `prefix-1`;
@@ -463,7 +472,7 @@ may change this):
 1. Take the event's room id or canonical alias and build a Matrix URI for them
    as described above.
 2. Append to the result of previous step:
-   - literal `event/`;
+   - literal `e/`;
    - the event id after removing the sigil (`$`) and percent-encoding.
    
 Clients MUST implement proper percent-encoding of the identifiers; there's no
@@ -481,7 +490,7 @@ extensions. Here are a few ideas:
 
 * Add specifying a segment of the room timeline (`from=$evtid1&to=$evtid2`).
 
-* Unlock bare event ids (`matrix:event/$event_id`) - subject to change in
+* Unlock bare event ids (`matrix:e/$event_id`) - subject to change in
   other areas of the specification.
 
 * Bring tangible semantics to the authority part. The main purpose of
@@ -516,12 +525,12 @@ extensions. Here are a few ideas:
   (also referred to in the previous section).
 
 * One could conceive a URI mapping of avatars in the form of
-  `matrix:user/uid:matrix.org/avatar/room:matrix.org`
+  `matrix:u/uid:matrix.org/avatar/room:matrix.org`
   (a user’s avatar for a given room).
 
-* As described in "Alternatives" and "Discussion points", respectively, one can introduce a synonymous
-  system that uses Matrix identifiers with sigils by adding another path
-  prefix (e.g., `matrix:id/%23matrix:matrix.org`).
+* As described in "Alternatives", a synonymous system can be introduced that
+  uses Matrix identifiers with sigils by adding another path prefix (e.g.,
+  `matrix:id/%23matrix:matrix.org`).
 
 
 ### Past discussion points and tradeoffs
@@ -534,8 +543,10 @@ further discussion should happen in GitHub comments.
    `//` if the URI doesn't have an authority component. In other words,
    `//` implies a centre of authority, and the (public) Matrix
    federation is not supposed to have one; hence no `//` in most URIs.
-1. _Why do type specifiers use singular rather than plural
-   as is common in RESTful APIs?_
+1. ~~_Why do type specifiers use singular rather than plural
+   as is common in RESTful APIs?_~~
+   This is no more relevant with single-letter type specifiers. The answer
+   below is provided for history only.
    Unlike in actual RESTful APIs, this MSC does not see `rooms/` or
    `users/` as collections to browse. The type specifier completes
    the id specification in the URI, defining a very specific and
@@ -579,18 +590,40 @@ further discussion should happen in GitHub comments.
 
 ### Alternatives
 
-#### Reddit-style URLs
+#### Using full words for all types
 
-Reddit style (`matrix:r/matrix:matrix.org`, `matrix:u/me:example.org` etc.)
-is almost as compact as original Matrix identifiers, while still rather
-clearly conveys the type and nicely avoids the singular vs. plural confusion
-described in the previous section. However, in the context of high requirements
-to URL grammar stability, Reddit-style prefixes would eventually produce
-bigger ambiguity as a primary notation; but they can be handy as shortcuts.
-As discussed in "Future evolution", the current proposal provides enough space
-to define synonyms; this may need some canonicalisation service from
-homeservers so that we don't have to enable synonyms at each client
-individually.
+During its draft state, this MSC was proposing type specifiers using full words
+(`user`, `room`, `event` etc.), arguing that abbreviations can be introduced
+separately as synonyms. Full words have several shortcomings pointed out in
+discussions across the whole period of preparation, namely:
+- The singular vs. plural choice (see also "Past discussion points")
+- Using English words raises a question about eventual support of localised
+  URI variants (`matrix:benutzer/...`, `matrix:usuario/...` etc.) catering to
+  international audience, that would add complication to the Matrix technology.
+- Abbreviated forms are popularised by Reddit and make URIs shorter which is
+  crucial for the outbound integration case (see the introduction).
+
+Meanwhile, using `u`/`r`/`e` for users, rooms and events has the following
+advantages:
+1. there's a strong Reddit legacy, with users across the world quite familiar
+   with the abbreviated forms (and `r/` coincidentally standing for sub-Reddits
+   links to which have basically the same place in the Reddit ecosystem as
+   Matrix room aliases have in the Matrix ecosystem);
+2. matrix.to links to users and room aliases are heavily used throughout Matrix,
+   specifically in end-user-facing contexts (see also use cases in the
+   introductory section of this MSC);
+3. the singular vs. plural (`room` or `rooms`?) confusion is avoided;
+4. it's shorter, which is crucial for typing the URI in an external medium.
+
+The rationale behind not abbreviating `roomid/` is a better distinction between
+room aliases and room ids; also, since room ids are almost never typed in
+manually, the advantages (3) and (4) above don't hold.
+
+For these reasons, it was decided in the end to use the single-letter style
+for types most used in the outbound integration case. It's still possible to
+reinstate full words as synonyms some time down the road, with the caveat that
+a canonicalisation service from homeservers may be needed to avoid having
+to enable synonyms at each client individually.
 
 #### URNs
 
