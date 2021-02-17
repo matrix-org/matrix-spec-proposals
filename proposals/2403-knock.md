@@ -589,6 +589,7 @@ An unstable feature flag is not required due to this proposal's requirement
 of a new room version. Clients can check for a room version that includes
 knocking via the Client-Server API's [capabilities
 endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-capabilities).
+Experimental implementation should use `xyz.amorgan.knock` as a room version identifier.
 
 The new endpoints should contain an unstable prefix during experimental
 implementation. The unstable counterpart for each endpoint is:
