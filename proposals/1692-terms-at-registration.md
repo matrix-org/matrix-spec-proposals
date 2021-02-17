@@ -2,8 +2,8 @@
 
 Homeservers may wish to force users to accept a set of policies or otherwise have
 users be aware of changes to the terms of service, privacy policy, or other document.
-This proposal describes a "Terms API" that gives homeservers the option of enforcing
-a terms of service (or other legal document) upon a user before they can use the service.
+This proposal describes how a server can present these documents during registration
+for users to accept before gaining access to the service.
 
 **Note**: This proposal used to contain an entire TOS API for clients to interact with.
 This functionality has been moved to [MSC3012](https://github.com/matrix-org/matrix-doc/pull/3012).
@@ -21,7 +21,8 @@ where they are not aware of the terms of service until after they've registered.
 terms of service can change at any time, having a versioned set of documents is required to
 ensure everyone has accepted the updated terms of service. Homeservers should additionally
 be able to decide if the given change to their terms of service requires everyone to accept
-the new terms or if no action is required by users.
+the new terms or if no action is required by users, though this feature is covered by
+[MSC3012](https://github.com/matrix-org/matrix-doc/pull/3012) instead of here.
 
 The version for a policy should be arbitrary and potentially non-linear, similar to room
 versions. The acceptable range of characters for a version is `[a-zA-Z0-9.-]`.
