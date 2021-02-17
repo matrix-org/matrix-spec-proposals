@@ -5,8 +5,7 @@ users be aware of changes to the terms of service, privacy policy, or other docu
 This proposal describes a "Terms API" that gives homeservers the option of enforcing
 a terms of service (or other legal document) upon a user before they can use the service.
 
-
-# General principles and motivation
+## General principles and motivation
 
 * The homeserver should be able to support multiple documents (ie: a TOS, privacy policy,
   and acceptable use policy).
@@ -24,14 +23,12 @@ the new terms or if no action is required by users.
 The version for a policy should be arbitrary and potentially non-linear, similar to room
 versions. The acceptable range of characters for a version is `[a-zA-Z0-9.-]`.
 
-
-# UI authentication changes
+## UI authentication changes
 
 This API makes changes to the registration and login flows for UI auth, and makes use of UI
 auth at a later stage in this proposal.
 
-
-## Registration
+### Registration
 
 During registration it may be important to the homeserver that the user accepts a given policy.
 This is described as a `m.login.terms` authentication type. The parameters for this authentication
@@ -78,8 +75,7 @@ The client is not required to supply any additional information in the auth dict
 this stage. The client should present the user with a checkbox to accept each policy with a
 link to said policy, or otherwise rely on the homeserver's fallback.
 
-
-## Login
+### Login
 
 Given the Client-Server specification doesn't use UI auth on the login routes, mimicking the
 process used for registration is more difficult. The homeserver would not be aware of who is
@@ -109,7 +105,7 @@ continuing, older clients will not be able to work around the limitation. Modern
 expected to support the UI auth flow (after the initial password submission), therefore allowing
 the user to actually log in.
 
-# Asking for acceptance after login/registration
+## Asking for acceptance after login/registration
 
 The homeserver should maintain a read-only `m.terms` account data event with `content` similar
 to:
@@ -224,8 +220,7 @@ the context of sync.
 In addition, the homeserver should not prevent the use of the special "terms acceptance" API
 described in the next section.
 
-
-## Terms acceptance API
+### Terms acceptance API
 
 One way to accept the terms of service is to force the user to log in again, however that is
 likely to be less than desireable for most users. Instead, the client may make a request to
@@ -238,8 +233,7 @@ include policies that are `"required": false` in the user's account data. This i
 same API is used by the client to acknowledge a non-blocking policy (such as the Code of Conduct
 in the prior example).
 
-
-# Why use account data and not a special /sync property or polling API?
+## Why use account data and not a special /sync property or polling API?
 
 The user's account data was picked because (almost) every client is aware of the concept and
 requires few changes to support it. Many clients additionally have optimized the lookup for
