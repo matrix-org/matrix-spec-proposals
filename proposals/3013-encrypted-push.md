@@ -10,7 +10,7 @@ to fetch the full event, and then create the notification based on that.
 This, however, introduces the issue of having to perform an additional HTTP request to be able to
 display the full event notification. On some systems (e.g. some weird vendor-specific android phones,
 or while driving through ~~rural germany~~ places with patchy cellular network availability) this isn't
-always.
+always the case.
 
 This proposal adds a method to encrypt the push message in a way only the recipient client can decrypt
 it, allowing the server to send the full event over push again, with this MSC and [MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782).
