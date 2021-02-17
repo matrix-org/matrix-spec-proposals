@@ -17,8 +17,18 @@ so working implementations already exist.
 ## Proposal
 
 For pushers of kind `http` a new `format`, `full_event`, is introduced. If this format is specified
-it is expected that the homeserver tries to fill out as many fields as specified in the [push gateway api](https://matrix.org/docs/spec/push_gateway/r0.1.1#post-matrix-push-v1-notify)
-as possible.
+it is expected that the homeserver tries to fill out the following fields as specified in the [push gateway api](https://matrix.org/docs/spec/push_gateway/r0.1.1#post-matrix-push-v1-notify):
+ - `event_id`
+ - `room_id`
+ - `type`
+ - `sender`
+ - `prio`
+ - `counts`
+ - `membership` (for `m.room.member`)
+ - `user_is_target` (for `m.room.member`)
+ - `content`
+ - `sender_display_name`
+ - `room_name`
 
 ## Potential issues
 
