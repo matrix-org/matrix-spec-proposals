@@ -22,7 +22,7 @@ kind `http`, except that the content it pushes is encrypted. That means it inher
 data requirements, all the formats etc. It adds a new pusher data field, `public_key`, which is a
 (optionally unpadded) base64-encoded curve25519 public key. This new field is not to be added to the
 actual push payload being sent to push gateways. As such, setting such a pusher could look as
-following:
+following (assuming [MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782) has been merged):
 
 ```
 POST /_matrix/client/r0/pushers/set HTTP/1.1
@@ -38,7 +38,7 @@ Content-Type: application/json
   "pushkey": "APA91bHPRgkF3JUikC4ENAHEeMrd41Zxv3hVZjC9KtT8OvPVGJ-hQMRKRrZuJAEcl7B338qju59zJMjw2DELjzEvxwYv7hH5Ynpc1ODQ0aT4U4OFEeco8ohsN5PjL1iC2dNtk2BAokeMCg2ZXKqpc8FXKmhX94kIxQ",
   "data": {
     "url": "https://push-gateway.location.here/_matrix/push/v1/notify",
-    "format": "event_id_only",
+    "format": "full_event",
     "public_key": "GkZgmbbxnYZfFtywxF4K7NUPqA50Kb7TEsyHeVWyHBI"
   },
   "append": false
