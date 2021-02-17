@@ -15,8 +15,8 @@ matrix federation. This is optionally implementable, and the scope of this docum
 specific ways to implement this stream (such as WebSockets, TCP/TLS, or other specific
 bi-directional network channels)
 
-This proposal, and the Federation Stream, assumes a full-duplex binary pipeline, over which any kind
-of data is streamed in-order.
+This proposal, and the Federation Stream, assumes a full-duplex framed binary "pipeline", over which any kind
+of data is streamed in-order, with framing available to both consuming ends.
 
 The Federation Stream is intended as a faster-yet-compatible carrier alternative to
 `/federation/v1/send`, and is thus intended to not receive exclusive features that also aren't able
@@ -30,11 +30,9 @@ changed with [a proposed extension](#proposed-extensions).
 
 ### Basic Frame
 
-The basic frame of the stream consists of 5 leading bytes, and then a payload.
+The basic frame of the stream consists of 1 leading byte, and then a payload.
 
-The first byte denotes the [opcode](#opcodes), effectively a `u8`/`uint8`/`byte`.
-
-The next 4 bytes denote the length of the remaining payload, effectively `u32`/`uint32`/`uint`.
+That first byte denotes the [opcode](#opcodes), effectively a `u8`/`uint8`/`byte`.
 
 The remaining payload is defined per opcode, with formatting defined per-connection (see
 [opcodes](#opcodes) and [`hello`](#hello) below).
@@ -311,8 +309,8 @@ For the purposes of this document, a `value` can be any of above (both structure
 Extensions to the Federation Stream can be defined (through `Hello/Greetings`), but must never
 interfere with;
 
+- The first byte leading in a frame.
 - Opcodes laid out in this proposal.
-- The first 5 bytes leading in a frame.
 - ["Standard" defined formatting](#defined-payload-formats).
 
 #### Proposed Extensions
@@ -347,7 +345,7 @@ but should inform it's possible use-case, and how freely its definitions should 
 The Bytes reserved for opcode extensions are `0xA0`-`0xEF`.
 
 Extensions can possibly define frames of their own, these are proposed during `Hello`, and mapped
-during `Greetings`, for this, 79 byte-values can be used.
+during `Greetings`, for this, 79 different byte-values can be used.
 
 ### Glossary
 
@@ -377,6 +375,43 @@ The tradeoff between establishing a Federation Stream immediately and "just" uti
 should be researched and weighed for every individual implementation, and there is no one singular
 optimization strategy that may be possible, and this proposal does not try to restrict these
 possibilities, only suggest and guide them.
+
+## Imposed requirements on the underlying connection
+
+As mentioned before, the Federation Stream (and this proposal) assumes that the underlying transport
+on which it sends frames is *framed*, this means that either side consumes a chunk of data at a
+time, which in this case is the opcode and it's corresponding payload.
+
+This was done to deduplicate behaviour from possible underlying transports, where some of which are
+capable of providing a framing mechanism by itself to the application side.
+
+However, some transports will or aren't able to provide a framed consumption interface to specific
+applications, these issues are intended to be hashed out in future proposals at a time, but for now,
+here are a few advisories to those proposals.
+
+(Please note that "payload" here means the entire frame of opcode + internal payload)
+
+- When using terminating byte sequences (such as NULL, `0x00`), take extra care, as the payload or
+  opcode could carry these bytes with them internally.
+
+  This method is *NOT RECOMMENDED*, due to aforementioned potential of those byte-sequences existing
+  in payload or opcode, which then have to be escaped, and un-escaped before serving to the stream
+  handler.
+
+- When leading with an amount of bytes that signify payload size, assume that the payload size can
+  possibly be the max of a 4-byte `uint` (i.e. `u32`).
+
+  The rationale of this is that a 2-byte payload size (`u16`) is too small for some possible event
+  sizes (64 KB), as the current soft-assumed limit is one megabyte.
+
+  A 3-byte payload size header, while relatively right for assumed payload size (~16 MB), is awkward
+  for platforms to deal with, as casting a 3-byte integer to a 4-byte `uint32` can be a footgun to
+  implement.
+
+- Alternatively, using a VarInt as leading payload size is recommended, given that guardrails exist
+  to assure that a malicious actor cannot perform exploits such as buffer overruns, or send
+  Denial-of-Service attacks by making the server allocate an arbitrarily large buffer, sanity checks
+  should exist in these cases.
 
 ## Potential issues
 
