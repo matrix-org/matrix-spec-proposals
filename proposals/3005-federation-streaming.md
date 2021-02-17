@@ -20,7 +20,7 @@ of data is streamed in-order.
 
 The Federation Stream is intended as a faster-yet-compatible carrier alternative to
 `/federation/v1/send`, and is thus intended to not receive exclusive features that also aren't able
-to be used in HTTP-REST format, that partain to the basic way federation is done, and aren't
+to be used in HTTP-REST format, that pertain to the basic way federation is done, and aren't
 executable with `v1/send`. (Until a day comes where Federation Streaming is the primary way of
 federation-event-sending).
 
