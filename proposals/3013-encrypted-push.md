@@ -161,7 +161,7 @@ musn't be encrypted.
 
 ## Security considerations
 
-In a first draft symmetric encryption was used. However, using asymmetric encryption seams like the
+In a first draft symmetric encryption was used. However, using asymmetric encryption seems like the
 proper way to go here, as, in the case of the server being compromised, there is no need to re-negotiate
 a new key to encrypt the push message.
 
