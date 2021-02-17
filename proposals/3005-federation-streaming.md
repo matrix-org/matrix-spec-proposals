@@ -247,8 +247,7 @@ Because EDU nonces must be unique over the course of the entire Federation Strea
 could possibly build up memory pressure to track thousands of nonces on both sides of the connection
 for uniqueness.
 
-This Frame aims to vacuum entire swaths of nonces from the other side's memory, it is sent by the
-side which sends EDUs which include these nonces.
+This Frame aims to vacuum entire swaths of nonces from the other side's memory.
 
 The payload data is an `object`, defined as following, all fields required;
 
@@ -258,7 +257,7 @@ The payload data is an `object`, defined as following, all fields required;
 |  `end`  | `integer` | End of the range to be vacuumed.  |
 
 When received, all EDU nonce values inside the (inclusive) range between both integer values must be
-perceived as usable by the sending side again, for the receiving side.
+perceived as usable by the sender again (from the receiver's perspective).
 
 ##### Error
 
