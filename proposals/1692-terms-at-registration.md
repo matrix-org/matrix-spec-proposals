@@ -5,6 +5,9 @@ users be aware of changes to the terms of service, privacy policy, or other docu
 This proposal describes a "Terms API" that gives homeservers the option of enforcing
 a terms of service (or other legal document) upon a user before they can use the service.
 
+**Note**: This proposal used to contain an entire TOS API for clients to interact with.
+This functionality has been moved to [MSC3012](https://github.com/matrix-org/matrix-doc/pull/3012).
+
 ## General principles and motivation
 
 * The homeserver should be able to support multiple documents (ie: a TOS, privacy policy,
