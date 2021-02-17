@@ -417,6 +417,15 @@ This request was invalid, e.g. bad JSON. Example reply:
 }
 ```
 
+##### Status code 404:
+The room is unknown to the remote server. Example reply:
+```json
+{
+  "errcode": "M_NOT_FOUND",
+  "error": "Unknown room"
+}
+```
+
 ### `PUT /_matrix/federation/v2/send_knock/{roomId}/{eventId}`
 Submits a signed knock event to the resident homeserver for it to accept into
 the room's graph. Note that event format may differ between room versions.
