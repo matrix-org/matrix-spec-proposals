@@ -159,6 +159,13 @@ updates if a message was read on another device.
 If the gateway does additional processing, like marking call attempts differently, the relevant data
 musn't be encrypted.
 
+## Alternatives
+
+Instead of this MSC, the push gateway for a specific app could encrypt the contents so that FCM/APNs
+are still unable to see them. As the push gateway is set by app, that would mean that another server
+than your homeserver gets full event contents for your push notifications. So this is also questionable
+from a privacy point of view.
+
 ## Security considerations
 
 In a first draft symmetric encryption was used. However, using asymmetric encryption seems like the
