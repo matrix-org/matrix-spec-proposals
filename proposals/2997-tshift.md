@@ -24,6 +24,11 @@ Once the spec is complete and there are no more MSCs the t-shirt will be obsolet
 
 Instead of a shirt, a sweater or thelike could be used.
 
+Instead of just printing normal event contents on the shirt we might want to consider using
+t-shirts-as-rooms. This would allow greater flexibility, as we could easily add any amount of metadata
+to the t-shirt in the future, such as the amount of times it has been washed or what temperature to
+iron it at.
+
 ## Security considerations
 
 Unfortunately not all people are able to wear t-shirts, so a solution for those would have to be
