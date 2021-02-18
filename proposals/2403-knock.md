@@ -112,6 +112,10 @@ The knocking homeserver should assume an invite to a room it has knocked on mean
 that its knock has been accepted, even if the invite was not explicitly
 related to the knock attempt.
 
+Note that client or homeserver implementations are free to automatically
+accept this invite given they're aware that it's the result of a previous
+knock.
+
 ### Membership change to `leave`
 
 The knock has been rejected by someone in the room, or the knocking user has
