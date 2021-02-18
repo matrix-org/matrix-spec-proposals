@@ -246,7 +246,6 @@ footer {
 /* Styles for sections that are rendered from data, such as HTTP APIs and event schemas */
 .rendered-data {
   margin: 1rem 0 3rem 0;
-  padding: 1rem;
 
   details {
 
@@ -296,7 +295,6 @@ footer {
   }
 
   p {
-    margin: .5rem;
     max-width: 80%;
   }
 
@@ -415,4 +413,10 @@ Make padding symmetrical (this selector is used in the default styles to apply p
   background-position: left 1rem center;
   background-repeat: no-repeat;
   padding-left: 100px;
+}
+
+/* Full-width tables */
+.td-content > table {
+  width: 100%;
+  display: table;
 }
