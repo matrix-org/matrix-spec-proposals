@@ -355,6 +355,22 @@ For backwards compatibility with old servers, if a client does not find a
 `join_rule` key in a chunk, then it should assume a `join_rule` key with
 value `public`.
 
+### Push Rules
+
+To help knocks be noticed earlier, it would be nice to send a push
+notification to those in the room who can act on a knock when it
+comes in, rather than everyone in the room. This would require a
+push rule to fire only when that user's power level is high enough to 
+accept or reject a knock.
+
+With the current push rules implementation it is possible to place a
+condition on the sender's power level, but unfortunately the same does
+not exist for event recipients. 
+
+This MSC thus does not propose any changes to push rules at this time,
+but acknowledges that it would be useful for a future MSC to address when
+the underlying push rules architecture can support it.
+
 
 ## Server-Server API
 Similarly to join and leave over federation, a ping-pong game with two new
