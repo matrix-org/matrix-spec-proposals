@@ -6,8 +6,16 @@ out, most of them already had an MSC for that! One feature that was keep being b
 
 ## Proposal
 
-Get a t-shirt with "There's an MSC for that!" written on it.
-
+Get a t-shirt with "There's an MSC for that!" written on it. This T-shirt shall include a code block
+typeset in a monospace block that should read
+```json
+{
+  "type": "m.t-shirt",
+  "content": {
+    "body": "There's an MSC for that!"
+  }
+}
+```
 ## Potential issues
 
 Once the spec is complete and there are no more MSCs the t-shirt will be obsolete.
