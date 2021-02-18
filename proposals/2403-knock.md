@@ -426,16 +426,15 @@ The room is unknown to the remote server. Example reply:
 }
 ```
 
-### `PUT /_matrix/federation/v2/send_knock/{roomId}/{eventId}`
+### `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
 Submits a signed knock event to the resident homeserver for it to accept into
 the room's graph. Note that event format may differ between room versions.
 
-While this is a new endpoint, we start off at `v2` to align with the rest of
-the `/v2/send_*` endpoints. The switch from `v1` to `v2` occurred as part of
-[MSC1802](https://github.com/matrix-org/matrix-doc/pull/1802) and required
-that `send_*` endpoints no longer return a redundant HTTP error code in
-response bodies. As we do the same here, and for consistency's sake, for
-`send_knock` will begin at endpoint `v2` as well.
+Note that in the past all `send_*` federation endpoints were updated to `/v2`
+to remove a redundant HTTP error code from the return body. While we don't
+have the same redundancy here, we start off at `/v1` for this new endpoint
+as per
+[MSC2844](https://github.com/matrix-org/matrix-doc/pull/2844).
 
 Request format:
 
@@ -455,7 +454,7 @@ Response Format:
 
 A request could look as follows:
 ```json
-PUT /_matrix/federation/v2/send_knock/%21abc123%3Amatrix.org/%24abc123%3Aexample.org HTTP/1.1
+PUT /_matrix/federation/v1/send_knock/%21abc123%3Amatrix.org/%24abc123%3Aexample.org HTTP/1.1
 Content-Type: application/json
 
 {
@@ -611,7 +610,7 @@ S-S make_knock:
 
 S-S send_knock:
 
-* `PUT /_matrix/federation/v2/send_knock/{roomId}/{eventId}`
+* `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
 * `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
 
 And finally, an unstable prefix is added to the key that comes down `/sync`,
