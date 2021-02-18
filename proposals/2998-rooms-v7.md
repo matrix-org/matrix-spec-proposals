@@ -3,8 +3,6 @@
 A new room version, `7`, is proposed using [room version 6](https://matrix.org/docs/spec/rooms/v6.html) as a base
 and incorporating the following MSCs:
 
-* [MSC2174](https://github.com/matrix-org/matrix-doc/pull/2174) - Move the `redacts` key to a sane place.
-* [MSC2175](https://github.com/matrix-org/matrix-doc/pull/2175) - Remove the `creator` field from `m.room.create` events.
 * [MSC2176](https://github.com/matrix-org/matrix-doc/pull/2176) - Update the redaction rules.
 * [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403) - Add "knock" feature.
 
