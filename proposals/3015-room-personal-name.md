@@ -4,7 +4,7 @@ Very often users want to personally rename rooms to see it in list like they wan
 
 Examples of problem: 
 
-1. Very often other people want to rename DM rooms with me and can do this, because we both are admins. So they set the alternative name of that DM room (eg `Korepov Alexey` instead of `Alexey Murz Korepov`) - this looks or for them. But, as result, on my side I see that room in my rooms list with my name, instead of remote user name.
+1. Very often other people want to rename DM rooms with me and can do this, because we both are admins. So he set the alternative name of that DM room (eg `Korepov Alexey` instead of `Alexey Murz Korepov`) - this works well on his side. But, as result on my side, I see that room in my rooms list with my name, instead of remote user name.
 
 2. The user have two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result he see two identical rooms in list with same name and can understand which bob is where only via reading recent messages.
 
