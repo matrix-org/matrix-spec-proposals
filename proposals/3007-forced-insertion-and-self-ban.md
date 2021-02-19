@@ -2,7 +2,7 @@
 
 This proposal is going to change the auth rules to allow for users to forcibly add other users into
 public or knockable rooms if they have a newly proposed power to `insert_member`. This can be used to
-implement a ban reversal.
+implement a ban reversal and obligatory joins for business and school use cases.
 
 ## Proposal
 
@@ -13,9 +13,9 @@ state machine in any case. This proposal seeks to add well-defined rules on who 
 membership without going through not-member `leave` state.
 
 Add `insert_member` field to `m.room.power_levels`, whose value is going to be interpreted as
-the minimum power level that a member has to have to be able to forcibly add users to a room.
-Unless greater than or equal to the power level required to invite, this operation is completely
-disallowed in said room.
+the minimum power level that a room member has to have to be able to forcibly add users to
+a room. Unless greater than or equal to the power level required to invite, this operation
+is completely disallowed in said room.
 
 Change the auth rules for the member state transistions as follows:
 * from anything to `ban`: allowed only if the banning user has the power to perform `ban` or banning
