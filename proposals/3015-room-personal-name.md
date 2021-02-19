@@ -24,7 +24,7 @@ For solve this problem I propose to use [room's account_data](https://matrix.org
 
 By default this item is absent. It is added only when user make the personal renaming of room, and cleared if user remove the personal name for room (or make it empty).
 
-Regarding to spec, the account data can't be deleted, so if user wants to clean the personal name or "Reset to default", the value of the `m.room_name_personal` should become empty.
+Regarding to spec, the account data's key can't be deleted, so if user wants to clean the personal name or "Reset to default", the value of the `m.room_name_personal` key should become empty (`{}`).
 
 # Client support
 
@@ -50,9 +50,9 @@ This MSC does not need any changes on server side.
 
 # Alternatives
 
-1. Instead of setting personal name for rooms via [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) we can set personal names directly for Matrix users (mxid), like other messengers (Telegram, WhatsApp, etc) doing. This will give similar behavior for DM rooms, but will make impossible to set personal names of rooms with several users (or DM rooms with bots), and intersects with per-room display names feature. And this way will be better to implement together with "[Contacts](https://github.com/vector-im/roadmap/issues/10)" feature, which is planned in Element.
+1. Instead of setting personal name for rooms via [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) we can set personal names directly for Matrix users (mxid), like other messengers (Telegram, WhatsApp, etc) doing. This will give similar behavior for DM rooms, but will make impossible to set personal names of rooms with several users (or DM rooms with bots), and intersects with per-room display names feature. And this way will be better to implement together with "[Contacts](https://github.com/vector-im/roadmap/issues/10)" feature, which is planned in Element, also her is issue about this: [Contact List & Renaming Contacts](https://github.com/matrix-org/matrix-doc/issues/2936).
 
-2. This feature can be extended via storing personal avatar for room, but, as I think, for multi-user rooms this is unnecessary, and for DM rooms will be better to store personal avatars in some "Contact list" storage, instead of account data in each room.
+2. This feature can be extended via storing personal avatar for room to, but, as I think, for multi-user rooms this is unnecessary, and for DM rooms will be better to implement personal avatars together with "Contacts" feature, mentioned above, instead of use the room's account data for this.
 
 # Unstable prefix
 
