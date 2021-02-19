@@ -14,23 +14,23 @@ Most of other modern messengers (Telegram, Skype, Viber, WhatsApp) already have 
 
 # Proposal
 
-For solve this problem I propose to use [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) item with type `room_name_personal` to store custom name of any room for each user individually:
+For solve this problem I propose to use [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) item with type `m.room_name_personal` to store custom name of any room for each user individually:
 
 ```json
 {
-  "room_name_personal": "Alice Liddell"
+  "m.room_name_personal": "Alice Liddell"
 }
 ```
 
 By default this item is absent. It is added only when user make the personal renaming of room, and removed if user remove personal name for room (or make it empty).
 
-The value of this item should be not empty, if client fill empty value for room personal name, the item should be deleted.
+Regarding to spec, the account data can't be deleted, so if user wants to clean the personal name or "Reset to default", the value of the `m.room_name_personal` should become empty.
 
 # Client support
 
 ## Displaying:
 
-When client displays the room in list, it should lookup the `room_name_personal` key, if it exists - use that text for display name in room list instead of global room name. In room page header (over timeline) may be shown both names (global and personal) with explaining that this room have alternative personal name, that seen only for current user.
+When client displays the room in list, it should lookup the `m.room_name_personal` key, if it exists and have not empty value - use it's value for display name in room list instead of global room name. In room page header (over timeline) clients may show both names (global and personal) with explaining that this room have alternative personal name, that is seen only for current user.
 
 ## Adding, removing, renaming:
 
