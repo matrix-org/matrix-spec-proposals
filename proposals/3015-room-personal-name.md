@@ -1,4 +1,4 @@
-# MSCxxxx: Personal room names
+# MSC3015: Room personal name
 
 Very often users want to personally rename rooms to see it in list like they wants, especially for DM rooms. But room name is shared thing, so if they rename it for yourself, all other members will see this rename too.
 
