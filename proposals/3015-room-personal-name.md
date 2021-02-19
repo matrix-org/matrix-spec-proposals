@@ -6,9 +6,9 @@ Examples of problem:
 
 1. Very often other people want to rename DM rooms with me and can do this, because we both are admins. So he set the alternative name of that DM room (eg `Korepov Alexey` instead of `Alexey Murz Korepov`) - this works well on his side. But, as result on my side, I see that room in my rooms list with my name, instead of remote user name.
 
-2. The user have two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result he see two identical rooms in list with same name and can understand which bob is where only via reading recent messages.
+2. The user have two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result he see two identical rooms in list with same name and can understand which Alice is where only via reading recent messages. And he can solve this problem via renaming rooms, that give the result from item 1, descibed above.
 
-3. This problem often happens for rooms from bridged networks, when we talk with same person via different networks.
+3. This problem often happens for rooms from bridged networks, when we talk with same person via different networks, and want to mark each room personally. This can be solved via adding suffixes with remote network name to room name on Bridge side, but people want to change other parts of room name too. For example, one person can have different names in each network (eg "Alexey Korepov" on VK, "Korepov Alexey" on Skype, "Alex" on WhatsApp, "Murz" on Telegram), and I want to see all rooms with him as similar names.
 
 Most of other modern messengers (Telegram, Skype, Viber, WhatsApp) already have this feature, but only for DM rooms via reusing smartphone's addressbook to store personal names of contacts. And moving from that messengers to Matrix confuses the people, because they can't rename personal chats in his own list like before.
 
