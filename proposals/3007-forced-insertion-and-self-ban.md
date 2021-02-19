@@ -1,8 +1,8 @@
 # MSC3007: Forced member insertion and room blocking by self-banning
 
-This proposal is going to change the auth rules to allow for users to forcibly add other users into
-public or knockable rooms if they have a newly proposed power to `insert_member`. This can be used to
-implement a ban reversal and obligatory joins for business and school use cases.
+This proposal is going to change the auth rules to allow for room members to forcibly add non-members
+into public or knockable rooms if they have a newly proposed power to `insert_member`. This can be
+used to implement a ban reversal and obligatory joins for business and school use cases.
 
 ## Proposal
 
