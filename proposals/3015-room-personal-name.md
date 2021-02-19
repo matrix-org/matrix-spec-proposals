@@ -1,12 +1,16 @@
 # MSC3015: Room personal name
 
-Very often users want to personally rename rooms to see it in list like they wants, especially for DM rooms. But room name is shared thing, so if they rename it for yourself, all other members will see this rename too.
+Very often users want to personally rename rooms to see it in list like they wants, especially for DM rooms. But room name is shared thing, so if they rename it for yourself, all other members will see this rename too. 
 
-Example of problem: the user have two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result he see two identical rooms in list with same name and can understand which bob is where only via reading recent messages.
+Examples of problem: 
 
-Also this problem often happens for rooms from bridged networks, when we talk with same person via different networks.
+1. Very often other people want to rename DM rooms with me and can do this, because we both are admins. So they set the alternative name of that DM room (eg `Korepov Alexey` instead of `Alexey Murz Korepov`) - this looks or for them. But, as result, on my side I see that room in my rooms list with my name, instead of remote user name.
 
-Most of other modern messengers (Telegram, Skype, Viber, WhatsApp) already have this feature, but only for DM rooms via reusing smartphone's addressbook to store personal names of contacts. And moving from that messengers to Matrix confuses the people, that they can't rename personal chats in his own list like before.
+2. The user have two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result he see two identical rooms in list with same name and can understand which bob is where only via reading recent messages.
+
+3. This problem often happens for rooms from bridged networks, when we talk with same person via different networks.
+
+Most of other modern messengers (Telegram, Skype, Viber, WhatsApp) already have this feature, but only for DM rooms via reusing smartphone's addressbook to store personal names of contacts. And moving from that messengers to Matrix confuses the people, because they can't rename personal chats in his own list like before.
 
 # Proposal
 
