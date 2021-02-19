@@ -50,8 +50,10 @@ This MSC does not need any changes on server side.
 
 # Alternatives
 
-1. Instead of setting personal name for rooms via [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) we can set personal names directly for Matrix users (mxid), like other messengers (Telegram, WhatsApp, etc) doing. This will give similar behavior for DM rooms, but will make impossible to set personal names of rooms with several users (or DM rooms with bots), and intersects with per-room display names feature.
+1. Instead of setting personal name for rooms via [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) we can set personal names directly for Matrix users (mxid), like other messengers (Telegram, WhatsApp, etc) doing. This will give similar behavior for DM rooms, but will make impossible to set personal names of rooms with several users (or DM rooms with bots), and intersects with per-room display names feature. And this way will be better to implement together with "[Contacts](https://github.com/vector-im/roadmap/issues/10)" feature, which is planned in Element.
 
-## Unstable prefix
+2. This feature can be extended via storing personal avatar for room, but, as I think, for multi-user rooms this is unnecessary, and for DM rooms will be better to store personal avatars in some "Contact list" storage, instead of account data in each room.
+
+# Unstable prefix
 
 Clients should use `org.matrix.msc3015.room_name_personal` type instead of proposed, while this MSC has not been included in a spec release.
