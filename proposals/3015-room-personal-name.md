@@ -14,11 +14,11 @@ Most of other modern messengers (Telegram, Skype, Viber, WhatsApp) already have 
 
 # Proposal
 
-For solve this problem I propose to use [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) item with type `m.room_name_personal` to store custom name of any room for each user individually:
+For solve this problem I propose to use [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type) item with key `m.room_name_personal` to store custom name of any room for each user individually, with filling personal name in content with `room_name_personal` type:
 
 ```json
 {
-  "m.room_name_personal": "Alice Liddell"
+  "room_name_personal": "Alice Liddell"
 }
 ```
 
