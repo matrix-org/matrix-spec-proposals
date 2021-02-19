@@ -54,4 +54,4 @@ This MSC does not need any changes on server side.
 
 ## Unstable prefix
 
-Clients should use `org_matrix_mscxxxx_room_name_personal` type instead of proposed, while this MSC has not been included in a spec release.
+Clients should use `org.matrix.msc3015.room_name_personal` type instead of proposed, while this MSC has not been included in a spec release.
