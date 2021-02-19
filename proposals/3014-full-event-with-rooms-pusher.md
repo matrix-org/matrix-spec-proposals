@@ -13,8 +13,8 @@ specifically have been read to be able to dispose of the notification, apart fro
 For pushers of type `http` (and thus all pushers inheriting from that type) a new `format`,
 `full_event_with_rooms`, is introduced. This pusher has the same fields as the `full_event` pusher
 described in [MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782), with the addition of a
-new `rooms` field. This new field is a map of room IDs to notification count. The rooms with a
-notification count of zero are not to be included in this map.
+new `rooms` field inside of the `counts` object. This new field is a map of room IDs to notification
+count. The rooms with a notification count of zero are not to be included in this map.
 
 As such, an example of an event being pushed out could look as following:
 
@@ -35,11 +35,11 @@ As such, an example of an event being pushed out could look as following:
     },
     "counts": {
       "unread": 4,
-      "missed_calls": 1
-    },
-    "rooms": {
-      "!someroom:example.org": 3,
-      "!slw48wfj34rtnrf:example.com": 1,
+      "missed_calls": 1,
+      "rooms": {
+        "!someroom:example.org": 3,
+        "!slw48wfj34rtnrf:example.com": 1,
+      }
     },
     "devices": [
       {
@@ -63,11 +63,11 @@ And a badge count only update could look as following:
   "notification": {
     "counts": {
       "unread": 4,
-      "missed_calls": 1
-    },
-    "rooms": {
-      "!someroom:example.org": 3,
-      "!slw48wfj34rtnrf:example.com": 1,
+      "missed_calls": 1,
+      "rooms": {
+        "!someroom:example.org": 3,
+        "!slw48wfj34rtnrf:example.com": 1,
+      }
     },
     "devices": [
       {
