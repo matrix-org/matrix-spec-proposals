@@ -22,7 +22,7 @@ For solve this problem I propose to use [room's account_data](https://matrix.org
 }
 ```
 
-By default this item is absent. It is added only when user make the personal renaming of room, and removed if user remove personal name for room (or make it empty).
+By default this item is absent. It is added only when user make the personal renaming of room, and cleared if user remove the personal name for room (or make it empty).
 
 Regarding to spec, the account data can't be deleted, so if user wants to clean the personal name or "Reset to default", the value of the `m.room_name_personal` should become empty.
 
