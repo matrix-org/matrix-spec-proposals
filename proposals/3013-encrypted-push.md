@@ -49,9 +49,9 @@ Now, when the homeserver pushes out the message, it is to perform the `notificat
 http pusher, and then encrypt all of its contents, apart from the `devices` key, using the following
 algorithm:
 
-1. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral key and the backup's
-   public key to generate a shared secret. The public half of the ephemeral key, encoded using unpadded
-   base64, becomes the `ephemeral` property of the new payload.
+1. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral key and the public key
+   specified when setting the pusher to generate a shared secret. The public half of the ephemeral key,
+   encoded using unpadded base64, becomes the `ephemeral` property of the new payload.
 2. Using the shared secret, generate 80 bytes by performing an HKDF using SHA-256 as the hash, with
    a salt of 32 bytes of 0, and with the empty string as the info. The first 32 bytes are used as the
    AES key, the next 32 bytes are used as the MAC key, and the last 16 bytes are used as the AES
