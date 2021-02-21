@@ -407,49 +407,40 @@ UX friction of indirecting everything via matrix.to outweighs the benefits of
 the simpler URI-handling implementation, and makes matrix.to an unnecessary
 single point of failure for onboarding.)
 
+This section and the one below effectively supersedes
+[MSC2644](https://github.com/matrix-org/matrix-doc/pull/2644).
 
-##### Support for private federations and private networks
+##### Indicating that a link requires a given client or homeserver
 
-While the majority of known Matrix servers participate in the global Matrix
-network, we still need to support links to those which do not federate, or
-participate in private federations, or are not connected to the internet.  To
-support this, we can specify query parameters to the URI to force the use of a
-given client or homeserver for this link, even if a user has already
-registered a matrix URI handler.
+Ideally all links would work with all clients and all homeservers. However,
+it's possible that the link author might want to indicate that the link should
+be opened in a specific client or homeserver - e.g. if it requires
+experimental functionality only implemented on that client or server, or if
+the server has been somehow locked to require a specific client.
 
 * `force_client` specifies that a given client must be used to successfully
 follow this link.  If the user has no registered matrix URI handler, the
 behaviour is the same as `default_client` (but takes precedence over that
 parameter).  If the user has a matrix URI handler registered for a different
-client, then the registered client must instead route the user as if
+client, then the registered client should instead route the user as if
 onboarding for the first time, treating it like a `default_client` parameter.
-For instance, an organisation might run a Matrix federation on an air-gapped
-private network with private DNS of priv.example.com.  In this instance, they
-might link to URLs as
-`matrix:r/somewhere:internal.example.com?force_client=https://chat.internal.example.com`.
-This makes it clear that even if you have a different Matrix client already
-registered, it will not be able to follow the link unless you use the clients
-found at https://chat.priv.example.com (assuming you can route to that
-client).
 
 * `force_hs` specifies that users must use a given homeserver to successfully
 follow this link.  (This is not to be confused with the `via` parameter, which
 tells your *server* which server to use to join this link).  If the user has
 no registered matrix URI handler, the behaviour is the same as `default_hs`
 (but takes precedence over that parameter).  If the user has a matrix URI
-handler registered, then the registered client must route the user to use the
+handler registered, then the registered client should route the user to use the
 given homeserver - either by onboarding them to it via login/register (if the
 client has room to add a new account) or by redirecting them to matrix.to or
-the specified `force_client` or `default_client` destination.  For instance,
-`matrix:r/somewhere:unfederated.com?force_hs=unfederated.com` would be turned
-into
-`https://matrix.to/#/r/somewhere:unfederated.com?force_hs=unfederated.com` if
-you had no matrix URI handler registered, or if you did, your matrix client
-would attempt to login/register you with unfederated.com (if it was logged
-out, or if it supported multiaccount) - or failing that would open up
-`https://matrix.to/#/r/somewhere:unfederated.com?force_hs=unfederated.com` in
-a web browser to help you connect via a different client.
+the specified `force_client` or `default_client` destination.
 
+These parameters could also be used as a crass way to link to unfederated
+servers or those on private networks, but this is not recommended, given it
+breaks badly in the face of private federations (i.e. by specifying the use of
+a single required homeserver, users on other servers in the private federation
+will be incorrectly forced to use the specified one).  Handling private
+federations will be left for a separate MSC.
 
 ### Recommended implementation
 
@@ -539,6 +530,7 @@ performed on behalf (using the access token) of the user `@me:example.org`:
 | Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:r/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>API: Find the respective room in the local `/sync` cache or<br/>`GET /rooms/!rid:example.org/...`<br/> |
 | Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:r/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
 | Event:<br/>`matrix:r/us:example.org/e/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | Non-interactive operation: return event or event content, depending on context<br/>API: find the event in the local `/sync` cache or<br/>`GET /directory/room/%23us:example.org` (to resolve alias to id)<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org`<br/> |
+
 
 #### URI construction algorithm
 
