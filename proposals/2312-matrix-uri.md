@@ -356,6 +356,100 @@ Client authors are strongly encouraged to standardise custom query elements
 that gain adoption by submitting an MSC defining them in a way compatible
 across the client ecosystem.
 
+We define four other query parameters below which improve the ability to onboard
+new matrix users (`default_client` and `default_hs`) and support links to private
+servers (`force_client` and `force_hs`).
+
+##### Transparently onboarding new Matrix users
+
+New Matrix users following a matrix URI will typically expect to be onboarded
+to a specific branded client and/or server.  It is critical to minimise
+friction in doing so, in order to compete with the UX of traditional
+centralised apps. For instance, FOSDEM wants to onboard new users straight
+into https://chat.fosdem.org and default to using an account on the fosdem.org
+homeserver, via a single click.  To support this, we can specify query
+parameters to the URI to specify a default client and homeserver for new
+users:
+
+* `default_client` optionally specifies the client URI new users following this
+link should use to connect to Matrix, if there is not a registered matrix URI
+handler already.  To convert the matrix URL into the suggested default client
+URL, the caller should replace the matrix URI scheme prefix with the URL given
+by the `default_client` parameter, suffixed by `/#/` in order to express the
+routing data as a URL fragment and maximise privacy.  For instance, a
+matrix-URI aware browser with no registered matrix URI handler would convert
+`matrix:r/fosdem:fosdem.org?default_client=https://chat.fosdem.org` to
+`https://chat.fosdem.org/#/r/fosdem:fosdem.org`.  It's then up to that target
+webapp to springboard the user into the appropriate web/mobile/native app.  If
+no `default_client` parameter is specified, the value defaults to
+`https://matrix.to` (which will need to be separately modified to support the
+MSC2312 URI scheme).
+
+* `default_hs` optionally specifies the suggested server which new users
+following this link should use to connect to Matrix.  For instance, a link
+whose author doesn't care which client is used to connect, but recommends a
+specific homeserver might be:
+`matrix:r/general:mozilla.org?default_hs=mozilla.org`.  In the absence of any
+registered matrix URI handler, this would be converted to
+`https://matrix.to/#/r/general:mozilla.org?default_hs=mozilla.org` (as
+`default_client` defaults to `https://matrix.to`).  The springboard webapp
+(matrix.to in this instance) then has to pass the parameter through to the
+actual client for use in login/registration.
+
+Until the `matrix:` URI scheme is commonplace, we expect to see matrix.to URLs
+used primarily on the Web to onboard new users, perhaps with matrix: URIs
+alongside them for the convenience of existing Matrix users.  Within Matrix
+clients, we expect matrix: URIs to be the default.
+
+(One alternative considered was to always route via https://matrix.to if there
+is no registered matrix URL handler - however, on reflection, the additional
+UX friction of indirecting everything via matrix.to outweighs the benefits of
+the simpler URI-handling implementation, and makes matrix.to an unnecessary
+single point of failure for onboarding.)
+
+
+##### Support for private federations and private networks
+
+While the majority of known Matrix servers participate in the global Matrix
+network, we still need to support links to those which do not federate, or
+participate in private federations, or are not connected to the internet.  To
+support this, we can specify query parameters to the URI to force the use of a
+given client or homeserver for this link, even if a user has already
+registered a matrix URI handler.
+
+* `force_client` specifies that a given client must be used to successfully
+follow this link.  If the user has no registered matrix URI handler, the
+behaviour is the same as `default_client` (but takes precedence over that
+parameter).  If the user has a matrix URI handler registered for a different
+client, then the registered client must instead route the user as if
+onboarding for the first time, treating it like a `default_client` parameter.
+For instance, an organisation might run a Matrix federation on an air-gapped
+private network with private DNS of priv.example.com.  In this instance, they
+might link to URLs as
+`matrix:r/somewhere:internal.example.com?force_client=https://chat.internal.example.com`.
+This makes it clear that even if you have a different Matrix client already
+registered, it will not be able to follow the link unless you use the clients
+found at https://chat.priv.example.com (assuming you can route to that
+client).
+
+* `force_hs` specifies that users must use a given homeserver to successfully
+follow this link.  (This is not to be confused with the `via` parameter, which
+tells your *server* which server to use to join this link).  If the user has
+no registered matrix URI handler, the behaviour is the same as `default_hs`
+(but takes precedence over that parameter).  If the user has a matrix URI
+handler registered, then the registered client must route the user to use the
+given homeserver - either by onboarding them to it via login/register (if the
+client has room to add a new account) or by redirecting them to matrix.to or
+the specified `force_client` or `default_client` destination.  For instance,
+`matrix:r/somewhere:unfederated.com?force_hs=unfederated.com` would be turned
+into
+`https://matrix.to/#/r/somewhere:unfederated.com?force_hs=unfederated.com` if
+you had no matrix URI handler registered, or if you did, your matrix client
+would attempt to login/register you with unfederated.com (if it was logged
+out, or if it supported multiaccount) - or failing that would open up
+`https://matrix.to/#/r/somewhere:unfederated.com?force_hs=unfederated.com` in
+a web browser to help you connect via a different client.
+
 
 ### Recommended implementation
 
@@ -445,7 +539,6 @@ performed on behalf (using the access token) of the user `@me:example.org`:
 | Room (no `action` in URI):<br/>`matrix:roomid/rid:example.org`<br/>`matrix:r/us:example.org` | Attempt to "open" (usually: display the timeline at the latest or last remembered position) the room | No default non-interactive operation<br/>API: Find the respective room in the local `/sync` cache or<br/>`GET /rooms/!rid:example.org/...`<br/> |
 | Room (`action=join`):<br/>`matrix:roomid/rid:example.org?action=join&via=example2.org`<br/>`matrix:r/us:example.org?action=join` | Attempt to join the room | `POST /join/!rid:example.org?server_name=example2.org`<br/>`POST /join/#us:example.org` |
 | Event:<br/>`matrix:r/us:example.org/e/lol823y4bcp3qo4`<br/>`matrix:roomid/rid:example.org/event/lol823y4bcp3qo4?via=example2.org` | 1. For room aliases, resolve an alias to a room id (HOW?)<br/>2. Attempt to retrieve (see the next column) and display the event;<br/>3. If the event could not be retrieved due to access denial and the current user is not a member of the room, the client MAY offer the user to join the room and try to open the event again | Non-interactive operation: return event or event content, depending on context<br/>API: find the event in the local `/sync` cache or<br/>`GET /directory/room/%23us:example.org` (to resolve alias to id)<br/>`GET /rooms/!rid:example.org/event/lol823y4bcp3qo4?server_name=example2.org`<br/> |
-
 
 #### URI construction algorithm
 
