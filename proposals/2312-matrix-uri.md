@@ -440,7 +440,7 @@ servers or those on private networks, but this is not recommended, given it
 breaks badly in the face of private federations (i.e. by specifying the use of
 a single required homeserver, users on other servers in the private federation
 will be incorrectly forced to use the specified one).  Handling private
-federations will be left for a separate MSC.
+federations will be left for [MSC3020](https://github.com/matrix-org/matrix-doc/pull/3020)
 
 ### Recommended implementation
 
