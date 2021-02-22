@@ -42,3 +42,6 @@ checks via the capabilities API if its current server is part of the specified
 network. If it isn't, then the client should handle the matrix URI as if
 onboarding the user for the first time as described in MSC2312 - i.e.
 redirecting them to the `default_client` (or matrix.to, if none is specified).
+
+For instance `matrix:u/matthew:somewhere.tchap.gouv.fr?network=fr.gouv.tchap&default_hs=public.tchap.gouv.fr&default_client=https://www.tchap.gouv.fr`
+would be the right shape of uri to link into Tchap.
