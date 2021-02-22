@@ -357,8 +357,8 @@ that gain adoption by submitting an MSC defining them in a way compatible
 across the client ecosystem.
 
 We define four other query parameters below which improve the ability to onboard
-new matrix users (`default_client` and `default_hs`) and support links to private
-servers (`force_client` and `force_hs`).
+new matrix users (`default_client` and `default_hs`) and let link authors
+specify a mandated client or server (`force_client` and `force_hs`).
 
 ##### Transparently onboarding new Matrix users
 
