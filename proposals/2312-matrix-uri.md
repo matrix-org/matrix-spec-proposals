@@ -442,6 +442,10 @@ a single required homeserver, users on other servers in the private federation
 will be incorrectly forced to use the specified one).  Handling private
 federations will be left for [MSC3020](https://github.com/matrix-org/matrix-doc/pull/3020)
 
+We deliberately don't use the `authority` section of the URI for this given
+the potential ambiguity, whereas assigning it to a query param makes it much
+clearer and avoids it inappropriately dominating the URI.
+
 ### Recommended implementation
 
 #### URI parsing algorithm
