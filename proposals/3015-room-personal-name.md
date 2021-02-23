@@ -37,10 +37,13 @@ name in content with `room_name_personal` type:
 ```
 
 By default this item is absent. It is added only when user make the personal renaming of room, and cleared if user
-remove the personal name for room (or make it empty).
+remove the personal name for room (or make it empty). 
 
 Regarding to spec, the account data's key can't be deleted, so if user wants to clean the personal name or "Reset to
 default", the value of the `m.room_name_personal` key should become empty (`{}`).
+
+It can be used for all types of rooms: DMs (to rename personal contacts), public rooms (to set desired personal name, eg in user's
+native language), Spaces, etc.
 
 # Client support
 
@@ -69,21 +72,20 @@ This MSC does not need any changes on server side.
 
 # Potential issues
 
-1. Users can set personal name for room identical as global name of room - this will give little negative effect: all
-   further global room name changes will not change room name in client list. This can be solved via clearly describe
-   the difference between global room name and personal name, and some warning that those names are identical with
-   ability to remove personal name.
+1. User can set a personal name that is identical to the current global room name. This may cause confusion as the client
+   will not see future global name changes. Clients should consider providing the user a suggestion to remove personal
+   override of room name to follow future renames of room. And for other renames - explanation that personal name will not 
+   follow the future changing of global room name.
 
 # Alternatives
 
-1. Instead of setting personal name for rooms via [room's
-   account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type)
+1. Instead of setting personal name for rooms via
+   [room's account_data](https://matrix.org/docs/spec/client_server/r0.6.0#put-matrix-client-r0-user-userid-rooms-roomid-account-data-type)
    we can set personal names directly for Matrix users (mxid), like other messengers (Telegram, WhatsApp, etc) doing.
    This will give similar behavior for DM rooms, but will make impossible to set personal names of rooms with several
    users (or DM rooms with bots), and intersects with per-room display names feature. And this way will be better to
    implement together with "[Contacts](https://github.com/vector-im/roadmap/issues/10)" feature, which is planned in
-   Element, also her is issue about this: [Contact List & Renaming
-   Contacts](https://github.com/matrix-org/matrix-doc/issues/2936).
+   Element and in issue [Contact List & Renaming Contacts](https://github.com/matrix-org/matrix-doc/issues/2936).
 
 2. This feature can be extended via storing personal avatar for room to, but, as I think, for multi-user rooms this is
    unnecessary, and for DM rooms will be better to implement personal avatars together with "Contacts" feature,
