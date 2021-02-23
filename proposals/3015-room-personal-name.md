@@ -53,7 +53,7 @@ seen only for current user.
 
 ## Adding, removing, renaming:
 
-Clients should provide the way to privately rename room and clearly explain the difference between global room name and
+Clients should provide a way to privately rename a room and clearly explain the difference between global room name and
 personal name.
 
 In room list this can be implemented via "Rename room personally" or "Set personal name for room" menu item in
