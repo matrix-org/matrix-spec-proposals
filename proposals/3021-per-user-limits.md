@@ -3,7 +3,7 @@
 Not all servers are as lucky as matrix.org to have variable scaling,
 hence some of them will need to place fanout limits on users and rooms,
 such as how many rooms a user is allowed to be member of, how many members can
-a room simultaneously have, how may child rooms can a space room is allowed
+a room simultaneously have, how may child rooms a space room is allowed
 to have, or how many sessions a user is allowed to have simultaneously open.
 This MSC deals with the easiest part, per-user fanout limits.
 
@@ -11,7 +11,7 @@ This MSC deals with the easiest part, per-user fanout limits.
 
 To modify the limit of a particular user:
 ```
-PUT /_matrix/client/r0/admin/limits/user_id HTTP/1.1
+PUT /_matrix/client/r0/admin/limits/{user_id} HTTP/1.1
 {
    "type": "m.limits.fanout.user_rooms",
    "value": infinity
@@ -47,4 +47,3 @@ starting from the last joined one. If such a kick cannot be implemented
 due to end-to-end encryption, then the server will ignore the room membership
 FOR THAT USER ONLY, i.e. shall not deliver the events from that room to
 the said user.
-
