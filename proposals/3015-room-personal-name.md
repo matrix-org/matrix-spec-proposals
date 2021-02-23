@@ -9,7 +9,7 @@ Examples of problem:
    alternative name of that DM room (eg `Korepov Alexey` instead of `Alexey Murz Korepov`) - this works well on their
    side. But, as result on my side, I see that room in my rooms list with my name, instead of remote user name.
 
-2. The user have two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result he see
+2. The user has two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result they see
    two identical rooms in list with same name and can understand which Alice is where only via reading recent messages.
    And he can solve this problem via renaming rooms, that give the result from item 1, descibed above.
 
