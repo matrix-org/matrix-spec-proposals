@@ -34,6 +34,12 @@ If, a server-wide limit is defined but a user specific limit is not,
 the user specific limit shall be returned as if it were the same. In case
 both limits exist, the smaller limit for a given user shall apply.
 
+For now, two such limits are proposed:
+
+* Per-user room limit: `m.limits.fanout.user_rooms`
+** Per-user room-as-type limit: `m.limits.fanout.user_rooms.{room_type}`
+* Per-user device limit: `m.limits.fanout.open_sessions`
+
 ## The per-user room limit semantics
 
 A user shall not be allowed to join more rooms once it joins as many rooms as 
@@ -43,7 +49,17 @@ rooms user has joined drops below the limit, joins will be processed as usual.
 
 If a user has more room than it is allowed to be joined when the limit is put
 in place, it is to be auto-kicked from the excess rooms by the server
-starting from the last joined one. If such a kick cannot be implemented
-due to end-to-end encryption, then the server will ignore the room membership
-FOR THAT USER ONLY, i.e. shall not deliver the events from that room to
-the said user.
+starting from the last joined one. If a limit for a particular type of room
+exists, that limit shall only be considered for that type of room. For example,
+`m.limits.fanout.user_rooms.space` will only affect space rooms and not bare
+rooms. If the limit for a subtype of room is greater than the general room limit
+per user, the subtype limit will be ignored.
+
+## The per-user session limit semantics
+
+A user shall not be allowed to create new sessions once the number of open
+sessions reaches the limit. As soon as the number of open sessions drops below
+the limit, logins will be processed as usual. If a user has more open sessions
+than it is allowed to be open when the limit is put in place, it is to be
+logged out from the excess sessions by the server starting from the least
+recently active session according to the last log-out time of said sessions.
