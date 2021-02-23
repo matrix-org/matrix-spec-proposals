@@ -37,7 +37,7 @@ both limits exist, the smaller limit for a given user shall apply.
 For now, two such limits are proposed:
 
 * Per-user room limit: `m.limits.fanout.user_rooms`
-** Per-user room-as-type limit: `m.limits.fanout.user_rooms.{room_type}`
+* * Per-user room-as-type limit: `m.limits.fanout.user_rooms.{room_type}`
 * Per-user device limit: `m.limits.fanout.open_sessions`
 
 ## The per-user room limit semantics
