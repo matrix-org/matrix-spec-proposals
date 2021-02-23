@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: Spec idea
 about: Suggest a future MSC idea.
 title: ''
 labels: 'improvement'
