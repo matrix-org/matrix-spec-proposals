@@ -46,7 +46,7 @@ default", the value of the `m.room_name_personal` key should become empty (`{}`)
 
 ## Displaying:
 
-When client displays the room in list, it should lookup the `m.room_name_personal` key, if it exists and have not empty
+When client displays the room in list, it should lookup the `m.room_name_personal` key, if it exists and has a `room_name_personal`
 value - use it's value for display name in room list instead of global room name. In room page header (over timeline)
 clients may show both names (global and personal) with explaining that this room have alternative personal name, that is
 seen only for current user.
