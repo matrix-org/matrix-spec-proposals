@@ -10,7 +10,7 @@ Examples of problem:
    side. But, as result on my side, I see that room in my rooms list with my name, instead of remote user name.
 
 2. The user has two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result they see
-   two identical rooms in list with same name and can understand which Alice is where only via reading recent messages.
+   two identical rooms in the list with same name and it is unclear which room is which.
    And he can solve this problem via renaming rooms, that give the result from item 1, descibed above.
 
 3. This problem often happens for rooms from bridged networks, when we talk with same person via different networks, and
