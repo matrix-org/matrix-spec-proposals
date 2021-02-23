@@ -5,7 +5,7 @@ name is shared thing, so if they rename it for yourself, all other members will 
 
 Examples of problem: 
 
-1. Very often other people want to rename DM rooms with me and can do this, because we both are admins. So he set the
+1. Very often other people want to rename DM rooms with me and can do this, because we both are admins. So they set the
    alternative name of that DM room (eg `Korepov Alexey` instead of `Alexey Murz Korepov`) - this works well on his
    side. But, as result on my side, I see that room in my rooms list with my name, instead of remote user name.
 
