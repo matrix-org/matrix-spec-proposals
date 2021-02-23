@@ -11,7 +11,7 @@ Examples of problem:
 
 2. The user has two DM rooms with different Matrix users, but both have name "Alice" without avatar. As result they see
    two identical rooms in the list with same name and it is unclear which room is which.
-   And he can solve this problem via renaming rooms, that give the result from item 1, descibed above.
+   If attempting to solve this problem via renaming rooms, the problem described in 1 occurs.
 
 3. This problem often happens for rooms from bridged networks, when we talk with same person via different networks, and
    want to mark each room personally. This can be solved via adding suffixes with remote network name to room name on
