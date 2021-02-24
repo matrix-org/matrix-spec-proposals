@@ -5,9 +5,6 @@ In other messaging apps, there is also a special type for voice memos,
 since they carry a different meaning and inflict different behaviour.
 This MSC calls for the introduction of an `m.voice` message type.
 
-
-## Proposal
-
 Even if it's not the primary mode of communication for nerds,
 voice memos are very important to a lot of users of modern instant messaging services.
 In order to provide awesome voice messages, they need to be treated differently from generic audio files.
@@ -18,22 +15,28 @@ they should be available to consume as early as possible.
 This lets the recipient know at a glance that they are being expected
 to listen to the voice messages now, instead of later.
 
-Matrix voice messages should reinforce the authenticity, originality
+The presentation of voice messages should reinforce the authenticity
 and potential urgency of the audio content.
 
-So, I propose to introduce a new message type `m.voice` with the same
-contents as `m.audio`, but to be handled slightly differently.
+## Proposal
+
+I propose to introduce a new message type `m.voice` with the same
+contents as `m.audio`.
+Voice messages MUST be OGG files, Opus encoded. Other files can be 
+sent as `m.audio`or `m.file`.
 
 ### Related links:
 - [A long-standing issue on Riot Web that calls for voice messages
 ](https://github.com/vector-im/riot-web/issues/1358)
 - [An earlier proposal to send m.typing-like status codes when recording
 ](https://github.com/matrix-org/matrix-doc/pull/310)
+- [Telegram API for voice messages
+](https://core.telegram.org/bots/api#sendvoice)
 
 ## Potential issues
 
-Introducing a new message type means that client developers will have to do work to implement it,
-or many people won't be able to use the feature.
+Introducing a new message type means that client developers will have to
+do work to implement it, or their users won't be able to use the feature.
 
 ## Alternatives
 
@@ -44,6 +47,9 @@ This alternative version (extending the m.audio message type) has the benefit
 that it comes with backwards compatibility for free. However, we should keep
 types as simple as possible.
 
+There is also #1767 (display hints) which tackles the same issue more generally,
+but it is not ready, and voice messages should come first.
+
 ## Security considerations
 
 @uhoreg offers:
@@ -53,3 +59,8 @@ could cause malicious content to be automatically downloaded)
 
 This could be solved by having clients handle auto-download responsibly,
 e.g. only auto-download voice messages from trusted contacts.
+
+## Unstable prefix
+
+While this MSC is not considered a stable part of the specification,
+implementations should use `org.matrix.msc2516.voice` in place of `m.voice`.
