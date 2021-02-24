@@ -9,7 +9,7 @@ This proposal implements the reserved "knock" membership type for the
 knocks on a room, they are asking for permission to join. Like all membership
 events, it contains an optional "reason" parameter to specify the reason you
 want to join. Like other membership types, the parameters "displayname" and
-"avatar_url" are optional. This membership can be set from users who aren't
+"avatar_url" are optional. This membership can be sent by users who aren't
 currently in said room. An example for the membership would look like the
 following:
 ```json
@@ -26,7 +26,8 @@ can decide to reject it instead.
 
 ## Restrictions
 There are restrictions to being able to set this membership, as well as
-accepting or denying the knock.
+accepting or denying the knock.  A formal description of the changes to the auth rules is given below; 
+first we summarise the semantics of the proposed changes.
 
 ### Current membership
 Only users without a current membership or with their current membership
@@ -42,29 +43,28 @@ knocks, a join rule of "knock" is functionally equivalent to that of
 "invite", except that it additionally allows external users to change their
 membership to "knock" under certain conditions.
 
-As the join rules are modified, the auth rules are as well. The [current auth
-rules](https://matrix.org/docs/spec/rooms/v6#authorization-rules-for-events) are defined
-by each room version. To change these rules, the implementation of this
-proposal must be done in a new room version. The explicit changes to the auth
-rules from room version 5 are:
 
-* Under "5. If type is `m.room.member`", the following will be added:
+### Auth rules
+
+Each room version defines the auth rules which should be applied in that room version.
+This MSC proposes a new room version with the following changes to the [auth
+rules from room version 6](https://matrix.org/docs/spec/rooms/v6#authorization-rules-for-events):
+
+* Under "5. If type is `m.room.member`", insert the following after "e. If membership is `ban`":
 
   ```
-  a. If `membership` is `knock`:
+  f. If `membership` is `knock`:
     i. If the `join_rule` is anything other than `knock`, reject.
     ii. If `sender` does not match `state_key`, reject.
     iii. If the `sender`'s membership is not `ban`, `knock`, `invite` or `join`, allow.
     iv. Otherwise, reject.
   ```
 
-  Note that:
-    - The `sender` field in the event is set to the user ID of the knocking
-      user, not any other user in the room that belongs to a homeserver that
-      the knocking user is using to inject into the room DAG. This is separate
-      from an invite membership event, where the `sender` is the inviter and
+Note that:
+    - Both the `sender` and `state_key` fields are set to the user ID of the knocking
+      user. This is different to an `invite` membership event, where the `sender` is the inviter and
       the `state_key` is the invitee.
-    - a.ii is justified as one user should not be able to knock on behalf of
+    - f.ii is justified as one user should not be able to knock on behalf of
       another user.
     - a.iii is justified as knocks should not be allowed if the knocking user
       has been banned from the room, has already knocked on the room, is
@@ -95,7 +95,7 @@ Let's talk about each one of these in more detail.
 The knock has been accepted by someone in the room.
 
 The user who is accepting the knock must have the power level to perform
-invites. The user's homeserver will then send an invite - over federation if
+invites. The accepting user's homeserver will then send an invite - over federation if
 necessary - to the knocking user. The knocking user may then join the room as
 if they had been invited normally.
 
@@ -146,7 +146,7 @@ validate the `prev_events` and `auth_events` that the event references. We
 could send those events over as well, but those will also reference other
 events that require validation and so on.
 
-A dumb thing we could easily do here is to trust the leave event implicitly
+A simple thing we could easily do here is to trust the leave event implicitly
 if it is sent by the homeserver we originally knocked through. We know this
 homeserver is (or at least was) in the room, so they're probably telling the
 truth. This is almost an edge case though, as while you'll knock through one
