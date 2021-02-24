@@ -683,7 +683,7 @@
         "translated_descriptions": {
             "bg": "Царевица",
             "ca": "Blat de moro",
-            "de": "Korn",
+            "de": "Mais",
             "eo": "Maizo",
             "es": "Maíz",
             "et": "Mais",
@@ -787,7 +787,7 @@
         "translated_descriptions": {
             "bg": "Усмивка",
             "ca": "Somrient",
-            "de": "Smiley",
+            "de": "Lächeln",
             "eo": "Rideto",
             "es": "Emoticono",
             "et": "Smaili",
@@ -917,7 +917,7 @@
         "translated_descriptions": {
             "bg": "Дядо Коледа",
             "ca": "Pare Noél",
-            "de": "Nikolaus",
+            "de": "Weihnachtsmann",
             "eo": "Kristnaska viro",
             "es": null,
             "et": "Jõuluvana",
@@ -1021,7 +1021,7 @@
         "translated_descriptions": {
             "bg": "Часовник",
             "ca": "Rellotge",
-            "de": "Wecker",
+            "de": "Uhr",
             "eo": "Horloĝo",
             "es": "Reloj",
             "et": "Kell",
@@ -1437,7 +1437,7 @@
         "translated_descriptions": {
             "bg": "Трофей",
             "ca": "Trofeu",
-            "de": "Trophäe",
+            "de": "Pokal",
             "eo": "Trofeo",
             "es": null,
             "et": "Auhind",
