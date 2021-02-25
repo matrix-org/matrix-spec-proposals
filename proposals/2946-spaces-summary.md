@@ -257,3 +257,12 @@ Receiving server behaviour:
  - Servers are authorised to see node/edge information if they are either joined to the room or the room is `world_readable`.
    A well-behaved server will not send requests for rooms they are already joined to, so they should only be shown `world_readable`
    rooms.
+   
+  ### Unstable Prefix
+  
+  The following mapping will be used for identifiers in this MSC during development:
+  
+  Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`/_matrix/client/r0/rooms/{roomID}/spaces` | CS API Path | `/_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces`
+`/_matrix/federation/v1/spaces/{roomID}` | SS API Path | `/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
