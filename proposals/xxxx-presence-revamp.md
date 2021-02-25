@@ -6,7 +6,7 @@ on how we might improve the presence system and integrate it with
 profiles-as-rooms (MSC1769).
 
 `PUT /_matrix/client/r0/presence/{userId}/status`
-===============================================
+=================================================
 `status_msg` becomes deprecated. In it's place there's a new state event in the
 user's MSC1769 profile room, `m.status`. It's not a field in the `m.profile`
 object because it's intended to be updated fairly frequently and we don't need
@@ -47,6 +47,10 @@ Question: How would we restrict the set of people allowed to see presence
    info (ie. assuming we allow a wider set of people to see the user's profile)
 Question: What happens if a user send an `m.presence`event to their profile room?
           Should they be allowed to?
+
+`GET /_matrix/client/r0/presence/{userId}/status`
+=================================================
+Also goes away.
 
 Presence for the smartphone generation
 ======================================
