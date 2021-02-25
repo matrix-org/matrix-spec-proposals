@@ -1,4 +1,4 @@
-MSCXXXX: Thoughts on updating presence
+MSC3032: Thoughts on updating presence
 ======================================
 
 This is deliberately a loose-form, draft MSC to note down my current thoughts
