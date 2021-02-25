@@ -6,7 +6,7 @@ and incorporating the following MSCs:
 * [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403) - Add "knock" feature.
 
 Though other MSCs are capable of being included in this version, they do not have sufficient implementation to be
-considered stable enough for v7 rooms. A future room version may still include them.
+considered for v7 rooms. A future room version may still include them.
 
 Room version 7 upon being added to the specification shall be considered stable. No other room versions are affected
 by this MSC. Before v7 can enter the specification, MSC2403 needs sufficient review to be eligible to enter the spec
