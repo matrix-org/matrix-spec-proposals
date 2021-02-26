@@ -3,7 +3,7 @@
 File transfer in matrix currently works by uploading a file to the server, which is then distributed over
 the participating servers in the room, and is available through an HTTP get request to everyone who knows
 the URL. By nescesity this has a maximum filesize and also results in a more or less permanent availablity
-of said file. For larger files, and/or files that should only be sent point to point it may be desirable
+of said file. For larger files, and/or files that should only be sent from point-to-point, it may be desirable
 to be able to send from device to device. As matrix already implements
 [WebRTC signalling for voip](https://matrix.org/docs/spec/client_server/r0.6.0#voice-over-ip), this 
 functionality can be replicated for streaming file transfers from device to device. It can even be possible
