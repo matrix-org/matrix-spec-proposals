@@ -27,7 +27,7 @@ by being explicitly for automatic updates from clients, eg.:
 The homeserver can then combine the multiple sources of presence information from
 the clients and the user-set value to determine an effective presence for the user.
 This is a black-box as far as the spec is concerned, but semantics will be along
-the lines of 'if any status is busy, the user is busy`.
+the lines of 'if any status is busy, the user is busy'.
 
 Question: if a user sets themselves 'busy', what status do they set when they're
 free again? 'online'?
