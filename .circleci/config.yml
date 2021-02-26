@@ -1,8 +1,16 @@
-gendoc: &gendoc
-  name: Generate the docs
+genlegacydoc: &genlegacydoc
+  name: Generate the legacy docs
   command: |
     source /env/bin/activate
     scripts/gendoc.py
+
+gendoc: &gendoc
+  name: Generate the docs
+  # Note: Node dependencies are required for the hugo build.
+  command: |
+    apk add nodejs npm git hugo
+    npm i
+    hugo --baseURL "/${CIRCLE_NODE_INDEX}/public"
 
 genswagger: &genswagger
   name: Validate sources and generate swagger json
@@ -70,17 +78,32 @@ jobs:
       - checkout
       - run: *checkexamples
       - run: *genmatrixassets # We don't actually use the assets, but we do want to make sure they build
-  build-docs:
+  build-legacy-docs:
     docker:
       - image: uhoreg/matrix-doc-build
     steps:
       - checkout
-      - run: *gendoc
+      - run: *genlegacydoc
       - store_artifacts:
           path: scripts/gen
       - run:
-          name: "Doc build is available at:"
+          name: "Legacy doc build is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/gen/index.html"; echo $DOCS_URL
+  build-docs:
+    docker:
+      - image: alpine
+    steps:
+      # Note: We install git in the image so we can pull git submodules. The hugo theme in use
+      # is a git submodule, which has its own submodules, and all need to be loaded.
+      - run: apk add git
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: *gendoc
+      - store_artifacts:
+          path: public
+      - run:
+          name: "Doc build is available at:"
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/public/index.html"; echo $DOCS_URL
   build-swagger:
     docker:
       - image: uhoreg/matrix-doc-build
@@ -111,6 +134,7 @@ workflows:
 
   build-spec:
     jobs:
+      - build-legacy-docs
       - build-docs
       - build-swagger
       - check-docs

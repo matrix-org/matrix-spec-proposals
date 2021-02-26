@@ -14,7 +14,7 @@ then
     ./scripts/proposals.py
 fi
 
-# generate the spec docs
+# generate the legacy spec docs
 ./scripts/gendoc.py -d assets/spec
 
 # and the swagger
