@@ -13,7 +13,7 @@ Messages with multiple attachments now already implemented in many messengers, f
 
 ## Proposal
 
-### Option one (primary)
+### Option one "Best fallback"
 
 For solve described problem, I propose to add `m.attachment` relation type to current events, that will point to other media events in room, which must be shown as attachment to current event, and `is_attachment: true` marker field to all media, that was send to be an attachment for some message.
 
@@ -83,7 +83,7 @@ For delete (redact action) message with attachments, we must also apply `redact`
 
 I see no serious problems with fallback display of attachments. For Matrix clients, that don't yet support this feature, the attachments will be represented as separate media events, like the user upload each attachment separately, before sending main message.
 
-### Option two (secondary)
+### Option two "Best implementation"
 
 As lite alternative to option one, we can send only one event with direct links to all attached media, instead of sending separate event for each attachment, because it will give less "spam" for room. Eg when user is sending message with 20 attachments - it will send only one event to room, instead of 21 like in option one implementation. But the main problem with this option is *fallback*.
 
