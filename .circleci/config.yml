@@ -7,10 +7,13 @@ genlegacydoc: &genlegacydoc
 gendoc: &gendoc
   name: Generate the docs
   # Note: Node dependencies are required for the hugo build.
+  # Note: We use a custom config file for circleci due to some specifics with hosting the
+  #       site using CircleCI's artifacts platform. See config-circleci.toml for details.
   command: |
     apk add nodejs npm git hugo
     npm i
-    hugo --baseURL "/${CIRCLE_NODE_INDEX}/public"
+    cat config-circleci.toml config.toml > hugo-config.toml
+    hugo --config hugo-config.toml --baseURL "/${CIRCLE_NODE_INDEX}/public"
 
 genswagger: &genswagger
   name: Validate sources and generate swagger json
