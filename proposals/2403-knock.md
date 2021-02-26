@@ -56,7 +56,7 @@ rules from room version 6](https://matrix.org/docs/spec/rooms/v6#authorization-r
   f. If `membership` is `knock`:
     i. If the `join_rule` is anything other than `knock`, reject.
     ii. If `sender` does not match `state_key`, reject.
-    iii. If the `sender`'s membership is not `ban`, `knock`, `invite` or `join`, allow.
+    iii. If the `sender`'s membership is not `ban`, `invite` or `join`, allow.
     iv. Otherwise, reject.
   ```
 
@@ -66,9 +66,9 @@ Note that:
       the `state_key` is the invitee.
     - f.ii is justified as one user should not be able to knock on behalf of
       another user.
-    - a.iii is justified as knocks should not be allowed if the knocking user
-      has been banned from the room, has already knocked on the room, is
-      invited to the room or if they are already in the room.
+    - f.iii is justified as knocks should not be allowed if the knocking user
+      has been banned from the room, is invited to the room or if they are already
+      in the room.
     - Knocks are not restricted by power level like invites are. The `join_rules`
       are already used to enforce whether someone can or cannot knock. However,
       power level rules do apply when approving or denying the knock, as discussed
