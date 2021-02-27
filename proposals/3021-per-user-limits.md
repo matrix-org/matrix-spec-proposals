@@ -14,7 +14,7 @@ To modify the limit of a particular user:
 PUT /_matrix/client/r0/admin/limits/{user_id} HTTP/1.1
 {
    "type": "m.limits.fanout.user_rooms",
-   "value": infinity
+   "value": 123456789
 }
 ```
 
@@ -23,9 +23,10 @@ To modify the limits of all users:
 PUT /_matrix/client/r0/admin/limits/ HTTP/1.1
 {
    "type": "m.limits.fanout.user_rooms",
-   "value": infinity
+   "value": 123456789
 }
 ```
+If `value` is not defined, then said limit is not defined.
 
 The query will be made to the same paths, using the GET method instead.
 And to delete the limit for the particular user, use the DELETE method
