@@ -30,12 +30,6 @@ checkexamples: &checkexamples
     source /env/bin/activate
     scripts/check-event-schema-examples.py
 
-genmatrixassets: &genmatrixassets
-  name: Generate/Verify matrix.org assets
-  command: |
-    source /env/bin/activate
-    ./scripts/generate-matrix-org-assets
-
 validateapi: &validateapi
   name: Validate OpenAPI specifications
   command: |
@@ -69,7 +63,6 @@ jobs:
     steps:
       - checkout
       - run: *checkexamples
-      - run: *genmatrixassets # We don't actually use the assets, but we do want to make sure they build
   build-docs:
     docker:
       - image: uhoreg/matrix-doc-build
