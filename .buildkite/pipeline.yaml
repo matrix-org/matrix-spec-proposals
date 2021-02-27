@@ -1,14 +1,16 @@
 steps:
   - label: ":books: Build spec"
     command:
-      - python3 -m venv env
-      - env/bin/pip install -r scripts/requirements.txt
-      - ". env/bin/activate; scripts/generate-matrix-org-assets"
+      # Install the python dependencies necessary to build the spec
+      - python3 -m venv env && . env/bin/activate
+      - pip install -r scripts/requirements.txt
+      # Build the spec
+      - scripts/generate-matrix-org-assets
     artifact_paths:
       - assets.tar.gz
     plugins:
-      - docker#v3.0.1:
-          image: "python:3.6"
+      - docker#v3.7.0:
+          image: python:3.9
 
   - label: "rebuild matrix.org"
     trigger: "matrix-dot-org"
