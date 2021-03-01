@@ -28,7 +28,8 @@ steps:
       # Pull current proposal information
       - npm run get-proposals
       # Build the spec, will build to './spec'
-      - hugo -d "spec"
+      # Set the baseURL as we're deploying to https://spec.matrix.org/unstable
+      - hugo --baseURL "/unstable" -d "spec"
       # Compress the result and make it available as an artifact
       - tar -czf spec.tar.gz spec
     artifact_paths:
