@@ -11,7 +11,7 @@ mkdir -p assets
 # generate specification/proposals.rst
 ./scripts/proposals.py
 
-# generate the spec docs
+# generate the legacy spec docs
 ./scripts/gendoc.py -d assets/spec
 
 # and the swagger
