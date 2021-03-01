@@ -110,6 +110,10 @@ For the case of backwards compatibility the existing endpoint is to remain,
 and if the server supports multiple SSO IdPs it should offer the user a page
 which lets them choose between the available IdP options as a fallback.
 
+If the `idp_id` is unrecognised, the server should display some sort of error
+page to the user. (A protocol whereby an error can be returned to the original
+client could be a matter for a future improvement, but is out of scope for now.)
+
 ### Notes on user-interactive auth
 
 For the case of User Interactive Auth the server would just give the standard
@@ -128,6 +132,12 @@ fallback page which fills the gap and lets the user choose which SSO IdP they ne
 for the server to deterministically always pick one, maybe the first option and let
 old clients only auth via that one but that means potentially locking users out of their
 accounts.
+
+[MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) proposes
+replacing much of Matrix's authentication mechanism with OAuth2.0. If that is
+adopted, then the Matrix client would not be able to specify an authentication
+mechanism; rather it is left up to the server to host pages allowing the user
+to choose their authentication mechanism.
 
 ### Styling information as an alternative to `brand`
 
