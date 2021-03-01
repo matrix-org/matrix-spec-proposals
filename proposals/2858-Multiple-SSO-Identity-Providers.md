@@ -10,7 +10,7 @@ pass their user to the configured Identity provider and for them to come back wi
 is exchangeable for a Matrix access token. This flow offers no insight to the user as to what
 Identity providers are available: clients can offer only a very generic `Sign in with SSO`
 button. With the currently possible solutions and workarounds the experience is far from great
-and user's have to blindly click `Sign in with SSO` without any clue as to what's hiding on the other
+and users have to blindly click `Sign in with SSO` without any clue as to what's hiding on the other
 side of the door. Some users will definitely not be familiar with `SSO` but will be with the concept of
 "Continue with Google" or similar.
 
