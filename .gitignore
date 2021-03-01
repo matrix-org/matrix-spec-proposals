@@ -11,6 +11,8 @@
 /scripts/swagger
 /scripts/tmp
 /templating/out
+/hugo-config.toml
+/public
 *.pyc
 *.swp
 _rendered.rst
