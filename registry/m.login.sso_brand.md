@@ -21,22 +21,32 @@ that way!
 -->
 
  * Identifier: `com.apple`
+ 
    Description: "Sign in with Apple". See
    https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple/overview/buttons/.
+   
  * Identifier: `com.facebook`
+ 
    Description: "Continue with Facebook". See
    https://developers.facebook.com/docs/facebook-login/web/login-button/.
+   
  * Identifier: `com.github`
+ 
    Description: Logos available at https://github.com/logos.
- * Identifier: `com.gitlab`:
+   
+ * Identifier: `com.gitlab`
+
    Description: Login in via the hosted https:/gitlab.com SaaS platform.
- * Identifier: `com.google`:
+ 
+ * Identifier: `com.google`
+
    Description: "Sign in with Google". See
    https://developers.google.com/identity/branding-guidelines.
+   
  * Identifier: `com.twitter`
+   
    Description: "Log in with Twitter". See
    https://developer.twitter.com/en/docs/authentication/guides/log-in-with-twitter#tab1.
-
 
 
 ## Requesting updates to the list
