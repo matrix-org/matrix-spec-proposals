@@ -180,9 +180,10 @@ When identity providers are listed under the experimental
 `org.matrix.msc2858.identity_providers` field of the response to `/login`,
 (instead of `identity_providers`), different values for the `brand` field are
 used. In particular the following were defined:
-    * `org.matrix.gitlab` (now `com.gitlab`).
-    * `org.matrix.github` (now `com.github`).
-    * `org.matrix.apple` (now `com.apple`).
-    * `org.matrix.google` (now `com.google`).
-    * `org.matrix.facebook` (now `com.facebook`).
-    * `org.matrix.twitter` (now `com.twitter`).
+
+  * `org.matrix.gitlab` (now `com.gitlab`).
+  * `org.matrix.github` (now `com.github`).
+  * `org.matrix.apple` (now `com.apple`).
+  * `org.matrix.google` (now `com.google`).
+  * `org.matrix.facebook` (now `com.facebook`).
+  * `org.matrix.twitter` (now `com.twitter`).
