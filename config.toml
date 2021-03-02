@@ -1,6 +1,10 @@
 baseURL = "/"
 title = "Matrix Specification"
 
+# Prepends absolute URLs with the baseURL. Useful when hosting on non-root
+# paths, such as /unstable.
+canonifyURLs = true
+
 enableRobotsTXT = true
 
 # Hugo allows theme composition (and inheritance). The precedence is from left to right.
