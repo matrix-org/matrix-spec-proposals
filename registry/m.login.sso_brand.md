@@ -36,7 +36,7 @@ that way!
    
  * Identifier: `com.gitlab`
 
-   Description: Login in via the hosted https:/gitlab.com SaaS platform.
+   Description: Login in via the hosted https://gitlab.com SaaS platform.
  
  * Identifier: `com.google`
 
