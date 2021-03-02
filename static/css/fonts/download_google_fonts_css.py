@@ -79,6 +79,12 @@ original_contents = resp.text.split("\n")
 
 # Download all referenced font files and write out new font file
 new_css_file_lines = []
+
+# Store metadata for helping give friendly names to each font file
+font_lang = None
+font_family = None
+font_style = None
+font_weight = 0
 for line in original_contents:
     # Check if this line contains a font URL
     match = re.match(r".*url\((.*)\) format.*", line)
@@ -90,14 +96,34 @@ for line in original_contents:
         resp = requests.get(font_url)
         if resp.status_code == 200:
             # Save the font file
-            filename = font_url.split("/")[-1]
-            with open(font_output_dir + filename, "w") as f:
+            filename = "%s-%s-%s-%d.woff2" % (
+                font_family, font_lang, font_style, font_weight
+            )
+            font_filepath = font_output_dir + filename
+            with open(font_filepath, "w") as f:
+                print("Writing font file:", font_filepath)
                 f.write(resp.text)
+
+            # Replace google URL with local URL
+            line = re.sub(r"url\(.+\)", f"url({css_font_path + filename})", line)
         else:
             print("Warning: failed to download font file:", font_url)
 
-        # Replace google URL with local URL
-        line = re.sub(r"https://fonts.gstatic.com/s/[^/]*/[^/]*/", css_font_path, line)
+    # Check for font metadata. If there is some, we'll note it down and use it to help
+    # name font files when we write them out.
+    # Makes for nicer font filenames than fvQtMwCp50KnMw2boKod... etc.
+    font_lang_match = re.match(r"^/\* (.+) \*/$", line)
+    if font_lang_match:
+        font_lang = font_lang_match.group(1)
+    font_family_match = re.match(r".*font-family: '(.+)';$", line)
+    if font_family_match:
+        font_family = font_family_match.group(1)
+    font_style_match = re.match(r".*font-style: (.+);$", line)
+    if font_style_match:
+        font_style = font_style_match.group(1)
+    font_weight_match = re.match(r".*font-weight: (.+);$", line)
+    if font_weight_match:
+        font_weight = int(font_weight_match.group(1))
 
     # Append the potentially modified line to the new css file
     new_css_file_lines.append(line)
