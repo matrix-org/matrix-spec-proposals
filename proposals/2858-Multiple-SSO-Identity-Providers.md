@@ -79,20 +79,16 @@ of an object with the following fields:
    "Common namespaced identifier grammar" as defined in
    [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758).
 
-   Initially the following identifiers are specified:
-    * `org.matrix.gitlab`
-    * `org.matrix.github`
-    * `org.matrix.apple`
-    * `org.matrix.google`
-    * `org.matrix.facebook`
-    * `org.matrix.twitter`
+   A registry of brand identifiers is maintained at
+   [`matrix-doc/registry/m.login.sso_brand.md`](../registry/m.login.sso_brand.md). Contributors
+   are encouraged to add more brands to the registry.
 
    Server implementations are free to add additional brands, though they should
    be mindful of clients which do not recognise any given brand.
 
    Clients are free to implement any set of brands they wish, including all or
-   any of the above, but are expected to apply a sensible unbranded fallback
-   for any brand they do not recognise/support.
+   any of the brands listed in the registry, but are expected to apply a
+   sensible unbranded fallback for any brand they do not recognise/support.
 
    Where `icon` and `brand` are both present, it is recommended that clients
    which support the `brand` give precedence to `brand` over `icon`.
@@ -175,5 +171,18 @@ the text.
 
 ## Unstable prefix
 
-Whilst in development use `org.matrix.msc2858.identity_providers` for the flow discovery and `/_matrix/client/unstable/org.matrix.msc2858/login/sso/redirect/{idp_id}`
-for the new endpoints.
+Whilst in development use `org.matrix.msc2858.identity_providers` for the flow
+discovery and
+`/_matrix/client/unstable/org.matrix.msc2858/login/sso/redirect/{idp_id}` for
+the new endpoints.
+
+When identity providers are listed under the experimental
+`org.matrix.msc2858.identity_providers` field of the response to `/login`,
+(instead of `identity_providers`), different values for the `brand` field are
+used. In particular the following were defined:
+    * `org.matrix.gitlab` (now `com.gitlab`).
+    * `org.matrix.github` (now `com.github`).
+    * `org.matrix.apple` (now `com.apple`).
+    * `org.matrix.google` (now `com.google`).
+    * `org.matrix.facebook` (now `com.facebook`).
+    * `org.matrix.twitter` (now `com.twitter`).
