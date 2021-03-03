@@ -100,9 +100,9 @@ for line in original_contents:
                 font_family, font_lang, font_style, font_weight
             )
             font_filepath = font_output_dir + filename
-            with open(font_filepath, "w") as f:
+            with open(font_filepath, "wb") as f:
                 print("Writing font file:", font_filepath)
-                f.write(resp.text)
+                f.write(resp.content)
 
             # Replace google URL with local URL
             line = re.sub(r"url\(.+\)", f"url({css_font_path + filename})", line)
