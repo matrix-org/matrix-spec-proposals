@@ -191,16 +191,13 @@ Additionally, extensions to the `GET /_matrix/client/r0/sync` endpoint are
 introduced. These allow a client to receive information about the status of
 their knock attempt.
 
-The newly proposed endpoint requires authentication and can be rate limited.
-
-
 ### `POST /_matrix/client/r0/knock/{roomIdOrAlias}`
 Or the knocking equivalent of
 [`POST
 /_matrix/client/r0/join/{roomIdOrAlias}`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-join-roomidoralias).
 
 The path parameter (`roomIdOrAlias`) is either the room ID or the alias of
-the room you want to knock on. Additionally several `server_name` parameters
+the room you want to knock on. Additionally, several `server_name` parameters
 can be specified via the query parameters. The post body accepts an optional
 string parameter, `reason`, which is the reason you want to join the room. A
 request could look as follows:
@@ -213,6 +210,9 @@ Content-Type: application/json
   "reason": "I want to join this room as I really love foxes!"
 }
 ```
+
+This endpoint requires authentication and can be rate limited.
+
 
 #### Responses:
 ##### Status code 200:
