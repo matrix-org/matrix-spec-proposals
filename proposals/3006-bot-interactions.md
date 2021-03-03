@@ -92,7 +92,7 @@ Additionally a way of exiting that stage should be available.
 ```
 
 7b. If the user clicks the new button the client sends the command as in step 4 with additionally mentioning the `stage_id` under the 
-`m.inteaction.command` object. The bot after that can react either with a new stage or with the same `m.interaction.stage.end` 
+`m.interaction.command` object. The bot after that can react either with a new stage or with the same `m.interaction.stage.end` 
 event to indicate the end of a interaction flow.
 
 #### Flow as a graphic
