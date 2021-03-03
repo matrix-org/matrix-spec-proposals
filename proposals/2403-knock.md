@@ -216,13 +216,16 @@ This endpoint requires authentication and can be rate limited.
 
 #### Responses:
 ##### Status code 200:
-The user knocked successfully. Example reply:
+The user knocked successfully. The room ID of the knocked on room is returned. Example 
+reply:
 ```json
-{}
+{
+  "room_id": "!ZclcEpFTORTjmWIrqH:matrix.org"
+}
 ```
 
 ##### Status code 403:
-The user wasn't allowed to knock (e.g. they are banned). Error reply:
+The user wasn't allowed to knock (e.g. they are banned). Example error reply:
 ```json
 {
   "errcode": "M_FORBIDDEN",
