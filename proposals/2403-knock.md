@@ -195,6 +195,10 @@ The newly proposed endpoint requires authentication and can be rate limited.
 
 
 ### `POST /_matrix/client/r0/knock/{roomIdOrAlias}`
+Or the knocking equivalent of
+[`POST
+/_matrix/client/r0/join/{roomIdOrAlias}`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-join-roomidoralias).
+
 The path parameter (`roomIdOrAlias`) is either the room ID or the alias of
 the room you want to knock on. Additionally several `server_name` parameters
 can be specified via the query parameters. The post body accepts an optional
