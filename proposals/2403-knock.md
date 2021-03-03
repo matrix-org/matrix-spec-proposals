@@ -332,8 +332,9 @@ Response:
 
 A problem arises for discovery of knockable rooms. Ideally one wouldn't have
 to send their colleagues a room ID for a room that they need to knock on. One
-of these methods for room discovery is the public rooms directory, which
-allows us to explore a list of rooms we may be able to join.
+of these methods for room discovery is the [public rooms
+directory](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-publicrooms),
+which allows us to explore a list of rooms we may be able to join.
 
 The spec does not prevent us from adding rooms with 'knock' join_rules to the
 public rooms directory. However, a user attempting
