@@ -24,164 +24,6 @@ following:
 After a knock in a room, a member of the room can invite the knocker, or they
 can decide to reject it instead.
 
-## Restrictions
-There are restrictions to being able to set this membership, as well as
-accepting or denying the knock.  A formal description of the changes to the auth rules is given below; 
-first we summarise the semantics of the proposed changes.
-
-### Current membership
-Only users without a current membership or with their current membership
-being "leave" can knock on a room. This means that a user that is banned, has
-already knocked or is currently in the room cannot knock on it.
-
-### Join Rules
-This proposal makes use of the existing "knock" join rule. The value of
-`join_rule` in the content of the `m.room.join_rules` state event for a room
-must be set to "knock" for a knock to succeed. This means that existing rooms
-will need to opt into allowing knocks in their rooms. Other than allowing
-knocks, a join rule of "knock" is functionally equivalent to that of
-"invite", except that it additionally allows external users to change their
-membership to "knock" under certain conditions.
-
-
-### Auth rules
-
-Each room version defines the auth rules which should be applied in that room version.
-This MSC proposes a new room version with the following changes to the [auth
-rules from room version 6](https://matrix.org/docs/spec/rooms/v6#authorization-rules-for-events):
-
-* Under "5. If type is `m.room.member`", insert the following after "e. If membership is `ban`":
-
-  ```
-  f. If `membership` is `knock`:
-    i. If the `join_rule` is anything other than `knock`, reject.
-    ii. If `sender` does not match `state_key`, reject.
-    iii. If the `sender`'s membership is not `ban`, `invite` or `join`, allow.
-    iv. Otherwise, reject.
-  ```
-
-Note that:
-    - Both the `sender` and `state_key` fields are set to the user ID of the knocking
-      user. This is different to an `invite` membership event, where the `sender` is the inviter and
-      the `state_key` is the invitee.
-    - f.ii is justified as one user should not be able to knock on behalf of
-      another user.
-    - f.iii is justified as knocks should not be allowed if the knocking user
-      has been banned from the room, is invited to the room or if they are already
-      in the room.
-    - Knocks are not restricted by power level like invites are. The `join_rules`
-      are already used to enforce whether someone can or cannot knock. However,
-      power level rules do apply when approving or denying the knock, as discussed
-      in the Membership Changes section below.
-
-Additionally, note that redactions of knock events are not a concern, as
-`membership` keys are excluded from being redacted as defined by all current
-room versions.
-
-## Membership changes
-Once someone has sent a `knock` membership into the room, the membership for
-that user can be transitioned to the following possible states:
- - `invite`: In this case, the knock was accepted by someone inside the room
-   and they are inviting the knocker into the room.
- - `leave`: In this case, similar to how kicks are handled, the knock has
-   been rejected. Alternatively, the knocking user has rescinded their knock.
- - `ban`: In this case, the knock was rejected and the user has been prevented
-   from sending further knocks.
-
-Let's talk about each one of these in more detail.
-
-### Membership change to `invite`
-
-The knock has been accepted by someone in the room.
-
-The user who is accepting the knock must have the power level to perform
-invites. The accepting user's homeserver will then send an invite - over federation if
-necessary - to the knocking user. The knocking user may then join the room as
-if they had been invited normally.
-
-The accept a knock, the client should call [`POST
-/_matrix/client/r0/rooms/{roomId}/invite`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-invite)
-with the user ID of the knocking user in the JSON body.
-
-If the knocking user is on another homeserver, then the homeserver of the
-accepting user will call [`PUT
-/_matrix/federation/v2/invite/{roomId}/{eventId}`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
-on the knocking homeserver to inform it that the knock has been accepted.
-
-The knocking homeserver should assume an invite to a room it has knocked on means
-that its knock has been accepted, even if the invite was not explicitly
-related to the knock attempt.
-
-Note that client or homeserver implementations are free to automatically
-accept this invite given they're aware that it's the result of a previous
-knock.
-
-### Membership change to `leave`
-
-The knock has been rejected by someone in the room, or the knocking user has
-rescinded their knock.
-
-To rescind a knock, the knocking user's client must call [`POST
-/_matrix/client/r0/rooms/{roomId}/leave`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-leave).
-
-To reject a knock, the rejecting user's client must call [`POST
-/_matrix/client/r0/rooms/{roomId}/kick`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-kick)
-with the user ID of the knocking user in the JSON body. Rejecting a knock
-over federation has a slight catch, however.
-
-When the knocking user is on another homeserver, the homeserver of the
-rejecting user needs to send the `leave` event over federation to the
-knocking homeserver. However, this is a bit tricky as it is currently very
-difficult to have events from a room propagate over federation when the
-receiving homeserver is not in the room. This is due to the remote homeserver
-being unable to verify that the event being sent is actually from a
-homeserver in the room - and that the homeserver in the room had the required
-power level to send it. This is a problem that currently affects other,
-similar operations, such as disinviting or unbanning a federated user. In
-both cases, they won't be notified as their homeserver is not in the room.
-
-While we could send easily send the leave event as part of a generic
-transaction to the remote homeserver, that homeserver would have no way to
-validate the `prev_events` and `auth_events` that the event references. We
-could send those events over as well, but those will also reference other
-events that require validation and so on.
-
-A simple thing we could easily do here is to trust the leave event implicitly
-if it is sent by the homeserver we originally knocked through. We know this
-homeserver is (or at least was) in the room, so they're probably telling the
-truth. This is almost an edge case though, as while you'll knock through one
-homeserver in the room, there's no guarantee that the admin that denies your
-knock will be on the same homeserver you knocked through. Perhaps the
-homeserver you knocked through could listen for this and then send the event
-back to you - but what if it goes offline in the meantime?
-
-As such, informing remote homeservers about the rejection of knocks over
-federation is de-scoped for now, and left to a future MSC which can solve
-this class of problem in a suitable way. Rejections should still work for the
-homeservers that are in the room, as they can validate the leave event for
-they have access to the events it references.
-
-
-### Membership change to `ban`
-
-The knock has been rejected by someone in the room and the user has been
-banned, and is unable to send further knocks.
-
-This one is fairly straightforward. Someone with the appropriate power levels
-in the room bans the user. This will have the same effect as rejecting the
-knock, and in addition prevent any further knocks by this user from being
-allowed into the room.
-
-If the user is unbanned, they will be able to send a new knock which could be
-accepted.
-
-To ban the user, the client should call [`POST
-/_matrix/client/r0/rooms/{roomId}/ban`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-ban) with the user ID of the knocking user in the JSON body.
-
-Informing the knocking user about the update is the same as rejecting the
-knock.
-
-
 ## Client-Server API
 A new endpoint is introduced in the Client-Server API: `POST
 /_matrix/client/r0/knock/{roomIdOrAlias}`. This allows the client to state
@@ -216,7 +58,7 @@ This endpoint requires authentication and can be rate limited.
 
 #### Responses:
 ##### Status code 200:
-The user knocked successfully. The room ID of the knocked on room is returned. Example 
+The user knocked successfully. The room ID of the knocked on room is returned. Example
 reply:
 ```json
 {
@@ -372,12 +214,12 @@ value `public`.
 To help knocks be noticed earlier, it would be nice to send a push
 notification to those in the room who can act on a knock when it
 comes in, rather than everyone in the room. This would require a
-push rule to fire only when that user's power level is high enough to 
+push rule to fire only when that user's power level is high enough to
 accept or reject a knock.
 
 With the current push rules implementation it is possible to place a
 condition on the sender's power level, but unfortunately the same does
-not exist for event recipients. 
+not exist for event recipients.
 
 This MSC thus does not propose any changes to push rules at this time,
 but acknowledges that it would be useful for a future MSC to address when
@@ -385,9 +227,10 @@ the underlying push rules architecture can support it.
 
 
 ## Server-Server API
-Similarly to join and leave over federation, a ping-pong game with two new
-endpoints is introduced: `make_knock` and `send_knock`. Both endpoints must
-be protected via server ACLs.
+Similarly to [join](https://matrix.org/docs/spec/server_server/r0.1.4#joining-rooms)
+and [leave](https://matrix.org/docs/spec/server_server/r0.1.4#leaving-rooms-rejecting-invites)
+over federation, a ping-pong game with two new endpoints is introduced: `make_knock`
+and `send_knock`. Both endpoints must be protected via server ACLs.
 
 ### `GET /_matrix/federation/v1/make_knock/{roomId}/{userId}`
 
@@ -554,6 +397,161 @@ request content.
   ]
 }
 ```
+
+## Restrictions
+There are restrictions to being able to set this membership, as well as
+accepting or denying the knock.  A formal description of the changes to the auth rules is given below; 
+first we summarise the semantics of the proposed changes.
+
+### Current membership
+Only users without a current membership or with their current membership
+being "leave" can knock on a room. This means that a user that is banned, has
+already knocked or is currently in the room cannot knock on it.
+
+### Join Rules
+This proposal makes use of the existing "knock" join rule. The value of
+`join_rule` in the content of the `m.room.join_rules` state event for a room
+must be set to "knock" for a knock to succeed. This means that existing rooms
+will need to opt into allowing knocks in their rooms. Other than allowing
+knocks, a join rule of "knock" is functionally equivalent to that of
+"invite", except that it additionally allows external users to change their
+membership to "knock" under certain conditions.
+
+### Auth rules
+
+Each room version defines the auth rules which should be applied in that room version.
+This MSC proposes a new room version with the following changes to the [auth
+rules from room version 6](https://matrix.org/docs/spec/rooms/v6#authorization-rules-for-events):
+
+* Under "5. If type is `m.room.member`", insert the following after "e. If membership is `ban`":
+
+  ```
+  f. If `membership` is `knock`:
+    i. If the `join_rule` is anything other than `knock`, reject.
+    ii. If `sender` does not match `state_key`, reject.
+    iii. If the `sender`'s membership is not `ban`, `invite` or `join`, allow.
+    iv. Otherwise, reject.
+  ```
+
+Note that:
+    - Both the `sender` and `state_key` fields are set to the user ID of the knocking
+      user. This is different to an `invite` membership event, where the `sender` is the inviter and
+      the `state_key` is the invitee.
+    - f.ii is justified as one user should not be able to knock on behalf of
+      another user.
+    - f.iii is justified as knocks should not be allowed if the knocking user
+      has been banned from the room, is invited to the room or if they are already
+      in the room.
+    - Knocks are not restricted by power level like invites are. The `join_rules`
+      are already used to enforce whether someone can or cannot knock. However,
+      power level rules do apply when approving or denying the knock, as discussed
+      in the Membership Changes section below.
+
+Additionally, note that redactions of knock events are not a concern, as
+`membership` keys are excluded from being redacted as defined by all current
+room versions.
+
+## Membership changes
+Once someone has sent a `knock` membership into the room, the membership for
+that user can be transitioned to the following possible states:
+ - `invite`: In this case, the knock was accepted by someone inside the room
+   and they are inviting the knocker into the room.
+ - `leave`: In this case, similar to how kicks are handled, the knock has
+   been rejected. Alternatively, the knocking user has rescinded their knock.
+ - `ban`: In this case, the knock was rejected and the user has been prevented
+   from sending further knocks.
+
+Let's talk about each one of these in more detail.
+
+### Membership change to `invite`
+
+The knock has been accepted by someone in the room.
+
+The user who is accepting the knock must have the power level to perform
+invites. The accepting user's homeserver will then send an invite - over federation if
+necessary - to the knocking user. The knocking user may then join the room as
+if they had been invited normally.
+
+To accept a knock, the client should call [`POST
+/_matrix/client/r0/rooms/{roomId}/invite`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-invite)
+with the user ID of the knocking user in the JSON body.
+
+If the knocking user is on another homeserver, then the homeserver of the
+accepting user will call [`PUT
+/_matrix/federation/v2/invite/{roomId}/{eventId}`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
+on the knocking homeserver to inform it that the knock has been accepted.
+
+The knocking homeserver should assume an invite to a room it has knocked on means
+that its knock has been accepted, even if the invite was not explicitly
+related to the knock attempt.
+
+Note that client or homeserver implementations are free to automatically
+accept this invite given they're aware that it's the result of a previous
+knock.
+
+### Membership change to `leave`
+
+The knock has been rejected by someone in the room, or the knocking user has
+rescinded their knock.
+
+To rescind a knock, the knocking user's client must call [`POST
+/_matrix/client/r0/rooms/{roomId}/leave`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-leave).
+
+To reject a knock, the rejecting user's client must call [`POST
+/_matrix/client/r0/rooms/{roomId}/kick`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-kick)
+with the user ID of the knocking user in the JSON body. Rejecting a knock
+over federation has a slight catch, however.
+
+When the knocking user is on another homeserver, the homeserver of the
+rejecting user needs to send the `leave` event over federation to the
+knocking homeserver. However, this is a bit tricky as it is currently very
+difficult to have events from a room propagate over federation when the
+receiving homeserver is not in the room. This is due to the remote homeserver
+being unable to verify that the event being sent is actually from a
+homeserver in the room - and that the homeserver in the room had the required
+power level to send it. This is a problem that currently affects other,
+similar operations, such as disinviting or unbanning a federated user. In
+both cases, they won't be notified as their homeserver is not in the room.
+
+While we could send easily send the leave event as part of a generic
+transaction to the remote homeserver, that homeserver would have no way to
+validate the `prev_events` and `auth_events` that the event references. We
+could send those events over as well, but those will also reference other
+events that require validation and so on.
+
+A simple thing we could easily do here is to trust the leave event implicitly
+if it is sent by the homeserver we originally knocked through. We know this
+homeserver is (or at least was) in the room, so they're probably telling the
+truth. This is almost an edge case though, as while you'll knock through one
+homeserver in the room, there's no guarantee that the admin that denies your
+knock will be on the same homeserver you knocked through. Perhaps the
+homeserver you knocked through could listen for this and then send the event
+back to you - but what if it goes offline in the meantime?
+
+As such, informing remote homeservers about the rejection of knocks over
+federation is de-scoped for now, and left to a future MSC which can solve
+this class of problem in a suitable way. Rejections should still work for the
+homeservers that are in the room, as they can validate the leave event for
+they have access to the events it references.
+
+### Membership change to `ban`
+
+The knock has been rejected by someone in the room and the user has been
+banned, and is unable to send further knocks.
+
+This one is fairly straightforward. Someone with the appropriate power levels
+in the room bans the user. This will have the same effect as rejecting the
+knock, and in addition prevent any further knocks by this user from being
+allowed into the room.
+
+If the user is unbanned, they will be able to send a new knock which could be
+accepted.
+
+To ban the user, the client should call [`POST
+/_matrix/client/r0/rooms/{roomId}/ban`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-ban) with the user ID of the knocking user in the JSON body.
+
+Informing the knocking user about the update is the same as rejecting the
+knock.
 
 # Potential issues
 This new feature would allow users to send events into rooms that they don't
