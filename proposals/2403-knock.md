@@ -623,12 +623,7 @@ Experimental implementation should use `xyz.amorgan.knock` as a room version ide
 The new endpoints should contain an unstable prefix during experimental
 implementation. The unstable counterpart for each endpoint is:
 
-C-S knock method 1:
-
-* `POST /_matrix/client/r0/rooms/{roomId}/knock`
-* `POST /_matrix/client/unstable/xyz.amorgan/rooms/{roomId}/knock`
-
-C-S knock method 2:
+C-S knock:
 
 * `POST /_matrix/client/knock/{roomIdOrAlias}`
 * `POST /_matrix/client/unstable/xyz.amorgan/knock/{roomIdOrAlias}`
@@ -643,7 +638,7 @@ S-S send_knock:
 * `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
 * `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
 
-And finally, an unstable prefix is added to the key that comes down `/sync`,
+Finally, an unstable prefix is added to the key that comes down `/sync`,
 the join rule for rooms and the `content.membership` key of the member
 event sent into rooms when a user has knocked successfully. Instead of
 `knock`, experimental implementations should use `xyz.amorgan.knock`.
