@@ -84,7 +84,7 @@ of an object with the following fields:
    "Common namespaced identifier grammar" as defined in
    [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758).
 
-   To reduce confusion over which indentifier should be used for each brand
+   To reduce confusion over which identifier should be used for each brand
    (for example: should "Sign in with Microsoft" be `com.microsoft` or
    `com.azure`?), it is proposed to maintain a registry of identifiers outside
    the core specification document, avoiding the need for a full MSC to add
