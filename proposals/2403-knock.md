@@ -561,11 +561,9 @@ partake in. That is why this proposal enables the a `knock` join rule, in
 order to allow room admins to opt in to this behaviour.
 
 # Alternatives
-The two endpoints for the Client-Server API seem redundant, this MSC followed
-how JOIN is working currently: One "proper" endpoint (`/rooms/{roomId}/join`)
-and one to work properly over federation (`/join/{roomIdOrAlias}`). They
-could both be merged into one, however, as that would also affect the join
-endpoint it seems out-of-scope for this MSC.
+The possibility of initiating a knock by sending EDUs between users instead of sending 
+a membership state event into a room has been raised. This is an ongoing discussion
+occurring at https://github.com/matrix-org/matrix-doc/pull/2403/files#r573180627.
 
 # Client UX recommendations
 After a knock is received in a room, it is expected to be displayed in the
