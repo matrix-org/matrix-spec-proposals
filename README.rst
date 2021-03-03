@@ -25,11 +25,9 @@ Structure of this repository
   contained in the specification, along with example JSON files.
 - ``meta``: documents outlining the processes involved when writing
   documents, e.g. documentation style, guidelines.
-- ``registry``: Lists of identifiers for use in various parts of the Matrix protocol.
 - ``scripts``: scripts to generate formatted versions of the
   documentation, typically HTML.
 - ``specification``: the specification split up into sections.
-
 
 .. _OpenAPI: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 .. _JSON Schema: http://json-schema.org/
@@ -68,7 +66,7 @@ The above will write the rendered version of the specification to
 
 Windows users
 ~~~~~~~~~~~~~
-The ``source`` program does not exist on Windows, so instead run one of the
+The ``source`` program does not exist on Windows, so instead run one of the 
 ``activate`` files in ``.\env\Scripts\`` to activate the virtual environment.
 
 If you're on Windows Vista or higher, be sure that the "Symbolic Links"

@@ -84,9 +84,11 @@ of an object with the following fields:
    "Common namespaced identifier grammar" as defined in
    [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758).
 
-   A registry of brand identifiers is maintained at
-   [`matrix-doc/registry/m.login.sso_brand.md`](../registry/m.login.sso_brand.md). Contributors
-   are encouraged to add more brands to the registry.
+   To reduce confusion over which indentifier should be used for each brand
+   (for example: should "Sign in with Microsoft" be `com.microsoft` or
+   `com.azure`?), it is proposed to maintain a registry of identifiers outside
+   the core specification document, avoiding the need for a full MSC to add
+   entries to the list. An initial list of proposed identifiers is given below.
 
    Server implementations are free to add additional brands, though they should
    be mindful of clients which do not recognise any given brand.
@@ -122,6 +124,35 @@ SSO flow option without any `identity_providers` as there is no method for
 a client to choose an IdP within that flow at this time nor is it as
 essential.
 
+### Proposed initial identifiers for the `brand` indentifier
+
+ * Identifier: `com.apple`
+
+   Description: "Sign in with Apple". See
+   https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple/overview/buttons/.
+
+ * Identifier: `com.facebook`
+
+   Description: "Continue with Facebook". See
+   https://developers.facebook.com/docs/facebook-login/web/login-button/.
+
+ * Identifier: `com.github`
+
+   Description: Logos available at https://github.com/logos.
+
+ * Identifier: `com.gitlab`
+
+   Description: Login in via the hosted https://gitlab.com SaaS platform.
+
+ * Identifier: `com.google`
+
+   Description: "Sign in with Google". See
+   https://developers.google.com/identity/branding-guidelines.
+
+ * Identifier: `com.twitter`
+
+   Description: "Log in with Twitter". See
+   https://developer.twitter.com/en/docs/authentication/guides/log-in-with-twitter#tab1.
 
 ## Alternatives
 
