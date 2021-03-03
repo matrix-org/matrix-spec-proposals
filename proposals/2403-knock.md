@@ -489,18 +489,14 @@ Note that client or homeserver implementations are free to automatically
 accept this invite given they're aware that it's the result of a previous
 knock.
 
-### Membership change to `leave`
+### Membership change to `leave` via rejecting a knock
 
-The knock has been rejected by someone in the room, or the knocking user has
-rescinded their knock.
-
-To rescind a knock, the knocking user's client must call [`POST
-/_matrix/client/r0/rooms/{roomId}/leave`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-leave).
+The knock has been rejected by someone in the room.
 
 To reject a knock, the rejecting user's client must call [`POST
 /_matrix/client/r0/rooms/{roomId}/kick`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-kick)
 with the user ID of the knocking user in the JSON body. Rejecting a knock
-over federation has a slight catch, however.
+over federation has a slight catch, though.
 
 When the knocking user is on another homeserver, the homeserver of the
 rejecting user needs to send the `leave` event over federation to the
@@ -533,6 +529,16 @@ federation is de-scoped for now, and left to a future MSC which can solve
 this class of problem in a suitable way. Rejections should still work for the
 homeservers that are in the room, as they can validate the leave event for
 they have access to the events it references.
+
+### Membership change to `leave` via rescinding a knock
+The knocking user has rescinded their knock.
+
+To rescind a knock, the knocking user's client must call [`POST
+/_matrix/client/r0/rooms/{roomId}/leave`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-rooms-roomid-leave).
+To rescind a knock over federation, the knocking homeserver must complete
+a [`make_leave`, `send_leave` dance](
+https://matrix.org/docs/spec/server_server/r0.1.4#leaving-rooms-rejecting-invites)
+with a homeserver in the room.
 
 ### Membership change to `ban`
 
