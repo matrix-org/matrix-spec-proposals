@@ -18,7 +18,12 @@ side of the door. Some users will definitely not be familiar with `SSO` but will
 
 We extend the [login
 flow](https://matrix.org/docs/spec/client_server/r0.6.1#login) to allow clients
-to choose an SSO Identity provider before control is handed over to the server.
+to choose an SSO Identity provider before control is handed over to the
+server. The following sequence diagram illustrates the proposed, updated, login flow:
+
+<!-- source for the following is in images/2858-seq-diagram.txt -->
+
+![Sequence diagram](https://user-images.githubusercontent.com/2403652/104897523-61fb4b00-5970-11eb-88f7-9fc0956b33a2.png)
 
 ### Extensions to login flow discovery
 
