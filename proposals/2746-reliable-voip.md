@@ -231,7 +231,7 @@ in the RTP payload.
 `call_id`s and the newly introduced `party_id` are explicitly defined to be up to 32 characters
 from the set of `A-Z` `a-z` `0-9` `.-_`.
 
-### Specify behhaviour on room leave
+### Specify behaviour on room leave
 If the client sees the party it is in a call with leave the room, the client should treat this
 as a hangup event for any calls that are in progress. No specific requirement is given for the
 situation where a client has sent an invite and the invitee leaves the room, but the client may
