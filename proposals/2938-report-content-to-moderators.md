@@ -177,10 +177,6 @@ preview to simplify the work of moderators.
 
 ## Potential issues
 
-This proposal does not yet cover the case in which no moderator comes from the same
-homeserver as the user. This is a limitation that needs to be fixed before merging this proposal.
-However, it may be possible to run an experiment before this limitation is fixed.
-
 This proposal may end up being used for spamming the moderators of rooms. We believe
 that this is no worse than the current implementation which may be used for spamming the administrator
 of the homeserver.
