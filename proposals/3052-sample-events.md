@@ -19,7 +19,7 @@ JSON part is formatted as follows:
         "sample_length" : undefined,
         "sample_width" : undefined,
         "sample_depth" : undefined,
-        "sample_encoding" : "encoding"
+        "sample_encoding" : "encoding",
         "samples" : "whatever_samples"
     }
 }
