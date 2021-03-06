@@ -13,20 +13,20 @@ JSON part is formatted as follows:
 {
     "type": "m.samples",
     "content": {
-        "sample_type": "audio/pcm",
-        "sample_rate": 44100,
-        "sample_duration" : 123.4567, 
-        "sample_length" : undefined,
-        "sample_width" : undefined,
-        "sample_depth" : undefined,
-        "sample_encoding" : "encoding",
+        "sample.type": "audio/pcm",
+        "sample.rate": 44100,
+        "sample.duration" : 123.4567, 
+        "sample.length" : undefined,
+        "sample.width" : undefined,
+        "sample.depth" : undefined,
+        "sample.encoding" : "encoding",
         "samples" : "whatever_samples"
     }
 }
 ```
 
-`sample_type` is a MIME type, `sample_rate` is the sample rate in Hertz, `sample_duration` is
-the duration of this sample event in seconds, `sample_length`, `sample_width` and `sample_depth`
+`sample.type` is a MIME type, `sample.rate` is the sample rate in Hertz, `sample.duration` is
+the duration of this sample event in seconds, `sample.length`, `sample.width` and `sample.depth`
 are integers for positional data if exists.
 
 When clients encounter multiple sample events from others, they shall align all the samples by timestamp
