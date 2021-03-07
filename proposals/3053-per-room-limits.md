@@ -42,20 +42,28 @@ sent to the room:
 }
 ```
 
-If `value` is not defined, then said limit is not defined.
+If `value` is not defined, then said limit is not defined either.
 
 The query will be made to the same paths, using the GET method instead.
 And to delete the limit for the particular user, use the DELETE method
 for the same path. A user is allowed to query users from own homeserver only.
-If, a server-wide limit is defined but a user specific limit is not,
-the user specific limit shall be returned as if it were the same. In case
-both limits exist, the smaller limit for a given user shall apply.
+If, a server-wide limit is defined but a room specific limit is not,
+the room specific limit shall be returned as if it were the same. In case
+both limits exist, the smaller limit for a given room shall apply.
 
-For now, two such limits are proposed:
+For now, four such limits are proposed:
 
 * Per-room user fanout limit: `m.limits.fanout.room_users`
+* Immediate child room nesting limit: `m.limits.fanout.room_children`
+* Inherited child room nesting limit: `m.limits.fanout.room_branching`
+* Descendant room nesting limit: `m.limits.fanout.room_rooms`
 * Per-room user complexity limit: `m.limits.complexity.user_cap`
-* * Per-room-as-type user complexity limit: `m.limits.complexity.room_users.{room_type}`
+ * Per-room-as-type user complexity limit: `m.limits.complexity.user_cap.{room_type}`
+
+Room limits specified as sub-keys of `m.limits.fanout` are sent as state events,
+and room limits specified as subkeys of `m.limits.complexity` are sent as admin
+API settings, as shown above by user capping example.
+
 ## The per-room user limit semantics
 
 A room shall not be allowed to have more members once it has as many members as 
@@ -75,3 +83,18 @@ To set per-room user fanout limit, user has to have power to `limits`.
 The power level required for `limits` shall be greater than or equal to
 the greatest of the power level required for `invite`, `redact`, `ban`,
 `power_levels`.
+
+## Room nesting limit semantics
+
+A room shall not be allowed to have more child rooms once it has as many children
+as specified by the child limit. New child rooms will not be added. As soon as
+the number of child rooms drops below the limit, joins will be processed as usual.
+
+* Immediate child room nesting limit only affects direct children of said rooms.
+* Inherited child room limit affects direct children of said rooms, and
+ is recursively applied to child rooms.
+* Descendant room nesting limit affects all descendants of said rooms.
+
+If the limit for a subtype of room is greater than the general nesting limit
+per room, the subtype limit will be ignored. To set per-room nesting limit,
+user has to have power to `tombstone` and `attach`.
