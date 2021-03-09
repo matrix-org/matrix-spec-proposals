@@ -167,7 +167,7 @@ essential.
    https://developer.twitter.com/en/docs/authentication/guides/log-in-with-twitter#tab1.
 
 When considering a new identifier for private use, administrators should pick
-some sensible name follosing the advice of [RFC6648 sec
+some sensible name following the advice of [RFC6648 sec
 3](https://tools.ietf.org/html/rfc6648#section-3).
 
 ## Alternatives
