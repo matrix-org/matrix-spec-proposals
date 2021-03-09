@@ -41,13 +41,13 @@ flows whose type `m.login.sso`. This would look like this:
                     "id": "google",
                     "name": "Google",
                     "icon": "mxc://...",
-                    "brand": "org.matrix.google"
+                    "brand": "google"
                 },
                 {
                     "id": "github",
                     "name": "Github",
                     "icon": "mxc://...",
-                    "brand": "org.matrix.github"
+                    "brand": "github"
                 }
             ]
         },
@@ -80,15 +80,27 @@ of an object with the following fields:
    the IdP. If present then it must be an MXC URI to an image resource.
 
  * The `brand` field is **optional**. It allows the client to style the login
-   button to suit a particular brand. It should be a string matching the
-   "Common namespaced identifier grammar" as defined in
-   [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758).
+   button to suit a particular brand. It should be a string using the following
+   grammar:
+
+    * Must be at least one character and no more than 255 characters in length.
+    * Must start with one of the characters `[a-z]`, and be entirely composed
+      of the characters `[a-z]`, `[0-9]`, `-`, `_` and `.`.
 
    To reduce confusion over which identifier should be used for each brand
-   (for example: should "Sign in with Microsoft" be `com.microsoft` or
-   `com.azure`?), it is proposed to maintain a registry of identifiers outside
+   (for example: should "Sign in with Microsoft" be `microsoft` or
+   `azure`?), it is proposed to maintain a registry of identifiers outside
    the core specification document, avoiding the need for a full MSC to add
    entries to the list. An initial list of proposed identifiers is given below.
+
+   [Rationale: this grammar is based on the
+   [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758), removing the
+   requirements for a namespaced heirarchy. In
+   [discussion](https://github.com/matrix-org/matrix-doc/pull/2858#discussion_r565506802),
+   it was agreed that a separate registry was seen as important for a
+   lightweight process by which implementations can agree on identifiers. The
+   registry makes the namespacing of MSC2758 redundant; the namespacing system
+   was also somewhat confusing.]
 
    Server implementations are free to add additional brands, though they should
    be mindful of clients which do not recognise any given brand.
@@ -126,33 +138,37 @@ essential.
 
 ### Proposed initial identifiers for the `brand` indentifier
 
- * Identifier: `com.apple`
+ * Identifier: `apple`
 
    Description: "Sign in with Apple". See
    https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple/overview/buttons/.
 
- * Identifier: `com.facebook`
+ * Identifier: `facebook`
 
    Description: "Continue with Facebook". See
    https://developers.facebook.com/docs/facebook-login/web/login-button/.
 
- * Identifier: `com.github`
+ * Identifier: `github`
 
    Description: Logos available at https://github.com/logos.
 
- * Identifier: `com.gitlab`
+ * Identifier: `gitlab`
 
    Description: Login in via the hosted https://gitlab.com SaaS platform.
 
- * Identifier: `com.google`
+ * Identifier: `google`
 
    Description: "Sign in with Google". See
    https://developers.google.com/identity/branding-guidelines.
 
- * Identifier: `com.twitter`
+ * Identifier: `twitter`
 
    Description: "Log in with Twitter". See
    https://developer.twitter.com/en/docs/authentication/guides/log-in-with-twitter#tab1.
+
+When considering a new identifier for private use, administrators should pick
+some sensible name follosing the advice of [RFC6648 sec
+3](https://tools.ietf.org/html/rfc6648#section-3).
 
 ## Alternatives
 
@@ -217,9 +233,9 @@ When identity providers are listed under the experimental
 (instead of `identity_providers`), different values for the `brand` field are
 used. In particular the following were defined:
 
-  * `org.matrix.gitlab` (now `com.gitlab`).
-  * `org.matrix.github` (now `com.github`).
-  * `org.matrix.apple` (now `com.apple`).
-  * `org.matrix.google` (now `com.google`).
-  * `org.matrix.facebook` (now `com.facebook`).
-  * `org.matrix.twitter` (now `com.twitter`).
+  * `org.matrix.gitlab` (now `gitlab`).
+  * `org.matrix.github` (now `github`).
+  * `org.matrix.apple` (now `apple`).
+  * `org.matrix.google` (now `google`).
+  * `org.matrix.facebook` (now `facebook`).
+  * `org.matrix.twitter` (now `twitter`).
