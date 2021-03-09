@@ -131,10 +131,11 @@ client could be a matter for a future improvement, but is out of scope for now.)
 
 ### Notes on user-interactive auth
 
-For the case of User Interactive Auth the server would just give the standard
-SSO flow option without any `identity_providers` as there is no method for
-a client to choose an IdP within that flow at this time nor is it as
-essential.
+No change is proposed to the SSO flow for User-Interactive Authentication.
+
+For a reauthentication operation, the server implementation is free to choose
+any suitable IdP to authenticate the user. (Often, this will simply be
+the IdP that the user logged in with.)
 
 ### Proposed initial identifiers for the `brand` indentifier
 
