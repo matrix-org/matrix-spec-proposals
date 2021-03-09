@@ -138,14 +138,19 @@ essential.
 
 ### Proposed initial identifiers for the `brand` indentifier
 
+The following identifiers are proposed for the initial content of the `brand`
+identifier registry. The descriptions are guidelines to help server
+administrators pick a suitable brand identifier, and to help client authors
+style buttons in their clients.
+
  * Identifier: `apple`
 
-   Description: "Sign in with Apple". See
+   Description: Suitable for "Sign in with Apple": see
    https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple/overview/buttons/.
 
  * Identifier: `facebook`
 
-   Description: "Continue with Facebook". See
+   Description: "Continue with Facebook": see
    https://developers.facebook.com/docs/facebook-login/web/login-button/.
 
  * Identifier: `github`
@@ -158,12 +163,12 @@ essential.
 
  * Identifier: `google`
 
-   Description: "Sign in with Google". See
+   Description: Suitable for "Google Sign-In": see
    https://developers.google.com/identity/branding-guidelines.
 
  * Identifier: `twitter`
 
-   Description: "Log in with Twitter". See
+   Description: Suitable for "Log in with Twitter": see
    https://developer.twitter.com/en/docs/authentication/guides/log-in-with-twitter#tab1.
 
 When considering a new identifier for private use, administrators should pick
