@@ -487,7 +487,10 @@ related to the knock attempt.
 
 Note that client or homeserver implementations are free to automatically
 accept this invite given they're aware that it's the result of a previous
-knock.
+knock. In case of failing to auto-accept an invite on the homeserver, it's
+recommended for homeservers to pass the invite down to the client so that it
+may try at a later point (or reject the potentially broken invite) at the user's
+discretion.
 
 ### Membership change to `leave` via rejecting a knock
 
