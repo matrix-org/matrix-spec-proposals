@@ -154,7 +154,7 @@ essential.
 
  * Identifier: `gitlab`
 
-   Description: Login in via the hosted https://gitlab.com SaaS platform.
+   Description: Logos available at https://about.gitlab.com/press/press-kit/.
 
  * Identifier: `google`
 
