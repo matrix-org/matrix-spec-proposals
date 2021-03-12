@@ -1,4 +1,4 @@
-# MSCxxxx: Sharing room keys for past messages
+# MSC3061: Sharing room keys for past messages
 
 In Matrix, rooms can be configured via the `m.room.history_visibility` state
 event such that historical messages can be visible to all Matrix users
@@ -75,4 +75,4 @@ devices.
 ## Unstable prefix
 
 Until this feature lands in the spec, the property name to be used is
-`org.matrix.mscxxxx.shared_history` rather than `shared_history`.
+`org.matrix.msc3061.shared_history` rather than `shared_history`.
