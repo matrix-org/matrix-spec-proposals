@@ -5,11 +5,11 @@ hence some of them will need to place rate limits on users and rooms,
 and users and admins should be able to check and modify them in a
 standardised way, and the servers should be able to communicate those
 kinds of rate limits in a standardised way. This has been mentioned
-in #803.
+in **[#803](https://github.com/issues/803)**.
 
 ## The basics
 
-As **[@ara4n](https://github.com/ara4n)** said at **[#803](https://github.com/issues/803):
+As **[@ara4n](https://github.com/ara4n)** said in **[#803](https://github.com/issues/803)**:
 
 > Suggestions are:
 > 
