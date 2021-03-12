@@ -40,7 +40,7 @@ The HTTPS server responds with an HTTP code of:
 - `404` if the `transaction_id` is unknown
 - `400` if the keys do not match the expected values
 - `303` if the server wants the human to perform additional steps to verify
-  their identity (see "(Verifying the human)[#verifying-the-human]" below)
+  their identity (see "[Verifying the human](#verifying-the-human)" below)
 
 Upon successful completion of this step, the bot sends a
 `m.key.verification.mac` message to the human's client.  The format is the same
