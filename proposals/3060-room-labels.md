@@ -1,4 +1,4 @@
-# MSCXXXX: Room labels
+# MSC3060: Room labels
 
 Currently, the only allowed way in Matrix to advertise information about a room is through its name, avatar and topic, which can feel a bit limiting (a room's name is usually expected to be very short and isn't always very descriptive, and a room's topic is usually where one would find related social media accounts or the room's rules/code of conduct).
 
