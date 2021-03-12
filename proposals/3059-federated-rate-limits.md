@@ -1,4 +1,4 @@
-# MSC3060: Limits API: Part 3 — Federated ratelimiting on Matrix
+# MSC3060: Limits API — Part 3: Federated ratelimiting on Matrix
 
 Not all servers are as lucky as matrix.org to have variable scaling,
 hence some of them will need to place rate limits on users and rooms,
