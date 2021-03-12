@@ -1,4 +1,4 @@
-# MSCxxxx: Bot verification
+# MSC3062: Bot verification
 
 It is generally recommended that key verification should be done in person.
 However, it is usually difficult to meet a bot in person for the purposes of
@@ -100,4 +100,4 @@ The security of this verification method depends on:
 ## Unstable prefix
 
 Until this feature lands in the spec, the verification method name should be
-`org.matrix.mscxxxx.bot_verification`.
+`org.matrix.msc3062.bot_verification`.
