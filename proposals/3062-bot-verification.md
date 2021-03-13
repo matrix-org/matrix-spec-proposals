@@ -97,6 +97,9 @@ The security of this verification method depends on:
 - the human being able to distinguish a trusted URL from an untrusted URL,
 - the bot's operator's ability to secure their web server.
 
+When the human's client makes the HTTPS request, this will expose the human's
+IP address to the bot's operators.
+
 ## Unstable prefix
 
 Until this feature lands in the spec, the verification method name should be
