@@ -105,7 +105,6 @@ PUT /_matrix/client/r0/admin/limits/{user_id}/scoped HTTP/1.1
    "limits": ["m.room.message":123.4567, "m.ban":1.234567]
 }
 ```
-
 Queries are made to the same paths, using GET method instead.
 Users can query rate limits of users from the same homeserver.
 To clear the limit, either DELETE the rate limit or send a 
@@ -120,7 +119,9 @@ The following state event shall be sent:
 {
    "type": "m.limits.rate.user",
    "power_level": 0,
-   "power_level.scope": "maximum",
+   "power_level.operator": "maximum",
+   "users": undefined,
+   "users.operator": "include",
    "roles": undefined,
    "roles.operator": "exclude(all)"
    "limits": ["m.room.message":123.4567, "m.ban":1.234567]
@@ -128,6 +129,7 @@ The following state event shall be sent:
 ```
 
 Limits are cleared and edited following the usual message editing conventions.
+`users` is an unordered list of user MXIDs and/or aliases.
 `power_level` is the power level that the rate limit is going to be applied.
 `power_level.operator` is the relevant comparison operator that the power level
 is going to be applied. Valid operators are greater than or equal (`minimum`,
@@ -135,10 +137,11 @@ is going to be applied. Valid operators are greater than or equal (`minimum`,
 or equal (`maximum`, `max`, `lte`, `less_or_equal`), greater (`greater`,
 `minimum_exclusive`, `minex`), less (`less`, `maximum_exclusive`, `maxex`).
 `roles` is reserved and meant to include an unordered list of roles for a future
-role-based access control. `roles_operator` is a combinatoric operator that is
-going to be applied to the user's roles and role limiting scope (`roles`)
-to evaluate whether the rate limit applies to a given user. The valid combinatoric
-operators are `include_min({n})`, include at least `n` roles from the list,
+role-based access control. `roles.operator` and `users.operator` are
+combinatoric operators that are going to be applied to the user's MXID (`users`), or
+user's roles and role limiting scope (`roles`) to evaluate whether the rate
+limit applies to a given user. The valid combinatoric operators for roles are
+`include_min({n})`, include at least `n` roles from the list,
 `include_max({n})`, include at most `n` roles from the list, `include({m},{n})`,
 include at least `m` and at most `n` roles from the list, `include({n})`,
 include exactly `n` roles from the list, `exclude_min({n})`, exclude at least
@@ -152,10 +155,42 @@ most `n` roles from the list, `exclude({m},{n})`, exclude at least `m`
 and at most `n` roles from the list, `exclude({n})`, exclude exactly `n` roles
 from the list. `all` is a placeholder representing all the roles in the list
 and can be used as a parameter in those inclusion or exclusion operators.
+The valid combinatoric operators for users are `include` and `exclude`.
 Users having at least one of `limits.rate` or `limits` power can change
-per-room rate limit. However, all users can impose rate limits on oneselves,
+per-room rate limit.  However, all users can impose rate limits on oneselves,
 and those self-imposed limits cannot be increased by other users above
-the self-imposed values.
+the self-imposed values. Both `users` and `roles` parameters can be used,
+in which case the applicable users is based on the union of the user set
+based on user filtering and the user set based on the role filtering.
+
+## Rate limit burst capability
+
+Bursting can be defined using the `burst` property, which includes an array
+of JSON objects, each defining a burst group over a base limit. Repeating
+the above with bursting capabilities. Bursting coefficient `burst.coef` is
+multiplied by base limit to calculate effective rate limit during the
+burst period, for up to `burst.duration` seconds.
+
+```json
+{
+   "type": "m.limits.rate.user",
+   "power_level": 0,
+   "power_level.scope": "maximum",
+   "roles": undefined,
+   "roles.operator": "exclude(all)"
+   "limits": ["m.room.message":123.4567, "m.ban":1.234567],
+   "burst": [
+   {
+   "burst.coef": 1.00,
+   "burst.duration": 0,
+   "users": undefined,
+   "users.operator": "exclude",
+   "roles": undefined,
+   "roles.operator": "include_min(1)"
+   }
+   ]
+}
+```
 
 ## Potential issues
 
