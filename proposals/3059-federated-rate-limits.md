@@ -123,7 +123,7 @@ The following state event shall be sent:
    "users": undefined,
    "users.operator": "include",
    "roles": undefined,
-   "roles.operator": "exclude(all)"
+   "roles.operator": "exclude(all)",
    "limits": ["m.room.message":123.4567, "m.ban":1.234567]
 }
 ```
@@ -177,7 +177,7 @@ burst period, for up to `burst.duration` seconds.
    "power_level": 0,
    "power_level.scope": "maximum",
    "roles": undefined,
-   "roles.operator": "exclude(all)"
+   "roles.operator": "exclude(all)",
    "limits": ["m.room.message":123.4567, "m.ban":1.234567],
    "burst": [
    {
