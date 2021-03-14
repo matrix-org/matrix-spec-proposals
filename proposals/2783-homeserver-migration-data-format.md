@@ -80,7 +80,7 @@ To avoid collisions, the root directory has it's files prefixed with their corre
 and directories prefixed or nested with those specifiers.
 
 This means that the item `org.matrix.synapse` can "own" `org.matrix.synapse.json`, "own" the directory `org.matrix.synapse/`,
-and own `org.matrix/synapse.json`, as some examples.
+and own `org.matrix/synapse.json`, to give some examples.
 
 And so, as a more elaborate example, the directory structure could look like this;
 
