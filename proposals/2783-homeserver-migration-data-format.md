@@ -1,22 +1,23 @@
 # MSC2783: Homeserver Migration Data Format
 
-The current matrix ecosystem has multiple homeservers available for testing and use, however,
-once you have "picked" a homeserver, you're effectively "locked in" on that homeserver implementation
-for that domain, as certain metadata attributed to that homeserver needs to be provable by that server
-on that specific domain.
+The current matrix ecosystem now has multiple homeservers available for testing and use, however, as of writing this proposal,
+once an admin has "picked" a homeserver implementation, you're effectively "locked in" on that homeserver implementation
+for that domain, as it not possible to easily replace the implementation with another without a loss of data, or inconsistent
+federation functionality.
 
 The remedying point to this has been to "start a new server on a new domain", however,
-private encrypted chats, or unfederated rooms are difficult or plain impossible to transfer with this move,
+private encrypted chats an unfederated rooms are difficult or plain impossible to transfer with this move,
 and so there is a reluctance to move until the benefits outweigh this "lossy" migration method.
 
-Currently, dendrite is gaining more and more compliance with synapse (the defacto "matrix homeserver" in features
-and reliability), and conduit has an ambitious goal to be synapse-compliant by the end of 2021. When these homeservers
-become compliant, there isn't much holding back to migrate to these more preformat implementations, but only the
-aforementioned "lossy" migration method mentioned before.
+Currently, dendrite is gaining more and more compliance with the spec and synapse (the defacto "matrix homeserver" in features
+and reliability), and conduit has an ambitious goal to be fully spec-compliant by the end of 2021. When these homeservers
+become compliant, there isn't much holding back to migrate to these more performant implementations, with the
+aforementioned "lossy" migration method being the only way, which could result in many "dead domains" and a hard breakage
+of rooms and DMs for many.
 
 ## Proposal
 
-This proposal aims to provide a better, lock-in free, and reliable way of migrating between homeservers,
+This proposal aims to provide a better, lock-in free, and reliable way of migrating between implementations,
 as well as be able to provide a format in which a "snapshot" backup of a server could be made.
 
 This is supplemental to the existing spec, and this does not aim to influence the general protocol spec,
@@ -25,20 +26,20 @@ but rather provide a standard "mold" to "pour" a homeserver's data into.
 This proposal aims to be extendable by custom homeserver implementations and other interested parties or documents,
 be it that some data is implementation-specific, or that data is custom to MSCs or other "extended specifications".
 
-(This proposal uses [RFC2119](https://tools.ietf.org/html/rfc2119) to indicate requirement levels.)
+(This proposal uses [RFC2119](https://tools.ietf.org/html/rfc2119) to indicate requirement levels. e.g. "SHOULD", "MUST", etc.)
 
-### General Structure
+## General Structure
 
-The proposal concerns itself with a directory structure, this directory structure can be captures in ZIP files,
+The proposal mainly defines a directory structure, this directory structure can be captures in ZIP files,
 RAR files, `.tar.gz` files, or any other sort of archival or indexable directory "target".
 
 At the root of the directory structure, a file `manifest.mspf.json` exists, this is the manifest, this file MUST always exist.
 
 The `mspf` here stands for "Matrix Server Persistance Format", this is not a custom file format,
-but is suffixed before `.json` to not confuse this file with other "`manifest.json`"-named files and formats.
+but is suffixed before `.json` to not confuse this file with other "`manifest.json`"-identified formats.
 
-The manifest contains information pertaining to "items", such as room events, queued `to_device` events,
-user account data, and other core matrix concepts, but it could also contain custom items.
+The manifest contains information pertaining to "items", items can concern themselves with things such as room events,
+queued `to_device` events, user account data, but also custom data (such as data pertaining to SSO)
 
 All items are mapped with their java-domain-notation specifier (e.g. `org.example.subdomain`), all items are JSON `object`s.
 
@@ -74,15 +75,15 @@ And `Item` has a format of the following;
 }
 ```
 
-### Directory Structure
+## Directory Structure
 
 To avoid collisions, the root directory has it's files prefixed with their corresponding Item specifiers,
 and directories prefixed or nested with those specifiers.
 
 This means that the item `org.matrix.synapse` can "own" `org.matrix.synapse.json`, "own" the directory `org.matrix.synapse/`,
-and own `org.matrix/synapse.json`, to give some examples.
+and "own" `org.matrix/synapse.json`, to give some examples.
 
-And so, as a more elaborate example, the directory structure could look like this;
+And so, for a more elaborate example, the directory structure could look like this;
 
 ```text
 - manifest.mspf.json
@@ -120,12 +121,12 @@ This proposal does not specify a lookup or packer algorithm for the specific hie
 of how Items must organize their files and directories, this is only to note that Items are free in doing it in this fashion,
 if they wish.
 
-### Initial `m.*` Items
+## Initial `m.*` Items
 
 To make this proposal (relatively) viable for use when first released, this section defines the first `m.`-prefixed
 Items that come with version 0 of the manifest (and version 1 when standardized in the spec).
 
-#### `m.core` version `1`
+### `m.core` version `1`
 
 `m.core` aims to capture the absolute "core" items of a matrix server.
 
@@ -142,7 +143,7 @@ XXX: Get more feedback if this is all "core" data.
 }
 ```
 
-#### `m.rooms` version `1`
+### `m.rooms` version `1`
 
 `m.rooms` aims to capture room metadata such as versions, memberships, and aliases.
 
@@ -164,7 +165,7 @@ XXX: Aliases need better looking at.
 }
 ```
 
-#### `m.events` version `1`
+### `m.events` version `1`
 
 `m.events` aims to capture all events present in the database.
 
@@ -183,7 +184,7 @@ XXX: RoomID -> Array[Event] mapping because just making it arrays could be a lot
 this way the importers can just "select" rooms from files and correctly parse version-specific event formats
 from them, revert? or keep?
 
-#### `m.users` version `1`
+### `m.users` version `1`
 
 `m.users` intends to capture all user-specific information.
 
@@ -230,7 +231,7 @@ User details is another mapping with the following structure;
 }
 ```
 
-#### `m.e2e.to_device` version `1`
+### `m.e2e.to_device` version `1`
 
 `m.e2e.to_device` aims to capture all in-flight/undelivered `to_device` events.
 
@@ -242,7 +243,7 @@ It owns the files `to_device.*.cbor` under directory `m.e2e/`.
 
 XXX: TODO; structure of files, array? mapping?
 
-#### `m.e2e.keys` version `1`
+### `m.e2e.keys` version `1`
 
 `m.e2e.keys` aims to capture all E2E-encryption-key related data.
 
