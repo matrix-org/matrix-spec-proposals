@@ -70,4 +70,4 @@ should be used by humans).
 
 Until the feature described in this proposal is merged into the Matrix
 specification, implementations must use the unstable prefix
-`org.matrix.mscXXXX.labels` instead of `m.room.labels`.
+`org.matrix.msc3060.labels` instead of `m.room.labels`.
