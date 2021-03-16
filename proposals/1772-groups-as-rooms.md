@@ -276,16 +276,19 @@ One way this might be implemented is:
    to do this check (and both servers and clients can cache the results fairly
    aggressively.)
 
-## Dependencies
+## Related MSCs
+
+ * [MSC2946](https://github.com/matrix-org/matrix-doc/issues/2946): Spaces
+   Summary API.
+
+ * [MSC2962](https://github.com/matrix-org/matrix-doc/issues/2962): Group
+   access control via Spaces.
 
  * [MSC2753](https://github.com/matrix-org/matrix-doc/issues/2753) for
    effective peeking over the C/S API.
 
  * [MSC2444](https://github.com/matrix-org/matrix-doc/issues/2444) (or similar)
    for effective peeking over Federation.
-
-These dependencies are shared with profiles-as-rooms
-([MSC1769](https://github.com/matrix-org/matrix-doc/issues/1769)).
 
 ## Security considerations
 
