@@ -108,7 +108,8 @@ PUT /_matrix/client/r0/admin/limits/{user_id}/scoped HTTP/1.1
 Queries are made to the same paths, using GET method instead.
 Users can query rate limits of users from the same homeserver.
 To clear the limit, either DELETE the rate limit or send a 
-not defined value. 
+not defined value. A server is free to apply lower limits
+than set by these endpoints at some or all times.
 
 ## Per-user per-room event rate limiting semantics
 
