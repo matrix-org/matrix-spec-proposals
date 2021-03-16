@@ -39,11 +39,10 @@ within the space are determined by state events within the space-room.
 Spaces are referred to primarily by their alias, for example
 `#foo:matrix.org`.
 
-Space-rooms are distinguished from regular messaging rooms by the `m.room.type`
-of `m.space` (see
-[MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840)). This allows
-clients to offer slightly customised user experience depending on the purpose
-of the room.
+Space-rooms are distinguished from regular messaging rooms by the presence of a
+`type: m.space` property in the `m.room.create` event. This allows clients to
+offer slightly customised user experience depending on the purpose of the
+room. Currently, no server-side behaviour is expected to depend on this property.
 
 Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
 way as a normal room.
@@ -69,8 +68,8 @@ the room).
 
 Join rules, invites and 3PID invites work as for a normal room, with the
 exception that `invite_state` sent along with invites should be amended to
-include the event containing the type `m.space`, to allow clients to discern
-whether an invite is to a space-room or not.
+include the `m.room.create` event, to allow clients to discern whether an
+invite is to a space-room or not.
 
 XXX: Should we also include a MSC2946 summary of the space in the invite too?
 
@@ -279,9 +278,6 @@ One way this might be implemented is:
 
 ## Dependencies
 
- * [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) for room
-   types.
-
  * [MSC2753](https://github.com/matrix-org/matrix-doc/issues/2753) for
    effective peeking over the C/S API.
 
@@ -312,6 +308,15 @@ These dependencies are shared with profiles-as-rooms
   different querying users. (It may be possible to simulate this behaviour
   using smaller spaces).
 
+## Rejected alternatives
+
+### Use a separate state event for type of room
+
+[MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) proposes the use
+of a separate `m.room.type` state event to distinguish different room
+types. This implies that rooms can dynamically switch between being a Space,
+and being a regular non-Space room. That is not a usecase we consider useful,
+and allowing it would impose significant complexity on client implementations.
 
 ## Unstable prefix
 
@@ -320,7 +325,8 @@ development:
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`m.space` | room type | `org.matrix.msc1772.space`
+`type` | property in `m.room.create` | `org.matrix.msc1772.type`
+`m.space` | value of `type` in `m.room.create` | `org.matrix.msc1772.space`
 `m.space.child` | event type | `org.matrix.msc1772.space.child`
 `m.space.parent` | event type | `org.matrix.msc1772.space.parent`
 
