@@ -136,7 +136,7 @@ Otherwise the matrix logic is quite simple here, basically following the same fl
 however: most guides (including the synapse github how-to) advice to disable TCP relays in the turnserver,
 which may be unwanted for file transfers.
 
-Both sender and reciever need to be online simultaniously for this mode of file transfer
+Both sender and reciever need to be online simultaneously for this mode of file transfer
 to work, which is unexpected in the context of the existing matrix file transfer.
 
 This file transfer will only send the file once, from one device to another.
