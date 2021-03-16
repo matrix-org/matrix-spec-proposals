@@ -403,3 +403,22 @@ Proposed final identifier       | Purpose | Development identifier
 `m.room.power_level_mappings` | event type | `org.matrix.msc1772.room.power_level_mappings`
 `auto_users` | key in `m.room.power_levels` event | `org.matrix.msc1772.auto_users`
 `allow` | key in `m.room.join_rules` event | `org.matrix.msc1772.allow`
+
+## Footnotes
+
+<a id="f1"/>[1]: The converse, "anybody can join, provided they are not members
+of the '#catlovers' space" is less useful since (a) users in the banned space
+could simply leave it at any time; (b) this functionality is already somewhat
+provided by [Moderation policy
+lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists).  [↩](#a1)
+
+<a id="f2"/>[2]: Note that there is nothing stopping users sending and
+receiving invites in `public` rooms today, and they work as you might
+expect. The only difference is that you are not *required* to hold an `invite`
+when joining the room. [↩](#a2)
+
+<a id="f3"/>[3]: This is a marginal decrease in security from the current
+situation with invite-only rooms. Currently, a misbehaving server can allow
+unauthorized users to join an invite-only room by first issuing an invite to
+that user. In theory that can be prevented by raising the PL required to send
+an invite, but in practice that is rarely done.  [↩](#a2)
