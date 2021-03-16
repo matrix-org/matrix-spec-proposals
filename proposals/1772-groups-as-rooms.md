@@ -219,16 +219,6 @@ advertise particular rooms more prominently than in the room directory.
 However, this can be added in a later MSC if it's found to be needed in
 practice.
 
-### Long description
-
-We would like to allow spaces to have a long description using rich
-formatting. This will use a new state event type `m.room.description` (with
-empty `state_key`) whose content is the same format as `m.room.message` (ie,
-contains a `msgtype` and possibly `formatted_body`).
-
-TODO: this could also be done via pinned messages. Failing that
-`m.room.description` should probably be a separate MSC.
-
 ## Future extensions
 
 The following sections are not blocking parts of this proposal, but are
