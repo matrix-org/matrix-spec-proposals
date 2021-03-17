@@ -37,13 +37,13 @@ unspecified.
 Each space is represented by its own room, known as a "space-room". The rooms
 within the space are determined by state events within the space-room.
 
-Spaces are referred to primarily by their alias, for example
-`#foo:matrix.org`.
-
 Space-rooms are distinguished from regular messaging rooms by the presence of a
 `type: m.space` property in the `m.room.create` event. This allows clients to
 offer slightly customised user experience depending on the purpose of the
 room. Currently, no server-side behaviour is expected to depend on this property.
+
+As with regular rooms, public spaces are expected to have an alias, for example
+`#foo:matrix.org`, which can be used to refer to the space.
 
 Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
 way as a normal room.
