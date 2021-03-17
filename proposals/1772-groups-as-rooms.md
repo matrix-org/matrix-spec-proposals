@@ -133,7 +133,6 @@ relationship can be expressed in one of two ways:
         "state_key": "!space:example.com",
         "content": {
             "via": ["example.com"],
-            "present": true,
             "canonical": true,
         }
     }
