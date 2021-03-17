@@ -184,6 +184,29 @@ encountered, and ignore the relationship rather than recursing infinitely.
 XXX: we need to deterministically specify where the cycles get cut.
 I think kegan found a solution for this when implementing MSC2946 in Dendrite.
 
+### Suggested children
+
+Space admins can mark particular children of a space as "suggested". This
+mainly serves as a hint to clients that that they can be displayed differently
+(for example by showing them eagerly in the room list), though future
+server-side interfaces (such as the summary API proposed in MSC2946) might also
+make use of it.
+
+A suggested child is identified by a `"suggested": true` property in the
+`m.space.child` event:
+
+
+```jsonc
+{
+    "type": "m.space.child",
+    "state_key": "!abcd:example.com",
+    "content": {
+        "via": ["example.com", "test.org"],
+        "suggested": true
+    }
+}
+```
+
 ## Future extensions
 
 The following sections are not blocking parts of this proposal, but are
