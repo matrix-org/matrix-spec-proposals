@@ -100,7 +100,6 @@ relationship can be expressed in one of two ways:
         "content": {
             "via": ["example.com"],
             "order": "abcd",
-            "auto_join": true
         }
     }
 
@@ -120,10 +119,6 @@ relationship can be expressed in one of two ways:
     are not strings, or do not consist solely of ascii characters in the range
     `\x20` (space) to `\x7F` (`~`), or consist of more than 50 characters, are
     forbidden and should be ignored if received.)
-
-    If `auto_join` is set to `true`, that indicates that the child should be
-    automatically joined by members of the space: see
-    [below](#auto-joined-children).
 
  2. Separately, rooms can claim parents via the `m.space.parent` state
     event.
@@ -191,18 +186,25 @@ XXX: we need to specify how vias are updated as time goes on (perhaps servers
 with sufficient permission could automatically add themselves into the via event
 via the bot from MSC2962?)
 
+## Future extensions
+
+The following sections are not blocking parts of this proposal, but are
+included as a useful reference for how we imagine it will be extended in future.
+
 ### Auto-joined children
 
-The `auto_join` flag on a child listing allows a space admin to list the
-sub-spaces and rooms in that space which should be automatically joined by
-members of that space.  (This is not a force-join, which are descoped for
-a future MSC; the user can subsequently part these room if they desire.)
+We could add an `auto_join` flag to `m.space.child` events to allow a space
+admin to list the sub-spaces and rooms in that space which should be
+automatically joined by members of that space.
 
-Joining should be performed by the client.  This can optionally be sped up by
-using [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) to get a
-summary of the spacetree to be joined, and then using a batch join API (when
-available) to join whichever subset of it makes most sense for the client's
-UX.
+This would be distinct from a force-join: the user could subsequently part any
+auto-joined room if they desire.
+
+Joining would be performed by the client.  This could possibly be sped up by
+using a summary API (such as that proposed in
+[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)) to get a summary
+of the spacetree to be joined, and then using a batch join API to join
+whichever subset of it makes most sense for the client's UX.
 
 Obviously auto-joining can be a DoS vector, and we consider it to be antisocial
 for a space to try to autojoin its members to more than 100 children (in total).
@@ -211,19 +213,8 @@ Clients could display the auto-joined children in the room list whenever the
 space appears in the list - thus helping users discover other rooms in a space
 even if they're not joined to that space.  For instance, if you join
 `#matrix:matrix.org`, your client could show that room in the context of its
-parent space, with that space's autojoined children shown alongside it as
+parent space, with that space's auto-joined children shown alongside it as
 siblings.
-
-It may also be useful to have a way to "suggest" that members of a space
-should join certain children (but without actually autojoining them) - to
-advertise particular rooms more prominently than in the room directory.
-However, this can be added in a later MSC if it's found to be needed in
-practice.
-
-## Future extensions
-
-The following sections are not blocking parts of this proposal, but are
-included as a useful reference for how we imagine it will be extended in future.
 
 ### Restricting access to the spaces membership list
 
