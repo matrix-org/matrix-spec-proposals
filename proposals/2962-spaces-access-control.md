@@ -393,6 +393,10 @@ child rooms? Seems to have some of the same problems as inheriting PLs.
   expansion increases the attack surface anyway by letting members in other
   rooms dictate who's allowed into your room.
 
+* The peek server has significant power. For example, a poorly chosen peek
+  server could lie about the space membership and add an
+  `@evil_user:example.org`.
+
 ## Unstable prefix
 
 The following mapping will be used for identifiers in this MSC during
