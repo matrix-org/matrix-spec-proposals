@@ -1,6 +1,7 @@
 # Proposal for Matrix "spaces" (formerly known as "groups as rooms (take 2)")
 
-This obsoletes [MSC1215](https://github.com/matrix-org/matrix-doc/issues/1215).
+This MSC, and related proposals, supercede
+[MSC1215](https://github.com/matrix-org/matrix-doc/issues/1215).
 
 ## Background and objectives
 
@@ -284,7 +285,7 @@ One way this might be implemented is:
 
 None at present.
 
-## Tradeoffs
+## Potential issues
 
 * If the membership of a space would be large (for example: an organisation of
   several thousand people), this membership has to be copied entirely into the
