@@ -282,9 +282,7 @@ One way this might be implemented is:
 
 ## Security considerations
 
-* The peek server has significant power. For example, a poorly chosen peek
-  server could lie about the space membership and add an
-  `@evil_user:example.org`.
+None at present.
 
 ## Tradeoffs
 
