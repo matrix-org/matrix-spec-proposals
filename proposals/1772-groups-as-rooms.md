@@ -153,9 +153,11 @@ relationship can be expressed in one of two ways:
     space that it should not be, clients could ignore such `m.space.parent`
     events unless either (a) there is a corresponding `m.space.child` event in
     the claimed parent, or (b) the sender of the `m.space.child` event has a
-    sufficient power-level to send such an `m.space.child` event in the parent.
-    [Checking the power-level rather than requiring an *actual* `m.space.child`
-    event in the parent allows for "secret" rooms (see below).]
+    sufficient power-level to send such an `m.space.child` event in the
+    parent. (It is not necessarily required that that user currently be a
+    member of the parent room - only the `m.room.power_levels` event is
+    inspected.) [Checking the power-level rather than requiring an *actual*
+    `m.space.child` event in the parent allows for "secret" rooms (see below).]
 
     Where the parent space also claims a parent, clients can recursively peek
     into the grandparent space, and so on.
@@ -291,6 +293,13 @@ None at present.
 * No allowance is made for exposing different 'views' of the membership list to
   different querying users. (It may be possible to simulate this behaviour
   using smaller spaces).
+
+* The requirement that `m.room.parent` links be ignored unless the sender has a
+  high PL in the parent room could lead to suprising effects where a parent
+  link suddenly ceases to take effect because a user loses their PL in the
+  parent room. This is mitigated in the general case by honouring the parent
+  link when there is a corresponding `m.room.child` event, however it remains
+  a problem for "secret" rooms.
 
 ## Rejected alternatives
 
