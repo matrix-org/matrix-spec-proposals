@@ -184,10 +184,6 @@ encountered, and ignore the relationship rather than recursing infinitely.
 XXX: we need to deterministically specify where the cycles get cut.
 I think kegan found a solution for this when implementing MSC2946 in Dendrite.
 
-XXX: we need to specify how vias are updated as time goes on (perhaps servers
-with sufficient permission could automatically add themselves into the via event
-via the bot from MSC2962?)
-
 ## Future extensions
 
 The following sections are not blocking parts of this proposal, but are
@@ -299,6 +295,10 @@ None at present.
   parent room. This is mitigated in the general case by honouring the parent
   link when there is a corresponding `m.room.child` event, however it remains
   a problem for "secret" rooms.
+
+* The `via` servers listed in the `m.room.child` and `m.room.parent` events
+  could get out of date, and will need to be updated from time to time. This
+  remains an unsolved problem.
 
 ## Rejected alternatives
 
