@@ -26,6 +26,8 @@ other party. Optional features or extensions may or may not be implemented.
 * Overly overcompliant: All required and optional parts are implemented, and
 with so many additional checks that a counterparty deviating in any manner
 cannot communicate in any manner. No extensions are allowed.
+* An implementation may be overcompliant in some aspects and undercompliant in
+others. This is not a non-compliance in itself. 
 * Non-compliant: Anything else.
 
 These tiers apply to clients and servers equally.
