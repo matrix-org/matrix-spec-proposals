@@ -1,6 +1,7 @@
 # MSC3068: Compliance profiles
 
-This MSC seeks to standardise the terminology
+This MSC seeks to standardise the terminology on compliant a Matrix client or
+a server is.
 
 ## Proposal
 
@@ -35,3 +36,6 @@ having undercompliant or petty compliant servers with open registration
 is discouraged.
 * Overcompliant or overly overcompliant clients will fail to communicate
 with most of the current Matrix ecosystem.
+* Overly overcompliant parties will fail to communicate with undercompliant or
+petty compliant parties, and may fail to communicate with strictly compliant
+parties.
