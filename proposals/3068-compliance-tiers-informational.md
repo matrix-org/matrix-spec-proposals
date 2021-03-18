@@ -1,14 +1,15 @@
 # MSC3068: Compliance profiles
 
 This MSC seeks to standardise the terminology on how compliant a Matrix client
-or server is.
+or server is. This will enable us to discuss and change the security model of
+Matrix in a more formalised manner.
 
 ## Proposal
 
 Unfortunately, not all clients and not all servers implement the specification
 as exactly written, and noncompliant or unspecified events that are accepted
-are very common. This informational MSC describes several compliance tiers,
-based on the implementation of required and optional features, and features not
+are very common. This MSC describes several compliance tiers, based on
+the implementation of required and optional features, and features not
 specified in the official Matrix protocol specification ("extensions"):
 
 * Strictly compliant: All required and optional parts of the spec is fully
