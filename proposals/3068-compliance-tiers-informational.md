@@ -1,7 +1,7 @@
 # MSC3068: Compliance profiles
 
-This MSC seeks to standardise the terminology on compliant a Matrix client or
-a server is.
+This MSC seeks to standardise the terminology on how compliant a Matrix client
+or server is.
 
 ## Proposal
 
