@@ -5,7 +5,7 @@ to carve out a little corner of Matrix to list a series (or group) of rooms. Typ
 be used by communities to represent their community/project on Matrix.
 
 Though the feature worked for the extremely common use case, it had/has multiple sharp edges which
-prevent it from being considered ready for widespread adoption. The details of which are spread over
+prevent it from being considered ready for widespread adoption. The details of those problems are spread over
 multiple issue trackers and not recorded here, however the summary is that 
 [MSC1772: Spaces](https://github.com/matrix-org/matrix-doc/pull/1772) is destined to replace the entire 
 Groups system in Matrix.
