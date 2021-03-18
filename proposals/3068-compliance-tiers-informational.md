@@ -21,10 +21,10 @@ possibly with some extensions. Optional features may or may not be implemented.
 but not to the point to prevent coherent resolution or authentication.
 * Overcompliant: All required parts are implemented, with some additional
 checks, possibly to the point of rejecting any unspecified events from the
-other party.
+other party. Optional features or extensions may or may not be implemented.
 * Overly overcompliant: All required and optional parts are implemented, and
 with so many additional checks that a counterparty deviating in any manner
-cannot communicate in any manner.
+cannot communicate in any manner. No extensions are allowed.
 * Non-compliant: Anything else.
 
 These tiers apply to clients and servers equally.
