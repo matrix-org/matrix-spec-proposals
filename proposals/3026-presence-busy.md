@@ -52,5 +52,5 @@ and open to discussion.
 ## Unstable prefix
 
 Until this proposal is merged into a stable version of the Matrix specification,
-implementations must use `org.matrix.busy` instead of `busy` as the new presence
+implementations must use `org.matrix.msc3026.busy` instead of `busy` as the new presence
 state.
