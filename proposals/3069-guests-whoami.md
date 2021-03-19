@@ -7,7 +7,7 @@ of the endpoint got created such that guest access was declined.
 ## Proposal
 
 Guests are allowed to use `/account/whoami`. When a guest makes a request, the response will have
-and added `is_guest: true` field - this field is optional (default `false`) otherwise.
+an added `is_guest: true` field - this field is optional (default `false`) otherwise.
 
 ## Potential issues
 
