@@ -177,16 +177,16 @@ burst period, for up to `burst.duration` seconds.
    "type": "m.limits.rate.user",
    "power_level": 0,
    "power_level.scope": "maximum",
-   "roles": undefined,
+   "roles": [],
    "roles.operator": "exclude(all)",
    "limits": ["m.room.message":123.4567, "m.ban":1.234567],
    "burst": [
    {
    "burst.coef": 1.00,
    "burst.duration": 0,
-   "users": undefined,
+   "users": [],
    "users.operator": "exclude",
-   "roles": undefined,
+   "roles": [],
    "roles.operator": "include_min(1)"
    }
    ]
