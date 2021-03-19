@@ -164,6 +164,28 @@ the self-imposed values. Both `users` and `roles` parameters can be used,
 in which case the applicable users is based on the union of the user set
 based on user filtering and the user set based on the role filtering.
 
+Applicable user set of the rate limit is then calculated as follows:
+* A rate limiting event with both power level based filtering and role
+based filtering (`power_level` and `roles` defined) at the same time
+is rejected.
+* If both `power_level` and `roles` are omitted and `users` are defined,
+and `users.operator` is `exclude`, then the limit applies to all users,
+except ones stated in the list.
+* If `power_level` is defined, users are filtered according to `power_level`
+and `power_level.operator`, then the `users` are added or subtracted from
+that set according to `users.operator`.
+* If `roles` is defined, the following rules apply:
+* ** If `roles.operator` is an exclusion operator, then take the set of all
+users and subtract users according to `roles.operator` according to `roles`
+and the roles user possesses.
+* ** If `roles.operator` is an inclusion operator, then start with empty set,
+and add users according to `roles` listed and `roles.operator`.
+* ** If `users` is also defined, then the `users` are added or subtracted
+from the set calculated according to the abovementioned method, depending
+on `users.operator`.
+* For burst definitions, the same rules apply, except maximum applicable
+user set is the set of users that are limited by the parent rate limit.
+
 ## Rate limit burst capability
 
 Bursting can be defined using the `burst` property, which includes an array
