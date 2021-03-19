@@ -121,10 +121,10 @@ The following state event shall be sent:
    "type": "m.limits.rate.user",
    "power_level": 0,
    "power_level.operator": "maximum",
-   "users": undefined,
+   "users": [],
    "users.operator": "include",
-   "roles": undefined,
-   "roles.operator": "exclude(all)",
+   "roles": [],
+   "roles.operator": "include_min(1)",
    "limits": ["m.room.message":123.4567, "m.ban":1.234567]
 }
 ```
