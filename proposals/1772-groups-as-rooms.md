@@ -115,10 +115,10 @@ relationship can be expressed in one of two ways:
 
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
-    ordering of `order` values; rooms with no `order` come last. `order`s which
-    are not strings, or do not consist solely of ascii characters in the range
-    `\x20` (space) to `\x7F` (`~`), or consist of more than 50 characters, are
-    forbidden and should be ignored if received.)
+    ordering of the characters in `order` values; rooms with no `order`
+    come last. `order`s which are not strings, or do not consist solely of
+    ascii characters in the range `\x20` (space) to `\x7F` (`~`), or consist of
+    more than 50 characters, are forbidden and should be ignored if received.)
 
  2. Separately, rooms can claim parents via the `m.space.parent` state
     event.
@@ -141,12 +141,12 @@ relationship can be expressed in one of two ways:
     Parents where `via` is not present are ignored.
 
     `canonical` determines whether this is the main parent for the space. When
-    a user joins a room with a canonical parent, clients may switch to view
-    the room in the context of that space, peeking into it in order to find
-    other rooms and group them together.  In practice, well behaved rooms
-    should only have one `canonical` parent, but given this is not enforced:
-    if multiple are present the client should select the one with the lowest
-    room ID, as determined via a lexicographic utf-8 ordering.
+    a user joins a room with a canonical parent, clients may switch to view the
+    room in the context of that space, peeking into it in order to find other
+    rooms and group them together.  In practice, well behaved rooms should only
+    have one `canonical` parent, but given this is not enforced: if multiple
+    are present the client should select the one with the lowest room ID, as
+    determined via a lexicographic ordering of the Unicode code-points.
 
     To avoid abuse where a room admin falsely claims that a room is part of a
     space that it should not be, clients could ignore such `m.space.parent`
