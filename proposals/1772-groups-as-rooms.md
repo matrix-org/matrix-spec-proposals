@@ -38,7 +38,7 @@ Each space is represented by its own room, known as a "space-room". The rooms
 within the space are determined by state events within the space-room.
 
 Space-rooms are distinguished from regular messaging rooms by the presence of a
-`type: m.space` property in the `m.room.create` event. This allows clients to
+`type: m.space` property in the content of the `m.room.create` event. This allows clients to
 offer slightly customised user experience depending on the purpose of the
 room. Currently, no server-side behaviour is expected to depend on this property.
 
