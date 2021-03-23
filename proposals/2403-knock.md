@@ -405,8 +405,8 @@ first we summarise the semantics of the proposed changes.
 
 ### Current membership
 Only users without a current membership or with their current membership
-being "leave" can knock on a room. This means that a user that is banned, has
-already knocked or is currently in the room cannot knock on it.
+set to "knock" or "leave" can knock on a room. This means that a user that
+is banned, is invited or is currently in the room cannot knock on it.
 
 ### Join Rules
 This proposal makes use of the existing "knock" join rule. The value of
