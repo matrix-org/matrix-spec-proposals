@@ -629,17 +629,17 @@ implementation. The unstable counterpart for each endpoint is:
 C-S knock:
 
 * `POST /_matrix/client/knock/{roomIdOrAlias}`
-* `POST /_matrix/client/unstable/xyz.amorgan/knock/{roomIdOrAlias}`
+* `POST /_matrix/client/unstable/xyz.amorgan.knock/knock/{roomIdOrAlias}`
 
 S-S make_knock:
 
 * `GET /_matrix/federation/v1/make_knock/{roomId}/{userId}`
-* `GET /_matrix/federation/unstable/xyz.amorgan/make_knock/{roomId}/{userId}`
+* `GET /_matrix/federation/unstable/xyz.amorgan.knock/make_knock/{roomId}/{userId}`
 
 S-S send_knock:
 
 * `PUT /_matrix/federation/v1/send_knock/{roomId}/{eventId}`
-* `PUT /_matrix/federation/unstable/xyz.amorgan/send_knock/{roomId}/{eventId}`
+* `PUT /_matrix/federation/unstable/xyz.amorgan.knock/send_knock/{roomId}/{eventId}`
 
 Finally, an unstable prefix is added to the key that comes down `/sync`,
 the join rule for rooms and the `content.membership` key of the member
