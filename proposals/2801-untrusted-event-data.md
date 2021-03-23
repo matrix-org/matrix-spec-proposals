@@ -109,7 +109,7 @@ events sent over federation; in particular, if subsets of the servers in a room
 have different ideas as to which events are "valid", then their concepts of the
 room state can begin to drift, and the room can eventually become
 "split-brained". This makes it hard to simply say, for example,
-"`m.room.member` events with a non-string `displayname` are invald and should
+"`m.room.member` events with a non-string `displayname` are invalid and should
 not form part of the room state": we have a risk that some servers will accept
 the event, and some will not.
 
