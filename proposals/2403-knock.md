@@ -98,7 +98,8 @@ the room's name and avatar. A client will need this information to show a
 nice representation of pending knocked rooms. The recommended events to
 include are the join rules, canonical alias, avatar, name and encryption
 state of the room, rather than all room state. This behaviour matches the
-information sent to remote homeservers when invited their users to a room.
+information sent to remote homeservers when remote users are invited to a
+room.
 
 This prevents unneeded state from the room leaking out, and also speeds
 things up (think not sending over hundreds of membership events from big
