@@ -50,7 +50,7 @@ marks that they have been used.
 
 A new response parameter, `device_unused_fallback_key_types`, is added to
 `/sync`.  This is an array listing the key algorithms for which the server has
-an unused fallback key for the user.  If the client wants the server to have a
+an unused fallback key for the device.  If the client wants the server to have a
 fallback key for a given key algorithm, but that algorithm is not listed in
 `device_unused_fallback_key_types`, the client will upload a new key as above.
 
@@ -65,7 +65,7 @@ Example:
 
 Response:
 
-```json
+```jsonc
 {
   // other fields...
   "device_unused_fallback_key_types": ["signed_curve25519"]
