@@ -75,6 +75,15 @@ The user wasn't allowed to knock (e.g. they are banned). Example error reply:
 }
 ```
 
+##### Status code 404:
+The room was not found. Example error reply:
+```json
+{
+  "errcode": "M_NOT_FOUND",
+  "error": "Unknown room."
+}
+```
+
 ### Extensions to `GET /_matrix/client/r0/sync`
 
 In [the response to
@@ -289,6 +298,15 @@ This request was invalid, e.g. bad JSON. Example reply:
 }
 ```
 
+##### Status code 403:
+This request is forbidden, e.g. the user is banned from the room. Example reply:
+```json
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "You are not allowed to knock on this room"
+}
+```
+
 ##### Status code 404:
 The room is unknown to the remote server. Example reply:
 ```json
@@ -396,6 +414,24 @@ request content.
       "type": "m.room.member",
     }
   ]
+}
+```
+
+##### Status code 403:
+This request is forbidden, e.g. the user is banned from the room. Example reply:
+```json
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "You are not allowed to knock on this room"
+}
+```
+
+##### Status code 404:
+The room is unknown to the remote server. Example reply:
+```json
+{
+  "errcode": "M_NOT_FOUND",
+  "error": "Unknown room"
 }
 ```
 
