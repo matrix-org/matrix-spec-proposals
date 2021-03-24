@@ -549,7 +549,7 @@ power level to send it. This is a problem that currently affects other,
 similar operations, such as disinviting or unbanning a federated user. In
 both cases, they won't be notified as their homeserver is not in the room.
 
-While we could send easily send the leave event as part of a generic
+While we could easily send the leave event as part of a generic
 transaction to the remote homeserver, that homeserver would have no way to
 validate the `prev_events` and `auth_events` that the event references. We
 could send those events over as well, but those will also reference other
@@ -601,7 +601,7 @@ knock.
 
 # Potential issues
 This new feature would allow users to send events into rooms that they don't
-partake in. That is why this proposal enables the a `knock` join rule, in
+partake in. That is why this proposal enables the `knock` join rule, in
 order to allow room admins to opt in to this behaviour.
 
 # Alternatives
