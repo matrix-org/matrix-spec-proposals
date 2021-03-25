@@ -179,7 +179,8 @@ but also if you have e.g. a bot which syncs emotes over multiple rooms, those wi
 For emoticons a client could add deliminators (e.g. `:`) around around the image shortcode, meaning
 that if an image has a shortcode of `emote`, the user can enter `:emote:` to send it. If there are
 multiple emoticons with the same shortcode in a room the client could e.g. slugify the packs display
-name and then have the user enter `:slug~emote:`.
+name and then have the user enter `:slug~emote:`. As slugs typically match `^[\w-]+$` that should
+ensure complete-ability.
 
 The alt / title text fo the `<img>` tag is expected to be the `body` of the emote, or, if absent, its
 shotcode, optionally with tacked on deliminators.
