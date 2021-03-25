@@ -5,6 +5,7 @@ Emoticons, or short emotes...we need them!
 We also need proper stickers, too!
 
 ## Terminology
+### Emoticons
 Since there is a lot of confusion of how this relates to `m.emote`, why this isn't called custom emoji
 etc, there it is:
 
@@ -23,6 +24,11 @@ are for.
 Now, a client may choose to name these however they like, we already have a naming disparity between
 spec and clients with groups vs communities. It is, however, imperative to name things in the spec
 accurately after what they are.
+
+### Stickers
+Stickers already exits in Matrix. They are reusable images one can send, usually as a reaction sent
+in the timeline to something. This MSC adds a way to distribute and define a source for a client to
+send them.
 
 ## Proposal
 ### Emoticons in the formatted body
@@ -59,7 +65,7 @@ To send stickers the already speced `m.sticker` is used.
 Emoticons are recommended to have a size of about 128x128 pixels. Even though the fallback specifies
 a height of 32, this is to ensure that the emotes still look good on higher DPI screens.
 
-Stickers are recommended to have a size of about 512x512 pixels.
+Stickers are recommended to have a size of up to 512x512 pixels.
 
 Furthermore, these images should either have a mimetype of `image/png`, `image/gif` or `image/webp`.
 They can be animated.
@@ -79,7 +85,7 @@ The pack object consists of the following keys:
    to the room avatar, if the pack is in the room. If the room also does not have an avatar, or the
    image pack event is not in a room, this pack does not have an avatar.
  - `usage`: (String[], optional) An array of the usages for this pack. Possible usages are `emoticon`
-   and `sticker`. If the usage is absent, a usage for all possible usage types is to be assumed.
+   and `sticker`. If the usage is absent or empty, a usage for all possible usage types is to be assumed.
  - `license`: (String, optional) The license of this pack.
 
 #### Image object
@@ -89,8 +95,8 @@ The image object conists of the following keys:
    the emote alt text. Defaults to the short code.
  - `info`: (`ImageInfo`, optional) The already speced `ImageInfo` object used for the `info` block of
    `m.sticker` events.
- - `usage`: (String[], optional) An array of the usages for this image. If present, this overrides
-   the usage defined at pack level for this particular image.
+ - `usage`: (String[], optional) An array of the usages for this image. If present and non-emtpy,
+   this overrides the usage defined at pack level for this particular image.
 
 #### Example image pack event
 Taking all this into account, an example pack event may look as following:
@@ -100,8 +106,8 @@ Taking all this into account, an example pack event may look as following:
     "emote": {
       "url": "mxc://example.org/blah"
     },
-    "sicker": {
-      "url": "mxc://example.og/sticker",
+    "sticker": {
+      "url": "mxc://example.org/sticker",
       "usage": ["sticker"]
     }
   },
@@ -169,10 +175,21 @@ that, when viewing a room that you also have in `m.image_pack.rooms`, it won't b
 but also if you have e.g. a bot which syncs emotes over multiple rooms, those will also be deduplicated.
 
 ### Sending
+#### Emoticons
 For emoticons a client could add deliminators (e.g. `:`) around around the image shortcode, meaning
 that if an image has a shortcode of `emote`, the user can enter `:emote:` to send it. If there are
 multiple emoticons with the same shortcode in a room the client could e.g. slugify the packs display
 name and then have the user enter `:slug~emote:`.
+
+The alt / title text fo the `<img>` tag is expected to be the `body` of the emote, or, if absent, its
+shotcode, optionally with tacked on deliminators.
+
+#### Stickers
+When sending a sticker the `body` of the `m.sticker` event should be set to the `body` defined for that
+image, or its shortcode, if absent.
+
+Furthermore, the `info` of the `m.sticker` event should be set to the `info` defined for that image,
+or a blank object, if absent.
 
 ## Security Considerations
 When sending an `<img>` tag in an encrypted room, the client will make a request to fetch
@@ -181,6 +198,8 @@ this could potentially leak part of the conversation. This is **not** a new secu
 it already exists. This, however, isn't much different from posting someone a link in an e2ee chat and
 the recipient opens the link. Additionally, images, and thus emotes, are often cached by the client,
 not even necessarily leading to an http query.
+
+Related issue: https://github.com/matrix-org/matrix-doc/issues/2418
 
 ## Unstable prefix
 The `m.image_pack` in the account data is replaced with `im.ponies.user_emotes`. The `m.image_pack` in
