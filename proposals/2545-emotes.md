@@ -205,7 +205,7 @@ Related issue: https://github.com/matrix-org/matrix-doc/issues/2418
 ## Unstable prefix
 The `m.image_pack` in the account data is replaced with `im.ponies.user_emotes`. The `m.image_pack` in
 the room state is replaced with `im.ponies.room_emotes`. The `m.image_pack.rooms` is replaced with
-`im.ponies.room_emotes`.
+`im.ponies.emote_rooms`.
 
 Some existing implementations using `im.ponies.user_emotes` and `im.ponies.room_emotes` currently use
 a dict called `short` which is just a map of the shortcode to the mxc url.
