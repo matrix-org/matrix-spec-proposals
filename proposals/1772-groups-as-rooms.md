@@ -207,6 +207,17 @@ A suggested child is identified by a `"suggested": true` property in the
 }
 ```
 
+### Extended "room invite state"
+
+The specification is currently vague about what room state should be available
+to users that have been invited to a room, though the Federation API spec does
+recommend that the `invite_room_state` sent over federation via [PUT
+`/_matrix/federation/v2/invite`](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
+should include "the join rules, canonical alias, avatar, and name of the room".
+
+This MSC proposes adding `m.room.create` to that list, so that the recipient of
+an invite can distinguish invites to spaces from other invites.
+
 ## Future extensions
 
 The following sections are not blocking parts of this proposal, but are
