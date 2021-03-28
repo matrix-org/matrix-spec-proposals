@@ -7,7 +7,11 @@ fields of those events.
 
 ## Proposal
 
-Draft
+This only applies to reads. Write results cannot have fields redacted using this method.
+
+To retrieve events with fields redacted, the query parameter `filter` shall be set as an array of 
+strings denoting URL-encoded JSON keys. The server will then return a response comprising of the event
+with those fields filtered out.
 
 ## Potential issues
 
