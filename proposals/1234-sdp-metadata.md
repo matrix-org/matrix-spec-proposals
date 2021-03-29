@@ -66,7 +66,7 @@ type and have the following fields:
 
 ### Edge cases
 
-+ There should _never_ be more than one `SDPStreamMetadata` in the
++ There should _never_ be more than one `SDPStreamMetadata` in
   `sdp_stream_metadata` with the same `purpose`.
 + If an incoming stream is not described, in `sdp_stream_metadata`, it should be
   ignored.
@@ -90,7 +90,7 @@ states](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream/id).
 Similar is true for SDP attributes.
 
 This proposal is also more practical for cases where more complex metadata is
-needed. For conferencing, a `userId` field could be added to
+needed. For conferencing, a `user_id` field could be added to
 `SDPStreamMetadata`.
 
 ## Unstable prefix
