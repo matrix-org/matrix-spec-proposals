@@ -100,7 +100,7 @@ During development, the following fields should be used:
 |Release                     |Development                                    |
 |----------------------------|-----------------------------------------------|
 |`sdp_stream_metadata`       |`org.matrix.msc3077.sdp_stream_metadata`       |
-|`m.call.sdp_stream_metadata`|`m.call.org.matrix.msc3077.sdp_stream_metadata`|
+|`m.call.sdp_stream_metadata`|`org.matrix.msc3077.call.sdp_stream_metadata`|
 
 ## Potential issues
 
