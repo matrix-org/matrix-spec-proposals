@@ -1,4 +1,4 @@
-# MSC0000: Low Bandwidth Client-Server API
+# MSC3079: Low Bandwidth Client-Server API
 
 The Client-Server API is not bandwidth efficient, relying on HTTP and human-readable JSON as a data
 format. It is desirable to provide low bandwidth alternatives for mobile or low power devices. This
@@ -160,7 +160,7 @@ mandate 1200 bytes of padding.
 The `/versions` response should look like this whilst the proposal is in review:
 ```json
 {
-  "org.matrix.msc0000.low_bandwidth": {
+  "org.matrix.msc3079.low_bandwidth": {
     "dtls": 8008,
     "cbor_enum_version": 1,
     "coap_enum_version": 1,
@@ -174,7 +174,7 @@ The `/versions` response should look like this whilst the proposal is in review:
 ### Appendix A: CBOR integer keys
 
 | Key Name | Integer |
--------
+|----------|---------|
 |event_id|                    1|
 |type|                        2|
 |content|                     3|
@@ -283,6 +283,7 @@ The `/versions` response should look like this whilst the proposal is in review:
 ### Appendix B: CoAP Path Enums
 
 | Path Enum | Matrix Path Regexp |
+|-----------|--------------------|
 |0| /_matrix/client/versions|
 |1| /_matrix/client/r0/login|
 |2| /_matrix/client/r0/capabilities|
