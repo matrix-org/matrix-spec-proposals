@@ -7,7 +7,8 @@ proposal specifies a CoAP/CBOR alternative to the existing HTTP/JSON API. This p
 This MSC has the potential to have a significant beneficial impact on mobile devices power
 (and hence battery) consumption. It would also open up the possibility of the `/sync` API being used
 in the background of mobile devices as a form of Matrix Push Notification, removing the need for
-GCM/APNS. Furthermore, it allows Matrix to run faster on low bitrate links (e.g 1-5Kbps).
+proprietary push systems such as GCM/APNS. Furthermore, it allows Matrix to run faster on
+low bitrate links (e.g 1-5Kbps).
 
 ## Proposal
 
@@ -40,12 +41,14 @@ to:
 Where `8` is statically mapped to a string key e.g `origin_server_ts`. This means it is possible for
 a key to be defined twice: once as a number and once as a string. If this happens, the string key
 MUST be used. It is NOT required that keys which have integers are represented as such; the integer
-mapping is entirely optional. The complete key enum list is in Appendix A and represents version 1
+mapping is entirely optional. String representations of numbers e.g `"8"` MUST NOT be expanded, and
+should be treated literally. As JSON does not allow integer keys, this prevents any ambiguity when
+converting from CBOR to JSON. The complete key enum list is in Appendix A and represents version 1
 of the CBOR key mappings.
 
 Clients MUST set the `Content-Type` header to `application/cbor` when sending CBOR objects.
 Similarly, servers MUST set the `Content-Type` header to `application/cbor` when responding with CBOR
-to requests. Server MUST NOT respond to requests with `Content-Type: application/json` with CBOR,
+to requests. Servers MUST NOT respond to requests with `Content-Type: application/json` with CBOR,
 unless the `Accept` header in the client's request includes `application/cbor`.
 
 TODO: Define test objects to and from JSON
@@ -100,8 +103,8 @@ of (access_token, coap token ID). This allows the same device to have multiple O
 events MUST be sent as Confirmable messages to ensure that the client received the events. The pushed events MUST
 look identical to a normal `/sync` response, which includes the `next_batch` token. When the client disconnects and
 reconnects with a new registration, they can use the `next_batch` token to consume where they left off. If a client
-doesn't acknowledge an event despite multiple attempts to do so, the registration SHOULD be removed to avoid sending
-redundant data.
+doesn't acknowledge an event despite multiple attempts to do so, the registration SHOULD be removed to avoid consuming
+server resources and network bandwidth.
 
 Clients MAY re-register with the `/sync` endpoint if they believe their registration was deleted e.g due to loss of
 internet connectivity. Servers SHOULD retry sending events in the event of a re-register request, if the registration
@@ -134,7 +137,7 @@ which low bandwidth features are supported on this server. This object looks lik
 
 ### Summary of required features
 
-Many features in this proposal are optional. The fundamental required features in order for a server to declare itself
+Many features in this proposal are optional. The fundamental features required in order for a server to declare itself
 as "low-bandwidth" in the `/versions` response are:
  - Accept `application/cbor`. CBOR integer keys are optional.
  - Accept CoAP requests with access token Option stickiness. CoAP path enums are optional.
@@ -167,9 +170,6 @@ The `/versions` response should look like this whilst the proposal is in review:
   }
 }
 ```
-
-
-## Appendices
 
 ### Appendix A: CBOR integer keys
 
@@ -280,7 +280,7 @@ The `/versions` response should look like this whilst the proposal is in review:
 |error|                       103|
 |room_alias|                  104|
 
-### Appendix B: CoAP Path Enums
+### Appendix B: CoAP Path Enums
 
 | Path Enum | Matrix Path Regexp |
 |-----------|--------------------|
