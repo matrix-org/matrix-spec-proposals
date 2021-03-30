@@ -259,10 +259,10 @@ the room (see [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
 change this).
 
 Further MSCs may introduce navigation to more top-level as well as
-non-top-level objects; see "Further evolution" for some ideas. These new
-proposals SHOULD follow the generic grammar laid out above, adding new `type`
-and `nonid-segment` specifiers and/or allowing them in other levels, rather
-than introduce a new grammar. It is recommended to only use abbreviated
+non-top-level objects; see "Ideas for further evolution" to get inspired. These
+new proposals SHOULD follow the generic grammar laid out above, adding new
+`type` and `nonid-segment` specifiers and/or allowing them in other levels,
+rather than introduce a new grammar. It is recommended to only use abbreviated
 single-letter specifiers if they are expected to be user visible and convenient
 for type-in; if a URI for a given resource type is usually generated
 (e.g. because the corresponding identifier is not human-friendly), it's
@@ -484,7 +484,7 @@ liberty similar to that of matrix.to.
 
 ## Discussion and non-normative statements
 
-### Further evolution
+### Ideas for further evolution
 
 This MSC is obviously just the first step, keeping the door open for
 extensions. Here are a few ideas:
@@ -533,7 +533,12 @@ extensions. Here are a few ideas:
 
 * As described in "Alternatives", a synonymous system can be introduced that
   uses Matrix identifiers with sigils by adding another path prefix (e.g.,
-  `matrix:id/%23matrix:matrix.org`).
+  `matrix:id/%23matrix:matrix.org`). However, such MSC would have to address
+  the concerns of possible confusion arising from having two similar but
+  distinct notations.
+
+* Interoperability of Matrix URIs with
+  [Linked Data](https://en.wikipedia.org/wiki/Linked_data).
 
 
 ### Past discussion points and tradeoffs
@@ -574,9 +579,6 @@ further discussion should happen in GitHub comments.
    to offload that to the server. For that reason fragments, if/when ever
    employed in Matrix, only should be used to pinpoint a position within events
    and for similar strictly client-side operations.
-1. _Interoperability with
-   [Linked Data](https://en.wikipedia.org/wiki/Linked_data)_ is out of
-   scope of this MSC but worth being considered separately.
 1. _How does this MSC work with closed federations?_ ~~If you need to
    communicate a URI to the bigger world where you cannot expect
    the consumer to know in advance which federation they should use -
@@ -651,12 +653,11 @@ the type signifier?).
 Yet another alternative considered was to go "full REST" and structure
 URLs in a more traditional way with serverparts coming first, followed
 by type grouping (sic - not specifiers), and then by localparts,
-i.e. `matrix://example.org/rooms/roomalias`. This is even more
-difficult to comprehend for a Matrix user than the previous alternative
-and besides it conflates the notion of an authority server with
-that of a namespace (quite confusingly, `example.org` above is
-the _domain name_ - aka server part - of an alias, not a _host name_
-of a hypothetical homeserver that should be used to resolve the URI).
+i.e. `matrix://example.org/rooms/roomalias`. This is even more difficult
+to comprehend for a Matrix user than the previous alternative and besides it
+conflates the notion of an authority server with that of a namespace
+discriminator: clients would not connect to `example.org` to resolve the alias
+above, they would still connect to their own homeserver.
 
 #### Minimal syntax
 
@@ -667,6 +668,8 @@ URIs even though they look like ones: most URI parsers won't handle them
 correctly. As laid out in the beginning of this proposal, Matrix URIs are
 not striving to preempt Matrix identifiers; instead of trying to produce
 an equally readable string, one should just use identifiers where they work.
+Why Matrix identifiers look the way they look is way out of the MSC scope
+to discuss here.
 
 #### Minimal syntax based on the path component and percent-encoding
 
@@ -696,7 +699,7 @@ Putting the whole id to the URI fragment (`matrix:#id_with_sigil` or,
 following on the `matrix.to` tradition, `matrix:#/id_with_sigil` for
 readability) allows using `#` without encoding on many URI parsers. It is
 still not fully RFC-compliant and rules out using URIs by homeservers
-(see also "Past discussion points").
+(see also "Past discussion points" on using fragments to address events).
 
 Regardless of the placement (the fragment or the path), one more consideration
 is that the character space for sigils is extremely limited and
