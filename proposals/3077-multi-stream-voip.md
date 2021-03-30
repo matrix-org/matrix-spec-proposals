@@ -25,9 +25,9 @@ a session description i.e.:
 + `m.call.answer`
 + `m.call.negotiate`
 
-The `sdp_stream_metadata` field is an object in which each key corresponds to
-one stream in the session description. The values are of `SDPStreamMetadata`
-type and have the following fields:
+The `sdp_stream_metadata` field is an object in which each key is one stream
+`id` in the session description. The values are of `SDPStreamMetadata` type and
+have the following fields:
 
 + `purpose` - a string indicating the purpose of the stream. For compatibility
   between clients values `m.usermedia` and `m.screenshare` are defined.
