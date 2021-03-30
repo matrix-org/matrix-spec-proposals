@@ -156,6 +156,12 @@ mandate 1200 bytes of padding.
 
 ## Security considerations
 
+DTLS connections should have the same security guarantees as TLS connections. Weak ciphers should not be used.
+
+If a DTLS connection is hijacked, an attacker can send requests without the need for an access token.
+
+OBSERVE could potentially send encrypted traffic to addresses which, in the worst case scenario, are attacker
+controlled. Without the DTLS session keys this traffic should remain secure.
 
 
 ## Unstable prefix
