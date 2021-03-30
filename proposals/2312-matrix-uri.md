@@ -49,12 +49,13 @@ This MSC does not introduce new Matrix entities, nor API endpoints -
 it merely defines a mapping between URIs with the scheme name `matrix:`
 and Matrix identifiers, as well as operations on them. The MSC should be
 sufficient to produce an implementation that would convert Matrix URIs to
-a series of CS API calls, entirely on the client side. It is recognised,
-however, that most of the URI processing logic can and should (eventually)
-be on the server side in order to facilitate adoption of Matrix URIs;
-further MSCs are needed to define details for that, as well as to extend
-the mapping to more resources (including those without equivalent
-Matrix identifiers, such as room state or user profile data).
+a series of [CS API](https://matrix.org/docs/spec/client_server/latest) calls,
+entirely on the client side. It is recognised, however, that most of
+the URI processing logic can and should (eventually) be on the server side
+in order to facilitate adoption of Matrix URIs; further MSCs are needed
+to define details for that, as well as to extend the mapping to more resources
+(including those without equivalent Matrix identifiers, such as room state or
+user profile data).
 
 The Matrix identifier (or identifiers) can be reconstructed from
 `{id without sigil}` by prepending a sigil character corresponding to `{type}`.
