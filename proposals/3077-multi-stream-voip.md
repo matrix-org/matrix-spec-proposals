@@ -31,6 +31,8 @@ have the following fields:
 
 + `purpose` - a string indicating the purpose of the stream. For compatibility
   between clients values `m.usermedia` and `m.screenshare` are defined.
+  `m.usermedia` is the stream that contains the webcam and microphone tracks.
+  `m.screenshare` is then the stream with the screen-sharing tracks.
 
 ### Example
 
