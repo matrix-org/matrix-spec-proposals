@@ -195,21 +195,23 @@ hyperlinks to Matrix URIs.
 
 #### Authority
 
-The authority part will eventually be used to indicate access to a Matrix
-resource (such as a room or a user) specifically through a given server,
-addressing a case described in
-[matrix-org/matrix-doc#2309](https://github.com/matrix-org/matrix-doc/issues/2309).
+Basing on
+[the definition in RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.2),
+this MSC restricts the authority part to never have a userinfo component,
+partially to prevent confusion concerned with the `@` character that has its
+own meaning in Matrix, but also because this component has historically been
+a popular target of abuse.
 ```text
 authority = host [ ":" port ]
 ```
+Further definition of syntax or semantics for the authority part is left for
+future MSCs. Clients MUST parse the authority part as per RFC 3986 (i.e.
+the presence of an authority part MUST NOT break URI parsing) but SHOULD NOT
+use data from the authority part other than for experiments or research.
 
-Here's an example of a Matrix URI with an authority part
-(the authority part is `example.org:682` here):
-`matrix://example.org:682/roomid/Internal_Room_Id:example2.org`.
-
-The authority part, as defined above, is reserved for future MSCs.
-Clients SHOULD NOT use data from the authority part other than for
-experimental or further research purposes.
+The authority part may eventually be used to indicate access to a Matrix
+resource (such as a room or a user) specifically through a given entity.
+See "Ideas for further evolution".
 
 #### Path
 This MSC restricts
@@ -330,12 +332,12 @@ means performing an action on a URI with no `action` in the query.
 The routing query (`via=`) indicates servers that are likely involved in
 the room (see also
 [the feature of matrix.to](https://matrix.org/docs/spec/appendices#routing)).
-It is proposed to use the routing query to be used not only for resolving
+In the meantime, it is proposed that this routing query be used not only with
 room ids in a public federation but also when a URI refers to a resource in
 a non-public Matrix network (see the question about closed federations in
 "Discussion points and tradeoffs"). Note that `authority` in the definition
-above is only a part of the grammar as defined in the respective section;
-it is not proposed here to generate or read the authority part of the URI.
+above is only a part of the _query parameter_ grammar; it is not proposed here
+to generate or interpret the _authority part_ of the URI.
 
 Clients MAY introduce and recognise custom query items, according to
 the following rules:
@@ -352,7 +354,7 @@ the following rules:
   action should be respected as much as possible. Client authors SHOULD strive
   for consistent experience across their and 3rd party clients, anticipating
   that the same user may happen to have both their client and a 3rd party one.
-  
+
 Client authors are strongly encouraged to standardise custom query elements
 that gain adoption by submitting an MSC defining them in a way compatible
 across the client ecosystem.
@@ -497,33 +499,33 @@ extensions. Here are a few ideas:
 * Bring tangible semantics to the authority part. The main purpose of
   the authority part,
   [as per RFC 3986](https://tools.ietf.org/html/rfc3986#section-3.2),
-  is to identify the authority governing the namespace for the rest
-  of the URI. This MSC restates the RFC definitions for
-  [`host`](https://tools.ietf.org/html/rfc3986#section-3.2.2) and
-  [`port`](https://tools.ietf.org/html/rfc3986#section-3.2.3) but
-  doesn't go further, calling for a separate MSC that would define semantics of
-  the `host:port` pair. RFC 3986 also includes provisions for user
-  information but this MSC explicitly excludes them from the authority grammar,
-  on the grounds that user information has historically been a vector of
-  widespread abuse. If providing a user identity via the authority part is
-  found to be of value (with alleviated security concerns) in some case,
-  a separate MSC should both re-add it to the grammar of the authority part
-  and define how to construct, parse, and use it.
+  is to identify the entity governing the namespace for the rest of the URI.
+  The current MSC rules out the userinfo component but leaves it to a separate
+  MSC to define semantics of the remaining`host[:port]` piece.
 
   Importantly, future MSCs are advised against using the authority part for
   _routing over federation_ (the case for `via=` query items), as it would be
   against the spirit of RFC 3986. The authority part can be used in cases when
   a given Matrix entity is only available from certain servers (the case of
-  closed federations or non-federating servers). A request to the server
-  resolved from the authority part means that the client should be, as the name
-  implies, _authorised_ by the authority server to access the requested
-  resource. That, in turn, implies that the resource is either available
-  to guests on the authority server, or the end user must be authenticated
-  (and their access rights checked) by (or on behalf of) _that server_ in order
-  to access the resource. While being a part of the original proposal,
+  closed federations or non-federating servers). 
+
+  While being a part of the original proposal in an attempt to address
+  [the respective case](https://github.com/matrix-org/matrix-doc/issues/2309),
   the definition of the authority semantics has been dropped as a result of
-  [the discussion](https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282)
-  (also referred to in the previous section).
+  [the subsequent discussion](https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282).
+  A further MSC may approach the same case (and/or others) and define the
+  meaning of the authority part (either on the client- or even on
+  the server-side - provided that using Matrix URIs on the server-side brings
+  some other value along the way). This might not necessarily be actual DNS
+  hostnames even - one (quite far-fetched for now) idea to entertain might be
+  introducing some decentralised system of "network names" in order to equalise
+  "public" and "non-public" federations.
+
+  Along the same lines, if providing any part of user credentials via
+  the authority part is found to be of considerable value in some case,
+  a separate MSC could both reinstate it in the grammar and define how
+  to construct, parse, and use it - provided that the same MSC addresses
+  the security concerns associated with such URIs.
 
 * One could conceive a URI mapping of avatars in the form of
   `matrix:u/uid:matrix.org/avatar/room:matrix.org`
@@ -583,10 +585,9 @@ further discussion should happen in GitHub comments.
    they know the URI is not going to be used outside this federation.
    Clients can facilitate that by having an option to always add or omit
    the authority part in generated URIs for a given user account.~~
-   Use `via=` in order to point to a homeserver in the closed federation.
-   The authority part may eventually be used for that but further discussion
-   is needed on how clients should support it without compromising privacy
-   (see [the discussion on the issue](https://github.com/matrix-org/matrix-doc/pull/2312#discussion_r348960282)).
+   As of now, use `via=` in order to point to a homeserver in the closed
+   federation. The authority part may eventually be used for that (or for some
+   other case - see the previous section).
 
 
 ### Alternatives
@@ -737,8 +738,8 @@ is taken to not make essential parts of the URI omittable to avoid
 even accidental misrepresentation of a local resource for a remote one
 in Matrix and vice versa.
 
-The MSC intentionally doesn't support conveying any kind of user
-information in URIs.
+As mentioned in the authority part section, the MSC intentionally doesn't
+support conveying any kind of user information in URIs.
 
 The MSC strives to not be prescriptive in treating URIs except the `action`
 query parameter. Actions without user confirmation may lead to unintended
