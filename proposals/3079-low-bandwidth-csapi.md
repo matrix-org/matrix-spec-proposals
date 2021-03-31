@@ -18,6 +18,9 @@ The current Client-Server API stack, along with the proposed alternatives are as
  - HTTP long-polling -> CoAP OBSERVE (optional)
  - TLS/TCP -> DTLS/UDP
 
+Media endpoints are not covered by this proposal. Clients will have to use the standard HTTP CS API to upload
+or download files. This proposal covers everything under `/_matrix/client`.
+
 The rest of this proposal breaks down each option and fleshes out the implementation/rationale.
 
 ### JSON -> CBOR
@@ -128,7 +131,7 @@ CoAP requests MUST be supported on this UDP port.
 In order to aid discovery, servers SHOULD add an extra key to `/_matrix/client/r0/versions` which indicates
 which low bandwidth features are supported on this server. This object looks like:
 ```
-"low_bandwidth": {
+"m.low_bandwidth": {
   "dtls": 8008,            // advertise that this server runs a UDP listener for DTLS here.
   "cbor_enum_version": 1,  // which table is used for integer keys. This proposal is version 1. Omission indicates no support.
   "coap_enum_version": 1,  // which table is used for coap path enums. This proposal is version 1. Omission indicates no support.
@@ -178,6 +181,8 @@ The `/versions` response should look like this whilst the proposal is in review:
 ```
 
 ### Appendix A: CBOR integer keys
+
+This is version 1 of this table.
 
 | Key Name | Integer |
 |----------|---------|
@@ -287,6 +292,8 @@ The `/versions` response should look like this whilst the proposal is in review:
 |room_alias|                  104|
 
 ### Appendix B: CoAP Path Enums
+
+This is version 1 of this table.
 
 | Path Enum | Matrix Path Regexp |
 |-----------|--------------------|
