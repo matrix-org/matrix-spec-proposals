@@ -146,6 +146,8 @@ as "low-bandwidth" in the `/versions` response are:
  - Accept CoAP requests with access token Option stickiness. CoAP path enums are optional.
  - Accept DTLS/UDP requests.
 
+Servers which support low bandwidth can advertise this by the presence of the `m.low_bandwidth` key in the `/versions` response.
+
 ## Potential issues
 
 Browsers are currently unsupported due to their inability to send UDP traffic.
@@ -156,6 +158,12 @@ way for browsers to participate over WebSockets but this is out of scope for thi
 
 HTTP/3 over QUIC (which is UDP) was considered but rejected due to large initial connection sizes, which
 mandate 1200 bytes of padding.
+
+DEFLATE is a compression algorithm which can further reduce bandwidth usage. Blanket compression
+algorithms are vulnerable to the [CRIME attack](https://tools.ietf.org/html/rfc7525#section-3.3), so any
+compression algorithm must be explicitly opt-in. DTLS connections MAY support DEFLATE as a
+[compression method](https://tools.ietf.org/html/rfc3749#section-2.1), and should be negotiated in the TLS
+handshake.
 
 ## Security considerations
 
