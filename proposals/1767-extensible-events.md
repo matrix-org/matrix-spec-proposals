@@ -35,8 +35,9 @@ an ordered list; most preferred first.
 We provide short-form types (`m.text` and `m.html`) for the most common scenarios
 of an event requiring a plain-text or HTML-formatted representation.
 
-For convenience and compatibility, we keep "body" and "formatted_body" as
-shorthand for plain-text and html-formatted fallback for events.
+For convenience and compatibility, we keep `body` and `formatted_body` as
+shorthand for plain-text and html-formatted fallback for events. We lose `format`
+and `msgtype`, however.
 
 The various types in an event's contents MUST refer to the same event.  Multiple
 events should be linked using a `m.relates_to` reference rather than multiplexing
@@ -49,11 +50,11 @@ Here are proposals for different types of events:
 For compactness for this super-common case, we define a short form which is
 equivalent to the longer form `m.message` example below:
 
-```json
+```json5
 {
     "type": "m.message",
     "content": {
-        "m.text": "i am a *fish*",
+        "m.text": "i am a *fish*", // doesn't have to be markdown, but useful as a "fallback" for HTML
         "m.html": "i am a <b>fish</b>"
     }
 }
@@ -63,13 +64,13 @@ equivalent to the longer form `m.message` example below:
 
 m.message describes a simple textual instant message.
 
-```json
+```json5
 {
     "type": "m.message",
     "content": {
         "m.message": [
             {
-                "mimetype": "text/html",
+                "mimetype": "text/html", // optional, default text/plain
                 "body": "i am a <b>fish</b>"
             },
             {
@@ -83,7 +84,7 @@ m.message describes a simple textual instant message.
 
 ### m.file
 
-```json
+```json5
 {
     "type": "m.file",
     "content": {
@@ -100,7 +101,7 @@ m.message describes a simple textual instant message.
 
 ### m.image
 
-```json
+```json5
 {
     "type": "m.image",
     "content": {
@@ -117,6 +118,7 @@ m.message describes a simple textual instant message.
         },
         "m.caption": [
             {
+                "mimetype": "text/plain", // still optional
                 "body": "matrix logo"
             }
         ],
@@ -133,12 +135,19 @@ m.message describes a simple textual instant message.
 }
 ```
 
-XXX: do we need to worry about the schema overlap between m.file/m.image and m.thumbnail?
-do we need to specify how specific thumbnails can have specific captions (or is that effectively displayhints?)
+The schemas for some of the types above have some overlap, such as `m.image` and `m.thumbnail` repeating
+the same information (or `m.file` also duplicating that information). De-duplicating this doesn't appear
+to be an easy feat when we consider schema complexity, thus the duplication is tolerable by this MSC.
+
+It's also worth noting that thumbnails do not have dedicated captions as they are implicitly a thumbnail
+of the captioned content in the event. Events are meant to have exactly one thing represented within them,
+meaning that a second caption is not required.
 
 ### m.message containing original source text, to allow future edits:
 
-```json
+***TODO: Compare with how edits work in practice, adjust as needed.***
+
+```json5
 {
     "type": "m.message",
     "content": {
@@ -163,7 +172,7 @@ do we need to specify how specific thumbnails can have specific captions (or is 
 
 ### m.message interationalised
 
-```json
+```json5
 {
     "type": "m.message",
     "content": {
@@ -181,13 +190,13 @@ do we need to specify how specific thumbnails can have specific captions (or is 
 }
 ```
 
-The french text is preferred and comes next, and a non-i18n aware client would
+The french text is preferred and comes first, and a non-i18n aware client would
 use it.  A smarter i18n-aware client would realise the user can't speak french
 and fall through to the next one.
 
 ### m.video
 
-```json
+```json5
 {
     "type": "m.video",
     "content": {
@@ -229,11 +238,11 @@ and fall through to the next one.
 }
 ```
 
-### IOT events (e.g. net.arasphere.temperature)
+### Hypothetical IOT events (e.g. net.arasphere.temperature)
 
 with text fallback:
 
-```json
+```json5
 {
     "type": "net.arasphere.temperature",
     "content": {
@@ -246,7 +255,9 @@ with text fallback:
 }
 ```
 
-### m.calendar.request
+### Hypothetical m.calendar.request
+
+*Making this not-hypothetical would be a responsibility of another MSC.*
 
 This is a deliberately chunky event designed to show a geotagged calendar request.
 
@@ -299,8 +310,14 @@ https://tools.ietf.org/html/draft-ietf-calext-jscalendar-11)
 
 This would be nicer with displayhints support, but still works pretty well.
 
+## Technical schema
 
-## Tradeoffs
+***TODO***
+
+This is where we put all the pre-spec prose for what this looks like, such as grammar,
+acceptable formats, etc.
+
+## Potential issues
 
 It's a bit ugly to not know whether a given key will take a string, hash or array.
 
@@ -313,9 +330,7 @@ We're skipping over defining rules for which fallback combinations to display
 (i.e. "display hints") for now; these can be added in a future MSC if needed.
 MSC1225 contains a proposal for this.
 
-## Issues
-
-I think Erik had some concerns about mixing together types at the top level of `contents`
+I think Erik had some concerns about mixing together types at the top level of `content`
 but I've forgotten the details.  Hopefully these are mitigated by the revised approach.
 
 ## Security considerations
@@ -325,23 +340,74 @@ However, this is inevitable given the existence of E2E, so we have no choice but
 for clients to apply ACLs clientside (e.g. refuse to render an m.image contents
 on an event if the sender doesn't have enough PL to send an m.image event).
 
-## Availability
+Like today, it's possible to have the different representations of an event not match,
+thus introducing a potential for malicious payloads (text-only clients seeing something
+different to HTML-friendly ones). Clients could try to do similarity comparisons, though
+this is complicated with features like HTML and arbitrary custom markup (markdown, etc)
+showing up in the plaintext or in tertiary formats on the events. Historically, room
+moderators have been pretty good about removing these malicious senders from their rooms
+when other users point out (quite quickly) that the event is appearing funky to them.
 
-Given the disruption of migrating clients & bridges to the new event shape, this
-should probably land after S2S r0.
+## Migration, availability, and unstable prefix
 
-## Migration
+Given the disruption of migrating clients, bridges, servers, etc to the new event shape,
+this will require an amount of advertising and warning to land.
+
+While this MSC is not considered stable by the specification, implementations *must* use
+`org.matrix.msc1767` as a prefix to denote the unstable functionality. For example, sending
+a `m.text` event would mean sending a `org.matrix.msc1767.text` event instead.
 
 Currently visible events are `m.room.message` with a `msgtype` to distinguish
-between `m.text`, `m.image`, `m.file`, etc.
+between `m.text`, `m.image`, `m.file`, etc. This MSC outlines how those would be 
+translated to the new event shape, but does not cover fallback as obviously.
 
-...?
+A suggested migration would be to send/receive `m.room.message` events as formatted today
+with the additional fields from this MSC. For example, here's a simple text message:
+
+```json5
+{
+    "type": "m.room.message",
+    "content": {
+        "msgtype": "m.text",
+        "body": "Hello World",
+        "format": "org.matrix.custom.html",
+        "formatted_body": "<b>Hello</b> World",
+        "m.text": "Hello World",
+        "m.html": "<b>Hello</b> World"
+    }
+}
+```
+
+This looks very awful, but it at least shows that the parent type is meant to be a `m.text` event.
+Similar semantics apply to videos, audio, etc. This has a risk of potentially running up against the
+65K limit, though for the vast majority of messages this will be fine.
+
+After a period of time (***TBD***), implementations would stop sending the `m.room.message` hybrid
+and switch to solely to the defined types of this MSC, accepting breakage of any clients.
+
+Before all that happens, this MSC would need to be adopted into the spec. As such, implementations
+wishing to trial the migration ahead of this MSC's inclusion in the spec would use the unstable
+prefix mentioned above. The example `m.room.message` event becomes:
+
+```json5
+{
+    "type": "m.room.message",
+    "content": {
+        "msgtype": "m.text",
+        "body": "Hello World",
+        "format": "org.matrix.custom.html",
+        "formatted_body": "<b>Hello</b> World",
+        "org.matrix.msc1767.text": "Hello World",
+        "org.matrix.msc1767.html": "<b>Hello</b> World"
+    }
+}
+```
 
 ## Changes from MSC1225
 
  * converted from googledoc to MD, and to be a single PR rather than split PR/Issue.
- * simplifies it by removing displayhints (for now)
- * removes all references to mixins, as the term was scaring people and making it feel far too type-theoretic
- * replaces the clunky m.text.1 idea with lists for types which support fallbacks
- * removes the concept of optional compact form for m.text by instead having m.text always in compact form
+ * simplifies it by removing displayhints (for now - deferred to a future MSC).
+ * removes all references to mixins, as the term was scaring people and making it feel far too type-theoretic.
+ * replaces the clunky m.text.1 idea with lists for types which support fallbacks.
+ * removes the concept of optional compact form for m.text by instead having m.text always in compact form.
  * tries to accomodate most of the feedback on GH and Google Docs from MSC1225.
