@@ -134,7 +134,7 @@ handshake.
 
 ### Versioning
 
-In order to aid discovery, servers SHOULD add an extra key to `/_matrix/client/r0/versions` which indicates
+In order to aid discovery, servers MUST add an extra key to `/_matrix/client/r0/versions` which indicates
 which low bandwidth features are supported on this server. This object looks like:
 ```
 "m.low_bandwidth": {
@@ -167,17 +167,17 @@ should be terminated. UDP has no equivalent. For this reason, restarting the ser
 value for clients to detect a dead connection. This can be shortened by modifying DTLS to send `CloseNotify` alerts when
 the UDP socket receives unrecognised data.
 
-## Alternatives
-
-HTTP/3 over QUIC (which is UDP) was considered but rejected due to large initial connection sizes, which
-mandate 1200 bytes of padding.
-
 Matrix servers perform "remote echo", where messages a client send get returned in the `/sync` stream. Changing this
 behaviour would invasively modify the behaviour of servers and clients. Clients and test suites often rely on this
 remote echo to determine when the message has been fully processed in the server. Servers rely on incrementing sync
 tokens for each new event. Suppressing remote echo would add extra complexity to handling sync streams. For these
 reasons, the sync stream will remain as it is for now. In the future, low bandwidth modifications may be applied
 to the sync stream, which will be negotiated when registering an OBSERVE request.
+
+## Alternatives
+
+HTTP/3 over QUIC (which is UDP) was considered but rejected due to large initial connection sizes, which
+mandate 1200 bytes of padding.
 
 ## Security considerations
 
@@ -191,16 +191,7 @@ controlled. Without the DTLS session keys this traffic should remain secure.
 
 ## Unstable prefix
 
-The `/versions` response should look like this whilst the proposal is in review:
-```json
-{
-  "org.matrix.msc3079.low_bandwidth": {
-    "dtls": 8008,
-    "cbor_enum_version": 1,
-    "coap_enum_version": 1,
-  }
-}
-```
+The `/versions` response should use `org.matrix.msc3079.low_bandwidth` instead of `m.low_bandwidth` whilst the proposal is in review.
 
 ### Appendix A: CBOR integer keys
 
