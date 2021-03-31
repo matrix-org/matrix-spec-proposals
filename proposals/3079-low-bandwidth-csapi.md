@@ -126,6 +126,12 @@ of the DTLS connection is out of scope for this proposal.
 
 CoAP requests MUST be supported on this UDP port.
 
+DEFLATE is a compression algorithm which can further reduce bandwidth usage. Blanket compression
+algorithms are vulnerable to the [CRIME attack](https://tools.ietf.org/html/rfc7525#section-3.3), so any
+compression algorithm must be explicitly opt-in. DTLS connections MAY support DEFLATE as a
+[compression method](https://tools.ietf.org/html/rfc3749#section-2.1), and should be negotiated in the TLS
+handshake.
+
 ### Versioning
 
 In order to aid discovery, servers SHOULD add an extra key to `/_matrix/client/r0/versions` which indicates
@@ -159,11 +165,12 @@ way for browsers to participate over WebSockets but this is out of scope for thi
 HTTP/3 over QUIC (which is UDP) was considered but rejected due to large initial connection sizes, which
 mandate 1200 bytes of padding.
 
-DEFLATE is a compression algorithm which can further reduce bandwidth usage. Blanket compression
-algorithms are vulnerable to the [CRIME attack](https://tools.ietf.org/html/rfc7525#section-3.3), so any
-compression algorithm must be explicitly opt-in. DTLS connections MAY support DEFLATE as a
-[compression method](https://tools.ietf.org/html/rfc3749#section-2.1), and should be negotiated in the TLS
-handshake.
+Matrix servers perform "remote echo", where messages a client send get returned in the `/sync` stream. Changing this
+behaviour would invasively modify the behaviour of servers and clients. Clients and test suites often rely on this
+remote echo to determine when the message has been fully processed in the server. Servers rely on incrementing sync
+tokens for each new event. Suppressing remote echo would add extra complexity to handling sync streams. For these
+reasons, the sync stream will remain as it is for now. In the future, low bandwidth modifications may be applied
+to the sync stream, which will be negotiated when registering an OBSERVE request.
 
 ## Security considerations
 
