@@ -1,6 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
-.. Copyright 2017 New Vector Ltd
-.. Copyright 2018 New Vector Ltd
+.. Copyright 2017-2019 New Vector Ltd
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -17,9 +16,7 @@
 Federation API
 ==============
 
-.. WARNING::
-  This API is unstable and will change without warning or discussion while
-  we work towards a r0 release (scheduled for August 2018).
+{{unstable_warning_block_SERVER_RELEASE_LABEL}}
 
 Matrix homeservers use the Federation APIs (also known as server-server APIs)
 to communicate with each other. Homeservers use these APIs to push messages to
@@ -77,13 +74,28 @@ This version of the specification is generated from
 For the full historical changelog, see
 https://github.com/matrix-org/matrix-doc/blob/master/changelogs/server_server.rst
 
-
 Other versions of this specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/server_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.4 <https://matrix.org/docs/spec/server_server/r0.1.4.html>`_
+- `r0.1.3 <https://matrix.org/docs/spec/server_server/r0.1.3.html>`_
+- `r0.1.2 <https://matrix.org/docs/spec/server_server/r0.1.2.html>`_
+- `r0.1.1 <https://matrix.org/docs/spec/server_server/r0.1.1.html>`_
+- `r0.1.0 <https://matrix.org/docs/spec/server_server/r0.1.0.html>`_
+
+
+API standards
+-------------
+
+The mandatory baseline for client-server communication in Matrix is exchanging
+JSON objects over HTTP APIs. More efficient optional transports will in future
+be supported as optional extensions - e.g. a packed binary encoding over
+stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip mobile usage.
+For the default HTTP transport, all API calls use a Content-Type of
+``application/json``.  In addition, all strings MUST be encoded as UTF-8.
 
 Server discovery
 ----------------
@@ -91,35 +103,107 @@ Server discovery
 Resolving server names
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Each matrix homeserver is identified by a server name consisting of a hostname
+Each Matrix homeserver is identified by a server name consisting of a hostname
 and an optional port, as described by the `grammar
-<../appendices.html#server-name>`_.  Server names should be resolved to an IP
-address and port using the following process:
+<../appendices.html#server-name>`_. Where applicable, a delegated server name
+uses the same grammar.
 
-* If the hostname is an IP literal, then that IP address should be used,
-  together with the given port number, or 8448 if no port is given.
+Server names are resolved to an IP address and port to connect to, and have
+various conditions affecting which certificates and ``Host`` headers to send.
+The process overall is as follows:
 
-* Otherwise, if the port is present, then an IP address is discovered by
-  looking up an AAAA or A record for the hostname, and the specified port is
-  used.
+.. Note from the author: The repetitive "use this Host header and this cert"
+   comments are intentional. The process is overall quite complicated, and
+   explaining explicitly what requests look like at each step helps ease the
+   understanding and ensure everyone is on the same page. Implementations
+   are of course welcome to realize where the process can be optimized, and
+   do so - just ensure that the result is the same!
 
-* If the hostname is not an IP literal and no port is given, the server is
-  discovered by first looking up a ``_matrix._tcp`` SRV record for the
-  hostname, which may give a hostname (to be looked up using AAAA or A queries)
-  and port.  If the SRV record does not exist, then the server is discovered by
-  looking up an AAAA or A record on the hostname and taking the default
-  fallback port number of 8448.
+1. If the hostname is an IP literal, then that IP address should be used,
+   together with the given port number, or 8448 if no port is given. The
+   target server must present a valid certificate for the IP address.
+   The ``Host`` header in the request should be set to the server name,
+   including the port if the server name included one.
 
-  Homeservers may use SRV records to load balance requests between multiple TLS
-  endpoints or to failover to another endpoint if an endpoint fails.
+2. If the hostname is not an IP literal, and the server name includes an
+   explicit port, resolve the IP address using AAAA or A records. Requests
+   are made to the resolved IP address and given port with a ``Host`` header
+   of the original server name (with port). The target server must present a
+   valid certificate for the hostname.
 
-When making requests to servers, use the hostname of the target server in the
-``Host`` header, regardless of any hostname given in the SRV record. For
-example, if the server name is ``example.org``, and the SRV record resolves to
-``matrix.example.org``, the ``Host`` header in the request should be
-``example.org``.  If an explicit port was given in the server name, it should be
-included in the ``Host`` header; otherwise, no port number should be given in
-the ``Host`` header.
+3. If the hostname is not an IP literal, a regular HTTPS request is made
+   to ``https://<hostname>/.well-known/matrix/server``, expecting the
+   schema defined later in this section. 30x redirects should be followed,
+   however redirection loops should be avoided. Responses (successful or
+   otherwise) to the ``/.well-known`` endpoint should be cached by the
+   requesting server. Servers should respect the cache control headers
+   present on the response, or use a sensible default when headers are not
+   present. The recommended sensible default is 24 hours. Servers should
+   additionally impose a maximum cache time for responses: 48 hours is
+   recommended. Errors are recommended to be cached for up to an hour,
+   and servers are encouraged to exponentially back off for repeated
+   failures. The schema of the ``/.well-known`` request is later in this
+   section. If the response is invalid (bad JSON, missing properties, non-200
+   response, etc), skip to step 4. If the response is valid, the ``m.server``
+   property is parsed as ``<delegated_hostname>[:<delegated_port>]`` and
+   processed as follows:
+
+   * If ``<delegated_hostname>`` is an IP literal, then that IP address
+     should be used together with the ``<delegated_port>`` or 8448 if no
+     port is provided. The target server must present a valid TLS certificate
+     for the IP address. Requests must be made with a ``Host`` header containing
+     the IP address, including the port if one was provided.
+
+   * If ``<delegated_hostname>`` is not an IP literal, and ``<delegated_port>``
+     is present, an IP address is discovered by looking up an AAAA or A
+     record for ``<delegated_hostname>``. The resulting IP address is
+     used, alongside the ``<delegated_port>``. Requests must be made with a
+     ``Host`` header of ``<delegated_hostname>:<delegated_port>``. The
+     target server must present a valid certificate for ``<delegated_hostname>``.
+
+   * If ``<delegated_hostname>`` is not an IP literal and no
+     ``<delegated_port>`` is present, an SRV record is looked up for
+     ``_matrix._tcp.<delegated_hostname>``. This may result in another
+     hostname (to be resolved using AAAA or A records) and port. Requests
+     should be made to the resolved IP address and port with a ``Host``
+     header containing the ``<delegated_hostname>``. The target server
+     must present a valid certificate for ``<delegated_hostname>``.
+
+   * If no SRV record is found, an IP address is resolved using AAAA
+     or A records. Requests are then made to the resolve IP address
+     and a port of 8448, using a ``Host`` header of ``<delegated_hostname>``.
+     The target server must present a valid certificate for ``<delegated_hostname>``.
+
+4. If the ``/.well-known`` request resulted in an error response, a server
+   is found by resolving an SRV record for ``_matrix._tcp.<hostname>``. This
+   may result in a hostname (to be resolved using AAAA or A records) and
+   port. Requests are made to the resolved IP address and port, using 8448
+   as a default port, with a ``Host`` header of ``<hostname>``. The target
+   server must present a valid certificate for ``<hostname>``.
+
+5. If the ``/.well-known`` request returned an error response, and the SRV
+   record was not found, an IP address is resolved using AAAA and A records.
+   Requests are made to the resolved IP address using port 8448 and a ``Host``
+   header containing the ``<hostname>``. The target server must present a
+   valid certificate for ``<hostname>``.
+
+
+The TLS certificate provided by the target server must be signed by a known
+Certificate Authority. Servers are ultimately responsible for determining
+the trusted Certificate Authorities, however are strongly encouraged to
+rely on the operating system's judgement. Servers can offer administrators
+a means to override the trusted authorities list. Servers can additionally
+skip the certificate validation for a given whitelist of domains or netmasks
+for the purposes of testing or in networks where verification is done
+elsewhere, such as with ``.onion`` addresses. Servers should respect SNI
+when making requests where possible: a SNI should be sent for the certificate
+which is expected, unless that certificate is expected to be an IP address in
+which case SNI is not supported and should not be sent.
+
+Servers are encouraged to make use of the
+`Certificate Transparency <https://www.certificate-transparency.org/>`_ project.
+
+{{wellknown_ss_http_api}}
 
 Server implementation
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -131,7 +215,7 @@ Retrieving server keys
 
 .. NOTE::
   There was once a "version 1" of the key exchange. It has been removed from the
-  specification due to lack of significance. It may be reviewed `here
+  specification due to lack of significance. It may be reviewed `from the historical draft
   <https://github.com/matrix-org/matrix-doc/blob/51faf8ed2e4a63d4cfd6d23183698ed169956cc0/specification/server_server_api.rst#232version-1>`_.
 
 Each homeserver publishes its public keys under ``/_matrix/key/v2/server/{keyId}``.
@@ -153,12 +237,11 @@ server by querying other servers.
 Publishing Keys
 +++++++++++++++
 
-Homeservers publish the allowed TLS fingerprints and signing keys in a JSON
+Homeservers publish their signing keys in a JSON
 object at ``/_matrix/key/v2/server/{key_id}``. The response contains a list of
 ``verify_keys`` that are valid for signing federation requests made by the
 homeserver and for signing events. It contains a list of ``old_verify_keys`` which
-are only valid for signing events. Finally the response contains a list of TLS
-certificate fingerprints to validate any connection made to the homeserver.
+are only valid for signing events.
 
 {{keys_server_ss_http_api}}
 
@@ -210,6 +293,11 @@ Step 1 sign JSON:
         }
    }
 
+The server names in the JSON above are the server names for each homeserver involved. Delegation from
+the `server name resolution section <#resolving-server-names>`_ above do not affect
+these - the server names from before delegation would take place are used. This
+same condition applies throughout the request signing process.
+
 Step 2 add Authorization header:
 
 .. code::
@@ -235,8 +323,8 @@ Example python code:
              "destination": destination_name,
         }
 
-        if content_json is not None:
-            request["content"] = content
+        if content is not None:
+            request_json["content"] = content
 
         signed_json = sign_json(request_json, origin_name, origin_signing_key)
 
@@ -282,6 +370,8 @@ Transactions are limited in size; they can have at most 50 PDUs and 100 EDUs.
 
 {{transactions_ss_http_api}}
 
+.. _`Persistent Data Unit schema`:
+
 PDUs
 ----
 
@@ -308,27 +398,8 @@ creating a new event in this room should populate the new event's
   |
   E4
 
-.. _`auth events selection`:
+For a full schema of what a PDU looks like, see the `room version specification`_.
 
-The ``auth_events`` field of a PDU identifies the set of events which give the
-sender permission to send the event. The ``auth_events`` for the
-``m.room.create`` event in a room is empty; for other events, it should be the
-following subset of the room state:
-
-- The ``m.room.create`` event.
-- The current ``m.room.power_levels`` event, if any.
-- The sender's current ``m.room.member`` event, if any.
-- If type is ``m.room.member``:
-
-    - The target's current ``m.room.member`` event, if any.
-    - If ``membership`` is ``join`` or ``invite``, the current
-      ``m.room.join_rules`` event, if any.
-    - If membership is ``invite`` and ``content`` contains a
-      ``third_party_invite`` property, the current
-      ``m.room.third_party_invite`` event with ``state_key`` matching
-      ``content.third_party_invite.signed.token``, if any.
-
-{{definition_ss_pdu}}
 
 Checks performed on receipt of a PDU
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,9 +421,8 @@ must ensure that the event:
 Further details of these checks, and how to handle failures, are described
 below.
 
-.. TODO:
-  Flesh this out a bit more, and probably change the doc to group the various
-  checks in one place, rather than have them spread out.
+The `Signing Events <#signing-events>`_ section has more information on which hashes
+and signatures are expected on events, and how to calculate them.
 
 
 Definitions
@@ -380,188 +450,31 @@ Authorization rules
 
 The rules governing whether an event is authorized depends on a set of state. A
 given event is checked multiple times against different sets of state, as
-specified above. The types of state events that affect authorization are:
-
-- ``m.room.create``
-- ``m.room.member``
-- ``m.room.join_rules``
-- ``m.room.power_levels``
-- ``m.room.third_party_invite``
-
-The rules are as follows:
-
-1. If type is ``m.room.create``:
-
-   a. If it has any previous events, reject.
-   b. If the domain of the ``room_id`` does not match the domain of the
-      ``sender``, reject.
-   c. If ``content.room_version`` is present and is not a recognised version,
-      reject.
-   d. If ``content`` has no ``creator`` field, reject.
-   e. Otherwise, allow.
-
-#. Reject if event has ``auth_events`` that:
-
-   a. have duplicate entries for a given ``type`` and ``state_key`` pair
-   #. have entries whose ``type`` and ``state_key`` don't match those
-      specified by the `auth events selection`_ algorithm described above.
-
-#. If event does not have a ``m.room.create`` in its ``auth_events``, reject.
-
-#. If type is ``m.room.aliases``:
-
-   a. If event has no ``state_key``, reject.
-   b. If sender's domain doesn't matches ``state_key``, reject.
-   c. Otherwise, allow.
-
-#. If type is ``m.room.member``:
-
-   a. If no ``state_key`` key or ``membership`` key in ``content``, reject.
-
-   #. If ``membership`` is ``join``:
-
-      i. If the only previous event is an ``m.room.create``
-         and the ``state_key`` is the creator, allow.
-
-      #. If the ``sender`` does not match ``state_key``, reject.
-
-      #. If the ``sender`` is banned, reject.
-
-      #. If the ``join_rule`` is ``invite`` then allow if membership state
-         is ``invite`` or ``join``.
-
-      #. If the ``join_rule`` is ``public``, allow.
-
-      #. Otherwise, reject.
-
-   #. If ``membership`` is ``invite``:
-
-      i. If ``content`` has ``third_party_invite`` key:
-
-         #. If *target user* is banned, reject.
-
-         #. If ``content.third_party_invite`` does not have a
-            ``signed`` key, reject.
-
-         #. If ``signed`` does not have ``mxid`` and ``token`` keys, reject.
-
-         #. If ``mxid`` does not match ``state_key``, reject.
-
-         #. If there is no ``m.room.third_party_invite`` event in the
-            current room state with ``state_key`` matching ``token``, reject.
-
-         #. If ``sender`` does not match ``sender`` of the
-            ``m.room.third_party_invite``, reject.
-
-         #. If any signature in ``signed`` matches any public key in the
-            ``m.room.third_party_invite`` event, allow. The public keys are
-            in ``content`` of ``m.room.third_party_invite`` as:
-
-            #. A single public key in the ``public_key`` field.
-            #. A list of public keys in the ``public_keys`` field.
-
-         #. Otherwise, reject.
-
-      #. If the ``sender``'s current membership state is not ``join``, reject.
-
-      #. If *target user*'s current membership state is ``join`` or ``ban``,
-         reject.
-
-      #. If the ``sender``'s power level is greater than or equal to the *invite
-         level*, allow.
-
-      #. Otherwise, reject.
-
-   #. If ``membership`` is ``leave``:
-
-      i. If the ``sender`` matches ``state_key``, allow if and only if that user's
-         current membership state is ``invite`` or ``join``.
-
-      #. If the ``sender``'s current membership state is not ``join``, reject.
-
-      #. If the *target user*'s current membership state is ``ban``, and the
-         ``sender``'s power level is less than the *ban level*, reject.
-
-      #. If the ``sender``'s power level is greater than or equal to the *kick
-         level*, and the *target user*'s power level is less than the
-         ``sender``'s power level, allow.
-
-      #. Otherwise, reject.
-
-   #. If ``membership`` is ``ban``:
-
-      i. If the ``sender``'s current membership state is not ``join``, reject.
-
-      #. If the ``sender``'s power level is greater than or equal to the *ban
-         level*, and the *target user*'s power level is less than the
-         ``sender``'s power level, allow.
-
-      #. Otherwise, reject.
-
-   #. Otherwise, the membership is unknown. Reject.
-
-#. If the ``sender``'s current membership state is not ``join``, reject.
-
-#. If type is ``m.room.third_party_invite``:
-
-   a. Allow if and only if ``sender``'s current power level is greater than
-      or equal to the *invite level*.
-
-#. If the event type's *required power level* is greater than the ``sender``'s power
-   level, reject.
-
-#. If the event has a ``state_key`` that starts with an ``@`` and does not match
-   the ``sender``, reject.
-
-#. If type is ``m.room.power_levels``:
-
-   a. If ``users`` key in ``content`` is not a dictionary with keys that are
-      valid user IDs with values that are integers (or a string that is an
-      integer), reject.
-
-   #. If there is no previous ``m.room.power_levels`` event in the room, allow.
-
-   #. For each of the keys ``users_default``, ``events_default``,
-      ``state_default``, ``ban``, ``redact``, ``kick``, ``invite``, as well as
-      each entry being changed under the ``events`` or ``users`` keys:
-
-      i. If the current value is higher than the ``sender``'s current power level,
-         reject.
-
-      #. If the new value is higher than the ``sender``'s current power level,
-         reject.
-
-   #. For each entry being changed under the ``users`` key, other than the
-      ``sender``'s own entry:
-
-      i. If the current value is equal to the ``sender``'s current power level,
-         reject.
-
-   #. Otherwise, allow.
-
-#. If type is ``m.room.redaction``:
-
-   a. If the ``sender``'s power level is greater than or equal to the *redact
-      level*, allow.
-
-   #. If the domain of the ``event_id`` of the event being redacted is the same
-      as the domain of the ``event_id`` of the ``m.room.redaction``, allow.
-
-   #. Otherwise, reject.
-
-#. Otherwise, allow.
-
-.. NOTE::
-
-  Some consequences of these rules:
-
-  * Unless you are a member of the room, the only permitted operations (apart
-    from the intial create/join) are: joining a public room; accepting or
-    rejecting an invitation to a room.
-
-  * To unban somebody, you must have power level greater than or equal to both
-    the kick *and* ban levels, *and* greater than the target user's power
-    level.
+specified above. Each room version can have a different algorithm for how the
+rules work, and which rules are applied. For more detailed information, please
+see the `room version specification`_.
+
+
+Auth events selection
+^^^^^^^^^^^^^^^^^^^^^
+
+The ``auth_events`` field of a PDU identifies the set of events which give the
+sender permission to send the event. The ``auth_events`` for the
+``m.room.create`` event in a room is empty; for other events, it should be the
+following subset of the room state:
+
+- The ``m.room.create`` event.
+- The current ``m.room.power_levels`` event, if any.
+- The sender's current ``m.room.member`` event, if any.
+- If type is ``m.room.member``:
+
+    - The target's current ``m.room.member`` event, if any.
+    - If ``membership`` is ``join`` or ``invite``, the current
+      ``m.room.join_rules`` event, if any.
+    - If membership is ``invite`` and ``content`` contains a
+      ``third_party_invite`` property, the current
+      ``m.room.third_party_invite`` event with ``state_key`` matching
+      ``content.third_party_invite.signed.token``, if any.
 
 
 Rejection
@@ -752,191 +665,8 @@ is at the top)::
 Suppose E3 and E4 are both ``m.room.name`` events which set the name of the
 room. What should the name of the room be at E5?
 
-Servers should follow one of the following recursively-defined algorithms,
-depending on the room version, to determine the room state at a given point on
-the DAG.
-
-State resolution algorithm for version 2 rooms
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
-the room state :math:`S(E)` before :math:`E`, and depends on whether
-:math:`E` is a state event or a message event:
-
-* If :math:`E` is a message event, then :math:`S'(E) = S(E)`.
-
-* If :math:`E` is a state event, then :math:`S'(E)` is :math:`S(E)`, except
-  that its entry corresponding to :math:`E`'s ``event_type`` and ``state_key``
-  is replaced by :math:`E`'s ``event_id``.
-
-The room state :math:`S(E)` before :math:`E` is the *resolution* of the set of
-states :math:`\{ S'(E_1), S'(E_2), … \}` consisting of the states after each of
-:math:`E`'s ``prev_event``\s :math:`\{ E_1, E_2, … \}`, where the resolution of
-a set of states is given in the algorithm below.
-
-Definitions
-+++++++++++
-
-The state resolution algorithm for version 2 rooms uses the following
-definitions, given the set of room states :math:`\{ S_1, S_2, \ldots \}`:
-
-Power events
-  A *power event* is a state event with type ``m.room.power_levels`` or
-  ``m.room.join_rules``, or a state event with type ``m.room.member`` where the
-  ``membership`` is ``leave`` or ``ban`` and the ``sender`` does not match the
-  ``state_key``. The idea behind this is that power events are events that have
-  may remove someone's ability to do something in the room.
-
-Unconflicted state map and conflicted state set
-  The *unconflicted state map* is the state where the value of each key exists
-  and is the same in each state :math:`S_i`.  The *conflicted state set* is the
-  set of all other state events. Note that the unconflicted state map only has
-  one event per ``(event_type, state_key)``, whereas the conflicted state set
-  may have multiple events.
-
-Auth difference
-  The *auth difference* is calculated by first calculating the full auth chain
-  for each state :math:`S_i`, that is the union of the auth chains for each
-  event in :math:`S_i`, and then taking every event that doesn't appear in
-  every auth chain. If :math:`C_i` is the full auth chain of :math:`S_i`, then
-  the auth difference is :math:`\cup C_i - \cap C_i`.
-
-Full conflicted set
-  The *full conflicted set* is the union of the conflicted state set and the
-  auth difference.
-
-Reverse topological power ordering
-  The *reverse topological power ordering* of a set of events is the
-  lexicographically smallest topological ordering based on the DAG formed by
-  auth events. The reverse topological power ordering is ordered from earliest
-  event to latest. For comparing two topological orderings to determine which
-  is the lexicographically smallest, the following comparison relation on
-  events is used: for events :math:`x` and :math:`y`, :math:`x<y` if
-
-  1. :math:`x`'s sender has *greater* power level than :math:`y`'s sender,
-     when looking at their respective ``auth_event``\s; or
-  2. the senders have the same power level, but :math:`x`'s
-     ``origin_server_ts`` is *less* than :math:`y`'s ``origin_server_ts``; or
-  3. the senders have the same power level and the events have the same
-     ``origin_server_ts``, but :math:`x`'s ``event_id`` is *less* than
-     :math:`y`'s ``event_id``.
-
-  The reverse topological power ordering can be found by sorting the events
-  using Kahn's algorithm for topological sorting, and at each step selecting,
-  among all the candidate vertices, the smallest vertex using the above
-  comparison relation.
-
-Mainline ordering
-  Given an ``m.room.power_levels`` event :math:`P`, the *mainline of* :math:`P`
-  is the list of events generated by starting with :math:`P` and recursively
-  taking the ``m.room.power_levels`` events from the ``auth_events``, ordered
-  such that :math:`P` is last. Given another event :math:`e`, the *closest
-  mainline event to* :math:`e` is the first event encountered in the mainline
-  when iteratively descending through the ``m.room.power_levels`` events in the
-  ``auth_events`` starting at :math:`e`. If no mainline event is encountered
-  when iteratively descending through the ``m.room.power_levels`` events, then
-  the closest mainline event to :math:`e` can be considered to be a dummy event
-  that is before any other event in the mainline of :math:`P` for the purposes
-  of condition 1 below.
-
-  The *mainline ordering based on* :math:`P` of a set of events is the
-  ordering, from smallest to largest, using the following comparision relation
-  on events: for events :math:`x` and :math:`y`, :math:`x<y` if
-
-  1. the closest mainline event to :math:`x` appears *before* the closest
-     mainline event to :math:`y`; or
-  2. the closest mainline events are the same, but :math:`x`\'s
-     ``origin_server_ts`` is *less* than :math:`y`\'s ``origin_server_ts``; or
-  3. the closest mainline events are the same and the events have the same
-     ``origin_server_ts``, but :math:`x`\'s ``event_id`` is *less* than
-     :math:`y`\'s ``event_id``.
-
-Iterative auth checks
-  The *iterative auth checks algorithm* takes as input an initial room state
-  and a sorted list of state events, and constructs a new room state by
-  iterating through the event list and applying the state event to the room
-  state if the state event is allowed by the `authorization rules`_. If the
-  state event is not allowed by the authorization rules, then the event is
-  ignored. If a ``(event_type, state_key)`` key that is required for checking
-  the authorization rules is not present in the state, then the appropriate
-  state event from the event's ``auth_events`` is used.
-
-Algorithm
-+++++++++
-
-The *resolution* of a set of states is obtained as follows:
-
-1. Take all *power events* and any events in their auth chains, recursively,
-   that appear in the *full conflicted set* and order them by the *reverse
-   topological power ordering*.
-2. Apply the *iterative auth checks algorithm* on the *unconflicted state map*
-   and the list of events from the previous step to get a partially resolved
-   state.
-3. Take all remaining events that weren't picked in step 1 and order them by
-   the mainline ordering based on the power level in the partially resolved
-   state obtained in step 2.
-4. Apply the *iterative auth checks algorithm* on the partial resolved
-   state and the list of events from the previous step.
-5. Update the result by replacing any event with the event with the same key
-   from the *unconflicted state map*, if such an event exists, to get the final
-   resolved state.
-
-State resolution algorithm for version 1 rooms
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. WARNING::
-  This section documents the state resolution algorithm as implemented by
-  Synapse as of December 2017 (and therefore the de-facto Matrix protocol).
-  However, this algorithm is known to have some problems.
-
-The room state :math:`S'(E)` after an event :math:`E` is defined in terms of
-the room state :math:`S(E)` before :math:`E`, and depends on whether
-:math:`E` is a state event or a message event:
-
-* If :math:`E` is a message event, then :math:`S'(E) = S(E)`.
-
-* If :math:`E` is a state event, then :math:`S'(E)` is :math:`S(E)`, except
-  that its entry corresponding to :math:`E`'s ``event_type`` and ``state_key``
-  is replaced by :math:`E`'s ``event_id``.
-
-The room state :math:`S(E)` before :math:`E` is the *resolution* of the set of
-states :math:`\{ S'(E'), S'(E''), … \}` consisting of the states after each of
-:math:`E`'s ``prev_event``\s :math:`\{ E', E'', … \}`.
-
-The *resolution* of a set of states is defined as follows.  The resolved state
-is built up in a number of passes; here we use :math:`R` to refer to the
-results of the resolution so far.
-
-* Start by setting :math:`R` to the union of the states to be resolved,
-  excluding any *conflicting* events.
-
-* First we resolve conflicts between ``m.room.power_levels`` events. If there
-  is no conflict, this step is skipped, otherwise:
-
-  * Assemble all the ``m.room.power_levels`` events from the states to
-    be resolved into a list.
-
-  * Sort the list by ascending ``depth`` then descending ``sha1(event_id)``.
-
-  * Add the first event in the list to :math:`R`.
-
-  * For each subsequent event in the list, check that the event would be
-    allowed by the `authorization rules`_ for a room in state :math:`R`. If the
-    event would be allowed, then update :math:`R` with the event and continue
-    with the next event in the list. If it would not be allowed, stop and
-    continue below with ``m.room.join_rules`` events.
-
-* Repeat the above process for conflicts between ``m.room.join_rules`` events.
-
-* Repeat the above process for conflicts between ``m.room.member`` events.
-
-* No other events affect the authorization rules, so for all other conflicts,
-  just pick the event with the highest depth and lowest ``sha1(event_id)`` that
-  passes authentication in :math:`R` and add it to :math:`R`.
-
-A *conflict* occurs between states where those states have different
-``event_ids`` for the same ``(state_type, state_key)``. The events thus
-affected are said to be *conflicting* events.
+The algorithm to be used for state resolution depends on the room version. For
+a description of each room version's algorithm, please see the `room version specification`_.
 
 
 Backfilling and retrieving missing events
@@ -1001,7 +731,7 @@ In summary, the remote join handshake consists of the joining server querying
 the directory server for information about the room alias; receiving a room ID
 and a list of join candidates. The joining server then requests information
 about the room from one of the residents. It uses this information to construct
-a ``m.room.member`` event which it finally sends to a resident server.
+an ``m.room.member`` event which it finally sends to a resident server.
 
 Conceptually these are three different roles of homeserver. In practice the
 directory server is likely to be resident in the room, and so may be selected
@@ -1057,7 +787,9 @@ and responds to the joining server with the full set of state for the
 newly-joined room. The resident server must also send the event to other servers
 participating in the room.
 
-{{joins_ss_http_api}}
+{{joins_v1_ss_http_api}}
+
+{{joins_v2_ss_http_api}}
 
 .. TODO-spec
   - (paul) I don't really understand why the full auth_chain events are given
@@ -1072,7 +804,9 @@ the homeserver may sign the membership event itself and skip the process defined
 here. However, when a user invites another user on a different homeserver, a request
 to that homeserver to have the event signed and verified must be made.
 
-{{invites_ss_http_api}}
+{{invites_v1_ss_http_api}}
+
+{{invites_v2_ss_http_api}}
 
 Leaving Rooms (Rejecting Invites)
 ---------------------------------
@@ -1088,11 +822,13 @@ Similar to the `Joining Rooms`_ handshake, the server which wishes to leave the
 room starts with sending a ``/make_leave`` request to a resident server. In the
 case of rejecting invites, the resident server may be the server which sent the
 invite. After receiving a template event from ``/make_leave``, the leaving server
-signs the event and replaces the ``event_id`` with it's own. This is then sent to
+signs the event and replaces the ``event_id`` with its own. This is then sent to
 the resident server via ``/send_leave``. The resident server will then send the
 event to other servers in the room.
 
-{{leaving_ss_http_api}}
+{{leaving_v1_ss_http_api}}
+
+{{leaving_v2_ss_http_api}}
 
 Third-party invites
 -------------------
@@ -1101,7 +837,7 @@ Third-party invites
    More information about third party invites is available in the `Client-Server API`_
    under the Third Party Invites module.
 
-When an user wants to invite another user in a room but doesn't know the Matrix
+When a user wants to invite another user in a room but doesn't know the Matrix
 ID to invite, they can do so using a third-party identifier (e.g. an e-mail or a
 phone number).
 
@@ -1120,7 +856,7 @@ Cases where an association doesn't exist for a third-party identifier
 
 If the third-party identifier isn't bound to any Matrix ID, the inviting
 homeserver will request the identity server to store an invite for this identifier
-and to deliver it to whoever binds it to its Matrix ID. It will also send a
+and to deliver it to whoever binds it to its Matrix ID. It will also send an
 ``m.room.third_party_invite`` event in the room to specify a display name, a token
 and public keys the identity server provided as a response to the invite storage
 request.
@@ -1131,7 +867,7 @@ in the `Invitation Storage`_ section of the Identity Service API.
 
 The following process applies for each invite sent by the identity server:
 
-The invited homeserver will create a ``m.room.member`` invite event containing
+The invited homeserver will create an ``m.room.member`` invite event containing
 a special ``third_party_invite`` section containing the token and a signed object,
 both provided by the identity server.
 
@@ -1146,7 +882,7 @@ will need to request the room's homeserver to auth the event.
 Verifying the invite
 ++++++++++++++++++++
 
-When a homeserver receives a ``m.room.member`` invite event for a room it's in
+When a homeserver receives an ``m.room.member`` invite event for a room it's in
 with a ``third_party_invite`` object, it must verify that the association between
 the third-party identifier initially invited to the room and the Matrix ID that
 claims to be bound to it has been verified without having to rely on a third-party
@@ -1195,15 +931,8 @@ The server API for presence is based entirely on exchange of the following
 EDUs. There are no PDUs or Federation Queries involved.
 
 Servers should only send presence updates for users that the receiving server
-would be interested in. This can include the receiving server sharing a room
-with a given user, or a user on the receiving server has added one of the
-sending server's users to their presence list.
-
-Clients may define lists of users that they are interested in via "Presence
-Lists" through the `Client-Server API`_. When users are added to a presence
-list, a ``m.presence_invite`` EDU is sent to them. The user may then accept
-or deny their involvement in the list by sending either an ``m.presence_accept``
-or ``m.presence_deny`` EDU back.
+would be interested in. Such as the receiving server sharing a room
+with a given user.
 
 .. TODO-doc
   - Explain the timing-based round-trip reduction mechanism for presence
@@ -1213,13 +942,6 @@ or ``m.presence_deny`` EDU back.
 
 {{definition_ss_event_schemas_m_presence}}
 
-{{definition_ss_event_schemas_m_presence_invite}}
-
-{{definition_ss_event_schemas_m_presence_accept}}
-
-{{definition_ss_event_schemas_m_presence_deny}}
-
-
 Receipts
 --------
 
@@ -1227,7 +949,7 @@ Receipts are EDUs used to communicate a marker for a given event. Currently the
 only kind of receipt supported is a "read receipt", or where in the event graph
 the user has read up to.
 
-Read receipts for events events that a user sent do not need to be sent. It is
+Read receipts for events that a user sent do not need to be sent. It is
 implied that by sending the event the user has read up to the event.
 
 {{definition_ss_event_schemas_m_receipt}}
@@ -1297,7 +1019,7 @@ which should be used to correlate with subsequent ``m.device_list_update`` EDUs.
 
 .. TODO: this whole thing desperately feels like it should just be state in a room,
   rather than inventing a whole different DAG.  The same room could be used for
-  profiles, presence lists, etc.
+  profiles etc.
 
 {{user_devices_ss_http_api}}
 
@@ -1314,6 +1036,8 @@ The APIs defined here are designed to be able to proxy much of the client's requ
 through to federation, and have the response also be proxied through to the client.
 
 {{user_keys_ss_http_api}}
+
+{{definition_ss_event_schemas_m_signing_key_update}}
 
 
 Send-to-device messaging
@@ -1360,13 +1084,15 @@ The following endpoint prefixes MUST be protected:
 * ``/_matrix/federation/v1/make_join``
 * ``/_matrix/federation/v1/make_leave``
 * ``/_matrix/federation/v1/send_join``
+* ``/_matrix/federation/v2/send_join``
 * ``/_matrix/federation/v1/send_leave``
+* ``/_matrix/federation/v2/send_leave``
 * ``/_matrix/federation/v1/invite``
+* ``/_matrix/federation/v2/invite``
 * ``/_matrix/federation/v1/state``
 * ``/_matrix/federation/v1/state_ids``
 * ``/_matrix/federation/v1/backfill``
 * ``/_matrix/federation/v1/event_auth``
-* ``/_matrix/federation/v1/query_auth``
 * ``/_matrix/federation/v1/get_missing_events``
 
 
@@ -1403,6 +1129,15 @@ originating server, following the algorithm described in `Checking for a signatu
 Note that this step should succeed whether we have been sent the full event or
 a redacted copy.
 
+The signatures expected on an event are:
+
+* The ``sender``'s server, unless the invite was created as a result of 3rd party invite.
+  The sender must already match the 3rd party invite, and the server which actually
+  sends the event may be a different server.
+* For room versions 1 and 2, the server which created the ``event_id``. Other room
+  versions do not track the ``event_id`` over federation and therefore do not need
+  a signature from those servers.
+
 If the signature is found to be valid, the expected content hash is calculated
 as described below. The content hash in the ``hashes`` property of the received
 event is base64-decoded, and the two are compared for equality.
@@ -1411,6 +1146,26 @@ If the hash check fails, then it is assumed that this is because we have only
 been given a redacted version of the event. To enforce this, the receiving
 server should use the redacted copy it calculated rather than the full copy it
 received.
+
+.. _`reference hashes`:
+
+Calculating the reference hash for an event
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The *reference hash* of an event covers the essential fields of an event,
+including content hashes. It is used for event identifiers in some room versions.
+See the `room version specification`_ for more information. It is calculated as
+follows.
+
+1. The event is put through the redaction algorithm.
+
+2. The ``signatures``, ``age_ts``, and ``unsigned`` properties are removed
+   from the event, if present.
+
+3. The event is converted into `Canonical JSON`_.
+
+4. A sha256 hash is calculated on the resulting JSON object.
+
 
 Calculating the content hash for an event
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1454,7 +1209,7 @@ Example code
         # Keys under "unsigned" can be modified by other servers.
         # They are useful for conveying information like the age of an
         # event that will change in transit.
-        # Since they can be modifed we need to exclude them from the hash.
+        # Since they can be modified we need to exclude them from the hash.
         event_object.pop("unsigned", None)
 
         # Signatures will depend on the current value of the "hashes" key.
@@ -1476,13 +1231,23 @@ Example code
 
    [[TODO(markjh): Since the ``hash`` object cannot be redacted a server
    shouldn't allow too many hashes to be listed, otherwise a server might embed
-   illict data within the ``hash`` object.
+   illicit data within the ``hash`` object.
 
    We might want to specify a maximum number of keys for the
    ``hash`` and we might want to specify the maximum output size of a hash]]
 
    [[TODO(markjh) We might want to allow the server to omit the output of well
    known hash functions like SHA-256 when none of the keys have been redacted]]
+
+
+Security considerations
+-----------------------
+
+When a domain's ownership changes, the new controller of the domain can masquerade
+as the previous owner, receiving messages (similarly to email) and request past
+messages from other servers. In the future, proposals like
+`MSC1228 <https://github.com/matrix-org/matrix-doc/issues/1228>`_ will address this
+issue.
 
 
 .. |/query/directory| replace:: ``/query/directory``
@@ -1500,3 +1265,5 @@ Example code
 .. _`Checking for a signature`: ../appendices.html#checking-for-a-signature
 .. _`Device Management module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#device-management
 .. _`End-to-End Encryption module`: ../client_server/%CLIENT_RELEASE_LABEL%.html#end-to-end-encryption
+.. _`room version specification`: ../index.html#room-versions
+.. _`Client-Server Key Algorithms`: ../client_server/%CLIENT_RELEASE_LABEL%.html#key-algorithms

@@ -1,13 +1,25 @@
-gendoc: &gendoc
-  name: Generate the docs
+genlegacydoc: &genlegacydoc
+  name: Generate the legacy docs
   command: |
     source /env/bin/activate
     scripts/gendoc.py
 
+gendoc: &gendoc
+  name: Generate the docs
+  # Note: Node dependencies are required for the hugo build.
+  # Note: We use a custom config file for circleci due to some specifics with hosting the
+  #       site using CircleCI's artifacts platform. See config-circleci.toml for details.
+  command: |
+    apk add nodejs npm git hugo
+    npm i
+    cat config-circleci.toml config.toml > hugo-config.toml
+    hugo --config hugo-config.toml --baseURL "/${CIRCLE_NODE_INDEX}/public"
+
 genswagger: &genswagger
-  name: Generate the swagger
+  name: Validate sources and generate swagger json
   command: |
     source /env/bin/activate
+    scripts/check-swagger-sources.py
     scripts/dump-swagger.py
 
 buildswaggerui: &buildswaggerui
@@ -27,23 +39,14 @@ checkexamples: &checkexamples
   name: Check Event Examples
   command: |
     source /env/bin/activate
-    cd event-schemas
-    ./check_examples.py
-    cd ../api
-    ./check_examples.py
-
-genmatrixassets: &genmatrixassets
-  name: Generate/Verify matrix.org assets
-  command: |
-    source /env/bin/activate
-    ./scripts/generate-matrix-org-assets
+    scripts/check-event-schema-examples.py
 
 validateapi: &validateapi
   name: Validate OpenAPI specifications
   command: |
-    cd api
+    cd scripts
     npm install
-    node validator.js -s "client-server"
+    node validator.js -s "../data/api/client-server"
 
 buildspeculator: &buildspeculator
   name: Build Speculator
@@ -71,18 +74,32 @@ jobs:
     steps:
       - checkout
       - run: *checkexamples
-      - run: *genmatrixassets # We don't actually use the assets, but we do want to make sure they build
-  build-docs:
+  build-legacy-docs:
     docker:
       - image: uhoreg/matrix-doc-build
     steps:
       - checkout
-      - run: *gendoc
+      - run: *genlegacydoc
       - store_artifacts:
           path: scripts/gen
       - run:
-          name: "Doc build is available at:"
+          name: "Legacy doc build is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/gen/index.html"; echo $DOCS_URL
+  build-docs:
+    docker:
+      - image: alpine
+    steps:
+      # Note: We install git in the image so we can pull git submodules. The hugo theme in use
+      # is a git submodule, which has its own submodules, and all need to be loaded.
+      - run: apk add git
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: *gendoc
+      - store_artifacts:
+          path: public
+      - run:
+          name: "Doc build is available at:"
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/public/index.html"; echo $DOCS_URL
   build-swagger:
     docker:
       - image: uhoreg/matrix-doc-build
@@ -97,7 +114,7 @@ jobs:
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
   build-dev-scripts:
     docker:
-      - image: golang:1.8
+      - image: golang:1.10
     steps:
       - checkout
       - run:
@@ -113,6 +130,7 @@ workflows:
 
   build-spec:
     jobs:
+      - build-legacy-docs
       - build-docs
       - build-swagger
       - check-docs
@@ -121,4 +139,4 @@ workflows:
 
 notify:
   webhooks:
-    - url: https://giles.cadair.com/circleci
+    - url: https://giles.cadair.dev/circleci

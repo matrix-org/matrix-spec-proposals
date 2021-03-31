@@ -11,12 +11,16 @@ virtualenv -p python3 env
 python --version
 pip --version
 
+# Install python dependencies
 pip install -r scripts/requirements.txt
 
+# Install node dependencies
+npm install --prefix=scripts
+
 # do sanity checks on the examples and swagger
-(cd event-schemas/ && ./check_examples.py)
-(cd api && ./check_examples.py)
-(cd api && npm install && node validator.js -s "client-server")
+scripts/check-event-schema-examples.py
+scripts/check-swagger-sources.py
+node scripts/validator.js --schema "data/api/client-server"
 
 : ${GOPATH:=${WORKSPACE}/.gopath}
 mkdir -p "${GOPATH}"
@@ -30,5 +34,5 @@ go get gopkg.in/fsnotify/fsnotify.v1
 
 # build the spec for matrix.org.
 # (we don't actually use it on travis, but it's still useful to check we
-# can build it. On Jenkins, this is then used to deploy to matrix.org).
+# can build it. On Buildkite, this is then used to deploy to matrix.org).
 ./scripts/generate-matrix-org-assets

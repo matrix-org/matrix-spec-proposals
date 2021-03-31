@@ -1,0 +1,11 @@
+{
+    "$ref": "server_key.json",
+    "signatures": {
+        "example.org": {
+            "ed25519:abc123": "VGhpcyBzaG91bGQgYWN0dWFsbHkgYmUgYSBzaWduYXR1cmU"
+        },
+        "notary.server.com": {
+            "ed25519:010203": "VGhpcyBpcyBhbm90aGVyIHNpZ25hdHVyZQ"
+        }
+    }
+}

@@ -29,7 +29,7 @@ Canonical JSON
 ~~~~~~~~~~~~~~
 
 We define the canonical JSON encoding for a value to be the shortest UTF-8 JSON
-encoding with dictionary keys lexicographically sorted by unicode codepoint.
+encoding with dictionary keys lexicographically sorted by Unicode codepoint.
 Numbers in the JSON must be integers in the range ``[-(2**53)+1, (2**53)-1]``.
 
 We pick UTF-8 as the encoding as it should be available to all platforms and
@@ -38,6 +38,17 @@ We sort the keys to give a consistent ordering. We force integers to be in the
 range where they can be accurately represented using IEEE double precision
 floating point numbers since a number of JSON libraries represent all numbers
 using this representation.
+
+.. WARNING::
+   Events in room versions 1, 2, 3, 4, and 5 might not be fully compliant with
+   these restrictions. Servers SHOULD be capable of handling JSON which is considered
+   invalid by these restrictions where possible.
+
+   The most notable consideration is that integers might not be in the range
+   specified above.
+
+.. Note::
+   Float values are not permitted by this encoding.
 
 .. code:: python
 
@@ -52,14 +63,14 @@ using this representation.
          separators=(',',':'),
          # Sort the keys of dictionaries.
          sort_keys=True,
-         # Encode the resulting unicode as UTF-8 bytes.
+         # Encode the resulting Unicode as UTF-8 bytes.
      ).encode("UTF-8")
 
 Grammar
 +++++++
 
 Adapted from the grammar in http://tools.ietf.org/html/rfc7159 removing
-insignificant whitespace, fractions, exponents and redundant character escapes
+insignificant whitespace, fractions, exponents and redundant character escapes.
 
 .. code::
 

@@ -38,28 +38,8 @@ paths:
       responses:
         200:
           description: Server discovery information.
-          examples:
-            application/json: {
-                "m.homeserver": {
-                  "base_url": "https://matrix.example.com"
-                },
-                "m.identity_server": {
-                  "base_url": "https://identity.example.com"
-                }
-              }
           schema:
-            type: object
-            properties:
-              m.homeserver:
-                description: Information about the homeserver to connect to.
-                "$ref": "definitions/wellknown/homeserver.yaml"
-              m.identity_server:
-                description: Optional. Information about the identity server to connect to.
-                "$ref": "definitions/wellknown/identity_server.yaml"
-            additionalProperties:
-              description: Application-dependent keys using Java package naming convention.
-            required:
-              - m.homeserver
+            "$ref": "definitions/wellknown/full.yaml"
         404:
           description: No server discovery information available.
       tags:

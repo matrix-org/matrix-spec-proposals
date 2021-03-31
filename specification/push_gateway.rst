@@ -84,9 +84,12 @@ This describes the format used by "HTTP" pushers to send notifications of
 events to Push Gateways. If the endpoint returns an HTTP error code, the
 homeserver SHOULD retry for a reasonable amount of time using exponential backoff.
 
-When pushing notifications for events, the hoemserver is expected to include all of
+When pushing notifications for events, the homeserver is expected to include all of
 the event-related fields in the ``/notify`` request. When the homeserver is performing
 a push where the ``format`` is ``"event_id_only"``, only the ``event_id``, ``room_id``,
 ``counts``, and ``devices`` are required to be populated.
+
+Note that most of the values and behaviour of this endpoint is described by the Client-Server
+API's `Push Module <../client_server/%CLIENT_RELEASE_LABEL%.html#module-push>`_.
 
 {{push_notifier_push_http_api}}

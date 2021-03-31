@@ -40,21 +40,44 @@ The specification consists of the following parts:
 
 {{apis}}
 
+Additionally, this introduction page contains the key baseline information required to
+understand the specific APIs, including the sections on `room versions`_
+and `overall architecture <#architecture>`_.
+
 The `Appendices <appendices.html>`_ contain supplemental information not specific to
 one of the above APIs.
 
-The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_ is useful for browsing the Client-Server API.
+The `Matrix Client-Server API Swagger Viewer <https://matrix.org/docs/api/client-server/>`_
+is useful for browsing the Client-Server API.
+
+
+Matrix versions
+~~~~~~~~~~~~~~~
+
+.. Note::
+  As of June 10th 2019, the Matrix specification is considered out of beta -
+  indicating that all currently released APIs are considered stable and secure
+  to the best of our knowledge, and the spec should contain the complete
+  information necessary to develop production-grade implementations of Matrix
+  without the need for external reference.
+
+Matrix 1.0 (released June 10th, 2019) consists of the following minimum API
+versions:
+
+=======================  =======
+API/Specification        Version
+=======================  =======
+Client-Server API        r0.5.0
+Server-Server API        r0.1.2
+Application Service API  r0.1.1
+Identity Service API     r0.1.1
+Push Gateway API         r0.1.0
+Room Version             v5
+=======================  =======
+
 
 Introduction to the Matrix APIs
 -------------------------------
-.. WARNING::
-  The Matrix specification is still evolving: the APIs are not yet frozen
-  and this document is in places a work in progress or stale. We have made every
-  effort to clearly flag areas which are still being finalised.
-  We're publishing it at this point because it's complete enough to be more than
-  useful and provide a canonical reference to how Matrix is evolving. Our end
-  goal is to mirror WHATWG's `Living Standard
-  <https://whatwg.org/faq?#living-standard>`_.
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice
 over IP (VoIP) and Internet of Things (IoT) communication, designed to create
@@ -83,7 +106,7 @@ The principles that Matrix attempts to follow are:
 - Empowering the end-user
 
   + The user should be able to choose the server and clients they use
-  + The user should be control how private their communication is
+  + The user should be able to control how private their communication is
   + The user should know precisely where their data is stored
 
 - Fully decentralised - no single points of control over conversations or the
@@ -127,6 +150,8 @@ Spec Change Proposals
 To propose a change to the Matrix Spec, see the explanations at `Proposals
 for Spec Changes to Matrix <proposals>`_.
 
+
+.. _`architecture`:
 
 Architecture
 ------------
@@ -189,7 +214,7 @@ allocated the account and has the form::
 
   @localpart:domain
 
-See `'Identifier Grammar' the appendices <appendices.html#identifier-grammar>`_ for full details of
+See `'Identifier Grammar' in the appendices <appendices.html#identifier-grammar>`_ for full details of
 the structure of user IDs.
 
 Devices
@@ -315,8 +340,8 @@ The following conceptual diagram shows an
                     |     Content: { JSON object }       |
                     |....................................|
 
-Federation maintains *shared data structures* per-room between multiple home
-servers. The data is split into ``message events`` and ``state events``.
+Federation maintains *shared data structures* per-room between multiple
+homeservers. The data is split into ``message events`` and ``state events``.
 
 Message events:
   These describe transient 'once-off' activity in a room such as an
@@ -341,6 +366,12 @@ pushed over federation to the participating servers in a room, currently using
 full mesh topology. Servers may also request backfill of events over federation
 from the other servers participating in a room.
 
+.. Note::
+  Events are not limited to the types defined in this specification. New or custom
+  event types can be created on a whim using the Java package naming convention.
+  For example, a ``com.example.game.score`` event can be sent by clients and other
+  clients would receive it through Matrix, assuming the client has access to the
+  ``com.example`` namespace.
 
 Room Aliases
 ++++++++++++
@@ -400,7 +431,7 @@ Profiles
 ~~~~~~~~
 
 Users may publish arbitrary key/value data associated with their account - such
-as a human readable display name, a profile photo URL, contact information
+as a human-readable display name, a profile photo URL, contact information
 (email address, phone numbers, website URLs etc).
 
 .. TODO
@@ -417,6 +448,109 @@ dedicated API.  The API is symmetrical to managing Profile data.
 .. TODO
   Would it really be overengineered to use the same API for both profile &
   private user data, but with different ACLs?
+
+
+Common concepts
+---------------
+
+Various things are common throughout all of the Matrix APIs. They are
+documented here.
+
+.. TODO: Some words about trailing slashes. See https://github.com/matrix-org/matrix-doc/issues/2107
+
+Namespacing
+~~~~~~~~~~~
+
+Namespacing helps prevent conflicts between multiple applications and the specification
+itself. Where namespacing is used, ``m.`` prefixes are used by the specification to
+indicate that the field is controlled by the specification. Custom or non-specified
+namespaces used in the wild MUST use the Java package naming convention to prevent
+conflicts.
+
+As an example, event types defined in the specification are namespaced under the
+special ``m.`` prefix, however any client can send a custom event type, such as
+``com.example.game.score`` (assuming the client has rights to the ``com.example``
+namespace) without needing to put the event into the ``m.`` namespace.
+
+Timestamps
+~~~~~~~~~~
+
+Unless otherwise stated, timestamps are measured as milliseconds since the Unix epoch.
+Throughout the specification this may be referred to as POSIX, Unix, or just "time in
+milliseconds".
+
+
+.. _`room versions`:
+
+Room Versions
+-------------
+
+Rooms are central to how Matrix operates, and have strict rules for what
+is allowed to be contained within them. Rooms can also have various
+algorithms that handle different tasks, such as what to do when two or
+more events collide in the underlying DAG. To allow rooms to be improved
+upon through new algorithms or rules, "room versions" are employed to
+manage a set of expectations for each room. New room versions are assigned
+as needed.
+
+There is no implicit ordering or hierarchy to room versions, and their principles
+are immutable once placed in the specification. Although there is a recommended
+set of versions, some rooms may benefit from features introduced by other versions.
+Rooms move between different versions by "upgrading" to the desired version. Due
+to versions not being ordered or hierarchical, this means a room can "upgrade"
+from version 2 to version 1, if it is so desired.
+
+Room version grammar
+~~~~~~~~~~~~~~~~~~~~
+
+Room versions are used to change properties of rooms that may not be compatible
+with other servers. For example, changing the rules for event authorization would
+cause older servers to potentially end up in a split-brain situation due to not
+understanding the new rules.
+
+A room version is defined as a string of characters which MUST NOT exceed 32
+codepoints in length. Room versions MUST NOT be empty and SHOULD contain only
+the characters ``a-z``, ``0-9``, ``.``, and ``-``.
+
+Room versions are not intended to be parsed and should be treated as opaque
+identifiers. Room versions consisting only of the characters ``0-9`` and ``.``
+are reserved for future versions of the Matrix protocol.
+
+The complete grammar for a legal room version is::
+
+  room_version = 1*room_version_char
+  room_version_char = DIGIT
+                    / %x61-7A         ; a-z
+                    / "-" / "."
+
+Examples of valid room versions are:
+
+* ``1`` (would be reserved by the Matrix protocol)
+* ``1.2`` (would be reserved by the Matrix protocol)
+* ``1.2-beta``
+* ``com.example.version``
+
+Complete list of room versions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Room versions are divided into two distinct groups: stable and unstable. Stable
+room versions may be used by rooms safely. Unstable room versions are everything
+else which is either not listed in the specification or flagged as unstable for
+some other reason. Versions can switch between stable and unstable periodically
+for a variety of reasons, including discovered security vulnerabilities and age.
+
+Clients should not ask room administrators to upgrade their rooms if the room is
+running a stable version. Servers SHOULD use room version 6 as the default room
+version when creating new rooms.
+
+The available room versions are:
+
+* `Version 1 <rooms/v1.html>`_ - **Stable**. The current version of most rooms.
+* `Version 2 <rooms/v2.html>`_ - **Stable**. Implements State Resolution Version 2.
+* `Version 3 <rooms/v3.html>`_ - **Stable**. Introduces events whose IDs are the event's hash.
+* `Version 4 <rooms/v4.html>`_ - **Stable**. Builds on v3 by using URL-safe base64 for event IDs.
+* `Version 5 <rooms/v5.html>`_ - **Stable**. Introduces enforcement of signing key validity periods.
+* `Version 6 <rooms/v6.html>`_ - **Stable**. Alters several authorization rules for events.
 
 Specification Versions
 ----------------------

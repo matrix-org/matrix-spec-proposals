@@ -1,4 +1,5 @@
 # Copyright 2018 New Vector Ltd
+# Copyright 2020 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,7 +43,6 @@ paths:
           description: |-
             The user ID to retrieve devices for. Must be a user local to the
             receiving homeserver.
-          required: true
           x-example: "@alice:example.org"
       responses:
         200:
@@ -82,4 +82,37 @@ paths:
                       description: Optional display name for the device.
                       example: "Alice's Mobile Phone"
                   required: ['device_id', 'keys']
+              master_key:
+                type: object
+                description: |-
+                  The user\'s master cross-signing key.
+                allOf:
+                  - $ref: ../client-server/definitions/cross_signing_key.yaml
+                  # FIXME: why isn't the doc generator picking up this example?
+                  - example: {
+                      "user_id": "@alice:example.com",
+                      "usage": ["master"],
+                      "keys": {
+                        "ed25519:base64+master+public+key": "base64+master+public+key",
+                      }
+                    }
+              self_signing_keys:
+                type: object
+                description: |-
+                  The user\'s self-signing key.
+                allOf:
+                  - $ref: ../client-server/definitions/cross_signing_key.yaml
+                  # FIXME: why isn't the doc generator picking up this example?
+                  - example: {
+                      "user_id": "@alice:example.com",
+                      "usage": ["self_signing"],
+                      "keys": {
+                        "ed25519:base64+self+signing+public+key": "base64+self+signing+master+public+key",
+                      },
+                      "signatures": {
+                        "@alice:example.com": {
+                          "ed25519:base64+master+public+key": "signature+of+self+signing+key"
+                        }
+                      }
+                    }
             required: ['user_id', 'stream_id', 'devices']

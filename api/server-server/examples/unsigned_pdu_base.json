@@ -1,0 +1,26 @@
+{
+    "room_id": "!UcYsUzyxTGDxLBEvLy:example.org",
+    "sender": "@alice:example.com",
+    "origin": "example.com",
+    "origin_server_ts": 1404838188000,
+    "depth": 12,
+    "auth_events": [
+        [
+            "$af232176:example.org",
+            {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}
+        ]
+    ],
+    "type": "m.room.message",
+    "prev_events": [
+        [
+            "$af232176:example.org",
+            {"sha256": "abase64encodedsha256hashshouldbe43byteslong"}
+        ]
+    ],
+    "content": {
+        "key": "value"
+    },
+    "unsigned": {
+        "age": 4612
+    }
+}

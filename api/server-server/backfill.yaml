@@ -32,8 +32,8 @@ paths:
       summary: Retrieves the events which precede the given event
       description: |-
         Retrieves a sliding-window history of previous PDUs that occurred in the given room.
-        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs that preceded it
-        are retrieved, up to the total number given by the ``limit``.
+        Starting from the PDU ID(s) given in the ``v`` argument, the PDUs given in ``v`` and
+        the PDUs that preceded them are retrieved, up to the total number given by the ``limit``.
       operationId: backfillRoom
       security:
         - signedRequest: []
@@ -63,24 +63,16 @@ paths:
           description: |-
             A transaction containing the PDUs that preceded the given event(s), including the given
             event(s), up to the given limit.
+
+            .. Note::
+               Though the PDU definitions require that ``prev_events`` and ``auth_events`` be limited
+               in number, the response of backfill MUST NOT be validated on these specific restrictions.
+
+               Due to historical reasons, it is possible that events which were previously accepted
+               would now be rejected by these limitations. The events should be rejected per usual by
+               the ``/send``, ``/get_missing_events``, and remaining endpoints.
           schema:
-            $ref: "definitions/transaction.yaml"
-          # Override the example to show the response of the request a bit better
-          examples:
-            application/json: {
-              "$ref": "examples/transaction.json",
-              "pdus": [
-                {
-                  "$ref": "pdu.json",
-                  "room_id": "!SomeRoom:matrix.org",
-                  "event_id": "$abc123:matrix.org"
-                },
-                {
-                  "$ref": "pdu.json",
-                  "room_id": "!SomeRoom:matrix.org"
-                },
-              ]
-            }
+            $ref: "definitions/unlimited_pdu_transaction.yaml"
   "/get_missing_events/{roomId}":
     post:
       summary: Retrieves events that the sender is missing
@@ -114,14 +106,14 @@ paths:
               earliest_events:
                 type: array
                 description: |-
-                  The latest events that the sender already has. These are skipped when retrieving
+                  The latest event IDs that the sender already has. These are skipped when retrieving
                   the previous events of ``latest_events``.
                 items:
                   type: string
                 example: ["$missing_event:example.org"]
               latest_events:
                 type: array
-                description: The events to retrieve the previous events for.
+                description: The event IDs to retrieve the previous events for.
                 items:
                   type: string
                 example: ["$event_that_has_the_missing_event_as_a_previous_event:example.org"]
@@ -136,13 +128,16 @@ paths:
             properties:
               events:
                 type: array
-                description: The missing events.
+                description: |-
+                  The missing events. The event format varies depending on the room version - check
+                  the `room version specification`_ for precise event formats.
                 items:
-                  $ref: definitions/pdu.yaml
+                  type: object
+                  title: PDU
             required: ['events']
           examples:
             application/json: {
               "events": [
-                {"$ref": "examples/pdu.json"}
+                {"$ref": "examples/minimal_pdu.json"}
               ]
             }

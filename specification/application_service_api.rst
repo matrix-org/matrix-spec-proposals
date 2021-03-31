@@ -36,7 +36,7 @@ Changelog
 ---------
 
 
-.. topic:: Version: unstable
+.. topic:: Version: %APPSERVICE_RELEASE_LABEL%
 {{application_service_changelog}}
 
 This version of the specification is generated from
@@ -52,6 +52,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/application_service/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.1.1 <https://matrix.org/docs/spec/application_service/r0.1.1.html>`_
 - `r0.1.0 <https://matrix.org/docs/spec/application_service/r0.1.0.html>`_
 
 
@@ -187,6 +188,15 @@ An example registration file for an IRC-bridging application service is below:
 Homeserver -> Application Service API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Authorization
++++++++++++++
+
+Homeservers MUST include a query parameter named ``access_token`` containing the
+``hs_token`` from the application service's registration when making requests to
+the application service. Application services MUST verify the provided ``access_token``
+matches their known ``hs_token``, failing the request with an ``M_FORBIDDEN`` error
+if it does not match.
+
 Legacy routes
 +++++++++++++
 
@@ -196,21 +206,21 @@ service specification now defines a version on all endpoints to be more compatib
 with the rest of the Matrix specification and the future.
 
 Homeservers should attempt to use the specified endpoints first when communicating
-with application services. However, if the application service receives an http status
-code that does not indicate success (ie: 404, 500, 501, etc) then the homeserver
+with application services. However, if the application service receives an HTTP status
+code that does not indicate success (i.e.: 404, 500, 501, etc) then the homeserver
 should fall back to the older endpoints for the application service.
 
 The older endpoints have the exact same request body and response format, they
 just belong at a different path. The equivalent path for each is as follows:
 
-* ``/_matrix/app/v1/transactions/{txnId}`` becomes ``/transactions/{txnId}``
-* ``/_matrix/app/v1/users/{userId}`` becomes ``/users/{userId}``
-* ``/_matrix/app/v1/rooms/{roomAlias}`` becomes ``/rooms/{roomAlias}``
-* ``/_matrix/app/v1/thirdparty/protocol/{protocol}`` becomes ``/_matrix/app/unstable/thirdparty/protocol/{protocol}``
-* ``/_matrix/app/v1/thirdparty/user/{user}`` becomes ``/_matrix/app/unstable/thirdparty/user/{user}``
-* ``/_matrix/app/v1/thirdparty/location/{location}`` becomes ``/_matrix/app/unstable/thirdparty/location/{location}``
-* ``/_matrix/app/v1/thirdparty/user`` becomes ``/_matrix/app/unstable/thirdparty/user``
-* ``/_matrix/app/v1/thirdparty/location`` becomes ``/_matrix/app/unstable/thirdparty/location``
+* ``/_matrix/app/v1/transactions/{txnId}`` should fall back to ``/transactions/{txnId}``
+* ``/_matrix/app/v1/users/{userId}`` should fall back to ``/users/{userId}``
+* ``/_matrix/app/v1/rooms/{roomAlias}`` should fall back to ``/rooms/{roomAlias}``
+* ``/_matrix/app/v1/thirdparty/protocol/{protocol}`` should fall back to ``/_matrix/app/unstable/thirdparty/protocol/{protocol}``
+* ``/_matrix/app/v1/thirdparty/user/{user}`` should fall back to ``/_matrix/app/unstable/thirdparty/user/{user}``
+* ``/_matrix/app/v1/thirdparty/location/{location}`` should fall back to ``/_matrix/app/unstable/thirdparty/location/{location}``
+* ``/_matrix/app/v1/thirdparty/user`` should fall back to ``/_matrix/app/unstable/thirdparty/user``
+* ``/_matrix/app/v1/thirdparty/location`` should fall back to ``/_matrix/app/unstable/thirdparty/location``
 
 Homeservers should periodically try again for the newer endpoints because the
 application service may have been updated.

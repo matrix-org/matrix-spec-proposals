@@ -1,0 +1,8 @@
+{
+  "$ref": "core/room_event.json",
+  "type": "m.room.redaction",
+  "redacts": "$fukweghifu23:localhost",
+  "content": {
+    "reason": "Spamming"
+  }
+}

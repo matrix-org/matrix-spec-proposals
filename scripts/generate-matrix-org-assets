@@ -8,13 +8,10 @@ cd `dirname $0`/..
 
 mkdir -p assets
 
-if [ "$CIRCLECI" != "true" ]
-then
-    # generate specification/proposals.rst
-    ./scripts/proposals.py
-fi
+# generate specification/proposals.rst
+./scripts/proposals.py
 
-# generate the spec docs
+# generate the legacy spec docs
 ./scripts/gendoc.py -d assets/spec
 
 # and the swagger

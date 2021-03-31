@@ -5,7 +5,6 @@ targets:
   client_server:
     files:
       - client_server_api.rst
-      - { 1: events.rst }
       - { 1: modules.rst }
       - { 2: feature_profiles.rst }
       - { 2: "group:modules" }  # reference a group of files
@@ -26,6 +25,30 @@ targets:
     files:
       - push_gateway.rst
     version_label: "%PUSH_GATEWAY_RELEASE_LABEL%"
+  rooms@v1: # this is translated to be rooms/v1.html
+    files:
+      - rooms/v1.rst
+    version_label: v1
+  rooms@v2: # this is translated to be rooms/v2.html
+    files:
+      - rooms/v2.rst
+    version_label: v2
+  rooms@v3: # this is translated to be rooms/v3.html
+    files:
+      - rooms/v3.rst
+    version_label: v3
+  rooms@v4: # this is translated to be rooms/v4.html
+    files:
+      - rooms/v4.rst
+    version_label: v4
+  rooms@v5: # this is translated to be rooms/v5.html
+    files:
+      - rooms/v5.rst
+    version_label: v5
+  rooms@v6: # this is translated to be rooms/v6.html
+    files:
+      - rooms/v6.rst
+    version_label: v6
   appendices:
     files:
       - appendices.rst
@@ -51,6 +74,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/send_to_device.rst
     - modules/device_management.rst
     - modules/end_to_end_encryption.rst
+    - modules/secrets.rst
     - modules/history_visibility.rst
     - modules/push.rst
     - modules/third_party_invites.rst
@@ -61,7 +85,7 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/account_data.rst
     - modules/admin.rst
     - modules/event_context.rst
-    - modules/cas_login.rst
+    - modules/sso_login.rst
     - modules/dm.rst
     - modules/ignore_users.rst
     - modules/stickers.rst
@@ -70,6 +94,9 @@ groups:  # reusable blobs of files when prefixed with 'group:'
     - modules/openid.rst
     - modules/server_acls.rst
     - modules/mentions.rst
+    - modules/room_upgrades.rst
+    - modules/server_notices.rst
+    - modules/moderation_policies.rst
 
 
 title_styles: ["=", "-", "~", "+", "^", "`", "@", ":"]
