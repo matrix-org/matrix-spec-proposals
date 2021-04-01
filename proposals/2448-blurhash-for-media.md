@@ -92,7 +92,7 @@ Example `m.sticker` content:
 Room avatars having BlurHashes available will be especially useful when
 viewing a server's Public Rooms directory.
 
-An optional field is added to `m.room.avatar`'s `content` dictionary with the
+An optional field is added to `m.room.avatar`'s `content.info` dictionary with the
 key `blurhash`. Its value is a BlurHash of the media that is pointed to by
 `url`.
 
@@ -101,7 +101,9 @@ Example `m.room.avatar` content:
 ```json
 {
   "url": "mxc://amorgan.xyz/a59ee02f180677d83d1b57d366127f8e1afdd4ed",
-  "blurhash": "JadR*.7kCMdnj"
+  "info": {
+    "blurhash": "JadR*.7kCMdnj"
+  }
 }
 ```
 
