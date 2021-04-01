@@ -76,9 +76,8 @@ have the following fields:
 
 ### Backwards compatibility
 
-If the field `sdp_stream_metadata` is missing, clients should
-behave the way they do right now (i.e. they should not allow usage of multiple
-streams).
+If the field `sdp_stream_metadata` is missing, clients should ignore any new
+incoming streams (i.e. they should use the first one).
 
 ## Alternatives
 
