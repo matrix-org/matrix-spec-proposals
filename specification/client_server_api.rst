@@ -1,4 +1,4 @@
-.. Copyright 2016 OpenMarket Ltd
+.. Copyright 2016-2020 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ Other versions of this specification
 The following other versions are also available, in reverse chronological order:
 
 - `HEAD <https://matrix.org/docs/spec/client_server/unstable.html>`_: Includes all changes since the latest versioned release.
+- `r0.6.1 <https://matrix.org/docs/spec/client_server/r0.6.1.html>`_
 - `r0.6.0 <https://matrix.org/docs/spec/client_server/r0.6.0.html>`_
 - `r0.5.0 <https://matrix.org/docs/spec/client_server/r0.5.0.html>`_
 - `r0.4.0 <https://matrix.org/docs/spec/client_server/r0.4.0.html>`_
@@ -123,6 +124,10 @@ The common error codes are:
 :``M_UNKNOWN_TOKEN``:
   The access token specified was not recognised.
 
+  An additional response parameter, ``soft_logout``, might be present on the response
+  for 401 HTTP status codes. See `the soft logout section <#soft-logout>`_ for more
+  information.
+
 :``M_MISSING_TOKEN``:
   No access token was specified for the request.
 
@@ -181,7 +186,7 @@ Other error codes the client might encounter are:
   permits, for example, email addresses from a particular domain.
 
 :``M_SERVER_NOT_TRUSTED``:
-  The client's request used a third party server, eg. identity server, that this server does not trust.
+  The client's request used a third party server, e.g. identity server, that this server does not trust.
 
 :``M_UNSUPPORTED_ROOM_VERSION``:
   The client's request to create a room used a room version that the server does not support.
@@ -223,8 +228,8 @@ Other error codes the client might encounter are:
   may reach a resource limit if it starts using too much memory or disk space. The
   error MUST have an ``admin_contact`` field to provide the user receiving the error
   a place to reach out to. Typically, this error will appear on routes which attempt
-  to modify state (eg: sending messages, account data, etc) and not routes which only
-  read state (eg: ``/sync``, get account data, etc).
+  to modify state (e.g.: sending messages, account data, etc) and not routes which only
+  read state (e.g.: ``/sync``, get account data, etc).
 
 :``M_CANNOT_LEAVE_SERVER_NOTICE_ROOM``:
   The user is unable to reject an invite to join the server notices room. See the
@@ -261,8 +266,8 @@ to pre-flight requests and supply Cross-Origin Resource Sharing (CORS) headers o
 all requests.
 
 Servers MUST expect that clients will approach them with ``OPTIONS`` requests,
-allowing clients to discover the CORS headers. All endpoints in this specification s
-upport the ``OPTIONS`` method, however the server MUST NOT perform any logic defined
+allowing clients to discover the CORS headers. All endpoints in this specification
+support the ``OPTIONS`` method, however the server MUST NOT perform any logic defined
 for the endpoints when approached with an ``OPTIONS`` request.
 
 When a client approaches the server with a request, the server should respond with
@@ -404,19 +409,36 @@ should pass the ``device_id`` in the request body. If the client sets the
 to that device. There is therefore at most one active access token assigned to
 each device at any one time.
 
+Soft logout
+~~~~~~~~~~~
+
+When a request fails due to a 401 status code per above, the server can
+include an extra response parameter, ``soft_logout``, to indicate if the client's
+persisted information can be retained. This defaults to ``false``, indicating
+that the server has destroyed the session. Any persisted state held by the client,
+such as encryption keys and device information, must not be reused and must be discarded.
+
+When ``soft_logout`` is true, the client can acquire a new access token by
+specifying the device ID it is already using to the login API. In most cases
+a ``soft_logout: true`` response indicates that the user's session has expired
+on the server-side and the user simply needs to provide their credentials again.
+
+In either case, the client's previously known access token will no longer function.
+
+.. _`user-interactive authentication`:
+
 User-Interactive Authentication API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Overview
 <<<<<<<<
 
-Some API endpoints require authentication that
-interacts with the user. The homeserver may provide many different ways of
-authenticating, such as user/password auth, login via a social network (OAuth2),
-login by confirming a token sent to their email address, etc. This specification
-does not define how homeservers should authorise their users but instead
-defines the standard interface which implementations should follow so that ANY
-client can login to ANY homeserver.
+Some API endpoints require authentication that interacts with the user. The
+homeserver may provide many different ways of authenticating, such as
+user/password auth, login via a single-sign-on server (SSO), etc. This
+specification does not define how homeservers should authorise their users but
+instead defines the standard interface which implementations should follow so
+that ANY client can log in to ANY homeserver.
 
 The process takes the form of one or more 'stages'. At each stage the client
 submits a set of data for a given authentication type and awaits a response
@@ -642,10 +664,9 @@ Authentication types
 This specification defines the following auth types:
  - ``m.login.password``
  - ``m.login.recaptcha``
- - ``m.login.oauth2``
+ - ``m.login.sso``
  - ``m.login.email.identity``
  - ``m.login.msisdn``
- - ``m.login.token``
  - ``m.login.dummy``
 
 Password-based
@@ -686,7 +707,7 @@ For example, to authenticate using the user's Matrix ID, clients would submit:
   }
 
 Alternatively reply using a 3PID bound to the user's account on the homeserver
-using the |/account/3pid|_ API rather then giving the ``user`` explicitly as
+using the |/account/3pid|_ API rather than giving the ``user`` explicitly as
 follows:
 
 .. code:: json
@@ -722,65 +743,17 @@ To use this authentication type, clients should submit an auth dict as follows:
     "session": "<session ID>"
   }
 
-Token-based
-<<<<<<<<<<<
+Single Sign-On
+<<<<<<<<<<<<<<
 :Type:
-  ``m.login.token``
+  ``m.login.sso``
 :Description:
-  The client submits a login token.
+  Authentication is supported by authorising with an external single sign-on
+  provider.
 
-To use this authentication type, clients should submit an auth dict as follows:
-
-.. code:: json
-
-  {
-    "type": "m.login.token",
-    "token": "<token>",
-    "txn_id": "<client generated nonce>",
-    "session": "<session ID>"
-  }
-
-
-A client may receive a login ``token`` via some external service, such as email
-or SMS. Note that a login token is separate from an access token, the latter
-providing general authentication to various API endpoints.
-
-Additionally, the server must encode the user ID in the ``token``; there is
-therefore no need for the client to submit a separate username.
-
-The ``txn_id`` should be a random string generated by the client for the
-request. The same ``txn_id`` should be used if retrying the request. The
-``txn_id`` may be used by the server to disallow other devices from using the
-token, thus providing "single use" tokens while still allowing the device to
-retry the request. This would be done by tying the token to the ``txn_id``
-server side, as well as potentially invalidating the token completely once the
-device has successfully logged in (e.g. when we receive a request from the
-newly provisioned access_token).
-
-
-OAuth2-based
-<<<<<<<<<<<<
-:Type:
-  ``m.login.oauth2``
-:Description:
-  Authentication is supported via OAuth2 URLs. This login consists of multiple
-  requests.
-:Parameters:
-  ``uri``: Authorization Request URI OR service selection URI. Both contain an
-  encoded ``redirect URI``.
-
-The homeserver acts as a 'confidential' client for the purposes of OAuth2.  If
-the uri is a ``service selection URI``, it MUST point to a webpage which prompts
-the user to choose which service to authorize with. On selection of a service,
-this MUST link through to an ``Authorization Request URI``. If there is only one
-service which the homeserver accepts when logging in, this indirection can be
-skipped and the "uri" key can be the ``Authorization Request URI``.
-
-The client then visits the ``Authorization Request URI``, which then shows the
-OAuth2 Allow/Deny prompt. Hitting 'Allow' redirects to the ``redirect URI`` with
-the auth code. Homeservers can choose any path for the ``redirect URI``. Once
-the OAuth flow has completed, the client retries the request with the session
-only, as above.
+A client wanting to complete authentication using SSO should use the
+`Fallback`_ mechanism. See `SSO during User-Interactive Authentication`_ for
+more information.
 
 Email-based (identity / homeserver)
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -854,7 +827,7 @@ Dummy Auth
   Dummy authentication always succeeds and requires no extra parameters. Its
   purpose is to allow servers to not require any form of User-Interactive
   Authentication to perform a request. It can also be used to differentiate
-  flows where otherwise one flow would be a subset of another flow. eg. if
+  flows where otherwise one flow would be a subset of another flow. e.g. if
   a server offers flows ``m.login.recaptcha`` and ``m.login.recaptcha,
   m.login.email.identity`` and the client completes the recaptcha stage first,
   the auth would succeed with the former flow, even if the client was intending
@@ -886,6 +859,8 @@ should open is::
 Where ``auth type`` is the type name of the stage it is attempting and
 ``session ID`` is the ID of the session given by the homeserver.
 
+.. _`user-interactive authentication fallback completion`:
+
 This MUST return an HTML page which can perform this authentication stage. This
 page must use the following JavaScript when the authentication has been
 completed:
@@ -903,7 +878,7 @@ to be defined in an embedded browser, or to use the HTML5 `cross-document
 messaging <https://www.w3.org/TR/webmessaging/#web-messaging>`_ API, to receive
 a notification that the authentication stage has been completed.
 
-Once a client receives the notificaton that the authentication stage has been
+Once a client receives the notification that the authentication stage has been
 completed, it should resubmit the request with an auth dict with just the
 session ID:
 
@@ -916,19 +891,19 @@ session ID:
 
 Example
 <<<<<<<
-A client webapp might use the following javascript to open a popup window which will
+A client webapp might use the following JavaScript to open a popup window which will
 handle unknown login types:
 
 .. code:: javascript
 
   /**
    * Arguments:
-   *     homeserverUrl: the base url of the homeserver (eg "https://matrix.org")
+   *     homeserverUrl: the base url of the homeserver (e.g. "https://matrix.org")
    *
-   *     apiEndpoint: the API endpoint being used (eg
+   *     apiEndpoint: the API endpoint being used (e.g.
    *        "/_matrix/client/%CLIENT_MAJOR_VERSION%/account/password")
    *
-   *     loginType: the loginType being attempted (eg "m.login.recaptcha")
+   *     loginType: the loginType being attempted (e.g. "m.login.recaptcha")
    *
    *     sessionID: the session ID given by the homeserver in earlier requests
    *
@@ -955,7 +930,7 @@ handle unknown login types:
           };
 
           request({
-              method:'POST', url:apiEndpint, json:requestBody,
+              method:'POST', url:apiEndpoint, json:requestBody,
           }, onComplete);
       };
 
@@ -1052,8 +1027,7 @@ Login
 
 A client can obtain access tokens using the ``/login`` API.
 
-Note that this endpoint does `not` currently use the user-interactive
-authentication API.
+Note that this endpoint does `not` currently use the `User-Interactive Authentication API`_.
 
 For a simple username/password login, clients should submit a ``/login``
 request as follows:
@@ -1070,7 +1044,7 @@ request as follows:
   }
 
 Alternatively, a client can use a 3PID bound to the user's account on the
-homeserver using the |/account/3pid|_ API rather then giving the ``user``
+homeserver using the |/account/3pid|_ API rather than giving the ``user``
 explicitly, as follows:
 
 .. code:: json
@@ -1103,7 +1077,7 @@ with ``403 Forbidden`` and an error code of ``M_FORBIDDEN``.
 
 If the homeserver advertises ``m.login.sso`` as a viable flow, and the client
 supports it, the client should redirect the user to the ``/redirect`` endpoint
-for `Single Sign-On <#sso-client-login>`_. After authentication is complete, the
+for `client login via SSO`_. After authentication is complete, the
 client will need to submit a ``/login`` request matching ``m.login.token``.
 
 {{login_cs_http_api}}
@@ -1121,6 +1095,12 @@ login API::
 This returns an HTML and JavaScript page which can perform the entire login
 process. The page will attempt to call the JavaScript function
 ``window.onLogin`` when login has been successfully completed.
+
+Non-credential parameters valid for the ``/login`` endpoint can be provided as query
+string parameters here. These are to be forwarded to the login endpoint during the login
+process. For example::
+
+    GET /_matrix/static/client/login/?device_id=GHTYAJCE
 
 .. _Registration:
 
@@ -1150,7 +1130,7 @@ can be proxied (bound) to the identity server in many cases.
   This section deals with two terms: "add" and "bind". Where "add" (or "remove")
   is used, it is speaking about an identifier that was not bound to an identity
   server. As a result, "bind" (or "unbind") references an identifier that is found
-  in an identity server. Note that an identifer can be added and bound at the same
+  in an identity server. Note that an identifier can be added and bound at the same
   time, depending on context.
 
 {{administrative_contact_cs_http_api}}
@@ -1561,8 +1541,6 @@ Room Events
 This specification outlines several standard event types, all of which are
 prefixed with ``m.``
 
-{{m_room_aliases_event}}
-
 {{m_room_canonical_alias_event}}
 
 {{m_room_create_event}}
@@ -1573,8 +1551,15 @@ prefixed with ``m.``
 
 {{m_room_power_levels_event}}
 
-{{m_room_redaction_event}}
+Historical events
++++++++++++++++++
 
+Some events within the ``m.`` namespace might appear in rooms, however they
+serve no significant meaning in this version of the specification. They are:
+
+* ``m.room.aliases``
+
+Previous versions of the specification have more information on these events.
 
 Syncing
 ~~~~~~~
@@ -1746,39 +1731,7 @@ redacted include a ``redacted_because`` key whose value is the event that caused
 it to be redacted, which may include a reason.
 
 
-Upon receipt of a redaction event, the server should strip off any keys not in
-the following list:
-
-- ``event_id``
-- ``type``
-- ``room_id``
-- ``sender``
-- ``state_key``
-- ``content``
-- ``hashes``
-- ``signatures``
-- ``depth``
-- ``prev_events``
-- ``prev_state``
-- ``auth_events``
-- ``origin``
-- ``origin_server_ts``
-- ``membership``
-
-.. Note:
-   Some of the keys, such as ``hashes``, will appear on the federation-formatted
-   event and therefore the client may not be aware of them.
-
-The content object should also be stripped of all keys, unless it is one of
-one of the following event types:
-
-- ``m.room.member`` allows key ``membership``.
-- ``m.room.create`` allows key ``creator``.
-- ``m.room.join_rules`` allows key ``join_rule``.
-- ``m.room.power_levels`` allows keys ``ban``, ``events``, ``events_default``,
-  ``kick``, ``redact``, ``state_default``, ``users``, ``users_default``.
-- ``m.room.aliases`` allows key ``aliases``.
-- ``m.room.history_visibility`` allows key ``history_visibility``.
+The exact algorithm to apply against an event is defined in the `room version specification`_.
 
 The server should add the event causing the redaction to the ``unsigned``
 property of the redacted event, under the ``redacted_because`` key. When a
@@ -1792,7 +1745,7 @@ same way a server does.
     except those protected by the redaction algorithm. For example,
     a redacted ``join`` event will still result in the user being considered joined.
     Similarly, a redacted topic does not necessarily cause the topic to revert to
-    what is was prior to the event - it causes the topic to be removed from the room.
+    what it was prior to the event - it causes the topic to be removed from the room.
 
 
 Events
@@ -1838,15 +1791,15 @@ send update requests to other servers. However, homeservers MUST handle
 ``GET`` requests to resolve aliases on other servers; they should do this using
 the federation API if necessary.
 
-Rooms store a *partial* list of room aliases via the ``m.room.aliases`` state
-event. This alias list is partial because it cannot guarantee that the alias
-list is in any way accurate or up-to-date, as room aliases can point to
-different room IDs over time. Crucially, the aliases in this event are
-**purely informational** and SHOULD NOT be treated as accurate. They SHOULD
-be checked before they are used or shared with another user. If a room
-appears to have a room alias of ``#alias:example.com``, this SHOULD be checked
-to make sure that the room's ID matches the ``room_id`` returned from the
-request.
+Rooms do not store a list of all aliases present on a room, though members
+of the room with relevant permissions may publish preferred aliases through
+the ``m.room.canonical_alias`` state event. The aliases in the state event
+should point to the room ID they are published within, however room aliases
+can and do drift to other room IDs over time. Clients SHOULD NOT treat the
+aliases as accurate. They SHOULD be checked before they are used or shared
+with another user. If a room appears to have a room alias of ``#alias:example.com``,
+this SHOULD be checked to make sure that the room's ID matches the ``room_id``
+returned from the request.
 
 {{directory_cs_http_api}}
 
@@ -2024,9 +1977,9 @@ many places of a client's display, changes to these fields cause an automatic
 propagation event to occur, informing likely-interested parties of the new
 values. This change is conveyed using two separate mechanisms:
 
-- a ``m.room.member`` event (with a ``join`` membership) is sent to every room
+- an ``m.room.member`` event (with a ``join`` membership) is sent to every room
   the user is a member of, to update the ``displayname`` and ``avatar_url``.
-- a ``m.presence`` presence status update is sent, again containing the new
+- an ``m.presence`` presence status update is sent, again containing the new
   values of the ``displayname`` and ``avatar_url`` keys, in addition to the
   required ``presence`` key containing the current presence state of the user.
 

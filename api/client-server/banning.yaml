@@ -61,7 +61,7 @@ paths:
                 description: The fully qualified user ID of the user being banned.
               reason:
                 type: string
-                description: The reason the user has been banned. This will be supplied as the 
+                description: The reason the user has been banned. This will be supplied as the
                   ``reason`` on the target's updated `m.room.member`_ event.
             required: ["user_id"]
       responses:
@@ -111,12 +111,18 @@ paths:
           schema:
             type: object
             example: {
-                "user_id": "@cheeky_monkey:matrix.org"
-              }
+              "user_id": "@cheeky_monkey:matrix.org",
+              "reason": "They've been banned long enough"
+            }
             properties:
               user_id:
                 type: string
                 description: The fully qualified user ID of the user being unbanned.
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
             required: ["user_id"]
       responses:
         200:

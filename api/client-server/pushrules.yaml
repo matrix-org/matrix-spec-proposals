@@ -300,6 +300,16 @@ paths:
             allOf: [
               "$ref": "definitions/push_rule.yaml"
             ]
+        404:
+          description: |-
+            The push rule does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Push notifications
     delete:
@@ -340,6 +350,16 @@ paths:
               }
           schema:
             type: object  # empty json object
+        404:
+          description: |-
+            The push rule does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Push notifications
     put:
@@ -412,9 +432,9 @@ paths:
                 description: |-
                   The action(s) to perform when the conditions for this rule are met.
                 items:
-                  type: string
-                  enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
-                  # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
+                  type:
+                    - string
+                    - object
               conditions:
                 type: array
                 description: |-
@@ -444,6 +464,16 @@ paths:
                 "error": "before/after rule not found: someRuleId",
                 "errcode": "M_UNKNOWN"
               }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        404:
+          description: |-
+            The push rule does not exist (when updating a push rule).
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
           schema:
             "$ref": "definitions/errors/error.yaml"
         429:
@@ -498,6 +528,16 @@ paths:
                 type: boolean
                 description: Whether the push rule is enabled or not.
             required: ["enabled"]
+        404:
+          description: |-
+            The push rule does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Push notifications
     put:
@@ -553,6 +593,16 @@ paths:
               }
           schema:
             type: object
+        404:
+          description: |-
+            The push rule does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Push notifications
   "/pushrules/{scope}/{kind}/{ruleId}/actions":
@@ -592,7 +642,10 @@ paths:
           description: The actions for this push rule.
           examples:
             application/json: {
-                "actions": ["notify"]
+                "actions": [
+                  "notify",
+                  {"set_tweak": "sound", "value": "bing"}
+                ]
               }
           schema:
             type: object
@@ -601,8 +654,20 @@ paths:
                 type: array
                 description:  The action(s) to perform for this rule.
                 items:
-                  type: string
+                  type:
+                    - string
+                    - object
             required: ["actions"]
+        404:
+          description: |-
+            The push rule does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Push notifications
     put:
@@ -648,12 +713,15 @@ paths:
                 type: array
                 description: The action(s) to perform for this rule.
                 items:
-                  type: string
-                  enum: ["notify", "dont_notify", "coalesce", "set_tweak"]
-                  # TODO: type: object e.g. {"set_sound":"beeroclock.wav"} :/
+                  type:
+                    - string
+                    - object
             required: ["actions"]
             example: {
-                "actions": ["notify"]
+                "actions": [
+                  "notify",
+                  {"set_tweak": "highlight"}
+                ]
               }
       responses:
         200:
@@ -663,5 +731,15 @@ paths:
               }
           schema:
             type: object
+        404:
+          description: |-
+            The push rule does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "The push rule was not found."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - Push notifications

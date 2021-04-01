@@ -52,6 +52,20 @@ paths:
           description: The room identifier to leave.
           required: true
           x-example: "!nkl290a:matrix.org"
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            example: {
+              "reason": "Saying farewell - thanks for the support!"
+            }
+            properties:
+              reason:
+                type: string
+                description: |-
+                  Optional reason to be included as the ``reason`` on the subsequent
+                  membership event.
       responses:
         200:
           description: |-

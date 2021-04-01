@@ -45,6 +45,12 @@ paths:
         The body of the request should be the content object of the event; the
         fields in this object will vary depending on the type of event. See
         `Room Events`_ for the ``m.`` event specification.
+
+        If the event type being sent is ``m.room.canonical_alias`` servers
+        SHOULD ensure that any new aliases being listed in the event are valid
+        per their grammar/syntax and that they point to the room ID where the
+        state event is to be sent. Servers do not validate aliases which are
+        being removed or are already present in the state event.
       operationId: setRoomStateWithKey
       security:
         - accessToken: []
@@ -92,6 +98,8 @@ paths:
                 type: string
                 description: |-
                   A unique identifier for the event.
+            required:
+              - event_id
         403:
           description: |-
             The sender doesn't have permission to send the event into the room.
@@ -101,6 +109,24 @@ paths:
             application/json: {
               "errcode": "M_FORBIDDEN",
               "error": "You do not have permission to send the event."
+            }
+        400:
+          description: |-
+            The sender's request is malformed.
+
+            Some example error codes include:
+
+            * ``M_INVALID_PARAMETER``: One or more aliases within the ``m.room.canonical_alias``
+              event have invalid syntax.
+
+            * ``M_BAD_ALIAS``: One or more aliases within the ``m.room.canonical_alias`` event
+              do not point to the room ID for which the state event is to be sent to.
+          schema:
+            $ref: "definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_BAD_ALIAS",
+              "error": "The alias '#hello:example.org' does not point to this room."
             }
       tags:
         - Room participation

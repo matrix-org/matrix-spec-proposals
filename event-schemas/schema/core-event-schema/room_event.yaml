@@ -9,5 +9,5 @@ properties:
     type: string
 required:
 - room_id
-title: Room Event
+title: RoomEvent
 type: object

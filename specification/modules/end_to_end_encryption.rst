@@ -1,5 +1,5 @@
 .. Copyright 2016 OpenMarket Ltd
-.. Copyright 2019 The Matrix.org Foundation C.I.C.
+.. Copyright 2019-2020 The Matrix.org Foundation C.I.C.
 ..
 .. Licensed under the Apache License, Version 2.0 (the "License");
 .. you may not use this file except in compliance with the License.
@@ -83,9 +83,23 @@ Base64`_. Example:
   "JGLn/yafz74HB2AbPLYJWIVGnKAtqECOBf11yyXac2Y"
 
 The name ``signed_curve25519`` also corresponds to the Curve25519 algorithm,
-but keys using this algorithm are objects with the properties ``key`` (giving
-the Base64-encoded 32-byte Curve25519 public key), and ``signatures`` (giving a
-signature for the key object, as described in `Signing JSON`_). Example:
+but a key using this algorithm is represented by an object with the following
+properties:
+
+``KeyObject``
+
+========== ================ =====================================================
+Parameter  Type             Description
+========== ================ =====================================================
+key        string           **Required.** The unpadded Base64-encoded 32-byte
+                            Curve25519 public key.
+signatures Signatures       **Required.** Signatures of the key object.
+
+                            The signature is calculated using the process described
+                            at `Signing JSON`_.
+========== ================ =====================================================
+
+Example:
 
 .. code:: json
 
@@ -256,15 +270,15 @@ either ``m.file`` as the msgtype, or the appropriate msgtype for the file
 type. The key is sent using the `JSON Web Key`_ format, with a `W3C
 extension`_.
 
-.. anchor for link from m.message api spec
+.. anchor for link from m.room.message api spec
 .. |encrypted_files| replace:: End-to-end encryption
 .. _encrypted_files:
 
-Extensions to ``m.message`` msgtypes
+Extensions to ``m.room.message`` msgtypes
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 This module adds ``file`` and ``thumbnail_file`` properties, of type
-``EncryptedFile``, to ``m.message`` msgtypes that reference files, such as
+``EncryptedFile``, to ``m.room.message`` msgtypes that reference files, such as
 `m.file`_ and `m.image`_, replacing the ``url`` and ``thumbnail_url``
 properties.
 
@@ -277,7 +291,7 @@ Parameter Type             Description
 ========= ================ =====================================================
 url       string           **Required.** The URL to the file.
 key       JWK              **Required.** A `JSON Web Key`_ object.
-iv        string           **Required.** The Initialisation Vector used by
+iv        string           **Required.** The 128-bit unique counter block used by
                            AES-CTR, encoded as unpadded base64.
 hashes    {string: string} **Required.** A map from an algorithm name to a hash
                            of the ciphertext, encoded as unpadded base64. Clients
@@ -417,7 +431,7 @@ Device verification may reach one of several conclusions. For example:
 Key verification framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Verifying keys manually by reading out the Ed25519 key is not very user friendly,
+Verifying keys manually by reading out the Ed25519 key is not very user-friendly,
 and can lead to errors. In order to help mitigate errors, and to make the process
 easier for users, some verification methods are supported by the specification.
 The methods all use a common framework for negotiating the key verification.
@@ -429,7 +443,7 @@ allows Bob to reject the request on one device, and have it apply to all of his
 devices. Similarly, it allows Bob to process the verification on one device without
 having to involve all of his devices.
 
-When Bob's device receives a ``m.key.verification.request``, it should prompt Bob
+When Bob's device receives an ``m.key.verification.request``, it should prompt Bob
 to verify keys with Alice using one of the supported methods in the request. If
 Bob's device does not understand any of the methods, it should not cancel the request
 as one of his other devices may support the request. Instead, Bob's device should
@@ -440,17 +454,17 @@ minutes after Bob's client receives the message, whichever comes first, if Bob
 does not interact with the prompt. The prompt should additionally be hidden if
 an appropriate ``m.key.verification.cancel`` message is received.
 
-If Bob rejects the request, Bob's client must send a ``m.key.verification.cancel``
+If Bob rejects the request, Bob's client must send an ``m.key.verification.cancel``
 message to Alice's device. Upon receipt, Alice's device should tell her that Bob
 does not want to verify her device and send ``m.key.verification.cancel`` messages
 to all of Bob's devices to notify them that the request was rejected.
 
 If Bob accepts the request, Bob's device starts the key verification process by
-sending a ``m.key.verification.start`` message to Alice's device. Upon receipt
-of this message, Alice's device should send a ``m.key.verification.cancel`` message
+sending an ``m.key.verification.start`` message to Alice's device. Upon receipt
+of this message, Alice's device should send an ``m.key.verification.cancel`` message
 to all of Bob's other devices to indicate the process has been started. The start
 message must use the same ``transaction_id`` from the original key verification
-request if it is in response to the request. The start message can be sent indepdently
+request if it is in response to the request. The start message can be sent independently
 of any request.
 
 Individual verification methods may add additional steps, events, and properties to
@@ -459,7 +473,7 @@ be under the ``m.key.verification`` namespace and any other event types must be 
 according to the Java package naming convention.
 
 Any of Alice's or Bob's devices can cancel the key verification request or process
-at any time with a ``m.key.verification.cancel`` message to all applicable devices.
+at any time with an ``m.key.verification.cancel`` message to all applicable devices.
 
 This framework yields the following handshake, assuming both Alice and Bob each have
 2 devices, Bob's first device accepts the key verification request, and Alice's second
@@ -502,10 +516,10 @@ Short Authentication String (SAS) verification
 
 SAS verification is a user-friendly key verification process built off the common
 framework outlined above. SAS verification is intended to be a highly interactive
-process for users, and as such exposes verfiication methods which are easier for
+process for users, and as such exposes verification methods which are easier for
 users to use.
 
-The verification process is heavily inspired by Phil Zimmerman's ZRTP key agreement
+The verification process is heavily inspired by Phil Zimmermann's ZRTP key agreement
 handshake. A key part of key agreement in ZRTP is the hash commitment: the party that
 begins the Diffie-Hellman key sharing sends a hash of their part of the Diffie-Hellman
 exchange, and does not send their part of the Diffie-Hellman exchange until they have
@@ -513,7 +527,7 @@ received the other party's part. Thus an attacker essentially only has one attem
 attack the Diffie-Hellman exchange, and hence we can verify fewer bits while still
 achieving a high degree of security: if we verify n bits, then an attacker has a 1 in
 2\ :sup:`n` chance of success.  For example, if we verify 40 bits, then an attacker has
-a 1 in 1,099,511,627,776 chance (or less than 1 in 1012 chance) of success. A failed
+a 1 in 1,099,511,627,776 chance (or less than 1 in 10\ :sup:`12` chance) of success. A failed
 attack would result in a mismatched Short Authentication String, alerting users to the
 attack.
 
@@ -539,17 +553,17 @@ The process between Alice and Bob verifying each other would be:
 #. Alice and Bob communicate which devices they'd like to verify with each other.
 #. Alice selects Bob's device from the device list and begins verification.
 #. Alice's client ensures it has a copy of Bob's device key.
-#. Alice's device sends Bob's device a ``m.key.verification.start`` message.
+#. Alice's device sends Bob's device an ``m.key.verification.start`` message.
 #. Bob's device receives the message and selects a key agreement protocol, hash
    algorithm, message authentication code, and SAS method supported by Alice's
    device.
 #. Bob's device ensures it has a copy of Alice's device key.
 #. Bob's device creates an ephemeral Curve25519 key pair (|BobCurve25519|), and
    calculates the hash (using the chosen algorithm) of the public key |BobPublicKey|.
-#. Bob's device replies to Alice's device with a ``m.key.verification.accept`` message.
+#. Bob's device replies to Alice's device with an ``m.key.verification.accept`` message.
 #. Alice's device receives Bob's message and stores the commitment hash for later use.
 #. Alice's device creates an ephemeral Curve25519 key pair (|AliceCurve25519|) and
-   replies to Bob's device with a ``m.key.verification.key``, sending only the public
+   replies to Bob's device with an ``m.key.verification.key``, sending only the public
    key |AlicePublicKey|.
 #. Bob's device receives Alice's message and replies with its own ``m.key.verification.key``
    message containing its public key |BobPublicKey|.
@@ -564,16 +578,16 @@ The process between Alice and Bob verifying each other would be:
 #. Alice and Bob compare the strings shown by their devices, and tell their devices if
    they match or not.
 #. Assuming they match, Alice and Bob's devices calculate the HMAC of their own device keys
-   and a comma-separated sorted list of of the key IDs that they wish the other user
-   to verify, using SHA-256 as the hash function. HMAC is defined in [RFC 2104](https://tools.ietf.org/html/rfc2104).
+   and a comma-separated sorted list of the key IDs that they wish the other user
+   to verify, using SHA-256 as the hash function. HMAC is defined in `RFC 2104 <https://tools.ietf.org/html/rfc2104>`_.
    The key for the HMAC is different for each item and is calculated by generating
-   32 bytes (256 bits) using `the key verification HKDF <#SAS-HKDF>`_.
-#. Alice's device sends Bob's device a ``m.key.verification.mac`` message containing the
+   32 bytes (256 bits) using `the key verification HKDF <#sas-hkdf>`_.
+#. Alice's device sends Bob's device an ``m.key.verification.mac`` message containing the
    MAC of Alice's device keys and the MAC of her key IDs to be verified. Bob's device does
    the same for Bob's device keys and key IDs concurrently with Alice.
 #. When the other device receives the ``m.key.verification.mac`` message, the device
    calculates the HMAC of its copies of the other device's keys given in the message,
-   as well as the HMAC of the comma-seperated, sorted, list of key IDs in the message.
+   as well as the HMAC of the comma-separated, sorted, list of key IDs in the message.
    The device compares these with the HMAC values given in the message, and if everything
    matches then the device keys are verified.
 
@@ -605,20 +619,20 @@ The wire protocol looks like the following between Alice and Bob's devices::
 Error and exception handling
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-At any point the interactive verfication can go wrong. The following describes what
+At any point the interactive verification can go wrong. The following describes what
 to do when an error happens:
 
-* Alice or Bob can cancel the verification at any time. A ``m.key.verification.cancel``
+* Alice or Bob can cancel the verification at any time. An ``m.key.verification.cancel``
   message must be sent to signify the cancellation.
 * The verification can time out. Clients should time out a verification that does not
   complete within 10 minutes. Additionally, clients should expire a ``transaction_id``
   which goes unused for 10 minutes after having last sent/received it. The client should
   inform the user that the verification timed out, and send an appropriate
   ``m.key.verification.cancel`` message to the other device.
-* When the same device attempts to intiate multiple verification attempts, the receipient
+* When the same device attempts to initiate multiple verification attempts, the recipient
   should cancel all attempts with that device.
 * When a device receives an unknown ``transaction_id``, it should send an appropriate
-  ``m.key.verfication.cancel`` message to the other device indicating as such. This
+  ``m.key.verification.cancel`` message to the other device indicating as such. This
   does not apply for inbound ``m.key.verification.start`` or ``m.key.verification.cancel``
   messages.
 * If the two devices do not share a common key share, hash, HMAC, or SAS method then
@@ -653,15 +667,34 @@ are used in addition to those already specified:
 {{m_key_verification_mac_event}}
 
 
-.. _`SAS-HKDF`:
+.. _sas-hkdf:
 
 HKDF calculation
 <<<<<<<<<<<<<<<<
 
-In all of the SAS methods, HKDF is as defined in [RFC 5869](https://tools.ietf.org/html/rfc5869)
+In all of the SAS methods, HKDF is as defined in `RFC 5869 <https://tools.ietf.org/html/rfc5869>`_
 and uses the previously agreed-upon hash function for the hash function. The shared
-secret is supplied as the input keying material. No salt is used, and the input
-parameter is the concatenation of:
+secret is supplied as the input keying material. No salt is used. When the
+``key_agreement_protocol`` is ``curve25519-hkdf-sha256``, the info parameter is
+the concatenation of:
+
+  * The string ``MATRIX_KEY_VERIFICATION_SAS|``.
+  * The Matrix ID of the user who sent the ``m.key.verification.start`` message,
+    followed by ``|``.
+  * The Device ID of the device which sent the ``m.key.verification.start``
+    message, followed by ``|``.
+  * The public key from the ``m.key.verification.key`` message sent by the device
+    which sent the ``m.key.verification.start`` message, followed by ``|``.
+  * The Matrix ID of the user who sent the ``m.key.verification.accept`` message,
+    followed by ``|``.
+  * The Device ID of the device which sent the ``m.key.verification.accept``
+    message, followed by ``|``.
+  * The public key from the ``m.key.verification.key`` message sent by the device
+    which sent the ``m.key.verification.accept`` message, followed by ``|``.
+  * The ``transaction_id`` being used.
+
+When the ``key_agreement_protocol`` is the deprecated method ``curve25519``,
+the info parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_SAS``.
   * The Matrix ID of the user who sent the ``m.key.verification.start`` message.
@@ -670,6 +703,8 @@ parameter is the concatenation of:
   * The Device ID of the device which sent the ``m.key.verification.accept`` message.
   * The ``transaction_id`` being used.
 
+New implementations are discouraged from implementing the ``curve25519`` method.
+
 .. admonition:: Rationale
 
   HKDF is used over the plain shared secret as it results in a harder attack
@@ -677,7 +712,7 @@ parameter is the concatenation of:
 
 For verification of each party's device keys, HKDF is as defined in RFC 5869 and
 uses SHA-256 as the hash function. The shared secret is supplied as the input keying
-material. No salt is used, and in the input parameter is the concatenation of:
+material. No salt is used, and in the info parameter is the concatenation of:
 
   * The string ``MATRIX_KEY_VERIFICATION_MAC``.
   * The Matrix ID of the user whose key is being MAC-ed.
@@ -691,7 +726,7 @@ material. No salt is used, and in the input parameter is the concatenation of:
 SAS method: ``decimal``
 <<<<<<<<<<<<<<<<<<<<<<<
 
-Generate 5 bytes using `HKDF <#SAS-HKDF>`_ then take sequences of 13 bits to
+Generate 5 bytes using `HKDF <#sas-hkdf>`_ then take sequences of 13 bits to
 convert to decimal numbers (resulting in 3 numbers between 0 and 8191 inclusive
 each). Add 1000 to each calculated number.
 
@@ -708,7 +743,7 @@ such as dashes, or with the numbers on individual lines.
 SAS method: ``emoji``
 <<<<<<<<<<<<<<<<<<<<<
 
-Generate 6 bytes using `HKDF <#SAS-HKDF>`_ then split the first 42 bits into
+Generate 6 bytes using `HKDF <#sas-hkdf>`_ then split the first 42 bits into
 7 groups of 6 bits, similar to how one would base64 encode something. Convert
 each group of 6 bits to a number and use the following table to get the corresponding
 emoji:
@@ -735,6 +770,154 @@ Clients SHOULD show the emoji with the descriptions from the table, or appropria
 translation of those descriptions. Client authors SHOULD collaborate to create a
 common set of translations for all languages.
 
+.. Note::
+   Known translations for the emoji are available from
+   https://github.com/matrix-org/matrix-doc/blob/master/data-definitions/ and can be
+   translated online: https://translate.riot.im/projects/matrix-doc/sas-emoji-v1
+
+
+Cross-signing
+~~~~~~~~~~~~~
+
+Rather than requiring Alice to verify each of Bob's devices with each of her
+own devices and vice versa, the cross-signing feature allows users to sign their
+device keys such that Alice and Bob only need to verify once. With
+cross-signing, each user has a set of cross-signing keys that are used to sign
+their own device keys and other users' keys, and can be used to trust device
+keys that were not verified directly.
+
+Each user has three ed25519 key pairs for cross-signing:
+
+* a master key (MSK) that serves as the user's identity in cross-signing and signs
+  their other cross-signing keys;
+* a user-signing key (USK) -- only visible to the user that it belongs to --
+  that signs other users' master keys; and
+* a self-signing key (SSK) that signs the user's own device keys.
+
+The master key may also be used to sign other items such as the backup key. The
+master key may also be signed by the user's own device keys to aid in migrating
+from device verifications: if Alice's device had previously verified Bob's
+device and Bob's device has signed his master key, then Alice's device can
+trust Bob's master key, and she can sign it with her user-signing key.
+
+Users upload their cross-signing keys to the server using `POST
+/_matrix/client/r0/keys/device_signing/upload`_. When Alice uploads new
+cross-signing keys, her user ID will appear in the ``changed`` property of the
+``device_lists`` field of the ``/sync`` of response of all users who share an
+encrypted room with her. When Bob sees Alice's user ID in his ``/sync``, he
+will call `POST /_matrix/client/r0/keys/query`_ to retrieve Alice's device and
+cross-signing keys.
+
+If Alice has a device and wishes to send an encrypted message to Bob, she can
+trust Bob's device if:
+
+- Alice's device is using a master key that has signed her user-signing key,
+- Alice's user-signing key has signed Bob's master key,
+- Bob's master key has signed Bob's self-signing key, and
+- Bob's self-signing key has signed Bob's device key.
+
+The following diagram illustrates how keys are signed:
+
+.. code::
+
+   +------------------+                ..................   +----------------+
+   | +--------------+ |   ..................            :   | +------------+ |
+   | |              v v   v            :   :            v   v v            | |
+   | |           +-----------+         :   :         +-----------+         | |
+   | |           | Alice MSK |         :   :         |  Bob MSK  |         | |
+   | |           +-----------+         :   :         +-----------+         | |
+   | |             |       :           :   :           :       |           | |
+   | |          +--+       :...        :   :        ...:       +--+        | |
+   | |          v             v        :   :        v             v        | |
+   | |    +-----------+ .............  :   :  ............. +-----------+  | |
+   | |    | Alice SSK | : Alice USK :  :   :  :  Bob USK  : |  Bob SSK  |  | |
+   | |    +-----------+ :...........:  :   :  :...........: +-----------+  | |
+   | |      |  ...  |         :        :   :        :         |  ...  |    | |
+   | |      V       V         :........:   :........:         V       V    | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | | | Devices | ...|                                  | Devices | ...|  | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | |      |  ...  |                                         |  ...  |    | |
+   | +------+       |                                         |       +----+ |
+   +----------------+                                         +--------------+
+
+.. based on https://jcg.re/blog/quick-overview-matrix-cross-signing/
+
+In the diagram, boxes represent keys and lines represent signatures with the
+arrows pointing from the signing key to the key being signed.  Dotted boxes and
+lines represent keys and signatures that are only visible to the user who
+created them.
+
+The following diagram illustrates Alice's view, hiding the keys and signatures
+that she cannot see:
+
+.. code::
+
+   +------------------+                +----------------+   +----------------+
+   | +--------------+ |                |                |   | +------------+ |
+   | |              v v                |                v   v v            | |
+   | |           +-----------+         |             +-----------+         | |
+   | |           | Alice MSK |         |             |  Bob MSK  |         | |
+   | |           +-----------+         |             +-----------+         | |
+   | |             |       |           |                       |           | |
+   | |          +--+       +--+        |                       +--+        | |
+   | |          v             v        |                          v        | |
+   | |    +-----------+ +-----------+  |                    +-----------+  | |
+   | |    | Alice SSK | | Alice USK |  |                    |  Bob SSK  |  | |
+   | |    +-----------+ +-----------+  |                    +-----------+  | |
+   | |      |  ...  |         |        |                      |  ...  |    | |
+   | |      V       V         +--------+                      V       V    | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | | | Devices | ...|                                  | Devices | ...|  | |
+   | | +---------+   -+                                  +---------+   -+  | |
+   | |      |  ...  |                                         |  ...  |    | |
+   | +------+       |                                         |       +----+ |
+   +----------------+                                         +--------------+
+
+`Verification methods <#device-verification>`_ can be used to verify a user's
+master key by using the master public key, encoded using unpadded base64, as
+the device ID, and treating it as a normal device. For example, if Alice and
+Bob verify each other using SAS, Alice's ``m.key.verification.mac`` message to
+Bob may include ``"ed25519:alices+master+public+key":
+"alices+master+public+key"`` in the ``mac`` property. Servers therefore must
+ensure that device IDs will not collide with cross-signing public keys.
+
+Key and signature security
+<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+A user's master key could allow an attacker to impersonate that user to other
+users, or other users to that user.  Thus clients must ensure that the private
+part of the master key is treated securely.  If clients do not have a secure
+means of storing the master key (such as a secret storage system provided by
+the operating system), then clients must not store the private part.
+
+If a user's client sees that any other user has changed their master key, that
+client must notify the user about the change before allowing communication
+between the users to continue.
+
+A user's user-signing and self-signing keys are intended to be easily
+replaceable if they are compromised by re-issuing a new key signed by the
+user's master key and possibly by re-verifying devices or users.  However,
+doing so relies on the user being able to notice when their keys have been
+compromised, and it involves extra work for the user, and so although clients
+do not have to treat the private parts as sensitively as the master key,
+clients should still make efforts to store the private part securely, or not
+store it at all.  Clients will need to balance the security of the keys with
+the usability of signing users and devices when performing key verification.
+
+To avoid leaking of social graphs, servers will only allow users to see:
+
+* signatures made by the user's own master, self-signing or user-signing keys,
+* signatures made by the user's own devices about their own master key,
+* signatures made by other users' self-signing keys about their respective
+  devices,
+* signatures made by other users' master keys about their respective
+  self-signing key, or
+* signatures made by other users' devices about their respective master keys.
+
+Users will not be able to see signatures made by other users' user-signing keys.
+
+{{cross_signing_cs_http_api}}
 
 .. section name changed, so make sure that old links keep working
 .. _key-sharing:
@@ -752,20 +935,155 @@ Key requests
 
 When a device is missing keys to decrypt messages, it can request the keys by
 sending `m.room_key_request`_ to-device messages to other devices with
-``action`` set to ``request``. If a device wishes to share the keys with that
-device, it can forward the keys to the first device by sending an encrypted
-`m.forwarded_room_key`_ to-device message. The first device should then send an
-`m.room_key_request`_ to-device message with ``action`` set to
-``request_cancellation`` to the other devices that it had originally sent the key
-request to; a device that receives a ``request_cancellation`` should disregard any
-previously-received ``request`` message with the same ``request_id`` and
-``requesting_device_id``.
+``action`` set to ``request``.
+
+If a device wishes to share the keys with that device, it can forward the keys
+to the first device by sending an encrypted `m.forwarded_room_key`_ to-device
+message. The first device should then send an `m.room_key_request`_ to-device
+message with ``action`` set to ``request_cancellation`` to the other devices
+that it had originally sent the key request to; a device that receives a
+``request_cancellation`` should disregard any previously-received ``request``
+message with the same ``request_id`` and ``requesting_device_id``.
+
+If a device does not wish to share keys with that device, it can indicate this
+by sending an `m.room_key.withheld`_ to-device message, as described in
+`Reporting that decryption keys are withheld`_.
 
 .. NOTE::
 
   Key sharing can be a big attack vector, thus it must be done very carefully.
   A reasonable strategy is for a user's client to only send keys requested by the
   verified devices of the same user.
+
+Server-side key backups
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Devices may upload encrypted copies of keys to the server. When a device tries
+to read a message that it does not have keys for, it may request the key from
+the server and decrypt it. Backups are per-user, and users may replace backups
+with new backups.
+
+In contrast with `Key requests`_, Server-side key backups do not require another
+device to be online from which to request keys. However, as the session keys are
+stored on the server encrypted, it requires users to enter a decryption key to
+decrypt the session keys.
+
+To create a backup, a client will call `POST
+/_matrix/client/r0/room_keys/version`_ and define how the keys are to be
+encrypted through the backup's ``auth_data``; other clients can discover the
+backup by calling `GET /_matrix/client/r0/room_keys/version`_.  Keys are
+encrypted according to the backup's ``auth_data`` and added to the backup by
+calling `PUT /_matrix/client/r0/room_keys/keys`_ or one of its variants, and
+can be retrieved by calling `GET /_matrix/client/r0/room_keys/keys`_ or one of
+its variants.  Keys can only be written to the most recently created version of
+the backup.  Backups can also be deleted using `DELETE
+/_matrix/client/r0/room_keys/version/{version}`_, or individual keys can be
+deleted using `DELETE /_matrix/client/r0/room_keys/keys`_ or one of its
+variants.
+
+Clients must only store keys in backups after they have ensured that the
+``auth_data`` is trusted, either by checking the signatures on it, or by
+deriving the public key from a private key that it obtained from a trusted
+source.
+
+When a client uploads a key for a session that the server already has a key
+for, the server will choose to either keep the existing key or replace it with
+the new key based on the key metadata as follows:
+
+- if the keys have different values for ``is_verified``, then it will keep the
+  key that has ``is_verified`` set to ``true``;
+- if they have the same values for ``is_verified``, then it will keep the key
+  with a lower ``first_message_index``;
+- and finally, is ``is_verified`` and ``first_message_index`` are equal, then
+  it will keep the key with a lower ``forwarded_count``.
+
+Recovery key
+<<<<<<<<<<<<
+
+If the recovery key (the private half of the backup encryption key) is
+presented to the user to save, it is presented as a string constructed as
+follows:
+
+1. The 256-bit curve25519 private key is prepended by the bytes ``0x8B`` and
+   ``0x01``
+2. All the bytes in the string above, including the two header bytes, are XORed
+   together to form a parity byte. This parity byte is appended to the byte
+   string.
+3. The byte string is encoded using base58, using the same `mapping as is used
+   for Bitcoin addresses
+   <https://en.bitcoin.it/wiki/Base58Check_encoding#Base58_symbol_chart>`_,
+   that is, using the alphabet
+   ``123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz``.
+4. A space should be added after every 4th character.
+
+When reading in a recovery key, clients must disregard whitespace, and perform
+the reverse of steps 1 through 3.
+
+Backup algorithm: ``m.megolm_backup.v1.curve25519-aes-sha2``
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+When a backup is created with the ``algorithm`` set to
+``m.megolm_backup.v1.curve25519-aes-sha2``, the ``auth_data`` should have the
+following format:
+
+``AuthData``
+
+.. table::
+   :widths: auto
+
+   ========== =========== ======================================================
+   Parameter  Type        Description
+   ========== =========== ======================================================
+   public_key string      **Required.** The curve25519 public key used to encrypt
+                          the backups, encoded in unpadded base64.
+   signatures Signatures  Optional. Signatures of the ``auth_data``, as Signed
+                          JSON
+   ========== =========== ======================================================
+
+The ``session_data`` field in the backups is constructed as follows:
+
+1. Encode the session key to be backed up as a JSON object with the properties:
+
+   .. table::
+      :widths: auto
+
+      =============================== ======== =========================================
+      Parameter                       Type     Description
+      =============================== ======== =========================================
+      algorithm                       string   **Required.** The end-to-end message
+                                               encryption algorithm that the key is
+                                               for.  Must be ``m.megolm.v1.aes-sha2``.
+      forwarding_curve25519_key_chain [string] **Required.** Chain of Curve25519 keys
+                                               through which this session was
+                                               forwarded, via
+                                               `m.forwarded_room_key`_ events.
+      sender_key                      string   **Required.** Unpadded base64-encoded
+                                               device curve25519 key.
+      sender_claimed_keys             {string: **Required.** A map from algorithm name
+                                      string}  (``ed25519``) to the identity key
+                                               for the sending device.
+      session_key                     string   **Required.** Unpadded base64-encoded
+                                               session key in `session-sharing format
+                                               <https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md#session-sharing-format>`_.
+      =============================== ======== =========================================
+
+2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
+   key and the backup's public key to generate a shared secret.  The public
+   half of the ephemeral key, encoded using unpadded base64, becomes the ``ephemeral``
+   property of the ``session_data``.
+3. Using the shared secret, generate 80 bytes by performing an HKDF using
+   SHA-256 as the hash, with a salt of 32 bytes of 0, and with the empty string
+   as the info.  The first 32 bytes are used as the AES key, the next 32 bytes
+   are used as the MAC key, and the last 16 bytes are used as the AES
+   initialization vector.
+4. Stringify the JSON object, and encrypt it using AES-CBC-256 with PKCS#7
+   padding.  This encrypted data, encoded using unpadded base64, becomes the
+   ``ciphertext`` property of the ``session_data``.
+5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above.  The first 8 bytes of the resulting MAC
+   are base64-encoded, and become the ``mac`` property of the ``session_data``.
+
+{{key_backup_cs_http_api}}
 
 Key exports
 ~~~~~~~~~~~
@@ -839,6 +1157,9 @@ described as follows:
    session_id                      string      Required. The ID of the session.
    session_key                     string      Required. The key for the session.
    =============================== =========== ====================================
+
+This is similar to the format before encryption used for the session keys in
+`Server-side key backups`_ but adds the ``room_id`` and ``session_id`` fields.
 
 Example:
 
@@ -991,7 +1312,7 @@ session has become corrupted and create a new one to replace it.
    to decrypt it successfully. Olm does not have a way to recover from the failure,
    making this session replacement process required.
 
-To establish a new session, the client sends a `m.dummy <#m-dummy>`_ to-device event
+To establish a new session, the client sends an `m.dummy <#m-dummy>`_ to-device event
 to the other party to notify them of the new session details.
 
 Clients should rate-limit the number of sessions it creates per device that it receives
@@ -1054,13 +1375,13 @@ who sent the message. The same reasoning applies, but the sender ed25519 key has
 inferred from the ``keys.ed25519`` property of the event which established the Megolm
 session.
 
-In order to enable end-to-end encryption in a room, clients can send a
+In order to enable end-to-end encryption in a room, clients can send an
 ``m.room.encryption`` state event specifying ``m.megolm.v1.aes-sha2`` as its
 ``algorithm`` property.
 
 When creating a Megolm session in a room, clients must share the corresponding session
 key using Olm with the intended recipients, so that they can decrypt future messages
-encrypted using this session. A ``m.room_key`` event is used to do this. Clients
+encrypted using this session. An ``m.room_key`` event is used to do this. Clients
 must also handle ``m.room_key`` events sent by other devices in order to decrypt their
 messages.
 
@@ -1097,7 +1418,7 @@ Extensions to /sync
 
 This module adds an optional ``device_lists`` property to the |/sync|_
 response, as specified below. The server need only populate this property for
-an incremental ``/sync`` (ie, one where the ``since`` parameter was
+an incremental ``/sync`` (i.e., one where the ``since`` parameter was
 specified). The client is expected to use |/keys/query|_ or |/keys/changes|_
 for the equivalent functionality after an initial sync, as documented in
 `Tracking the device list for a user`_.
@@ -1124,7 +1445,8 @@ device_lists DeviceLists Optional. Information on e2e device updates. Note:
 ========= ========= =============================================
 Parameter Type      Description
 ========= ========= =============================================
-changed   [string]  List of users who have updated their device identity keys,
+changed   [string]  List of users who have updated their device identity or
+                    cross-signing keys,
                     or who now share an encrypted room with the client since
                     the previous sync response.
 left      [string]  List of users with whom we do not share any encrypted rooms
@@ -1134,7 +1456,8 @@ left      [string]  List of users with whom we do not share any encrypted rooms
 .. NOTE::
 
   For optimal performance, Alice should be added to ``changed`` in Bob's sync only
-  when she adds a new device, or when Alice and Bob now share a room but didn't
+  when she updates her devices or cross-signing keys, or when Alice and Bob now
+  share a room but didn't
   share any room previously. However, for the sake of simpler logic, a server
   may add Alice to ``changed`` when Alice and Bob share a new room, even if they
   previously already shared a room.
@@ -1159,6 +1482,32 @@ Example response:
       "signed_curve25519": 20
     }
   }
+
+Reporting that decryption keys are withheld
+-------------------------------------------
+
+When sending an encrypted event to a room, a client can optionally signal to
+other devices in that room that it is not sending them the keys needed to
+decrypt the event.  In this way, the receiving client can indicate to the user
+why it cannot decrypt the event, rather than just showing a generic error
+message.
+
+In the same way, when one device requests keys from another using `Key
+requests`_, the device from which the key is being requested may want to tell
+the requester that it is purposely not sharing the key.
+
+If Alice withholds a megolm session from Bob for some messages in a room, and
+then later on decides to allow Bob to decrypt later messages, she can send Bob
+the megolm session, ratcheted up to the point at which she allows Bob to
+decrypt the messages. If Bob logs into a new device and uses key sharing to
+obtain the decryption keys, the new device will be sent the megolm sessions
+that have been ratcheted up. Bob's old device can include the reason that the
+session was initially not shared by including a ``withheld`` property in the
+``m.forwarded_room_key`` message that is an object with the ``code`` and
+``reason`` properties from the ``m.room_key.withheld`` message.
+
+{{m_room_key_withheld_event}}
+
 
 .. References
 

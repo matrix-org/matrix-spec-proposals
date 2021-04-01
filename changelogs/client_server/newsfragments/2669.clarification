@@ -1,0 +1,1 @@
+Fix types of push rules' actions; they can be objects as well as strings.

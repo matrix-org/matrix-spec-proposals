@@ -45,7 +45,7 @@ following grammar::
     IPv6char    = DIGIT / %x41-46 / %x61-66 / ":" / "."
                       ; 0-9, A-F, a-f, :, .
 
-    dns-name    = *255dns-char
+    dns-name    = 1*255dns-char
 
     dns-char    = DIGIT / ALPHA / "-" / "."
 
@@ -152,7 +152,7 @@ The complete grammar for a legal user ID is::
   set. User IDs are primarily intended for use as an identifier at the protocol
   level, and their use as a human-readable handle is of secondary
   benefit. Furthermore, they are useful as a last-resort differentiator between
-  users with similar display names. Allowing the full unicode character set
+  users with similar display names. Allowing the full Unicode character set
   would make very difficult for a human to distinguish two similar user IDs. The
   limited character set used has the advantage that even a user unfamiliar with
   the Latin alphabet should be able to distinguish similar user IDs manually, if
@@ -190,7 +190,7 @@ history includes events with a ``sender`` which does not conform. In order to
 handle these rooms successfully, clients and servers MUST accept user IDs with
 localparts from the expanded character set::
 
-  extended_user_id_char = %x21-39 / %x3B-7E  ; all ascii printing chars except :
+  extended_user_id_char = %x21-39 / %x3B-7E  ; all ASCII printing chars except :
 
 Mapping from other character sets
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -251,8 +251,8 @@ risk of clashes of identifiers between different homeservers. There is no
 implication that the room or event in question is still available at the
 corresponding homeserver.
 
-Event IDs and Room IDs are case-sensitive. They are not meant to be human
-readable. They are intended to be treated as fully opaque strings by clients.
+Event IDs and Room IDs are case-sensitive. They are not meant to be human-readable.
+They are intended to be treated as fully opaque strings by clients.
 
 .. TODO-spec
   What is the grammar for the opaque part? https://matrix.org/jira/browse/SPEC-389
@@ -326,7 +326,7 @@ parameter is only used in the case of permalinks where an event ID is referenced
 The matrix.to URI, when referenced, must always start with ``https://matrix.to/#/``
 followed by the identifier.
 
-The ``<additional arguments>`` and the preceeding question mark are optional and
+The ``<additional arguments>`` and the preceding question mark are optional and
 only apply in certain circumstances, documented below.
 
 Clients should not rely on matrix.to URIs falling back to a web server if accessed
@@ -379,7 +379,7 @@ are picked is left as an implementation detail, however the current recommendati
 to pick 3 unique servers based on the following criteria:
 
 * The first server should be the server of the highest power level user in the room,
-  provided they are at least power level 50. If no user meets this criteria, pick the
+  provided they are at least power level 50. If no user meets this criterion, pick the
   most popular server in the room (most joined users). The rationale for not picking
   users with power levels under 50 is that they are unlikely to be around into the
   distant future while higher ranking users (and therefore servers) are less likely

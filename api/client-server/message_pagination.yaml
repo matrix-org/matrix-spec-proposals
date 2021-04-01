@@ -111,8 +111,6 @@ paths:
                   for ``dir=f`` in chronological order, so that events start
                   at the ``from`` point.
                 items:
-                  type: object
-                  title: RoomEvent
                   "$ref": "definitions/event-schemas/schema/core-event-schema/room_event.yaml"
               state:
                 type: array
@@ -126,8 +124,6 @@ paths:
                   sent to the client in prior calls to this endpoint, assuming
                   the membership of those members has not changed.
                 items:
-                  type: object
-                  title: RoomStateEvent
                   $ref: "definitions/event-schemas/schema/core-event-schema/state_event.yaml"
           examples:
             application/json: {

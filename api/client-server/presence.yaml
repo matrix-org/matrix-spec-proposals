@@ -62,7 +62,7 @@ paths:
                 description: The new presence state.
               status_msg:
                 type: string
-                description: "The status message to attach to this state."
+                description: The status message to attach to this state.
             required: ["presence"]
       responses:
         200:

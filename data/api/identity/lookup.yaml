@@ -1,0 +1,171 @@
+# Copyright 2016 OpenMarket Ltd
+# Copyright 2017 Kamax.io
+# Copyright 2017 New Vector Ltd
+# Copyright 2018 New Vector Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Identity Service Lookup API"
+  version: "1.0.0"
+host: localhost:8090
+schemes:
+  - https
+basePath: /_matrix/identity/api/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  "/lookup":
+    get:
+      summary: Look up the Matrix user ID for a 3pid.
+      description: Look up the Matrix user ID for a 3pid.
+      operationId: lookupUser
+      deprecated: true
+      parameters:
+        - in: query
+          type: string
+          name: medium
+          required: true
+          description: The medium type of the 3pid. See the [3PID Types](/appendices/#3pid-types) Appendix.
+          x-example: "email"
+        - in: query
+          type: string
+          name: address
+          required: true
+          description: The address of the 3pid being looked up. See the [3PID Types](/appendices/#3pid-types) Appendix.
+          x-example: "louise@bobs.burgers"
+      responses:
+        200:
+          description:
+            The association for that 3pid, or an empty object if no association is known.
+          examples:
+            application/json: {
+              "address": "louise@bobs.burgers",
+              "medium": "email",
+              "mxid": "@ears:matrix.org",
+              "not_before": 1428825849161,
+              "not_after": 4582425849161,
+              "ts": 1428825849161,
+              "signatures": {
+                "matrix.org": {
+                  "ed25519:0": "ENiU2YORYUJgE6WBMitU0mppbQjidDLanAusj8XS2nVRHPu+0t42OKA/r6zV6i2MzUbNQ3c3MiLScJuSsOiVDQ"
+                }
+              }
+            }
+          schema:
+            type: object
+            properties:
+              address:
+                type: string
+                description: The 3pid address of the user being looked up, matching the address requested.
+              medium:
+                type: string
+                description: A medium from the [3PID Types](/appendices/#3pid-types) Appendix, matching the medium requested.
+              mxid:
+                type: string
+                description: The Matrix user ID associated with the 3pid.
+              not_before:
+                type: integer
+                description: A unix timestamp before which the association is not known to be valid.
+              not_after:
+                type: integer
+                description: A unix timestamp after which the association is not known to be valid.
+              ts:
+                type: integer
+                description: The unix timestamp at which the association was verified.
+              signatures:
+                type: object
+                description: The signatures of the verifying identity servers which show that the association should be trusted, if you trust the verifying identity servers.
+                $ref: "../../schemas/server-signatures.yaml"
+            required:
+              - address
+              - medium
+              - mxid
+              - not_before
+              - not_after
+              - ts
+              - signatures
+  "/bulk_lookup":
+    post:
+      summary: Lookup Matrix user IDs for a list of 3pids.
+      description: Lookup Matrix user IDs for a list of 3pids.
+      operationId: lookupUsers
+      deprecated: true
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            example: {
+              "threepids":
+              [
+                ["email","user@example.org"],
+                ["msisdn", "123456789"],
+                ["email","user2@example.org"]
+              ]
+            }
+            properties:
+              threepids:
+                type: array
+                items:
+                  type: array
+                  title: 3PID mappings
+                  minItems: 2
+                  maxItems: 2
+                  items:
+                    # TODO: Give real names to these values. Adding a `title` does not work.
+                    #- type: 3PID Medium
+                    #- type: 3PID Address
+                    - type: string
+                    - type: string
+                description: |-
+                  An array of arrays containing the [3PID Types](/appendices/#3pid-types) with the `medium`
+                  in first position and the `address` in second position.
+            required:
+              - "threepids"
+      responses:
+        200:
+          description: A list of known 3PID mappings for the supplied 3PIDs.
+          examples:
+            application/json: {
+              "threepids": [
+                ["email","user@example.org", "@bla:example.org"],
+                ["msisdn", "123456789", "@blah2:example.com"]
+              ]
+            }
+          schema:
+            type: object
+            properties:
+              threepids:
+                type: array
+                items:
+                  type: array
+                  title: 3PID mappings
+                  minItems: 3
+                  maxItems: 3
+                  items:
+                    # TODO: Give real names to these values. Adding a `title` does not work.
+                    #- type: 3PID Medium
+                    #- type: 3PID Address
+                    #- type: Matrix User ID
+                    - type: string
+                    - type: string
+                    - type: string
+                description: |-
+                  An array of array containing the [3PID Types](/appendices/#3pid-types) with the `medium`
+                  in first position, the `address` in second position and Matrix user
+                  ID in third position.
+            required:
+              - "threepids"

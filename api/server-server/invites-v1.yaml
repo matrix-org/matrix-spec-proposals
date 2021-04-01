@@ -70,7 +70,7 @@ paths:
                 properties:
                   unsigned:
                     type: object
-                    title: Unsigned Event Content
+                    title: UnsignedData
                     description: |-
                       Information included alongside the event that is not signed. May include more
                       than what is listed here.

@@ -84,17 +84,19 @@ paths:
           description: The kind of account to register. Defaults to ``user``.
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
               auth:
                 description: |-
-                  Additional authentication information for the
-                  user-interactive authentication API. Note that this
-                  information is *not* used to define how the registered user
-                  should be authenticated, but is instead used to
-                  authenticate the ``register`` call itself.
-                "$ref": "definitions/auth_data.yaml"
+                    Additional authentication information for the
+                    user-interactive authentication API. Note that this
+                    information is *not* used to define how the registered user
+                    should be authenticated, but is instead used to
+                    authenticate the ``register`` call itself.
+                allOf:
+                - "$ref": "definitions/auth_data.yaml"
               username:
                 type: string
                 description: |-
@@ -227,7 +229,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_email_validation.yaml"
+            $ref: "definitions/request_email_validation.yaml"
       responses:
         200:
           description: |-
@@ -277,7 +279,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_msisdn_validation.yaml"
+            $ref: "definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: |-
@@ -328,14 +330,15 @@ paths:
 
         The homeserver may change the flows available depending on whether a
         valid access token is provided. The homeserver SHOULD NOT revoke the
-        access token provided in the request, however all other access tokens
-        for the user should be revoked if the request succeeds.
+        access token provided in the request. Whether other access tokens for
+        the user are revoked depends on the request parameters.
       security:
         - accessToken: []
       operationId: changePassword
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
@@ -343,10 +346,20 @@ paths:
                 type: string
                 description: The new password for the account.
                 example: "ihatebananas"
+              logout_devices:
+                type: boolean
+                description: |-
+                  Whether the user's other access tokens, and their associated devices, should be
+                  revoked if the request succeeds. Defaults to true.
+
+                  When ``false``, the server can still take advantage of `the soft logout method <#soft-logout>`_
+                  for the user's remaining devices.
+                example: true
               auth:
                 description: |-
-                  Additional authentication information for the user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
+                    Additional authentication information for the user-interactive authentication API.
+                allOf:
+                - "$ref": "definitions/auth_data.yaml"
             required: ["new_password"]
       responses:
         200:
@@ -395,7 +408,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "./definitions/request_email_validation.yaml"
+            $ref: "definitions/request_email_validation.yaml"
       responses:
         200:
           description: An email was sent to the given address.
@@ -453,7 +466,7 @@ paths:
           name: body
           required: true
           schema:
-            $ref: "../identity/definitions/request_msisdn_validation.yaml"
+            $ref: "definitions/request_msisdn_validation.yaml"
       responses:
         200:
           description: An SMS message was sent to the given phone number.
@@ -507,13 +520,15 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
               auth:
                 description: |-
                   Additional authentication information for the user-interactive authentication API.
-                "$ref": "definitions/auth_data.yaml"
+                allOf:
+                  - $ref: "definitions/auth_data.yaml"
               id_server:
                 type: string
                 description: |-

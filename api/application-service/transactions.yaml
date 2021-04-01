@@ -50,7 +50,7 @@ paths:
           x-example: "35"
         - in: body
           name: body
-          description: A list of events.
+          description: Transaction information
           schema:
             type: object
             example: {
@@ -59,7 +59,6 @@ paths:
                 {"$ref": "../../event-schemas/examples/m.room.message$m.text"}
               ]
             }
-            description: Transaction information
             properties:
               events:
                 type: array
