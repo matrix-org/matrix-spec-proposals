@@ -47,7 +47,6 @@ have the following fields:
         "lifetime": "60000",
         "capabilities": {
             "m.call.transferee": true,
-            "m.call.sdp_stream_metadata": true,
         },
         "offer": {
             "sdp": "...",
@@ -75,11 +74,9 @@ have the following fields:
 + If a stream has `purpose` of an unknown type (i.e. not `m.usermedia` or
   `m.screenshare`), it should be ignored.
 
-### Backwards compatibility and capability advertisement
+### Backwards compatibility
 
-For backwards compatibility and capability advertisement, a field
-`m.call.sdp_stream_metadata` is added to the `capabilities` object. If
-`m.call.sdp_stream_metadata` is anything other than `true`, clients should
+If the field `sdp_stream_metadata` is missing, clients should
 behave the way they do right now (i.e. they should not allow usage of multiple
 streams).
 
