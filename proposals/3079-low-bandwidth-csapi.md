@@ -10,6 +10,10 @@ in the background of mobile devices as a form of Matrix Push Notification, remov
 proprietary push systems such as GCM/APNS. Furthermore, it allows Matrix to run faster on
 low bitrate links (e.g 1-5Kbps).
 
+This proposal produces extremely low packet sizes of around 180 bytes to send a message,
+and 150 bytes for the response. Keep alive idle traffic is around 88 bytes per heartbeat
+interval (e.g per minute). 
+
 ## Proposal
 
 The current Client-Server API stack, along with the proposed alternatives are as follows:
