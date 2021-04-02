@@ -76,8 +76,10 @@ have the following fields:
 
 ### Backwards compatibility
 
-If the field `sdp_stream_metadata` is missing, clients should ignore any new
-incoming streams (i.e. they should use the first one).
+During the initial invite and answer exchange clients find out if the field
+`sdp_stream_metadata` is missing. If it is not present in the event sent by the
+oponent, the client should ignore any new incoming streams (i.e. it should use
+the first one) and it shouldn't send more than one stream.
 
 ## Alternatives
 
