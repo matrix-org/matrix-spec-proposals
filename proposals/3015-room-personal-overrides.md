@@ -66,6 +66,10 @@ For not allow to override bad things, I think we must define an allowlist of sta
 - `m.room.topic`
 - and maybe `m.room.pinned_events` too?
 
+In future this list can be extended for personally override the remote user profiles from [MSC1769: Extensible 
+profiles as rooms](https://github.com/matrix-org/matrix-doc/pull/1769), and even complement them: add personal phone
+number for contact, that missed in public profile and know only by you, leave personal notes about contact, etc.
+
 # Client support
 
 ## Displaying:
