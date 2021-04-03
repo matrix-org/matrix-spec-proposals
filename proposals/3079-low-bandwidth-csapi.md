@@ -62,7 +62,7 @@ TODO: Define test objects to and from JSON
 
 ### HTTP -> CoAP
 
-CoAP is defined in [RFC 7252: Contrained Application Protocol](https://tools.ietf.org/html/rfc7252)
+CoAP is defined in [RFC 7252: Constrained Application Protocol](https://tools.ietf.org/html/rfc7252)
 and is intended to be bandwidth efficient. It defines mappings to and from HTTP. Implementations exist
 in [many languages](https://coap.technology/impls.html). This allows the existing HTTP CS API to be mapped
 to CoAP request/responses.
