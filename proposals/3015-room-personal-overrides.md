@@ -64,11 +64,13 @@ For not allow to override bad things, I think we must define an allowlist of sta
 - `m.room.name`
 - `m.room.avatar`
 - `m.room.topic`
-- and maybe `m.room.pinned_events` too?
+- and maybe also `m.room.pinned_events` for implement personal pinning?
 
-In future this list can be extended for personally override the remote user profiles from [MSC1769: Extensible 
-profiles as rooms](https://github.com/matrix-org/matrix-doc/pull/1769), and even complement them: add personal phone
-number for contact, that missed in public profile and know only by you, leave personal notes about contact, etc.
+Also we can allow even `m.room.member` for personally override room members names and avatars too. But for this task
+may be better to wait for user profiles implementation from [MSC1769: Extensible profiles as rooms](https://github.com/matrix-org/matrix-doc/pull/1769),
+to override profile info values via same technic like in regular rooms, this will allow even complements the remote 
+profiles: add personal phone number for your contact, that missed in public profile and know only by you, leave personal
+notes about that contact, etc.
 
 # Client support
 
