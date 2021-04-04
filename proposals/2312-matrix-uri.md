@@ -756,7 +756,7 @@ or state) events on user's behalf.
 
 A dedicated URI scheme is well overdue for Matrix. Many other networks
 already have got one for themselves, benefiting both in terms of
-branding (compare `matrix:room/weruletheworld:example.org` vs.
+branding (compare `matrix:r/weruletheworld:example.org` vs.
 `#weruletheworld:example.org` from the standpoint of someone who
 hasn't been to Matrix) and interoperability (`matrix.to` requires
 opening a browser while clicking a `tg:` link dumped to the terminal
