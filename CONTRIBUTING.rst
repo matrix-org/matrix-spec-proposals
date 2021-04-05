@@ -29,9 +29,7 @@ some time to complete.
 Changes to the protocol (new endpoints, ideas, etc) need to go through the
 `proposals process <https://matrix.org/docs/spec/proposals>`_. Other changes,
 such as fixing bugs, typos, or clarifying existing behaviour do not need a proposal.
-If you're not sure, visit us at `#matrix-spec:matrix.org`_
-and ask.
-
+If you're not sure, visit us at `#matrix-spec:matrix.org`_ and ask.
 
 Other changes
 ~~~~~~~~~~~~~
@@ -64,12 +62,17 @@ following:
   to fix. On the other hand, introducing new behaviour is best represented by a
   proposal.
 
+* Design or aesthetic changes, such as improving accessibility, colour schemes,
+  etc. Please check in with us at `#matrix-docs:matrix.org`_ with your proposed
+  design change before opening a PR so we can work with you on it.
+
 For such changes, please do just open a `pull request`_. If you're not sure if
 your change is covered by the above, please visit `#matrix-spec:matrix.org` and
 ask.
 
 .. _`pull request`: https://help.github.com/articles/about-pull-requests
 .. _`#matrix-spec:matrix.org`: https://matrix.to/#/#matrix-spec:matrix.org
+.. _`#matrix-docs:matrix.org`: https://matrix.to/#/#matrix-docs:matrix.org
 
 
 Adding to the changelog
@@ -100,8 +103,7 @@ the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 All news fragments must have a brief summary explaining the change in the
 contents of the file. The summary must end in a full stop to be in line with
-the style guide and and formatting must be done using `Restructured Text
-<http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_.
+the style guide and and formatting must be done using Markdown.
 
 Changes that do not change the spec, such as changes to the build script, formatting,
 CSS, etc should not get a news fragment.
