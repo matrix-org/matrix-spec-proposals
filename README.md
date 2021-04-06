@@ -2,10 +2,10 @@
 
 This repository contains the Matrix Specification, rendered at [spec.matrix.org](http://spec.matrix.org/).
 
-Developers looking to use Matrix should join [#matrix-dev:matrix.org](http://matrix.to/#/#matrix-dev:matrix.org)
+Developers looking to use Matrix should join [#matrix-dev:matrix.org](https://matrix.to/#/#matrix-dev:matrix.org)
 on Matrix for help.
 
-Spec authors and proposal writers are welcome to join [#matrix-spec:matrix.org](http://matrix.to/#/#matrix-spec:matrix.org). We welcome contributions! See [CONTRIBUTING.rst](./CONTRIBUTING.rst) for details.
+Spec authors and proposal writers are welcome to join [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org). We welcome contributions! See [CONTRIBUTING.rst](./CONTRIBUTING.rst) for details.
 
 ## Structure
 
