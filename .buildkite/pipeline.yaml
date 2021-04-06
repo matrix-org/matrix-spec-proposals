@@ -1,5 +1,5 @@
 steps:
-  - label: ":books: Build the legacy spec"
+  - label: ":snake: Build swagger definitions for matrix.org"
     command:
       # Install the python dependencies necessary to build the spec
       - python3 -m venv env && . env/bin/activate
