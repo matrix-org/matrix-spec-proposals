@@ -35,8 +35,8 @@ The Matrix spec is compiled with [Hugo](https://gohugo.io/) (a static site gener
 
 * `/themes`: you can use just Hugo or use it with a theme. Themes primarily provide additional templates, which are
   supplied in a `/themes/$theme_name/layouts` directory. You can use a theme but customise it by providing your own
-  versions of any of the them layouts in the base `/layouts` directory. That is, if a theme provides
-  `/themes/$theme_name/layouts/sidebar.html` and you provide `/layouts/sidebar.html`, then your version of this
+  versions of any of the theme layouts in the base `/layouts` directory. That is, if a theme provides
+  `/themes/$theme_name/layouts/sidebar.html` and you provide `/layouts/sidebar.html`, then your version of the
   template will be used.
 
 It also has the following top-level file:
@@ -51,7 +51,7 @@ Additionally, the following directories may be of interest:
 * `/event-schemas`: [JSON Schema](http://json-schema.org/) definitions for the spec.
 * `/data-definitions`: Bits of structured data consumable by Matrix implementations.
 * `/meta`: Documentation relating to the spec's processes that are otherwise untracked (release instructions, etc).
-* `/scripts`: Various scripts for generating the spec.
+* `/scripts`: Various scripts for generating the spec and validating its contents.
 * `/proposals`: Matrix Spec Change (MSC) proposals. See <https://spec.matrix.org/unstable/proposals/>.
 
 ## Authoring changes to the spec
@@ -62,7 +62,7 @@ place after an MSC has been accepted, not as part of a proposal itself.
 1. Install the extended version (often the OS default) of Hugo: <https://gohugo.io/getting-started/installing>
 2. Run `git submodule update --init --recursive` for good measure.
 3. Run `npm i` to install the dependencies. Note that this will require NodeJS to be installed.
-4. Run `npm run get-proposals` to seed the proposals data. This is not required.
+4. Run `npm run get-proposals` to seed proposal data. This is merely for populating the content of the "Spec Change Proposals" page and is not required.
 5. Run `hugo serve` to run a local webserver which builds whenever a file change is detected. If watching doesn't appear
    to be working for you, try `hugo serve --disableFastRender` instead.
 6. Edit the specification 🙂
@@ -73,7 +73,7 @@ Awesome. If you're looking at making design-related changes to the spec site, pl
 
 ## Building the specification
 
-If for some reason you're not a CI/CD system and want to render the spec yourself, follow the above steps for authoring
+If for some reason you're not a CI/CD system and want to render a static version of the spec for yourself, follow the above steps for authoring
 changes to the specification and instead of `hugo serve` run `hugo -d "spec"` - this will generate the spec to `/spec`.
 If you'd like to serve the spec off a path instead of a domain root (eg: `/unstable`), add `--baseURL "/unstable"` to
 the `hugo -d "spec"` command.

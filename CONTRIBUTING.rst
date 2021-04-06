@@ -103,7 +103,7 @@ the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 All news fragments must have a brief summary explaining the change in the
 contents of the file. The summary must end in a full stop to be in line with
-the style guide and and formatting must be done using Markdown.
+the style guide and formatting must be done using Markdown.
 
 Changes that do not change the spec, such as changes to the build script, formatting,
 CSS, etc should not get a news fragment.
