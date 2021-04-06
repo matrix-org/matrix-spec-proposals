@@ -5,7 +5,8 @@ This repository contains the Matrix Specification, rendered at [spec.matrix.org]
 Developers looking to use Matrix should join [#matrix-dev:matrix.org](https://matrix.to/#/#matrix-dev:matrix.org)
 on Matrix for help.
 
-Spec authors and proposal writers are welcome to join [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org). We welcome contributions! See [CONTRIBUTING.rst](./CONTRIBUTING.rst) for details.
+Spec authors and proposal writers are welcome to join [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org).
+We welcome contributions! See [CONTRIBUTING.rst](./CONTRIBUTING.rst) for details.
 
 ## Structure
 
@@ -62,7 +63,8 @@ place after an MSC has been accepted, not as part of a proposal itself.
 1. Install the extended version (often the OS default) of Hugo: <https://gohugo.io/getting-started/installing>
 2. Run `git submodule update --init --recursive` for good measure.
 3. Run `npm i` to install the dependencies. Note that this will require NodeJS to be installed.
-4. Run `npm run get-proposals` to seed proposal data. This is merely for populating the content of the "Spec Change Proposals" page and is not required.
+4. Run `npm run get-proposals` to seed proposal data. This is merely for populating the content of the "Spec Change Proposals"
+   page and is not required.
 5. Run `hugo serve` to run a local webserver which builds whenever a file change is detected. If watching doesn't appear
    to be working for you, try `hugo serve --disableFastRender` instead.
 6. Edit the specification 🙂
@@ -73,18 +75,18 @@ Awesome. If you're looking at making design-related changes to the spec site, pl
 
 ## Building the specification
 
-If for some reason you're not a CI/CD system and want to render a static version of the spec for yourself, follow the above steps for authoring
-changes to the specification and instead of `hugo serve` run `hugo -d "spec"` - this will generate the spec to `/spec`.
-If you'd like to serve the spec off a path instead of a domain root (eg: `/unstable`), add `--baseURL "/unstable"` to
-the `hugo -d "spec"` command.
+If for some reason you're not a CI/CD system and want to render a static version of the spec for yourself, follow the above
+steps for authoring changes to the specification and instead of `hugo serve` run `hugo -d "spec"` - this will generate the
+spec to `/spec`. If you'd like to serve the spec off a path instead of a domain root (eg: `/unstable`), add `--baseURL "/unstable"`
+to the `hugo -d "spec"` command.
 
-For building the swagger definitions, create a python3 virtualenv and activate it. Then run `pip install -r ./scripts/requirements.txt` and finally `python ./scripts/dump-swagger.py` to generate it to `./scripts/swagger/api-docs.json`.
-To make use of the generated file, there are a number of options:
+For building the swagger definitions, create a python3 virtualenv and activate it. Then run `pip install -r ./scripts/requirements.txt`
+and finally `python ./scripts/dump-swagger.py` to generate it to `./scripts/swagger/api-docs.json`. To make use of the generated file,
+there are a number of options:
 
-* It can be uploaded from your filesystem to an online editor/viewer such as
-  http://editor.swagger.io/
+* It can be uploaded from your filesystem to an online editor/viewer such as [on the swagger website](http://editor.swagger.io/).
 * You can run a local HTTP server by running `./scripts/swagger-http-server.py`, and then view the documentation via an
-  online viewer; for example, at <http://petstore.swagger.io/?url=http://localhost:8000/api-docs.json>
+  online viewer; for example, at <http://petstore.swagger.io/?url=http://localhost:8000/api-docs.json>.
 * You can host the swagger UI yourself. See <https://github.com/swagger-api/swagger-ui#how-to-run> for advice on how to
   do so.
 
