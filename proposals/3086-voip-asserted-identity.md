@@ -37,8 +37,8 @@ display name and/or avatar may not match the given Matrix user ID. The given
 Matrix user ID may not exist at all. The entity on the other side of the call
 may not have changed at all.
 
-The event fulfils a similar purpose to RFC4916 or the P-Asserted-Identity
-header in SIP.
+The event fulfils a similar purpose to [RFC 4916](https://tools.ietf.org/html/rfc4916)
+or the [P-Asserted-Identity header in SIP](https://tools.ietf.org/html/rfc3325#section-9.1).
 
 Examples:
 
