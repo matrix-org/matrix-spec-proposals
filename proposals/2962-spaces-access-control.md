@@ -1,4 +1,4 @@
-# Proposal for Group Access Control via Spaces in Matrix
+# MSC2962: Managing power levels via Spaces
 
 MSC1772 defines Spaces: a new way to define groups of users and rooms in
 Matrix by describing them as a room.  Originally MSC1772 attempted to define
@@ -6,11 +6,11 @@ how you could apply permissions to Matrix rooms based on the membership of a
 space. However, this is effectively a separate concern from how you model spaces
 themselves, and so has been split out into a this separate MSC.
 
-## Goals:
+This MSC originally included restricting room membership based on space membership.
+This has been split into [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).
 
- * Set the power levels in a room based on membership of a space
- * Restrict access to a room based on membership of a space
- * Kick users from a room if they leave a space
+Thus, the goal of this MSC is to set the power levels in a room based on
+membership of a space.
 
 ### Managing power levels via spaces
 
@@ -257,141 +257,11 @@ Things that were considered and dismissed:
     should be enough? But still sucks that there are two ways to do the same
     thing, and clients which don't support spaces will get it wrong.)
 
-### Restricting room membership based on space membership
-
-A desirable feature is to give room admins the power to restrict membership of
-their room based on the membership of spaces (for example, "members of the
-#doglovers space can join this room without an invitation"<sup id="a1">[1](#f1)</sup>).
-
-We could represent the allowed spaces with additional content in the
-`m.room.join_rules` event. For example:
-
-```js
-{
-    "type": "m.room.join_rules",
-    "state_key": "",
-    "content": {
-        "join_rule": "public",
-        "allow": [
-            {
-                "space": "!mods:example.org",
-                "via": ["example.org"],
-            },
-            {
-                "space": "!users:example.org",
-                "via": ["example.org"],
-            }
-        ]
-    }
-}
-```
-
-The `allow` key applies a restriction to the `public` join rule, so that
-only users satisfying one or more of the requirements should be allowed to
-join. Additionally, users who have received an explicit `invite` event are
-allowed to join<sup id="a2">[2](#f2)</sup>. If the `allow` key is an
-empty list (or not a list at all), no users are allowed to join without an
-invite.
-
-Unlike the regular `invite` join rule, the restriction cannot be enforced over
-federation by event authorization, so servers in the room are trusted not to
-allow invalid users to join.<sup id="a3">[3](#f3)</sup>
-
-When a server receives a `/join` request from a client or a
-`/make_join`/`/send_join` request from a server, the request should only be
-permitted if the user has a valid invite or is in one of the listed spaces
-(established by peeking).
-
-XXX: redacting the join_rules above will reset the room to public, which feels dangerous?
-
-A new room version is not absolutely required here, but may be advisable to
-ensure that servers that do not support `allow` do not join the room
-(and would also allow us to tweak the redaction rules to avoid the foot-gun).
-
-#### Kicking users out when they leave the allowed space
-
-XXX: this will probably be a future extension, rather than part of the initial
-implementation of `allow`.
-
-In the above example, suppose `@bob:server.example` leaves `!users:example.org`:
-they should be removed from the room. One option is to leave the departure up
-to Bob's server `server.example`, but this places a relatively high level of trust
-in that server. Additionally, if `server.example` were offline, other users in
-the room would still see Bob in the room (and their servers would attempt to
-send message traffic to it).
-
-Instead, we make the removal the responsibility of the room's admin bot (see
-above): the bot is expected to peek into any spaces in `allow` and kick
-any users who are members of the room and leave the union of the allowed
-spaces.
-
-(XXX: should users in a space be kicked when that space is removed from the
-`allow` list? We think not, by analogy with what happens when you switch
-the join rules from `public` to `invite`.)
-
-One problem here is that it will lead to users who joined via an invite being
-kicked. For example:
- * `@bob:server.example` creates an invite-only room.
- * Later, the `join_rules` are switched to `public`, with an `allow` of
-   `!users:example.org`, of which Bob happens to be a member.
- * Later still, Bob leaves `!users:example.org`.
- * Bob is kicked from his own room.
-
-Fixing this is thorny. Some sort of annotation on the membership events might
-help. but it's unclear what the desired semantics are:
-
- * Assuming that users in a given space are *not* kicked when that space is
-   removed from `allow`, are those users then given a pass to remain
-   in the room indefinitely? What happens if the space is added back to
-   `allow` and *then* the user leaves it?
-
- * Suppose a user joins a room via a space (SpaceA). Later, SpaceB is added to
-   the `allow` list and SpaceA is removed. What should happen when the
-   user leaves SpaceB? Are they exempt from the kick?
-
-#### Alternatives
-
-* Maintain some sort of pre-approved list as the space membership changes in a
-  similar way to the PL mapping, possibly via a new membership state.
-
-  Could lead to a lot of membership churn, from a centralised control point.
-
-* Base it on invite-only rooms, and generate invite events on the fly. Kind-of
-  ok, except that we'd want the invites to be seen as having a sender of a
-  management bot rather than an arbitrary user, which would mean that all joins
-  would have to go through that one server (even from servers that were already
-  participating in the room), which feels a bit grim. We could have multiple
-  admin bots to mitigate this, but it gets a bit messy.
-
-* Change the way that `allow` and invites interact, so that an invite
-  does not exempt you from the `allow` requirements. This would be
-  simpler to implement, but probably doesn't match the expected UX.
-
-* Put the `allow` rules in a separate event? This is attractive because
-  `join_rules` are involved in event auth and hence state resolution, and the
-  fewer events that state res has to grapple with the better. However, doing
-  this would probably require us to come up with a new `join_rule` state to
-  tell servers to go and look for the allowed spaces.
-
-## Future extensions
-
-### Inheriting join rules
-
-If you make a parent space invite-only, should that (optionally?) cascade into
-child rooms? Seems to have some of the same problems as inheriting PLs.
-
 ## Dependencies
 
  * [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) for room spaces.
 
 ## Security considerations
-
-* The `allow` feature for `join_rules` places increased trust in the servers in the
-  room. We consider this acceptable: if you don't want evil servers randomly
-  joining spurious users into your rooms, then a) don't let evil servers in
-  your room in the first place, b) don't use `allow` lists, given the
-  expansion increases the attack surface anyway by letting members in other
-  rooms dictate who's allowed into your room.
 
 * The peek server has significant power. For example, a poorly chosen peek
   server could lie about the space membership and add an
@@ -406,23 +276,3 @@ Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `m.room.power_level_mappings` | event type | `org.matrix.msc1772.room.power_level_mappings`
 `auto_users` | key in `m.room.power_levels` event | `org.matrix.msc1772.auto_users`
-`allow` | key in `m.room.join_rules` event | `org.matrix.msc1772.allow`
-
-## Footnotes
-
-<a id="f1"/>[1]: The converse, "anybody can join, provided they are not members
-of the '#catlovers' space" is less useful since (a) users in the banned space
-could simply leave it at any time; (b) this functionality is already somewhat
-provided by [Moderation policy
-lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists).  [↩](#a1)
-
-<a id="f2"/>[2]: Note that there is nothing stopping users sending and
-receiving invites in `public` rooms today, and they work as you might
-expect. The only difference is that you are not *required* to hold an `invite`
-when joining the room. [↩](#a2)
-
-<a id="f3"/>[3]: This is a marginal decrease in security from the current
-situation with invite-only rooms. Currently, a misbehaving server can allow
-unauthorized users to join an invite-only room by first issuing an invite to
-that user. In theory that can be prevented by raising the PL required to send
-an invite, but in practice that is rarely done.  [↩](#a2)
