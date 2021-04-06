@@ -21,7 +21,7 @@ The Matrix spec is compiled with [Hugo](https://gohugo.io/) (a static site gener
 
 * `/data`: this can contain TOML, YAML, or JSON files. Files kept here are directly available to template code as
   [data objects](https://gohugo.io/templates/data-templates/), so templates don't need to load them from a file and
-  parse them. This is also where our
+  parse them. This is also where our Swagger/OpenAPI definitions are.
 
 * `/layouts`: this contains [Hugo templates](https://gohugo.io/templates/). Some templates define the overall layout of
   a page: for example, whether it has header, footer, sidebar, and so on.
