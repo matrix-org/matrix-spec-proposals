@@ -1,6 +1,6 @@
 # MSC2746: Improved Signalling for 1:1 VoIP
 
-Matrix has basic support for signalling 1:1 WebRTC calls, but has a number of shortcomings:
+Historically, Matrix has basic support for signalling 1:1 WebRTC calls which suffer a number of shortcomings:
 
  * If several devices try to answer the same call, there is no way for them to determine clearly
    that the caller has set up the call with a different device, and no way for the caller to
