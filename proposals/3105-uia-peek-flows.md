@@ -82,6 +82,10 @@ that no action should be taken. This is less backwards compatible, and therefore
 option but would allow us to define an amount of custom functionality like reserving a `session`.
 See the "unstable prefix" section for more information on backwards compatibility.
 
+We could also completely replace UIA with some other system that either has built-in previewing
+of similar constructs, or no need to perform auth in this way. This is not considered feasible by
+this proposal in the timespan it intends to land within.
+
 ## Security considerations
 
 Servers should ratelimit `OPTIONS` requests no different than they would other requests, which they
