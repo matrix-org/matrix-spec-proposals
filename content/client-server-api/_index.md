@@ -1382,7 +1382,7 @@ available room versions.
 {{% /boxes/warning %}}
 
 {{% boxes/warning %}}
-Event bodies are considered untrusted data. This means that anyone using
+Event bodies are considered untrusted data. This means that any application using
 Matrix must validate that the event body is of the expected shape/schema
 before using the contents verbatim.
 
