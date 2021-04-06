@@ -1381,6 +1381,18 @@ opaque string. No changes should be required to support the currently
 available room versions.
 {{% /boxes/warning %}}
 
+{{% boxes/warning %}}
+Event bodies are considered untrusted data. This means that any application using
+Matrix must validate that the event body is of the expected shape/schema
+before using the contents verbatim.
+
+**It is not safe to assume that an event body will have all the expected
+fields of the expected types.**
+
+See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
+detail on why this assumption is unsafe.
+{{% /boxes/warning %}}
+
 ### Types of room events
 
 Room events are split into two categories:
