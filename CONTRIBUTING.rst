@@ -89,8 +89,8 @@ To create a changelog entry, create a file named in the format ``prNumber.type``
 the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 * ``new`` - Used when adding new endpoints. Please have the file contents be the
-  method and route being added, surrounded in RST code tags. For example: ``POST
-  /accounts/whoami``
+  method and route being added, surrounded in markdown code tags. For example: \`POST
+  /accounts/whoami\`.
 
 * ``feature`` - Used when adding backwards-compatible changes to the API.
 
