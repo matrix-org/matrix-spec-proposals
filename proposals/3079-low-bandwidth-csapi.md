@@ -109,7 +109,7 @@ using [RFC 7641: CoAP OBSERVE](https://tools.ietf.org/html/rfc7641). The registr
 of (access_token, coap token ID). This allows the same device to have multiple OBSERVE registrations. All pushed
 events MUST be sent as Confirmable messages to ensure that the client received the events. The pushed events MUST
 look identical to a normal `/sync` response, which includes the `next_batch` token. When the client disconnects and
-reconnects with a new registration, they can use the `next_batch` token to consume where they left off. If a client
+reconnects with a new registration, they can use the `next_batch` token to resume where they left off. If a client
 doesn't acknowledge an event despite multiple attempts to do so, the registration SHOULD be removed to avoid consuming
 server resources and network bandwidth.
 
