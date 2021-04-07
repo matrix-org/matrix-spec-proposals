@@ -51,7 +51,8 @@ MUST be used. It is NOT required that keys which have integers are represented a
 mapping is entirely optional. String representations of numbers e.g `"8"` MUST NOT be expanded, and
 should be treated literally. As JSON does not allow integer keys, this prevents any ambiguity when
 converting from CBOR to JSON. The complete key enum list is in Appendix A and represents version 1
-of the CBOR key mappings.
+of the CBOR key mappings. Further versions are intended to be backwards compatible e.g we only ever
+add keys.
 
 Clients MUST set the `Content-Type` header to `application/cbor` when sending CBOR objects.
 Similarly, servers MUST set the `Content-Type` header to `application/cbor` when responding with CBOR
@@ -82,14 +83,17 @@ The path parameters in the mapping should be read left to right to determine whe
 shortened form. In this example, the short mapping is `/9/{roomId}/{eventType}/{txnId}`. Paths which do
 not have any path parameters only have one path segment e.g `/_matrix/client/r0/sync` is just `/7`.
 This path mapping is optional, and servers MUST accept the full paths. The complete path enum list is in
-Appendix B and represents version 1 of the CoAP path mappings.
+Appendix B and represents version 1 of the CoAP path mappings. Further versions are intended to be backwards
+compatible e.g we only ever add keys.
 
 #### Access Tokens
 
 CoAP defines many mappings but notably has no Option mapping for `Authorization` headers. This proposal marks
 the option ID 256 as `Authorization` in accordance with the [CoAP Option Registry](https://tools.ietf.org/html/rfc7252#section-12.2)
 which mandates that options IDs 0-255 are reserved for IETF review. This Option should have the same Critical,
-UnSafe, NoCacheKey, Format and Length values as the `Uri-Query` Option.
+UnSafe, NoCacheKey, Format and Length values as the `Uri-Query` Option. The `Authorization` value SHOULD omit
+the "Bearer " prefix to save on bytes, though this is optional and servers MUST handle both with and without
+the prefix.
 
 In addition, this Option MAY be omitted on subsequent requests, in which case the server MUST use the last
 used value for this Option. This reduces bandwidth usage by only sending the access token once per connection.
@@ -148,6 +152,12 @@ which low bandwidth features are supported on this server. This object looks lik
   "observe": 1,            // Set to 1 if /sync supports OBSERVE. Omission indicates no support for OBSERVE.
 }
 ```
+
+Clients MAY negotiate which CBOR version to use with the server by sending an option ID 257 with a `uint` value (defined in
+RFC 7252) set to the CBOR version requested. This value should be 'sticky' and remembered across requests for the lifetime
+of the underlying connection. Absence of this option indicates no CBOR enum support in the client UNLESS the client sends
+numeric keys in its request bodies, in which case Version 1 MUST be assumed. This negotiation is required so servers know
+whether to push numeric CBOR keys to clients. It is not required for CoAP versions as these are always client-initiated.
 
 ### Summary of required features
 
