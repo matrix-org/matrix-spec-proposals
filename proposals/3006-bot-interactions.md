@@ -21,19 +21,21 @@ _Note: a deeper explanation of the events will be below the interaction flow_
 {
   "type": "m.bot.interactions",
   "state_key": "@faq_bot:example.matrix",
-  "command_prefix": "!",
-  "interactions": [
-    {
-      "type": "m.interaction.command",
-      "description": "Shows the help of the FAQ Bot",
-      "name": "help"
-    },
-    {
-      "type": "m.interaction.button",
-      "description": "Search question",
-      "name": "Search"
-    }
-  ]
+  "content": {
+    "command_prefix": "!",
+    "interactions": [
+      {
+        "type": "m.interaction.command",
+        "description": "Shows the help of the FAQ Bot",
+        "name": "help"
+      },
+      {
+        "type": "m.interaction.button",
+        "description": "Search question",
+        "name": "Search"
+      }
+    ]
+  }
 }
 ```
 
@@ -163,19 +165,21 @@ Example:
 {
   "type": "m.bot.interactions",
   "state_key": "@faq_bot:example.matrix",
-  "command_prefix": "!",
-  "interactions": [
-    {
-      "type": "m.interaction.command",
-      "description": "Shows the help of the FAQ Bot",
-      "name": "help"
-    },
-    {
-      "type": "m.interaction.button",
-      "description": "Search question",
-      "name": "Search"
-    }
-  ]
+  "content": {
+    "command_prefix": "!",
+    "interactions": [
+      {
+        "type": "m.interaction.command",
+        "description": "Shows the help of the FAQ Bot",
+        "name": "help"
+      },
+      {
+        "type": "m.interaction.button",
+        "description": "Search question",
+        "name": "Search"
+      }
+    ]
+  }
 }
 ```
 
@@ -301,3 +305,7 @@ this was being decided difficult or even dangerous as bots or abusive users migh
 * It might leak metadata if it is not encrypted
 
 ## Unstable prefix
+
+`dev.nordgedanken.msc3006.` shall be used as a prefix.
+
+e.g.: `m.bot.interactions` becomes `dev.nordgedanken.msc3006.bot.interactions`
