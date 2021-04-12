@@ -33,6 +33,12 @@ create a new room version that restricts user IDs in event auth. Something like
 [MSC1228](https://github.com/matrix-org/matrix-doc/pull/1228) will eventually
 overhaul the entire user ID system anyway.
 
+## Potential issues
+Existing users with user IDs outside the historical user ID grammar would be
+unable to join rooms after this new room version. However, there shouldn't be
+any actual users with such user IDs, as normal registrations have always
+required usernames to follow the historical grammar.
+
 ## Unstable prefix
 Implementations can use `net.maunium.msc2828` as the room version until this
 proposal is added to an official room version.
