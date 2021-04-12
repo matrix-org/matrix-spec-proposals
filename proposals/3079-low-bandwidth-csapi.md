@@ -51,7 +51,7 @@ MUST be used. It is NOT required that keys which have integers are represented a
 mapping is entirely optional. String representations of numbers e.g `"8"` MUST NOT be expanded, and
 should be treated literally. As JSON does not allow integer keys, this prevents any ambiguity when
 converting from CBOR to JSON. The complete key enum list is in Appendix A and represents version 1
-of the CBOR key mappings. Further versions are intended to be backwards compatible e.g we only ever
+of the CBOR key mappings. Further versions are intended to be backwards compatible i.e. we only ever
 add keys.
 
 Clients MUST set the `Content-Type` header to `application/cbor` when sending CBOR objects.
