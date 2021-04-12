@@ -169,7 +169,7 @@ Editing interface can be represented exactly like the composer interface, where 
 
 ### Display recommendations:
 
-On the client site, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons. Also clients can implement collapse/expand action on gallery grid.
+On the client side, attachments can be displayed as grid of clickable thumbnails, like the current `m.image` events, but with a smaller size, having fixed height, like a regular image gallery. On click, Matrix client must display media in full size, and, if possible, as a gallery with "next-previous" buttons. Also clients can implement collapse/expand action on gallery grid.
 
 If the message contains only one attachment, it can be displayed as full-width thumbnail in timeline, like current `m.image` and `m.video` messages.
 
