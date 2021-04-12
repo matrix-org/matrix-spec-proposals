@@ -288,6 +288,17 @@ If a stage start is sent the user moves into the next decision tree of a menu. I
 Stage end should not be treated as a back button.
 
 
+## Fallback
+
+The fallback is done by making this a transparent change to the message event. It only adds metadata to the event instead of proposing a new message event.
+This brings the benefit that the fallback works in any existing client without needing to change the clients code. This means that user without the 
+MSC implemented in their client still can fully follow the conversation without missing out events.
+
+## Other neccesarry changes to make this even work
+
+To make this even work this needs an addition to the default room powerlevels. The `m.bot.interactions` state event type MUST be able to be set by
+the rooms default Powerlevel as bots usually are just regular users and not moderators of the room.
+
 ## Potential issues
 
 * Priority of stages is not defined if 2 commands happen at the same time
