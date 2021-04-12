@@ -4,7 +4,7 @@
 
 In the current implementation each media (file, image, video) can be sent only via a separate event to the room. But in most cases even one media is not sent alone, it must be commented via some text by the sender. So the user often wants to attach some images (one or several) directly to their text message when composing it, not after or before it.
 
-And now the user can send images only before the message (or after it) as a separate message, but he can't attach images during the composing process to send them when the text is finished, together with the text message in one event.
+And now the user can send images only before the message (or after it) as a separate message, but they can't attach images during the composing process to send them when the text is finished, together with the text message in one event.
 
 On the display side, when the user sends multiple images, the problem is that each image is displayed alone, as separate event with full width in timeline, not linked to the message, and not grouped to the gallery.
 
