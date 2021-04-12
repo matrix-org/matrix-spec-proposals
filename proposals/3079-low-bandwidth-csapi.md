@@ -84,7 +84,7 @@ shortened form. In this example, the short mapping is `/9/{roomId}/{eventType}/{
 not have any path parameters only have one path segment e.g `/_matrix/client/r0/sync` is just `/7`.
 This path mapping is optional, and servers MUST accept the full paths. The complete path enum list is in
 Appendix B and represents version 1 of the CoAP path mappings. Further versions are intended to be backwards
-compatible e.g we only ever add keys.
+compatible e.g we only ever add paths.
 
 #### Access Tokens
 
