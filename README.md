@@ -22,7 +22,7 @@ The Matrix spec is compiled with [Hugo](https://gohugo.io/) (a static site gener
 
 * `/data`: this can contain TOML, YAML, or JSON files. Files kept here are directly available to template code as 
   [data objects](https://gohugo.io/templates/data-templates/), so templates don't need to load them from a file and 
-  parse them. This is also where our Swagger/OpenAPI definitions are.
+  parse them. This is also where our Swagger/OpenAPI definitions and schemas are.
 
 * `/layouts`: this contains [Hugo templates](https://gohugo.io/templates/). Some templates define the overall layout of 
   a page: for example, whether it has header, footer, sidebar, and so on.
@@ -49,7 +49,6 @@ Additionally, the following directories may be of interest:
 
 * `/attic`: Here contains historical sections of specification and legacy drafts for the specification.
 * `/changelogs`: Various bits of changelog for the specification areas.
-* `/event-schemas`: [JSON Schema](http://json-schema.org/) definitions for the spec.
 * `/data-definitions`: Bits of structured data consumable by Matrix implementations.
 * `/meta`: Documentation relating to the spec's processes that are otherwise untracked (release instructions, etc).
 * `/scripts`: Various scripts for generating the spec and validating its contents.
