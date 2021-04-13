@@ -33,13 +33,13 @@ to walk the full state of the space).
 ### Client-server API
 
 Walks the space tree, starting at the provided room ID ("the root room"),
-and visiting other rooms/spaces found via `org.matrix.msc1772.space.child`
+and visiting other rooms/spaces found via `m.space.child`
 events, recursing through those children into their children, etc.
 
 Example request:
 
 ```jsonc
-POST /_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces
+POST /_matrix/client/r0/rooms/{roomID}/spaces
 
 {
     "max_rooms_per_space": 5,
@@ -50,7 +50,7 @@ POST /_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces
 or:
 
 ```text
-GET /_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces?
+GET /_matrix/client/r0/rooms/{roomID}/spaces?
     max_rooms_per_space=5&
     suggested_only=true
 ```
@@ -69,13 +69,13 @@ Example response:
             "topic": "Tasty tasty cheese",
             "world_readable": true,
 
-            "room_type": "org.matrix.msc1772.space"
+            "room_type": "m.space"
         },
         { ... }
     ],
     "events": [
         {
-            "type": "org.matrix.msc1772.space.child",
+            "type": "m.space.child",
             "state_key": "!efgh:example.com",
             "content": {
                 "via": ["example.com"],
@@ -92,7 +92,7 @@ Example response:
 Request params:
 
 * **`suggested_only`**: Optional. If `true`, return only child events and rooms where the
-  `org.matrix.msc1772.space.child` event has `suggested: true`. Defaults to
+  `m.space.child` event has `suggested: true`. Defaults to
   `false`.  (For the POST request, must be a boolean. For GET, must be either
   `true` or `false`, case sensitive.)
 * **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
@@ -108,7 +108,7 @@ Response fields:
   `/publicRooms` (see
   [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
   with the addition of:
-  * **`room_type`**: the value of the `org.matrix.msc1772.type` field from the
+  * **`room_type`**: the value of the `m.type` field from the
     room's `m.room.create` event, if any.
 * **`events`**: child events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
@@ -144,7 +144,7 @@ Much the same interface as the C-S API.
 Example request:
 
 ```jsonc
-POST /_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}
+POST /_matrix/federation/v1/spaces/{roomID}
 {
     "exclude_rooms": ["!a:b", "!b:c"],
     "max_rooms_per_space": 5,
@@ -183,6 +183,20 @@ This is largely the same as the C-S API, but differences are:
 
 ## Unstable prefix
 
-## TODO
+During development of this feature it will be available at an unstable endpoints.
+The client-server API will be:
 
-* Update this to use the stable identifiers from MSC1772 and MSC2946 everywhere.
+`/_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces`
+
+And the server-server API will be:
+
+`/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
+
+Note that the unstable identifiers from [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) also apply:
+
+Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`type` | property in `m.room.create` | `org.matrix.msc1772.type`
+`m.space` | value of `type` in `m.room.create` | `org.matrix.msc1772.space`
+`m.space.child` | event type | `org.matrix.msc1772.space.child`
+`m.space.parent` | event type | `org.matrix.msc1772.space.parent`
