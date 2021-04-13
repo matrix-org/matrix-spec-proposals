@@ -69,7 +69,7 @@ include unusual event IDs.
 Proposal:
 
 > The opaque_id part must not be empty, and must consist entirely of the
-> characters `[0-9a-zA-Z.=_-]`.
+> characters `[0-9a-zA-Z._~-]`.
 >
 > The total length (including sigil and domain) must not exceed 255 characters.
 >
@@ -123,14 +123,12 @@ Proposal:
 > alg_chars      = %x61-7a / %30-39 / "_" / "."
 >                     ; a-z 0-9 _ .
 >
-> tok_chars      = ALPHA / DIGIT / "." / "=" / "_" / "-"
->                     ; A-Z a-z 0-9 . = _ -
+> tok_chars      = ALPHA / DIGIT / "." / "~" / "_" / "-"
+>                     ; A-Z a-z 0-9 . ~ _ -
 > ```
 >
 
 Note that enforcing this grammar will mean:
-
-* Making sure that synapse handles "=" characters in key IDs (easy).
 
 * Making libolm not put + and / characters in key IDs (easy enough, but there
   will be a bunch of malformed unique keys out there in the wild. Possibly they
@@ -151,7 +149,7 @@ simplicity and consistency.
 Proposal:
 
 > Opaque IDs must be strings consisting entirely of the characters
-> `[0-9a-zA-Z.=_-]`. Their length must not exceed 255 characters and they must
+> `[0-9a-zA-Z._~-]`. Their length must not exceed 255 characters and they must
 > not be empty.
 
 For almost all of the current implementations I have looked at (listed below),
