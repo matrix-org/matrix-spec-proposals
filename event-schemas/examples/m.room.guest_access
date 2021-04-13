@@ -1,8 +1,0 @@
-{
-  "$ref": "core/state_event.json",
-  "type": "m.room.guest_access",
-  "state_key": "",
-  "content": {
-    "guest_access": "can_join"
-  }
-}
