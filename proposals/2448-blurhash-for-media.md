@@ -1,7 +1,7 @@
 # MSC2448: Using BlurHash as a Placeholder for Matrix Media
 
 [BlurHash](https://blurha.sh) is a compact representation of a placeholder
-for an image (or the frame of a video). Currently in Matrix, clients must
+for an image (or a frame of video). Currently in Matrix, clients must
 display a placeholder image in the message timeline while a piece of media is
 loading. Some clients, such as Element, simply display an empty space.
 
@@ -20,7 +20,7 @@ before the thumbnail is downloaded.
 
 ### m.room.message
 
-A optional field is added in `m.room.message`'s `content.info` dictionary
+An optional field is added in `m.room.message`'s `content.info` dictionary
 with the key `blurhash`. It is a BlurHash of the original piece of media.
 Clients could then render this using [one of the available BlurHash
 implementations](https://github.com/woltapp/blurhash).
