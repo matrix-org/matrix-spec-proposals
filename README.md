@@ -54,8 +54,6 @@ Additionally, the following directories may be of interest:
 * `/meta`: Documentation relating to the spec's processes that are otherwise untracked (release instructions, etc).
 * `/scripts`: Various scripts for generating the spec and validating its contents.
 * `/proposals`: Matrix Spec Change (MSC) proposals. See <https://spec.matrix.org/unstable/proposals/>.
-* `/api`: [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) / Swagger definitions for
-  the spec.
 
 ## Authoring changes to the spec
 
