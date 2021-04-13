@@ -89,9 +89,6 @@ verification itself.
 To accept a key verification, Bob will send an `m.key.verification.ready` event
 with the following properties in its contents:
 
-TODO: MSC1849 may use `m.relationship` rather than `m.relates_to`, in which
-case this proposal should follow suit.
-
 - `m.relates_to`: an object with the properties:
   - `rel_type`: `m.reference`
   - `event_id`: the event ID of the key verification request that is being
@@ -99,6 +96,10 @@ case this proposal should follow suit.
 - `methods`: an array of verification methods that the device supports
 - `from_device`: Bob's device ID.  This is required since some verification
   methods may use the device IDs as part of the verification process.
+
+(Note: the form of the `m.relates_to` property is based on the current state of
+[MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674), but is
+independent from it since this MSC does not rely on any aggregations features.)
 
 Clients should ignore `m.key.verification.ready` events that correspond to
 verification requests that they did not send.
