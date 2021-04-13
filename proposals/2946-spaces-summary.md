@@ -11,13 +11,13 @@ describes why a Space is useful:
 >
 > We refer to such collections of rooms as "spaces".
 
-MSC2946 attempts to solve how the user of a space discovers rooms in that space. This
+MSC2946 attempts to solve how a member of a space discovers rooms in that space. This
 is useful for quickly exposing a user to many aspects of an entire community, using the
 examples above, joining the "official matrix.org rooms" space might suggest joining a few
 rooms:
 
 * A room to discuss deevelopment of the Matrix Spec.
-* An announements room for news related to matrix.org.
+* An announcements room for news related to matrix.org.
 * An off-topic room for members of the space.
 
 Note that it is implied that joining a space forces a user to join any of these, but
@@ -92,14 +92,17 @@ Example response:
 Request params:
 
 * **`suggested_only`**: Optional. If `true`, return only child events and rooms where the
-  `m.space.child` event has `suggested: true`. Defaults to
-  `false`.  (For the POST request, must be a boolean. For GET, must be either
-  `true` or `false`, case sensitive.)
+  `m.space.child` event has `suggested: true`. Defaults to `false`.
+
+  For the POST request, must be a boolean. For GET, must be either `true` or `false`,
+  case sensitive.
 * **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
   number of children to return per space. Doesn't apply to the root space (ie,
-  the `room_id` in the request). The server also has its own internal limit
-  (currently 50) (which *does* apply to the root room); attempts to exceed this
-  limit are ignored. Must be a non-negative integer.
+  the `room_id` in the request).
+
+  Server implementations may also have an internal limit (recommended to be 50)
+  (which *does* apply to the root room); attempts to exceed this  limit are
+  ignored. Must be a non-negative integer.
 
 Response fields:
 
@@ -110,23 +113,26 @@ Response fields:
   with the addition of:
   * **`room_type`**: the value of the `m.type` field from the
     room's `m.room.create` event, if any.
-* **`events`**: child events of the returned rooms. For each event, only the
+* **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
   `sender`.
+  
+#### Algorithm
 
-We start by looking at the root room, and add it to `rooms`. We also add any
-`child` events in the room to `events`. We then recurse into the targets of
-the `child` events, adding the rooms to `rooms` and any child events to
-`events`. We then move onto grandchildren, and carry on in this way until
-either all discovered rooms have been inspected, or we hit the server-side
-limit on the number of rooms (currently 50).
+1. Start at the "root" room (the provided room ID).
+2. Generate a summary and add it to `rooms`.
+3. Add any `m.space.child` events in the room to `events`.
+4. Recurse into the targets of the `m.space.child` events, added the rooms to `rooms`
+   and any `m.space.child` events to `events`.
+5. Recurse into grandchildren, etc. until either all discovered rooms have been
+   inspected, or the  server-side limit on the number of rooms is reached.
 
 Other notes:
 
-* No consideration is currently given to `parent` events.
+* No consideration is currently given to `m.space.parent` events.
 * If the user doesn't have permission to view/peek the root room (including if
   that room does not exist), a 403 error is returned with `M_FORBIDDEN`. Any
-  inaccessible children are simply omitted from the result (though the `child`
+  inaccessible children are simply omitted from the result (though the `m.space.child`
   events that point to them are still returned).
 * There could be loops in the returned child events - clients should handle this
   gracefully.
@@ -139,7 +145,7 @@ Other notes:
 
 ### Server-server API
 
-Much the same interface as the C-S API.
+Much the same interface as the Client-Server API.
 
 Example request:
 
@@ -152,14 +158,14 @@ POST /_matrix/federation/v1/spaces/{roomID}
 }
 ```
 
-Response has the same shape as the C-S API.
+Response has the same shape as the Client-Server API.
 
-Request params are the same as the C-S API, with the addition of:
+Request params are the same as the Client-Server API, with the addition of:
 
 * **`exclude_rooms`**: Optional. A list of room IDs that can be omitted
   from the response.
 
-This is largely the same as the C-S API, but differences are:
+This is largely the same as the Client-Server API, but differences are:
 
 * The calling server can specify a list of spaces/rooms to omit from the
   response (via `exclude_rooms`).
@@ -173,13 +179,21 @@ This is largely the same as the C-S API, but differences are:
     response is returned.
 * Currently, no consideration is given to room membership: the spaces/rooms
   must be world-readable (ie, peekable) for them to appear in the results.
-  XXX: this will have to change for private rooms.
 
 ## Potential issues
 
+* To reduce complexity, only a limited number of rooms are returned for a room,
+  no effort is made to paginate the results. Proper pagination is left to a future
+  MSC.
+
 ## Alternatives
 
+An initial version of this walked both `m.space.child` and `m.space.parent` events,
+but this seems unnecessary to provide the expected user experience.
+
 ## Security considerations
+
+None.
 
 ## Unstable prefix
 
