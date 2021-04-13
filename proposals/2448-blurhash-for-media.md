@@ -207,8 +207,8 @@ Example response:
 }
 ```
 
-Servers will obviously not be able to return a BlurHash string for encrypted
-media.
+Note that media servers will not be able to return a BlurHash string for
+encrypted media; that must be left to the client.
 
 In addition, the server can return the BlurHash string for an image when
 given an MXC URL. This would be through something like the Media Information
