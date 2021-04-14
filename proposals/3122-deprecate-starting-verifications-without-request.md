@@ -1,4 +1,4 @@
-# MSCxxxx: Depretate starting key verifications without requesting first
+# MSC3122: Depretate starting key verifications without requesting first
 
 Currently, the spec allows a device to begin a verification via to-device
 messages by sending an `m.key.verification.start` event without first sending
