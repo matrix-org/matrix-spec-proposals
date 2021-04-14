@@ -72,8 +72,6 @@ exception that `invite_state` sent along with invites should be amended to
 include the `m.room.create` event, to allow clients to discern whether an
 invite is to a space-room or not.
 
-XXX: Should we also include a MSC2946 summary of the space in the invite too?
-
 ### Relationship between rooms and spaces
 
 The intention is that rooms and spaces form a hierarchy, which clients can use
@@ -295,8 +293,11 @@ One way this might be implemented is:
  * [MSC2946](https://github.com/matrix-org/matrix-doc/issues/2946): Spaces
    Summary API.
 
- * [MSC2962](https://github.com/matrix-org/matrix-doc/issues/2962): Group
-   access control via Spaces.
+ * [MSC2962](https://github.com/matrix-org/matrix-doc/issues/2962): Managing
+   power levels via Spaces.
+
+ * [MSC3083](https://github.com/matrix-org/matrix-doc/issues/3083): Restricting
+   room membership based on space membership.
 
  * [MSC2753](https://github.com/matrix-org/matrix-doc/issues/2753) for
    effective peeking over the C/S API.
