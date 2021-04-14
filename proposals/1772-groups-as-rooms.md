@@ -21,7 +21,7 @@ We refer to such collections of rooms as "spaces".
 Synapse and Element-Web currently implement an unspecced "groups" API (referred
 to as "`/r0/groups`" in this document) which attempts to provide this
 functionality (see
-[matrix-doc#971](https://github.com/matrix-org/matrix-doc/issues/971)). However,
+[MSC971](https://github.com/matrix-org/matrix-doc/issues/971)). However,
 this is a complex API which has various problems (see
 [appendix](#appendix-problems-with-the-r0groups-api)).
 
@@ -80,10 +80,11 @@ relationship can be expressed in one of two ways:
 
  1. The admins of a space can advertise rooms and subspaces for their space by
     setting `m.space.child` state events. The `state_key` is the ID of a child
-    room or space, and the content should contain a `via` key which gives a list
+    room or space, and the content must contain a `via` key which gives a list
     of candidate servers that can be used to join the room. Something like:
 
-    ```js
+    ```jsonc
+    // a child room
     {
         "type": "m.space.child",
         "state_key": "!abcd:example.com",
@@ -92,12 +93,13 @@ relationship can be expressed in one of two ways:
         }
     }
 
+    // a child room with an ordering.
     {
         "type": "m.space.child",
         "state_key": "!efgh:example.com",
         "content": {
             "via": ["example.com"],
-            "order": "abcd",
+            "order": "abcd"
         }
     }
 
@@ -122,16 +124,16 @@ relationship can be expressed in one of two ways:
     event.
 
     Similar to `m.space.child`, the `state_key` is the ID of the parent space,
-    and the content should contain a `via` key which gives a list of candidate
+    and the content must contain a `via` key which gives a list of candidate
     servers that can be used to join the parent.
 
-    ```js
+    ```jsonc
     {
         "type": "m.space.parent",
         "state_key": "!space:example.com",
         "content": {
             "via": ["example.com"],
-            "canonical": true,
+            "canonical": true
         }
     }
     ```
@@ -187,7 +189,8 @@ I think kegan found a solution for this when implementing MSC2946 in Dendrite.
 Space admins can mark particular children of a space as "suggested". This
 mainly serves as a hint to clients that that they can be displayed differently
 (for example by showing them eagerly in the room list), though future
-server-side interfaces (such as the summary API proposed in MSC2946) might also
+server-side interfaces (such as the summary API proposed in
+[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)) might also
 make use of it.
 
 A suggested child is identified by a `"suggested": true` property in the
@@ -204,6 +207,9 @@ A suggested child is identified by a `"suggested": true` property in the
     }
 }
 ```
+
+A child which is missing the `suggested` property is treated identically to a
+child with `"suggested": false`. A suggested child may be a room or a subspace.
 
 ### Extended "room invite state"
 
@@ -359,8 +365,8 @@ Proposed final identifier       | Purpose | Development identifier
 
 ## History
 
- * This replaces MSC1215: https://docs.google.com/document/d/1ZnAuA_zti-K2-RnheXII1F1-oyVziT4tJffdw1-SHrE
- * Other thoughts that led into this are at: https://docs.google.com/document/d/1hljmD-ytdCRL37t-D_LvGDA3a0_2MwowSPIiZRxcabs
+ * This replaces [MSC1215](https://docs.google.com/document/d/1ZnAuA_zti-K2-RnheXII1F1-oyVziT4tJffdw1-SHrE).
+ * Other thoughts that led into this are [documented](https://docs.google.com/document/d/1hljmD-ytdCRL37t-D_LvGDA3a0_2MwowSPIiZRxcabs).
 
 ## Appendix: problems with the `/r0/groups` API
 
