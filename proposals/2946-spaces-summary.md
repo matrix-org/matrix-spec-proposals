@@ -62,7 +62,7 @@ Example response:
     "rooms": [
         {
             "room_id": "!ol19s:bleecker.street",
-            "avatar_url": "mxc://bleeker.street/CHEDDARandBRIE",
+            "avatar_url": "mxc://bleecker.street/CHEDDARandBRIE",
             "guest_can_join": false,
             "name": "CHEESE",
             "num_joined_members": 37,
