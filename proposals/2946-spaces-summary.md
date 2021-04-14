@@ -20,9 +20,6 @@ rooms:
 * An announcements room for news related to matrix.org.
 * An off-topic room for members of the space.
 
-Note that it is implied that joining a space forces a user to join any of these, but
-having a discovery mechanism is useful.
-
 ## Proposal
 
 A new client-server API (and corresponding server-server API) is added which allows
@@ -122,26 +119,35 @@ Response fields:
 1. Start at the "root" room (the provided room ID).
 2. Generate a summary and add it to `rooms`.
 3. Add any `m.space.child` events in the room to `events`.
-4. Recurse into the targets of the `m.space.child` events, added the rooms to `rooms`
-   and any `m.space.child` events to `events`.
+4. Recurse into the targets of the `m.space.child` events, generate a summary for
+   each room and add it to `rooms`, also and any `m.space.child` events of the room
+   to `events`.
 5. Recurse into grandchildren, etc. until either all discovered rooms have been
    inspected, or the  server-side limit on the number of rooms is reached.
 
 Other notes:
 
-* No consideration is currently given to `m.space.parent` events.
 * If the user doesn't have permission to view/peek the root room (including if
   that room does not exist), a 403 error is returned with `M_FORBIDDEN`. Any
   inaccessible children are simply omitted from the result (though the `m.space.child`
   events that point to them are still returned).
 * There could be loops in the returned child events - clients should handle this
   gracefully.
-* Similarly, note that a child room might also be a grandchild.
-* `suggested_only` applies transitively. For example, if a space A has child
-  space B which is *not* suggested, and space B has suggested child room C, and
-  the client makes a summary request for A with `suggested_only=true`,
-  neither B **nor** C will be returned.
-* The current implementation doesn't honour `order` fields in child events.
+* Similarly, note that a child room might appear multiple times (e.g. also be a
+  grandchild).
+* `suggested_only` applies transitively.
+
+  For example, if a space A has child space B which is *not* suggested, and space
+  B has suggested child room C, and the client makes a summary request for A with
+  `suggested_only=true`,  neither B **nor** C will be returned.
+
+  Similarly, if a space A has child space B which is suggested, and space B has
+  suggested child room C which is suggested, and the client makes a summary request
+  for A with `suggested_only=true`, both B and C will be returned.
+* The current implementation doesn't honour `order` fields in child events, as
+  suggested in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).
+* `m.space.child` with an invalid `via` (invalid is defined as missing, not an
+  array or an empty array) are ignored.
 
 ### Server-server API
 
@@ -182,14 +188,14 @@ This is largely the same as the Client-Server API, but differences are:
 
 ## Potential issues
 
-* To reduce complexity, only a limited number of rooms are returned for a room,
-  no effort is made to paginate the results. Proper pagination is left to a future
-  MSC.
+To reduce complexity, only a limited number of rooms are returned for a room,
+no effort is made to paginate the results. Proper pagination is left to a future
+MSC.
 
 ## Alternatives
 
-An initial version of this walked both `m.space.child` and `m.space.parent` events,
-but this seems unnecessary to provide the expected user experience.
+An initial version of this followed both `m.space.child` and `m.space.parent` events,
+but this is unnecessary to provide the expected user experience.
 
 ## Security considerations
 
@@ -197,13 +203,12 @@ None.
 
 ## Unstable prefix
 
-During development of this feature it will be available at an unstable endpoints.
-The client-server API will be:
+During development of this feature it will be available at unstable endpoints.
 
+The client-server API will be:
 `/_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces`
 
 And the server-server API will be:
-
 `/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
 
 Note that the unstable identifiers from [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) also apply:
