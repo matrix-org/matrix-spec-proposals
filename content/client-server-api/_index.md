@@ -1463,7 +1463,7 @@ There are additional restrictions on sizes per key:
 
 Some event types have additional size restrictions which are specified
 in the description of the event. Additional keys have no limit other
-than that implied by the total 65 KB limit on events.
+than that implied by the total 64 KiB limit on events.
 
 ### Room Events
 
