@@ -1,10 +1,10 @@
 # MSC3125: Limits API — Part 5: per-Instance limits
 
 Not all servers are as lucky as matrix.org to have variable scaling,
-hence some of them will need to place rate limits on users and rooms,
+hence some of them will need to place growth limits on themselves,
 and users and admins should be able to check and modify them in a
 standardised way, and the servers should be able to communicate those
-kinds of rate limits in a standardised way.
+kinds of limits in a standardised way.
 
 Coincidentially enough, the number of this MSC, 3125, is 5 to its 5th
 power, in other words, 5 tetrated twice.
