@@ -1447,7 +1447,7 @@ following fields.
 
 ### Size limits
 
-The complete event MUST NOT be larger than 65535 bytes, when formatted
+The complete event MUST NOT be larger than 65536 bytes, when formatted
 as a [PDU for the Server-Server
 protocol](/server-server-api/#pdus), including any
 signatures, and encoded as [Canonical
