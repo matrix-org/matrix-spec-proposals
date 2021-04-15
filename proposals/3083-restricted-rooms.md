@@ -44,10 +44,13 @@ following keys, or a string representing the MXID of the user exempted:
 
 Any entries in the list which do not match the expected format are ignored.
 
-When a server receives a `/join` request from a client or a `/make_join` / `/send_join`
+When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
 request from a server, the request should only be permitted if the user has a valid
 invite or is in one of the listed spaces (established by peeking if the server is not
 already in the space, see [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
+
+If the user is not part of the proper space, the homeserver should return an error response
+with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
 Unlike the `invite` join rule, confirmation that the `allow` rules were  properly
 checked cannot be enforced over federation by event authorization, so servers in
