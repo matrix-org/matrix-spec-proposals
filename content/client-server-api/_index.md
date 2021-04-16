@@ -1447,7 +1447,7 @@ following fields.
 
 ### Size limits
 
-The complete event MUST NOT be larger than 65535 bytes, when formatted
+The complete event MUST NOT be larger than 65536 bytes, when formatted
 as a [PDU for the Server-Server
 protocol](/server-server-api/#pdus), including any
 signatures, and encoded as [Canonical
@@ -1463,7 +1463,7 @@ There are additional restrictions on sizes per key:
 
 Some event types have additional size restrictions which are specified
 in the description of the event. Additional keys have no limit other
-than that implied by the total 65 KB limit on events.
+than that implied by the total 64 KiB limit on events.
 
 ### Room Events
 
