@@ -1,4 +1,4 @@
-# MSCxxxx: Verifying with QR codes v2
+# MSC3131: Verifying with QR codes v2
 
 [MSC1544](https://github.com/matrix-org/matrix-doc/pull/1544) defines a way of
 verifying using QR codes.  However, some [concerns were
