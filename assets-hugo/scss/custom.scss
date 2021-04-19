@@ -43,6 +43,7 @@ Custom SCSS for the Matrix spec
 /* Styles for the sidebar nav */
 .td-sidebar-nav {
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
 
   /* This overrides calc(100vh - 10rem);, which gives us a blank space at the bottom of the sidebar */
   max-height: calc(100vh - 6rem);
@@ -209,6 +210,161 @@ footer {
 
 }
 
+/* Styles for alert boxes */
+.alert {
+  &.note {
+    &:not(.omit-title):before {
+      content: "INFO: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $note;
+    border-left-width: 5px;
+    background: $note-background;
+  }
+
+  &.rationale {
+    &:not(.omit-title):before {
+      content: "RATIONALE: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $note;
+    border-left-width: 5px;
+    background: $note-background;
+  }
+
+  &.warning {
+    &:not(.omit-title):before {
+      content: "WARNING: ";
+      font-weight: $font-weight-bold;
+    }
+    border: 2px solid $warning;
+    border-left-width: 5px;
+    background: $warning-background;
+  }
+}
+
+/* Styles for sections that are rendered from data, such as HTTP APIs and event schemas */
+.rendered-data {
+  margin: 1rem 0 3rem 0;
+
+  details {
+
+    summary {
+      padding: .5rem 0;
+      list-style-position: outside;
+    }
+  }
+
+  .deprecated-inline {
+
+    &:after {
+      content: " — DEPRECATED";
+      color: $warning;
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  h1 {
+    display: inline-block;
+    font-size: 1.3rem;
+
+    .endpoint {
+      color: $secondary;
+    }
+  }
+
+  h2 {
+    font-weight: $font-weight-bold;
+    font-size: 1.3rem;
+    margin: 3rem 0 .5rem 0;
+  }
+
+  h3 {
+    font-weight: $font-weight-bold;
+    font-size: 1.1rem;
+    margin: 1.5rem 0 .75rem 0;
+  }
+
+  h2 + table, h3 + table, h3 + div.highlight {
+    margin-top: 0;
+  }
+
+  hr {
+    border-bottom: 2px solid $dark;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    max-width: 80%;
+  }
+
+  p code, table code {
+    background-color: $white;
+  }
+
+  table {
+    table-layout: fixed;
+    width: 100%;
+    margin: 4rem 0;
+
+    caption {
+      caption-side: top;
+      color: $dark;
+      font-size: 1rem;
+      font-weight: $font-weight-bold;
+    }
+
+    th, td, caption {
+      padding: 1rem;
+    }
+
+    th {
+      background-color: $white;
+    }
+
+    caption, tr {
+      background-color: $table-row-default;
+    }
+
+    tr:nth-child(even) {
+      background-color: $table-row-alternate;
+    }
+
+    &.basic-info, &.basic-info th, &.basic-info td {
+      table-layout: fixed;
+      margin: 1rem 0 .5rem 0;
+      background-color: $white;
+    }
+
+    &.basic-info th {
+      width: 15rem;
+    }
+
+    .col-name, .col-type, .col-status {
+      width: 25%;
+    }
+
+    .col-description {
+      width: 50%;
+    }
+
+    .col-status-description {
+      width: 75%;
+    }
+
+  }
+
+  pre {
+    border: 0;
+    border-left: solid 5px $secondary;
+  }
+
+  .http-api-method {
+    font-weight: $font-weight-bold;
+  }
+
+}
+
 /* Miscellaneous custom bits */
 
 /* Update link colours for MAtrix style */
@@ -226,8 +382,18 @@ a, a:hover {
   max-width: 100%;
 }
 
+/* The default CSS applies a style for blockquotes but only to immediate children
+of .td-content. This applies the same style to any blockquotes that descend from
+.td-content. */
+.td-content blockquote {
+  padding: 0 0 0 1rem;
+  margin-bottom: $spacer;
+  color: $gray-600;
+  border-left: 6px solid $secondary;
+}
+
 /*
-Make padding symmetrical (this selector is used to apply padding-left: 3rem)
+Make padding symmetrical (this selector is used in the default styles to apply padding-left: 3rem)
 */
 .pl-md-5, .px-md-5 {
   padding-right: 3rem;
@@ -243,8 +409,14 @@ Make padding symmetrical (this selector is used to apply padding-left: 3rem)
 }
 
 .pageinfo-unstable {
-  background-image: url('/icons/unstable.png');
+  background-image: url('../icons/unstable.png');
   background-position: left 1rem center;
   background-repeat: no-repeat;
   padding-left: 100px;
+}
+
+/* Full-width tables */
+.td-content > table {
+  width: 100%;
+  display: table;
 }

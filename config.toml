@@ -1,6 +1,10 @@
 baseURL = "/"
 title = "Matrix Specification"
 
+# Prepends absolute URLs with the baseURL. Useful when hosting on non-root
+# paths, such as /unstable.
+canonifyURLs = true
+
 enableRobotsTXT = true
 
 # Hugo allows theme composition (and inheritance). The precedence is from left to right.
@@ -39,7 +43,7 @@ privacy_policy = "https://matrix.org/legal/privacy-notice"
 # must be one of "unstable", "current", "historical"
 # this is used to decide whether to show a banner pointing to the current release
 status = "unstable"
-current_version_url = "https://spec.matrix.org/latest"
+current_version_url = "https://matrix.org/docs/spec/"
 
 # User interface configuration
 [params.ui]

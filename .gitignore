@@ -1,6 +1,7 @@
 /api/node_modules
 /assets
 /assets.tar.gz
+/data/msc
 /env*
 /node_modules
 /resources
@@ -10,8 +11,11 @@
 /scripts/swagger
 /scripts/tmp
 /templating/out
+/hugo-config.toml
+/public
 *.pyc
 *.swp
 _rendered.rst
 /.vscode/
 /.idea/
+/spec/

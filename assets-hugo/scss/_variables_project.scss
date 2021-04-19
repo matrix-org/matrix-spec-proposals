@@ -33,5 +33,9 @@ $warning-background: #FFE0E0;
 $table-row-alternate: $secondary-lightest-background;
 $table-row-default: $secondary-lighter-background;
 
+/*
+ Opt to serve fonts locally by overriding web-font-path to be a non-google fonts URL.
+ This is only possible with our modified docsy theme: https://github.com/matrix-org/docsy
+ */
+$web-font-path: "../css/fonts/Inter.css";
 $google_font_name: "Inter";
-$google_font_family: "Inter:300,300i,400,400i,700,700i";
