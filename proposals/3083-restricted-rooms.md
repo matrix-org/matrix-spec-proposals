@@ -46,8 +46,8 @@ Any entries in the list which do not match the expected format are ignored.
 
 When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
 request from a server, the request should only be permitted if the user has a valid
-invite or is in one of the listed spaces (established by peeking if the server is not
-already in the space, see [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
+invite or is in one of the listed spaces. Note that the server may not know if the user
+is in a particular space, this is left to a future MSC to solve.
 
 If the user is not part of the proper space, the homeserver should return an error response
 with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
@@ -81,9 +81,6 @@ The `allow` feature for `join_rules` places increased trust in the servers in th
 1. Don't let evil servers in your room in the first place
 2. Don't use `allow` lists, given the expansion increases the attack surface anyway by letting members in other rooms dictate who's allowed into your room.
 
-The peek server also has significant power. For example, a poorly chosen peek
-server could lie about the space membership and add an `@evil_user:example.org`.
-
 ## Unstable prefix
 
 The `restricted` join rule will be included in a future room version to ensure
@@ -115,7 +112,15 @@ include, but are not included in this MSC.
 
 ### Checking space membership over federation
 
+If a server is not in a space (and thus doesn't know the membership of a space) it
+cannot enforce membership of a space during a join. Peeking over federation,
+as described in [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444),
+could be used to establish if the user is in any of the proper spaces.
 
+Note that there are additional security considerations with this, namely that
+the peek server has significant power. For example, a poorly chosen peek
+server could lie about the space membership and add an `@evil_user:example.org`
+to a space to gain membership to a room.
 
 ### Kicking users out when they leave the allowed space
 
