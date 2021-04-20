@@ -62,6 +62,25 @@ scanned the QR code, Alice's client sends an `m.key.verification.done` message.
 Bob's client may send an `m.key.verification.done` message any time after it
 sends the `m.key.verification.reciprocate` message.
 
+### Errors
+
+The verification may fail under the following situations:
+
+- When Bob scans Alice's QR code, if it does not contain his correct key or
+  Alice's key is different from Bob's local copy of her key, then Bob's device
+  will send an `m.key.verification.cancel` with `code` `m.key_mismatch`.
+- When Bob scans Alice's QR code, if the event ID or transaction ID does not
+  match what was expected, then Bob's device will send an
+  `m.key.verification.cancel` with `code` `m.unknown_transaction`.
+- When Bob scans Alice's QR code, if the QR code is not in the right form,
+  Bob's device will send an `m.key.verification.cancel` with `code`
+  `m.qr_code.invalid`.
+- When Alice receives the `m.key.verification.reciprocate` message, if the
+  shared secret does not match the secret she generated, Alice's device will
+  send an `m.key.verification.cancel` with `code` `m.invalid_message`.
+
+### Removing `next_method`
+
 In addition, the `next_method` field of the
 [`m.key.verification.start`](https://spec.matrix.org/unstable/client-server-api/#mkeyverificationstart)
 event is removed as it is currently unused and there are no plans for its use.
@@ -107,4 +126,13 @@ security issues.
 
 ## Unstable prefix
 
-TODO
+Until this lands in the spec, implementations will use the verification method
+names `org.matrix.msc3131.qr_code.show.v1` and
+`org.matrix.msc3131.qr_code.scan.v1` instead of `m.qr_code.show.v2` and
+`m.qr_code.scan.v2` respectively.  (Note the use of `v1` instead of `v2` in the
+unstable names, since this is the first version proposed for this MSC.)
+
+Since the `m.key.verification.reciprocate` message is only sent in the context
+of the verification methods, it does not need an unstable prefix; if changes to
+that message are needed, it will be accompanied by a change to the verification
+method name.
