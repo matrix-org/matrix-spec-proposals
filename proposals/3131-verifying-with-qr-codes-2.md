@@ -22,8 +22,8 @@ the same as the one defined in MSC1544.
 
 If both clients support both `v1` and `v2` versions of QR code verification,
 they must use the `v2` method.  In other words, they should behave as if the
-`v1` methods were not available.  The `m.qr_code.show.v1` and
-`m.qr_code.scan.v1` methods are deprecated.
+`v1` methods were not available.  The `m.qr_code.show.v1`,
+`m.qr_code.scan.v1`, and `m.reciprocate.v1` methods are deprecated.
 
 When Alice and Bob verify, if Alice's client supports showing QR codes and
 Bob's client supports scanning QR codes, then Alice's client MAY immediately
@@ -61,6 +61,30 @@ error message and cancels the verification.)  When Alice confirms that Bob has
 scanned the QR code, Alice's client sends an `m.key.verification.done` message.
 Bob's client may send an `m.key.verification.done` message any time after it
 sends the `m.key.verification.reciprocate` message.
+
+In addition, the `next_method` field of the
+[`m.key.verification.start`](https://spec.matrix.org/unstable/client-server-api/#mkeyverificationstart)
+event is removed as it is currently unused and there are no plans for its use.
+
+> Historical context: since scanning a QR code by itself can only verify keys
+> in one direction, a mechanism for reciprocating the verification was needed.
+> Originally, this mechanism required several messages to be exchanged, and so
+> it was thought that it should be abstracted into its own verification method
+> so that it could be used with any future scenarios where we needed to turn a
+> uni-directional verification into a bi-directional verification.  Thus there
+> was a need to allow multiple verification methods in a single verification --
+> the original verification and the reciprocal verification.
+>
+> However, MSC1543 did not send an `m.key.verification.start` before scanning;
+> the `m.key.verification.start` was only sent with the `m.reciprocate.v1`
+> method, and so the `next_method` field went unused for that MSC.  In
+> addition, the `m.reciprocate.v1` method was pared down to only a single
+> message, rather than the multi-message mechanism that was originally
+> designed, so there is now little need for keeping it as a separate
+> verification method.  Rather, it can be done as a single message as part of
+> another verification method, as is done in this MSC.  So it does not seem
+> like we will need to support multiple verification methods within the same
+> verification.
 
 ## Potential issues
 
