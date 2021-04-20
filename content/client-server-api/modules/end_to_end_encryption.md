@@ -357,7 +357,7 @@ out-of-band channel: there is no way to do it within Matrix without
 trusting the administrators of the homeservers.
 
 In Matrix, verification works by Alice meeting Bob in person, or
-contacting him via some other trusted medium, and use [SAS
+contacting him via some other trusted medium, and using [SAS
 Verification](#SAS Verification) to interactively verify Bob's devices.
 Alice and Bob may also read aloud their unpadded base64 encoded Ed25519
 public key, as returned by `/keys/query`.
@@ -390,60 +390,68 @@ decrypted by such a device. For the Olm protocol, this is documented at
 Verifying keys manually by reading out the Ed25519 key is not very
 user-friendly, and can lead to errors. In order to help mitigate errors,
 and to make the process easier for users, some verification methods are
-supported by the specification. The methods all use a common framework
+supported by the specification and use messages exchanged by the user's devices
+to assist in the verification. The methods all use a common framework
 for negotiating the key verification.
 
-To use this framework, Alice's client would send
-`m.key.verification.request` events to Bob's devices. All of the
-`to_device` messages sent to Bob MUST have the same `transaction_id` to
-indicate they are part of the same request. This allows Bob to reject
-the request on one device, and have it apply to all of his devices.
-Similarly, it allows Bob to process the verification on one device
-without having to involve all of his devices.
+Verification messages can be sent either in a room shared by the two parties,
+which should be a [direct messaging](#direct-messaging) room between the two
+parties, or by using [to-device](#send-to-device-messaging) messages sent
+directly between the two devices involved.  In both cases, the messages
+exchanged are similar, with minor differences as detailed below. Verifying
+between two different users should be performed using in-room messages, whereas
+verifying two devices belonging to the same user should be performed using
+to-device messages.
 
-When Bob's device receives an `m.key.verification.request`, it should
-prompt Bob to verify keys with Alice using one of the supported methods
-in the request. If Bob's device does not understand any of the methods,
-it should not cancel the request as one of his other devices may support
-the request. Instead, Bob's device should tell Bob that an unsupported
-method was used for starting key verification. The prompt for Bob to
-accept/reject Alice's request (or the unsupported method prompt) should
-be automatically dismissed 10 minutes after the `timestamp` field or 2
-minutes after Bob's client receives the message, whichever comes first,
-if Bob does not interact with the prompt. The prompt should additionally
-be hidden if an appropriate `m.key.verification.cancel` message is
-received.
+A key verification session is identified by an ID that is established by the
+first message sent in that session. For verifications using in-room messages,
+the ID is the event ID of the initial message, and for verifications using
+to-device messages, the first message contains a `transaction_id` field that is
+shared by the other messages of that session.
 
-If Bob rejects the request, Bob's client must send an
-`m.key.verification.cancel` message to Alice's device. Upon receipt,
-Alice's device should tell her that Bob does not want to verify her
-device and send `m.key.verification.cancel` messages to all of Bob's
-devices to notify them that the request was rejected.
+In general, verification operates as follows:
 
-If Bob accepts the request, Bob's device starts the key verification
-process by sending an `m.key.verification.start` message to Alice's
-device. Upon receipt of this message, Alice's device should send an
-`m.key.verification.cancel` message to all of Bob's other devices to
-indicate the process has been started. The start message must use the
-same `transaction_id` from the original key verification request if it
-is in response to the request. The start message can be sent
-independently of any request.
+- Alice requests a key verification with Bob by sending an
+  `m.key.verification.request` event. This event indicates the verification
+  methods that Alice's client supports. (Note that "Alice" and "Bob" may in
+  fact be the same user, in the case where a user is verifying their own
+  devices.)
+- Bob's client prompts Bob to accepts the key verification. When Bob accepts
+  the verification, Bob's client sends an `m.key.verification.ready` event.
+  This event indicates the verification methods, corresponding to the
+  verification methods supported by Alice's client, that Bob's client supports.
+- Alice's or Bob's devices allow their users to select one of the verification
+  methods supported by both devices to use for verification. When Alice or Bob
+  selects a verification method, their device begins the verification by
+  sending an `m.key.verification.start` event, indicating the selected
+  verification method.
+- Alice and Bob complete the verification as defined by the selected
+  verification method. This could involve their clients exchanging messages,
+  Alice and Bob exchanging information out-of-band, and/or Alice and Bob
+  interacting with their devices.
+- Alice's and Bob's clients send `m.key.verification.done` events to indicate
+  that the verification was successful.
 
-Individual verification methods may add additional steps, events, and
-properties to the verification messages. Event types for methods defined
-in this specification must be under the `m.key.verification` namespace
-and any other event types must be namespaced according to the Java
-package naming convention.
+Verifications can be cancelled by either device at any time by sending an
+`m.key.verification.cancel` event with a `code` field that indicates the reason
+it was cancelled.
 
-Any of Alice's or Bob's devices can cancel the key verification request
-or process at any time with an `m.key.verification.cancel` message to
-all applicable devices.
-
-This framework yields the following handshake, assuming both Alice and
-Bob each have 2 devices, Bob's first device accepts the key verification
-request, and Alice's second device initiates the request. Note how
-Alice's first device is not involved in the request or verification
-process.
+When using to-device messages, Alice may not know which of Bob's devices to
+verify, or may not want to choose a specific device. In this case, Alice will
+send `m.key.verification.request` events to all of Bob's devices. All of these
+events will use the same transaction ID. When Bob accepts or declines the
+verification on one of his devices (sending either an
+`m.key.verification.ready` or `m.key.verification.cancel` event), Alice will
+send an `m.key.verification.cancel` event to Bob's other devices with a `code`
+of `m.accepted` in the case where Bob accepted the verification, or `m.user` in
+the case where Bob rejected the verification. This yields the following
+handshake when using to-device messages, assuming both Alice and Bob each have
+2 devices, Bob's first device accepts the key verification request, and Alice's
+second device initiates the request. Note how Alice's first device is not
+involved in the request or verification process. Also note that, although in
+this example, Bob's device sends the `m.key.verification.start`, Alice's device
+could also send that message. As well, the order of the
+`m.key.verification.done` messages could be reversed.
 
 ```
     +---------------+ +---------------+                    +-------------+ +-------------+
@@ -456,19 +464,83 @@ process.
             |                 | m.key.verification.request        |               |
             |                 |-------------------------------------------------->|
             |                 |                                   |               |
-            |                 |          m.key.verification.start |               |
+            |                 |          m.key.verification.ready |               |
             |                 |<----------------------------------|               |
             |                 |                                   |               |
             |                 | m.key.verification.cancel         |               |
             |                 |-------------------------------------------------->|
             |                 |                                   |               |
+            |                 |          m.key.verification.start |               |
+            |                 |<----------------------------------|               |
+            |                 |                                   |               |
+            .
+            .                       (verification messages)
+            .
+            |                 |                                   |               |
+            |                 |           m.key.verification.done |               |
+            |                 |<----------------------------------|               |
+            |                 |                                   |               |
+            |                 | m.key.verification.done           |               |
+            |                 |---------------------------------->|               |
+            |                 |                                   |               |
 ```
 
-After the handshake, the verification process begins.
+When using in-room messages and the room has encryption enabled, clients should
+ensure that encryption does not hinder the verification. For example, if the
+verification messages are encrypted, clients must ensure that all the
+recipient's unverified devices receive the keys necessary to decrypt the
+messages, even if they would normally not be given the keys to decrypt messages
+in the room. Alternatively, verification messages may be sent unencrypted.
+
+Upon receipt of Alice's `m.key.verification.request` message, if Bob's device
+does not understand any of the methods, it should not cancel the request as one
+of his other devices may support the request. Instead, Bob's device should tell
+Bob that no supported method was found, and allow him to manually reject the
+request.
+
+The prompt for Bob to accept/reject Alice's request (or the unsupported method
+prompt) should be automatically dismissed 10 minutes after the `timestamp` (in
+the case of to-device messages) or `origin_ts` (in the case of in-room
+messages) field or 2 minutes after Bob's client receives the message, whichever
+comes first, if Bob does not interact with the prompt. The prompt should
+additionally be hidden if an appropriate `m.key.verification.cancel` message is
+received.
+
+If Bob rejects the request, Bob's client must send an
+`m.key.verification.cancel` event with `code` set to `m.user`. Upon receipt,
+Alice's device should tell her that Bob does not want to verify her device and,
+if the request was sent as a to-device message, send
+`m.key.verification.cancel` messages to all of Bob's devices to notify them
+that the request was rejected.
+
+If Alice's and Bob's clients both send an `m.key.verification.start` message,
+and both specify the same verification method, then the
+`m.key.verification.start` message sent by the user whose ID is the
+lexicographically largest user ID should be ignored, and the situation should
+be treated the same as if only the user with the lexicographically smallest
+user ID had sent the `m.key.verification.start` message.  In the case where the
+user IDs are the same (that is, when a user is verifying their own device),
+then the device IDs should be compared instead.  If the two
+`m.key.verification.start` messages do not specify the same verification
+method, then the verification should be cancelled with a `code` of
+`m.unexpected_message`.
+
+An `m.key.verification.start` message can also be sent independently of any
+request, specifying the verification method to use.
+
+Individual verification methods may add additional steps, events, and
+properties to the verification messages. Event types for methods defined
+in this specification must be under the `m.key.verification` namespace
+and any other event types must be namespaced according to the Java
+package naming convention.
 
 {{% event event="m.key.verification.request" %}}
 
+{{% event event="m.key.verification.ready" %}}
+
 {{% event event="m.key.verification.start" %}}
+
+{{% event event="m.key.verification.done" %}}
 
 {{% event event="m.key.verification.cancel" %}}
 
@@ -492,6 +564,10 @@ example, if we verify 40 bits, then an attacker has a 1 in
 1,099,511,627,776 chance (or less than 1 in 10<sup>12</sup> chance) of
 success. A failed attack would result in a mismatched Short
 Authentication String, alerting users to the attack.
+
+To advertise support for this method, clients use the name `m.sas.v1` in the
+`methods` fields of the `m.key.verification.request` and
+`m.key.verification.ready` events.
 
 The verification process takes place over [to-device](#send-to-device-messaging) messages in two
 phases:
