@@ -90,7 +90,7 @@ The `restricted` join rule will be included in a future room version to ensure
 that servers and clients opt-into the new functionality.
 
 During development it is expected that an unstable room version of
-`org.matrix.mscXXXX` is used. Since the room version namespaces the behaviour,
+`org.matrix.msc3083` is used. Since the room version namespaces the behaviour,
 the `allow` key and the `restricted` value do not need unstable prefixes.
 
 ## History / Rationale
