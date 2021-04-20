@@ -34,4 +34,4 @@ None.
 
 ## Unstable prefix
 
-No unstable prefix is removed since we are simply deprecating behaviour.
+No unstable prefix is required since we are simply deprecating behaviour.
