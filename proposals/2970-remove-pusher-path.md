@@ -40,9 +40,9 @@ Some additional constraints are added to ensure compatibility between implementa
  * The URL must NOT contain a fragment (ie, it may not contain the character
    `#`). (It *may* contain a query-string.)
  * The URL must NOT include a "userinfo" section (ie, the host may not be
-   preceded by a `user@` specifcication).
+   preceded by a `user@` specification).
  * The URL must consist solely of ASCII characters. (Unicode hostnames should
-   be punicode-encoded. Non-ASCII bytes in the path should be percent-encoded.)
+   be Punycode-encoded. Non-ASCII bytes in the path should be percent-encoded.)
  * The URL may not exceed 8000 characters in length.
 
 
@@ -62,8 +62,9 @@ The removal of the path constraint potentially makes it easier to construct
 HTTP magnification/DoS attacks, using the homeserver as a proxy.
 
 It could also make it easier to construct attacks against internal
-infrastructure (ie, SSRF attacks), although this is mitigated since there is no
-way for an attacker to read the response to such a request.
+infrastructure (ie, SSRF attacks). This is somewhat lessened by the fact that
+an attacker has no way to read the response to such a request, but blind 
+SSRF attacks are still possible.
 
 Although these are valid concerns, we note that Matrix Pushes are not
 significantly different in this respect to many other "webhook" systems (for
@@ -106,7 +107,7 @@ appproach might help to mitigate SSRF attacks whilst still allowing some
 flexibility for alternative implementations.
 
 We consider that requiring that the path *start* with `/_matrix/etc` offers too
-little flexibility for some implementaions, and that requiring that it *end*
+little flexibility for some implementations, and that requiring that it *end*
 with `/_matrix/etc` offers little protection. For example, an attakcer might
 configure a pusher with an endpoint
 `https://example.com/app%3Fx%3D/_matrix/etc`, which then appears as a request
