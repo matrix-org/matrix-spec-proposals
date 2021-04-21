@@ -1,50 +1,136 @@
 # MSC2970: Remove pusher path requirement
 
-Recently synapse [removed the ability to set arbitrary pusher paths](https://github.com/matrix-org/synapse/pull/8865),
-in order to follow the spec. During the time that synapse has allowed any pusher paths, it has shown
-itself to be very useful, to the point where this fix for synapse to follow the spec has become a
-real hindrance in some areas.
+Recently Synapse was updated to enforce the specified restriction that the URI
+for HTTP pushers have a path component of `/_matrix/push/v1/notify`
+([synapse#8865](https://github.com/matrix-org/synapse/pull/8865)).
 
-With the need of push notifications without FCM or apples push system getting greater and greater, an
-elegant approach is to self-host push for your own devices and completely remove the need of any gateway.
-This has been experimented with before, in projects such as [matrix-gotify](https://gitlab.com/Sorunome/matrix-gotify).
-These setups, however, typically have a URL specific to a device. The requirement of pushing to
-`/_matrix/push/v1/notify` makes this requirement impossible.
+Prior to this change, the ability to use arbitrary paths for pushers had been
+found useful for various applications. Examples include:
 
-Additionally p2p push could push directly to an ipv6 address of a phone, if it is known. Depending on
-implementation a custom path is not possible here, either.
+* Projects such as [matrix-gotify](https://gitlab.com/Sorunome/matrix-gotify)
+  offer a mechanism for push notifications which is independent from Google's
+  FCM or Apple's push system. These setups, however, typically have a URL
+  specific to a device, which is incompatible with the requirement for a fixed
+  path.
 
-In general, having a path requirement for the pushers basically forces app developers to implement
-and host matrix-specific gateways, instead of just being able to push general json blobs directly to
-your phone. The removal of a pusher path requirement would *greatly* increase flexibility here.
+* Push notifications could be sent directly to the IPv6 address of a phone, if
+  it is known. However, depending on implementation, it might be difficult to
+  arrange to receive pushes on a specific path.
+
+In general, having a path requirement for the pushers basically forces app
+developers to implement and host matrix-specific gateways, instead of just
+being able to push general json blobs directly to devices. The removal of the
+pusher path requirement would *greatly* increase flexibility here.
 
 ## Proposal
 
-The requirement for pushers with a kind `http` to have the path `/_matrix/push/v1/notify` is removed.
-The homeserver is expected to just push notifications in the specified format to the URL as given,
-including host, path and query part. The requirement that pusher URLs MUST be https remains.
+The requirements for the `url` parameter for [`POST
+/_matrix/client/r0/pushers/set`](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-pushers-set)
+are relaxed. In particular:
+
+ * The path need no longer be `/_matrix/push/v1/notify`.
+ * The requirement that the URL be `https` is extended to allow `http`, but
+   strongly recommend `https`.
+
+Some additional constraints are added to ensure compatibility between implementations:
+
+ * The URL MUST contain a valid host, with an optional port. IP literal
+   addresses are permitted, in accordance with [RFC3986
+   3.2.2](https://tools.ietf.org/html/rfc3986#section-3.2.2).
+ * The URL must NOT contain a query string or fragment (ie, it may not contain
+   the characters `?` or `#`).
+ * The URL must NOT include a "userinfo" section (ie, the host may not be
+   preceded by a `user@` specifcication).
+ * The URL must consist solely of ASCII characters. (Unicode hostnames should
+   be punicode-encoded. Non-ASCII bytes in the path should be percent-encoded.)
+ * The URL may not exceed 8000 characters in length.
+
 
 ### Versioning
 
-In the future a new, incompatible, push format may be introduced. As a client typically dictates what
-format of push it wants, the new format could be indicated by setting the pusher kind to e.g. `httpv2`.
-The client is then also expected to use a pusher URL which is capable of that new format. That way,
-client, server and wherever the pusher URL points to all know what payload to expect.
+One reason that the constraint on paths was introduced was to allow the future
+introduction of new, incompatible, push formats - with the intention that the
+homeserver pick the format to be used based on the path in the URL of the
+pusher.
+
+It is proposed instead that this could be done by changing the `kind` of
+pusher: for example by setting it to `httpv2`.
 
 ## Potential issues
 
-None
+The removal of the path constraint potentially makes it easier to construct
+HTTP magnification/DoS attacks, using the homeserver as a proxy.
+
+It could also make it easier to construct attacks against internal
+infrastructure (ie, SSRF attacks), although this is mitigated since there is no
+way for an attacker to read the response to such a request.
+
+Although these are valid concerns, we note that Matrix Pushes are not
+significantly different in this respect to many other "webhook" systems (for
+example, Github's
+[webhooks](https://docs.github.com/en/developers/webhooks-and-events/about-webhooks)
+system and [AWS
+SNS](https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html)),
+which have no such constraint.
+
+Rather, we propose that these attacks be mitigated by other controls such as
+the following -- all of which are important anti-abuse controls regardless of
+whether the URL path is restricted:
+
+ * All outgoing HTTP requests from the Homeserver should be subject to an IP
+   address blacklist, so that the server administrator can prevent access to
+   internal resources.
+
+ * We could require that the push endpoint respond to an empty `ping` request -
+   and in particular that it must respond at the time that the pusher is
+   configured. This would significantly reduce the scope for abuse by directing
+   pushes to inappropriate endpoints.
+
+   However, it is considered out-of-scope for this MSC.
+
+ * Outgoing requests must be subject to rate-limiting, to prevent individual
+   users creating large volumes of requests. Additionally, there should be a
+   per-user limit on the total number of pushers.
+
+ * If a push endpoint does not give a valid response at all (for example, over a
+   period of 7 days), the pusher should be disabled.
 
 ## Alternatives
 
-Instead of allowing the pusher path to be anything, it could be introduced that the pusher path may
-be prefixed with custom path fragments, but must still end in `/_matrix/push/v1/notify`. This approach
-tries to solve future versioning of different payloads by setting the version within the path. However,
-it would make matrix harder to integrate into existing push systems without the need for a gateway,
-as a push server might not expect paths to be suffixed. The versioning via introducing a new pusher
-kind seems appropriate either way, if the payload significantly changes. As such, it seems that allowing
-any pusher paths is the less restrictive approach.
+### Partial constraints on URI paths
+
+An alternative approach would be to allow more flexibility in the push endpoint
+path, whilst still imposing some constraints. For example, we might say that
+the path must start with, or end with, `/_matrix/push/v1/notify`. Such an
+appproach might help to mitigate SSRF attacks whilst still allowing some
+flexibility for alternative implementations.
+
+We consider that requiring that the path *start* with `/_matrix/etc` offers too
+little flexibility for some implementaions, and that requiring that it *end*
+with `/_matrix/etc` offers little protection. For example, an attakcer might
+configure a pusher with an endpoint
+`https://example.com/app%3Fx%3D/_matrix/etc`, which then appears as a request
+to `/app` with a query-string.
+
+In short, we consider the benefits of such an approach are minor.
+
+### Leave the HTTPS requirement in place
+
+Arguably the relaxation of the requirement that the push endpoint be HTTPS is
+orthogonal, but we consider this a good time to reconsider that requirement.
+
+In short, there are various deployment strategies - in particular, where a push
+gateway is known to be hosted on the same infrastructure as the homeserver -
+where the requirement for HTTPS is unnecessarily onerous. In most scenarios,
+HTTPS is preferable for obvious reasons, but We don't consider it the job of
+the pusher API to enforce this.
 
 ## Security considerations
 
-None
+As described above, this change could make DoS and SSRF attacks easier, and it
+is important that good countermeasures be put in place before such a change.
+
+## Unstable prefix
+
+We do not anticipate making a public release of the changes proposed here
+before the MSC is accepted; an unstable prefix is therefore not required.
