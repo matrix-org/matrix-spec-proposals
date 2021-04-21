@@ -37,8 +37,8 @@ Some additional constraints are added to ensure compatibility between implementa
  * The URL MUST contain a valid host, with an optional port. IP literal
    addresses are permitted, in accordance with [RFC3986
    3.2.2](https://tools.ietf.org/html/rfc3986#section-3.2.2).
- * The URL must NOT contain a query string or fragment (ie, it may not contain
-   the characters `?` or `#`).
+ * The URL must NOT contain a fragment (ie, it may not contain the character
+   `#`). (It *may* contain a query-string.)
  * The URL must NOT include a "userinfo" section (ie, the host may not be
    preceded by a `user@` specifcication).
  * The URL must consist solely of ASCII characters. (Unicode hostnames should
@@ -124,6 +124,12 @@ gateway is known to be hosted on the same infrastructure as the homeserver -
 where the requirement for HTTPS is unnecessarily onerous. In most scenarios,
 HTTPS is preferable for obvious reasons, but We don't consider it the job of
 the pusher API to enforce this.
+
+### Disallow query-strings
+
+We could also disallow query-strings in the URL. However, these are also useful
+in certain applications (in particular, they are sometimes used for addtional
+authorization).
 
 ## Security considerations
 
