@@ -55,7 +55,7 @@ invite is to a space-room or not.
  * [MSC2946](https://github.com/matrix-org/matrix-doc/issues/2946): Spaces
    Summary API.
    
- * [MSC3060](https://github.com/matrix-org/matrix-doc/issues/3060): Room
+ * [MSC3088](https://github.com/matrix-org/matrix-doc/issues/3088): Room
    subtyping.
    
  * [MSC1840](https://github.com/matrix-org/matrix-doc/issues/1840): Typed
