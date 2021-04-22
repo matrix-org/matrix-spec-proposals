@@ -416,7 +416,7 @@ In general, verification operates as follows:
   methods that Alice's client supports. (Note that "Alice" and "Bob" may in
   fact be the same user, in the case where a user is verifying their own
   devices.)
-- Bob's client prompts Bob to accepts the key verification. When Bob accepts
+- Bob's client prompts Bob to accept the key verification. When Bob accepts
   the verification, Bob's client sends an `m.key.verification.ready` event.
   This event indicates the verification methods, corresponding to the
   verification methods supported by Alice's client, that Bob's client supports.
@@ -424,7 +424,9 @@ In general, verification operates as follows:
   methods supported by both devices to use for verification. When Alice or Bob
   selects a verification method, their device begins the verification by
   sending an `m.key.verification.start` event, indicating the selected
-  verification method.
+  verification method. Note that if there is only one verification method in
+  common between the devices then the receiver's device (Bob) can auto-select
+  it.
 - Alice and Bob complete the verification as defined by the selected
   verification method. This could involve their clients exchanging messages,
   Alice and Bob exchanging information out-of-band, and/or Alice and Bob
@@ -490,7 +492,8 @@ ensure that encryption does not hinder the verification. For example, if the
 verification messages are encrypted, clients must ensure that all the
 recipient's unverified devices receive the keys necessary to decrypt the
 messages, even if they would normally not be given the keys to decrypt messages
-in the room. Alternatively, verification messages may be sent unencrypted.
+in the room. Alternatively, verification messages may be sent unencrypted,
+though this is not encouraged.
 
 Upon receipt of Alice's `m.key.verification.request` message, if Bob's device
 does not understand any of the methods, it should not cancel the request as one
