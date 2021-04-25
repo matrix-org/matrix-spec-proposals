@@ -9,7 +9,7 @@ Even if it's not the primary mode of communication for nerds,
 voice memos are very important to a lot of users of modern instant messaging services.
 In order to provide awesome voice messages, they need to be treated differently from generic audio files.
 
-For example, WhatsApp renders them differenty, to highlight that they are a way of communication.
+For example, WhatsApp renders them differently, to highlight that they are a way of communication.
 WhatsApp also always force-downloads them, because like a text message,
 they should be available to consume as early as possible.
 This lets the recipient know at a glance that they are being expected
