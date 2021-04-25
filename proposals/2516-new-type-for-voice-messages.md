@@ -1,4 +1,4 @@
-# Add a seperate message type for voice messages
+# Add a separate message type for voice messages
 
 In the matrix spec right now, there is a message type `m.audio` for audio files.
 In other messaging apps, there is also a special type for voice memos,
