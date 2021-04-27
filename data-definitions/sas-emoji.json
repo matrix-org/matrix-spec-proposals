@@ -27,6 +27,7 @@
             "sr": "пас",
             "sv": "Hund",
             "szl": null,
+            "tzm": "Aydi",
             "uk": "Пес",
             "zh_Hans": "狗"
         }
@@ -59,6 +60,7 @@
             "sr": "мачка",
             "sv": "Katt",
             "szl": null,
+            "tzm": "Amuc",
             "uk": "Кіт",
             "zh_Hans": "猫"
         }
@@ -91,6 +93,7 @@
             "sr": "лав",
             "sv": "Lejon",
             "szl": null,
+            "tzm": "Izem",
             "uk": "Лев",
             "zh_Hans": "狮子"
         }
@@ -123,6 +126,7 @@
             "sr": "коњ",
             "sv": "Häst",
             "szl": null,
+            "tzm": "Ayyis",
             "uk": "Кінь",
             "zh_Hans": "马"
         }
@@ -155,6 +159,7 @@
             "sr": "једнорог",
             "sv": "Enhörning",
             "szl": null,
+            "tzm": null,
             "uk": "Єдиноріг",
             "zh_Hans": "独角兽"
         }
@@ -187,6 +192,7 @@
             "sr": "прасе",
             "sv": "Gris",
             "szl": null,
+            "tzm": "Ilef",
             "uk": "Свиня",
             "zh_Hans": "猪"
         }
@@ -219,6 +225,7 @@
             "sr": "слон",
             "sv": "Elefant",
             "szl": null,
+            "tzm": "Ilu",
             "uk": "Слон",
             "zh_Hans": "大象"
         }
@@ -251,6 +258,7 @@
             "sr": "зец",
             "sv": "Kanin",
             "szl": null,
+            "tzm": "Agnin",
             "uk": "Кріль",
             "zh_Hans": "兔子"
         }
@@ -283,6 +291,7 @@
             "sr": "панда",
             "sv": "Panda",
             "szl": null,
+            "tzm": null,
             "uk": "Панда",
             "zh_Hans": "熊猫"
         }
@@ -315,6 +324,7 @@
             "sr": "петао",
             "sv": "Tupp",
             "szl": null,
+            "tzm": "Ayaẓiḍ",
             "uk": "Когут",
             "zh_Hans": "公鸡"
         }
@@ -347,6 +357,7 @@
             "sr": "пингвин",
             "sv": "Pingvin",
             "szl": null,
+            "tzm": null,
             "uk": "Пінгвін",
             "zh_Hans": "企鹅"
         }
@@ -379,6 +390,7 @@
             "sr": "корњача",
             "sv": "Sköldpadda",
             "szl": null,
+            "tzm": "Ifker",
             "uk": "Черепаха",
             "zh_Hans": "乌龟"
         }
@@ -411,6 +423,7 @@
             "sr": "риба",
             "sv": "Fisk",
             "szl": null,
+            "tzm": "Aselm",
             "uk": "Риба",
             "zh_Hans": "鱼"
         }
@@ -443,6 +456,7 @@
             "sr": "октопод",
             "sv": "Bläckfisk",
             "szl": null,
+            "tzm": null,
             "uk": "Восьминіг",
             "zh_Hans": "章鱼"
         }
@@ -475,6 +489,7 @@
             "sr": "лептир",
             "sv": "Fjäril",
             "szl": null,
+            "tzm": null,
             "uk": "Метелик",
             "zh_Hans": "蝴蝶"
         }
@@ -507,6 +522,7 @@
             "sr": "цвет",
             "sv": "Blomma",
             "szl": null,
+            "tzm": null,
             "uk": "Квітка",
             "zh_Hans": "花"
         }
@@ -539,6 +555,7 @@
             "sr": "дрво",
             "sv": "Träd",
             "szl": null,
+            "tzm": "Aseklu",
             "uk": "Дерево",
             "zh_Hans": "树"
         }
@@ -571,6 +588,7 @@
             "sr": "кактус",
             "sv": "Kaktus",
             "szl": null,
+            "tzm": null,
             "uk": "Кактус",
             "zh_Hans": "仙人掌"
         }
@@ -603,6 +621,7 @@
             "sr": "печурка",
             "sv": "Svamp",
             "szl": null,
+            "tzm": "Agursel",
             "uk": "Гриб",
             "zh_Hans": "蘑菇"
         }
@@ -635,6 +654,7 @@
             "sr": "глобус",
             "sv": "Jordklot",
             "szl": null,
+            "tzm": null,
             "uk": "Глобус",
             "zh_Hans": "地球"
         }
@@ -667,6 +687,7 @@
             "sr": "месец",
             "sv": "Måne",
             "szl": null,
+            "tzm": "Ayyur",
             "uk": "Місяць",
             "zh_Hans": "月亮"
         }
@@ -699,6 +720,7 @@
             "sr": "облак",
             "sv": "Moln",
             "szl": null,
+            "tzm": null,
             "uk": "Хмара",
             "zh_Hans": "云"
         }
@@ -731,6 +753,7 @@
             "sr": "ватра",
             "sv": "Eld",
             "szl": null,
+            "tzm": "Timessi",
             "uk": "Вогонь",
             "zh_Hans": "火"
         }
@@ -763,6 +786,7 @@
             "sr": "банана",
             "sv": "Banan",
             "szl": null,
+            "tzm": "Tabanant",
             "uk": "Банан",
             "zh_Hans": "香蕉"
         }
@@ -795,6 +819,7 @@
             "sr": "јабука",
             "sv": "Äpple",
             "szl": null,
+            "tzm": "Tadeffuyt",
             "uk": "Яблуко",
             "zh_Hans": "苹果"
         }
@@ -827,6 +852,7 @@
             "sr": "јагода",
             "sv": "Jordgubbe",
             "szl": null,
+            "tzm": null,
             "uk": "Полуниця",
             "zh_Hans": "草莓"
         }
@@ -859,6 +885,7 @@
             "sr": "кукуруз",
             "sv": "Majs",
             "szl": null,
+            "tzm": null,
             "uk": "Кукурудза",
             "zh_Hans": "玉米"
         }
@@ -891,6 +918,7 @@
             "sr": "пица",
             "sv": "Pizza",
             "szl": null,
+            "tzm": null,
             "uk": "Піца",
             "zh_Hans": "披萨"
         }
@@ -923,6 +951,7 @@
             "sr": "торта",
             "sv": "Tårta",
             "szl": null,
+            "tzm": null,
             "uk": "Пиріг",
             "zh_Hans": "蛋糕"
         }
@@ -955,6 +984,7 @@
             "sr": "срце",
             "sv": "Hjärta",
             "szl": null,
+            "tzm": "Ul",
             "uk": "Серце",
             "zh_Hans": "心"
         }
@@ -987,6 +1017,7 @@
             "sr": "смајли",
             "sv": "Smiley",
             "szl": null,
+            "tzm": null,
             "uk": "Посмішка",
             "zh_Hans": "笑脸"
         }
@@ -1019,6 +1050,7 @@
             "sr": "робот",
             "sv": "Robot",
             "szl": null,
+            "tzm": "Aṛubu",
             "uk": "Робот",
             "zh_Hans": "机器人"
         }
@@ -1038,7 +1070,7 @@
             "es": "Sombrero",
             "et": "Kübar",
             "fi": "Hattu",
-            "fr": "Châpeau",
+            "fr": "Chapeau",
             "hr": "kapa",
             "it": "Cappello",
             "ja": "帽子",
@@ -1051,6 +1083,7 @@
             "sr": "шешир",
             "sv": "Hatt",
             "szl": null,
+            "tzm": "Taraza",
             "uk": "Капелюх",
             "zh_Hans": "帽子"
         }
@@ -1083,6 +1116,7 @@
             "sr": "наочаре",
             "sv": "Glasögon",
             "szl": null,
+            "tzm": null,
             "uk": "Окуляри",
             "zh_Hans": "眼镜"
         }
@@ -1115,6 +1149,7 @@
             "sr": "кључ",
             "sv": "Skruvnyckel",
             "szl": null,
+            "tzm": null,
             "uk": "Гайковий ключ",
             "zh_Hans": "扳手"
         }
@@ -1147,6 +1182,7 @@
             "sr": "деда Мраз",
             "sv": "Tomte",
             "szl": null,
+            "tzm": null,
             "uk": "Санта Клаус",
             "zh_Hans": "圣诞老人"
         }
@@ -1166,7 +1202,7 @@
             "es": "Pulgar arriba",
             "et": "Pöidlad püsti",
             "fi": "Peukalo ylös",
-            "fr": "Pouce en l'air",
+            "fr": "Pouce en l’air",
             "hr": "palac gore",
             "it": "Pollice alzato",
             "ja": "いいね",
@@ -1179,6 +1215,7 @@
             "sr": "палчић горе",
             "sv": "Tummen upp",
             "szl": null,
+            "tzm": null,
             "uk": "Великий палець вгору",
             "zh_Hans": "赞"
         }
@@ -1211,6 +1248,7 @@
             "sr": "кишобран",
             "sv": "Paraply",
             "szl": null,
+            "tzm": null,
             "uk": "Парасолька",
             "zh_Hans": "伞"
         }
@@ -1243,6 +1281,7 @@
             "sr": "пешчаник",
             "sv": "Timglas",
             "szl": null,
+            "tzm": null,
             "uk": "Пісковий годинник",
             "zh_Hans": "沙漏"
         }
@@ -1275,6 +1314,7 @@
             "sr": "сат",
             "sv": "Klocka",
             "szl": null,
+            "tzm": null,
             "uk": "Годинник",
             "zh_Hans": "时钟"
         }
@@ -1307,6 +1347,7 @@
             "sr": "поклон",
             "sv": "Present",
             "szl": null,
+            "tzm": null,
             "uk": "Подарунок",
             "zh_Hans": "礼物"
         }
@@ -1339,6 +1380,7 @@
             "sr": "сијалица",
             "sv": "Lampa",
             "szl": null,
+            "tzm": null,
             "uk": "Лампочка",
             "zh_Hans": "灯泡"
         }
@@ -1371,6 +1413,7 @@
             "sr": "књига",
             "sv": "Bok",
             "szl": null,
+            "tzm": "Adlis",
             "uk": "Книга",
             "zh_Hans": "书"
         }
@@ -1403,6 +1446,7 @@
             "sr": "оловка",
             "sv": "Penna",
             "szl": null,
+            "tzm": null,
             "uk": "Олівець",
             "zh_Hans": "铅笔"
         }
@@ -1435,6 +1479,7 @@
             "sr": "спајалица",
             "sv": "Gem",
             "szl": null,
+            "tzm": null,
             "uk": "Спиначка",
             "zh_Hans": "回形针"
         }
@@ -1467,6 +1512,7 @@
             "sr": "маказе",
             "sv": "Sax",
             "szl": null,
+            "tzm": null,
             "uk": "Ножиці",
             "zh_Hans": "剪刀"
         }
@@ -1499,6 +1545,7 @@
             "sr": "катанац",
             "sv": "Lås",
             "szl": null,
+            "tzm": null,
             "uk": "Замок",
             "zh_Hans": "锁"
         }
@@ -1531,6 +1578,7 @@
             "sr": "кључ",
             "sv": "Nyckel",
             "szl": null,
+            "tzm": "Tasarut",
             "uk": "Ключ",
             "zh_Hans": "钥匙"
         }
@@ -1563,6 +1611,7 @@
             "sr": "чекић",
             "sv": "Hammare",
             "szl": null,
+            "tzm": null,
             "uk": "Молоток",
             "zh_Hans": "锤子"
         }
@@ -1595,6 +1644,7 @@
             "sr": "телефон",
             "sv": "Telefon",
             "szl": null,
+            "tzm": "Atilifun",
             "uk": "Телефон",
             "zh_Hans": "电话"
         }
@@ -1627,6 +1677,7 @@
             "sr": "застава",
             "sv": "Flagga",
             "szl": null,
+            "tzm": "Acenyal",
             "uk": "Прапор",
             "zh_Hans": "旗帜"
         }
@@ -1659,6 +1710,7 @@
             "sr": "воз",
             "sv": "Tåg",
             "szl": null,
+            "tzm": null,
             "uk": "Потяг",
             "zh_Hans": "火车"
         }
@@ -1691,6 +1743,7 @@
             "sr": "бицикл",
             "sv": "Cykel",
             "szl": null,
+            "tzm": null,
             "uk": "Велосипед",
             "zh_Hans": "自行车"
         }
@@ -1723,6 +1776,7 @@
             "sr": "авион",
             "sv": "Flygplan",
             "szl": null,
+            "tzm": null,
             "uk": "Літак",
             "zh_Hans": "飞机"
         }
@@ -1755,6 +1809,7 @@
             "sr": "ракета",
             "sv": "Raket",
             "szl": null,
+            "tzm": null,
             "uk": "Ракета",
             "zh_Hans": "火箭"
         }
@@ -1787,6 +1842,7 @@
             "sr": "пехар",
             "sv": "Trofé",
             "szl": null,
+            "tzm": null,
             "uk": "Приз",
             "zh_Hans": "奖杯"
         }
@@ -1819,6 +1875,7 @@
             "sr": "лопта",
             "sv": "Boll",
             "szl": null,
+            "tzm": "Tcama",
             "uk": "М'яч",
             "zh_Hans": "球"
         }
@@ -1851,6 +1908,7 @@
             "sr": "гитара",
             "sv": "Gitarr",
             "szl": null,
+            "tzm": "Agiṭaṛ",
             "uk": "Гітара",
             "zh_Hans": "吉他"
         }
@@ -1883,6 +1941,7 @@
             "sr": "труба",
             "sv": "Trumpet",
             "szl": null,
+            "tzm": null,
             "uk": "Труба",
             "zh_Hans": "喇叭"
         }
@@ -1915,6 +1974,7 @@
             "sr": "звоно",
             "sv": "Bjällra",
             "szl": null,
+            "tzm": null,
             "uk": "Дзвін",
             "zh_Hans": "铃铛"
         }
@@ -1947,6 +2007,7 @@
             "sr": "сидро",
             "sv": "Ankare",
             "szl": null,
+            "tzm": null,
             "uk": "Якір",
             "zh_Hans": "锚"
         }
@@ -1979,6 +2040,7 @@
             "sr": "слушалице",
             "sv": "Hörlurar",
             "szl": null,
+            "tzm": null,
             "uk": "Навушники",
             "zh_Hans": "耳机"
         }
@@ -2011,6 +2073,7 @@
             "sr": "фасцикла",
             "sv": "Mapp",
             "szl": null,
+            "tzm": "Asdaw",
             "uk": "Тека",
             "zh_Hans": "文件夹"
         }
@@ -2043,6 +2106,7 @@
             "sr": "чиода",
             "sv": "Häftstift",
             "szl": null,
+            "tzm": null,
             "uk": "Кнопка",
             "zh_Hans": "图钉"
         }
