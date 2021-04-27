@@ -944,6 +944,13 @@ example, if Alice and Bob verify each other using SAS, Alice's
 `mac` property. Servers therefore must ensure that device IDs will not
 collide with cross-signing public keys.
 
+The cross-signing private keys can be stored on the server or shared with other
+devices using the [Secrets](#secrets) module.  When doing so, the master,
+user-signing, and self-signing keys are identified using the names
+`m.cross_signing.master`, `m.cross_signing.user_signing`, and
+`m.cross_signing.self_signing`, respectively, and the keys are base64-encoded
+before being encrypted.
+
 ###### Key and signature security
 
 A user's master key could allow an attacker to impersonate that user to
@@ -1082,6 +1089,11 @@ as follows:
 
 When reading in a recovery key, clients must disregard whitespace, and
 perform the reverse of steps 1 through 3.
+
+The recovery key can also be stored on the server or shared with other devices
+using the [Secrets](#secrets) module. When doing so, it is identified using the
+name `m.megolm_backup.v1`, and the key is base64-encoded before being
+encrypted.
 
 ###### Backup algorithm: `m.megolm_backup.v1.curve25519-aes-sha2`
 
