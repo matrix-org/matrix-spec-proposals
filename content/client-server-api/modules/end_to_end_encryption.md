@@ -356,8 +356,8 @@ out-of-band channel: there is no way to do it within Matrix without
 trusting the administrators of the homeservers.
 
 In Matrix, verification works by Alice meeting Bob in person, or
-contacting him via some other trusted medium, and using [SAS
-Verification](#SAS Verification) to interactively verify Bob's devices.
+contacting him via some other trusted medium, and using one of the
+verification methods defined below to interactively verify Bob's devices.
 Alice and Bob may also read aloud their unpadded base64 encoded Ed25519
 public key, as returned by `/keys/query`.
 
@@ -989,6 +989,135 @@ Users will not be able to see signatures made by other users'
 user-signing keys.
 
 {{% http-api spec="client-server" api="cross_signing" %}}
+
+##### QR codes
+
+Verifying by QR codes provides a quick way to verify when one of the parties
+has a device capable of scanning a QR code. The QR code encodes both parties'
+master signing keys as well as a random shared secret that is used to allow
+bi-directional verification from a single scan.
+
+To advertise the ability to show a QR code, clients use the names
+`m.qr_code.show.v1` and `m.reciprocate.v1` in the `methods` fields of the
+`m.key.verification.request` and `m.key.verification.ready` events. To
+advertise the ability to scan a QR code, clients use the names
+`m.qr_code.scan.v1` and `m.reciprocate.v1` in the `methods` fields of the
+`m.key.verification.request` and `m.key.verification.ready` events.
+Clients that support both showing and scanning QR codes would advertise
+`m.qr_code.show.v1`, `m.qr_code.scan.v1`, and `m.reciprocate.v1` as
+methods.
+
+The process between Alice and Bob verifying each other would be:
+
+1. Alice and Bob meet in person, and want to verify each other's keys.
+2. Alice and Bob begin a key verification using the key verification
+   framework as described above.
+3. Alice's client displays a QR code that Bob is able to scan if Bob's client
+   indicated the ability to scan, an option to scan Bob's QR code if her client
+   is able to scan.  Bob's client prompts displays a QR code that Alice can
+   scan if Alice's client indicated the ability to scan, and an option to scan
+   Alice's QR code if his client is able to scan. The format for the QR code
+   is described below. Other options, like starting SAS Emoji verification, 
+   can be presented alongside the QR code if the devices have appropriate 
+   support.
+5. Alice scans Bob's QR code.
+6. Alice's device ensures that the keys encoded in the QR code match the
+   expected values for the keys. If not, Alice's device displays an error
+   message indicating that the code is incorrect, and sends a
+   `m.key.verification.cancel` message to Bob's device.
+
+   Otherwise, at this point:
+   - Alice's device has now verified Bob's key, and
+   - Alice's device knows that Bob has the correct key for her.
+
+   Thus for Bob to verify Alice's key, Alice needs to tell Bob that he has the
+   right key.
+7. Alice's device displays a message saying that the verification was
+   successful because the QR code's keys will have matched the keys
+   expected for Bob. Bob's device hasn't had a chance to verify Alice's
+   keys yet so wouldn't show the same message. Bob will know that
+   he has the right key for Alice because Alice's device will have shown
+   this message, as otherwise the verification would be cancelled.
+8. Alice's device sends an `m.key.verification.start` message with `method` set
+   to `m.reciprocate.v1` to Bob (see below).  The message includes the shared
+   secret from the QR code.  This signals to Bob's device that Alice has
+   scanned Bob's QR code.
+
+   This message is merely a signal for Bob's device to proceed to the next
+   step, and is not used for verification purposes.
+9. Upon receipt of the `m.key.verification.start` message, Bob's device ensures
+   that the shared secret matches.
+
+   If the shared secret does not match, it should display an error message
+   indicating that an attack was attempted.  (This does not affect Alice's
+   verification of Bob's keys.)
+
+   If the shared secret does match, it asks Bob to confirm that Alice
+   has scanned the QR code.
+10. Bob sees Alice's device confirm that the key matches, and presses the button
+    on his device to indicate that Alice's key is verified.
+
+    Bob's verification of Alice's key hinges on Alice telling Bob the result of
+    her scan.  Since the QR code includes what Bob thinks Alice's key is,
+    Alice's device can check whether Bob has the right key for her.  Alice has
+    no motivation to lie about the result, as getting Bob to trust an incorrect
+    key would only affect communications between herself and Bob.  Thus Alice
+    telling Bob that the code was scanned successfully is sufficient for Bob to
+    trust Alice's key, under the assumption that this communication is done
+    over a trusted medium (such as in-person).
+11. Both devices send an `m.key.verification.done` message.
+
+###### QR code format
+
+The QR codes to be displayed and scanned using this format will encode binary
+strings in the general form:
+
+- the ASCII string `MATRIX`
+- one byte indicating the QR code version (must be `0x02`)
+- one byte indicating the QR code verification mode.  Should be one of the
+  following values:
+  - `0x00` verifying another user with cross-signing
+  - `0x01` self-verifying in which the current device does trust the master key
+  - `0x02` self-verifying in which the current device does not yet trust the
+    master key
+- the event ID or `transaction_id` of the associated verification
+  request event, encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in
+    bytes of the ID as a UTF-8 string
+  - the ID as a UTF-8 string
+- the first key, as 32 bytes.  The key to use depends on the mode field:
+  - if `0x00` or `0x01`, then the current user's own master cross-signing public key
+  - if `0x02`, then the current device's device key
+- the second key, as 32 bytes.  The key to use depends on the mode field:
+  - if `0x00`, then what the device thinks the other user's master
+    cross-signing key is
+  - if `0x01`, then what the device thinks the other device's device key is
+  - if `0x02`, then what the device thinks the user's master cross-signing key
+    is
+- a random shared secret, as a byte string.  It is suggested to use a secret
+  that is about 8 bytes long.  Note: as we do not share the length of the
+  secret, and it is not a fixed size, clients will just use the remainder of
+  binary string as the shared secret.
+
+For example, if Alice displays a QR code encoding the following binary string:
+
+```
+      "MATRIX"    |ver|mode| len   | event ID
+ 4D 41 54 52 49 58  02  00   00 2D   21 41 42 43 44 ...
+| user's cross-signing key    | other user's cross-signing key | shared secret
+  00 01 02 03 04 05 06 07 ...   10 11 12 13 14 15 16 17 ...      20 21 22 23 24 25 26 27
+```
+
+this indicates that Alice is verifying another user (say Bob), in response to
+the request from event "$ABCD...", her cross-signing key is
+`0001020304050607...` (which is "AAECAwQFBg..." in base64), she thinks that
+Bob's cross-signing key is `1011121314151617...` (which is "EBESExQVFh..." in
+base64), and the shared secret is `2021222324252627` (which is "ICEiIyQlJic" in
+base64).
+
+###### Verification messages specific to QR codes
+
+{{% event event="m.key.verification.start$m.reciprocate.v1" %}}
 
 #### Sharing keys between devices
 
