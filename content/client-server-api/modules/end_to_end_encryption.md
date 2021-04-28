@@ -247,8 +247,7 @@ file type. The key is sent using the [JSON Web
 Key](https://tools.ietf.org/html/rfc7517#appendix-A.3) format, with a
 [W3C extension](https://w3c.github.io/webcrypto/#iana-section-jwk).
 
-Extensions to `m.room.message` msgtypes
-&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+###### Extensions to `m.room.message` msgtypes
 
 This module adds `file` and `thumbnail_file` properties, of type
 `EncryptedFile`, to `m.room.message` msgtypes that reference files, such
@@ -572,8 +571,7 @@ To advertise support for this method, clients use the name `m.sas.v1` in the
 `methods` fields of the `m.key.verification.request` and
 `m.key.verification.ready` events.
 
-The verification process takes place over [to-device](#send-to-device-messaging) messages in two
-phases:
+The verification process takes place in two phases:
 
 1.  Key agreement phase (based on [ZRTP key
     agreement](https://tools.ietf.org/html/rfc6189#section-4.4.1)).
@@ -584,63 +582,62 @@ The process between Alice and Bob verifying each other would be:
 1.  Alice and Bob establish a secure out-of-band connection, such as
     meeting in-person or a video call. "Secure" here means that either
     party cannot be impersonated, not explicit secrecy.
-2.  Alice and Bob communicate which devices they'd like to verify with
-    each other.
-3.  Alice selects Bob's device from the device list and begins
-    verification.
-4.  Alice's client ensures it has a copy of Bob's device key.
-5.  Alice's device sends Bob's device an `m.key.verification.start`
-    message.
-6.  Bob's device receives the message and selects a key agreement
+2.  Alice and Bob begin a key verification using the key verification
+    framework as described above.
+3.  Alice's device sends Bob's device an `m.key.verification.start`
+    message. Alice's client ensures it has a copy of Bob's device key.
+4.  Bob's device receives the message and selects a key agreement
     protocol, hash algorithm, message authentication code, and SAS
     method supported by Alice's device.
-7.  Bob's device ensures it has a copy of Alice's device key.
-8.  Bob's device creates an ephemeral Curve25519 key pair
+5.  Bob's device ensures it has a copy of Alice's device key.
+6.  Bob's device creates an ephemeral Curve25519 key pair
     (*K<sub>B</sub><sup>private</sup>*, *K<sub>B</sub><sup>public</sup>*),
     and calculates the hash (using the chosen algorithm) of the public
     key *K<sub>B</sub><sup>public</sup>*.
-9.  Bob's device replies to Alice's device with an
+7.  Bob's device replies to Alice's device with an
     `m.key.verification.accept` message.
-10. Alice's device receives Bob's message and stores the commitment hash
+8.  Alice's device receives Bob's message and stores the commitment hash
     for later use.
-11. Alice's device creates an ephemeral Curve25519 key pair
+9.  Alice's device creates an ephemeral Curve25519 key pair
     (*K<sub>A</sub><sup>private</sup>*, *K<sub>A</sub><sup>public</sup>*)
     and replies to Bob's device with an `m.key.verification.key`,
     sending only the public key
     *K<sub>A</sub><sup>public</sup>*.
-12. Bob's device receives Alice's message and replies with its own
+10. Bob's device receives Alice's message and replies with its own
     `m.key.verification.key` message containing its public key
     *K<sub>B</sub><sup>public</sup>*.
-13. Alice's device receives Bob's message and verifies the commitment
+11. Alice's device receives Bob's message and verifies the commitment
     hash from earlier matches the hash of the key Bob's device just sent
     and the content of Alice's `m.key.verification.start` message.
-14. Both Alice and Bob's devices perform an Elliptic-curve
+12. Both Alice and Bob's devices perform an Elliptic-curve
     Diffie-Hellman
     (*ECDH(K<sub>A</sub><sup>private</sup>*, *K<sub>B</sub><sup>public</sup>*)),
     using the result as the shared secret.
-15. Both Alice and Bob's devices display a SAS to their users, which is
+13. Both Alice and Bob's devices display a SAS to their users, which is
     derived from the shared key using one of the methods in this
     section. If multiple SAS methods are available, clients should allow
     the users to select a method.
-16. Alice and Bob compare the strings shown by their devices, and tell
+14. Alice and Bob compare the strings shown by their devices, and tell
     their devices if they match or not.
-17. Assuming they match, Alice and Bob's devices calculate the HMAC of
+15. Assuming they match, Alice and Bob's devices calculate the HMAC of
     their own device keys and a comma-separated sorted list of the key
     IDs that they wish the other user to verify, using SHA-256 as the
     hash function. HMAC is defined in [RFC
     2104](https://tools.ietf.org/html/rfc2104). The key for the HMAC is
     different for each item and is calculated by generating 32 bytes
     (256 bits) using [the key verification HKDF](#hkdf-calculation).
-18. Alice's device sends Bob's device an `m.key.verification.mac`
+16. Alice's device sends Bob's device an `m.key.verification.mac`
     message containing the MAC of Alice's device keys and the MAC of her
     key IDs to be verified. Bob's device does the same for Bob's device
     keys and key IDs concurrently with Alice.
-19. When the other device receives the `m.key.verification.mac` message,
+17. When the other device receives the `m.key.verification.mac` message,
     the device calculates the HMAC of its copies of the other device's
     keys given in the message, as well as the HMAC of the
     comma-separated, sorted, list of key IDs in the message. The device
     compares these with the HMAC values given in the message, and if
     everything matches then the device keys are verified.
+18. Alice and Bob's devices send `m.key.verification.done` messages to complete
+    the verification.
 
 The wire protocol looks like the following between Alice and Bob's
 devices:
