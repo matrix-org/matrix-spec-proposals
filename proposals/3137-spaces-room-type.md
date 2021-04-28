@@ -1,6 +1,6 @@
 # Proposal for Matrix Spaces room type
 
-This MSC is a subset of 
+This MSC is broken out from
 [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).
 
 https://github.com/matrix-org/matrix-doc/pull/1840#issuecomment-460070485
