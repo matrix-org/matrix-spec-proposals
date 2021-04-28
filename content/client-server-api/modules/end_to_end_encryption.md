@@ -585,7 +585,7 @@ The process between Alice and Bob verifying each other would be:
 2.  Alice and Bob begin a key verification using the key verification
     framework as described above.
 3.  Alice's device sends Bob's device an `m.key.verification.start`
-    message. Alice's client ensures it has a copy of Bob's device key.
+    message. Alice's device ensures it has a copy of Bob's device key.
 4.  Bob's device receives the message and selects a key agreement
     protocol, hash algorithm, message authentication code, and SAS
     method supported by Alice's device.
