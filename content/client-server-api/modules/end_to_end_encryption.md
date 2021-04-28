@@ -999,6 +999,9 @@ To advertise the ability to show a QR code, clients use the names
 advertise the ability to scan a QR code, clients use the names
 `m.qr_code.scan.v1` and `m.reciprocate.v1` in the `methods` fields of the
 `m.key.verification.request` and `m.key.verification.ready` events.
+Clients that support both showing and scanning QR codes would advertise
+`m.qr_code.show.v1`, `m.qr_code.scan.v1`, and `m.reciprocate.v1` as
+methods.
 
 The process between Alice and Bob verifying each other would be:
 
@@ -1010,7 +1013,9 @@ The process between Alice and Bob verifying each other would be:
    is able to scan.  Bob's client prompts displays a QR code that Alice can
    scan if Alice's client indicated the ability to scan, and an option to scan
    Alice's QR code if his client is able to scan. The format for the QR code
-   is described below.
+   is described below. Other options, like starting SAS Emoji verification, 
+   can be presented alongside the QR code if the devices have appropriate 
+   support.
 5. Alice scans Bob's QR code.
 6. Alice's device ensures that the keys encoded in the QR code match the
    expected values for the keys. If not, Alice's device displays an error
@@ -1024,8 +1029,11 @@ The process between Alice and Bob verifying each other would be:
    Thus for Bob to verify Alice's key, Alice needs to tell Bob that he has the
    right key.
 7. Alice's device displays a message saying that the verification was
-   successful. This message tells Alice that she has the right key for Bob,
-   and tells Bob that he has the right key for Alice.
+   successful because the QR code's keys will have matched the keys
+   expected for Bob. Bob's device hasn't had a chance to verify Alice's
+   keys yet so wouldn't show the same message. Bob will know that
+   he has the right key for Alice because Alice's device will have shown
+   this message, as otherwise the verification would be cancelled.
 8. Alice's device sends an `m.key.verification.start` message with `method` set
    to `m.reciprocate.v1` to Bob (see below).  The message includes the shared
    secret from the QR code.  This signals to Bob's device that Alice has
@@ -1060,9 +1068,9 @@ The process between Alice and Bob verifying each other would be:
 The QR codes to be displayed and scanned using this format will encode binary
 strings in the general form:
 
-- the ASCII string "MATRIX"
+- the ASCII string `MATRIX`
 - one byte indicating the QR code version (must be `0x02`)
-- one byte indicating the QR code verification mode.  May be one of the
+- one byte indicating the QR code verification mode.  Should be one of the
   following values:
   - `0x00` verifying another user with cross-signing
   - `0x01` self-verifying in which the current device does trust the master key
