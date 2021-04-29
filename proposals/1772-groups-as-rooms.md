@@ -42,7 +42,10 @@ a `'type': 'm.space'` property in the content of the `m.room.create` event.
 The value of the `type` property uses the Standardised Identifier Grammar from
 [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758). This allows clients to offer slightly customised user experience
 depending on the purpose of the room. Currently, no server-side behaviour is
-expected to depend on this property.
+expected to depend on this property.  A `type` property on the `m.room.create`
+event is used to ensure that a room cannot change between being a space-room
+and a non-space room. For more information, see the "Rejected Alternatives"
+section below.
 
 As with regular rooms, public spaces are expected to have an alias, for example
 `#foo:matrix.org`, which can be used to refer to the space.
@@ -62,12 +65,10 @@ Users can be members of spaces (represented by `m.room.member` state events as
 normal). The existing [`m.room.history_visibility`
 mechanism](https://matrix.org/docs/spec/client_server/r0.6.1#room-history-visibility)
 controls whether membership of the space is required to view the room list,
-membership list, etc.
-
-"Public" or "community" spaces would be set to `world_readable` to allow clients
-to see the directory of rooms within the space by peeking into the space-room
-(thus avoiding the need to add `m.room.member` events to the event graph within
-the room).
+membership list, etc. "Public" or "community" spaces would be set to
+`world_readable` to allow clients to see the directory of rooms within the
+space by peeking into the space-room (thus avoiding the need to add
+`m.room.member` events to the event graph within the room).
 
 Join rules, invites and 3PID invites work as for a normal room.  In order for
 clients to distinguish space invites from room invites, all invites must now
@@ -277,10 +278,17 @@ Whilst this is very powerful for mapping arbitrary organisational structures
 into Matrix, it may be overengineered. Instead, the common case is (we believe)
 a space where some users are publicly visible as members, and others are not.
 
-One way to of achieving this would be to create a separate space for the
+One way of achieving this would be to create a separate space for the
 private members - e.g. have `#foo:matrix.org` and `#foo-private:matrix.org`.
 `#foo-private:matrix.org` is set up with `m.room.history_visibility` to not to
 allow peeking; you have to be joined to see the members.
+
+It's worth noting that any member of a space can currently see who else is a
+member of that space, which might pose privacy problems for sensitive spaces.
+While the server itself will inevitably track the space membership in state
+events, a future MSC could restrict the membership from being sent to clients.
+This is essentially the same as
+[matrix-doc#1653](https://github.com/matrix-org/matrix-doc/issues/1653).
 
 ### Flair
 
@@ -344,14 +352,14 @@ None at present.
   different querying users. (It may be possible to simulate this behaviour
   using smaller spaces).
 
-* The requirement that `m.room.parent` links be ignored unless the sender has a
+* The requirement that `m.space.parent` links be ignored unless the sender has a
   high PL in the parent room could lead to suprising effects where a parent
   link suddenly ceases to take effect because a user loses their PL in the
   parent room. This is mitigated in the general case by honouring the parent
-  link when there is a corresponding `m.room.child` event, however it remains
+  link when there is a corresponding `m.space.child` event, however it remains
   a problem for "secret" rooms.
 
-* The `via` servers listed in the `m.room.child` and `m.room.parent` events
+* The `via` servers listed in the `m.space.child` and `m.space.parent` events
   could get out of date, and will need to be updated from time to time. This
   remains an unsolved problem.
 
