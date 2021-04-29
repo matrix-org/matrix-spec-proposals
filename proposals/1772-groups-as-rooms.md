@@ -40,7 +40,7 @@ within the space are determined by state events within the space-room.
 Space-rooms are distinguished from regular messaging rooms by the presence of
 a `'type': 'm.space'` property in the content of the `m.room.create` event.
 The value of the `type` property uses the Standardised Identifier Grammar from
-MSC #2758. This allows clients to offer slightly customised user experience
+[MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758). This allows clients to offer slightly customised user experience
 depending on the purpose of the room. Currently, no server-side behaviour is
 expected to depend on this property.
 
