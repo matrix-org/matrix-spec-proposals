@@ -61,7 +61,7 @@ paths:
       responses:
         200:
           description: |-
-            A template to be used for the rest of the [KNocking Rooms](/server-server-api/#knocking-rooms)
+            A template to be used for the rest of the [Knocking Rooms](/server-server-api/#knocking-rooms)
             handshake. Note that events have a different format depending on room version - check the
             [room version specification](/#room-versions) for precise event formats. **The response body
             here describes the common event fields in more detail and may be missing other
@@ -319,5 +319,4 @@ paths:
               "errcode": "M_FORBIDDEN",
               "error": "You are not permitted to knock on this room",
             }
-
 
