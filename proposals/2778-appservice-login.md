@@ -84,3 +84,12 @@ This can safely be ignored or used, but is an extra token hanging around.
 
 Implementations should use `uk.half-shot.msc2778.login.application_service` for `type` given in the
 `POST /login` until this lands in a released version of the specification.
+
+## Implementations
+
+The proposal has been implemented by a homeserver, a bridge SDK and two bridges:
+
+- [synapse](https://github.com/matrix-org/synapse/pull/8320)
+- [mautrix-python](https://github.com/tulir/mautrix-python/commit/12d7c48ca7c15fd3ff61608369af1cf69e289aeb)
+- [mautrix-whatsapp](https://github.com/tulir/mautrix-whatsapp/commit/ead8a869c84d07fadc7cfcf3d522452c99faaa36)
+- [matrix-appservice-bridge](https://github.com/matrix-org/matrix-appservice-bridge/pull/231/files#diff-5e93f1b51d50a44fcf0ca46ea1793c1cR851-R864)
