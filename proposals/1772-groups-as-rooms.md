@@ -37,16 +37,18 @@ unspecified.
 Each space is represented by its own room, known as a "space-room". The rooms
 within the space are determined by state events within the space-room.
 
-Space-rooms are distinguished from regular messaging rooms by the presence of a
-`type: m.space` property in the content of the `m.room.create` event. This allows clients to
-offer slightly customised user experience depending on the purpose of the
-room. Currently, no server-side behaviour is expected to depend on this property.
+Space-rooms are distinguished from regular messaging rooms by the presence of
+a `'type': 'm.space'` property in the content of the `m.room.create` event.
+The value of the `type` property uses the Standardised Identifier Grammar from
+MSC #2758. This allows clients to offer slightly customised user experience
+depending on the purpose of the room. Currently, no server-side behaviour is
+expected to depend on this property.
 
 As with regular rooms, public spaces are expected to have an alias, for example
 `#foo:matrix.org`, which can be used to refer to the space.
 
-Space-rooms may have `m.room.name` and `m.room.topic` state events in the same
-way as a normal room.
+Space-rooms may have `m.room.name`, `m.room.avatar` and `m.room.topic` state
+events in the same way as a normal room.
 
 Normal messages within a space-room are discouraged (but not blocked by the
 server): user interfaces are not expected to have a way to enter or display
@@ -67,10 +69,9 @@ to see the directory of rooms within the space by peeking into the space-room
 (thus avoiding the need to add `m.room.member` events to the event graph within
 the room).
 
-Join rules, invites and 3PID invites work as for a normal room, with the
-exception that `invite_state` sent along with invites should be amended to
-include the `m.room.create` event, to allow clients to discern whether an
-invite is to a space-room or not.
+Join rules, invites and 3PID invites work as for a normal room.  In order for
+clients to distinguish space invites from room invites, all invites must now
+include the `m.room.create` event in their `invite_state`.
 
 ### Relationship between rooms and spaces
 
@@ -111,7 +112,7 @@ relationship can be expressed in one of two ways:
     }
     ```
 
-    Children where `via` is not present are ignored.
+    Children where `via` is not present or invalid (not an array) are ignored.
 
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
@@ -121,8 +122,8 @@ relationship can be expressed in one of two ways:
     lexicographic order of their `room_id`s in case of equal
     `origin_server_ts`.  `order`s which are not strings, or do not consist
     solely of ascii characters in the range `\x20` (space) to `\x7F` (`~`), or
-    consist of more than 50 characters, are forbidden and should be ignored if
-    received.)
+    consist of more than 50 characters, are forbidden and the field should be
+    ignored if received.)
 
  2. Separately, rooms can claim parents via the `m.space.parent` state
     event.
@@ -142,7 +143,7 @@ relationship can be expressed in one of two ways:
     }
     ```
 
-    Parents where `via` is not present are ignored.
+    Parents where `via` is not present or invalid (not an array) are ignored.
 
     `canonical` determines whether this is the main parent for the space. When
     a user joins a room with a canonical parent, clients may switch to view the
