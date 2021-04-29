@@ -359,10 +359,14 @@ None at present.
 ### Use a separate state event for type of room
 
 [MSC1840](https://github.com/matrix-org/matrix-doc/pull/1840) proposes the use
-of a separate `m.room.type` state event to distinguish different room
-types. This implies that rooms can dynamically switch between being a Space,
-and being a regular non-Space room. That is not a usecase we consider useful,
-and allowing it would impose significant complexity on client implementations.
+of a separate `m.room.type` state event to distinguish different room types.
+This implies that rooms can dynamically switch between being a Space, and
+being a regular non-Space room. That is not a usecase we consider useful, and
+allowing it would impose significant complexity on client and server
+implementations. Specifically, client and server implementations who store
+spaces separately from rooms would have to support migrating back and forth
+between them and dealing with the ambiguities of `room_id`s no longer pointing
+to valid spaces, etc.
 
 ## Unstable prefix
 
