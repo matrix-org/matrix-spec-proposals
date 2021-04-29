@@ -179,10 +179,18 @@ include:
 
 Cycles in the parent->child and child->parent relationships are *not*
 permitted, but clients (and servers) should be aware that they may be
-encountered, and ignore the relationship rather than recursing infinitely.
+encountered, and MUST spot and break cycles rather than infinitely looping.
 
-XXX: we need to deterministically specify where the cycles get cut.
-I think kegan found a solution for this when implementing MSC2946 in Dendrite.
+In order for UI to be consistent across different clients, any cycles must be
+cut deterministically.  For instance, if space A points to space B as a child
+but space B also points to space A as a child, then clients must be consistent
+on whether A is shown in the UI as the parent of B (or vice versa).  Therefore
+when a client spots a loop in parent->child or child->parent relationships, it
+MUST ignore the cycle by cutting it such that the oldest space-room is the
+root (i.e. oldest parent).  'Oldest' means the room whose `m.room.create`
+event has the numerically smallest `origin_server_ts`.  If the oldest rooms
+are precisely the same age, we select the root as the room with the
+lexicographically smallest `room_id`.
 
 ### Suggested children
 
