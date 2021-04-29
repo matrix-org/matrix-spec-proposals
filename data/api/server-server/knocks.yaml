@@ -71,7 +71,6 @@ paths:
             properties:
               room_version:
                 type: string
-                required: true  # knocking was supported in v7
                 description: |-
                   The version of the room where the server is trying to knock.
                 example: "7"
@@ -122,6 +121,9 @@ paths:
                   - type
                   - content
                   - sender
+            required:
+              - room_version  # knocking was added in v7
+              - event
           examples:
             application/json: {
               "room_version": "7",
