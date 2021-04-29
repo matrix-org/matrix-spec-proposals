@@ -2,12 +2,14 @@
 
 The [report API](https://matrix.org/docs/spec/client_server/r0.5.0#post-matrix-client-r0-rooms-roomid-report-eventid)
 currently does not require users to be joined to the room in order to report that an
-event is inappropriate. This offers anyone the ability to report that any event is
-inappropriate without being joined to the room. There is limited use for users to call report on
-rooms they cannot presently see, so this endpoint should require users to be joined. 
+event is inappropriate. This allows anyone to report any event in any room  without being joined to the room.
+There is limited use (and scope for abuse) for users to call report on rooms they are not joined to,
+so this proposal requires that reporting users must be joined to a room before they can report an event.
 
 Furthermore this proposal addresses the case where the user may not have visibility
-on an event. In that case, similar logic applies as described below.
+on an event (e.g. not being able to read history in a room).
+
+In that case, similar logic applies as described below.
 
 ## Proposal
 
@@ -22,11 +24,11 @@ the room does not exist, the server should respond with:
 }
 ```
 
-where the contents of `error` can be left to the implementation. It is key to note that this response
+where the contents of `error` can be left to the implementation. It is important to note that this response
 MUST be sent regardless if the room exists or not as this endpoint could be used as a way to brute
 force room IDs in order to find a room.
 
-If the user is joined to the room, but the event doesn't exist OR the user doesn't have permission to see
+If the user is joined to the room, but the event doesn't exist on the homeserver OR the user doesn't have permission to see
 the event then the response should be:
 
 ```json
@@ -36,15 +38,29 @@ the event then the response should be:
 }
 ```
 
-Care should be taken to note that some homeservers may not have backfilled an event, while it may exist.
-Implementations MAY fetch the event from another server when handling this request, although this
-is not required.
+It is not expected for homeservers to attempt to backfill an event they cannot find locally, as the user is unlikely to
+have seen an event that the homeserver has not yet stored.
+
+If the event is redacted, reports MAY still be allowed depending on the implementation. There is an argument that
+a redeacted event should still be reportable as even deleted abusive content was harmful at a point.
 
 
 ## Tradeoffs
 
+None
+
 ## Potential issues
+
+This will incur a performance penalty on the endpoint as the homeserver now needs to query state in the room, however
+this is considered acceptable given the potential to reduce abuse of the endpoint.
 
 ## Security considerations
 
+Care should be taken not to give away information inadvertently by responding different error codes depending
+on the existence of the room, as it may give away private rooms on the homeserver. This may be somewhat unavoidable
+due to the time delay for checking the existence of a room vs checking the state for a user, so implementations
+MAY decide to "fuzz" the response times of the endpoint to avoid time-based attacks.
 ## Conclusion
+
+This proposal should hopefully reduce the abuse potential of the /report endpoint without significantly increasing
+the complexity or performance requirements on a homeserver.
