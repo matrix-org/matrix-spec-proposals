@@ -115,10 +115,11 @@ relationship can be expressed in one of two ways:
 
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
-    ordering of the characters in `order` values; rooms with no `order`
-    come last. `order`s which are not strings, or do not consist solely of
-    ascii characters in the range `\x20` (space) to `\x7F` (`~`), or consist of
-    more than 50 characters, are forbidden and should be ignored if received.)
+    ordering of the Unicode codepoints of the characters in `order` values;
+    rooms with no `order` come last. `order`s which are not strings, or do not
+    consist solely of ascii characters in the range `\x20` (space) to `\x7F`
+    (`~`), or consist of more than 50 characters, are forbidden and should be
+    ignored if received.)
 
  2. Separately, rooms can claim parents via the `m.space.parent` state
     event.
@@ -189,8 +190,9 @@ when a client spots a loop in parent->child or child->parent relationships, it
 MUST ignore the cycle by cutting it such that the oldest space-room is the
 root (i.e. oldest parent).  'Oldest' means the room whose `m.room.create`
 event has the numerically smallest `origin_server_ts`.  If the oldest rooms
-are precisely the same age, we select the root as the room with the
-lexicographically smallest `room_id`.
+are precisely the same age, we select the root as the room with the smallest
+`room_id` (lexicographically comparing the Unicode code-points of the
+`room_id` string).
 
 ### Suggested children
 
