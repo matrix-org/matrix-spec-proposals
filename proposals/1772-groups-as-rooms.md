@@ -26,8 +26,8 @@ this is a complex API which has various problems (see
 [appendix](#appendix-problems-with-the-r0groups-api)).
 
 This proposal suggests a new approach where spaces are themselves represented
-by rooms, rather than a custom first-class entity.  This requires few server
-changes, other than better support for peeking (see Dependencies below).
+by rooms, rather than a custom first-class entity.  This requires minimal
+server changes.
 
 The existing `/r0/groups` API would be deprecated in Synapse and remain
 unspecified.
