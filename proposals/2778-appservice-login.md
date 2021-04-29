@@ -82,9 +82,7 @@ create more work for all parties involved for little benefit.
 
 ## Security considerations
 
-The /login endpoint will generate an access token which can be used to control the appservice user, which
-is superflous as the appservice `as_token` should be used to authenticate all requests on behalf of ghosts.
-This can safely be ignored or used, but is an extra token hanging around.
+None
 
 ## Unstable prefix
 
