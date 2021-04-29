@@ -377,6 +377,17 @@ spaces separately from rooms would have to support migrating back and forth
 between them and dealing with the ambiguities of `room_id`s no longer pointing
 to valid spaces, etc.
 
+### Use a different sigil/twigil for spaces
+
+Groups used + as a sigil to differentiate them from rooms (e.g. +matrix:matrix.org).
+We considered doing similar for Spaces, e.g. a #+ twigil or reuse the + sigil,
+but concluded that the resulting complexity and exoticism is not worth it.
+This means that clients such as matrix.to have to peek into rooms to find out their
+`type` before being able to display an appropriate UI, and users will not know
+whether #matrix:matrix.org is a room or a space without using a client (e.g. if
+reading an advert).  It also means that if the client UI requires a space alias the
+client will need to validate the entered data serverside.
+
 ## Unstable prefix
 
 The following mapping will be used for identifiers in this MSC during
