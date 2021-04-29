@@ -1,4 +1,4 @@
-# Copyright 2018 New Vector Ltd
+# Copyright 2018, 2021 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -193,6 +193,13 @@ paths:
                     avatar_url:
                       type: string
                       description: The URL for the room's avatar, if one is set.
+                    join_rule:
+                      type: string
+                      description: |-
+                        The room's join rule. When not present, the room is assumed to
+                        be `public`. Note that rooms with `invite` join rules are not
+                        expected here, but rooms with `knock` rules are given their
+                        near-public nature.
               next_batch:
                 type: string
                 description: |-
@@ -221,7 +228,8 @@ paths:
                   "num_joined_members": 37,
                   "room_id": "!ol19s:bleecker.street",
                   "topic": "Tasty tasty cheese",
-                  "world_readable": true
+                  "world_readable": true,
+                  "join_rule": "public"
                 }
               ],
               "next_batch": "p190q",
