@@ -16,9 +16,9 @@ the point in time in the timezone of the user.
 
 For events of type `m.room.message` with `msgtype` of `m.text` and `format` of 
 `org.matrix.custom.html` in the `content` field, the `formatted_body` field 
-supports containing the [`<time>` element]
-(https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time) to annotate 
-text describing a point in time with the timezone of the sender.
+supports containing the
+[`<time>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/time)
+to annotate text describing a point in time with the timezone of the sender.
 Here is an example:
 
 ```json
@@ -50,11 +50,11 @@ or any other timezone.
 
 ## Potential issues
 
-For web clients, Firefox always [reports the local timezone to be UTC]
-(https://bugzilla.mozilla.org/show_bug.cgi?id=1330890) when
-"resist fingerprinting" is on. Web clients would therefore need to at least
-confirm the detected timezone with the user to ensure it does not get sent
-with a different timezone than the user is actually in and create
+For web clients, Firefox always
+[reports the local timezone to be UTC](https://bugzilla.mozilla.org/show_bug.cgi?id=1330890)
+when "resist fingerprinting" is on. Web clients would therefore need to at
+least confirm the detected timezone with the user to ensure it does not get
+sent with a different timezone than the user is actually in and create
 a whole level of confusion.
 
 The `datetime` attribute in HTML does not allow to just specify a time of day
