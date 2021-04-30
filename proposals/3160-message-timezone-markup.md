@@ -25,7 +25,7 @@ The `timezone` attribute contains the local timezone offset in minutes from UTC.
 
 Clients could either detect when the user writes something that looks like a timestamp and either automatically wrap it in a `<mx-time>`, or propose to do so. Alternatively, clients could have a time button in the composer formatting options that allows to add a time with a dialog, requiring less sophisticated time pattern detection while typing.
 
-When rendering an `<mx-time>` element, clients could render it in a special way, and allow to interact with it to show the timezone in the timezone of the sender, or any other timezone.
+When rendering an `<mx-time>` element, clients could render it in a special way, and allow to interact with it to show the time in the timezone of the sender, or any other timezone.
 
 ## Potential issues
 
