@@ -35,6 +35,8 @@ Here is an example:
 The `datetime` attribute should always contain a timezone, which is not required
  by HTML. We should probably also only allow one specific format,
  as opposed to HTML.
+ 
+No other attributes are allowed on the `<time>` element.
 
 ### Possible user interface
 
