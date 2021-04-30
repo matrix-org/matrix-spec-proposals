@@ -21,7 +21,7 @@ For events of type `m.room.message` with `msgtype` of `m.text` and `format` `org
 
 ## Potential issues
 
-
+For web clients, Firefox always reports the local timezone to be UTC when resist fingerprinting is on. Web clients would therefore need to at least confirm the detected timezone with the user to ensure it does not get sent with a different timezone than the user is actually and create a whole level of confusion.
 
 ## Alternatives
 
