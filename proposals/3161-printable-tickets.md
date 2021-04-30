@@ -22,7 +22,7 @@ layout).
 
 This format is intended for easy mass production in the types of large ticket printers that are used
 at the turnstiles and ticket offices of airports, railway stations and the stadiums. Can also be easily
-at home printers by printing into A4 and cutting it into 3 equal pieces longitudinally.
+at home printers by printing into A4 and cutting it into 4 equal pieces longitudinally.
 
 ### The small format (54×89mm)
 
