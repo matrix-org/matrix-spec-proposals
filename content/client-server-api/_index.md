@@ -1785,11 +1785,17 @@ relation to a room:
 -   Joined (the user can send and receive events in the room)
 -   Banned (the user is not allowed to join the room)
 
-There is an exception to the requirement that a user join a room before
-sending events to it: users may send an `m.room.member` event to a room
-with `content.membership` set to `leave` to reject an invitation if they
-have currently been invited to a room but have not joined it. The same
-applies for retracting knocks on the room that the user sent.
+There are a few notable exceptions which allow non-joined members of the
+room to send events in the room:
+
+- Users wishing to reject an invite would send `m.room.member` events with
+  `content.membership` of `leave`. They must have been invited first.
+
+- If the room allows, users can send `m.room.member` events with `content.membership`
+  of `knock` to knock on the room. This is a request for an invite by the user.
+
+- To retract a previous knock, a user would send a `leave` event similar to
+  rejecting an invite.
 
 Some rooms require that users be invited to it before they can join;
 others allow anyone to join. Whether a given room is an "invite-only"
