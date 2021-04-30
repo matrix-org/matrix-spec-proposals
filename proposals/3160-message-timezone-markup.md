@@ -37,6 +37,8 @@ HTML already supports a [`<time>` element](https://developer.mozilla.org/en-US/d
 
 ## Security considerations
 
+None I can think off.
+
 ## Unstable prefix
 
 Is a prefix needed for the tag name? If so, we can use `<org.matrix.msc3160.time>`.
