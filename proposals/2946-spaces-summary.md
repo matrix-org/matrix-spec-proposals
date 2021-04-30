@@ -11,7 +11,7 @@ describes why a Space is useful:
 >
 > We refer to such collections of rooms as "spaces".
 
-MSC2946 attempts to solve how a member of a space discovers rooms in that space. This
+This MSC attempts to solve how a member of a space discovers rooms in that space. This
 is useful for quickly exposing a user to many aspects of an entire community, using the
 examples above, joining the "official matrix.org rooms" space might suggest joining a few
 rooms:
