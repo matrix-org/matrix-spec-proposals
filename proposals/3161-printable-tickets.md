@@ -12,15 +12,21 @@ film, the light-on-dark scheme is also allowed. The check word amount shall be s
 
 ## The paper layout
 
-The printing resolution should allow the Aztec code to be printed in a manner that each pixel can be mapped
-to an integral number of dots without breaking the squareness of the pixels.
+The printing resolution should allow the Aztec code to be printed in a manner that each pixel can be
+mapped to an integral number of dots without breaking the squareness of the pixels. In both large and
+small formats, the Aztec barcode should be sized at 49.5×49.5 millimetres with a 0.25 millimetres wide
+quiet zone around it (the actual quiet zone is larger due to the placement of the barcode in the
+layout).
 
 ### The large format (210×74mm)
 
+This format is intended for easy mass production in the types of large ticket printers that are used
+at the turnstiles and ticket offices of airports, railway stations and the stadiums. Can also be easily
+at home printers by printing into A4 and cutting it into 3 equal pieces longitudinally.
 
 ### The small format (54×89mm)
 
-
+This format is intended for production in the barcode reading handheld terminals with ticket printers.
 
 ## Alternatives
 
