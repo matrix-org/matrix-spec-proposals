@@ -25,6 +25,8 @@ The `timezone` attribute contains the local timezone offset in minutes from UTC.
 
 Clients could either detect when the user writes something that looks like a timestamp and either automatically wrap it in a `<mx-time>`, or propose to do so. Alternatively, clients could have a time button in the composer formatting options that allows to add a time with a dialog, requiring less sophisticated time pattern detection while typing.
 
+When rendering an `<mx-time>` element, clients could render it in a special way, and allow to interact with it to show the timezone in the timezone of the sender, or any other timezone.
+
 ## Potential issues
 
 For web clients, Firefox always reports the local timezone to be UTC when resist fingerprinting is on. Web clients would therefore need to at least confirm the detected timezone with the user to ensure it does not get sent with a different timezone than the user is actually and create a whole level of confusion.
