@@ -1,4 +1,4 @@
-# Copyright 2016 OpenMarket Ltd
+# Copyright 2016, 2021 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -281,6 +281,28 @@ paths:
                               items:
                                 $ref: "../../event-schemas/schema/stripped_state.yaml"
                               type: array
+                  knock:
+                    title: Knocked rooms
+                    type: object
+                    description: |-
+                      The rooms that the user has knocked upon, mapped as room ID to room information.
+                    additionalProperties:
+                      title: Knocked Room
+                      type: object
+                      properties:
+                        knock_state:
+                          title: KnockState
+                          type: object
+                          description: |-
+                            The state of a room that the user has knocked upon. The state
+                            events contained here have the same restrictions as `InviteState`
+                            above.
+                          properties:
+                            events:
+                              description: The StrippedState events that form the knock state.
+                              items:
+                                $ref: "../../event-schemas/schema/stripped_state.yaml"
+                              type: array
                   leave:
                     title: Left rooms
                     type: object
@@ -431,6 +453,26 @@ paths:
                             "type": "m.room.member",
                             "state_key": "@bob:example.com",
                             "content": {"membership": "invite"}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "knock": {
+                    "!223asd456:example.com": {
+                      "invite_state": {
+                        "events": [
+                          {
+                            "sender": "@alice:example.com",
+                            "type": "m.room.name",
+                            "state_key": "",
+                            "content": {"name": "My Room Name"}
+                          },
+                          {
+                            "sender": "@bob:example.com",
+                            "type": "m.room.member",
+                            "state_key": "@bob:example.com",
+                            "content": {"membership": "knock"}
                           }
                         ]
                       }
