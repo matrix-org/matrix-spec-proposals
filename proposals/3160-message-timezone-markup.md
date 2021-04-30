@@ -10,7 +10,7 @@ For events of type `m.room.message` with `msgtype` of `m.text` and `format` `org
 
 ```json
 {
-    "type": "m.room.message"
+    "type": "m.room.message",
     "content": {
         "msgtype": "m.text",
         "format": "org.matrix.custom.html",
@@ -18,6 +18,12 @@ For events of type `m.room.message` with `msgtype` of `m.text` and `format` `org
     }
 }
 ```
+
+The `timezone` attribute contains the local timezone offset in minutes from UTC.
+
+### Possible user interface
+
+Clients could either detect when the user writes something that looks like a timestamp and either automatically wrap it in a `<mx-time>`, or propose to do so. Alternatively, clients could have a time button in the composer formatting options that allows to add a time with a dialog, requiring less sophisticated time pattern detection while typing.
 
 ## Potential issues
 
