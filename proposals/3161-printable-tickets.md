@@ -1,4 +1,4 @@
-# MSC3155: Printable tickets for Matrix
+# MSC3161: Printable tickets for Matrix
 
 This proposal specifies how can a printable ticket be made to invite users and/or knock into a room.
 
