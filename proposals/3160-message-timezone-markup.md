@@ -71,7 +71,7 @@ text in the body.
 
 ## Security considerations
 
-None I can think off.
+None I can think of.
 
 ## Unstable prefix
 
