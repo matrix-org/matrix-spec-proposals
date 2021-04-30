@@ -68,118 +68,118 @@ request being made was invalid.
 
 The common error codes are:
 
-`M_FORBIDDEN`  
+`M_FORBIDDEN`
 Forbidden access, e.g. joining a room without permission, failed login.
 
-`M_UNKNOWN_TOKEN`  
+`M_UNKNOWN_TOKEN`
 The access token specified was not recognised.
 
 An additional response parameter, `soft_logout`, might be present on the
 response for 401 HTTP status codes. See [the soft logout
 section](#soft-logout) for more information.
 
-`M_MISSING_TOKEN`  
+`M_MISSING_TOKEN`
 No access token was specified for the request.
 
-`M_BAD_JSON`  
+`M_BAD_JSON`
 Request contained valid JSON, but it was malformed in some way, e.g.
 missing required keys, invalid values for keys.
 
-`M_NOT_JSON`  
+`M_NOT_JSON`
 Request did not contain valid JSON.
 
-`M_NOT_FOUND`  
+`M_NOT_FOUND`
 No resource was found for this request.
 
-`M_LIMIT_EXCEEDED`  
+`M_LIMIT_EXCEEDED`
 Too many requests have been sent in a short period of time. Wait a while
 then try again.
 
-`M_UNKNOWN`  
+`M_UNKNOWN`
 An unknown error has occurred.
 
 Other error codes the client might encounter are:
 
-`M_UNRECOGNIZED`  
+`M_UNRECOGNIZED`
 The server did not understand the request.
 
-`M_UNAUTHORIZED`  
+`M_UNAUTHORIZED`
 The request was not correctly authorized. Usually due to login failures.
 
-`M_USER_DEACTIVATED`  
+`M_USER_DEACTIVATED`
 The user ID associated with the request has been deactivated. Typically
 for endpoints that prove authentication, such as `/login`.
 
-`M_USER_IN_USE`  
+`M_USER_IN_USE`
 Encountered when trying to register a user ID which has been taken.
 
-`M_INVALID_USERNAME`  
+`M_INVALID_USERNAME`
 Encountered when trying to register a user ID which is not valid.
 
-`M_ROOM_IN_USE`  
+`M_ROOM_IN_USE`
 Sent when the room alias given to the `createRoom` API is already in
 use.
 
-`M_INVALID_ROOM_STATE`  
+`M_INVALID_ROOM_STATE`
 Sent when the initial state given to the `createRoom` API is invalid.
 
-`M_THREEPID_IN_USE`  
+`M_THREEPID_IN_USE`
 Sent when a threepid given to an API cannot be used because the same
 threepid is already in use.
 
-`M_THREEPID_NOT_FOUND`  
+`M_THREEPID_NOT_FOUND`
 Sent when a threepid given to an API cannot be used because no record
 matching the threepid was found.
 
-`M_THREEPID_AUTH_FAILED`  
+`M_THREEPID_AUTH_FAILED`
 Authentication could not be performed on the third party identifier.
 
-`M_THREEPID_DENIED`  
+`M_THREEPID_DENIED`
 The server does not permit this third party identifier. This may happen
 if the server only permits, for example, email addresses from a
 particular domain.
 
-`M_SERVER_NOT_TRUSTED`  
+`M_SERVER_NOT_TRUSTED`
 The client's request used a third party server, e.g. identity server,
 that this server does not trust.
 
-`M_UNSUPPORTED_ROOM_VERSION`  
+`M_UNSUPPORTED_ROOM_VERSION`
 The client's request to create a room used a room version that the
 server does not support.
 
-`M_INCOMPATIBLE_ROOM_VERSION`  
+`M_INCOMPATIBLE_ROOM_VERSION`
 The client attempted to join a room that has a version the server does
 not support. Inspect the `room_version` property of the error response
 for the room's version.
 
-`M_BAD_STATE`  
+`M_BAD_STATE`
 The state change requested cannot be performed, such as attempting to
 unban a user who is not banned.
 
-`M_GUEST_ACCESS_FORBIDDEN`  
+`M_GUEST_ACCESS_FORBIDDEN`
 The room or resource does not permit guests to access it.
 
-`M_CAPTCHA_NEEDED`  
+`M_CAPTCHA_NEEDED`
 A Captcha is required to complete the request.
 
-`M_CAPTCHA_INVALID`  
+`M_CAPTCHA_INVALID`
 The Captcha provided did not match what was expected.
 
-`M_MISSING_PARAM`  
+`M_MISSING_PARAM`
 A required parameter was missing from the request.
 
-`M_INVALID_PARAM`  
+`M_INVALID_PARAM`
 A parameter that was specified has the wrong value. For example, the
 server expected an integer and instead received a string.
 
-`M_TOO_LARGE`  
+`M_TOO_LARGE`
 The request or entity was too large.
 
-`M_EXCLUSIVE`  
+`M_EXCLUSIVE`
 The resource being requested is reserved by an application service, or
 the application service making the request has not created the resource.
 
-`M_RESOURCE_LIMIT_EXCEEDED`  
+`M_RESOURCE_LIMIT_EXCEEDED`
 The request cannot be completed because the homeserver has reached a
 resource limit imposed on it. For example, a homeserver held in a shared
 hosting environment may reach a resource limit if it starts using too
@@ -189,7 +189,7 @@ Typically, this error will appear on routes which attempt to modify
 state (e.g.: sending messages, account data, etc) and not routes which
 only read state (e.g.: `/sync`, get account data, etc).
 
-`M_CANNOT_LEAVE_SERVER_NOTICE_ROOM`  
+`M_CANNOT_LEAVE_SERVER_NOTICE_ROOM`
 The user is unable to reject an invite to join the server notices room.
 See the [Server Notices](#server-notices) module for more information.
 
@@ -238,23 +238,23 @@ time.
 
 In this section, the following terms are used with specific meanings:
 
-`PROMPT`  
+`PROMPT`
 Retrieve the specific piece of information from the user in a way which
 fits within the existing client user experience, if the client is
 inclined to do so. Failure can take place instead if no good user
 experience for this is possible at this point.
 
-`IGNORE`  
+`IGNORE`
 Stop the current auto-discovery mechanism. If no more auto-discovery
 mechanisms are available, then the client may use other methods of
 determining the required parameters, such as prompting the user, or
 using default values.
 
-`FAIL_PROMPT`  
+`FAIL_PROMPT`
 Inform the user that auto-discovery failed due to invalid/empty data and
 `PROMPT` for the parameter.
 
-`FAIL_ERROR`  
+`FAIL_ERROR`
 Inform the user that auto-discovery did not return any usable URLs. Do
 not continue further with the current login process. At this point,
 valid data was obtained, but no server is available to serve the client.
@@ -606,7 +606,7 @@ flow with three stages will resemble the following diagram:
 
 #### Authentication types
 
-This specification defines the following auth types:  
+This specification defines the following auth types:
 -   `m.login.password`
 -   `m.login.recaptcha`
 -   `m.login.sso`
@@ -893,7 +893,7 @@ type of identifier being used, and depending on the type, has other
 fields giving the information required to identify the user as described
 below.
 
-This specification defines the following identifier types:  
+This specification defines the following identifier types:
 -   `m.id.user`
 -   `m.id.thirdparty`
 -   `m.id.phone`
@@ -1712,7 +1712,7 @@ event also has a `creator` key which contains the user ID of the room
 creator. It will also generate several other events in order to manage
 permissions in this room. This includes:
 
--   `m.room.power_levels` : Sets the power levels of users and required power  
+-   `m.room.power_levels` : Sets the power levels of users and required power
     levels for various actions within the room such as sending events.
 
 -   `m.room.join_rules` : Whether the room is "invite-only" or not.
@@ -1778,57 +1778,44 @@ in that room. There are several states in which a user may be, in
 relation to a room:
 
 -   Unrelated (the user cannot send or receive events in the room)
+-   Knocking (the user has requested to participate in the room, but has
+    not yet been allowed to)
 -   Invited (the user has been invited to participate in the room, but
     is not yet participating)
 -   Joined (the user can send and receive events in the room)
 -   Banned (the user is not allowed to join the room)
 
-There is an exception to the requirement that a user join a room before
-sending events to it: users may send an `m.room.member` event to a room
-with `content.membership` set to `leave` to reject an invitation if they
-have currently been invited to a room but have not joined it.
+There are a few notable exceptions which allow non-joined members of the
+room to send events in the room:
+
+- Users wishing to reject an invite would send `m.room.member` events with
+  `content.membership` of `leave`. They must have been invited first.
+
+- If the room allows, users can send `m.room.member` events with `content.membership`
+  of `knock` to knock on the room. This is a request for an invite by the user.
+
+- To retract a previous knock, a user would send a `leave` event similar to
+  rejecting an invite.
 
 Some rooms require that users be invited to it before they can join;
 others allow anyone to join. Whether a given room is an "invite-only"
 room is determined by the room config key `m.room.join_rules`. It can
 have one of the following values:
 
-`public`  
+`public`
 This room is free for anyone to join without an invite.
 
-`invite`  
+`invite`
 This room can only be joined if you were invited.
+
+`knock`
+This room can only be joined if you were invited, and allows anyone to
+request an invite to the room. Note that this join rule is only available
+to rooms based upon [room version 7](/rooms/v7).
 
 The allowable state transitions of membership are:
 
-```
-                                       /ban
-                  +------------------------------------------------------+
-                  |                                                      |
-                  |  +----------------+  +----------------+              |
-                  |  |    /leave      |  |                |              |
-                  |  |                v  v                |              |
-    /invite    +--------+           +-------+             |              |
-  ------------>| invite |<----------| leave |----+        |              |
-               +--------+  /invite  +-------+    |        |              |
-                 |                   |    ^      |        |              |
-                 |                   |    |      |        |              |
-           /join |   +---------------+    |      |        |              |
-                 |   | /join if           |      |        |              |
-                 |   | join_rules         |      | /ban   | /unban       |
-                 |   | public      /leave |      |        |              |
-                 v   v               or   |      |        |              |
-               +------+            /kick  |      |        |              |
-  ------------>| join |-------------------+      |        |              |
-   /join       +------+                          v        |              |
-   if             |                           +-----+     |              |
-   join_rules     +-------------------------->| ban |-----+              |
-   public                   /ban              +-----+                    |
-                                                ^ ^                      |
-                                                | |                      |
-  ----------------------------------------------+ +----------------------+
-                  /ban
-```
+![membership-flow-diagram](/diagrams/membership.png)
 
 {{% http-api spec="client-server" api="list_joined_rooms" %}}
 
@@ -1838,14 +1825,51 @@ The allowable state transitions of membership are:
 
 {{% http-api spec="client-server" api="joining" %}}
 
+##### Knocking on rooms
+
+<!--
+This section is here because it's most similar to being invited/joining a
+room, though has added complexity which needs to be explained. Otherwise
+this will have been just the API definition and nothing more (like invites).
+-->
+
+If the join rules allow, external users to the room can `/knock` on it to
+request permission to join. Users with appropriate permissions within the
+room can then approve (`/invite`) or deny (`/kick`, `/ban`, or otherwise
+set membership to `leave`) the knock. Knocks can be retracted by calling
+`/leave` or otherwise setting membership to `leave`.
+
+Users who are currently in the room, already invited, or banned cannot
+knock on the room.
+
+To accept another user's knock, the user must have permission to invite
+users to the room. To reject another user's knock, the user must have
+permission to either kick or ban users (whichever is being performed).
+Note that setting another user's membership to `leave` is kicking them.
+
+The knocking homeserver should assume that an invite to the room means
+that the knock was accepted, even if the invite is not explicitly related
+to the knock.
+
+Homeservers are permitted to automatically accept invites as a result of
+knocks as they should be aware of the user's intent to join the room. If
+the homeserver is not auto-accepting invites (or there was an unrecoverable
+problem with accepting it), the invite is expected to be passed down normally
+to the client to handle. Clients can expect to see the join event if the
+server chose to auto-accept.
+
+{{% http-api spec="client-server" api="knocking" %}}
+
 #### Leaving rooms
 
 A user can leave a room to stop receiving events for that room. A user
 must have been invited to or have joined the room before they are
 eligible to leave the room. Leaving a room to which the user has been
-invited rejects the invite. Once a user leaves a room, it will no longer
-appear in the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is explicitly
-requested via a filter with the `include_leave` field set to `true`.
+invited rejects the invite, and can retract a knock. Once a user leaves
+a room, it will no longer appear in the response to the
+[`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is
+explicitly requested via a filter with the `include_leave` field set
+to `true`.
 
 Whether or not they actually joined the room, if the room is an
 "invite-only" room the user will need to be re-invited before they can
@@ -1853,7 +1877,7 @@ re-join the room.
 
 A user can also forget a room which they have left. Rooms which have
 been forgotten will never appear the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API,
-until the user re-joins or is re-invited.
+until the user re-joins, is re-invited, or knocks.
 
 A user may wish to force another user to leave a room. This can be done
 by 'kicking' the other user. To do so, the user performing the kick MUST
