@@ -6,7 +6,7 @@ Luckily, computers are great at math, and so to facilitate this, clients could a
 
 ## Proposal
 
-For events of type `m.room.message` with `msgtype` of `m.text` and `format` `org.matrix.custom.html` in the `content` field, the `formatted_body` field supports containing a `mx-time` element, to support. Here is an example:
+For events of type `m.room.message` with `msgtype` of `m.text` and `format` `org.matrix.custom.html` in the `content` field, the `formatted_body` field supports containing a `mx-time` element. Here is an example:
 
 ```json
 {
