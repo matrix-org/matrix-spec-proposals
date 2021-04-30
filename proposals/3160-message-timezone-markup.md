@@ -14,7 +14,7 @@ For events of type `m.room.message` with `msgtype` of `m.text` and `format` `org
     "content": {
         "msgtype": "m.text",
         "format": "org.matrix.custom.html",
-        "formatted_body": "Shall we have a call at <mx-time timezone=\"-120\">9am</mx-time>?"
+        "formatted_body": "Shall we have a quick call at <mx-time timezone=\"-120\">9am</mx-time> tomorrow?"
     }
 }
 ```
