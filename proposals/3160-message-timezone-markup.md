@@ -1,4 +1,4 @@
-# MSC3145: Attach timezone metadata to time information in messages
+# MSC3160: Attach timezone metadata to time information in messages
 
 When communicating across timezones, you sometimes want to agree on a time with others, for example when to have a meeting. If somebody says, let's meet at 8pm, everybody else in the room has to think in what timezone the other person is, and work out the math in their head how that relates to their timezone, if different.
 
@@ -31,4 +31,4 @@ HTML already supports a [`<time>` element](https://developer.mozilla.org/en-US/d
 
 ## Unstable prefix
 
-Is a prefix needed for the tag name? If so, we can use `<org.matrix.msc3145.time>`.
+Is a prefix needed for the tag name? If so, we can use `<org.matrix.msc3160.time>`.
