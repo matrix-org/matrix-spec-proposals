@@ -39,7 +39,7 @@ The `datetime` attribute should always contain a timezone, which is not required
 ### Possible user interface
 
 Clients could either detect when the user writes something that looks like
-a timestamp and either automatically wrap it in a `<mx-time>`, or propose
+a timestamp and either automatically wrap it in a `<time>` element, or propose
 to do so. Alternatively, clients could have a time button in the composer
 formatting options that allows to add a time with a dialog, requiring less
 sophisticated time pattern detection while typing.
