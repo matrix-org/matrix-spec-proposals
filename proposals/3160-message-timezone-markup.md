@@ -29,7 +29,7 @@ When rendering an `<mx-time>` element, clients could render it in a special way,
 
 ## Potential issues
 
-For web clients, Firefox always reports the local timezone to be UTC when resist fingerprinting is on. Web clients would therefore need to at least confirm the detected timezone with the user to ensure it does not get sent with a different timezone than the user is actually and create a whole level of confusion.
+For web clients, Firefox always reports the local timezone to be UTC when resist fingerprinting is on. Web clients would therefore need to at least confirm the detected timezone with the user to ensure it does not get sent with a different timezone than the user is actually in and create a whole level of confusion.
 
 ## Alternatives
 
