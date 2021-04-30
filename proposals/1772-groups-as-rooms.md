@@ -191,13 +191,14 @@ In order for UI to be consistent across different clients, any cycles must be
 cut deterministically.  For instance, if space A points to space B as a child
 but space B also points to space A as a child, then clients must be consistent
 on whether A is shown in the UI as the parent of B (or vice versa).  Therefore
-when a client spots a loop in parent->child or child->parent relationships, it
-MUST ignore the cycle by cutting it such that the oldest space-room is the
-root (i.e. oldest parent).  'Oldest' means the room whose `m.room.create`
-event has the numerically smallest `origin_server_ts`.  If the oldest rooms
-are precisely the same age, we select the root as the room with the smallest
-`room_id` (lexicographically comparing the Unicode code-points of the
-`room_id` string).
+when a client needs to consistently visualise a space hierarchy, it should
+check for loops in parent->child or child->parent relationships and ignore the
+cycle by cutting it such that the oldest space-room is the root (i.e. oldest
+parent). 'Oldest' means the room whose `m.room.create` event has the
+numerically smallest `origin_server_ts`.  If the oldest rooms are precisely
+the same age, we select the root as the room with the smallest `room_id`
+(lexicographically comparing the Unicode code-points of the `room_id` string).
+https://hackmd.io/eQpyqCcRR-Gj-SWZcD-Fxg shows an algorithm for doing so.
 
 ### Suggested children
 
