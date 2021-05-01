@@ -63,7 +63,7 @@ properties:
           description: |-
             Optional UI hint for what kind of common SSO provider is being
             described in this IdP. Matrix maintains a registry of identifiers
-            [in the matrix-doc repo](https://github.com/matrix-org/matrix-doc/blob/master/data-definitions/idp-brands.md)
+            [in the matrix-doc repo](https://github.com/matrix-org/matrix-doc/blob/master/informal/idp-brands.md)
             to ensure clients and servers are aligned on major/common brands.
 
             Clients should prefer the `brand` over the `icon`, when both are
