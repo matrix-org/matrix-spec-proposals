@@ -11,6 +11,10 @@ dark-on-light colour scheme, however, if the ticket is printed in a light sensit
 film, the light-on-dark scheme is also allowed. The check word amount shall be set as the smallest number
 possible that is greater than 25% of the data words.
 
+### Data to be embedded within barcode
+
+
+
 ## The paper layout
 
 The printing resolution should allow the Aztec code to be printed in a manner that each pixel can be
@@ -31,8 +35,9 @@ This format is intended for production in the barcode reading handheld terminals
 
 In this format, the barcode is placed such that the edge of the Aztec code lies 2 millimetres from
 the top margin, and the barcode is laterally centred. Following a 2.75 millimetre blank zone below
-the Aztec code, the roomname shall be printed in bold, followed by room description after a line break,
-and the inviter/knock request creator of the room.
+the Aztec code, the room name shall be printed in bold, followed by the room ID in italics after
+a line break, then the room description after another line break, then the inviter/knock request creator
+of the ticket after yet another line break, respectively. The font to be used is Helvetica/Arial in 8pt.
 
 ## Alternatives
 
