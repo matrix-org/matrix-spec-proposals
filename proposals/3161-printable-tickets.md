@@ -8,7 +8,8 @@ This proposal specifies how can a printable ticket be made to invite users and/o
 
 Printable tickets shall feature Aztec codes with 21 layers (99×99). The barcode shall be printed in the
 dark-on-light colour scheme, however, if the ticket is printed in a light sensitive medium like a photo
-film, the light-on-dark scheme is also allowed. The check word amount shall be set as 
+film, the light-on-dark scheme is also allowed. The check word amount shall be set as the smallest number
+possible that is greater than 25% of the data words.
 
 ## The paper layout
 
@@ -16,7 +17,7 @@ The printing resolution should allow the Aztec code to be printed in a manner th
 mapped to an integral number of dots without breaking the squareness of the pixels. In both large and
 small formats, the Aztec barcode should be sized at 49.5×49.5 millimetres with a 0.25 millimetres wide
 quiet zone around it (the actual quiet zone is larger due to the placement of the barcode in the
-layout).
+layout). This means each pixel of the barcode will occupy 0.5×0.5 millimetres.
 
 ### The large format (210×74mm)
 
@@ -27,6 +28,11 @@ at home printers by printing into A4 and cutting it into 4 equal pieces longitud
 ### The small format (54×89mm)
 
 This format is intended for production in the barcode reading handheld terminals with ticket printers.
+
+In this format, the barcode is placed such that the edge of the Aztec code lies 2 millimetres from
+the top margin, and the barcode is laterally centred. Following a 2.75 millimetre blank zone below
+the Aztec code, the roomname shall be printed in bold, followed by room description after a line break,
+and the inviter/knock request creator of the room.
 
 ## Alternatives
 
