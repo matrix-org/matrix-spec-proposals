@@ -29,15 +29,15 @@ This format is intended for easy mass production in the types of large ticket pr
 at the turnstiles and ticket offices of airports, railway stations and the stadiums. Can also be easily
 at home printers by printing into A4 and cutting it into 4 equal pieces longitudinally.
 
+In this format, the ticket includes the Aztec code, room name, room ID at a minimum, inviter/knock request
+creator at a minimum. The detailed description is optional. The operator can add more information.
+
 ### The small format (54×89mm)
 
 This format is intended for production in the barcode reading handheld terminals with ticket printers.
 
-In this format, the barcode is placed such that the edge of the Aztec code lies 2 millimetres from
-the top margin, and the barcode is laterally centred. Following a 2.75 millimetre blank zone below
-the Aztec code, the room name shall be printed in bold, followed by the room ID in italics after
-a line break, then the room description after another line break, then the inviter/knock request creator
-of the ticket after yet another line break, respectively. The font to be used is Helvetica/Arial in 8pt.
+In this format, the ticket includes the Aztec code, room name, room ID at a minimum. Inviter/knock request
+creator and detailed description are optional. The operator can add more information.
 
 ## Alternatives
 
