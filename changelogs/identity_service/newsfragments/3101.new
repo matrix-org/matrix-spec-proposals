@@ -1,1 +1,1 @@
-Add `/versions` API as per [MSC2320](https://github.com/matrix-org/matrix-doc/pull/2320).
+Add `GET /_matrix/identity/versions` API as per [MSC2320](https://github.com/matrix-org/matrix-doc/pull/2320).
