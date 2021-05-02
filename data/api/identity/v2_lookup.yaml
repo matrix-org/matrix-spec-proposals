@@ -101,6 +101,10 @@ paths:
                   The addresses to look up. The format of the entries here depend on
                   the `algorithm` used. Note that queries which have been incorrectly
                   hashed or formatted will lead to no matches.
+
+                  Note that addresses are case sensitive: review the
+                  [3PID Types](/appendices#pid-types) to verify the intended case an
+                  identifier should be prior to submission/hashing.
                 example: [
                   "4kenr7N9drpCJ4AfalmlGQVsOn3o2RHjkADUpXJWZUc",
                   "nlo35_T5fzSGZzJApqu8lgIudJvmOQtDaHtr-I4rU7I"
