@@ -89,8 +89,8 @@ To create a changelog entry, create a file named in the format ``prNumber.type``
 the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 * ``new`` - Used when adding new endpoints. Please have the file contents be the
-  method and route being added, surrounded in RST code tags. For example: ``POST
-  /accounts/whoami``
+  method and route being added, surrounded in markdown code tags. For example: \`POST
+  /accounts/whoami\`.
 
 * ``feature`` - Used when adding backwards-compatible changes to the API.
 
@@ -103,7 +103,7 @@ the ``newsfragments`` directory. The ``type`` can be one of the following:
 
 All news fragments must have a brief summary explaining the change in the
 contents of the file. The summary must end in a full stop to be in line with
-the style guide and and formatting must be done using Markdown.
+the style guide and formatting must be done using Markdown.
 
 Changes that do not change the spec, such as changes to the build script, formatting,
 CSS, etc should not get a news fragment.

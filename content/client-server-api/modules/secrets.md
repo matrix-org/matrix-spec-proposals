@@ -42,7 +42,7 @@ passphrases](#deriving-keys-from-passphrases).
 
 | Parameter  | Type      | Description
 |------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------|
-| name       | string    | **Required.** The name of the key.                                                                                                  |
+| name       | string    | Optional. The name of the key. If not given, the client may use a generic name such as "Unnamed key", or "Default key" if the key is marked as the default key (see below). |
 | algorithm  | string    | **Required.** The encryption algorithm to be used for this key. Currently, only `m.secret_storage.v1.aes-hmac-sha2` is supported.   |
 | passphrase | string    | See [deriving keys from passphrases](#deriving-keys-from-passphrases) section for a description of this property.                   |
 
@@ -55,6 +55,18 @@ object that has the ID of the key as its `key` property. The default key
 will be used to encrypt all secrets that the user would expect to be
 available on all their clients. Unless the user specifies otherwise,
 clients will try to use the default key to decrypt secrets.
+
+Clients that want to present a simplified interface to users by not supporting
+multiple keys should use the default key if one is specified. If not default
+key is specified, the client may behave as if there is no key is present at
+all. When such a client creates a key, it should mark that key as being the
+default key.
+
+`DefaultKey`
+
+| Parameter  | Type      | Description
+|------------|-----------|------------------------------------------|
+| key        | string    | **Required.** The ID of the default key. |
 
 ##### Secret storage
 
@@ -115,6 +127,16 @@ and the key descriptions for the keys would be:
   "name": "Some other key",
   "algorithm": "m.secret_storage.v1.aes-hmac-sha2",
   // ... other properties according to algorithm
+}
+```
+
+If `key_id_1` is the default key, then we also have:
+
+`m.secret_storage.default_key`:
+
+```
+{
+  "key": "key_id_1"
 }
 ```
 
