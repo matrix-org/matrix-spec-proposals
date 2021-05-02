@@ -247,8 +247,7 @@ file type. The key is sent using the [JSON Web
 Key](https://tools.ietf.org/html/rfc7517#appendix-A.3) format, with a
 [W3C extension](https://w3c.github.io/webcrypto/#iana-section-jwk).
 
-Extensions to `m.room.message` msgtypes
-&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+###### Extensions to `m.room.message` msgtypes
 
 This module adds `file` and `thumbnail_file` properties, of type
 `EncryptedFile`, to `m.room.message` msgtypes that reference files, such
@@ -357,8 +356,8 @@ out-of-band channel: there is no way to do it within Matrix without
 trusting the administrators of the homeservers.
 
 In Matrix, verification works by Alice meeting Bob in person, or
-contacting him via some other trusted medium, and use [SAS
-Verification](#SAS Verification) to interactively verify Bob's devices.
+contacting him via some other trusted medium, and using one of the
+verification methods defined below to interactively verify Bob's devices.
 Alice and Bob may also read aloud their unpadded base64 encoded Ed25519
 public key, as returned by `/keys/query`.
 
@@ -390,60 +389,70 @@ decrypted by such a device. For the Olm protocol, this is documented at
 Verifying keys manually by reading out the Ed25519 key is not very
 user-friendly, and can lead to errors. In order to help mitigate errors,
 and to make the process easier for users, some verification methods are
-supported by the specification. The methods all use a common framework
+supported by the specification and use messages exchanged by the user's devices
+to assist in the verification. The methods all use a common framework
 for negotiating the key verification.
 
-To use this framework, Alice's client would send
-`m.key.verification.request` events to Bob's devices. All of the
-`to_device` messages sent to Bob MUST have the same `transaction_id` to
-indicate they are part of the same request. This allows Bob to reject
-the request on one device, and have it apply to all of his devices.
-Similarly, it allows Bob to process the verification on one device
-without having to involve all of his devices.
+Verification messages can be sent either in a room shared by the two parties,
+which should be a [direct messaging](#direct-messaging) room between the two
+parties, or by using [to-device](#send-to-device-messaging) messages sent
+directly between the two devices involved.  In both cases, the messages
+exchanged are similar, with minor differences as detailed below. Verifying
+between two different users should be performed using in-room messages, whereas
+verifying two devices belonging to the same user should be performed using
+to-device messages.
 
-When Bob's device receives an `m.key.verification.request`, it should
-prompt Bob to verify keys with Alice using one of the supported methods
-in the request. If Bob's device does not understand any of the methods,
-it should not cancel the request as one of his other devices may support
-the request. Instead, Bob's device should tell Bob that an unsupported
-method was used for starting key verification. The prompt for Bob to
-accept/reject Alice's request (or the unsupported method prompt) should
-be automatically dismissed 10 minutes after the `timestamp` field or 2
-minutes after Bob's client receives the message, whichever comes first,
-if Bob does not interact with the prompt. The prompt should additionally
-be hidden if an appropriate `m.key.verification.cancel` message is
-received.
+A key verification session is identified by an ID that is established by the
+first message sent in that session. For verifications using in-room messages,
+the ID is the event ID of the initial message, and for verifications using
+to-device messages, the first message contains a `transaction_id` field that is
+shared by the other messages of that session.
 
-If Bob rejects the request, Bob's client must send an
-`m.key.verification.cancel` message to Alice's device. Upon receipt,
-Alice's device should tell her that Bob does not want to verify her
-device and send `m.key.verification.cancel` messages to all of Bob's
-devices to notify them that the request was rejected.
+In general, verification operates as follows:
 
-If Bob accepts the request, Bob's device starts the key verification
-process by sending an `m.key.verification.start` message to Alice's
-device. Upon receipt of this message, Alice's device should send an
-`m.key.verification.cancel` message to all of Bob's other devices to
-indicate the process has been started. The start message must use the
-same `transaction_id` from the original key verification request if it
-is in response to the request. The start message can be sent
-independently of any request.
+- Alice requests a key verification with Bob by sending an
+  `m.key.verification.request` event. This event indicates the verification
+  methods that Alice's client supports. (Note that "Alice" and "Bob" may in
+  fact be the same user, in the case where a user is verifying their own
+  devices.)
+- Bob's client prompts Bob to accept the key verification. When Bob accepts
+  the verification, Bob's client sends an `m.key.verification.ready` event.
+  This event indicates the verification methods, corresponding to the
+  verification methods supported by Alice's client, that Bob's client supports.
+- Alice's or Bob's devices allow their users to select one of the verification
+  methods supported by both devices to use for verification. When Alice or Bob
+  selects a verification method, their device begins the verification by
+  sending an `m.key.verification.start` event, indicating the selected
+  verification method. Note that if there is only one verification method in
+  common between the devices then the receiver's device (Bob) can auto-select
+  it.
+- Alice and Bob complete the verification as defined by the selected
+  verification method. This could involve their clients exchanging messages,
+  Alice and Bob exchanging information out-of-band, and/or Alice and Bob
+  interacting with their devices.
+- Alice's and Bob's clients send `m.key.verification.done` events to indicate
+  that the verification was successful.
 
-Individual verification methods may add additional steps, events, and
-properties to the verification messages. Event types for methods defined
-in this specification must be under the `m.key.verification` namespace
-and any other event types must be namespaced according to the Java
-package naming convention.
+Verifications can be cancelled by either device at any time by sending an
+`m.key.verification.cancel` event with a `code` field that indicates the reason
+it was cancelled.
 
-Any of Alice's or Bob's devices can cancel the key verification request
-or process at any time with an `m.key.verification.cancel` message to
-all applicable devices.
-
-This framework yields the following handshake, assuming both Alice and
-Bob each have 2 devices, Bob's first device accepts the key verification
-request, and Alice's second device initiates the request. Note how
-Alice's first device is not involved in the request or verification
-process.
+When using to-device messages, Alice may not know which of Bob's devices to
+verify, or may not want to choose a specific device. In this case, Alice will
+send `m.key.verification.request` events to all of Bob's devices. All of these
+events will use the same transaction ID. When Bob accepts or declines the
+verification on one of his devices (sending either an
+`m.key.verification.ready` or `m.key.verification.cancel` event), Alice will
+send an `m.key.verification.cancel` event to Bob's other devices with a `code`
+of `m.accepted` in the case where Bob accepted the verification, or `m.user` in
+the case where Bob rejected the verification. This yields the following
+handshake when using to-device messages, assuming both Alice and Bob each have
+2 devices, Bob's first device accepts the key verification request, and Alice's
+second device initiates the request. Note how Alice's first device is not
+involved in the request or verification process. Also note that, although in
+this example, Bob's device sends the `m.key.verification.start`, Alice's device
+could also send that message. As well, the order of the
+`m.key.verification.done` messages could be reversed.
 
 ```
     +---------------+ +---------------+                    +-------------+ +-------------+
@@ -456,19 +465,84 @@ process.
             |                 | m.key.verification.request        |               |
             |                 |-------------------------------------------------->|
             |                 |                                   |               |
-            |                 |          m.key.verification.start |               |
+            |                 |          m.key.verification.ready |               |
             |                 |<----------------------------------|               |
             |                 |                                   |               |
             |                 | m.key.verification.cancel         |               |
             |                 |-------------------------------------------------->|
             |                 |                                   |               |
+            |                 |          m.key.verification.start |               |
+            |                 |<----------------------------------|               |
+            |                 |                                   |               |
+            .
+            .                       (verification messages)
+            .
+            |                 |                                   |               |
+            |                 |           m.key.verification.done |               |
+            |                 |<----------------------------------|               |
+            |                 |                                   |               |
+            |                 | m.key.verification.done           |               |
+            |                 |---------------------------------->|               |
+            |                 |                                   |               |
 ```
 
-After the handshake, the verification process begins.
+When using in-room messages and the room has encryption enabled, clients should
+ensure that encryption does not hinder the verification. For example, if the
+verification messages are encrypted, clients must ensure that all the
+recipient's unverified devices receive the keys necessary to decrypt the
+messages, even if they would normally not be given the keys to decrypt messages
+in the room. Alternatively, verification messages may be sent unencrypted,
+though this is not encouraged.
+
+Upon receipt of Alice's `m.key.verification.request` message, if Bob's device
+does not understand any of the methods, it should not cancel the request as one
+of his other devices may support the request. Instead, Bob's device should tell
+Bob that no supported method was found, and allow him to manually reject the
+request.
+
+The prompt for Bob to accept/reject Alice's request (or the unsupported method
+prompt) should be automatically dismissed 10 minutes after the `timestamp` (in
+the case of to-device messages) or `origin_ts` (in the case of in-room
+messages) field or 2 minutes after Bob's client receives the message, whichever
+comes first, if Bob does not interact with the prompt. The prompt should
+additionally be hidden if an appropriate `m.key.verification.cancel` message is
+received.
+
+If Bob rejects the request, Bob's client must send an
+`m.key.verification.cancel` event with `code` set to `m.user`. Upon receipt,
+Alice's device should tell her that Bob does not want to verify her device and,
+if the request was sent as a to-device message, send
+`m.key.verification.cancel` messages to all of Bob's devices to notify them
+that the request was rejected.
+
+If Alice's and Bob's clients both send an `m.key.verification.start` message,
+and both specify the same verification method, then the
+`m.key.verification.start` message sent by the user whose ID is the
+lexicographically largest user ID should be ignored, and the situation should
+be treated the same as if only the user with the lexicographically smallest
+user ID had sent the `m.key.verification.start` message.  In the case where the
+user IDs are the same (that is, when a user is verifying their own device),
+then the device IDs should be compared instead.  If the two
+`m.key.verification.start` messages do not specify the same verification
+method, then the verification should be cancelled with a `code` of
+`m.unexpected_message`.
+
+An `m.key.verification.start` message can also be sent independently of any
+request, specifying the verification method to use.
+
+Individual verification methods may add additional steps, events, and
+properties to the verification messages. Event types for methods defined
+in this specification must be under the `m.key.verification` namespace
+and any other event types must be namespaced according to the Java
+package naming convention.
 
 {{% event event="m.key.verification.request" %}}
 
+{{% event event="m.key.verification.ready" %}}
+
 {{% event event="m.key.verification.start" %}}
+
+{{% event event="m.key.verification.done" %}}
 
 {{% event event="m.key.verification.cancel" %}}
 
@@ -493,8 +567,11 @@ example, if we verify 40 bits, then an attacker has a 1 in
 success. A failed attack would result in a mismatched Short
 Authentication String, alerting users to the attack.
 
-The verification process takes place over [to-device](#send-to-device-messaging) messages in two
-phases:
+To advertise support for this method, clients use the name `m.sas.v1` in the
+`methods` fields of the `m.key.verification.request` and
+`m.key.verification.ready` events.
+
+The verification process takes place in two phases:
 
 1.  Key agreement phase (based on [ZRTP key
     agreement](https://tools.ietf.org/html/rfc6189#section-4.4.1)).
@@ -505,63 +582,62 @@ The process between Alice and Bob verifying each other would be:
 1.  Alice and Bob establish a secure out-of-band connection, such as
     meeting in-person or a video call. "Secure" here means that either
     party cannot be impersonated, not explicit secrecy.
-2.  Alice and Bob communicate which devices they'd like to verify with
-    each other.
-3.  Alice selects Bob's device from the device list and begins
-    verification.
-4.  Alice's client ensures it has a copy of Bob's device key.
-5.  Alice's device sends Bob's device an `m.key.verification.start`
-    message.
-6.  Bob's device receives the message and selects a key agreement
+2.  Alice and Bob begin a key verification using the key verification
+    framework as described above.
+3.  Alice's device sends Bob's device an `m.key.verification.start`
+    message. Alice's device ensures it has a copy of Bob's device key.
+4.  Bob's device receives the message and selects a key agreement
     protocol, hash algorithm, message authentication code, and SAS
     method supported by Alice's device.
-7.  Bob's device ensures it has a copy of Alice's device key.
-8.  Bob's device creates an ephemeral Curve25519 key pair
+5.  Bob's device ensures it has a copy of Alice's device key.
+6.  Bob's device creates an ephemeral Curve25519 key pair
     (*K<sub>B</sub><sup>private</sup>*, *K<sub>B</sub><sup>public</sup>*),
     and calculates the hash (using the chosen algorithm) of the public
     key *K<sub>B</sub><sup>public</sup>*.
-9.  Bob's device replies to Alice's device with an
+7.  Bob's device replies to Alice's device with an
     `m.key.verification.accept` message.
-10. Alice's device receives Bob's message and stores the commitment hash
+8.  Alice's device receives Bob's message and stores the commitment hash
     for later use.
-11. Alice's device creates an ephemeral Curve25519 key pair
+9.  Alice's device creates an ephemeral Curve25519 key pair
     (*K<sub>A</sub><sup>private</sup>*, *K<sub>A</sub><sup>public</sup>*)
     and replies to Bob's device with an `m.key.verification.key`,
     sending only the public key
     *K<sub>A</sub><sup>public</sup>*.
-12. Bob's device receives Alice's message and replies with its own
+10. Bob's device receives Alice's message and replies with its own
     `m.key.verification.key` message containing its public key
     *K<sub>B</sub><sup>public</sup>*.
-13. Alice's device receives Bob's message and verifies the commitment
+11. Alice's device receives Bob's message and verifies the commitment
     hash from earlier matches the hash of the key Bob's device just sent
     and the content of Alice's `m.key.verification.start` message.
-14. Both Alice and Bob's devices perform an Elliptic-curve
+12. Both Alice and Bob's devices perform an Elliptic-curve
     Diffie-Hellman
     (*ECDH(K<sub>A</sub><sup>private</sup>*, *K<sub>B</sub><sup>public</sup>*)),
     using the result as the shared secret.
-15. Both Alice and Bob's devices display a SAS to their users, which is
+13. Both Alice and Bob's devices display a SAS to their users, which is
     derived from the shared key using one of the methods in this
     section. If multiple SAS methods are available, clients should allow
     the users to select a method.
-16. Alice and Bob compare the strings shown by their devices, and tell
+14. Alice and Bob compare the strings shown by their devices, and tell
     their devices if they match or not.
-17. Assuming they match, Alice and Bob's devices calculate the HMAC of
+15. Assuming they match, Alice and Bob's devices calculate the HMAC of
     their own device keys and a comma-separated sorted list of the key
     IDs that they wish the other user to verify, using SHA-256 as the
     hash function. HMAC is defined in [RFC
     2104](https://tools.ietf.org/html/rfc2104). The key for the HMAC is
     different for each item and is calculated by generating 32 bytes
     (256 bits) using [the key verification HKDF](#hkdf-calculation).
-18. Alice's device sends Bob's device an `m.key.verification.mac`
+16. Alice's device sends Bob's device an `m.key.verification.mac`
     message containing the MAC of Alice's device keys and the MAC of her
     key IDs to be verified. Bob's device does the same for Bob's device
     keys and key IDs concurrently with Alice.
-19. When the other device receives the `m.key.verification.mac` message,
+17. When the other device receives the `m.key.verification.mac` message,
     the device calculates the HMAC of its copies of the other device's
     keys given in the message, as well as the HMAC of the
     comma-separated, sorted, list of key IDs in the message. The device
     compares these with the HMAC values given in the message, and if
     everything matches then the device keys are verified.
+18. Alice and Bob's devices send `m.key.verification.done` messages to complete
+    the verification.
 
 The wire protocol looks like the following between Alice and Bob's
 devices:
@@ -865,6 +941,13 @@ example, if Alice and Bob verify each other using SAS, Alice's
 `mac` property. Servers therefore must ensure that device IDs will not
 collide with cross-signing public keys.
 
+The cross-signing private keys can be stored on the server or shared with other
+devices using the [Secrets](#secrets) module.  When doing so, the master,
+user-signing, and self-signing keys are identified using the names
+`m.cross_signing.master`, `m.cross_signing.user_signing`, and
+`m.cross_signing.self_signing`, respectively, and the keys are base64-encoded
+before being encrypted.
+
 ###### Key and signature security
 
 A user's master key could allow an attacker to impersonate that user to
@@ -906,6 +989,135 @@ Users will not be able to see signatures made by other users'
 user-signing keys.
 
 {{% http-api spec="client-server" api="cross_signing" %}}
+
+##### QR codes
+
+Verifying by QR codes provides a quick way to verify when one of the parties
+has a device capable of scanning a QR code. The QR code encodes both parties'
+master signing keys as well as a random shared secret that is used to allow
+bi-directional verification from a single scan.
+
+To advertise the ability to show a QR code, clients use the names
+`m.qr_code.show.v1` and `m.reciprocate.v1` in the `methods` fields of the
+`m.key.verification.request` and `m.key.verification.ready` events. To
+advertise the ability to scan a QR code, clients use the names
+`m.qr_code.scan.v1` and `m.reciprocate.v1` in the `methods` fields of the
+`m.key.verification.request` and `m.key.verification.ready` events.
+Clients that support both showing and scanning QR codes would advertise
+`m.qr_code.show.v1`, `m.qr_code.scan.v1`, and `m.reciprocate.v1` as
+methods.
+
+The process between Alice and Bob verifying each other would be:
+
+1. Alice and Bob meet in person, and want to verify each other's keys.
+2. Alice and Bob begin a key verification using the key verification
+   framework as described above.
+3. Alice's client displays a QR code that Bob is able to scan if Bob's client
+   indicated the ability to scan, an option to scan Bob's QR code if her client
+   is able to scan.  Bob's client prompts displays a QR code that Alice can
+   scan if Alice's client indicated the ability to scan, and an option to scan
+   Alice's QR code if his client is able to scan. The format for the QR code
+   is described below. Other options, like starting SAS Emoji verification, 
+   can be presented alongside the QR code if the devices have appropriate 
+   support.
+5. Alice scans Bob's QR code.
+6. Alice's device ensures that the keys encoded in the QR code match the
+   expected values for the keys. If not, Alice's device displays an error
+   message indicating that the code is incorrect, and sends a
+   `m.key.verification.cancel` message to Bob's device.
+
+   Otherwise, at this point:
+   - Alice's device has now verified Bob's key, and
+   - Alice's device knows that Bob has the correct key for her.
+
+   Thus for Bob to verify Alice's key, Alice needs to tell Bob that he has the
+   right key.
+7. Alice's device displays a message saying that the verification was
+   successful because the QR code's keys will have matched the keys
+   expected for Bob. Bob's device hasn't had a chance to verify Alice's
+   keys yet so wouldn't show the same message. Bob will know that
+   he has the right key for Alice because Alice's device will have shown
+   this message, as otherwise the verification would be cancelled.
+8. Alice's device sends an `m.key.verification.start` message with `method` set
+   to `m.reciprocate.v1` to Bob (see below).  The message includes the shared
+   secret from the QR code.  This signals to Bob's device that Alice has
+   scanned Bob's QR code.
+
+   This message is merely a signal for Bob's device to proceed to the next
+   step, and is not used for verification purposes.
+9. Upon receipt of the `m.key.verification.start` message, Bob's device ensures
+   that the shared secret matches.
+
+   If the shared secret does not match, it should display an error message
+   indicating that an attack was attempted.  (This does not affect Alice's
+   verification of Bob's keys.)
+
+   If the shared secret does match, it asks Bob to confirm that Alice
+   has scanned the QR code.
+10. Bob sees Alice's device confirm that the key matches, and presses the button
+    on his device to indicate that Alice's key is verified.
+
+    Bob's verification of Alice's key hinges on Alice telling Bob the result of
+    her scan.  Since the QR code includes what Bob thinks Alice's key is,
+    Alice's device can check whether Bob has the right key for her.  Alice has
+    no motivation to lie about the result, as getting Bob to trust an incorrect
+    key would only affect communications between herself and Bob.  Thus Alice
+    telling Bob that the code was scanned successfully is sufficient for Bob to
+    trust Alice's key, under the assumption that this communication is done
+    over a trusted medium (such as in-person).
+11. Both devices send an `m.key.verification.done` message.
+
+###### QR code format
+
+The QR codes to be displayed and scanned using this format will encode binary
+strings in the general form:
+
+- the ASCII string `MATRIX`
+- one byte indicating the QR code version (must be `0x02`)
+- one byte indicating the QR code verification mode.  Should be one of the
+  following values:
+  - `0x00` verifying another user with cross-signing
+  - `0x01` self-verifying in which the current device does trust the master key
+  - `0x02` self-verifying in which the current device does not yet trust the
+    master key
+- the event ID or `transaction_id` of the associated verification
+  request event, encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in
+    bytes of the ID as a UTF-8 string
+  - the ID as a UTF-8 string
+- the first key, as 32 bytes.  The key to use depends on the mode field:
+  - if `0x00` or `0x01`, then the current user's own master cross-signing public key
+  - if `0x02`, then the current device's device key
+- the second key, as 32 bytes.  The key to use depends on the mode field:
+  - if `0x00`, then what the device thinks the other user's master
+    cross-signing key is
+  - if `0x01`, then what the device thinks the other device's device key is
+  - if `0x02`, then what the device thinks the user's master cross-signing key
+    is
+- a random shared secret, as a byte string.  It is suggested to use a secret
+  that is about 8 bytes long.  Note: as we do not share the length of the
+  secret, and it is not a fixed size, clients will just use the remainder of
+  binary string as the shared secret.
+
+For example, if Alice displays a QR code encoding the following binary string:
+
+```
+      "MATRIX"    |ver|mode| len   | event ID
+ 4D 41 54 52 49 58  02  00   00 2D   21 41 42 43 44 ...
+| user's cross-signing key    | other user's cross-signing key | shared secret
+  00 01 02 03 04 05 06 07 ...   10 11 12 13 14 15 16 17 ...      20 21 22 23 24 25 26 27
+```
+
+this indicates that Alice is verifying another user (say Bob), in response to
+the request from event "$ABCD...", her cross-signing key is
+`0001020304050607...` (which is "AAECAwQFBg..." in base64), she thinks that
+Bob's cross-signing key is `1011121314151617...` (which is "EBESExQVFh..." in
+base64), and the shared secret is `2021222324252627` (which is "ICEiIyQlJic" in
+base64).
+
+###### Verification messages specific to QR codes
+
+{{% event event="m.key.verification.start$m.reciprocate.v1" %}}
 
 #### Sharing keys between devices
 
@@ -1003,6 +1215,11 @@ as follows:
 
 When reading in a recovery key, clients must disregard whitespace, and
 perform the reverse of steps 1 through 3.
+
+The recovery key can also be stored on the server or shared with other devices
+using the [Secrets](#secrets) module. When doing so, it is identified using the
+name `m.megolm_backup.v1`, and the key is base64-encoded before being
+encrypted.
 
 ###### Backup algorithm: `m.megolm_backup.v1.curve25519-aes-sha2`
 

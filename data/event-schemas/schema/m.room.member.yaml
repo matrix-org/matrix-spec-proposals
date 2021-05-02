@@ -14,7 +14,7 @@ description: |-
 
   - `ban` - The user has been banned from the room, and is no longer allowed to join it until they are un-banned from the room (by having their membership state set to a value other than `ban`).
 
-  - `knock` - This is a reserved word, which currently has no meaning.
+  - `knock` - The user has knocked on the room, requesting permission to participate. They may not participate in the room until they join.
 
   The `third_party_invite` property will be set if this invite is an `invite` event and is the successor of an `m.room.third_party_invite` event, and absent otherwise.
 
@@ -31,13 +31,13 @@ description: |-
   from the `prev_content` object on an event. If not present, the user's previous membership must be assumed
   as `leave`.
 
-  |                   | to `invite`         | to `join`                              | to `leave`                                                                                                                              | to `ban`                    | to `knock`       |
-  |-------------------|---------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|------------------|
-  | **from `invite`** | No change.          | User joined the room.                  | If the `state_key` is the same as the `sender`, the user rejected the invite. Otherwise, the `state_key` user had their invite revoked. | User was banned.            | Not implemented. |
-  | **from `join`**   |Must never happen.   | `displayname` or `avatar_url` changed. | If the `state_key` is the same as the `sender`, the user left. Otherwise, the `state_key` user was kicked.                              | User was kicked and banned. | Not implemented. |
-  | **from `leave`**  |New invitation sent. | User joined.                           | No change.                                                                                                                              | User was banned.            | Not implemented. |
-  | **from `ban`**    |Must never happen.   | Must never happen.                     | User was unbanned.                                                                                                                      | No change.                  | Not implemented. |
-  | **from `knock`**  |Not implemented.     | Not implemented.                       | Not implemented.                                                                                                                        | Not implemented.            | Not implemented. |
+  |                   | to `invite`          | to `join`                              | to `leave`                                                                                                                              | to `ban`                    | to `knock`         |
+  |-------------------|----------------------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|--------------------|
+  | **from `invite`** | No change.           | User joined the room.                  | If the `state_key` is the same as the `sender`, the user rejected the invite. Otherwise, the `state_key` user had their invite revoked. | User was banned.            | Must never happen. |
+  | **from `join`**   | Must never happen.   | `displayname` or `avatar_url` changed. | If the `state_key` is the same as the `sender`, the user left. Otherwise, the `state_key` user was kicked.                              | User was kicked and banned. | Must never happen. |
+  | **from `leave`**  | New invitation sent. | User joined.                           | No change.                                                                                                                              | User was banned.            | User is knocking.  |
+  | **from `ban`**    | Must never happen.   | Must never happen.                     | User was unbanned.                                                                                                                      | No change.                  | Must never happen. |
+  | **from `knock`**  | Knock accepted.      | Must never happen.                     | If the `state_key` is the same as the `sender`, the user retracted the knock. Otherwise, the `state_key` user had their knock denied.   | User was banned.            | No change.         |
 
 properties:
   content:
@@ -124,7 +124,24 @@ properties:
       - type: object
         properties:
           invite_room_state:
-            description: 'A subset of the state of the room at the time of the invite, if `membership` is `invite`. Note that this state is informational, and SHOULD NOT be trusted; once the client has joined the room, it SHOULD fetch the live state from the server and discard the invite_room_state. Also, clients must not rely on any particular state being present here; they SHOULD behave properly (with possibly a degraded but not a broken experience) in the absence of any particular events here. If they are set on the room, at least the state for `m.room.avatar`, `m.room.canonical_alias`, `m.room.join_rules`, and `m.room.name` SHOULD be included.'
+            description: |-
+              A subset of the state of the room at the time of the invite, if `membership` is `invite`.
+              Note that this state is informational, and SHOULD NOT be trusted; once the client has
+              joined the room, it SHOULD fetch the live state from the server and discard the
+              invite_room_state. Also, clients must not rely on any particular state being present here;
+              they SHOULD behave properly (with possibly a degraded but not a broken experience) in
+              the absence of any particular events here. If they are set on the room, at least the
+              state for `m.room.avatar`, `m.room.canonical_alias`, `m.room.join_rules`, and `m.room.name`
+              SHOULD be included.
+            items:
+              $ref: "stripped_state.yaml"
+            type: array
+          knock_room_state:
+            description: |-
+              A subset of the state of the room at the time of the knock, if `membership` is `knock`.
+              This has the same restrictions as `invite_room_state`. If they are set on the room, at least
+              the state for `m.room.avatar`, `m.room.canonical_alias`, `m.room.join_rules`, `m.room.name`,
+              and `m.room.encryption` SHOULD be included.
             items:
               $ref: "stripped_state.yaml"
             type: array
