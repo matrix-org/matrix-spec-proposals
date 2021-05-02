@@ -297,7 +297,7 @@ specify parameter values. The flow for this method is as follows:
     6.  If the `m.identity_server` property is present, extract the
         `base_url` value for use as the base URL of the identity server.
         Validation for this URL is done as in the step above, but using
-        `/_matrix/identity/api/v1` as the endpoint to connect to. If the
+        `/_matrix/identity/v2` as the endpoint to connect to. If the
         `m.identity_server` property is present, but does not have a
         `base_url` value, then `FAIL_ERROR`.
 

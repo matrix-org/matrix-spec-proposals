@@ -59,48 +59,48 @@ the keys `error` and `errcode` MUST always be present.
 
 Some standard error codes are below:
 
-`M_NOT_FOUND`  
+`M_NOT_FOUND`
 The resource requested could not be located.
 
-`M_MISSING_PARAMS`  
+`M_MISSING_PARAMS`
 The request was missing one or more parameters.
 
-`M_INVALID_PARAM`  
+`M_INVALID_PARAM`
 The request contained one or more invalid parameters.
 
-`M_SESSION_NOT_VALIDATED`  
+`M_SESSION_NOT_VALIDATED`
 The session has not been validated.
 
-`M_NO_VALID_SESSION`  
+`M_NO_VALID_SESSION`
 A session could not be located for the given parameters.
 
-`M_SESSION_EXPIRED`  
+`M_SESSION_EXPIRED`
 The session has expired and must be renewed.
 
-`M_INVALID_EMAIL`  
+`M_INVALID_EMAIL`
 The email address provided was not valid.
 
-`M_EMAIL_SEND_ERROR`  
+`M_EMAIL_SEND_ERROR`
 There was an error sending an email. Typically seen when attempting to
 verify ownership of a given email address.
 
-`M_INVALID_ADDRESS`  
+`M_INVALID_ADDRESS`
 The provided third party address was not valid.
 
-`M_SEND_ERROR`  
+`M_SEND_ERROR`
 There was an error sending a notification. Typically seen when
 attempting to verify ownership of a given third party address.
 
-`M_UNRECOGNIZED`  
+`M_UNRECOGNIZED`
 The request contained an unrecognised value, such as an unknown token or
 medium.
 
-`M_THREEPID_IN_USE`  
+`M_THREEPID_IN_USE`
 The third party identifier is already in use by another user. Typically
 this error will have an additional `mxid` property to indicate who owns
 the third party identifier.
 
-`M_UNKNOWN`  
+`M_UNKNOWN`
 An unknown error has occurred.
 
 ## Privacy
@@ -113,22 +113,6 @@ To this end, in general APIs should allow a 3PID to be mapped to a
 Matrix user identity, but not in the other direction (i.e. one should
 not be able to get all 3PIDs associated with a Matrix user ID, or get
 all 3PIDs associated with a 3PID).
-
-## Version 1 API deprecation
-
-As described on each of the version 1 endpoints, the v1 API is
-deprecated in favour of the v2 API described here. The major difference,
-with the exception of a few isolated cases, is that the v2 API requires
-authentication to ensure the user has given permission for the identity
-server to operate on their data.
-
-The v1 API is planned to be removed from the specification in a future
-version.
-
-Clients SHOULD attempt the v2 endpoints first, and if they receive a
-`404`, `400`, or similar error they should try the v1 endpoint or fail
-the operation. Clients are strongly encouraged to warn the user of the
-risks in using the v1 API, if they are planning on using it.
 
 ## Web browser clients
 
@@ -147,12 +131,9 @@ recommended CORS headers to be returned by servers on all requests are:
 
 ## Authentication
 
-Most `v2` endpoints in the Identity Service API require authentication
+Most endpoints in the Identity Service API require authentication
 in order to ensure that the requesting user has accepted all relevant
-policies and is otherwise permitted to make the request. The `v1` API
-(currently deprecated) does not require this authentication, however
-using `v1` is strongly discouraged as it will be removed in a future
-release.
+policies and is otherwise permitted to make the request.
 
 Identity Servers use a scheme similar to the Client-Server API's concept
 of access tokens to authenticate users. The access tokens provided by an
@@ -202,8 +183,6 @@ has just accepted are appended to `m.accepted_terms`.
 
 ## Status check
 
-{{% http-api spec="identity" api="ping" %}}
-
 {{% http-api spec="identity" api="v2_ping" %}}
 
 ## Key management
@@ -217,22 +196,13 @@ The identity server may also keep track of some short-term
 public-private keypairs, which may have different usage and lifetime
 characteristics than the service's long-term keys.
 
-{{% http-api spec="identity" api="pubkey" %}}
-
 {{% http-api spec="identity" api="v2_pubkey" %}}
 
 ## Association lookup
 
-{{% http-api spec="identity" api="lookup" %}}
-
 {{% http-api spec="identity" api="v2_lookup" %}}
 
 ### Client behaviour
-
-{{% boxes/note %}}
-This section only covers the v2 lookup endpoint. The v1 endpoint is
-described in isolation above.
-{{% /boxes/note %}}
 
 Prior to performing a lookup clients SHOULD make a request to the
 `/hash_details` endpoint to determine what algorithms the server
@@ -243,11 +213,6 @@ the server.
 Clients MUST support at least the `sha256` algorithm.
 
 ### Server behaviour
-
-{{% boxes/note %}}
-This section only covers the v2 lookup endpoint. The v1 endpoint is
-described in isolation above.
-{{% /boxes/note %}}
 
 Servers, upon receipt of a `/lookup` request, will compare the query
 against known bindings it has, hashing the identifiers it knows about as
@@ -398,19 +363,13 @@ through without modification.
 
 ### Email associations
 
-{{% http-api spec="identity" api="email_associations" %}}
-
 {{% http-api spec="identity" api="v2_email_associations" %}}
 
 ### Phone number associations
 
-{{% http-api spec="identity" api="phone_associations" %}}
-
 {{% http-api spec="identity" api="v2_phone_associations" %}}
 
 ### General
-
-{{% http-api spec="identity" api="associations" %}}
 
 {{% http-api spec="identity" api="v2_associations" %}}
 
@@ -427,8 +386,6 @@ the Matrix user's homeserver via the
 endpoint. The request MUST be signed with a long-term private key for
 the identity server.
 
-{{% http-api spec="identity" api="store_invite" %}}
-
 {{% http-api spec="identity" api="v2_store_invite" %}}
 
 ## Ephemeral invitation signing
@@ -437,7 +394,5 @@ To aid clients who may not be able to perform crypto themselves, the
 identity server offers some crypto functionality to help in accepting
 invitations. This is less secure than the client doing it itself, but
 may be useful where this isn't possible.
-
-{{% http-api spec="identity" api="invitation_signing" %}}
 
 {{% http-api spec="identity" api="v2_invitation_signing" %}}
