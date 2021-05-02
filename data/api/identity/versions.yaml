@@ -47,5 +47,5 @@ paths:
                 description: The supported versions.
                 items:
                   type: string
-                  description: The supported versions
+                  description: The supported versions.
             required: ['versions']
