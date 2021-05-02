@@ -232,6 +232,18 @@ reserved for events defined in the Matrix specification - for instance
 `m.room.message` is the event type for instant messages. Events are
 usually sent in the context of a "Room".
 
+{{% boxes/warning %}}
+Event bodies are considered untrusted data. This means that any application using
+Matrix must validate that the event body is of the expected shape/schema
+before using the contents verbatim.
+
+**It is not safe to assume that an event body will have all the expected
+fields of the expected types.**
+
+See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
+detail on why this assumption is unsafe.
+{{% /boxes/warning %}}
+
 ### Event Graphs
 
 Events exchanged in the context of a room are stored in a directed
@@ -315,12 +327,12 @@ sent to the room `!qporfwt:matrix.org`:
 Federation maintains *shared data structures* per-room between multiple
 homeservers. The data is split into `message events` and `state events`.
 
-Message events:  
+Message events:
 These describe transient 'once-off' activity in a room such as an
 instant messages, VoIP call setups, file transfers, etc. They generally
 describe communication activity.
 
-State events:  
+State events:
 These describe updates to a given piece of persistent information
 ('state') related to a room, such as the room's name, topic, membership,
 participating servers, etc. State is modelled as a lookup table of
@@ -493,7 +505,7 @@ stable and unstable periodically for a variety of reasons, including
 discovered security vulnerabilities and age.
 
 Clients should not ask room administrators to upgrade their rooms if the
-room is running a stable version. Servers SHOULD use room version 6 as
+room is running a stable version. Servers SHOULD use **room version 6** as
 the default room version when creating new rooms.
 
 The available room versions are:
@@ -510,10 +522,11 @@ The available room versions are:
     signing key validity periods.
 -   [Version 6](/rooms/v6) - **Stable**. Alters several
     authorization rules for events.
+-   [Version 7](/rooms/v7) - **Stable**. Introduces knocking.
 
 ## Specification Versions
 
-The specification for each API is versioned in the form `rX.Y.Z`.  
+The specification for each API is versioned in the form `rX.Y.Z`.
 -   A change to `X` reflects a breaking change: a client implemented
     against `r1.0.0` may need changes to work with a server which
     supports (only) `r2.0.0`.

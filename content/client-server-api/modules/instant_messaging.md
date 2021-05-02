@@ -53,7 +53,7 @@ tags to permit, denying the use and rendering of anything else, is:
 `font`, `del`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `blockquote`, `p`,
 `a`, `ul`, `ol`, `sup`, `sub`, `li`, `b`, `i`, `u`, `strong`, `em`,
 `strike`, `code`, `hr`, `br`, `div`, `table`, `thead`, `tbody`, `tr`,
-`th`, `td`, `caption`, `pre`, `span`, `img`.
+`th`, `td`, `caption`, `pre`, `span`, `img`, `details`, `summary`.
 
 Not all attributes on those tags should be permitted as they may be
 avenues for other disruption attempts, such as adding `onclick` handlers
@@ -63,10 +63,11 @@ are listed, clients should translate the value (a 6-character hex color
 code) to the appropriate CSS/attributes for the tag.
 
 `font`  
-`data-mx-bg-color`, `data-mx-color`
+`data-mx-bg-color`, `data-mx-color`, `color`
 
 `span`  
-`data-mx-bg-color`, `data-mx-color`
+`data-mx-bg-color`, `data-mx-color`, `data-mx-spoiler` (see 
+[spoiler messages](#spoiler-messages))
 
 `a`  
 `name`, `target`, `href` (provided the value is not relative and has a
@@ -460,6 +461,52 @@ to the following:
 For `m.image`, the text should be `"sent an image."`. For `m.video`, the
 text should be `"sent a video."`. For `m.audio`, the text should be
 `"sent an audio file"`.
+
+##### Spoiler messages
+
+Parts of a message can be hidden visually from the user through use of spoilers. 
+This does not affect the server's representation of the event content - it 
+is simply a visual cue to the user that the message may reveal important 
+information about something, spoiling any relevant surprise.
+
+To send spoilers clients MUST use the `formatted_body` and therefore the 
+`org.matrix.custom.html` format, described above. This makes spoilers valid on
+any `msgtype` which can support this format appropriately. 
+
+Spoilers themselves are contained with `span` tags, with the reason (optionally)
+being in the `data-mx-spoiler` attribute. Spoilers without a reason must at least
+specify the attribute, though the value may be empty/undefined.
+
+An example of a spoiler is:
+
+```json
+{
+  "msgtype": "m.text",
+  "format": "org.matrix.custom.html",
+  "body": "Alice [Spoiler](mxc://example.org/abc123) in the movie.",
+  "formatted_body": "Alice <span data-mx-spoiler>lived happily ever after</span> in the movie."
+}
+```
+
+If a reason were to be supplied, it would look like:
+
+```json
+{
+  "msgtype": "m.text",
+  "format": "org.matrix.custom.html",
+  "body": "Alice [Spoiler for health of Alice](mxc://example.org/abc123) in the movie.",
+  "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
+}
+```
+
+When sending a spoiler, clients SHOULD provide the plain text fallback in the `body`
+as shown above (including the reason). The fallback SHOULD omit the spoiler text verbatim
+since `body` might show up in text-only clients or in notifications. To prevent spoilers
+showing up in such situations, clients are strongly encouraged to first upload the plaintext
+to the media repository then reference the MXC URI in a markdown-style link, as shown above.
+
+Clients SHOULD render spoilers differently with some sort of disclosure. For example, the
+client could blur the actual text and ask the user to click on it for it to be revealed.
 
 #### Server behaviour
 

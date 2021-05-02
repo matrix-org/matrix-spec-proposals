@@ -1,0 +1,1 @@
+Add `m.key.verification.ready` and `m.key.verification.done` to key verification framework as per [MSC2366](https://github.com/matrix-org/matrix-doc/pull/2366).
