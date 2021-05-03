@@ -18,7 +18,7 @@ expressed for Matrix rooms.
 
 ## Proposal
 
-For the purposes if this proposal, each bot should be given a name (or names)
+For the purposes of this proposal, each bot should be given a name (or names)
 following the Java package naming convention.  For example, the Voyager bot
 from t2bot.io could use the name `io.t2bot.voyager`.
 
