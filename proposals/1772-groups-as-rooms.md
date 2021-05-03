@@ -72,7 +72,7 @@ space by peeking into the space-room (thus avoiding the need to add
 
 Join rules, invites and 3PID invites work as for a normal room.  In order for
 clients to distinguish space invites from room invites, all invites must now
-include the `m.room.create` event in their `invite_state`.
+include the `m.room.create` event in their `invite_state` and `knock_state`.
 
 ### Relationship between rooms and spaces
 
