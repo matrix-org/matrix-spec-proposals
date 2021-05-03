@@ -56,7 +56,7 @@ this is considered acceptable given the potential to reduce abuse of the endpoin
 
 ## Security considerations
 
-Care should be taken not to give away information inadvertently by responding different error codes depending
+Care should be taken not to give away information inadvertently by responding with different error codes depending
 on the existence of the room, as it may give away private rooms on the homeserver. This may be somewhat unavoidable
 due to the time delay for checking the existence of a room vs checking the state for a user, so implementations
 MAY decide to "fuzz" the response times of the endpoint to avoid time-based attacks.
