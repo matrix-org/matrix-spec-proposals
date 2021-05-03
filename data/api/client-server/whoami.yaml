@@ -47,7 +47,8 @@ paths:
             The token belongs to a known user.
           examples:
             application/json: {
-              "user_id": "@joe:example.org"
+              "user_id": "@joe:example.org",
+              "device_id": "ABC1234"
             }
           schema:
             type: object
@@ -55,7 +56,14 @@ paths:
             properties:
               user_id:
                 type: string
-                description: The user id that owns the access token.
+                description: The user ID that owns the access token.
+              device_id:
+                type: string
+                description: |-
+                  Device ID associated with the access token. If no device
+                  is associated with the access token (such as in the case
+                  of application services) then this field can be omitted.
+                  Otherwise this is required.
         401:
           description:
             The token is not recognised
