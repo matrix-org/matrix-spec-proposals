@@ -57,7 +57,8 @@ Parameters defined in this proposal are:
 - `allow`: (boolean) whether the bot is allowed to crawl the room.  If `false`,
   then the bot may not display any information about the room to users who are
   searching its directory, and may not store any information about the room
-  other than its existence and its crawling preferences.  If `true`, the bot
+  other than its existence and its crawling preferences.  The bot should also
+  avoid joining the room, or leave the room if it has already joined.  If `true`, the bot
   may index the room, and may store and display the room's ID, name, avatar,
   aliases, canonical alias, topic, encryption status, join rules, and history
   visibility.  Some other aspects of the room are controlled by specific
@@ -155,7 +156,7 @@ The configuration information is purely advisory, and should not be relied on
 for security since bots can simply ignore the configuration.
 
 
-## Conclusion
+## Unstable prefix
 
-In this proposal, we define a mechanism for configuring the crawling behaviour
-of bots in Matrix rooms.
+Until this lands in the spec, the state event type
+`org.matrix.msc2291.room.robots` should be used in place of `m.room.robots`.
