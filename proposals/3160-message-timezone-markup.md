@@ -57,7 +57,7 @@ For web clients, Firefox always
 when "resist fingerprinting" is on. Web clients would therefore need to at
 least confirm the detected timezone with the user to ensure it does not get
 sent with a different timezone than the user is actually in and create
-a whole level of confusion.
+a whole new level of confusion.
 
 The `datetime` attribute in HTML does not allow to just specify a time of day
 without specifying the day, which could be nice to have. In that case, clients
