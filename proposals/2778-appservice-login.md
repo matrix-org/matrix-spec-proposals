@@ -82,7 +82,28 @@ create more work for all parties involved for little benefit.
 
 ## Security considerations
 
-None
+Appservices could use this new functionality to generate devices for any userId that are within it's namespace e.g. setting the
+user namespace regex to `@.*:example.com` would allow appservice to control anyone on the homeserver. While this sounds scary, in practise
+this is not a problem because:
+
+- Appservice namespaces are mainained by the homeserver admin. If the namespace were to change, then it's reasonable
+  to assume that the server admin is aware. There is no defense mechanism to stop a malicious server admin from creating new
+  devices for a given user's account as they could also do so by simply modifying the database.
+
+- While an appservice *could* try to masquerade as a user maliciously without the server admin expecting it, it would still 
+  be bound by the restrictions of the namespace. Server admins are expected to be aware of the implications of adding new
+  appservices to their server so the burden of responsibility lies with the server admin.
+
+- Appservices already can /sync as any user using the `as_token` and send any messages as any user in the namespace, the only
+  difference is that without a dedicated access token they are unable to receive device messages. While in theory this
+  does make them unable to see encrypted messages, this is not designed to be a security mechanism.
+
+- An appservice trying to log in as a user will always create a new device, which means the user would be informed of the
+  new device on their existing sessions. It should be very obvious if a malicous appservice is creating new devices on your account.
+
+In conclusion this MSC only automates the creation of new devices for users inside an AS namespace, which is something
+a server admin could already do. Appservices should always be treated with care and so with these facts in mind the MSC should 
+be considered secure.
 
 ## Unstable prefix
 
