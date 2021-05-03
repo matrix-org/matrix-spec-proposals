@@ -8,12 +8,12 @@ This MSC defines an approach for defining data trees in Matrix, using a document
 for how it could be applied.
 
 Reading material:
-* [MSC1772 - Spaces](https://github.com/matrix-org/matrix-doc/pull/1772)
-* [MSC1840 - Room types](https://github.com/matrix-org/matrix-doc/pull/1840)
+* [MSC1772 - Spaces + Room types](https://github.com/matrix-org/matrix-doc/pull/1772)
 * [MSC3088 - Room subtyping](https://github.com/matrix-org/matrix-doc/pull/3088)
 * [MSC1767 - Extensible events](https://github.com/matrix-org/matrix-doc/pull/1767)
 
 Optional but useful reading:
+* [MSC1840 - Alternative room types](https://github.com/matrix-org/matrix-doc/pull/1840)
 * [MSC2326 - Label-based filtering ("threading")](https://github.com/matrix-org/matrix-doc/pull/2326)
 * [MSC2674 - Event relationships](https://github.com/matrix-org/matrix-doc/pull/2674)
 * [MSC2676 - Message editing](https://github.com/matrix-org/matrix-doc/pull/2676)
@@ -95,9 +95,9 @@ instead. This is expected to be a rare choice of data structure, though can theo
 group files within a directory for simpler access control. Note that the "My Folder" space does not need
 to be subtyped to have this happen.
 
-Files are represented as room events either in the tree room (or in any non-space room under that tree 
-space). This is done by exposing a generic `m.leaf` type which is purely intended to be used to encourage 
-proper rendering within the extensible events scheme. 
+Files are represented as room events either in the tree room (or in any non-space room under that tree
+space). This is done by exposing a generic `m.leaf` type which is purely intended to be used to encourage
+proper rendering within the extensible events scheme.
 
 This intentionally does not use state events to represent each leaf as encrypted state events are not possible
 currently. Other MSCs may wish to optimize the lookup of regular room events, though for now the intention
@@ -177,6 +177,26 @@ Note how the encrypted event excludes the custom field but the decrypted copy do
 there is no unnecessary disclosure of information. Clients MUST NOT trust the `m.leaf` in the encrypted
 event and must only consider the decrypted copy's `m.leaf`. This is to ensure that an `m.leaf` is *always*
 present on an event that needs it, as some clients might optimize out the `m.leaf` without carrying it over.
+
+**TODO: Decide on index versus the above (`m.leaf` accessible by server). Index is below.**
+
+The client is expected to maintain a "branch" structure in the room state, denoting the active files and
+where to find those files. This is done through a `m.branch` state event, where the state key is the event
+ID of the file. An `m.branch` event looks like this:
+
+```json5
+{
+  "type": "m.branch",
+  "state_key": "$event",
+  "content": {
+    "active": true
+  }
+}
+```
+
+When `active` is not exactly `true`, the file is considered invalid/inactive. Clients should ignore inactive
+files. Clients should take reasonable efforts to resolve the latest version of a file: an edited file event
+shouldn't need `m.branch` switching.
 
 For some common operations:
 * Deleting a file would mean redacting the event.
