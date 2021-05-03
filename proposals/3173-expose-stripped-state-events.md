@@ -1,4 +1,4 @@
-# MSCXXXX: Exposing stripped state events to any potential joiner
+# MSC3173: Expose stripped state events to any potential joiner
 
 It is currently possible to inspect the state of rooms in some circumstances:
 
