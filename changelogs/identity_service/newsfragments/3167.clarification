@@ -1,0 +1,1 @@
+Clarify that some identifiers may be lowercase prior to processing, as per [MSC2265](https://github.com/matrix-org/matrix-doc/pull/2265).
