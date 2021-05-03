@@ -68,8 +68,8 @@ properties:
 
             Clients should prefer the `brand` over the `icon`, when both are
             provided. Clients are not required to support any particular `brand`,
-            including those in the registry, though are expected to properly
-            display any IdP regardless.
+            including those in the registry, though are expected to be able to
+            present any IdP based off the `name`/`icon` to the user regardless.
 
             Unregistered brands are permitted using the Standard Identifier Format,
             though excluding the namespace requirements. For example, `examplesso`
