@@ -72,6 +72,13 @@ limits shall not be checked for event count limiting events themselves.
 
 ## Potential issues
 
+### Migration concerns
+
+The servers may have to be restarted after implementing this the first
+time, in order to track those limits correctly.
+
+### Misconfiguration mishap
+
 Misconfiguring those limits might make the server instance unable to
 serve the user base that instance targets.
 
