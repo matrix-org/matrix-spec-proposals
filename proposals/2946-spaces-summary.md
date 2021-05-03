@@ -210,12 +210,3 @@ The client-server API will be:
 
 And the server-server API will be:
 `/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
-
-Note that the unstable identifiers from [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) also apply:
-
-Proposed final identifier       | Purpose | Development identifier
-------------------------------- | ------- | ----
-`type` | property in `m.room.create` | `org.matrix.msc1772.type`
-`m.space` | value of `type` in `m.room.create` | `org.matrix.msc1772.space`
-`m.space.child` | event type | `org.matrix.msc1772.space.child`
-`m.space.parent` | event type | `org.matrix.msc1772.space.parent`
