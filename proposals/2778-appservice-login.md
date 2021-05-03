@@ -81,6 +81,12 @@ A third option could be to create a new endpoint that simply creates a new devic
 Given the rest of the matrix eco-system does this with /login, and /login is already extensible with `type`, it would
 create more work for all parties involved for little benefit.
 
+Finally, `POST /register` does already return a `device_id`, `access_token` for appservice users by default. However critically
+this means that bridges will need to be designed to store the access_token and device_id from the point of creating the user,
+so older bridges would be unable to get an access token for existing users as `POST /register` would fail.
+It would difficult to log out these tokens if they got exposed additionally, as the AS would not be able to fetch a new access token.
+Furthermore, the ability to generate access tokens for real users who registered elsewhere would not be possible with this mechanism. 
+
 ## Security considerations
 
 Appservices could use this new functionality to generate devices for any userId that are within it's namespace e.g. setting the
