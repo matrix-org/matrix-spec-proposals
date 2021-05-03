@@ -20,7 +20,7 @@ For the brands listed here, the `identifier` would be used as the `brand` value 
 under `m.login.sso`'s flow.
 
 Note that each brand may have their own requirements for how they are represented by clients, such as
-Facebook/Twitter wanting their signature blues for button backgrounds whereas Github is not as particular
+Facebook/Twitter wanting their signature blues for button backgrounds whereas GitHub is not as particular
 about the press requirements. Clients should not rely on this document for guidance on press requirements
 and instead refer to the brands individually.
 

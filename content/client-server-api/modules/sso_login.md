@@ -40,7 +40,7 @@ administrator to configure where the CAS server is and the REST
 endpoints which consume the ticket.
 
 Homeservers may optionally expose multiple possible SSO options for
-the user to persue, typically in the form of several "login with $service"
+the user to pursue, typically in the form of several "login with $service"
 buttons. These services, or "identity providers" (IdPs), are typically
 OpenID Connect, though the exact protocol used is not a concern for this
 specification.
