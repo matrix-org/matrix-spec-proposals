@@ -88,6 +88,6 @@ N/A
 
 <a id="f1"/>[1]: The rationale for including `knock` is that the user can trivially get this state already by knocking on the room.[↩](#a1)
 
-<a id="f2"/>[2]: As suggested in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).[↩](#a2)
+<a id="f2"/>[2]: As updated in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).[↩](#a2)
 
 <a id="f3"/>[3]: This is already sent from Synapse and generally seems useful for a user to know before joining a room.[↩](#a3)
