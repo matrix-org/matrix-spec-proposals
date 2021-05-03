@@ -772,7 +772,7 @@ Represents E-Mail addresses. The `address` is the raw email address in
 `user@domain` form with the domain in lowercase. It must not contain
 other text such as real name, angle brackets or a mailto: prefix.
 
-In additional to lowercasing the domain component of an email address,
+In addition to lowercasing the domain component of an email address,
 implementations are expected to lowercase the localpart as described
 in [the unicode mapping file](https://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt)
 prior to any processing. For example, `Strauß@Example.com` must be
