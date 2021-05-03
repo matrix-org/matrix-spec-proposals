@@ -1,6 +1,6 @@
 # Restricting room membership based on space membership
 
-Draft join rule changes for [spaces](https://github.com/matrix-org/matrix-doc/pull/1772),
+Draft join rule changes for [MSC1772: spaces](https://github.com/matrix-org/matrix-doc/pull/1772),
 this is meant to replaces the second half of [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962/).
 
 A desirable feature is to give room admins the power to restrict membership of
