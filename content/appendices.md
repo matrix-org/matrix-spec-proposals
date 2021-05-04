@@ -773,7 +773,7 @@ Represents E-Mail addresses. The `address` is the raw email address in
 other text such as real name, angle brackets or a mailto: prefix.
 
 In addition to lowercasing the domain component of an email address,
-implementations are expected to lowercase the localpart as described
+implementations are expected to case fold the localpart as described
 in [the unicode mapping file](https://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt)
 prior to any processing. For example, `Strauß@Example.com` must be
 considered to be `strauss@example.com` while processing the email
