@@ -103,6 +103,8 @@ the third party identifier.
 `M_UNKNOWN`  
 An unknown error has occurred.
 
+{{% http-api spec="identity" api="versions" %}}
+
 ## Privacy
 
 Identity is a privacy-sensitive issue. While the identity server exists
