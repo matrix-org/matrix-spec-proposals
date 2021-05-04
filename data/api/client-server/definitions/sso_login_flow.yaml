@@ -27,8 +27,8 @@ properties:
       and would map to the appropriate IdP-dependent redirect endpoint for that
       IdP.
     example: [
-      {"id": "com.example.idp.github", "name": "Github", "brand": "github"},
-      {"id": "com.example.idp.gitlab", "name": "Gitlab", "icon": "mxc://example.com/abc123"},
+      {"id": "com.example.idp.github", "name": "GitHub", "brand": "github"},
+      {"id": "com.example.idp.gitlab", "name": "GitLab", "icon": "mxc://example.com/abc123"},
     ]
     items:
       type: object
