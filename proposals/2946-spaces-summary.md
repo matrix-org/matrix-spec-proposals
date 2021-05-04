@@ -16,7 +16,7 @@ is useful for quickly exposing a user to many aspects of an entire community, us
 examples above, joining the "official matrix.org rooms" space might suggest joining a few
 rooms:
 
-* A room to discuss deevelopment of the Matrix Spec.
+* A room to discuss development of the Matrix Spec.
 * An announcements room for news related to matrix.org.
 * An off-topic room for members of the space.
 
@@ -24,14 +24,14 @@ rooms:
 
 A new client-server API (and corresponding server-server API) is added which allows
 for querying for the rooms and spaces contained within a space. This allows a client
-to display a hierarchy of rooms to a user in an efficient manner (i.e. without having
+to efficiently display a hierarchy of rooms to a user (i.e. without having
 to walk the full state of the space).
 
 ### Client-server API
 
-Walks the space tree, starting at the provided room ID ("the root room"),
-and visiting other rooms/spaces found via `m.space.child`
-events, recursing through those children into their children, etc.
+An endpoint is provided to walk the space tree, starting at the provided room ID
+("the root room"), and visiting other rooms/spaces found via `m.space.child`
+events. It recurses into the children and into their children, etc.
 
 Example request:
 
@@ -92,12 +92,12 @@ Request params:
   `m.space.child` event has `suggested: true`. Defaults to `false`.
 
   For the POST request, must be a boolean. For GET, must be either `true` or `false`,
-  case sensitive.
+  case-sensitive.
 * **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
   number of children to return per space. Doesn't apply to the root space (ie,
   the `room_id` in the request).
 
-  Server implementations may also have an internal limit (recommended to be 50)
+  Server implementations may also have an internal limit (recommended as 50)
   (which *does* apply to the root room); attempts to exceed this  limit are
   ignored. Must be a non-negative integer.
 
@@ -164,7 +164,7 @@ POST /_matrix/federation/v1/spaces/{roomID}
 }
 ```
 
-Response has the same shape as the Client-Server API.
+The response has the same shape as the Client-Server API.
 
 Request params are the same as the Client-Server API, with the addition of:
 
@@ -208,5 +208,5 @@ During development of this feature it will be available at unstable endpoints.
 The client-server API will be:
 `/_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces`
 
-And the server-server API will be:
+The server-server API will be:
 `/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
