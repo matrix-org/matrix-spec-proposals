@@ -377,7 +377,7 @@ be merged without the Spec Core Team focusing on them specifically.
 
 ## Implementing a proposal
 
-As part of the proposal process the spec core team will require evidence
+As part of the proposal process the Spec Core Team will require evidence
 of the MSC working in order for it to move into FCP. This can usually be
 a branch/pull request to whichever implementation of choice that proves
 the MSC works in practice, though in some cases the MSC itself will be
