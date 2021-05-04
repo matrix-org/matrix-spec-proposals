@@ -40,7 +40,7 @@ administrator to configure where the CAS server is and the REST
 endpoints which consume the ticket.
 
 Homeservers may optionally expose multiple possible SSO options for
-the user to pursue, typically in the form of several "login with $provider"
+the user to pursue, typically in the form of several "log in with $provider"
 buttons. These are known as "identity providers" (IdPs).
 
 #### Client login via SSO
