@@ -48,6 +48,9 @@ with any state key. For clarity, `"state_key": "@alice:example.org"` would retur
 the specified state key (there can only be one or zero), while `"state_key": true` would return any
 state events of the type, regardless of state key.
 
+To appease MSC2762's ability to read particular msgtypes, the widget can specify a `msgtype` in place
+of the `state_key` for `m.room.message` requests.
+
 The `type` is simply the event type to go searching for.
 
 The `limit` is the number of events the widget is looking for. The client can arbitrarily decide to
@@ -133,5 +136,7 @@ either through this MSC or MSC2762.
 
 While this MSC is not present in the spec, clients and widgets should:
 
-* Use `org.matrix.msc2876.` in place of `m.` in all new identifiers of this MSC.
 * Only call/support the `action`s if an API version of `org.matrix.msc2876` is advertised.
+* Use `org.matrix.msc2762.read.[state_]event:*` instead of `m.read.[state_]event:*`. Note that this
+  is a different MSC number for better compatibility with MSC2762.
+* Use `org.matrix.msc2876.*` in place of `m.*` for all other identifiers.
