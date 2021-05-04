@@ -46,7 +46,7 @@ Suitable for "Sign in with Apple": see https://developer.apple.com/design/human-
 Logos available at https://github.com/logos.
 
 
-### Gitlab
+### GitLab
 
 **Identifier**: `gitlab`
 
