@@ -337,7 +337,7 @@ func (s *server) serveSpec(w http.ResponseWriter, req *http.Request) {
 		log.Printf("Serving pr %s (%s)\n", branchName, sha)
 	} else if strings.ToLower(branchName) == "head" ||
 		branchName == "master" ||
-		strings.HasPrefix(branchName, "drafts/") {
+		strings.HasPrefix(branchName, "attic/drafts/") {
 		branchSHA, err := s.lookupBranch(branchName)
 		if err != nil {
 			writeError(w, 400, err)

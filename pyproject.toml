@@ -1,7 +1,7 @@
 [ tool.gilesbot ]
 
   [ tool.gilesbot.circleci_artifacts.docs ]
-    url = "gen/index.html"
+    url = "public/index.html"
     message = "Click details to preview the HTML documentation."
 
   [ tool.gilesbot.circleci_artifacts.swagger ]
