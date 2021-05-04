@@ -115,7 +115,7 @@ proposal.
 ## Alternatives
 
 Widgets could be powered by a bot or some sort of backend which allows them to filter the room state
-and timeline themeselves, however this can be a large amount of infrastructure for a widget to maintain
+and timeline themselves, however this can be a large amount of infrastructure for a widget to maintain
 and the user experience is not as great. The client already has most of the information a widget would
 need, and trying to interact through a bot would generally mean slower response times or technical
 challenges on the part of the widget developer.
