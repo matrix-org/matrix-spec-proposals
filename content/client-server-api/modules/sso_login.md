@@ -39,6 +39,10 @@ authentication the homeserver should provide a means for the
 administrator to configure where the CAS server is and the REST
 endpoints which consume the ticket.
 
+Homeservers may optionally expose multiple possible SSO options for
+the user to pursue, typically in the form of several "log in with $provider"
+buttons. These are known as "identity providers" (IdPs).
+
 #### Client login via SSO
 
 An overview of the process is as follows:
@@ -49,6 +53,8 @@ An overview of the process is as follows:
 2.  To initiate the `m.login.sso` login type, the Matrix client
     instructs the user's browser to navigate to the
     [`/login/sso/redirect`](/client-server-api/#get_matrixclientr0loginssoredirect) endpoint on the user's homeserver.
+    Note that this may be the IdP-dependent version of the endpoint if the
+    user has selected one of the `identity_providers` from the flow.
 3.  The homeserver responds with an HTTP redirect to the SSO user
     interface, which the browser follows.
 4.  The authentication server and the homeserver interact to verify the
@@ -97,10 +103,15 @@ endpoint to use: for `m.login.cas`, use `/cas/redirect` and for
 otherwise the same.
 {{% /boxes/note %}}
 
+{{% definition path="api/client-server/definitions/sso_login_flow" %}}
+
 ##### Client behaviour
 
 The client starts the process by instructing the browser to navigate to
-[`/login/sso/redirect`](/client-server-api/#get_matrixclientr0loginssoredirect) with an appropriate `redirectUrl`. Once
+[`/login/sso/redirect`](/client-server-api/#get_matrixclientr0loginssoredirect)
+(or [`/login/sso/redirect/{idpId}`](/client-server-api/#get_matrixclientr0loginssoredirectidpid)
+when using one of the `identity_providers`)
+with an appropriate `redirectUrl`. Once
 authentication is successful, the browser will be redirected to that
 `redirectUrl`.
 
@@ -140,6 +151,10 @@ authentication is successful, the browser will be redirected to that
     and replay attacks.
 
 ##### Server behaviour
+
+Servers should note that `identity_providers` are optional, and older clients
+might not interpret the value correctly. In these cases, the client will use
+the generic `/redirect` endpoint instead of the `/redirect/{idpId}` endpoint.
 
 ###### Redirecting to the Authentication server
 

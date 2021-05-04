@@ -28,7 +28,9 @@ paths:
         A web-based Matrix client should instruct the user's browser to
         navigate to this endpoint in order to log in via SSO.
 
-        The server MUST respond with an HTTP redirect to the SSO interface.
+        The server MUST respond with an HTTP redirect to the SSO interface,
+        or present a page which lets the user select an IdP to continue
+        with in the event multiple are supported by the server.
       operationId: redirectToSSO
       parameters:
         - in: query
@@ -44,3 +46,40 @@ paths:
           headers:
             Location:
               type: "string"
+  "/login/sso/redirect/{idpId}":
+    get:
+      summary: Redirect the user's browser to the SSO interface for an IdP.
+      description: |-
+        This endpoint is the same as `/login/sso/redirect`, though with an
+        IdP ID from the original `identity_providers` array to inform the
+        server of which IdP the client/user would like to continue with.
+
+        The server MUST respond with an HTTP redirect to the SSO interface
+        for that IdP.
+      operationId: redirectToSSO
+      parameters:
+        - in: path
+          type: string
+          name: idpId
+          required: true
+          description: |-
+            The `id` of the IdP from the `m.login.sso` `identity_providers`
+            array denoting the user's selection.
+        - in: query
+          type: string
+          name: redirectUrl
+          description: |-
+            URI to which the user will be redirected after the homeserver has
+            authenticated the user with SSO.
+          required: true
+      responses:
+        302:
+          description: A redirect to the SSO interface.
+          headers:
+            Location:
+              type: "string"
+        404:
+          description: |-
+            The IdP ID was not recognized by the server. The server is encouraged
+            to provide a user-friendly page explaining the error given the user
+            will be navigated to it.
