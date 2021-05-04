@@ -84,7 +84,7 @@ handle conflicts then.
 
 Some relation types should probably not be combined. For example you may
 disallow editing a reaction, because clients probably won't be handling that
-correctly. This MSC however does not disallow that. Relations should specify,
+correctly. This MSC however does not disallow that. Specifications that define relations should specify,
 how clients should handle that and clients sending such combinations should be
 aware, that those probably won't get handled. I don't think just allowing 1
 relation is the solution to handling such conflicts and I don't think they will
@@ -111,4 +111,3 @@ amount (like they do for devices already).
 Clients should use `im.nheko.relations.v1.relations` instead of `m.relations`
 and `im.nheko.relations.v1.in_reply_to` as the relation type for replies in the
 mean time.
-
