@@ -12,7 +12,7 @@ have used the bridge bot's device for all bridge users in the room, but this cau
 wish to only join ghosts to a room (e.g. for DMs).
 
 Another advantage this provides is that an appservice can now be used to generate access tokens for
-any user in it's namespace without having to set a password for that user, which may be useful in the
+any user in its namespace without having to set a password for that user, which may be useful in the
 case of software where maintaining password(s) in the configuration is undesirable.
 
 ## Proposal
