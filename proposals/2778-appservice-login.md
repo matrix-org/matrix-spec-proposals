@@ -6,14 +6,14 @@ do so, this proposal suggests implementing an appservice extension to the
 [`POST /login` endpoint](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-login).
 
 Appservice users do not usually need to login as they do not need their own access token, and do not
-traditionally need a "device". However, E2E encryption demands that at least one user in a room has a Matrix device
-which means bridge users need to be able to generate a device on demand. In the past, bridge developers
-have used the bridge bot's device for all bridge users in the room, but this causes problems should the bridge
-wish to only join ghosts to a room (e.g. for DMs).
+traditionally need a "device". However, E2E encryption demands that at least one user in a room has a
+Matrix device which means bridge users need to be able to generate a device on demand. In the past,
+bridge developers have used the bridge bot's device for all bridge users in the room, but this causes
+problems should the bridge wish to only join ghosts to a room (e.g. for DMs).
 
 Another advantage this provides is that an appservice can now be used to generate access tokens for
-any user in its namespace without having to set a password for that user, which may be useful in the
-case of software where maintaining password(s) in the configuration is undesirable.
+any user in its namespace without having to set a password for that user, which may be useful where
+maintaining password(s) in the configuration is undesirable.
 
 ## Proposal
 
