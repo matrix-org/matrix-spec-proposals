@@ -123,7 +123,7 @@ Response fields:
 2. Generate a summary and add it to `rooms`.
 3. Add any `m.space.child` events in the room to `events`.
 4. Recurse into the targets of the `m.space.child` events, generate a summary for
-   each room and add it to `rooms`, also and any `m.space.child` events of the room
+   each room and add it to `rooms`, also add any `m.space.child` events of the room
    to `events`.
 5. Recurse into grandchildren, etc. until either all discovered rooms have been
    inspected, or the  server-side limit on the number of rooms is reached.
