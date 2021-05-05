@@ -33,6 +33,9 @@ An endpoint is provided to walk the space tree, starting at the provided room ID
 ("the root room"), and visiting other rooms/spaces found via `m.space.child`
 events. It recurses into the children and into their children, etc.
 
+Note that there is no requirement for any of the rooms to be of have a `type` of
+`m.space`, any room with `m.space.child` events is considered.
+
 Example request:
 
 ```jsonc
@@ -117,27 +120,35 @@ Response fields:
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
   `sender`.
   
+Errors:
+
+403 with an error code of `M_FORBIDDEN`: if the user doesn't have permission to
+view/peek the root room (including if  that room does not exist).
+
 #### Algorithm
+
+A rough algorithm follows:
 
 1. Start at the "root" room (the provided room ID).
 2. Generate a summary and add it to `rooms`.
 3. Add any `m.space.child` events in the room to `events`.
-4. Recurse into the targets of the `m.space.child` events, generate a summary for
-   each room and add it to `rooms`, also add any `m.space.child` events of the room
-   to `events`.
-5. Recurse into grandchildren, etc. until either all discovered rooms have been
-   inspected, or the  server-side limit on the number of rooms is reached.
+4. Recurse into the targets of the `m.space.child` events.
+   1. If the room is not accessible (or has already been processed), do not
+      process it.
+   2. Generate a summary for the room and add it to `rooms`.
+   3. Add any `m.space.child` events of the room to `events`.
+5. Recurse into any newly added targets of `m.space.child` events (i.e. repeat
+   step 4), until either all discovered rooms have been  inspected, or the
+   server-side limit on the number of rooms is reached.
 
 Other notes:
 
-* If the user doesn't have permission to view/peek the root room (including if
-  that room does not exist), a 403 error is returned with `M_FORBIDDEN`. Any
-  inaccessible children are simply omitted from the result (though the `m.space.child`
-  events that point to them are still returned).
+* Any inaccessible children are omitted from the result, but the `m.space.child`
+  events that point to them are still returned.
 * There could be loops in the returned child events - clients should handle this
   gracefully.
 * Similarly, note that a child room might appear multiple times (e.g. also be a
-  grandchild).
+  grandchild). Clients and servers should handle this appropriately.
 * `suggested_only` applies transitively.
 
   For example, if a space A has child space B which is *not* suggested, and space
