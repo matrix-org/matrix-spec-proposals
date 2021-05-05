@@ -139,7 +139,7 @@ paths:
                   "id_server": "matrix.org",
                   "id_access_token": "abc123_OpaqueString",
                   "sid": "abc123987",
-                  "client_secret": "d0n'tT3ll"
+                  "client_secret": "d0nt-T3ll"
                 }
               }
       responses:
@@ -215,7 +215,7 @@ paths:
             required: ["client_secret",  "sid"]
             example: {
               "sid": "abc123987",
-              "client_secret": "d0n'tT3ll"
+              "client_secret": "d0nt-T3ll"
             }
       responses:
         200:
@@ -272,7 +272,7 @@ paths:
               "id_server": "example.org",
               "id_access_token": "abc123_OpaqueString",
               "sid": "abc123987",
-              "client_secret": "d0n'tT3ll"
+              "client_secret": "d0nt-T3ll"
             }
       responses:
         200:
