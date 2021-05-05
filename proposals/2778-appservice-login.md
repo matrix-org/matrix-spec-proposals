@@ -67,21 +67,41 @@ new devices should the appservice intentionally or inadvertently have lost the c
 
 ## Alternatives
 
+### 1. Include the token in the `/login` request body
+
 One minor tweak to the current proposal could be to include the token as part of the auth data, rather than
 being part of the header/params to the request. An argument could be made for either, but since the specification
 expects the appservice to pass the token this way in all requests, including `/register`, it seems wise to keep
 it that way.
 
-Some community members have used implementation details such as a "shared secret" authentication method to
+### 2. Use implementation specific "shared secret" authentication
+
+Some community members have used homeserver implementation details such as a "shared secret" authentication method to
 log into the accounts without having to use the /login process at all. Synapse provides such a function,
-but also means the appservice can now authenticate as any user on the homeserver. This seems undesirable from a
+but also means the appservice can now authenticate as any user on the homeserver. This is undesirable from a
 security standpoint.
+
+### 3. Keep using `/register` solely
 
 A third option could be to create a new endpoint that simply creates a new device for an appservice user on demand.
 Given the rest of the matrix eco-system does this with /login, and /login is already extensible with `type`, it would
 create more work for all parties involved for little benefit.
 
-Finally, `POST /register` does already return a `device_id`, `access_token` for appservice users by default. However critically
+Finally, `POST /register` does already return a `device_id` and `access_token` so appservices
+could store this information rather than calling `POST /login` at all. This does however present a few problems:
+
+- Quite a few appservices which only support unencrypted messaging do not use/store the `device_id`/`access_token` from a register call.
+  In the event that an appservice eventually gains the ability to support encryption, they would be unable to fetch a new `device_id`/
+  `access_token` for any existing users (as `/register` would fail for an existing user).
+- If user tokens were lost or exposed, there is no way to programattically create new access tokens for these users.
+- Finally, if a user was registered externally and the appservice would like to masquerade as it, it would be unable to fetch
+  an access token for that user.
+  
+While `POST /register` does work, it is impactical as the sole method of fetching an access token.
+  
+
+Most appservices
+which do not implement encryption do not store this information as neither the device_id or access_token are needed f However critically
 this means that bridges will need to be designed to store the access_token and device_id from the point of creating the user,
 so older bridges would be unable to get an access token for existing users as `POST /register` would fail.
 It would difficult to log out these tokens if they got exposed additionally, as the AS would not be able to fetch a new access token.
