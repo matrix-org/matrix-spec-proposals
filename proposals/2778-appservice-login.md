@@ -63,7 +63,7 @@ then `/login` to generate the appropriate device.
 
 This proposal means that there will be more calls to make when setting up a appservice user, when
 using encryption. While this could be done during the registration step, this would prohibit creating
-new devices should the appservice intentionally or inadvertently lost the client-side device data.
+new devices should the appservice intentionally or inadvertently have lost the client-side device data.
 
 ## Alternatives
 
