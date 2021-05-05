@@ -17,9 +17,7 @@ case of software where maintaining password(s) in the configuration is undesirab
 
 ## Proposal
 
-A new `type` is to be added to `POST /login`.
-
-`m.login.application_service`
+A new `type` is to be added to `POST /login`: `m.login.application_service`
 
 The `/login` endpoint may now take an `access_token` in the same way that other
 authenticated endpoints do. No additional parameters should be specified in the request body.
@@ -43,15 +41,16 @@ new flows.
 
 The response body should be unchanged from the existing `/login` specification.
 
-If:
+If one of the following conditions are true:
 
 - The access token is not provided
 - The access token does not correspond to a appservice
 - Or the user has not previously been registered
 
-Then the servers should reject with HTTP 403, with an `errcode` of `"M_FORBIDDEN"`. 
+Then the servers MUST reject with HTTP 403, with an `errcode` of `"M_FORBIDDEN"`. 
 
-If the access token does not correspond to a appservice that manages this user, then the `errcode` should be `"M_EXCLUSIVE"`.
+If the access token DOES correspond to a appservice but the user is not inside it's namespace,
+then the `errcode` should be `"M_EXCLUSIVE"`.
 
 Homeservers should ignore the `access_token` parameter if a type other than
 `m.login.application_service` has been provided.
