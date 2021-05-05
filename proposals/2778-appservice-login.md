@@ -125,9 +125,6 @@ this is not a problem because:
   difference is that without a dedicated access token they are unable to receive device messages. While in theory this
   does make them unable to see encrypted messages, this is not designed to be a security mechanism.
 
-- An appservice trying to log in as a user will always create a new device, which means the user would be informed of the
-  new device on their existing sessions. It should be very obvious if a malicous appservice is creating new devices on your account.
-
 In conclusion this MSC only automates the creation of new devices for users inside an AS namespace, which is something
 a server admin could already do. Appservices should always be treated with care and so with these facts in mind the MSC should 
 be considered secure.
