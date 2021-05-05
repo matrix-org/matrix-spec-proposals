@@ -1,4 +1,4 @@
-# MSC3174: An error code for spam rejections
+# MSC3174: Error codes for spam rejections
 
 Some Matrix server implementations, including Synapse, support spam-check filters.
 This proposal simply attempts to standardize spam rejection.
