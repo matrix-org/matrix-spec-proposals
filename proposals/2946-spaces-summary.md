@@ -36,6 +36,8 @@ events. It recurses into the children and into their children, etc.
 Note that there is no requirement for any of the rooms to be of have a `type` of
 `m.space`, any room with `m.space.child` events is considered.
 
+This endpoint requires authentication and is not subject to rate-limiting.
+
 Example request:
 
 ```jsonc
@@ -119,7 +121,7 @@ Response fields:
 * **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
   `sender`.
-  
+
 Errors:
 
 403 with an error code of `M_FORBIDDEN`: if the user doesn't have permission to
