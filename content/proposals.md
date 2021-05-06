@@ -437,7 +437,7 @@ that a particular MSC works) do not have to follow this process.
 1.  The FCP process is completed, and assuming nothing is flagged the
     MSC lands.
 1.  Implementations can now switch to using stable prefixes
-    (e.g.: for an endpoint, moving from
+    (for example, for an endpoint, moving from
     `/unstable/org.matrix.mscxxxx/frobnicate`
     to `/v1/frobnicate`), assuming that the change
     is backwards compatible with older implementations. In the rare occasion
