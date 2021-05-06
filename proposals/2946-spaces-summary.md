@@ -106,7 +106,7 @@ Response fields:
     in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).
 * **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
-  `sender`.
+  `sender`.<sup id="a1">[1](#f1)</sup>
 
 Errors:
 
@@ -219,3 +219,10 @@ The client-server API will be:
 
 The server-server API will be:
 `/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
+
+## Footnotes
+
+<a id="f1"/>[1]: The rationale for including stripped events here is to reduce
+potential dataleaks (e.g. timestamps, `prev_content`, etc.) and to ensure that
+clients do not treat any of this data as authoritative (e.g. if it came back
+over federation). The data should not be persisted as actual events.[↩](#a1)
