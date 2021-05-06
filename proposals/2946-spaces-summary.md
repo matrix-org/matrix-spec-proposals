@@ -83,9 +83,7 @@ Example response:
 Request params:
 
 * **`suggested_only`**: Optional. If `true`, return only child events and rooms where the
-  `m.space.child` event has `suggested: true`. Defaults to `false`.
-
-  Must be either `true` or `false`,  case-sensitive.
+  `m.space.child` event has `suggested: true`.  Must be a  boolean, defaults to `false`.
 * **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
   number of children to return per space. Doesn't apply to the root space (ie,
   the `room_id` in the request).
@@ -113,7 +111,11 @@ Response fields:
 Errors:
 
 403 with an error code of `M_FORBIDDEN`: if the user doesn't have permission to
-view/peek the root room (including if that room does not exist).
+view/peek the root room (including if that room does not exist). This matches the
+behavior of other room endpoints (e.g.
+[`/_matrix/client/r0/rooms/{roomID}/aliases`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-aliases)).
+To not divulge whether the user doesn't have permission vs whether the room
+does not exist.
 
 #### Algorithm
 
