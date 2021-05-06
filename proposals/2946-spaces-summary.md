@@ -203,7 +203,10 @@ but this is unnecessary to provide the expected user experience.
 
 ## Security considerations
 
-None.
+A space with many rooms on different homeservers could cause multiple federation
+requests to be made. A carefully crafted room with inadequate limits on the maximum
+rooms per space (or a maximum total number of rooms) could be used in a denial
+of service attack.
 
 ## Unstable prefix
 
