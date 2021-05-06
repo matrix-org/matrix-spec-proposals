@@ -245,10 +245,13 @@ is as follows:
     75% of the members of the Spec Core Team agree on its outcome, and
     all existing concerns have been resolved.
 -   The FCP will then begin and last for 5 days, giving anyone else some
-    time to speak up before it concludes. On its conclusion, the
-    disposition of the FCP will be carried out. If sufficient reasoning
-    against the disposition is raised, the FCP can be cancelled and the
-    MSC will continue to evolve accordingly.
+    time to speak up before it concludes. If sufficient reasoning
+    against the disposition is provided, a member of the Spec Core Team can
+    raise a concern and block FCP from completing. This will not reset or
+    pause the 5 day FCP timer, but FCP will not conclude until all concerns have
+    been resolved. If sufficient change in the MSC is required to resolve those
+    concerns, FCP might be cancelled and reproposed. Once FCP has concluded,
+    the disposition of the FCP will be carried out.
 -   Once the proposal has been accepted and merged, it is time to submit
     the actual change to the Specification that your proposal reasoned
     about. This is known as a spec PR. However in order for the spec PR
@@ -373,7 +376,7 @@ be merged without the Spec Core Team focusing on them specifically.
 
 ## Implementing a proposal
 
-As part of the proposal process the spec core team will require evidence
+As part of the proposal process the Spec Core Team will require evidence
 of the MSC working in order for it to move into FCP. This can usually be
 a branch/pull request to whichever implementation of choice that proves
 the MSC works in practice, though in some cases the MSC itself will be
