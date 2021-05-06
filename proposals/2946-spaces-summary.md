@@ -86,11 +86,10 @@ Request params:
   `m.space.child` event has `suggested: true`.  Must be a  boolean, defaults to `false`.
 * **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
   number of children to return per space. Doesn't apply to the root space (ie,
-  the `room_id` in the request).
+  the `room_id` in the request). Must be a non-negative integer.
 
-  Server implementations may also have an internal limit (recommended as 50)
-  (which *does* apply to the root room); attempts to exceed this limit are
-  ignored. Must be a non-negative integer.
+  Server implementations should impose a maximum value to avoid resource
+  exhaustion.
 
 Response fields:
 
