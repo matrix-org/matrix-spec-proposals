@@ -40,17 +40,6 @@ This endpoint requires authentication and is not subject to rate-limiting.
 
 Example request:
 
-```jsonc
-POST /_matrix/client/r0/rooms/{roomID}/spaces
-
-{
-    "max_rooms_per_space": 5,
-    "suggested_only": true
-}
-```
-
-or:
-
 ```text
 GET /_matrix/client/r0/rooms/{roomID}/spaces?
     max_rooms_per_space=5&
@@ -96,8 +85,7 @@ Request params:
 * **`suggested_only`**: Optional. If `true`, return only child events and rooms where the
   `m.space.child` event has `suggested: true`. Defaults to `false`.
 
-  For the POST request, must be a boolean. For GET, must be either `true` or `false`,
-  case-sensitive.
+  Must be either `true` or `false`,  case-sensitive.
 * **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
   number of children to return per space. Doesn't apply to the root space (ie,
   the `room_id` in the request).
@@ -172,7 +160,7 @@ Much the same interface as the Client-Server API.
 Example request:
 
 ```jsonc
-POST /_matrix/federation/v1/spaces/{roomID}
+GET /_matrix/federation/v1/spaces/{roomID}
 {
     "exclude_rooms": ["!a:b", "!b:c"],
     "max_rooms_per_space": 5,
