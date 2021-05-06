@@ -233,6 +233,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - User data
   "/account/3pid/bind":
     post:
       summary: Binds a 3PID to the user's account through an Identity Service.
