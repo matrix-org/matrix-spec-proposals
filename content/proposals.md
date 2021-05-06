@@ -250,7 +250,7 @@ is as follows:
     raise a concern and block FCP from completing. This will not reset or
     pause the 5 day FCP timer, but FCP will not conclude until all concerns have
     been resolved. If sufficient change in the MSC is required to resolve those
-    concerns, FCP may be cancelled and reproposed. Once FCP has concluded,
+    concerns, FCP might be cancelled and reproposed. Once FCP has concluded,
     the disposition of the FCP will be carried out.
 -   Once the proposal has been accepted and merged, it is time to submit
     the actual change to the Specification that your proposal reasoned
