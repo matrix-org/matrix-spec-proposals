@@ -103,7 +103,7 @@ Request params:
   the `room_id` in the request).
 
   Server implementations may also have an internal limit (recommended as 50)
-  (which *does* apply to the root room); attempts to exceed this  limit are
+  (which *does* apply to the root room); attempts to exceed this limit are
   ignored. Must be a non-negative integer.
 
 Response fields:
@@ -125,7 +125,7 @@ Response fields:
 Errors:
 
 403 with an error code of `M_FORBIDDEN`: if the user doesn't have permission to
-view/peek the root room (including if  that room does not exist).
+view/peek the root room (including if that room does not exist).
 
 #### Algorithm
 
@@ -140,7 +140,7 @@ A rough algorithm follows:
    2. Generate a summary for the room and add it to `rooms`.
    3. Add any `m.space.child` events of the room to `events`.
 5. Recurse into any newly added targets of `m.space.child` events (i.e. repeat
-   step 4), until either all discovered rooms have been  inspected, or the
+   step 4), until either all discovered rooms have been inspected, or the
    server-side limit on the number of rooms is reached.
 
 Other notes:
@@ -155,7 +155,7 @@ Other notes:
 
   For example, if a space A has child space B which is *not* suggested, and space
   B has suggested child room C, and the client makes a summary request for A with
-  `suggested_only=true`,  neither B **nor** C will be returned.
+  `suggested_only=true`, neither B **nor** C will be returned.
 
   Similarly, if a space A has child space B which is suggested, and space B has
   suggested child room C which is suggested, and the client makes a summary request
