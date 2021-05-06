@@ -18,7 +18,7 @@ SHOULD be `application/json` however it should be assumed to be JSON regardless 
 This is consistent with the Server-Server API.
 
 1. Step 3f in the Client-Server well-known flow should be changed to use the modern
-`/_matrix/identity/v2` API to validate the identity server rather than the deprecated
+`/_matrix/identity/versions` API to validate the identity server rather than the deprecated
 `/_matrix/identity/api/v1`.
 
 1. The maximum size of size of the well-known file is 51200 bytes. A client or server
