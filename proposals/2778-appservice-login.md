@@ -49,7 +49,7 @@ If one of the following conditions are true:
 
 Then the servers MUST reject with HTTP 403, with an `errcode` of `"M_FORBIDDEN"`. 
 
-If the access token DOES correspond to a appservice but the user is not inside it's namespace,
+If the access token DOES correspond to a appservice but the user is not inside its namespace,
 then the `errcode` should be `"M_EXCLUSIVE"`.
 
 Homeservers should ignore the `access_token` parameter if a type other than
@@ -108,7 +108,7 @@ Furthermore, the ability to generate access tokens for real users who registered
 
 ## Security considerations
 
-Appservices could use this new functionality to generate devices for any userId that are within it's namespace e.g. setting the
+Appservices could use this new functionality to generate devices for any userId that are within its namespace e.g. setting the
 user namespace regex to `@.*:example.com` would allow appservice to control anyone on the homeserver. While this sounds scary, in practise
 this is not a problem because:
 
