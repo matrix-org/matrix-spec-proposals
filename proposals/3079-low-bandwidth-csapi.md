@@ -59,7 +59,41 @@ Similarly, servers MUST set the `Content-Type` header to `application/cbor` when
 to requests. Servers MUST NOT respond to requests with `Content-Type: application/json` with CBOR,
 unless the `Accept` header in the client's request includes `application/cbor`.
 
-TODO: Define test objects to and from JSON
+The following test object is represented in [Canonical CBOR](https://tools.ietf.org/html/rfc7049#section-3.9)
+in order to make it useful (e.g keys are sorted). [Matrix does not allow IEEE floats.](https://spec.matrix.org/unstable/appendices/#canonical-json)
+
+JSON:
+```
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "Hello World"
+  },
+  "sender": "@alice:localhost",
+  "room_id": "!foo:localhost",
+  "unsigned": {
+    "bool_value": true,
+    "null_value": null
+  }
+}
+```
+
+Intermediate:
+```
+{
+  2: "m.room.message",
+  3: {27: "Hello World", 28: "m.text"},
+  5: "!foo:localhost",
+  6: "@alice:localhost",
+  9: {"bool_value": true, "null_value": null}
+}
+```
+
+CBOR:
+```
+a5026e6d2e726f6f6d2e6d65737361676503a2181b6b48656c6c6f20576f726c64181c666d2e74657874056e21666f6f3a6c6f63616c686f7374067040616c6963653a6c6f63616c686f737409a26a626f6f6c5f76616c7565f56a6e756c6c5f76616c7565f6
+```
 
 ### HTTP -> CoAP
 
