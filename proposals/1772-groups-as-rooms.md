@@ -45,7 +45,11 @@ depending on the purpose of the room. Currently, no server-side behaviour is
 expected to depend on this property.  A `type` property on the `m.room.create`
 event is used to ensure that a room cannot change between being a space-room
 and a non-space room. For more information, see the "Rejected Alternatives"
-section below.
+section below. Additionally, no client behaviour is recommended for handling
+unknown room types given the potential for legacy data: clients are free to
+make their own decisions about hiding unknown room types from users, though
+should note that a future conversation-like type (for example) might be
+introduced and could be considered "unknown" by older versions of their client.
 
 As with regular rooms, public spaces are expected to have an alias, for example
 `#foo:matrix.org`, which can be used to refer to the space.
