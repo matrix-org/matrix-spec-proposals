@@ -130,7 +130,8 @@ A rough algorithm follows:
 
    In the case of the homeserver not having access to the state of a room, the
    server-server API (see below) can be used to query for this information over
-   federation.
+   federation from one of the servers provided in the `via` key of the
+   `m.space.child` event.
 
 Other notes:
 
