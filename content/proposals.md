@@ -464,9 +464,10 @@ com.example/new/endpoint`.
 
 In summary:
 
--   Implementations MUST NOT use stable endpoints before the MSC has
-    been merged. Once an MSC has been accepted and merged, implementations
-    are allowed to use stable endpoints, but are not required to.
+-   Implementations MUST NOT use stable endpoints before the MSC proposal
+    document has been merged to the matrix-doc repository. Once that has
+    occurred, implementations are allowed to use stable endpoints, but
+    are not required to.
 -   Implementations are able to ship features that are exposed to users
     by default before an MSC has been merged to the spec, provided they
     follow the process above.
