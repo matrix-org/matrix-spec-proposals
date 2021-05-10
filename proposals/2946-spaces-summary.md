@@ -128,6 +128,10 @@ A rough algorithm follows:
    step 4), until either all discovered rooms have been inspected, or the
    server-side limit on the number of rooms is reached.
 
+   In the case of the homeserver not having access to the state of a room, the
+   server-server API (see below) can be used to query for this information over
+   federation.
+
 Other notes:
 
 * Any inaccessible children are omitted from the result, but the `m.space.child`
@@ -152,22 +156,23 @@ Other notes:
 
 ### Server-server API
 
-Much the same interface as the Client-Server API.
+The Server-Server API has almost the same interface as the Client-Server API.
+It is used when a homeserver does not have the state of a room to include in the
+summary.
 
 Example request:
 
 ```jsonc
-GET /_matrix/federation/v1/spaces/{roomID}
-{
-    "exclude_rooms": ["!a:b", "!b:c"],
-    "max_rooms_per_space": 5,
-    "suggested_only": true
-}
+GET /_matrix/federation/v1/spaces/{roomID}?
+    exclude_rooms=%21a%3Ab&
+    exclude_rooms=%21b%3Ac&
+    max_rooms_per_space=5&
+    suggested_only=true&
 ```
 
 The response has the same shape as the Client-Server API.
 
-Request params are the same as the Client-Server API, with the addition of:
+Request parameters are the same as the Client-Server API, with the addition of:
 
 * **`exclude_rooms`**: Optional. A list of room IDs that can be omitted
   from the response.
@@ -180,8 +185,9 @@ This is largely the same as the Client-Server API, but differences are:
   children.
 * If the target server is not a member of any discovered children (so
   would have to send another request over federation to inspect them), no
-  attempt is made to recurse into them - they are simply omitted from the
-  response.
+  attempt is made to recurse into them - they" are simply omitted from the
+  `rooms` key of the response. (Although they will still appear in the `events`
+  key).
   * If the target server is not a member of the root room, an empty
     response is returned.
 * Currently, no consideration is given to room membership: the spaces/rooms
