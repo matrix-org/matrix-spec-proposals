@@ -152,6 +152,14 @@ doesn't address the other issues with fallbacks.
 One could also just stick with the current fallbacks and make all clients pay
 the cost for a small number of clients actually benefitting from them.
 
+Lastly one could introduce an alternative relation type for replies without
+fallback and deprecate the current relation type (since it does not fit the new
+format for relations anyway). We could specify, that the server is supposed to
+send the replied_to event in unsigned to the client, so that clients just need
+to stitch those two events together, but don't need to fetch the replied_to
+event from the server. It would make replies slightly harder to implement for
+clients, but it would be simpler than what this MSC proposes.
+
 ## Security considerations
 
 Removing the fallback from the spec may lead to issues, when clients experience
