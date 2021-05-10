@@ -197,6 +197,64 @@ To reduce complexity, only a limited number of rooms are returned for a room,
 no effort is made to paginate the results. Proper pagination is left to a future
 MSC.
 
+### MSC1772 Ordering
+
+[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) defines the ordering
+of "default ordering of siblings in the room list" using the `order` key:
+
+> Rooms are sorted based on a lexicographic ordering of the Unicode codepoints
+> of the characters in `order` values. Rooms with no `order` come last, in
+> ascending numeric order of the `origin_server_ts` of their `m.room.create`
+> events, or ascending lexicographic order of their `room_id`s in case of equal
+> `origin_server_ts`. `order`s which are not strings, or do not consist solely
+> of ascii characters in the range `\x20` (space) to `\x7F` (~), or consist of
+> more than 50 characters, are forbidden and the field should be ignored if
+> received.
+
+Unfortunately there are situations when a homeserver comes across a reference to
+a child room that is unknown to it and must decide the ordering. Without being
+able to see the `m.room.create` event (which it might not have permission to see)
+no proper ordering can be given.
+
+Consider the following case of a space with 3 child rooms:
+
+```
+         Space A
+           |
+  +--------+--------+
+  |        |        |
+Room B   Room C   Room D
+```
+
+Space A, Room B, and Room C are on HS1, while Room D is on HS2. HS1 has no users
+in Room D (and thus has no state from it). Room B, C, and D do not have an
+`order` field set (and default to using the ordering rules above).
+
+When a user asks HS1 for the space summary with a `max_rooms_per_space` equal to
+`2` it cannot fulfill this request since it is unsure how to order Room B, Room
+C, and Room D, but it can only return 2 of them. It *can* reach out over
+federation to HS2 and request a space summary for Room D, but this is undesirable:
+
+* HS1 might not have the permissions to know any  of the state of Room D, so might
+  receive a 403 error.
+* If we expand the example above to many rooms than this becomes expensive to
+  query a remote server simply for ordering.
+
+This proposes changing the ordering rules from MSC1772 to the following:
+
+* Rooms are sorted based on a lexicographic ordering of the Unicode codepoints
+  of the characters in `order` values.
+
+  `order`s which are not strings, or do not consist solely  of ascii characters
+  in the range `\x20` (space) to `\x7F` (~), or consist of more than 50
+  characters, are forbidden and the field should be ignored if received.
+* Rooms with no `order` come last, in ascending lexicographic order of their
+  `room_id`s.
+
+This removes the clauses discussing using the `origin_server_ts` of the
+`m.room.create` event to allow a defined sorting of siblings based purely on the
+information available in the `m.space.child` event.
+
 ## Alternatives
 
 An initial version of this followed both `m.space.child` and `m.space.parent` events,
