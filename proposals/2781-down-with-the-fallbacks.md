@@ -100,6 +100,26 @@ Only replies to actual text messages have a somewhat reasonable fallback. The
 other ones do not provide any more value than a plain "this is a reply" tag,
 unless the client also already supports event links.
 
+#### Fallback discussion blocks new features
+
+On any proposal that wants to enable replies to other events or replies with
+other events, the discussion around "how to handle the fallback" happens. Any
+such MSC needs to specify, how the fallback should look like and the events need
+to support the `formatted_body` field. This blocks a lot of improvements, that
+could be done to replies as a whole. Often commentors even ask for the issues
+with fallbacks to be fixed on that MSC.
+
+#### Localization
+
+Since the fallback is added as normal text into the message, it needs to be
+localized for the receiving party to understand it. This however proves to be a
+challenge, since users may switch languages freely in a room and it is not easy
+to guess, which language was used in a short message. One could also use the
+client's language, but that leaks the user's localization settings, which can be a
+privacy concern and the other party may not speak that language. Alternatively a
+client can just send english fallbacks, but that significantly worsens the
+experience for casual users in non-english speaking countries.
+
 ## Proposal
 
 Deprecate the rich reply fallback. Clients should stop sending them and should
