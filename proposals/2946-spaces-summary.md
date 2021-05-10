@@ -59,7 +59,6 @@ Example response:
             "num_joined_members": 37,
             "topic": "Tasty tasty cheese",
             "world_readable": true,
-            "creation_ts": 1432735824653,
             "room_type": "m.space"
         },
         { ... }
@@ -100,9 +99,6 @@ Response fields:
   with the addition of:
   * **`room_type`**: the value of the `m.type` field from the
     room's `m.room.create` event, if any.
-  * **`creation_ts`**: the value of the `origin_server_ts` field from the
-    room's `m.room.create` event. This is required for sorting of rooms as specified
-    in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).
 * **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
   `sender`.<sup id="a1">[1](#f1)</sup>
