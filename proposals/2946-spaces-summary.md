@@ -150,8 +150,6 @@ Other notes:
   Similarly, if a space A has child space B which is suggested, and space B has
   suggested child room C which is suggested, and the client makes a summary request
   for A with `suggested_only=true`, both B and C will be returned.
-* The current implementation doesn't honour `order` fields in child events, as
-  suggested in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).
 * `m.space.child` with an invalid `via` (invalid is defined as missing, not an
   array or an empty array) are ignored.
 
