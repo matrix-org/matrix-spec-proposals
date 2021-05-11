@@ -49,10 +49,11 @@ added to the `PUT /_matrix/client/r0/profile/{userId}/avatar_url` and `PUT
 /_matrix/client/r0/profile/{userId}/displayname` endpoints.
 
 If specified, `space` must be a valid ID of a room of which the user is a member
-(regardless of whether it is of type `m.space`), and its effect is to limit the
-scope of the profile change to the given space. This is achieved by first
-updating the per-room profile data for the given space-room, and then recursing
-into all `m.space.child` rooms of which the user is a member.
+(regardless of whether it is of type `m.space`<sup id="a1">[1](#f1)</sup>), and
+its effect is to limit the scope of the profile change to the given space. This
+is achieved by first updating the per-room profile data for the given
+space-room, and then recursing into all `m.space.child` rooms of which the user
+is a member.
 
 The `space` parameter obeys `?force=false` as well, by only overwriting an
 `m.room.member` attribute if it matches the previous profile data of the root
@@ -119,3 +120,9 @@ with `force` and `space` will be available at unstable endpoints:
 PUT /_matrix/client/unstable/org.matrix.msc3189/profile/{userId}/avatar_url
 PUT /_matrix/client/unstable/org.matrix.msc3189/profile/{userId}/displayname
 ```
+
+## Footnotes
+
+<a id="f1"/>[1]: Room type is ignored primarily to be consistent with how the
+space summary API handles room IDs, and also since rooms can technically have
+`m.space.child` rooms without being of type `m.space` themselves. [↩](#a1)
