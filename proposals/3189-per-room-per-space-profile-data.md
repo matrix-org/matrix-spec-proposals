@@ -28,13 +28,13 @@ updates their global profile, an optional query parameter named `force` of type
 `boolean` is added to the `PUT /_matrix/client/r0/profile/{userId}/avatar_url`
 and `PUT /_matrix/client/r0/profile/{userId}/displayname` endpoints.
 
-If `force` is `true`, the profile change is propogated to all of the user's
+If `force` is `true`, the profile change is propagated to all of the user's
 rooms by adding, updating, or removing the relevant attribute of the user's
 `m.room.member` state (and only that attribute) as needed. Unlike the current
 behavior, updating `displayname` *must not* cause the user's `avatar_url` to
 change in any rooms, and vice versa.
 
-If `force` is `false` (the default value), the profile change is only propogated
+If `force` is `false` (the default value), the profile change is only propagated
 to rooms in which the relevant attribute (`displayname` or `avatar_url`) is
 equal to that of the user's global profile before the update. This ensures that
 by default, custom per-room profile data will not be overwritten.
@@ -77,7 +77,7 @@ To address this, it is proposed to change the meaning of a `200` response to a
 `PUT /_matrix/client/r0/profile/{userId}/avatar_url` or `PUT
 /_matrix/client/r0/profile/{userId}/displayname` request. Instead of indicating
 that the profile data was changed, a `200` indicates that the profile change has
-been acknowledged, and that if it has not already propogated to all relevant
+been acknowledged, and that if it has not already propagated to all relevant
 rooms, it is being processed in the background.
 
 ## Potential issues
