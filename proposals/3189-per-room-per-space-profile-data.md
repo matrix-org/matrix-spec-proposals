@@ -56,11 +56,11 @@ into all `m.space.child` rooms of which the user is a member.
 
 The `space` parameter obeys `?force=false` as well, by only overwriting an
 `m.room.member` attribute if it matches the previous profile data of the root
-space *or* the user's global profile. If this is not the case, meaning a room
-with a different per-room profile has been found, the profile change stops there
-and does not continue recursing into the room's space children. Additionally,
-servers must take care to handle cycles in the space graph and not recurse
-infinitely (e.g. by tracking which rooms it has visited).
+space. If this is not the case, meaning a room with a different per-room profile
+has been found, the profile change stops there and does not continue recursing
+into the room's space children. Additionally, servers must take care to handle
+cycles in the space graph and not recurse infinitely (e.g. by tracking which
+rooms it has visited).
 
 ## Potential issues
 
