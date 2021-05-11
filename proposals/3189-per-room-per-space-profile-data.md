@@ -62,24 +62,6 @@ into the room's space children. Additionally, servers must take care to handle
 cycles in the space graph and not recurse infinitely (e.g. by tracking which
 rooms it has visited).
 
-### Profile API semantics
-
-Unfortunately, there is a small issue in how the profile APIs function: When a
-user sets their display name or avatar, the request may take a long time to
-complete if the server has to update a large number of rooms. During this time,
-the client's connection could easily time out, resulting in a state where only a
-subset of rooms have received the profile change. This is not a new issue, but
-it is especially problematic for this proposal, since future attempts at
-changing profile data without specifying `?force=true` would interpret the rooms
-that weren't updated as all having custom per-room profiles.
-
-To address this, it is proposed to change the meaning of a `200` response to a
-`PUT /_matrix/client/r0/profile/{userId}/avatar_url` or `PUT
-/_matrix/client/r0/profile/{userId}/displayname` request. Instead of indicating
-that the profile data was changed, a `200` indicates that the profile change has
-been acknowledged, and that if it has not already propagated to all relevant
-rooms, it is being processed in the background.
-
 ## Potential issues
 
 This proposal assumes that having "one true display name per room" is a
@@ -100,6 +82,15 @@ rooms are joined, added to spaces, etc. If desired, servers could be changed to
 automate some of this behavior in the future, though arguably this should be
 left to clients, since they have more context for e.g. which parent space the
 user was viewing a room from when they joined it.
+
+Finally, there is a pre-existing issue with the profile APIs: If the server has
+to propagate a profile change to a large number of rooms, it could take a long
+time, and the client could easily time out, potentially leaving some rooms
+without the updated profile data. This is nothing new, but this proposal would
+make it an even more broken state, since future attempts at changing profile
+data without `?force=true` would interpret the rooms that weren't updated as all
+having custom per-room profiles. It is expected that a future MSC will address
+this by making the profile APIs non-blocking.
 
 ## Alternatives
 
