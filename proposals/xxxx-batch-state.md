@@ -150,8 +150,8 @@ deactivation or puppetting them to self-demote).
 
 The benefits of this API outweigh the risks. Server admins can always put some
 monitoring alerts in place to check if they have rogue admins who are
-bulk-spamming rooms with state events - and freeze users who do so, or otherwise
-have coarser rate-limiting.
+bulk-spamming rooms with state events - and freeze users who do so. It is also
+recommended to have a low rate-limit on this endpoint.
 
 There are some measures in the API design which attempt to mitigate some of the
 risk.
@@ -159,8 +159,6 @@ risk.
 Limiting each call to a single event type and ensuring that each event type /
 state key pair only appears a single time should reduce state resolution churn
 to a degree.
-
-It is also recommended to have a low rate-limit on this endpoint.
 
 Limiting the number of state events in a single API call to match what can be
 done by an abusive sever over federation should offer a level of security as
@@ -174,7 +172,7 @@ During development of this feature it will be available at an unstable endpoint:
 
 ## Footnotes
 
-<a id="f0"/>[1]: Note that
+<a id="f0"/>[0]: Note that
 [different JSON implementations handle duplicate Object keys differently](https://labs.bishopfox.com/tech-blog/an-exploration-of-json-interoperability-vulnerabilities).
 It should be ensured that JSON is handled consistently in your implementation. [↩](#a0)
 
