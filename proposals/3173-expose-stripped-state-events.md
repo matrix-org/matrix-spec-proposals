@@ -43,7 +43,7 @@ for knocking users:
 It is also provides an extended rationale of why this is useful:
 
 > These stripped state events contain information about the room, most notably the
-> room's name and avatar. A client will need this information to show a nice 
+> room's name and avatar. A client will need this information to show a nice
 > representation of pending knocked rooms. The recommended events to include are the
 > join rules, canonical alias, avatar, name and encryption state of the room, rather
 > than all room state. This behaviour matches the information sent to remote
@@ -52,9 +52,9 @@ It is also provides an extended rationale of why this is useful:
 [MSC1772: Spaces](https://github.com/matrix-org/matrix-doc/pull/1772) additionally
 recommends including the `m.room.create` event as one of the stripped state events:
 
-> Join rules, invites and 3PID invites work as for a normal room, with the exception 
+> Join rules, invites and 3PID invites work as for a normal room, with the exception
 > that `invite_state` sent along with invites should be amended to include the
-> `m.room.create` event, to allow clients to discern whether an invite is to a 
+> `m.room.create` event, to allow clients to discern whether an invite is to a
 > space-room or not.
 
 ## Proposal
@@ -67,7 +67,7 @@ the following mechanisms:
 * A room that has `join_rules` set to `public` or `knock`.<sup id="a1">[1](#f1)</sup>
 * A room that the user is in possession of an invite to (regardless of the `join_rules`).
 
-Future MSCs might include additional mechanism for a user to join a room and 
+Future MSCs might include additional mechanism for a user to join a room and
 should consider this MSC, for example:
 
 * [MSC3083: Restricting room membership based on space membership](https://github.com/matrix-org/matrix-doc/pull/3083) proposes allowing users to join a room based on their membership in a space (as defined in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)).
@@ -82,8 +82,8 @@ include the following as stripped state events:
 * Room name (`m.room.name`)
 * Encrypted status (`m.room.encryption`)<sup id="a3">[3](#f3)</sup>
 
-This also implies that the above information is available to any potential joiner 
-in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946). 
+This also implies that the above information is available to any potential joiner
+in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946).
 I.e. rooms which could be joined due to [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)
 can expose the information available in stripped state events.
 
@@ -106,20 +106,20 @@ calling server to properly filter this information.
 
 Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
 is not. The remote server will not know whether the request is on behalf of Alice
-or Bob (and hence whether it should share details of private rooms within that 
+or Bob (and hence whether it should share details of private rooms within that
 space).
 
 Trust is placed in the calling server: if there are any users on the calling
 server in the correct space, that calling server has a right to know about the
-rooms in that space and should return the relevant summaries, along with enough 
+rooms in that space and should return the relevant summaries, along with enough
 information that the calling server can then do some filtering.
 
-(The alternative, where the calling server sends the requesting `user_id`, and 
+(The alternative, where the calling server sends the requesting `user_id`, and
 the target server does the filtering, is unattractive because it rules out a
 future world where the calling server can cache the result.)
 
-This does not decrease security since a server could lie and make a request on 
-behalf of a user in the proper space to see the given information. I.e. the 
+This does not decrease security since a server could lie and make a request on
+behalf of a user in the proper space to see the given information. I.e. the
 calling server must be trusted anyway.
 
 ## Future extensions
