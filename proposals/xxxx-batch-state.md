@@ -1,7 +1,7 @@
 # Bulk state endpoint
 
-The goal is to potentially dump a bunch of state into a room
-in one goal. This is useful to:
+It is desired to potentially dump a bunch of state into a room  in one go. This
+is useful to:
 
 * Kick (or ban) many users at once.
 * Invite many users at once.
@@ -12,7 +12,7 @@ in one goal. This is useful to:
 
 A new endpoint is added to send multiple state events to a room in a single request.
 
-Authenticated & rate-limited
+This endpoint is authenticated and rate-limited.
 
 `PUT /_matrix/client/r0/rooms/{roomId}/batch_state/{eventType}/{txnId}`
 
@@ -61,9 +61,9 @@ The body of the response may contain two keys:
 
 Error responses:
 
-* Status code 400: No events were processed properly.
-* Status code 403: The sender doesn't have permission to send the event into the
-  room.
+* Status code 400: No events were successfully sent.
+* Status code 403: The sender doesn't have permission to send the event(s) into
+  the room.
 
 This also updates the previous definition to note that
 `PUT /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}` should be
@@ -71,8 +71,8 @@ rate-limited.
 
 ## Potential issues
 
-Handling a partial batch of state updates could lead to odd or unexpected behavior,
-but should be worse than the current situation (where each state event must be
+Handling a partial batch of state updates could lead to unexpected behavior, but
+should not be worse than the current situation (where each state event must be
 sent individually).
 
 ## Alternatives
@@ -114,9 +114,8 @@ seem particularly useful to specify the ordering of different state keys.
 ### Atomic requests
 
 Handling the request atomically and returning an error if any of the state keys
-cannot be set for some reason could be nicer. (See
-https://github.com/matrix-org/synapse/issues/7543 for a similar discussion
-involving the federation API.)
+cannot be set for some reason could be nicer. (See [a similar discussion](https://github.com/matrix-org/synapse/issues/7543)
+involving the federation API: `/_matrix/federation/v1/send/{txnId}`.)
 
 ## Security considerations
 
