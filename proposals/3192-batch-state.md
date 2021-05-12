@@ -1,4 +1,4 @@
-# Bulk state endpoint
+# MSC3192: Batch state endpoint
 
 It is desired to potentially dump a bunch of state into a room  in one go. This
 is useful to:
