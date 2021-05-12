@@ -34,10 +34,11 @@ to trust for membership. For example:
 ```
 
 This means that a user must be a member of the `!mods:example.org` space or
-`!users:example.org` space in order to join without an invite<sup id="a2">[2](#f2)</sup>. Membership in
-a single space is enough.
+`!users:example.org` space in order to join without an invite<sup id="a2">[2](#f2)</sup>.
+Membership in  a single space is enough.
 
-If the `allow` key is an empty list (or not a list at all), then no users are allowed to join without an invite. Each entry is expected to be an object with the
+If the `allow` key is an empty list (or not a list at all), then no users are
+allowed to join without an invite. Each entry is expected to be an object with the
 following keys, or a string representing the MXID of the user exempted:
 
 * `space`: The room ID of the space to check the membership of.
@@ -50,8 +51,8 @@ request from a server, the request should only be permitted if the user has a va
 invite or is in one of the listed spaces. Note that the server may not know if the user
 is in a particular space, this is left to a future MSC to solve.
 
-If the user is not part of the proper space, the homeserver should return an error response
-with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
+If the user is not part of the proper space, the homeserver should return an error
+response  with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
 Unlike the `invite` join rule, confirmation that the `allow` rules were  properly
 checked cannot be enforced over federation by event authorization, so servers in
@@ -60,7 +61,8 @@ However, user IDs listed as strings can be properly checked over federation.
 
 ### Discovery of restricted rooms
 
-The discovery of rooms in a space, as discussed in [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946): spaces summary,
+The discovery of rooms in a space, as discussed in
+[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946): spaces summary,
 must be updated to allow for discovery of restricted rooms.
 
 MSC2946 defines that a room should be included in the spaces summary if it is
@@ -125,7 +127,8 @@ The `allow` feature for `join_rules` places increased trust in the servers in th
   joining spurious users into your rooms, then:
 
 1. Don't let evil servers in your room in the first place
-2. Don't use `allow` lists, given the expansion increases the attack surface anyway by letting members in other rooms dictate who's allowed into your room.
+2. Don't use `allow` lists, given the expansion increases the attack surface anyway
+   by letting members in other rooms dictate who's allowed into your room.
 
 ## Unstable prefix
 
@@ -207,7 +210,8 @@ It is possible that completely different state should be kept, or a different
 ### Inheriting join rules
 
 If you make a parent space invite-only, should that (optionally?) cascade into
-child rooms? Seems to have some of the same problems as inheriting power levels, as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
+child rooms? Seems to have some of the same problems as inheriting power levels,
+as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
 
 ## Footnotes
 
