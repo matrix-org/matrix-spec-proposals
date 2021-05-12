@@ -84,7 +84,7 @@ include the following as stripped state events:
 
 This also implies that the above information is available to any potential joiner
 in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946).
-I.e. rooms which could be joined due to [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)
+E.g. rooms which could be joined due to [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)
 can expose the information available in stripped state events.
 
 ## Potential issues
@@ -98,29 +98,6 @@ a user is allowed to see stripped state events, as we do currently for invites a
 knocking.
 
 ## Security considerations
-
-The server-server API discussed in [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
-does not know the user who is requesting a summary of the space, but should divulge
-the above information if any member of a server could see it. It is up to the
-calling server to properly filter this information.
-
-Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
-is not. The remote server will not know whether the request is on behalf of Alice
-or Bob (and hence whether it should share details of private rooms within that
-space).
-
-Trust is placed in the calling server: if there are any users on the calling
-server in the correct space, that calling server has a right to know about the
-rooms in that space and should return the relevant summaries, along with enough
-information that the calling server can then do some filtering.
-
-(The alternative, where the calling server sends the requesting `user_id`, and
-the target server does the filtering, is unattractive because it rules out a
-future world where the calling server can cache the result.)
-
-This does not decrease security since a server could lie and make a request on
-behalf of a user in the proper space to see the given information. I.e. the
-calling server must be trusted anyway.
 
 ## Future extensions
 
