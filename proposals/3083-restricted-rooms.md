@@ -83,7 +83,41 @@ rooms in that space and should return the relevant summaries, along with enough
 information that the calling server can then do some filtering, thus an
 additional field is added to the server-server response of the spaces summary:
 
-*TODO*
+* `allowed_spaces`: A list of space IDs which give access to this room.
+
+This would modify the example response given to:
+
+```jsonc
+{
+    "rooms": [
+        {
+            "room_id": "!ol19s:bleecker.street",
+            "avatar_url": "mxc://bleecker.street/CHEDDARandBRIE",
+            "guest_can_join": false,
+            "name": "CHEESE",
+            "num_joined_members": 37,
+            "topic": "Tasty tasty cheese",
+            "world_readable": true,
+            "room_type": "m.space",
+            "allowed_spaces": ["!mods:example.org", "!users:example.org"]
+        },
+        { ... }
+    ],
+    "events": [
+        {
+            "type": "m.space.child",
+            "state_key": "!efgh:example.com",
+            "content": {
+                "via": ["example.com"],
+                "suggested": true
+            },
+            "room_id": "!ol19s:bleecker.street",
+            "sender": "@alice:bleecker.street"
+        },
+        { ... }
+    ]
+}
+```
 
 Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
 is not. The remote  server will not know whether the request is on behalf of Alice
