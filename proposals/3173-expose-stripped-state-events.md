@@ -64,7 +64,7 @@ Any user who is able to join a room can access the stripped state events of that
 Potential ways that a user might be able to join include, but are not limited to,
 the following mechanisms:
 
-* A room that has `join_rules` set to `public` or `knock`.<sup id="a1">[1](#f1)</sup>
+* A room that has `join_rules` set to `public` or `knock`.
 * A room that the user is in possession of an invite to (regardless of the `join_rules`).
 
 Future MSCs might include additional mechanism for a user to join a room and
@@ -75,12 +75,12 @@ should consider this MSC, for example:
 Additionally, it is recommended, but not required, that homeserver implementations
 include the following as stripped state events:
 
-* Create event (`m.room.create`)<sup id="a2">[2](#f2)</sup>
+* Create event (`m.room.create`)<sup id="a1">[2](#f1)</sup>
 * Join rules (`m.room.join_rules`)
 * Canonical alias (`m.room.canonical_alias`)
 * Room avatar (`m.room.avatar`)
 * Room name (`m.room.name`)
-* Encrypted status (`m.room.encryption`)<sup id="a3">[3](#f3)</sup>
+* Encrypted status (`m.room.encryption`)<sup id="a2">[3](#f2)</sup>
 
 This also implies that the above information is available to any potential joiner
 in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946).
@@ -99,6 +99,11 @@ knocking.
 
 ## Security considerations
 
+This would allow for invisibly accessing the stripped state of a room with `knock`
+join rules. This is already trivially accessible by knocking on the room, but
+currently users in the room would know that the knock occurred. This does not
+seem to be a major weakening of the security.
+
 ## Future extensions
 
 Dedicated client-server and server-server APIs could be added to request the
@@ -111,10 +116,7 @@ N/A
 
 ## Footnotes
 
-<a id="f1"/>[1]: The rationale for including `knock` is that the user can
-trivially get this state already by knocking on the room.[↩](#a1)
+<a id="f1"/>[1]: As updated in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).[↩](#a1)
 
-<a id="f2"/>[2]: As updated in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).[↩](#a2)
-
-<a id="f3"/>[3]: This is already sent from Synapse and generally seems useful for
-a user to know before joining a room.[↩](#a3)
+<a id="f2"/>[2]: This is already sent from Synapse and generally seems useful for
+a user to know before joining a room.[↩](#a2)
