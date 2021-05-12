@@ -174,13 +174,21 @@ to a space to gain membership to a room.
 ### Kicking users out when they leave the allowed space
 
 In the above example, suppose `@bob:server.example` leaves `!users:example.org`:
-they should be removed from the room. One option is to leave the departure up
-to Bob's server `server.example`, but this places a relatively high level of trust
-in that server. Additionally, if `server.example` were offline, other users in
-the room would still see Bob in the room (and their servers would attempt to
-send message traffic to it).
+should they be removed from the room? Likely not, by analogy with what happens
+when you switch the join rules from public to invite. Join rules currently govern
+joins, not existing room membership.
 
-Another consideration is that users may have joined via a direct invite, not via access through a space.
+It is left to a future MSC to consider this, but some potential thoughts are
+given below.
+
+If you assume that a user *should* be removed in this case, one option is to
+leave the departure up  to Bob's server `server.example`, but  this places a
+relatively high level of trust  in that server. Additionally, if `server.example`
+were offline, other users in  the room would still see Bob in the room (and their
+servers would attempt to  send message traffic to it).
+
+Another consideration is that users may have joined via a direct invite, not via
+access through a space.
 
 Fixing this is thorny. Some sort of annotation on the membership events might
 help. but it's unclear what the desired semantics are:
@@ -192,6 +200,9 @@ help. but it's unclear what the desired semantics are:
 * Suppose a user joins a room via a space (SpaceA). Later, SpaceB is added to
   the `allow` list and SpaceA is removed. What should happen when the
   user leaves SpaceB? Are they exempt from the kick?
+
+It is possible that completely different state should be kept, or a different
+`m.room.member` state could be used in a more reasonable way to track this.
 
 ### Inheriting join rules
 
