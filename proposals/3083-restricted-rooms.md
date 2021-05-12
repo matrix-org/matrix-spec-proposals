@@ -1,16 +1,17 @@
 # Restricting room membership based on space membership
 
-Draft join rule changes for [MSC1772: spaces](https://github.com/matrix-org/matrix-doc/pull/1772),
-this is meant to replaces the second half of [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962/).
-
 A desirable feature is to give room admins the power to restrict membership of
-their room based on the membership of one or more spaces, for example:
+their room based on the membership of one or more spaces from
+[MSC1772: spaces](https://github.com/matrix-org/matrix-doc/pull/1772),
+for example:
 
 > members of the #doglovers space can join this room without an invitation<sup id="a1">[1](#f1)</sup>
 
-We could represent the allowed spaces with a new `join_rule` - `restricted` - to
-reflect  the fact that what we have is a cross between `invite` and `public`. This
-would have additional content of the rooms to trust for membership. For example:
+## Proposal
+
+A new `join_rule` (`restricted`) will be used to  reflect a cross between `invite`
+and `public` join rules. The content of the join rules would include the rooms
+to trust for membership. For example:
 
 ```json
 {
@@ -57,6 +58,51 @@ checked cannot be enforced over federation by event authorization, so servers in
 the room are trusted not to allow invalid users to join.<sup id="a3">[3](#f3)</sup>
 However, user IDs listed as strings can be properly checked over federation.
 
+### Discovery of restricted rooms
+
+The discovery of rooms in a space, as discussed in [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946): spaces summary,
+must be updated to allow for discovery of restricted rooms.
+
+MSC2946 defines that a room should be included in the spaces summary if it is
+accessible (world-readable or if the user is already in the room). [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173)
+declares that if a user can view the stripped state of a room if they are *able*
+to join the room. Combining these two MSCs, the spaces summary should include
+rooms with restricted join rule which a user is able to join (i.e. they're a
+member of one of the spaces declared in the join rule).
+
+The server-server API discussed in [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
+does not know the user who is requesting a summary of the space, but should divulge
+the above information if any member of a server could see it. It is up to the
+calling server to properly filter this information.
+
+Trust is placed in the calling server: if there are any users on the calling
+server in the correct space, that calling server has a right to know about the
+rooms in that space and should return the relevant summaries, along with enough
+information that the calling server can then do some filtering, thus an
+additional field is added to the server-server response of the spaces summary:
+
+*TODO*
+
+Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
+is not. The remote  server will not know whether the request is on behalf of Alice
+or Bob (and hence  whether it should share details of restricted rooms within that
+space).
+
+Consider the above with a restricted room on a different server which defers
+access to the above space. When summarizing the space, the homeserver must make
+a request over federation for information on the room. The response would include
+the room (since Alice is able to join it), but the calling server does not know
+*why* they received the room, without additional information the server cannot
+properly filter the returned results.
+
+(The alternative, where the calling server sends the requesting `user_id`, and
+the target server does the filtering, is unattractive because it rules out a
+future world where the calling server can cache the result.)
+
+This does not decrease security since a server could lie and make a request on
+behalf of a user in the proper space to see the given information. I.e. the
+calling server must be trusted anyway.
+
 ## Summary of the behaviour of join rules
 
 See the [join rules](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-join-rules)
@@ -67,7 +113,7 @@ between `public`, `invite`, and `restricted`.
 * `invite`: only people with membership `invite` can join, as today.
 * `knock`: the same as `invite`, except anyone can knock, subject to `ban` and
   `server_acls`. See [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
-* `private`: This is reserved and not implemented. 
+* `private`: This is reserved and not implemented.
 * `restricted`: the same as `public` from the perspective of the auth rules, but
   with the additional caveat that servers are expected to check the `allow` rules
   before generating a `join` event (whether for a local or a remote user).
@@ -92,8 +138,11 @@ the `allow` key and the `restricted` value do not need unstable prefixes.
 
 ## History / Rationale
 
+Note that this replaces the second half of an older version of
+[MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
+
 It may seem that just having the `allow` key with `public` join rules is enough,
-as suggested in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962/),
+as suggested in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962),
 but there are concerns that having a `public` join rule that is restricted may
 cause issues if an implementation does not understand the semantics of the `allow`
 keyword. Using an `allow` key with `invite` join rules also does not make sense as
