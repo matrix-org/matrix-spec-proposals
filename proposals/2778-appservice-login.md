@@ -55,8 +55,8 @@ then the `errcode` should be `"M_EXCLUSIVE"`.
 Homeservers should ignore the `access_token` parameter if a type other than
 `m.login.application_service` has been provided.
 
-The expected flow for appservices would be to `/register` their users, and
-then `/login` to generate the appropriate device.
+Appservices creating **new** users can still use the `/register` endpoint to generate an `access_token` / `device_id`
+but for existing users, the `/login` endpoint can be used instead.
 
 ## Potential issues
 
