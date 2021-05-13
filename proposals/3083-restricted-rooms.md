@@ -9,7 +9,7 @@ for example:
 
 ## Proposal
 
-A new `join_rule` (`restricted`) will be used to  reflect a cross between `invite`
+A new `join_rule` (`restricted`) will be used to reflect a cross between `invite`
 and `public` join rules. The content of the join rules would include the rooms
 to trust for membership. For example:
 
@@ -35,7 +35,7 @@ to trust for membership. For example:
 
 This means that a user must be a member of the `!mods:example.org` space or
 `!users:example.org` space in order to join without an invite<sup id="a2">[2](#f2)</sup>.
-Membership in  a single space is enough.
+Membership in a single space is enough.
 
 If the `allow` key is an empty list (or not a list at all), then no users are
 allowed to join without an invite. Each entry is expected to be an object with the
@@ -52,9 +52,9 @@ invite or is in one of the listed spaces. Note that the server may not know if t
 is in a particular space, this is left to a future MSC to solve.
 
 If the user is not part of the proper space, the homeserver should return an error
-response  with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
+response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
-Unlike the `invite` join rule, confirmation that the `allow` rules were  properly
+Unlike the `invite` join rule, confirmation that the `allow` rules were properly
 checked cannot be enforced over federation by event authorization, so servers in
 the room are trusted not to allow invalid users to join.<sup id="a3">[3](#f3)</sup>
 However, user IDs listed as strings can be properly checked over federation.
@@ -120,8 +120,8 @@ This would modify the example response given to:
 ```
 
 Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
-is not. The remote  server will not know whether the request is on behalf of Alice
-or Bob (and hence  whether it should share details of restricted rooms within that
+is not. The remote server will not know whether the request is on behalf of Alice
+or Bob (and hence whether it should share details of restricted rooms within that
 space).
 
 Consider the above with a restricted room on a different server which defers
@@ -157,8 +157,8 @@ between `public`, `invite`, and `restricted`.
 ## Security considerations
 
 The `allow` feature for `join_rules` places increased trust in the servers in the
-  room. We consider this acceptable: if you don't want evil servers randomly
-  joining spurious users into your rooms, then:
+room. We consider this acceptable: if you don't want evil servers randomly
+joining spurious users into your rooms, then:
 
 1. Don't let evil servers in your room in the first place
 2. Don't use `allow` lists, given the expansion increases the attack surface anyway
@@ -193,8 +193,8 @@ to just introduce a a new join rule - `restricted` - as described above.
 
 ## Future extensions
 
-Potential future extensions which should not be designed out
-include, but are not included in this MSC.
+Potential future extensions which should not be designed out include, but are not
+included in this MSC.
 
 ### Checking space membership over federation
 
@@ -219,10 +219,10 @@ It is left to a future MSC to consider this, but some potential thoughts are
 given below.
 
 If you assume that a user *should* be removed in this case, one option is to
-leave the departure up  to Bob's server `server.example`, but  this places a
-relatively high level of trust  in that server. Additionally, if `server.example`
-were offline, other users in  the room would still see Bob in the room (and their
-servers would attempt to  send message traffic to it).
+leave the departure up to Bob's server `server.example`, but this places a
+relatively high level of trust in that server. Additionally, if `server.example`
+were offline, other users in the room would still see Bob in the room (and their
+servers would attempt to send message traffic to it).
 
 Another consideration is that users may have joined via a direct invite, not via
 access through a space.
@@ -261,7 +261,7 @@ The only difference is that you are not *required* to hold an invite when
 joining the room. [↩](#a2)
 
 <a id="f3"/>[3]: This is a marginal decrease in security from the current
-situation. Currently, a misbehaving server can allow  unauthorized users to join
+situation. Currently, a misbehaving server can allow unauthorized users to join
 any room by first issuing an invite to that user. In theory that can be
 prevented by raising the PL required to send an invite, but in practice that is
 rarely done. [↩](#a2)
