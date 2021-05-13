@@ -131,6 +131,12 @@ the room (since Alice is able to join it), but the calling server does not know
 *why* they received the room, without additional information the server cannot
 properly filter the returned results.
 
+Note that there are still potential situations where each server individually
+doesn't have enough information to properly return the full summary, but these
+do not seem reasonable in what is considered a normal structure of spaces. (E.g.
+in the above example, if the remote server is not in the space and does not know
+whether the server is in the space or not it cannot return the room.)
+
 (The alternative, where the calling server sends the requesting `user_id`, and
 the target server does the filtering, is unattractive because it rules out a
 future world where the calling server can cache the result.)
