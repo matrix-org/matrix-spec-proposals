@@ -38,6 +38,7 @@ sent to the room:
 ```
 {
    "type": "m.limits.fanout.room_users",
+   "state_key": "user_cap",
    "value": 123456789
 }
 ```
@@ -51,14 +52,15 @@ If, a server-wide limit is defined but a room specific limit is not,
 the room specific limit shall be returned as if it were the same. In case
 both limits exist, the smaller limit for a given room shall apply.
 
-For now, four such limits are proposed:
+For now, four such limits are proposed (with event types and state keys respectively):
 
-* Per-room user fanout limit: `m.limits.fanout.room_users`
-* Immediate child room nesting limit: `m.limits.fanout.room_children`
-* Inherited child room nesting limit: `m.limits.fanout.room_branching`
-* Descendant room nesting limit: `m.limits.fanout.room_rooms`
-* Per-room user complexity limit: `m.limits.complexity.user_cap`
+* Per-room user fanout limit: `m.limits.fanout.room_users` / `users`
+* Immediate child room nesting limit: `m.limits.fanout.room_children` / `children`
+* Inherited child room nesting limit: `m.limits.fanout.room_branching` / `branches`
+* Descendant room nesting limit: `m.limits.fanout.room_rooms` / `room_rooms`
+* Per-room user complexity limit: `m.limits.complexity.user_cap` / `user_cap`
  * Per-room-as-type user complexity limit: `m.limits.complexity.user_cap.{room_type}`
+ / not applicable to room state events
 
 Room limits specified as sub-keys of `m.limits.fanout` are sent as state events,
 and room limits specified as subkeys of `m.limits.complexity` are sent as admin
