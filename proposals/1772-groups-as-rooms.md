@@ -126,7 +126,7 @@ relationship can be expressed in one of two ways:
     `origin_server_ts` of their `m.room.create` events, or ascending
     lexicographic order of their `room_id`s in case of equal
     `origin_server_ts`.  `order`s which are not strings, or do not consist
-    solely of ascii characters in the range `\x20` (space) to `\x7F` (`~`), or
+    solely of ascii characters in the range `\x20` (space) to `\x7E` (`~`), or
     consist of more than 50 characters, are forbidden and the field should be
     ignored if received.)
 
