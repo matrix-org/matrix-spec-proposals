@@ -151,5 +151,5 @@ from Synapse and generally seems useful for  a user to know before joining a roo
 
 <a id="f3"/>[3]: The room topic (`m.room.topic`) is included as part of the
 [room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms)
-response for public rooms. It is additional to be included as part of [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
+response for public rooms. It is also planned to be included as part of [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
 in the spaces summary response. [↩](#a3)
