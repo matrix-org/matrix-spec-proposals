@@ -91,7 +91,7 @@ has some of the same issues as above.
 
 ### Request body
 
-A request body consistenting of an array of state keys and their content was
+A request body consisting of an array of state keys and their content was
 considered, but it seemed more appropriate to take advantage of the JSON Object
 properties, this alternative would look something like:
 
