@@ -80,12 +80,13 @@ should consider this MSC, for example:
 Additionally, it is recommended, but not required, that homeserver implementations
 include the following as stripped state events:
 
-* Create event (`m.room.create`)<sup id="a1">[2](#f1)</sup>
+* Create event (`m.room.create`)<sup id="a1">[1](#f1)</sup>
 * Join rules (`m.room.join_rules`)
 * Canonical alias (`m.room.canonical_alias`)
 * Room avatar (`m.room.avatar`)
 * Room name (`m.room.name`)
-* Encryption information (`m.room.encryption`)<sup id="a2">[3](#f2)</sup>
+* Encryption information (`m.room.encryption`)<sup id="a2">[2](#f2)</sup>
+* Room topic (`m.room.topic`)<sup id="a3">[3](#f3)</sup>
 
 This also implies that the above information is available to any potential joiner
 in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946).
@@ -121,7 +122,13 @@ N/A
 
 ## Footnotes
 
-<a id="f1"/>[1]: As updated in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772).[↩](#a1)
+<a id="f1"/>[1]: As updated in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772). [↩](#a1)
 
-<a id="f2"/>[2]: This is already sent from Synapse and generally seems useful for
-a user to know before joining a room.[↩](#a2)
+<a id="f2"/>[2]: The encryption information (`m.room.encryption`) is already sent
+from Synapse and generally seems useful for  a user to know before joining a room.
+[↩](#a2)
+
+<a id="f3"/>[3]: The room topic (`m.room.topic`) is included as part of the
+[room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms)
+response for public rooms. It is additional to be included as part of [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
+in the spaces summary response. [↩](#a3)
