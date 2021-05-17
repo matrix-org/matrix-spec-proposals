@@ -14,50 +14,56 @@ A new endpoint is added to send multiple state events to a room in a single requ
 
 This endpoint is authenticated and rate-limited.
 
-`PUT /_matrix/client/r0/rooms/{roomId}/batch_state/{eventType}/{txnId}`
+`PUT /_matrix/client/r0/rooms/{roomId}/batch_state/{txnId}`
 
 Example request:
 
 ```json
-{
-    "@alice:example.com": {
-        "membership": "join",
-        "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF",
-        "displayname": "Alice Margatroid"
-    }
-}
+[
+  {
+      "event_type": "m.room.membership",
+      "state_key": "@alice:example.com",
+      "content": {
+          "membership": "join",
+          "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF",
+          "displayname": "Alice Margatroid"
+      }
+  }
+]
 ```
 
 Example response:
 
 ```json
-{
-  "@alice:example.com": "$YUwRidLecu:example.com"
-}
+[
+  "$YUwRidLecu:example.com"
+]
 ```
 
-This API extends the [current ways to push state into a room](https://matrix.org/docs/spec/client_server/latest#sending-events-to-a-room) by allowing for multiple events for differing state keys to be created with a single API call.
+This API extends the [current ways to push state into a room](https://matrix.org/docs/spec/client_server/latest#sending-events-to-a-room)
+by allowing for multiple events for differing state keys to be created with a single API call.
 
 Path parameters:
 
 * `room_id`: **Required.** The room to set the state in
-* `event_type`: **Required.** The type of event to send.
 * `txnId`: **Required.** The transaction ID for this state update. Clients should
   generate an ID unique across requests with the same access token; it will be
   used by the server to ensure idempotency of requests.
 
-The body of the request should be a map of state key to the content object of the
-event<sup id="a0">[0](#f0)</sup>; the fields in this object will vary depending
-on the type of event. See [Room Events](https://matrix.org/docs/spec/client_server/latest#room-events)
-for the `m.` event specification.
+The body of the request should be an ordered array of objects with the following
+keys:
 
-At most 50 state keys can be included in the request body.<sup id="a1">[1](#f1)</sup>
+* `event_type`: **Required.** A string. The type of event to send.
+* `state_key`: A string. The state_key for the state to send. Defaults to the
+  empty string.
+* `content`: **Required.** The content object of the event; the fields in this object will vary
+  depending  on the type of event. See [Room Events](https://matrix.org/docs/spec/client_server/latest#room-events)
+  for the `m.` event specification.
 
-The body of the response may contain two keys:
+At most 50 events can be included in the request body.<sup id="a1">[1](#f1)</sup>
 
-* `event_ids`: A mapping of the state keys to event IDs of the sent events.
-* `errors`: A mapping of state keys to error information for state events (which
-  were *not* sent).
+The body of the response will contain an array of the created event IDs. If an
+event cannot be created then `null` will be returned in its place.
 
 Error responses:
 
@@ -77,45 +83,40 @@ sent individually).
 
 ## Alternatives
 
-### Endpoint
-
-`POST /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{txnId}` was considered
-as an endpoint, but the likelihood of confusing the `<txnId>` with a
-`<state key>` seems not worth it. See some of the
-[discussion in the client-server specification](https://matrix.org/docs/spec/client_server/latest#put-matrix-client-r0-rooms-roomid-state-eventtype-statekey)
-about the current `/state` endpoint.
-
-`PATCH /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{txnId}` was also
-considered, but `PATCH` seems unused in the Matrix specification and this also
-has some of the same issues as above.
-
 ### Request body
 
-A request body consisting of an array of state keys and their content was
-considered, but it seemed more appropriate to take advantage of the JSON Object
-properties, this alternative would look something like:
+A request body consisting of nested objects with event types and state keys as the
+keys pointed to their content was considered, but it seemed not in the style of
+other Matrix APIs. This alternative would look something like:
 
 ```json
-[
-    {
-        "state_key": "@alice:example.com",
-        "content": {
+{
+    "m.room.member": {
+        "@alice:example.com": {
             "membership": "join",
             "avatar_url": "mxc://localhost/SEsfnsuifSDFSSEF",
             "displayname": "Alice Margatroid"
         }
     }
-]
+}
 ```
-
-This does have a benefit that the state updates are ordered, although it does not
-seem particularly useful to specify the ordering of different state keys.
 
 ### Atomic requests
 
-Handling the request atomically and returning an error if any of the state keys
-cannot be set for some reason could be nicer. (See [a similar discussion](https://github.com/matrix-org/synapse/issues/7543)
+Handling the request atomically and returning an error if any of the state events
+cannot be created for some reason could be nicer. (See [a similar discussion](https://github.com/matrix-org/synapse/issues/7543)
 involving the federation API: `/_matrix/federation/v1/send/{txnId}`.)
+
+### Batch inserting state and messages
+
+The [MSC2716](https://github.com/matrix-org/matrix-doc/pull/2716): Incrementally
+importing history into existing rooms has need to insert both state and messages
+at the same time. This is used to insert messages plus their auth state at the
+same time.
+
+It is possible this API could be expanded to cover that use-case, but given the
+current specialization needed to handle MSC2716 there does not exist an
+example use-case for handling both state and messages at the same time.
 
 ## Security considerations
 
@@ -167,13 +168,9 @@ well.
 
 During development of this feature it will be available at an unstable endpoint:
 
-`/_matrix/client/unstable/org.matrix.mscxxxx/rooms/{roomId}/batch_state/{eventType}/{txnId}`
+`/_matrix/client/unstable/org.matrix.mscxxxx/rooms/{roomId}/batch_state/{txnId}`
 
 ## Footnotes
-
-<a id="f0"/>[0]: Note that
-[different JSON implementations handle duplicate Object keys differently](https://labs.bishopfox.com/tech-blog/an-exploration-of-json-interoperability-vulnerabilities).
-It should be ensured that JSON is handled consistently in your implementation. [↩](#a0)
 
 <a id="f1"/>[1]: This matches the [maximum of 50 PDUs](https://matrix.org/docs/spec/server_server/latest#put-matrix-federation-v1-send-txnid)
 that can be in a federation transaction. [↩](#a1)
