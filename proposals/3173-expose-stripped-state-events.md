@@ -80,7 +80,7 @@ include the following as stripped state events:
 * Canonical alias (`m.room.canonical_alias`)
 * Room avatar (`m.room.avatar`)
 * Room name (`m.room.name`)
-* Encrypted status (`m.room.encryption`)<sup id="a2">[3](#f2)</sup>
+* Encryption information (`m.room.encryption`)<sup id="a2">[3](#f2)</sup>
 
 This also implies that the above information is available to any potential joiner
 in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946).
