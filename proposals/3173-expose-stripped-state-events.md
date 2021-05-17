@@ -1,15 +1,17 @@
 # MSC3173: Expose stripped state events to any potential joiner
 
-It is currently possible to inspect the state of rooms in some circumstances:
+The current design of Matrix somtimes allows for inspecting part of the room state
+without being joined to the room:
 
 * If the room has `history_visibility: world_readable`, then anyone can inspect
   it (by calling `/state` on it).
-* Rooms in the room directory expose some of their state publicly.
+* Rooms in the [room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms)
+  expose some of their state publicly.
 * [Invited users](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
-  (and [knocking users](https://github.com/matrix-org/matrix-doc/pull/2403))
-  receive stripped state events.
+  and [knocking users](https://github.com/matrix-org/matrix-doc/pull/2403)
+  receive stripped state events to display metadata to users.
 
-This MSC proposes exposing the stripped state events that are currently available
+This MSC proposes allowing the stripped state events that are currently available
 to invited and knocking users to any user who could potentially join a room. It
 also consolidates the recommendation on which states events are available to
 potential joiners.
@@ -62,10 +64,13 @@ recommends including the `m.room.create` event as one of the stripped state even
 
 ## Proposal
 
-Any user who is able to join a room can access the stripped state events of that room.
+Any user who is able to join a room shall be allowed to have access the stripped
+state events of that room. No changes are proposed to the mechanics of how the
+users may get those state events, e.g. the `invite_state` of an invite or the
+roomd irectory.
 
-Potential ways that a user might be able to join include, but are not limited to,
-the following mechanisms:
+Potential ways that a user might be able to join a room include, but are not
+limited to, the following mechanisms:
 
 * A room that has `join_rules` set to `public` or `knock`.
 * A room that the user is in possession of an invite to (regardless of the `join_rules`).
@@ -77,8 +82,10 @@ should consider this MSC, for example:
   proposes allowing users to join a room based on their membership in a space (as defined in
   [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)).
 
-Additionally, it is recommended, but not required, that homeserver implementations
-include the following as stripped state events:
+It is also proposed to create a single definition for what stripped state events
+should be provided to be potential joiners. Thus, it is recommended (although not
+required<sup id="a0">[0](#f0)</sup>) that homeserver implementations include the
+following as stripped state events:
 
 * Create event (`m.room.create`)<sup id="a1">[1](#f1)</sup>
 * Join rules (`m.room.join_rules`)
@@ -87,11 +94,6 @@ include the following as stripped state events:
 * Room name (`m.room.name`)
 * Encryption information (`m.room.encryption`)<sup id="a2">[2](#f2)</sup>
 * Room topic (`m.room.topic`)<sup id="a3">[3](#f3)</sup>
-
-This also implies that the above information is available to any potential joiner
-in the API proposed in [MSC2946: Spaces summary](https://github.com/matrix-org/matrix-doc/pull/2946).
-E.g. rooms which could be joined due to [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)
-can expose the information available in stripped state events.
 
 ## Potential issues
 
@@ -112,15 +114,34 @@ seem to be a major weakening of the security.
 
 ## Future extensions
 
+### Dedicated APIs
+
 Dedicated client-server and server-server APIs could be added to request the
 stripped state events, but that is considered out-of-scope for the current
 proposal.
+
+### Revisions to the room directory
+
+A future MSC could include additional information from the stripped state events
+in the [room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms).
+This seems to mostly be the encryption information, but there may also be other
+pieces of information to include.
+
+### Additional ways to join a room
+
+[MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083) leverages this to
+expose the information available in stripped state events via the spaces summary
+for potential joiners due to membership in a space.
 
 ## Unstable prefix
 
 N/A
 
 ## Footnotes
+
+<a id="f0"/>[0]: Privacy conscious deployments may wish to limit the metadata
+available to users who are not in a room as the trade-off against user experience.
+There seems to be no reason to not allow this. [↩](#a0)
 
 <a id="f1"/>[1]: As updated in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772). [↩](#a1)
 
