@@ -2,9 +2,12 @@
 
 It is currently possible to inspect the state of rooms in some circumstances:
 
-* If the room has `history_visibility: world_readable`, then anyone can inspect it (by calling `/state` on it).
+* If the room has `history_visibility: world_readable`, then anyone can inspect
+  it (by calling `/state` on it).
 * Rooms in the room directory expose some of their state publicly.
-* [Invited users](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid) (and [knocking users](https://github.com/matrix-org/matrix-doc/pull/2403)) receive stripped state events.
+* [Invited users](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
+  (and [knocking users](https://github.com/matrix-org/matrix-doc/pull/2403))
+  receive stripped state events.
 
 This MSC proposes exposing the stripped state events that are currently available
 to invited and knocking users to any user who could potentially join a room. It
@@ -70,7 +73,9 @@ the following mechanisms:
 Future MSCs might include additional mechanism for a user to join a room and
 should consider this MSC, for example:
 
-* [MSC3083: Restricting room membership based on space membership](https://github.com/matrix-org/matrix-doc/pull/3083) proposes allowing users to join a room based on their membership in a space (as defined in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)).
+* [MSC3083: Restricting room membership based on space membership](https://github.com/matrix-org/matrix-doc/pull/3083)
+  proposes allowing users to join a room based on their membership in a space (as defined in
+  [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)).
 
 Additionally, it is recommended, but not required, that homeserver implementations
 include the following as stripped state events:
