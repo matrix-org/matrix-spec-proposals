@@ -670,7 +670,7 @@ custom-item-value =
 ```
 
 Note that this format is deliberately following [RFC 3986](https://tools.ietf.org/html/rfc3986)
-to ensure maximum compatibility with existing tooling. This URI scheme is
+to ensure maximum compatibility with existing tooling. The scheme name (`matrix`) is
 registered with the IANA [here](https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml).
 
 Currently, the `authority` and `fragment` are unused by this specification,
@@ -702,7 +702,7 @@ this specification are the following:
 
 * `action` - Helps provide intent for what the client should do specifically with
   the URI. Lack of an `action` simply indicates that the URI is identifying a resource
-  and has no significant action associated with it - clients could treat this as
+  and has no suggested action associated with it - clients could treat this as
   navigating the user to an informational page, for example.
   * `action=join` - Describes an intent for the client to join the room described
     by the URI and thus is only valid on URIs which are referring to a room (it
@@ -738,7 +738,7 @@ Examples of common URIs are:
 * Permalink by room ID: `matrix:roomid/somewhere:example.org/e/event:example.org?via=elsewhere.ca`
 * User: `matrix:u/alice:example.org?action=chat`
 
-A suggested client implementation is available in the
+A suggested client implementation algorithm is available in the
 [original MSC](https://github.com/matrix-org/matrix-doc/pull/2312/files#diff-f4ae31b823cdbeac105bd4b6526b3da8f6db03ae29847e1c7916b9ac51997fdfR363)
 (line 363).
 
