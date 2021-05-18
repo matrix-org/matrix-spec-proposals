@@ -1,4 +1,4 @@
-# MSC0000: Encrypted Appservices
+# MSC3202: Encrypted Appservices
 
 Presently, appservices in Matrix are capable of attaching themselves to a homeserver for high-traffic
 bot-like usecases, such as bridging and operationally expensive bots. Traditionally, these appservices
@@ -70,10 +70,10 @@ all the users in its namespace.
 
 ## Unstable prefix
 
-While this MSC is not considered stable for implementation, implementations should use `org.matrix.msc0000.`
+While this MSC is not considered stable for implementation, implementations should use `org.matrix.msc3202.`
 as a prefix to the fields on the `/transactions` endpoint. For example:
-* `device_lists` becomes `org.matrix.msc0000.device_lists`
-* `device_one_time_keys_count` becomes `org.matrix.msc0000.device_one_time_keys_count`
+* `device_lists` becomes `org.matrix.msc3202.device_lists`
+* `device_one_time_keys_count` becomes `org.matrix.msc3202.device_one_time_keys_count`
 
 Appservices which support encryption but never see these fields (ie: server is not implementing this in an
 unstable capacity) should be fine, though encryption might not function properly for them. It is the
