@@ -13,8 +13,8 @@ without being joined to the room:
 
 This MSC proposes allowing the stripped state events that are currently available
 to invited and knocking users to any user who could potentially join a room. It
-also consolidates the recommendation on which states events are available to
-potential joiners.
+also consolidates the recommendation on which events to include as stripped state
+for potential joiners.
 
 ## Background
 
@@ -64,10 +64,16 @@ recommends including the `m.room.create` event as one of the stripped state even
 
 ## Proposal
 
+This proposal includes two aspects which are dealt with separately:
+
+1. Generalizing when a user is allowed to view the stripped state of a room.
+2. A consistent recommendation for which events to include in the stripped state.
+
+### Accessing the stripped state of a room
+
 Any user who is able to join a room shall be allowed to have access the stripped
 state events of that room. No changes are proposed to the mechanics of how the
-users may get those state events, e.g. the `invite_state` of an invite or the
-room directory.
+users may get those state events.
 
 Potential ways that a user might be able to join a room include, but are not
 limited to, the following mechanisms:
@@ -81,6 +87,8 @@ should consider this MSC, for example:
 * [MSC3083: Restricting room membership based on space membership](https://github.com/matrix-org/matrix-doc/pull/3083)
   proposes allowing users to join a room based on their membership in a space (as defined in
   [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)).
+
+### Events to include in the stripped state
 
 It is also proposed to create a single definition for what stripped state events
 should be provided to be potential joiners. Thus, it is recommended (although not
