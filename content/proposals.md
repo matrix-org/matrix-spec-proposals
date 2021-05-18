@@ -245,10 +245,13 @@ is as follows:
     75% of the members of the Spec Core Team agree on its outcome, and
     all existing concerns have been resolved.
 -   The FCP will then begin and last for 5 days, giving anyone else some
-    time to speak up before it concludes. On its conclusion, the
-    disposition of the FCP will be carried out. If sufficient reasoning
-    against the disposition is raised, the FCP can be cancelled and the
-    MSC will continue to evolve accordingly.
+    time to speak up before it concludes. If sufficient reasoning
+    against the disposition is provided, a member of the Spec Core Team can
+    raise a concern and block FCP from completing. This will not reset or
+    pause the 5 day FCP timer, but FCP will not conclude until all concerns have
+    been resolved. If sufficient change in the MSC is required to resolve those
+    concerns, FCP might be cancelled and reproposed. Once FCP has concluded,
+    the disposition of the FCP will be carried out.
 -   Once the proposal has been accepted and merged, it is time to submit
     the actual change to the Specification that your proposal reasoned
     about. This is known as a spec PR. However in order for the spec PR
@@ -259,7 +262,7 @@ is as follows:
     will warrant another MSC. Any minor, non-fundamental changes are
     allowed but **must** be documented in the original proposal
     document. This ensures that someone reading a proposal in the future
-    doesn't assume old information wasn't merged into the spec.
+    doesn't assume old information that wasn't merged into the spec.
     -   Similar to the proposal PR, please sign off the spec PR as per
         the guidelines on
         [CONTRIBUTING.rst](https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst).
@@ -373,7 +376,7 @@ be merged without the Spec Core Team focusing on them specifically.
 
 ## Implementing a proposal
 
-As part of the proposal process the spec core team will require evidence
+As part of the proposal process the Spec Core Team will require evidence
 of the MSC working in order for it to move into FCP. This can usually be
 a branch/pull request to whichever implementation of choice that proves
 the MSC works in practice, though in some cases the MSC itself will be
@@ -388,13 +391,11 @@ release, implementations are required to use the following process to
 ensure that the official Matrix namespace is not cluttered with
 development or testing data.
 
-Note
-
-Unreleased implementations (including proofs-of-concept demonstrating
+**Note:** Unreleased implementations (including proofs-of-concept demonstrating
 that a particular MSC works) do not have to follow this process.
 
 1.  Have an idea for a feature.
-2.  Implement the feature using unstable endpoints, vendor prefixes, and
+1.  Implement the feature using unstable endpoints, vendor prefixes, and
     unstable feature flags as appropriate.
     -   When using unstable endpoints, they MUST include a vendor
         prefix. For example:
@@ -429,22 +430,25 @@ that a particular MSC works) do not have to follow this process.
     -   If at any point after early release, the idea changes in a
         backwards-incompatible way, the feature flag should also change
         so that implementations can adapt as needed.
-3.  In parallel, or ahead of implementation, open an MSC and solicit
+1.  In parallel, or ahead of implementation, open an MSC and solicit
     review per above.
-4.  Before FCP can be called, the Spec Core Team will require evidence
+1.  Before FCP can be called, the Spec Core Team will require evidence
     of the MSC working as proposed. A typical example of this is an
     implementation of the MSC, though the implementation does not need
     to be shipped anywhere and can therefore avoid the
     forwards/backwards compatibility concerns mentioned here.
-5.  The FCP process is completed, and assuming nothing is flagged the
+1.  The FCP process is completed, and assuming nothing is flagged the
     MSC lands.
-6.  A spec PR is written to incorporate the changes into Matrix.
-7.  A spec release happens.
-8.  Implementations switch to using stable prefixes (e.g.: `/r0`) if the
-    server supports the specification version released. If the server
-    doesn't advertise the specification version, but does have the
-    feature flag, unstable prefixes should still be used.
-9.  A transition period of about 2 months starts immediately after the
+1.  Implementations can now switch to using stable prefixes
+    (for example, for an endpoint, moving from
+    `/unstable/org.matrix.mscxxxx/frobnicate`
+    to `/v1/frobnicate`), assuming that the change
+    is backwards compatible with older implementations. In the rare occasion
+    where backwards compatibility is not possible without a new spec release,
+    implementations should continue to use unstable prefixes.
+1.  A spec PR is written to incorporate the changes into Matrix.
+1.  A spec release happens.
+1.  A transition period of about 2 months starts immediately after the
     spec release, before implementations start to encourage other
     implementations to switch to stable endpoints. For example, a server
     implementation should start asking client implementations to support
@@ -463,9 +467,9 @@ com.example/new/endpoint`.
 
 In summary:
 
--   Implementations MUST NOT use stable endpoints before the MSC is in
-    the spec. This includes NOT using stable endpoints in the period
-    between completion of FCP and release of the spec. passed.
+-   Implementations MUST NOT use stable endpoints before the MSC has
+    completed FCP. Once that has occurred, implementations are allowed
+    to use stable endpoints, but are not required to.
 -   Implementations are able to ship features that are exposed to users
     by default before an MSC has been merged to the spec, provided they
     follow the process above.

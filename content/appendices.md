@@ -590,32 +590,6 @@ Event IDs and Room IDs are case-sensitive. They are not meant to be
 human-readable. They are intended to be treated as fully opaque strings
 by clients.
 
-#### Group Identifiers
-
-Groups within Matrix are uniquely identified by their group ID. The
-group ID is namespaced to the group server which hosts this group and
-has the form:
-
-    +localpart:domain
-
-The `localpart` of a group ID is an opaque identifier for that group. It
-MUST NOT be empty, and MUST contain only the characters `a-z`, `0-9`,
-`.`, `_`, `=`, `-`, and `/`.
-
-The `domain` of a group ID is the [server name](#server-name) of the
-group server which hosts this group.
-
-The length of a group ID, including the `+` sigil and the domain, MUST
-NOT exceed 255 characters.
-
-The complete grammar for a legal group ID is:
-
-    group_id = "+" group_id_localpart ":" server_name
-    group_id_localpart = 1*group_id_char
-    group_id_char = DIGIT
-                 / %x61-7A                   ; a-z
-                 / "-" / "." / "=" / "_" / "/"
-
 #### Room Aliases
 
 A room may have zero or more aliases. A room alias has the format:
@@ -674,7 +648,6 @@ Examples of matrix.to URIs are:
 -   Permalink by room alias:
     `https://matrix.to/#/%23somewhere:example.org/%24event%3Aexample.org`
 -   User: `https://matrix.to/#/%40alice%3Aexample.org`
--   Group: `https://matrix.to/#/%2Bexample%3Aexample.org`
 
 {{% boxes/note %}}
 Historically, clients have not produced URIs which are fully encoded.
@@ -688,6 +661,16 @@ Clients should be aware that decoding a matrix.to URI may result in
 extra slashes appearing due to some [room
 versions](/#room-versions). These slashes should normally be
 encoded when producing matrix.to URIs, however.
+{{% /boxes/note %}}
+
+{{% boxes/note %}}
+<!-- TODO: @@TravisR: Make "Spaces" a link when that specification exists -->
+In prior versions of this specification, a concept of "groups" were mentioned
+to organize rooms. This functionality did not properly get introduced into
+the specification and is subsequently replaced with "Spaces". Historical
+matrix.to URIs pointing to groups might still exist: they take the form
+`https://matrix.to/#/%2Bexample%3Aexample.org` (where the `+` sigil may or
+may not be encoded).
 {{% /boxes/note %}}
 
 ##### Routing
