@@ -67,7 +67,7 @@ recommends including the `m.room.create` event as one of the stripped state even
 Any user who is able to join a room shall be allowed to have access the stripped
 state events of that room. No changes are proposed to the mechanics of how the
 users may get those state events, e.g. the `invite_state` of an invite or the
-roomd irectory.
+room directory.
 
 Potential ways that a user might be able to join a room include, but are not
 limited to, the following mechanisms:
