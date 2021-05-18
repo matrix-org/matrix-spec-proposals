@@ -31,7 +31,7 @@ import yaml
 
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
 templating_dir = os.path.join(scripts_dir, "templating")
-api_dir = os.path.join(os.path.dirname(scripts_dir), "api")
+api_dir = os.path.join(os.path.dirname(scripts_dir), "data", "api")
 
 sys.path.insert(0, templating_dir)
 
@@ -43,7 +43,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--client_release", "-c", metavar="LABEL",
     default="unstable",
-    help="""The client-server release version to gneerate for. Default:
+    help="""The client-server release version to generate for. Default:
     %(default)s""",
 )
 parser.add_argument(

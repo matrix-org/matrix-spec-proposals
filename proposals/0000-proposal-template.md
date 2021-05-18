@@ -1,4 +1,4 @@
-# Example: Proposal to adopt a template for MSCs
+# MSC0000: Template for new MSCs
 
 *Note: Text written in italics represents notes about the section or proposal process. This document
 serves as an example of what a proposal could look like (in this case, a proposal to have a template)

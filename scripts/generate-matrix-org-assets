@@ -8,19 +8,8 @@ cd `dirname $0`/..
 
 mkdir -p assets
 
-if [ "$CIRCLECI" != "true" ]
-then
-    # generate specification/proposals.rst
-    ./scripts/proposals.py
-fi
-
-# generate the spec docs
-./scripts/gendoc.py -d assets/spec
-
 # and the swagger
 ./scripts/dump-swagger.py -o assets/spec/client_server/unstable.json
 
-# create a tarball of the assets. Exclude the spec index for now, as
-# we want to leave it pointing at the release versions of the specs.
-# (XXX: how to maintain this?)
-tar -czf assets.tar.gz --exclude="assets/spec/index.html" assets
+# create a tarball of the assets.
+tar -czf assets.tar.gz assets
