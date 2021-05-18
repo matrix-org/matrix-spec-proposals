@@ -1,0 +1,1 @@
+Deprecate starting verifications that don't start with `m.key.verification.request` as per [MSC3122](https://github.com/matrix-org/matrix-doc/pull/3122).
