@@ -104,22 +104,40 @@ The reason for a new key rather than bundling the events into `events` is that
 existing appservices may mistake them for PDUs and could cause undefined behaviour.
 While `events` may now be a somewhat misleading name, this is an acceptable tradeoff.
 
+`to-device` messages are a bit special as they are aimed at a particular user/device ID
+combo. These events are annotated by the server with a `to_device_id` and `to_user_id`
+field at the top level of the EDU for transport to the appservice:
+
+```json5
+{
+  "type": "m.new_device",
+  "sender": "@alice:example.com",
+  "to_user_id": "@_irc_bob:example.org",
+  "to_device_id": "ABCDEF123",
+  "content": {
+    "device_id": "XYZABCDE",
+    "rooms": ["!726s6s6q:example.com"]
+  }
+}
+```
+
+Note that the EDU is otherwise formatted as it would for client-server API transport.
+
 ### Expectations of when an EDU should be pushed to an appservice
 
-It is not clear at face value what should be pushed to an appservice. An appservice
-registers interests in rooms and (usually) it's own users, however EDU events are not
-tied to a single room in all situations and as such there needs to be a specified way of
-forwarding these events.
+It is not clear at face value what should be pushed to an appservice. Appservices claim
+namespaces of users which registers "interest" in the rooms where those users reside, as
+well as claiming namespaces of rooms for explicit interest. However, not all EDUs are
+associated with a single room (presence, etc).
 
-An EDU should be sent to an appservice if the `room_id` is shared by any of the registered appservices
-users, if possible. For EDUs where that isn't the case, that is `m.presence`, the EDU should be sent
-if the sender is present in a room that is shared by any of the registered appservices users.
+If the EDU is capable of being associated to a particular room, it should be sent to the
+appservice under the same rules as regular events (interest in the room means sending it).
+For EDUs which are not associated with a particular room, the appservice receives the EDU
+if it contextually *would* apply. For example, a presence update for a user an appservice
+shares a room with (or is under the appservice's namespace) would be sent to the appservice.
 
-## Unstable prefix
-
-In the transaction body, instead of `ephemeral`, `de.sorunome.msc2409.ephemeral` is used.
-
-In the registration file, instead of `push_ephemeral`, `de.sorunome.msc2409.push_ephemeral` is used.
+To-device messages for devices belonging to the appservice's user namespaces should always
+be sent.
 
 ## Potential issues
 
@@ -132,3 +150,9 @@ network and the appservice more. As such, appservices have to opt-in to receive 
 The homeserver needs to accuratley determine which EDUs to send to the appservice, as to not leak
 any metadata about users. Particularly `m.presence` could be tricky, as no `room_id` is present in
 that EDU.
+
+## Unstable prefix
+
+In the transaction body, instead of `ephemeral`, `de.sorunome.msc2409.ephemeral` is used.
+
+In the registration file, instead of `push_ephemeral`, `de.sorunome.msc2409.push_ephemeral` is used.
