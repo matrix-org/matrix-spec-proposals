@@ -1,0 +1,1 @@
+The v1 identity service API has been removed in favour of the v2 API, as per [MSC2713](https://github.com/matrix-org/matrix-doc/pull/2713).

@@ -139,7 +139,7 @@ paths:
                   "id_server": "matrix.org",
                   "id_access_token": "abc123_OpaqueString",
                   "sid": "abc123987",
-                  "client_secret": "d0n'tT3ll"
+                  "client_secret": "d0nt-T3ll"
                 }
               }
       responses:
@@ -215,7 +215,7 @@ paths:
             required: ["client_secret",  "sid"]
             example: {
               "sid": "abc123987",
-              "client_secret": "d0n'tT3ll"
+              "client_secret": "d0nt-T3ll"
             }
       responses:
         200:
@@ -233,6 +233,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - User data
   "/account/3pid/bind":
     post:
       summary: Binds a 3PID to the user's account through an Identity Service.
@@ -272,7 +274,7 @@ paths:
               "id_server": "example.org",
               "id_access_token": "abc123_OpaqueString",
               "sid": "abc123987",
-              "client_secret": "d0n'tT3ll"
+              "client_secret": "d0nt-T3ll"
             }
       responses:
         200:
