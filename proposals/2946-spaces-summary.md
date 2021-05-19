@@ -120,8 +120,8 @@ A rough algorithm follows:
 2. Generate a summary and add it to `rooms`.
 3. Add any `m.space.child` events in the room to `events`.
 4. Recurse into the targets of the `m.space.child` events.
-   1. If the room is not accessible (or has already been processed), do not
-      process it.
+   1. If the room is inaccessible (as defined by [room history visibility](https://matrix.org/docs/spec/client_server/latest#id87))
+      or has already been processed, do not process it.
    2. Generate a summary for the room and add it to `rooms`.
    3. Add any `m.space.child` events of the room to `events`.
 5. Recurse into any newly added targets of `m.space.child` events (i.e. repeat
@@ -137,8 +137,8 @@ Other notes:
 
 * Any inaccessible children are omitted from the result, but the `m.space.child`
   events that point to them are still returned.
-* There could be loops in the returned child events - clients should handle this
-  gracefully.
+* There could be loops in the returned child events - clients (and servers)
+  should handle this  gracefully.
 * Similarly, note that a child room might appear multiple times (e.g. also be a
   grandchild). Clients and servers should handle this appropriately.
 * `suggested_only` applies transitively.
