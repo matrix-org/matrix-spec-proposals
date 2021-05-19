@@ -72,7 +72,8 @@ Example response:
                 "suggested": true
             },
             "room_id": "!ol19s:bleecker.street",
-            "sender": "@alice:bleecker.street"
+            "sender": "@alice:bleecker.street",
+            "creation_ts": 1432735824653
         },
         { ... }
     ]
@@ -101,7 +102,11 @@ Response fields:
     room's `m.room.create` event, if any.
 * **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
-  `sender`.<sup id="a1">[1](#f1)</sup>
+  `sender`, <sup id="a1">[1](#f1)</sup> with the addition of:
+  * **`creation_ts`**: the value of the `origin_server_ts` field from the
+    `m.space.child` event. This is required for sorting of rooms as specified
+    in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) and updated
+    below.
 
 Errors:
 
@@ -243,18 +248,20 @@ federation to HS2 and request a space summary for Room D, but this is undesirabl
 
 This proposes changing the ordering rules from MSC1772 to the following:
 
-* Rooms are sorted based on a lexicographic ordering of the Unicode codepoints
-  of the characters in `order` values.
+> Rooms are sorted based on a lexicographic ordering of the Unicode codepoints
+> of the characters in `order` values. Rooms with no `order` come last, in
+> ascending numeric order of the `origin_server_ts` of their `m.space.child`
+> events, or ascending lexicographic order of their `room_id`s in case of equal
+> `origin_server_ts`. `order`s which are not strings, or do not consist solely
+> of ascii characters in the range `\x20` (space) to `\x7E` (~), or consist of
+> more than 50 characters, are forbidden and the field should be ignored if
+> received.
 
-  `order`s which are not strings, or do not consist solely  of ascii characters
-  in the range `\x20` (space) to `\x7F` (~), or consist of more than 50
-  characters, are forbidden and the field should be ignored if received.
-* Rooms with no `order` come last, in ascending lexicographic order of their
-  `room_id`s.
-
-This removes the clauses discussing using the `origin_server_ts` of the
-`m.room.create` event to allow a defined sorting of siblings based purely on the
-information available in the `m.space.child` event.
+This modifies the clauses for calculating the `origin_server_ts` of the
+`m.room.create` event to refer to the `m.space.child` event instead. This allows
+for a defined sorting of siblings based purely on the information available in
+the `m.space.child` event while still allowing for a natural ordering due to the
+age of the relationship.
 
 ## Alternatives
 
