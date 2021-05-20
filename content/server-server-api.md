@@ -550,7 +550,7 @@ then any new event `D'` will not reference `C`:
     / \
     B   C
     |
-    D
+    D'
 
 #### Retrieving event authorization information
 
