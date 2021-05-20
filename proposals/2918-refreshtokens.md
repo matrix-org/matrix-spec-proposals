@@ -45,7 +45,7 @@ response:
 ```json
 {
   "access_token": "xxxxyyyyzzz",
-  "expires_in_ms": 60,
+  "expires_in_ms": 60000,
   "refresh_token": "eeeeffffgggghhhh"
 }
 ```
