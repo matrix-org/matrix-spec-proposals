@@ -18,6 +18,14 @@ The login API returns two additional fields:
 - `expires_in_ms`: The lifetime in milliseconds of the access token.
 - `refresh_token`: The refresh token, which can be used to obtain new access tokens.
 
+
+### Account registration API changes
+
+Unless `inhibit_login` is `true`, the account registration API returns two additional fields:
+
+- `expires_in_ms`: The lifetime in milliseconds of the access token.
+- `refresh_token`: The refresh token, which can be used to obtain new access tokens.
+
 ### Token refresh API
 
 This API lets the client refresh the access token.
@@ -45,7 +53,7 @@ response:
 ### Device handling
 
 The current spec states that "Matrix servers should record which device each access token is assigned to".
-This must be updated to reflect that devices are bound to a session, which are created during login and stays the same one after refreshing the token.
+This must be updated to reflect that devices are bound to a session, which are created during login and stays the same after refreshing the token.
 
 ## Potential issues
 
