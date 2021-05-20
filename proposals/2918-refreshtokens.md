@@ -15,7 +15,7 @@ Homeservers can choose to make the access tokens signed and non-revocable for pe
 
 The login API returns two additional fields:
 
-- `expires_in`: The lifetime in seconds of the access token.
+- `expires_in_ms`: The lifetime in milliseconds of the access token.
 - `refresh_token`: The refresh token, which can be used to obtain new access tokens.
 
 ### Token refresh API
@@ -37,7 +37,7 @@ response:
 ```json
 {
   "access_token": "xxxxyyyyzzz",
-  "expires_in": 60,
+  "expires_in_ms": 60,
   "refresh_token": "eeeeffffgggghhhh"
 }
 ```
