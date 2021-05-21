@@ -500,15 +500,15 @@ Example
 
 As an example consider the event graph:
 
-    A
-    /
+      A
+     /
     B
 
 where `B` is a ban of a user `X`. If the user `X` tries to set the topic
 by sending an event `C` while evading the ban:
 
-    A
-    / \
+      A
+     / \
     B   C
 
 servers that receive `C` after `B` should soft fail event `C`, and so
@@ -518,11 +518,11 @@ will neither relay `C` to its clients nor send any events referencing
 If later another server sends an event `D` that references both `B` and
 `C` (this can happen if it received `C` before `B`):
 
-    A
-    / \
+      A
+     / \
     B   C
-    \ /
-    D
+     \ /
+      D
 
 then servers will handle `D` as normal. `D` is sent to the servers'
 clients (assuming `D` passes auth checks). The state at `D` may resolve
@@ -539,18 +539,18 @@ state of the `C` branch.
 
 Let's go back to the graph before `D` was sent:
 
-    A
-    / \
+      A
+     / \
     B   C
 
 If all the servers in the room saw `B` before `C` and so soft fail `C`,
 then any new event `D'` will not reference `C`:
 
-    A
-    / \
+      A
+     / \
     B   C
     |
-    D
+    D'
 
 #### Retrieving event authorization information
 
@@ -584,15 +584,15 @@ state.
 For example, consider the following event graph (where the oldest event,
 E0, is at the top):
 
-    E0
-    |
-    E1
-    /  \
+      E0
+      |
+      E1
+     /  \
     E2  E4
     |    |
     E3   |
-    \  /
-    E5
+     \  /
+      E5
 
 Suppose E3 and E4 are both `m.room.name` events which set the name of
 the room. What should the name of the room be at E5?
