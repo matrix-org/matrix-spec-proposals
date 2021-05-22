@@ -185,7 +185,7 @@ Example `m.room.message.formatted_body`:
 "formatted_body": This is awesome <img alt=\"flutterjoy\" title=\"flutterjoy\" height=\"32\" src=\"mxc://matrix.example.org/abc\" data-mx-blurhash=\"LEHV6nWB2yk8pyo\" />
 ```
 
-## Calculating a blurhash
+## Calculating a blurhash on the server
 
 BlurHashes are inserted into events by the client, however some clients may not
 be able to implement the BlurHash library for whatever reason. In this case, it
@@ -193,10 +193,33 @@ would be nice to allow the media repository to calculate the BlurHash of a piece
 of media for the client, similar to how thumbnails are calculated by media
 repositories today.
 
-The
+A new boolean query parameter, `generate_blurhash`, is added to
 [`/_matrix/media/r0/upload`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-media-r0-upload)
-endpoint response is modified to include an optional `blurhash` key,
-which the client may use to insert into messages if desired:
+which allows clients to ask the server to generate a BlurHash for them. This
+may be useful for clients that are designed to run on very low-power hardware,
+or otherwise cannot generate a BlurHash itself.
+If set to `true`, the server SHOULD generate a BlurHash of the uploaded media
+and return it as the value of the `blurhash` key in the response.
+
+If the server cannot generate a BlurHash of the media - perhaps because it is
+not a file that a BlurHash can be derived from or it is too expensive to process
+a very large piece of media - then the server SHOULD NOT return a `blurhash` key
+in the response. Additionally, if `generate_blurhash` is not `true`, then the
+server SHOULD NOT return a `blurhash` key in the response.
+
+Fundamentally, this means that clients SHOULD NOT assume that a server will always
+return a BlurHash in the response to `/_matrix/media/r0/upload`, even if they have
+set the `generate_blurhash` query parameter to `true` in the request.
+
+An example request from a client that would like the server to generate a
+blurhash would look like:
+
+```
+POST /_matrix/media/r0/upload?generate_blurhash=true&filename=My+Family+Photo.jpeg HTTP/1.1
+Content-Type: Content-Type: image/jpeg
+
+<bytes>
+```
 
 Example response:
 
@@ -207,10 +230,15 @@ Example response:
 }
 ```
 
+We explicitly make this behaviour opt-in as it is assumed that the majority of
+clients that end up supporting BlurHashes will be capable of generating them
+locally. Thus the less load we can put on the homeserver, (by not making
+blurhash generation the default), the better.
+
 Note that media servers will not be able to return a BlurHash string for
 encrypted media; that must be left to the client.
 
-In addition, the server can return the BlurHash string for an image when
+The server could additionally return the BlurHash string for an image when
 given an MXC URL. This would be through something like the Media Information
 API (specified in
 [MSC2380](https://github.com/matrix-org/matrix-doc/pull/2380)), or similar.
@@ -256,9 +284,10 @@ the following:
 * The `blurhash` key in any events, request or response bodies should be
 replaced with `xyz.amorgan.blurhash`.
 
-* `/_matrix/media/r0/upload` should return a `xyz.amorgan.blurhash` key
-containing the blurhash instead of `blurhash`. This is preferred to adding
-another endpoint, which is messier to later remove.
+* `/_matrix/media/r0/upload?generate_blurhash=true` should return a
+`xyz.amorgan.blurhash` key containing the blurhash instead of `blurhash`.
+This is preferred to adding another endpoint, which is messier to later
+remove.
 
 * The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
