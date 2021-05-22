@@ -263,10 +263,6 @@ another endpoint, which is messier to later remove.
 * The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
 
-* And finally, an entry should be added to the homeserver's `GET
-/_matrix/client/versions` endpoint, in `unstable_features`, with the key
-`xyz.amorgan.blurhash` set to `true`.
-
 ## Security considerations
 
 BlurHash entries in encrypted events, be it as part of the `info` property,
