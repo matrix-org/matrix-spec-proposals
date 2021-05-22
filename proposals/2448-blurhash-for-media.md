@@ -150,7 +150,9 @@ to
 [`GET /_matrix/media/r0/preview_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-media-r0-preview-url)
 called `matrix:image:blurhash`. The value
 of this attribute is the blurhash representation of the media specified
-by `og:image`.
+by `og:image`. Note that we place this value under the `matrix` namespace as
+the [OpenGraph protocol](https://ogp.me/) does not (yet) have a spec'd field
+for BlurHashes.
 
 Note that `matrix:image:blurhash` MUST be omitted if `og:image` is not present
 in the response.
