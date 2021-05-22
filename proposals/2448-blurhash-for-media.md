@@ -117,7 +117,7 @@ An optional field is added to `m.room.member`'s `content` dictionary with
 the key `blurhash`. Its value is a BlurHash of the media that is pointed
 to by `avatar_url`.
 
-Note that `blurhash` SHOULD be omitted if `avatar_url` is not present.
+Note that `blurhash` MUST be omitted if `avatar_url` is not present.
 
 Example `m.room.member` event content:
 
