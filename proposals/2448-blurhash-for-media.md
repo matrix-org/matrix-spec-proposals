@@ -187,11 +187,11 @@ Example `m.room.message.formatted_body`:
 
 ## Calculating a blurhash
 
-BlurHashes are inserted into `m.room.message` events by the client, however
-some clients may not be able to implement the BlurHash library for whatever
-reason. In this case, it would be nice to allow the media repository to
-calculate the BlurHash of a piece of media for the client, similar to how
-thumbnails are calculated by media repositories today.
+BlurHashes are inserted into events by the client, however some clients may not
+be able to implement the BlurHash library for whatever reason. In this case, it
+would be nice to allow the media repository to calculate the BlurHash of a piece
+of media for the client, similar to how thumbnails are calculated by media
+repositories today.
 
 The
 [`/_matrix/media/r0/upload`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-media-r0-upload)
