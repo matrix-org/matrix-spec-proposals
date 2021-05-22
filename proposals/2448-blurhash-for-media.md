@@ -286,10 +286,9 @@ the following:
 * The `blurhash` key in any events, request or response bodies should be
 replaced with `xyz.amorgan.blurhash`.
 
-* `/_matrix/media/r0/upload?generate_blurhash=true` should return a
-`xyz.amorgan.blurhash` key containing the blurhash instead of `blurhash`.
-This is preferred to adding another endpoint, which is messier to later
-remove.
+* `/_matrix/media/r0/upload`'s new `generate_blurhash` query parameter
+should instead be `xyz.amorgan.generate_blurhash`. And instead of the
+key `blurhash`, the endpoint should return `xyz.amorgan.blurhash`.
 
 * The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
 `data-xyz-amorgan-blurhash`.
