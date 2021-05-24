@@ -145,6 +145,8 @@ When user Alice attempts to send a `m.abuse.report` message _M_ to room _R_:
 - if Alice could not witness event _M_.`event_id`, reject the message;
 - otherwise, send the message to room _R_ **even if Alice is not a member of room _R_**.
 
+**Note** This may needs a new API comparable to https://spec.matrix.org/unstable/server-server-api/#knocking-upon-a-room . To be specified.
+
 ### Possible bot behavior
 
 This section is provided as an illustration of the spec, not as part of the spec.
