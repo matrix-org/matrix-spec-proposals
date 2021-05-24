@@ -86,7 +86,18 @@ can be invited to moderation rooms act upon abuse reports:
 }
 ```
 
-- Each room MAY have state events `m.room.moderator_of`. A room that has a state event `m.room.moderation.
+- Each room MAY have state events `m.room.moderator_of`.
+
+```jsonc
+{
+    "state_key": "m.room.moderation.moderator_of", // A bot used to forward reports to this room.
+    "type": "m.room.moderation.moderator_of",
+    "content": {
+        "user_id": XXX, // The bot in charge of forwarding reports to this room.
+    }
+    // ... usual fields
+}
+```
 
 ```jsonc
 {
@@ -131,16 +142,17 @@ with content
 | room_id  | **Required** id of the room in which the event took place. |
 | moderated_by_id | **Required** id of the moderation room, as taken from `m.room.moderated_by`. |
 | nature   | **Required** The nature of the event, see below. |
+| reporter | **Required** The user reporting the event. |
 | comment  | Optional. String. A freeform description of the reason for sending this abuse report. |
 
 `nature` is an enum:
 
-- `m.abuse.disagreement`: disagree with other user;
-- `m.abuse.toxic`: toxic behavior, including insults, unsollicited invites;
-- `m.abuse.illegal`: illegal behavior, including child pornography, death threats,...;
-- `m.abuse.spam`: commercial spam, propaganda, ... whether from a bot or a human user;
-- `m.abuse.room`: report the entire room, e.g. for voluntarily hosting behavior that violates server ToS;
-- `m.abuse.other`: doesn't fit in any category above.
+- `m.abuse.nature.disagreement`: disagree with other user;
+- `m.abuse.nature.toxic`: toxic behavior, including insults, unsollicited invites;
+- `m.abuse.nature.illegal`: illegal behavior, including child pornography, death threats,...;
+- `m.abuse.nature.spam`: commercial spam, propaganda, ... whether from a bot or a human user;
+- `m.abuse.nature.room`: report the entire room, e.g. for voluntarily hosting behavior that violates server ToS;
+- `m.abuse.nature.other`: doesn't fit in any category above.
 
 We expect that this enum will be amended by further MSCs.
 
@@ -161,25 +173,19 @@ This proposal does not specify behavior when `m.room.moderated_by` is not set or
 
 Users should not need to join the moderation room to be able to send `m.abuse.report` messages to it, as it would
 let them snoop on reports from other users. Rather, we introduce a built-in bot as part of this specification: the
-Routing Bot. This Routing Bot is part of the server and has access to priviledged information such as room membership.
+Routing Bot.
 
 1. When the Routing Bot is invited to a room, it always accepts invites.
 2. When the Routing Bot receives a message other than `m.abuse.report`, it ignores the message.
 3. When the Routing Bot receives a message _M_ with type `m.abuse.report` from Alice:
     - If the Routing Bot is not a member of _M_`.moderated_by_id`, reject the message.
-    - If Alice is not a member of _M_.`room_id`, reject the message.
+    - If _M_.`reporter` is not Alice, reject the message.
     - If room _M_.`moderated_by_id`  does not contain a state event `m.room.moderation.moderator_of.XXX`, where `XXX`
-        is _M_.`room_id`
-            - Reject the message.
-        - Otherwise
-            - Call _S_ the above state event
-            - If _S_ does not have type `m.room.moderation.moderator_of`, reject the message.
-            - If _S_ is missing field `user_id`, reject the message.
-            - If _S_.`user_id` is not the id of the Routing Bot, reject the message.
-            - If event _M_.`event_id` did not take place in room _M_.`room_id`, reject the message.
-            - If Alice could not witness event _M_.`event_id`, reject the message.
-            - Copy the message to room _M_.
-
+        is _M_.`room_id`, reject the message. Otherwise, call _S_ this state event.
+    - If _S_ does not have type `m.room.moderation.moderator_of`, reject the message.
+    - If _S_ is missing field `user_id`, reject the message.
+    - If _S_.`user_id` is not the id of the Routing Bot, reject the message.
+    - Copy the `content` of _M_ as a new `m.abuse.report` message in room _M_.`room_id`.
 
 ### Possible Moderation Bot behavior
 
@@ -195,7 +201,7 @@ A possible setup would involve two Moderation Bots, both members of a moderation
 
 ## Security considerations
 
-### Routing
+### Routing, 1
 
 This proposal introduces a (very limited) mechanism that lets users send (some) events to a room without being part of that
 room. There is the possibility that this mechanism could be abused.
@@ -206,34 +212,88 @@ of the moderation room.
 However, it is possible that it can become a vector for attacks if combined with a bot that treats said structured data messages,
 e.g. a Classifier Bot and/or a Ban Bot.
 
+
+### Routing, 2
+
+The Routing Bot does not have access to priviledged information. In particular, it CANNOT check whether:
+    - Alice is a member of _M_.`room_id`.
+    - Event _M_.`event_id` took place in room _M_.`room_id`.
+    - Alice could witness event _M_.`event_id`.
+
+This means that **it is possible to send bogus abuse reports**, as is already the case with the current Abuse Report API.
+
+This is probably something that SHOULD BE FIXED before merging this spec.
+
 ### Revealing oneself
 
-If a end-user doesn't understand the difference between `abuse.room` and other kinds of abuse report, there is the possibility
+If a end-user doesn't understand the difference between `m.abuse.nature.room` and other kinds of abuse report, there is the possibility
 that this end-user may end up revealing themself by sending a report against a moderator or against the room to the very
 moderators of that room.
 
-### Snooping administrators
+The author believes that this is a problem that can and should be solved by UX.
+
+### Snooping administrators (user homeserver)
 
 Consider the following case:
 
 - homeserver compromised.org is administered by an evil administrator Marvin;
-- user @alice:compromised.org is a moderator of room _R_ with moderation room _MR_;
+- user @alice:compromised.org is a member of Community Room _CR_;
+- user @alice:compromised.org posts an abuse report against @bob:somewhere.org as DM to the Routing Bot;
+- Marvin can witness that @alice:compromised.org has sent a message to the Routing Bot
+    but cannot witness the contents of the message (assuming encryption);
+- as @alice:compromised.org is a member of _CR_, Marvin can witness when @bob:somewhere.org is kicked/banned,
+    even if _CR_ is encrypted;
+- Marvin can deduce that @alice:compromised.org has denounced @bob:somewhere.org.
+
+This is BAD. However, this is better as the current situation in which Marvin can directly
+read the report posted by @alice:compromised.org using the reporting API.
+
+### Snooping administrators (moderator homeserver)
+
+Consider the following case:
+
+- homeserver compromised.org is administered by an evil administrator Marvin;
+- user @alice:compromised.org is a moderator of room _CR_ with moderation room _MR_;
 - user @bob:innocent.org is a member of room _R_;
-- @bob:innocent.org posts an abuse report _AR_ to _MR_;
-- Marvin may achieve access to the metadata on report _AR_, including:
-    - the fact that @bob:innocent.org has reported something to room _AR_;
-- Marvin also has access to the metadata on _R_, including:
-    - the fact that _MR_ is the moderation room for _R_;
-    - the fact that @charlie:toxic.org was just banned from _R_;
-- Marvin may deduce that @bob:innocent.org has reported @charlie:toxic.org.
+- @bob:innocent.org posts an abuse report as DM to the Routing Bot;
+- Marvin does not witness this;
+- Marvin sees that the Routing Bot posts a message to _MR_ but the metadata does not
+    contain any data on @bob:innocent.org;
+- if the room is encrypted, Marvin cannot determine that @bob:innocent.org has posted
+    an abuse report.
 
-It is not clear how bad this is.
+This is GOOD.
 
-It is also not clear how to decrease the risk.
+### Interfering administrator (moderator homeserver)
+
+Consider the following case:
+
+- homeserver compromised.org is administered by an evil administrator Marvin;
+- user @alice:compromised.org joins a moderation room _MR_;
+- Marvin can impersonate @alice:compromised.org and set `m.room.moderation.moderator_of`
+    to point to a malicious bot EvilBot;
+- when @alice:compromised.org becomes moderator for room _CR_ and sets _MR_ as moderation
+    room, EvilBot becomes the Routing Bot;
+- every abuse report in room _CR_ is deanonymized by EvilBot.
+
+This is BAD. This may suggest that the Routing Bot mechanism may be a bad idea.
+
+### Interfering administrator (moderator homeserver)
+
+Consider the following case:
+
+- homeserver compromised.org is administered by an evil administrator Marvin;
+- user @alice:compromised.org is a moderator of room _CR_ with moderation room _MR_;
+- Marvin can impersonate @alice:compromised.org and set `m.room.moderation.moderated_by`
+    to point to a moderation room under its control;
+- every abuse report in room _CR_ is deanonymized by EvilBot.
+
+This is BAD. This actually suggests that the problem goes beyond the Routing Bot.
 
 ### Snooping bots
 
-As bots are invited to moderation rooms, a compromised bot has access to all moderation data for that room.
+As bots are invited to moderation rooms, a compromised bot (whether it's Routing Bot,
+Classifier Bot or Ban Bot) has access to all moderation data for that room.
 
 ## Alternatives
 
@@ -257,8 +317,8 @@ a higher risk and result in code that is harder to test and trust.
 
 During experimentation
 
-- `m.room.moderated_by` will be prefixed `org.matrix.msc3215.room.moderated_by`;
-- `m.room.moderator_of` will be prefixed `org.matrix.msc3215.room.moderator_of`;
+- `m.room.moderation.moderated_by` will be prefixed `org.matrix.msc3215.room.moderation.moderated_by`;
+- `m.room.moderation.moderator_of` will be prefixed `org.matrix.msc3215.room.moderation.moderator_of`;
 - `m.abuse.report` will be prefixed `org.matrix.msc3215.abuse.report`;
-- `abuse.*` will be prefixed `org.matrix.msc3215.abuse.nature.*`.
+- `m.abuse.nature.*` will be prefixed `org.matrix.msc3215.abuse.nature.*`.
 
