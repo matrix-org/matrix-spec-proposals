@@ -1,4 +1,4 @@
-# MSC0000: Synchronized access control for Spaces
+# MSC3216: Synchronized access control for Spaces
 
 A mechanism like Spaces ([MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772), now merged) is frequently used to group together rooms with different topics, that belong to the same community or organization with a single moderation team and policy. To this end, it should be possible to define both roles ("powerlevels") and permissions ("required powerlevels") once and then have them apply to every room in a Space.
 
@@ -112,7 +112,7 @@ It does not introduce any new security mechanisms, other than a small mechanical
 
 Unstable implementations should use the following identifiers:
 
-- Space-level state event: `net.cryto.mscXXXX.space.power_levels` instead of `m.space.power_levels`
-- Space defaults property: `net.cryto.mscXXXX.space_defaults` instead of `space_defaults`
-- API endpoint: `/_matrix/client/unstable/net.cryto.mscXXXX/spaces/{spaceId}/set_power_levels` instead of `/_matrix/client/r0/spaces/{spaceId}/set_power_levels`
+- Space-level state event: `net.cryto.msc3216.space.power_levels` instead of `m.space.power_levels`
+- Space defaults property: `net.cryto.msc3216.space_defaults` instead of `space_defaults`
+- API endpoint: `/_matrix/client/unstable/net.cryto.msc3216/spaces/{spaceId}/set_power_levels` instead of `/_matrix/client/r0/spaces/{spaceId}/set_power_levels`
 - Room version: `net.cryto.mscXXX.1`
