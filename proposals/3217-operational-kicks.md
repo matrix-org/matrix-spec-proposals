@@ -16,7 +16,7 @@ no longer read the history in the room.
 
 Instead, it would be useful if the Matrix spec could distinguish between:
 
-- The existing type of kick, where kicking should be considered an anti-abuse or deliberately
+- The existing type of kick, where kicking should be considered as anti-abuse or deliberately
   ejecting someone who should not be there.
 - A new type of kick where the action is "soft" and the room should continue to be
   visible in the client with all history, and provide an easy way back into the room.
