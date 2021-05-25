@@ -179,11 +179,10 @@ This section is provided as an illustration of the spec, not as part of the spec
 
 A possible setup would involve two Moderation Bots, both members of a moderation room _MR_.
 
-- A Classifier Bot consumes `m.abuse.report` messages, discards messages from users who have joined recently or never
-    been active in the room (possible bots/sleeping bots), then collates reports against users. If there are more than
-    e.g. 10 reports in the last hour against a single user, post a `m.policy.rule.user` message in the same room specifying that the user
-    should undergo temporary ban.
+- A Classifier Bot consumes `m.abuse.report` messages, discards messages from users who have joined recently or never been active in the room (possible bots/sleeping bots), then collates reports against users. If there are more than e.g. 10 reports in the last hour against a single user, post a `m.policy.rule.user` message in the same room specifying that the user should undergo temporary ban.
 - A Ban Bot consumes `m.policy.rule.user` messages and implements bans.
+
+Of course, it is entirely possible to implement both features as a single bot.
 
 ## Security considerations
 
