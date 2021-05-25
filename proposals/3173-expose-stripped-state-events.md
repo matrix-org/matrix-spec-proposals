@@ -1,7 +1,11 @@
 # MSC3173: Expose stripped state events to any potential joiner
 
-The current design of Matrix somtimes allows for inspecting part of the room state
-without being joined to the room:
+It can be useful to view the partial state of a room before joining to allow a user
+to know *what* they're joining. For example, it improves the user experience to
+show the user the room name and avatar before joining.
+
+It is already allowed to partially view the room state without being joined to
+the room in some situations:
 
 * If the room has `history_visibility: world_readable`, then anyone can inspect
   it (by calling `/state` on it).
@@ -14,7 +18,13 @@ without being joined to the room:
 This MSC proposes allowing the stripped state events that are currently available
 to invited and knocking users to any user who could potentially join a room. It
 also consolidates the recommendation on which events to include as stripped state
-for potential joiners.
+for potential joiners and provides a way to query for the stripped state directly.
+
+This will allow for improved future use cases, such as:
+
+* Improved user experience for more complicated access controls (e.g.
+  [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)).
+* More information available to platforms like matrix.to.
 
 ## Background
 
@@ -64,16 +74,18 @@ recommends including the `m.room.create` event as one of the stripped state even
 
 ## Proposal
 
-This proposal includes two aspects which are dealt with separately:
+This proposal includes a few aspects which are dealt with separately:
 
 1. Generalizing when a user is allowed to view the stripped state of a room.
 2. A consistent recommendation for which events to include in the stripped state.
+3. Providing a dedicated API for accessing the stripped state of the room.
 
 ### Accessing the stripped state of a room
 
 Any user who is able to join a room shall be allowed to have access the stripped
-state events of that room. No changes are proposed to the mechanics of how the
-users may get those state events.
+state events of that room. Additionally, any user who could access the state of
+a room may access the stripped state of a room, as it is a strict subset of
+information.
 
 Potential ways that a user might be able to join a room include, but are not
 limited to, the following mechanisms:
@@ -103,6 +115,67 @@ following as stripped state events:
 * Encryption information (`m.room.encryption`)<sup id="a2">[2](#f2)</sup>
 * Room topic (`m.room.topic`)<sup id="a3">[3](#f3)</sup>
 
+### Stripped state API
+
+`GET /_matrix/client/r0/rooms/{roomId}/stripped_state`
+
+A dedicated API is provided to query for the stripped state of a room. As
+described above, any potential joiner may access the stripped state of a room
+(and in the case of a room with `history_visibility: world_readable` -- anyone
+may access the stripped state, as it is a strict subset of the state).
+
+This API is rate-limited and does not require authentication.
+
+The request format follows [the `/state`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-state)
+endpoint.
+
+The response body includes an array of `StrippedState`, as
+[described in the `/sync` response](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-sync).
+
+#### Example request:
+
+`GET /_matrix/client/r0/rooms/%21636q39766251%3Aexample.com/stripped_state HTTP/1.1`
+
+#### Responses:
+
+##### Status code 200:
+
+The current stripped state of the room
+
+```json
+[
+  {
+    "content": {
+      "join_rule": "public"
+    },
+    "type": "m.room.join_rules",
+    "sender": "@example:example.org",
+    "state_key": ""
+  },
+  {
+    "content": {
+      "creator": "@example:example.org",
+      "room_version": "1",
+      "m.federate": true,
+      "predecessor": {
+        "event_id": "$something:example.org",
+        "room_id": "!oldroom:example.org"
+      }
+    },
+    "type": "m.room.create",
+    "sender": "@example:example.org",
+    "state_key": ""
+  }
+]
+```
+
+Note that this is the same example as [the `/state` endpoint](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-state),
+but limited to what would be returned as stripped state.
+
+##### Status code 403:
+
+You are not a member of the room, a potential joiner, and the room is not publicly viewable.
+
 ## Potential issues
 
 This is a generalization of current behavior and shouldn't introduce any new issues.
@@ -115,25 +188,29 @@ knocking.
 
 ## Security considerations
 
-This would allow for invisibly accessing the stripped state of a room with `knock`
-join rules. This is already trivially accessible by knocking on the room, but
-currently users in the room would know that the knock occurred. This does not
-seem to be a major weakening of the security.
+This would allow for invisibly accessing the stripped state of a room with `public`
+or `knock` join rules.
+
+In the case of a public room, if the room has `history_visibility` set to `world_readable`
+then this is no change. Otherwise, it is trivial to access the state of the room
+by joining, but currently users in the room would know that the join occurred.
+Additionally, this information is already provided by the room directory (if
+the room is listed there).
+
+Similarly, in the case of knocking, a user is able to trivially access the
+stripped state of the room by knocking, but users in the room would know that
+the knock occurred.
+
+This does not seem to be weakening the security expectations of either join rule.
 
 ## Future extensions
-
-### Dedicated APIs
-
-Dedicated client-server and server-server APIs could be added to request the
-stripped state events, but that is considered out-of-scope for the current
-proposal.
 
 ### Revisions to the room directory
 
 A future MSC could include additional information from the stripped state events
 in the [room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms).
-This seems to mostly be the encryption information, but there may also be other
-pieces of information to include.
+The main missing piece seems to be the encryption information, but there may also
+be other pieces of information to include.
 
 ### Additional ways to join a room
 
