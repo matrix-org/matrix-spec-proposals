@@ -51,3 +51,12 @@ implement. Users can always run their own homeservers to ensure it behaves corre
 In short: don't send those EDUs. Typing notifications, device messages, etc can all be mitigated
 by simply not calling the endpoints. Read receipts have a side effect of causing stuck
 notifications for users however, which is why they are solved here.
+
+## Unstable prefix
+
+While this MSC is not considered stable, implementations should use `org.matrix.msc2285` as a namespace
+for identifiers. `m.hidden` becomes `org.matrix.msc2885.hidden` for example.
+
+To detect server support, clients can either rely on the spec version (when stable) or the presence of
+a `org.matrix.msc2285` flag in `unstable_features` on `/versions`. Clients are recommended to check for
+server support to ensure they are not misleading the user about "hidden read receipts".
