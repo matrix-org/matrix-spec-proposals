@@ -15,8 +15,7 @@ for instance, that if 25 long-standing users of Matrix HQ report the same messag
 user as spam, said user will be banned temporarily or permanently from the room and/or the
 server as a spammer.
 
-This proposal does NOT include a specific policy for kicking/banning. Rather, it redesigns the abuse
-reporting mechanism to:
+This proposal does NOT include a specific policy for kicking/banning. Rather, it redesigns the abuse reporting mechanism to:
 
 - decentralize it;
 - produce formatted data that can be consumed by bots to decide whether action should be taken
@@ -53,15 +52,11 @@ In the current state, this mechanism is insufficient:
 This proposal redesigns the abuse report spec and suggested behavior as follows:
 
 - Any room can opt-in for moderation.
-- Rooms that opt-in for moderation have a moderation room (specified as a state event). These moderation
-    rooms may be shared between several rooms and there may be a default moderation room for a homeserver.
-- Posting an abuse report on a specific event from a room with moderation sends a data message to the
-    moderation room.
-- As there may still be a need to report entire rooms, the current abuse report API remains in place for
-    reporting entire rooms, although it is expected that further MSCs will eventually deprecate this API.
+- Rooms that opt-in for moderation have a moderation room (specified as a state event). These moderation rooms may be shared between several rooms.
+- Posting an abuse report on a specific event from a room with moderation sends a data message to the moderation room.
+- As there may still be a need to report entire rooms, the current abuse report API remains in place for reporting entire rooms, although it is expected that further MSCs will eventually deprecate this API.
 
-While this is not part of the MSC, the expectation is that the community may start experimenting with bots that
-can be invited to moderation rooms act upon abuse reports:
+While this is not part of the MSC, the expectation is that the community may start experimenting with bots that can be invited to moderation rooms to act upon abuse reports:
     - a bot could pick these data messages and turn them into human-readable reports including context
         and buttons to let moderators easily ignore/kick/ban/redact;
     - a bot could collate reports, ignore those from recently registered users, and decide to kick/ban
@@ -84,7 +79,7 @@ can be invited to moderation rooms act upon abuse reports:
 }
 ```
 
-- Each room MAY have state events `m.room.moderator_of`.
+- Each room MAY have state events `m.room.moderator_of`. A room that has state events `m.room.moderator_of` is a moderation room.
 
 ```jsonc
 {
@@ -97,30 +92,33 @@ can be invited to moderation rooms act upon abuse reports:
 }
 ```
 
+The rationale for having one state event in the Community Room and one in the Moderation Room is the following:
+
+1. The combination of `m.room.moderated_by` and (`m.room.moderator_of`, room_id) enables both rooms to sever the connection from each other. For instance, if a moderator for Community Room _CR_ has already left (or been banned from) Moderation Room _MR_, or if there was an error during the setup of the Community Room, they may pick a new Moderation Room without the help from _CR_. Similarly, moderators from _MR_ may decide whether they accept or reject the idea of moderating _CR_.
+2. The `m.room.moderated_by` state event in the Community Room provides all the data needed both by the Client to prepare abuse reports and by the Routing Bot (see below) to route the abuse report to the Moderation Room.
+3. The (`m.room.moderator_of`, `""`) state event in the Moderation Room provides all the data needed by new Community Rooms to setup their `m.room.moderated_by` to use this Moderation Room.
+
+
 ### Client behavior
 
 #### Opting in for moderation
 
-When a user Alice creates a room ("the Community Room") or when a room moderator accesses the Community Room's configuration,
-they MAY opt-in for moderation. When they do, they MUST pick a Moderation Room. The Client SHOULD check that:
+When a user Alice creates a room ("the Community Room") or when a room moderator accesses the Community Room's configuration, they MAY opt-in for moderation. When they do, they MUST pick a Moderation Room. The Client SHOULD check that:
 - the Moderation Room is a room in which Alice has a powerlevel sufficient for sending messages;
-- the Moderation Room has a state event `m.room.moderation.moderator_of`.
+- the Moderation Room has a state event (`m.room.moderation.moderator_of`, `""`).
 
-If Alice has opted-in for moderation, mased on the Moderation Room's Room ID and `m.room.moderation.moderator_of`, the Client
-MUST create a state event `m.room.moderated_by` (see above) in the Community Room.
+If Alice has opted-in for moderation, based on the Moderation Room's Room ID and `m.room.moderation.moderator_of`, the Client MUST create a state event `m.room.moderated_by` (see above) in the Community Room and a state event (`m.room.moderation.moderator_or`, room id) in the Moderation Room.
 
-Similarly, if a moderator has opted in for moderation in a Community Room, a moderator MAY opt out of moderation for that
-Community Room. This is materialized as deleting `m.room.moderated_by`.
+Similarly, if a moderator has opted in for moderation in a Community Room, a moderator MAY opt out of moderation for that Community Room. This is materialized as deleting `m.room.moderated_by`.
 
 #### Rejecting moderation
 
-A member of a Moderation Room may disconnect the Moderation Room from a Community Room by removing state event `m.room.moderation.moderator_of`, `XXX`. This may serve to reconfigure moderation if a Community Room is deleted
+A member of a Moderation Room may disconnect the Moderation Room from a Community Room by removing state event (`m.room.moderation.moderator_of`, `XXX`). This may serve to reconfigure moderation if a Community Room is deleted
 or grows sufficiently to require its dedicated moderation team/bots.
 
 #### Reporting an event
 
-Any member of a Community Room that supports moderation MAY report an event from that room, by sending a `m.abuse.report` event
-with content
+Any member of a Community Room that supports moderation MAY report an event from that room, by sending a `m.abuse.report` message event with content
 
 | field    | description |
 |----------|-------------|
@@ -137,49 +135,46 @@ with content
 - `m.abuse.nature.toxic`: toxic behavior, including insults, unsollicited invites;
 - `m.abuse.nature.illegal`: illegal behavior, including child pornography, death threats,...;
 - `m.abuse.nature.spam`: commercial spam, propaganda, ... whether from a bot or a human user;
-- `m.abuse.nature.room`: report the entire room, e.g. for voluntarily hosting behavior that violates server ToS;
 - `m.abuse.nature.other`: doesn't fit in any category above.
 
 We expect that this enum will be amended by further MSCs.
 
 The rationale for requiring a `nature` is twofold:
 
-- a Client may give to give a users the opportunity to think a little about whether the behavior they report truly is abuse;
+- a Client may give to give a user the opportunity to think a little about whether the behavior they report truly is abuse;
 - this gives the Client the ability to split between
-    - `abuse.room`, which should be routed to an administrator (in the current MSC, using the existing moderation API);
-    - `abuse.disagreement`, which may better be handled by blurring messages from offending user;
+    - reporting the room itself to homeserver administrators, typically because it promotes illegal or toxic activities, using the existing Abuse Report API;
+    - `m.abuse.nature.disagreement`, which may better be handled by blurring messages from offending user;
     - everything else, which needs to be handled by a room moderator or a bot.
 
-To send an `m.abuse.report`, the Client posts the `m.abuse.report` message as DM to the `user_id` specified in the 
-`m.room.moderated_by`.
+To send an `m.abuse.report`, the Client posts the `m.abuse.report` event as DM to the `user_id` specified in the `m.room.moderated_by`.
 
 This proposal does not specify behavior when `m.room.moderated_by` is not set or when the `user_id` doesn't exist.
 
-### Built-in routing bot behavior
+### Built-in Routing Bot behavior
 
-Users should not need to join the moderation room to be able to send `m.abuse.report` messages to it, as it would
-let them snoop on reports from other users. Rather, we introduce a built-in bot as part of this specification: the
-Routing Bot.
+Users should not need to join the moderation room to be able to send `m.abuse.report` events to it, as it would let them snoop on reports from other users. Rather, we introduce a built-in bot as part of this specification: the Routing Bot.
 
 1. When the Routing Bot is invited to a room, it always accepts invites.
-2. When the Routing Bot receives a message other than `m.abuse.report`, it ignores the message.
-3. When the Routing Bot receives a message _M_ with type `m.abuse.report` from Alice:
-    - If the Routing Bot is not a member of _M_`.moderated_by_id`, reject the message.
-    - If _M_.`reporter` is not Alice, reject the message.
-    - If room _M_.`moderated_by_id`  does not contain a state event `m.room.moderation.moderator_of`/`XXX`, where `XXX`
-        is _M_.`room_id`, reject the message. Otherwise, call _S_ this state event.
-    - If _S_ does not have type `m.room.moderation.moderator_of`, reject the message.
-    - If _S_ is missing field `user_id`, reject the message.
-    - If _S_.`user_id` is not the id of the Routing Bot, reject the message.
-    - Copy the `content` of _M_ as a new `m.abuse.report` message in room _M_.`room_id`.
+2. When the Routing Bot receives an event other than `m.abuse.report`, ignore the event.
+3. When the Routing Bot receives an event _E_ with type `m.abuse.report` from Alice:
+    - If the Routing Bot is not a member of _E_`.moderated_by_id`, reject the event.
+    - If _M_.`reporter` is not Alice, reject the event.
+    - If room _M_.`moderated_by_id`  does not contain a state event (`m.room.moderation.moderator_of`, `XXX`), where `XXX` is _M_.`room_id`, reject the event. Otherwise, call _S_ this state event.
+    - If _S_ does not have type `m.room.moderation.moderator_of`, reject the event.
+    - If _S_ is missing field `user_id`, reject the event.
+    - If _S_.`user_id` is not the id of the Routing Bot, reject the event.
+    - Copy the `content` of _M_ as a new `m.abuse.report` event in room _M_.`room_id`.
+
+Note that the empty state key is NOT a universal authorization for the Routing Bot to send messages to the room.
 
 ### Possible Moderation Bot behavior
 
-This section is provided as an illustration of the spec, not as part of the spec.
+This section is provided as an example of what could be done with the spec, not as part of the spec.
 
 A possible setup would involve two Moderation Bots, both members of a moderation room _MR_.
 
-- A Classifier Bot consumes `m.abuse.report` messages, discards messages from users who have joined recently or never been active in the room (possible bots/sleeping bots), then collates reports against users. If there are more than e.g. 10 reports in the last hour against a single user, post a `m.policy.rule.user` message in the same room specifying that the user should undergo temporary ban.
+- A Classifier Bot consumes `m.abuse.report` events, discards messages from users who have joined recently or never been active in the room (possible bots/sleeping bots), then collates reports against users. If there are more than e.g. 10 reports in the last hour against a single user, post a `m.policy.rule.user` message in the same room specifying that the user should undergo temporary ban.
 - A Ban Bot consumes `m.policy.rule.user` messages and implements bans.
 
 Of course, it is entirely possible to implement both features as a single bot.
@@ -279,7 +274,7 @@ Consider the following case:
 
 This is BAD. However, this is better as the current situation in which Marvin can directly read the report posted by @alice:compromised.org using the reporting API. Furthermore, this problem will not show up in Matrix P2P.
 
-If necessary, a hardened Client could make deductions harder/increase deniability by randomly sending bogus abuse reports to the Routing Bot.
+As a last resort, a hardened Client could make deductions harder/increase deniability by randomly sending bogus abuse reports to the Routing Bot.
 
 ### Snooping administrators (moderator homeserver)
 
@@ -338,7 +333,7 @@ Variant:
 
 I cannot find any solution to these problems: as long as an administrator can impersonate a moderator, they can access all moderation data past the date of impersonation.
 
-A similar problem already shows up without this MSC, insofar as the administrator can impersonage a user of _CR_ e.g. while they're asleep and invite an evil user to witness everything that happens in _CR_.
+A similar problem already shows up without this MSC, insofar as the administrator can impersonate a user of _CR_ e.g. while they're asleep and invite an evil user to witness everything that happens in _CR_.
 
 It feels like the only solution to both problems is beyond the scope of this MSC and is essentially Matrix P2P.
 
@@ -372,10 +367,9 @@ The Routing Bot CANNOT check whether:
     - Event _M_.`event_id` took place in room _M_.`room_id`.
     - Alice could witness event _M_.`event_id`.
 
-The Synapse Admin API currently offers all the features necessary to check whether
-Alice is a member of _M_.`room_id` and whether event _M_.`event_id` took place in room _M_.`room_id` and could easily be extended to allow checking whether Alice could witness event _M_.`event_id`.
+However, a Matrix homeserver implementation could offer the necessary features as part of an Admin API. As an example, the Synapse Admin API currently offers all the features necessary to check whether Alice is a member of _M_.`room_id` and whether event _M_.`event_id` took place in room _M_.`room_id` and could easily be extended to allow checking whether Alice could witness event _M_.`event_id`.
 
-One idea could be to somehow make the Routing Bot a priviledged user with *partial* access to the Admin API to all the homeservers involved. This feels like a lost fight, though, a strong risk that homeserver administrators will fail to properly configure the Routing Bot, and a very strong risk to privacy of all users if the Routing Bot is somehow compromised.
+One idea could be to somehow make the Routing Bot a privileged user with access to these features *on all the homeservers involved*. This feels like a lost fight, though, a strong risk that homeserver administrators will fail to properly configure the Routing Bot, and a very strong risk to privacy of all users if the Routing Bot is somehow compromised.
 
 The author believes that this is too risky.
 
