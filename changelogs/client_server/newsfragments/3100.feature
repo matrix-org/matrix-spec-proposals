@@ -1,0 +1,1 @@
+Add `<details>` and `<summary>` to the suggested HTML subset as per [MSC2184](https://github.com/matrix-org/matrix-doc/pull/2184).
