@@ -6,11 +6,14 @@ Matrix currently offers a mechanism to report bad content content (e.g. trolling
  - on large servers, they quickly end up bombarded with reports, which makes them unable to take action;
  - they may not be interested in moderation in the first place.
 
+In addition, the existing API is meaningless with Matrix P2P.
+
 This proposal redesigns the abuse reporting mechanism to:
 
 - decentralize it;
 - make it possible to reach moderators, rather than homeserver administrators;
-- produce structured data that can be consumed by tools or bots.
+- produce structured data that can be consumed by tools or bots;
+- move to a setting that works regardless of whether Matrix is homeserver-based or P2P.
 
 The expectation is that this will allow the Matrix community to experiment with tools that display abuse reports nicely and/or bots that can deal with abuse reports.
 
