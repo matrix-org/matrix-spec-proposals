@@ -70,9 +70,7 @@ can be invited to moderation rooms act upon abuse reports:
 
 ### Invariants
 
-- Each room MAY have a state event `m.room.moderated_by`. If specified, this is the room ID towards which
-    abuse reports MUST be sent. As rooms may be deleted `m.room.moderated_by` MAY be an invalid room ID.
-    A room that has a state event `m.room.moderated_by` supports moderation.
+- Each room MAY have a state event `m.room.moderated_by`. If specified, this is the room ID towards which abuse reports MUST be sent. As rooms may be deleted `m.room.moderated_by` MAY be an invalid room ID. A room that has a state event `m.room.moderated_by` supports moderation. Users who wish to set this state event MUST be have a Power Level sufficient to kick and ban users.
 
 ```jsonc
 {
@@ -90,18 +88,7 @@ can be invited to moderation rooms act upon abuse reports:
 
 ```jsonc
 {
-    "state_key": "m.room.moderation.moderator_of", // A bot used to forward reports to this room.
-    "type": "m.room.moderation.moderator_of",
-    "content": {
-        "user_id": XXX, // The bot in charge of forwarding reports to this room.
-    }
-    // ... usual fields
-}
-```
-
-```jsonc
-{
-    "state_key": "m.room.moderation.moderator_of.XXX", // XXX is the ID of the Community Room, i.e. the room being moderated.
+    "state_key": XXX, // XXX is the ID of the Community Room, i.e. the room being moderated, or empty if we wish to define the default user id in charge of forwarding reports to this room.
     "type": "m.room.moderation.moderator_of",
     "content": {
         "user_id": XXX, // The bot in charge of forwarding reports to this room.
@@ -127,8 +114,7 @@ Community Room. This is materialized as deleting `m.room.moderated_by`.
 
 #### Rejecting moderation
 
-A member of a Moderation Room may disconnect the Moderation Room from a Community Room by removing state event
-`m.room.moderation.moderator_of.XXX`. This may serve to reconfigure moderation if a Community Room is deleted
+A member of a Moderation Room may disconnect the Moderation Room from a Community Room by removing state event `m.room.moderation.moderator_of`, `XXX`. This may serve to reconfigure moderation if a Community Room is deleted
 or grows sufficiently to require its dedicated moderation team/bots.
 
 #### Reporting an event
@@ -136,7 +122,7 @@ or grows sufficiently to require its dedicated moderation team/bots.
 Any member of a Community Room that supports moderation MAY report an event from that room, by sending a `m.abuse.report` event
 with content
 
-| field    | Description |
+| field    | description |
 |----------|-------------|
 | event_id | **Required** id of the event being reported. |
 | room_id  | **Required** id of the room in which the event took place. |
@@ -180,7 +166,7 @@ Routing Bot.
 3. When the Routing Bot receives a message _M_ with type `m.abuse.report` from Alice:
     - If the Routing Bot is not a member of _M_`.moderated_by_id`, reject the message.
     - If _M_.`reporter` is not Alice, reject the message.
-    - If room _M_.`moderated_by_id`  does not contain a state event `m.room.moderation.moderator_of.XXX`, where `XXX`
+    - If room _M_.`moderated_by_id`  does not contain a state event `m.room.moderation.moderator_of`/`XXX`, where `XXX`
         is _M_.`room_id`, reject the message. Otherwise, call _S_ this state event.
     - If _S_ does not have type `m.room.moderation.moderator_of`, reject the message.
     - If _S_ is missing field `user_id`, reject the message.
@@ -203,26 +189,73 @@ A possible setup would involve two Moderation Bots, both members of a moderation
 
 ### Routing, 1
 
-This proposal introduces a (very limited) mechanism that lets users send (some) events to a room without being part of that
-room. There is the possibility that this mechanism could be abused.
+This proposal introduces a (very limited) mechanism that lets users send (some) events to a room without being part of that room. There is the possibility that this mechanism could be abused.
 
-We believe that it cannot readily be abused for spam, as these are structured data messages, which are usually not visible to members
-of the moderation room.
+We believe that it cannot readily be abused for spam, as these are structured data messages, which are usually not visible to members of the moderation room.
 
-However, it is possible that it can become a vector for attacks if combined with a bot that treats said structured data messages,
-e.g. a Classifier Bot and/or a Ban Bot.
-
+However, it is possible that it can become a vector for attacks if combined with a bot that treats said structured data messages, e.g. a Classifier Bot and/or a Ban Bot.
 
 ### Routing, 2
 
-The Routing Bot does not have access to priviledged information. In particular, it CANNOT check whether:
+The Routing Bot does NOT have access to priviledged information. In particular, it CANNOT check whether:
     - Alice is a member of _M_.`room_id`.
     - Event _M_.`event_id` took place in room _M_.`room_id`.
     - Alice could witness event _M_.`event_id`.
 
-This means that **it is possible to send bogus abuse reports**, as is already the case with the current Abuse Report API.
+This means that **it is possible to send bogus abuse reports**. This is already the case with the current Abuse Report API but this is probably something that SHOULD BE ASSESSED before merging this spec.
 
-This is probably something that SHOULD BE FIXED before merging this spec.
+#### Possible solution: an API to provide/check certificates
+
+We could expose an API to provide a certificate that Alice has witnessed
+an event and another API to check the certificate.
+
+As of this writing, this API is NOT part of the MSC but rather a proof of concept that the problem of bogus abuse reports could be solved without major changes to the protocol.
+
+##### Providing a certificate
+
+```
+POST /_matrix/client/r0/rooms/{room_id}/witness/{event_id}/certificate
+```
+
+- Authentication required: True
+- Rate limitation: True
+
+If Alice is the authenticated user and has witnessed `event_id` in room `room_id`, then this call returns a certificate.
+
+###### Response format
+
+| Parameter   | Type   | Description |
+|-------------|--------|-------------|
+| certificate | string | a certificate that may later be checked by the same homeserver, possibly a tuple (user_id, room_id, event_id, salt) encrypted with the homeserver's private key |
+
+We then extend `m.abuse.report` with
+
+| field | description |
+|-------|-------------|
+| certificate | **Required** The certificate provide by this API. |
+
+
+##### Verifying a certificate
+
+```
+POST /_matrix/client/r0/rooms/{room_id}/witness/{event_id}/check/{user_id}
+```
+
+- Authentication required: True
+- Rate limitation: True
+
+###### Request format
+
+| Parameter   | Type   | Description |
+|-------------|--------|-------------|
+| room_id     | RoomID | the room in which the event is said to have taken place |
+| user_id     | UserID | the user who claims to have witnessed the event |
+| event_id    | EventID| the event |
+| certificate | string | a certificate issued by the `witness/.../certificate` API |
+
+The request succeeds if and only if `certificate` confirms that user `user_id` witnessed event `event_id` in room `room_id`.
+
+The Classifier Bot SHOULD call this API to confirm that the abuse report is legit.
 
 ### Revealing oneself
 
@@ -245,8 +278,9 @@ Consider the following case:
     even if _CR_ is encrypted;
 - Marvin can deduce that @alice:compromised.org has denounced @bob:somewhere.org.
 
-This is BAD. However, this is better as the current situation in which Marvin can directly
-read the report posted by @alice:compromised.org using the reporting API.
+This is BAD. However, this is better as the current situation in which Marvin can directly read the report posted by @alice:compromised.org using the reporting API. Furthermore, this problem will not show up in Matrix P2P.
+
+If necessary, a hardened Client could make deductions harder/increase deniability by randomly sending bogus abuse reports to the Routing Bot.
 
 ### Snooping administrators (moderator homeserver)
 
@@ -264,31 +298,50 @@ Consider the following case:
 
 This is GOOD.
 
+### Interfering administrator (user homeserver)
+
+Consider the following case:
+
+- homeserver compromised.org is administered by an evil administrator Marvin;
+- user @alice:compromised.org is a member of Community Room _CR_;
+- if there is no moderator for _CR_ on compromised.org, Marvin cannot set `m.room.moderated_by`, hence cannot replace the moderation room or the Routing Bot.
+
+This is GOOD.
+
 ### Interfering administrator (moderator homeserver)
 
 Consider the following case:
 
 - homeserver compromised.org is administered by an evil administrator Marvin;
 - user @alice:compromised.org joins a moderation room _MR_;
+- user @bob:innocent.org is a member of room _CR_, with moderation room _MR_;
 - Marvin can impersonate @alice:compromised.org and set `m.room.moderation.moderator_of`
     to point to a malicious bot EvilBot;
-- when @alice:compromised.org becomes moderator for room _CR_ and sets _MR_ as moderation
-    room, EvilBot becomes the Routing Bot;
-- every abuse report in room _CR_ is deanonymized by EvilBot.
+- when @alice:compromised.org becomes moderator for room _CR_ and sets _MR_ as moderation room, EvilBot becomes the Routing Bot;
+- when @bob:innocent.org sends an abuse report through EvilBot, Marvin has access to the full abuse report.
 
-This is BAD. This may suggest that the Routing Bot mechanism may be a bad idea.
+This is BAD.
 
-### Interfering administrator (moderator homeserver)
-
-Consider the following case:
+Variant:
 
 - homeserver compromised.org is administered by an evil administrator Marvin;
 - user @alice:compromised.org is a moderator of room _CR_ with moderation room _MR_;
 - Marvin can impersonate @alice:compromised.org and set `m.room.moderation.moderated_by`
     to point to a moderation room under its control;
-- every abuse report in room _CR_ is deanonymized by EvilBot.
+- Marvin has access to all abuse reports in _MR_.
 
-This is BAD. This actually suggests that the problem goes beyond the Routing Bot.
+Variant:
+
+- homeserver compromised.org is administered by an evil administrator Marvin;
+- user @alice:compromised.org is a moderator of room _CR_ with moderation room _MR_;
+- Marvin can impersonate @alice:compromised.org and invite an evil moderator or bot to _MR_ ;
+- Marvin has access to all abuse reports in _MR_.
+
+I cannot find any solution to these problems: as long as an administrator can impersonate a moderator, they can access all moderation data past the date of impersonation.
+
+A similar problem already shows up without this MSC, insofar as the administrator can impersonage a user of _CR_ e.g. while they're asleep and invite an evil user to witness everything that happens in _CR_.
+
+It feels like the only solution to both problems is beyond the scope of this MSC and is essentially Matrix P2P.
 
 ### Snooping bots
 
@@ -304,7 +357,7 @@ MSC 2938 (by the same author) has previously been posted to specify a mechanism 
 
 I am not aware of other proposals that cover the same needs.
 
-### Alternatives to the Routing Bot
+### Alternative to the Routing Bot
 
 The "knocking" protocol is an example of an API that lets users inject state events in a room in which they do
 not belong. It is possible that we could follow the example of this protocol and implement a similar "abuse" API.
@@ -312,6 +365,34 @@ not belong. It is possible that we could follow the example of this protocol and
 However, this would require implementing yet another new communication protocol based on PDUs/EDUs, including a
 (small) custom encryption/certificate layer and another retry mechanism. The author believes that this would entail
 a higher risk and result in code that is harder to test and trust.
+
+### Priviledged Routing Bot
+
+The Routing Bot CANNOT check whether:
+    - Alice is a member of _M_.`room_id`.
+    - Event _M_.`event_id` took place in room _M_.`room_id`.
+    - Alice could witness event _M_.`event_id`.
+
+The Synapse Admin API currently offers all the features necessary to check whether
+Alice is a member of _M_.`room_id` and whether event _M_.`event_id` took place in room _M_.`room_id` and could easily be extended to allow checking whether Alice could witness event _M_.`event_id`.
+
+One idea could be to somehow make the Routing Bot a priviledged user with *partial* access to the Admin API to all the homeservers involved. This feels like a lost fight, though, a strong risk that homeserver administrators will fail to properly configure the Routing Bot, and a very strong risk to privacy of all users if the Routing Bot is somehow compromised.
+
+The author believes that this is too risky.
+
+### Priviledged Classifier Bot
+
+Instead of the Routing Bot checking whether the abuse report is legitimate, we could delegate the problem to the Classifier Bot. The risks and difficulties are essentially the same as with the Routing Bot.
+
+The author believes that this is too risky.
+
+### One Routing Bot per homeserver
+
+If the Routing Bot was attached to a specific homeserver, giving it the ability to check whether a user from the same homeserver is sending a legitimate abuse report would be simple and most likely riskless.
+
+However, this means that one Routing Bot per homeserver member of the Community Room needs to be invited to each Moderation Room. In particular, this would expose all the content of the Moderation Room to this Routing Bot and to the administrator of every homeserver member of the Community Room.
+
+A malicious administrator on *any* homeserver involved in the Community Room could therefore deanonymize every abuse report without visible tampering.
 
 ## Unstable prefix
 
