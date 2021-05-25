@@ -1,31 +1,18 @@
 # MSC3215: Aristotle: Moderation in all things
 
-On large public channels (e.g. Matrix HQ), we have too many users abusing the room:
-  - Spammers
-  - Bullies
-  - Invite spammers
-  - ...
+Matrix currently offers a mechanism to report bad content content (e.g. trolling, spam, abuse, etc.) to homeserver admins. However, the homeserver admin is generally the wrong person for this as:
 
-The Matrix community doesn't have enough moderators to handle all of this, in particular during
-weekends/outside of office hours.
+ - on encrypted channels, they often do not have access to the content;
+ - on large servers, they quickly end up bombarded with reports, which makes them unable to take action;
+ - they may not be interested in moderation in the first place.
 
-In an ideal world, we should not need to rely upon human moderators being awake to react to
-such abuse, as many users tend to report these types of abuse very quickly. One could imagine,
-for instance, that if 25 long-standing users of Matrix HQ report the same message of a new
-user as spam, said user will be banned temporarily or permanently from the room and/or the
-server as a spammer.
-
-This proposal does NOT include a specific policy for kicking/banning. Rather, it redesigns the abuse reporting mechanism to:
+This proposal redesigns the abuse reporting mechanism to:
 
 - decentralize it;
-- produce formatted data that can be consumed by bots to decide whether action should be taken
-    against a user.
+- make it possible to reach moderators, rather than homeserver administrators;
+- produce structured data that can be consumed by tools or bots.
 
-This proposal redesigns how abuse reports are posted, routed and treated to make it possible to
-use bots to react to simple cases.
-
-The expectation is that this will allow the Matrix community to experiment with bots that deal
-with abuse reports intelligently.
+The expectation is that this will allow the Matrix community to experiment with tools that display abuse reports nicely and/or bots that can deal with abuse reports.
 
 
 ## Proposal
@@ -37,16 +24,11 @@ Matrix specs offer a mechanism to report abuse. In this mechanism:
 
 In the current state, this mechanism is insufficient:
 
-1. If the abuse report concerns an event in an encrypted room, the homeserver administrator typically
-    does not have access to that room, while a room moderator would, hence cannot act upon that report.
-2. Many homeserver administrators do not wish to be moderators, especially in rooms in which they
-    do not participate themselves.
-3. As the mechanism does not expose an API for reading the abuse reports, it is difficult to experiment
-    with bots that could help moderators.
-4. As the mechanism is per-homeserver, reports from two users of the same room that happen to have accounts
-    on distinct homeservers cannot be collated.
-5. There is no good mechanism to route a report by a user to a moderator, especially if they live on different
-    homeserver.
+1. If the abuse report concerns an event in an encrypted room, the homeserver administrator typically does not have access to that room, while a room moderator would, hence cannot act upon that report.
+2. Many homeserver administrators do not wish to be moderators, especially in rooms in which they do not participate themselves.
+3. As the mechanism does not expose an API for reading the abuse reports, it is difficult to experiment with bots that could help moderators.
+4. As the mechanism is per-homeserver, reports from two users of the same room that happen to have accounts on distinct homeservers cannot be collated.
+5. There is no good mechanism to route a report by a user to a moderator, especially if they live on different homeserver.
 
 
 This proposal redesigns the abuse report spec and suggested behavior as follows:
@@ -57,11 +39,11 @@ This proposal redesigns the abuse report spec and suggested behavior as follows:
 - As there may still be a need to report entire rooms, the current abuse report API remains in place for reporting entire rooms, although it is expected that further MSCs will eventually deprecate this API.
 
 While this is not part of the MSC, the expectation is that the community may start experimenting with bots that can be invited to moderation rooms to act upon abuse reports:
-    - a bot could pick these data messages and turn them into human-readable reports including context
-        and buttons to let moderators easily ignore/kick/ban/redact;
-    - a bot could collate reports, ignore those from recently registered users, and decide to kick/ban
-        reported users if some threshold is exceeded;
+    - a bot or tool could pick these data messages and turn them into human-readable reports including context and buttons to let moderators easily ignore/kick/ban/redact;
+    - a bot could collate reports, ignore those from recently registered users, and decide to kick/ban reported users if some threshold is exceeded;
     - ...
+
+This proposal is a replacement for MSC 2938, which offers a more specialized mechanism for sending abuse reports to room moderators.
 
 ### Invariants
 
@@ -168,16 +150,14 @@ Users should not need to join the moderation room to be able to send `m.abuse.re
 
 Note that the empty state key is NOT a universal authorization for the Routing Bot to send messages to the room.
 
-### Possible Moderation Bot behavior
+### Possible Moderation Tool behavior
 
 This section is provided as an example of what could be done with the spec, not as part of the spec.
 
-A possible setup would involve two Moderation Bots, both members of a moderation room _MR_.
+- An Issue Bot could consume `m.abuse.report` events and turn them into human-readable private GitLab issues.
+- A Classifier Bot could consume `m.abuse.report` events, discarding messages from users who have joined recently or never been active in the room (possible bots/sleeping bots), then collating reports against users. If there are more than e.g. 10 reports in the last hour against a single user, the Classifier Bot pings a moderator and suggests banning the bad user.
+- ...
 
-- A Classifier Bot consumes `m.abuse.report` events, discards messages from users who have joined recently or never been active in the room (possible bots/sleeping bots), then collates reports against users. If there are more than e.g. 10 reports in the last hour against a single user, post a `m.policy.rule.user` message in the same room specifying that the user should undergo temporary ban.
-- A Ban Bot consumes `m.policy.rule.user` messages and implements bans.
-
-Of course, it is entirely possible to implement both features as a single bot.
 
 ## Security considerations
 
@@ -261,15 +241,15 @@ The author believes that this is a problem that can and should be solved by UX.
 
 ### Snooping administrators (user homeserver)
 
+This is an attack assuming that a homeserver administrator is attempting to deanonymize abuse reports from a user on their homeserver.
+
 Consider the following case:
 
 - homeserver compromised.org is administered by an evil administrator Marvin;
 - user @alice:compromised.org is a member of Community Room _CR_;
 - user @alice:compromised.org posts an abuse report against @bob:somewhere.org as DM to the Routing Bot;
-- Marvin can witness that @alice:compromised.org has sent a message to the Routing Bot
-    but cannot witness the contents of the message (assuming encryption);
-- as @alice:compromised.org is a member of _CR_, Marvin can witness when @bob:somewhere.org is kicked/banned,
-    even if _CR_ is encrypted;
+- Marvin can witness that @alice:compromised.org has sent a message to the Routing Bot but cannot witness the contents of the message (assuming encryption);
+- as @alice:compromised.org is a member of _CR_, Marvin can witness when @bob:somewhere.org is kicked/banned, even if _CR_ is encrypted;
 - Marvin can deduce that @alice:compromised.org has denounced @bob:somewhere.org.
 
 This is BAD. However, this is better as the current situation in which Marvin can directly read the report posted by @alice:compromised.org using the reporting API. Furthermore, this problem will not show up in Matrix P2P.
@@ -277,6 +257,8 @@ This is BAD. However, this is better as the current situation in which Marvin ca
 As a last resort, a hardened Client could make deductions harder/increase deniability by randomly sending bogus abuse reports to the Routing Bot.
 
 ### Snooping administrators (moderator homeserver)
+
+This is an attack assuming that a homeserver administrator is attempting to deanonymize abuse reports towards a moderator on their homeserver.
 
 Consider the following case:
 
@@ -290,9 +272,11 @@ Consider the following case:
 - if the room is encrypted, Marvin cannot determine that @bob:innocent.org has posted
     an abuse report.
 
-This is GOOD.
+The attack fails. This is GOOD.
 
 ### Interfering administrator (user homeserver)
+
+This is an attack assuming that a homeserver administrator is attempting to deanonymize abuse reports from a user on their homeserver and may tamper with non-encrypted data.
 
 Consider the following case:
 
@@ -300,9 +284,11 @@ Consider the following case:
 - user @alice:compromised.org is a member of Community Room _CR_;
 - if there is no moderator for _CR_ on compromised.org, Marvin cannot set `m.room.moderated_by`, hence cannot replace the moderation room or the Routing Bot.
 
-This is GOOD.
+The attack fails. This is GOOD.
 
 ### Interfering administrator (moderator homeserver)
+
+These is a series of attacks assuming that a homeserver administrator is attempting to deanonymize abuse reports towards a moderator on their homeserver. In these attacks, the evil administrator may tamper with non-encrypted data.
 
 Consider the following case:
 
@@ -331,11 +317,9 @@ Variant:
 - Marvin can impersonate @alice:compromised.org and invite an evil moderator or bot to _MR_ ;
 - Marvin has access to all abuse reports in _MR_.
 
-I cannot find any solution to these problems: as long as an administrator can impersonate a moderator, they can access all moderation data past the date of impersonation.
+All three attacks succeed. This is BAD. Note that a similar problem already shows up without this MSC, insofar as the administrator can impersonate a user of _CR_ e.g. while they're asleep and invite an evil user to witness everything that happens in _CR_.
 
-A similar problem already shows up without this MSC, insofar as the administrator can impersonate a user of _CR_ e.g. while they're asleep and invite an evil user to witness everything that happens in _CR_.
-
-It feels like the only solution to both problems is beyond the scope of this MSC and is essentially Matrix P2P.
+The author feels that the MSC does not make the situation any worse than it is and that the only solution to all these problems is beyond the scope of this MSC and is essentially Matrix P2P.
 
 ### Snooping bots
 
@@ -345,20 +329,20 @@ Classifier Bot or Ban Bot) has access to all moderation data for that room.
 ## Alternatives
 
 ### MSC 2938
+
 MSC 2938 (by the same author) has previously been posted to specify a mechanism for reporting events to room moderators. The current MSC is considered
     - more reliable (it does not need to roll out its own federation communication);
+    - more modular (the main features are implemented by bots and Clients);
+    - more friendly to tooling;
     - less specialized/more general.
 
-I am not aware of other proposals that cover the same needs.
+The author is not aware of other proposals that cover the same needs.
 
 ### Alternative to the Routing Bot
 
-The "knocking" protocol is an example of an API that lets users inject state events in a room in which they do
-not belong. It is possible that we could follow the example of this protocol and implement a similar "abuse" API.
+The "knocking" protocol is an example of an API that lets users inject state events in a room in which they do not belong. It is possible that we could follow the example of this protocol and implement a similar "abuse" API.
 
-However, this would require implementing yet another new communication protocol based on PDUs/EDUs, including a
-(small) custom encryption/certificate layer and another retry mechanism. The author believes that this would entail
-a higher risk and result in code that is harder to test and trust.
+However, this would require implementing yet another new communication protocol based on PDUs/EDUs, including a (small) custom encryption/certificate layer and another retry mechanism. The author believes that this would entail a higher risk and result in code that is harder to test and trust.
 
 ### Priviledged Routing Bot
 
