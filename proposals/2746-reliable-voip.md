@@ -133,6 +133,9 @@ The client may:
    `user_hangup`.
  * `user_media_failed`: The client was unable to start capturing media in such a way as it is unable
    to continue the call.
+ * `user_busy`: The user is busy. Note that this exists primarily for bridging to other networks such
+   as the PSTN. A Matrix client that receives a call whilst already in a call would not generally reject
+   the new call unless the user had specifically chosen to do so.
  * `unknown_error`: Some other failure occurred that meant the client was unable to continue the call
    rather than the user choosing to end it.
 
