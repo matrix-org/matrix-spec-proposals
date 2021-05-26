@@ -42,6 +42,7 @@ This proposal redesigns the abuse report spec and suggested behavior as follows:
 - As there may still be a need to report entire rooms, the current abuse report API remains in place for reporting entire rooms, although it is expected that further MSCs will eventually deprecate this API.
 
 While this is not part of the MSC, the expectation is that the community may start experimenting with bots that can be invited to moderation rooms to act upon abuse reports:
+
     - a bot or tool could pick these data messages and turn them into human-readable reports including context and buttons to let moderators easily ignore/kick/ban/redact;
     - a bot could collate reports, ignore those from recently registered users, and decide to kick/ban reported users if some threshold is exceeded;
     - ...
@@ -105,14 +106,14 @@ or grows sufficiently to require its dedicated moderation team/bots.
 
 Any member of a Community Room that supports moderation MAY report an event from that room, by sending a `m.abuse.report` message event with content
 
-| field    | description |
-|----------|-------------|
-| event_id | **Required** id of the event being reported. |
-| room_id  | **Required** id of the room in which the event took place. |
-| moderated_by_id | **Required** id of the moderation room, as taken from `m.room.moderated_by`. |
-| nature   | **Required** The nature of the event, see below. |
-| reporter | **Required** The user reporting the event. |
-| comment  | Optional. String. A freeform description of the reason for sending this abuse report. |
+| field    | type | description |
+|----------|------|-------------|
+| event_id | EventID | **Required** id of the event being reported. |
+| room_id  | RoomID  | **Required** id of the room in which the event took place. |
+| moderated_by_id | RoomID | **Required** id of the moderation room, as taken from `m.room.moderated_by`. |
+| nature   | `nature`  | **Required** The nature of the event, see below. |
+| reporter | UserID    | **Required** The user reporting the event. |
+| comment  | String    | Optional. A freeform description of the reason for sending this abuse report. |
 
 `nature` is an enum:
 
@@ -362,17 +363,37 @@ The author believes that this is too risky.
 
 ### Priviledged Classifier Bot
 
+Again, the Routing Bot CANNOT check whether:
+    - Alice is a member of _M_.`room_id`.
+    - Event _M_.`event_id` took place in room _M_.`room_id`.
+    - Alice could witness event _M_.`event_id`.
+
 Instead of the Routing Bot checking whether the abuse report is legitimate, we could delegate the problem to the Classifier Bot. The risks and difficulties are essentially the same as with the Routing Bot.
 
 The author believes that this is too risky.
 
 ### One Routing Bot per homeserver
 
+Again, the Routing Bot CANNOT check whether:
+    - Alice is a member of _M_.`room_id`.
+    - Event _M_.`event_id` took place in room _M_.`room_id`.
+    - Alice could witness event _M_.`event_id`.
+
 If the Routing Bot was attached to a specific homeserver, giving it the ability to check whether a user from the same homeserver is sending a legitimate abuse report would be simple and most likely riskless.
 
 However, this means that one Routing Bot per homeserver member of the Community Room needs to be invited to each Moderation Room. In particular, this would expose all the content of the Moderation Room to this Routing Bot and to the administrator of every homeserver member of the Community Room.
 
 A malicious administrator on *any* homeserver involved in the Community Room could therefore deanonymize every abuse report without visible tampering.
+
+### Canceling an abuse report
+
+At the moment, there is no mechanism to cancel an abuse report (i.e. "oops, I reported the wrong message"/"oops, I jumped the gun, that was actually not abuse").
+
+This is not worse than the current abuse report API that does not support cancelation.
+
+Furthermore, it feels like this could be added easily to the Routing Bot at a later stage without breakage. One possible manner of doing so would be to extend the Routing Bot to support the ability to delete a `m.abuse.report` report by a user if the same user requests it later.
+
+To limit the scope of the current MSC, we leave this work for later experimentation/MSCs.
 
 ## Unstable prefix
 
