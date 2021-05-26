@@ -24,7 +24,9 @@ This will allow for improved future use cases, such as:
 
 * Improved user experience for more complicated access controls (e.g.
   [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)).
-* More information available to platforms like matrix.to.
+* Showing a room preview on platforms when peeking fails (using for clients as
+  well as matrix.to).
+* Joining by alias (e.g. as in Element) could show a room preview.
 
 ## Background
 
