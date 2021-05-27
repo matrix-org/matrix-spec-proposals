@@ -71,4 +71,4 @@ but non-public, space. Flair would be enabled for this Space to denote official 
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use `org.matrix.msc3219` as a namespace. This means `m.room.flair` 
-becomes `org.matrix.msc0000.room.flair` and `m.flair` becomes `org.matrix.msc3219.flair` for example.
+becomes `org.matrix.msc3219.room.flair` and `m.flair` becomes `org.matrix.msc3219.flair` for example.
