@@ -226,7 +226,7 @@ headers to be returned by servers on all requests are:
 
     Access-Control-Allow-Origin: *
     Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-    Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+    Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
 
 ## Server Discovery
 
