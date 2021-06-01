@@ -79,7 +79,8 @@ recommends including the `m.room.create` event as one of the stripped state even
 This proposal includes a few aspects which are dealt with separately:
 
 1. Generalizing when a user is allowed to view the stripped state of a room.
-2. A consistent recommendation for which events to include in the stripped state.
+2. A consistent definition of stripped state and a recommendation for which
+   events to include in the stripped state.
 3. Providing a dedicated API for accessing the stripped state of the room.
 
 ### Accessing the stripped state of a room
@@ -102,12 +103,21 @@ should consider this MSC, for example:
   proposes allowing users to join a room based on their membership in a space (as defined in
   [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)).
 
-### Events to include in the stripped state
+### Stripped state definitions and recommended events
 
-It is also proposed to create a single definition for what stripped state events
-should be provided to be potential joiners. Thus, it is recommended (although not
-required<sup id="a0">[0](#f0)</sup>) that homeserver implementations include the
-following as stripped state events:
+It is also proposed to create a single definition of what the stripped state of
+a room is and for what events should be included in the stripped state to be
+potential joiners.
+
+The stripped state of a room is a list of simplified state events to help a
+potential joiner identify the room. These state events may only have the
+`sender`, `type`, `state_key` and `content` keys present. These events do not
+replace any state that the client already has for the room, for example if the
+client has archived the room.
+
+It is recommended (although not required<sup id="a0">[0](#f0)</sup>) that
+homeserver implementations include the following events as part of the stripped
+state of a room:
 
 * Create event (`m.room.create`)<sup id="a1">[1](#f1)</sup>
 * Join rules (`m.room.join_rules`)
@@ -119,7 +129,9 @@ following as stripped state events:
 
 ### Stripped state API
 
-`GET /_matrix/client/r0/rooms/{roomId}/stripped_state`
+#### Client-server API
+
+`GET /_matrix/client/r0/rooms/{roomIdOrAlias}/stripped_state`
 
 A dedicated API is provided to query for the stripped state of a room. As
 described above, any potential joiner may access the stripped state of a room
@@ -128,19 +140,26 @@ may access the stripped state, as it is a strict subset of the state).
 
 This API is rate-limited and does not require authentication.
 
-The request format follows [the `/state`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-state)
-endpoint.
+The request format follows [the `/state` endpoint](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-state),
+but with the addition of handling a `server_name` query parameter (as
+specified for [the `/join/{roomIdOrAlias}` endpoint](https://matrix.org/docs/spec/client_server/latest#post-matrix-client-r0-join-roomidoralias)).
 
 The response body includes an array of `StrippedState`, as
 [described in the `/sync` response](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-sync).
 
-#### Example request:
+If the homeserver does not know the state of the requested room it should use
+the corresponding federation API to request the stripped state from another
+homeserver.
+
+TODO
+
+##### Example request:
 
 `GET /_matrix/client/r0/rooms/%21636q39766251%3Aexample.com/stripped_state HTTP/1.1`
 
-#### Responses:
+##### Responses:
 
-##### Status code 200:
+###### Status code 200:
 
 The current stripped state of the room
 
@@ -174,9 +193,32 @@ The current stripped state of the room
 Note that this is the same example as [the `/state` endpoint](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-state),
 but limited to what would be returned as stripped state.
 
-##### Status code 403:
+###### Status code 403:
 
 You are not a member of the room, a potential joiner, and the room is not publicly viewable.
+
+#### Server-server API
+
+`GET /_matrix/federation/v1/stripped_state/{roomId}`
+
+Retrieve the stripped state of a room, this is essentially identical to the
+client-server API, but will not reach out over federation.
+
+Path parameters:
+
+* `roomId` - **Required.** The room ID to get state for.
+
+Response format:
+
+* `stripped_state` - `[StrippedState]` A list of simplified events to help identify the room.
+
+The form of `StrippedState` is as defined in
+[the `/invite/{roomId}/{eventId}` endpoint](https://matrix.org/docs/spec/server_server/latest#put-matrix-federation-v2-invite-roomid-eventid).
+
+The stripped state should be returned to the requesting server if the host has
+a potential joiner, e.g. if the room has `join_rules` set to `public` or any
+user on the request server is in possession of an invite to the room. The
+requesting server is responsible for filtering the returned data to the client.
 
 ## Potential issues
 
@@ -222,7 +264,10 @@ for potential joiners due to membership in a space.
 
 ## Unstable prefix
 
-N/A
+| Stable Endpoint | Unstable Endpoint |
+|---|---|
+| `/_matrix/client/r0/rooms/{roomIdOrAlias}/stripped_state` | `/_matrix/client/unstable/org.matrix.msc3173/rooms/{roomIdOrAlias}/stripped_state` |
+| `/_matrix/federation/v1/stripped_state/{roomId}` | `/_matrix/federation/unstable/org.matrix.msc3173/stripped_state/{roomId}` |
 
 ## Footnotes
 
