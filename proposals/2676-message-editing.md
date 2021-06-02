@@ -51,6 +51,13 @@ For instance, an `m.room.message` which replaces an existing event looks like:
 }
 ```
 
+The `m.new_content` includes any fields that would normally be found in an
+event's `content` field, such as `formatted_body`.  In addition, the `msgtype`
+field need not be the same as in the original event.  For example, if a user
+intended to send a message beginning with "/me", but their client sends an
+`m.emote` event instead, they could edit the message to send be an `m.text`
+event as they had originally intended.
+
 Permalinks to edited events should capture the event ID that the sender is
 viewing at that point (which might be an edit ID).  The client viewing the
 permalink should resolve this ID to the source event ID, and then display the
@@ -112,7 +119,7 @@ What happens when we edit a reply?
    can assume that any client which can handle edits can also display replies
    natively.
 
-   XXX: make Riot do this
+   XXX: make Element do this
 
 What power level do you need to be able to edit other people's messages, and how
 does it fit in with fedeation event auth rules?
