@@ -25,7 +25,7 @@ associate new information with an existing event.
 
 Relations are any event which have an `m.relates_to` field in their
 contents. The `m.relates_to` field must include a `rel_type` field that
-gives the type of relationship being defined, and the `event_id` field that
+gives the type of relationship being defined, and an `event_id` field that
 gives the event which is the target of the relation.  All the information about
 the relationship lives under the `m.relates_to` key.
 
@@ -63,9 +63,6 @@ would look like:
 Different subtypes of references could be defined through additional fields on
 the `m.relates_to` object, to distinguish between replies, threads, etc.
 This MSC doesn't attempt to define these subtypes.
-
-  XXX: do we want to support multiple parents for a m.reference event, if a
-  given event references different parents in different ways?
 
 ### Sending relations
 
@@ -107,8 +104,8 @@ events.
 ### End to end encryption
 
 Since the server has to be able to bundle related events, structural
-information about relations cannot be encrypted end-to-end, and so the
-`m.relates_to` field should not be included in the ciphertext.
+information about relations must be visible to the server, and so the
+`m.relates_to` field must be included in the plaintext.
 
 A future MSC may define a method for encrypting certain parts of the
 `m.relates_to` field that may contain sensitive information.
@@ -124,7 +121,9 @@ from normal redacted messages, and maintain reply ordering.
 
   FIXME: synapse doesn't do this yet
 
-  XXX: Does this require a new room version?
+This modification to the redaction algorithm requires a new room version.
+However, event relationships can still be used in existing room versions, but
+the user experince may worse if redactions are performed.
 
 ## Edge Cases
 
