@@ -169,10 +169,7 @@ for it.
 
 ## Unstable prefix
 
-| Stable Endpoint | Unstable Endpoint |
-|---|---|
-| `/_matrix/client/r0/rooms/{roomIdOrAlias}/stripped_state` | `/_matrix/client/unstable/org.matrix.msc3173/rooms/{roomIdOrAlias}/stripped_state` |
-| `/_matrix/federation/v1/stripped_state/{roomId}` | `/_matrix/federation/unstable/org.matrix.msc3173/stripped_state/{roomId}` |
+N/A
 
 ## Footnotes
 
