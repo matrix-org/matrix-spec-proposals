@@ -103,7 +103,7 @@ three thumbsup reaction annotations, one replace, and one reference.
                 "count": 1
             },
             "m.replace": {
-                "event_id": "$original_event_id",
+                "event_id": "$edit_event_id",
                 "origin_server_ts": 1562763768320,
                 "sender": "@bruno1:localhost"
             }
