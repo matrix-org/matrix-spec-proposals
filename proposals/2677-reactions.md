@@ -268,6 +268,9 @@ This is something that could be added later on. A few issues with this are:
 
 ## Security considerations
 
+Clients should render reactions that have a long `key` field in a sensible
+manner. For example, clients can elide overly-long reactions.
+
 If using reactions for upvoting/downvoting purposes we would almost certainly want to anonymise the
 reactor, at least from other users if not server admins, to avoid retribution problems.
 This gives an unfair advantage to people who run their own servers however and
