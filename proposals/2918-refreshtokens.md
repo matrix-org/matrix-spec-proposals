@@ -30,7 +30,8 @@ Unless `inhibit_login` is `true`, the account registration API returns two addit
 
 This API lets the client refresh the access token.
 A new refresh token is also issued, and the existing one is revoked.
-The Matrix server doesn't have to make the old access token invalid, since its lifetime is short enough.
+Since this request can get lost in flight, the server should delay this revocation to when the client uses the new access token or the new refresh token for the first time.
+The Matrix server can but does not have to make the old access token invalid, since its lifetime is short enough.
 
 `POST /_matrix/client/r0/refresh`
 
