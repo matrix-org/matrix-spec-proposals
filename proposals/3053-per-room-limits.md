@@ -100,3 +100,7 @@ the number of child rooms drops below the limit, joins will be processed as usua
 If the limit for a subtype of room is greater than the general nesting limit
 per room, the subtype limit will be ignored. To set per-room nesting limit,
 user has to have power to `tombstone` and `attach`.
+
+## Security considerations
+
+Misuse of this feature might cause permanently forking a room.
