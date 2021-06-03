@@ -51,6 +51,14 @@ response:
 }
 ```
 
+The `refresh_token` parameter can be invalid for two reasons:
+
+ - if it does not exist
+ - if it was already used once
+
+In both cases, the server must reply with a `401` HTTP status code and an `M_UNKNOWN_TOKEN` error code.
+This new use case of the `M_UNKNOWN_TOKEN` error code must be reflected in the spec.
+
 ### Device handling
 
 The current spec states that "Matrix servers should record which device each access token is assigned to".
