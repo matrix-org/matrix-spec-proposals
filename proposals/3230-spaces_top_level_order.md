@@ -12,6 +12,73 @@ This MSC only concerns top level space ordering as subspace ordering is defined 
 
 The ordering information should be stored using room [`account_data`](https://matrix.org/docs/spec/client_server/latest#id125)
 
+Order is saved by using a new room account data of type `m.space_order`
+
+` PUT /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/m.space.order`
+
+````
+{
+    "type": "m.space_order",
+    "content": {
+        "order": "..."
+    }
+}
+````
+
+Where `order` is a string that will be compared using lexicographic order. Spaces with no order should appear last and be ordered using the roomID.
+
+Order is defined as a `string` and not a `float` as in room tags, as recommanded because it was not very successful.
+
+
+
+## Client recommendations:
+
+After moving a space (e.g via DnD), client should limit the number of room account data update.
+For example if the space is moved between two other spaces, just update the moved space order by appending a new character to the previous space order string
+
+Re numbering (i.e change all spaces `m.space.order` account data) should be avoided as much as possible, as the updates might not be atomic for other clients and would makes spaces jump around.
+
+## Potential issues
+
+Spreading the order information across all spaces account data is making order changes not atomic.
+
+Order string could grow infinitly and reach a hard limit, it might be needed to re-number when order string are too big.
+
+
+## Future considerations
+
+__Space Pinning__: The room `m.space_order` content could be extended by adding categories like `pinned`
+
+
+__Space Folder__: In order to save vertical space, content could be extended to define folders and space with same folder could be represented as a single entry in the space pannel. On tap would expand the pannel.
+
+## Alternatives
+
+__Global Scope Account Data__
+
+It's not clear whether this setting should be using global vs room scope.
+
+Order could be stored in a global scope account as an array of roomID in the `org.matrix.mscXXX.space.order` type.
+````
+{
+  "type": "org.matrix.mscXXX.space.order",
+  "content": {
+    "order": [
+      "!GDoOXUnhorabeOhHur:matrix.org",
+      "!ERioTVWSdvArJzumhm:foo.bar",
+      "!AZozoWghOYSIAzerOIf:example.org",
+      "!uZvykTONFkrkzGUFVE:mozilla.org",
+      "!TfGEAMfGlIFILPqKYwQ:matrix.org",
+      "!TaFfBCfZQRjDkrTvbDb:matrix.org"
+    ]
+  }
+}
+````
+
+This alternative has been discarded as it won't scale, could reach event content size limit, and is less flexible as a way to define order compared to [0,1].
+
+__Room Tags__
+
 
 Order is stored using existing [Room Tagging](https://matrix.org/docs/spec/client_server/latest#room-tagging) mecanism.
 
@@ -34,47 +101,7 @@ Order is stored using existing [Room Tagging](https://matrix.org/docs/spec/clien
 
 As defined per `room tagging`ordering information is given under the order key as a number between 0 and 1. The numbers are compared such that 0 is displayed first. Therefore a room with an order of 0.2 would be displayed before a room with an order of 0.7. If a room has a tag without an order key then it should appear after the rooms with that tag that have an order key, fallbacking then to roomID lexical order.
 
-
-## Client recommendations:
-
-After moving a space (e.g via DnD), client should limit the number of room account data update. For example if the space is moved between two other spaces, just update the moved space order by taking the midpoint between the enclosing order.
-
-When the lower sibling has no order, a strategy could be to re-order the undefined one starting from the last ordered one by adding steps defined by number of nodes. Also client should avoid setting 0 and 1 order.
-
-=> INCLUDE HERE DETAILED ALGORITHM?
-
-
-## Future considerations
-
-__Space Pinning__: The room tag usage could be extended and define `u.space.favourite` or `u.space.lowpriority``
-
-
-__Space Folder__: In order to save vertical space spaces with same order could be represented as a single entry in the panel represented as a folder on clients?
-
-
-## Alternatives
-
-It's not clear whether this setting should be using global vs room scope.
-
-Order could be stored in a global scope account as an array of roomID in the `org.matrix.mscXXX.space.order` type.
-````
-{
-  "type": "org.matrix.mscXXX.space.order",
-  "content": {
-    "order": [
-      "!GDoOXUnhorabeOhHur:matrix.org",
-      "!ERioTVWSdvArJzumhm:foo.bar",
-      "!AZozoWghOYSIAzerOIf:example.org",
-      "!uZvykTONFkrkzGUFVE:mozilla.org",
-      "!TfGEAMfGlIFILPqKYwQ:matrix.org",
-      "!TaFfBCfZQRjDkrTvbDb:matrix.org"
-    ]
-  }
-}
-````
-
-This alternative has been discarded has it won't scale, could reach event content size limit, and is less flexible as a way to define order compared to [0,1].
-
+This alternative has been discarded becaused perceived as confusing in regards of tags intentions.
 
 
 
@@ -89,4 +116,4 @@ The following mapping will be used for identifiers in this MSC during developmen
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`m.space` | event type | `m.msc3230_space`
+`m.space_order` | event type | `org.matrix.msc3230.space_order`
