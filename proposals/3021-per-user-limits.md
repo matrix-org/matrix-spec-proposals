@@ -64,3 +64,8 @@ the limit, logins will be processed as usual. If a user has more open sessions
 than it is allowed to be open when the limit is put in place, it is to be
 logged out from the excess sessions by the server starting from the least
 recently active session according to the last log-out time of said sessions.
+
+## Security considerations
+
+An administrator may abuse the limiting capabilities to randomly prevent the user
+from joining various rooms without leaving a recorded trail.
