@@ -1,6 +1,6 @@
 # MSC3230: User defined top level spaces ordering
 
-Currently, Spaces as defined per [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) do not define an explicit order for top level spaces. Current implementations ere ordering based on the lexicographic order of the roomIds.
+Currently, Spaces as defined per [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) do not define an explicit order for top level spaces. Current implementations are ordering based on the lexicographic order of the roomIds.
 
 As requested by a lot of users, it would be very convenient to be able to re-order top level spaces.
 
