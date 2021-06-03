@@ -14,7 +14,7 @@ The ordering information should be stored using room [`account_data`](https://ma
 
 Order is saved by using a new room account data of type `m.space_order`
 
-` PUT /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/m.space.order`
+` PUT /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/m.space_order`
 
 ````
 {
