@@ -18,6 +18,7 @@ The login API returns two additional fields:
 - `expires_in_ms`: The lifetime in milliseconds of the access token.
 - `refresh_token`: The refresh token, which can be used to obtain new access tokens.
 
+This also applies to logins done by application services.
 
 ### Account registration API changes
 
@@ -25,6 +26,8 @@ Unless `inhibit_login` is `true`, the account registration API returns two addit
 
 - `expires_in_ms`: The lifetime in milliseconds of the access token.
 - `refresh_token`: The refresh token, which can be used to obtain new access tokens.
+
+This also applies to registrations done by application services.
 
 ### Token refresh API
 
