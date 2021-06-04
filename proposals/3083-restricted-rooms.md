@@ -39,7 +39,7 @@ Membership in a single space is enough.
 
 If the `allow` key is an empty list (or not a list at all), then no users are
 allowed to join without an invite. Each entry is expected to be an object with the
-following keys, or a string representing the MXID of the user exempted:
+following keys:
 
 * `space`: The room ID of the space to check the membership of.
 * `via`: A list of servers which may be used to peek for membership of the space.
@@ -57,7 +57,6 @@ response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 Unlike the `invite` join rule, confirmation that the `allow` rules were properly
 checked cannot be enforced over federation by event authorization, so servers in
 the room are trusted not to allow invalid users to join.<sup id="a3">[3](#f3)</sup>
-However, user IDs listed as strings can be properly checked over federation.
 
 ## Summary of the behaviour of join rules
 
