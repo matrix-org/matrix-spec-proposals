@@ -14,8 +14,8 @@ and is integrated with existing clients.
 
 ## Proposal
 
-The [/\_matrix/client/r0/register](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientr0register)
-endpoint uses the [User-Interactive Authentication API](https://spec.matrix.org/unstable/client-server-api/#user-interactive-authentication-api).
+The [/\_matrix/client/r0/register](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-register)
+endpoint uses the [User-Interactive Authentication API](https://matrix.org/docs/spec/client_server/r0.6.1#user-interactive-authentication-api).
 A new authentication type `m.registration.token` will be defined which requires
 a `token` key to be present in the submitted `auth` dict. The token will be a
 string which the homeserver can match against its records to authenticate the
