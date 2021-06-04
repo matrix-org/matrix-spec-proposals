@@ -58,10 +58,10 @@ POST /_matrix/client/r0/register
 ```
 
 If the server verifies that `fBVFdqVE` is a valid token then the account is
-registered as normal, otherwise a `401` status is returned. On the successful
-use of a token the server may alter the validity of the token. For example, the
-token may be completely invalidated, or its number of permitted uses reduced.
-Management of the tokens is left to the server implementation.
+registered as normal, otherwise a `401` status is returned. Once registration of
+the user has completed, the server may alter the validity of the token.
+For example, the token may be completely invalidated, or its number of permitted
+uses reduced. Management of the tokens is left to the server implementation.
 
 Using the User-Interactive Authentication API means clients' existing
 registration logic will be unaffected, with a fallback available for clients
