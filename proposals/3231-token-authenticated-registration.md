@@ -16,7 +16,7 @@ and is integrated with existing clients.
 
 The [/\_matrix/client/r0/register](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-register)
 endpoint uses the [User-Interactive Authentication API](https://matrix.org/docs/spec/client_server/r0.6.1#user-interactive-authentication-api).
-A new authentication type `m.registration.token` will be defined which requires
+A new authentication type `m.login.registration_token` will be defined which requires
 a `token` key to be present in the submitted `auth` dict. The token will be a
 string which the homeserver can match against its records to authenticate the
 registration request.
@@ -30,7 +30,7 @@ HTTP/1.1 401 Unauthorized
 {
 	"flows": [
 		{
-			"stages": [ "m.registration.token" ]
+			"stages": [ "m.login.registration_token" ]
 		}
 	],
 	"params": {},
@@ -46,7 +46,7 @@ POST /_matrix/client/r0/register
 
 {
 	"auth": {
-		"type": "m.registration.token",
+		"type": "m.login.registration_token",
 		"token": "fBVFdqVE",
 		"session": "xxxxx"
 	}
@@ -98,5 +98,5 @@ to do the registration.
 
 ## Unstable prefix
 
-Implementations should use `org.matrix.msc3231.registration.token` as the
+Implementations should use `org.matrix.msc3231.login.registration_token` as the
 authentication type until this MSC has passed FCP and been merged.
