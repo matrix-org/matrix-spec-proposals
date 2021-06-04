@@ -48,11 +48,15 @@ Any entries in the list which do not match the expected format are ignored.
 
 When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
 request from a server, the request should only be permitted if the user has a valid
-invite or is in one of the listed spaces. Note that the server may not know if the user
-is in a particular space, this is left to a future MSC to solve.
+invite or is in one of the listed spaces.
 
 If the user is not part of the proper space, the homeserver should return an error
 response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
+
+It is possible for a homeserver receiving a `/make_join` / `/send_join` request
+to not know if the user is in a particular space (due to not participating in any
+of the necessary spaces). In this case the homeserver should reject the join,
+the requesting server may wish to attempt to join via other homeservers.
 
 Unlike the `invite` join rule, confirmation that the `allow` rules were properly
 checked cannot be enforced over federation by event authorization, so servers in
