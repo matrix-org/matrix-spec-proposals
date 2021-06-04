@@ -184,4 +184,4 @@ joining the room. [↩](#a2)
 situation. Currently, a misbehaving server can allow unauthorized users to join
 any room by first issuing an invite to that user. In theory that can be
 prevented by raising the PL required to send an invite, but in practice that is
-rarely done. [↩](#a2)
+rarely done. [↩](#a3)
