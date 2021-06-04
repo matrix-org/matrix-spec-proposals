@@ -99,5 +99,4 @@ to do the registration.
 ## Unstable prefix
 
 Implementations should use `org.matrix.msc3231.registration.token` as the
-authentication type until this MSC is part of a released version of the
-specification.
+authentication type until this MSC has passed FCP and been merged.
