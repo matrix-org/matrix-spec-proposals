@@ -2,8 +2,7 @@
 
 A desirable feature is to give room admins the power to restrict membership of
 their room based on the membership of one or more spaces from
-[MSC1772: spaces](https://github.com/matrix-org/matrix-doc/pull/1772),
-for example:
+[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772), for example:
 
 > members of the #doglovers space can join this room without an invitation<sup id="a1">[1](#f1)</sup>
 
@@ -74,8 +73,8 @@ between `public`, `invite`, and `restricted`.
   `server_acls`. See [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
 * `private`: This is reserved, but unspecified.
 * `restricted`: the same as `public` from the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
-  but with the additional caveat that servers are expected to check the `allow`
-  rules before generating a `join` event (whether for a local or a remote user).
+  but with the additional caveat that servers must check the `allow` rules before
+  generating a `join` event (whether for a local or a remote user).
 
 ## Security considerations
 
