@@ -59,7 +59,7 @@ of the necessary spaces). In this case the homeserver should reject the join,
 the requesting server may wish to attempt to join via other homeservers.
 
 Unlike the `invite` join rule, confirmation that the `allow` rules were properly
-checked cannot be enforced over federation by event authorization, so servers in
+checked cannot be enforced over federation by event authorisation, so servers in
 the room are trusted not to allow invalid users to join.<sup id="a3">[3](#f3)</sup>
 
 ## Summary of the behaviour of join rules
@@ -72,10 +72,10 @@ between `public`, `invite`, and `restricted`.
 * `invite`: only people with membership `invite` can join, as today.
 * `knock`: the same as `invite`, except anyone can knock, subject to `ban` and
   `server_acls`. See [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
-* `private`: This is reserved and not implemented.
-* `restricted`: the same as `public` from the perspective of the auth rules, but
-  with the additional caveat that servers are expected to check the `allow` rules
-  before generating a `join` event (whether for a local or a remote user).
+* `private`: This is reserved, but unspecified.
+* `restricted`: the same as `public` from the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
+  but with the additional caveat that servers are expected to check the `allow`
+  rules before generating a `join` event (whether for a local or a remote user).
 
 ## Security considerations
 
@@ -89,35 +89,30 @@ joining spurious users into your rooms, then:
 
 ## Unstable prefix
 
-The `restricted` join rule will be included in a future room version to ensure
-that servers and clients opt-into the new functionality.
+The `restricted` join rule will be included in a future room version to allow
+servers and clients to opt-into the new functionality.
 
-During development it is expected that an unstable room version of
-`org.matrix.msc3083` is used. Since the room version namespaces the behaviour,
-the `allow` key and the `restricted` value do not need unstable prefixes.
+During development, an unstable room version of `org.matrix.msc3083` will be used.
+Since the room version namespaces the behaviour, the `allow` key and the
+`restricted` value do not need unstable prefixes.
 
-## History / Rationale
+## Alternatives
 
-Note that this replaces the second half of an older version of
-[MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
-
-It may seem that just having the `allow` key with `public` join rules is enough,
-as suggested in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962),
+It may seem that just having the `allow` key with `public` join rules is enough
+(as originally suggested in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962)),
 but there are concerns that having a `public` join rule that is restricted may
-cause issues if an implementation does not understand the semantics of the `allow`
-keyword. Using an `allow` key with `invite` join rules also does not make sense as
-from the perspective of the auth rules, this is akin to `public` (since the checking
-of whether a member is in the space is done during the call to `/join`
-or `/make_join` / `/send_join`).
+cause issues if an implementation has not been updated to understand the semantics
+of the `allow` keyword. This could be solved by introducing a new room version,
+but in that case it seems clearer to introduce the `restricted` join rule, as
+described above.
 
-The above concerns about an implementation not understanding the semantics of `allow`
-could be solved by introducing a new room version, but if this is done it seems clearer
-to just introduce a a new join rule - `restricted` - as described above.
+Using an `allow` key with `invite` join rules to broaden who can join was rejected
+as an option since it requires weakening the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules).
+From the perspective of the auth rules, the `restricted` join rule is identical
+to `public` (since the checking of whether a member is in the space is done during
+the call to `/join` or `/make_join` / `/send_join` regardless).
 
 ## Future extensions
-
-Potential future extensions which should not be designed out include, but are not
-included in this MSC.
 
 ### Checking space membership over federation
 
@@ -130,6 +125,9 @@ Note that there are additional security considerations with this, namely that
 the peek server has significant power. For example, a poorly chosen peek
 server could lie about the space membership and add an `@evil_user:example.org`
 to a space to gain membership to a room.
+
+This MSC recommends rejecting the join in this case and allowing the requesting
+homeserver to ask another homeserver.
 
 ### Kicking users out when they leave the allowed space
 
@@ -167,7 +165,7 @@ It is possible that completely different state should be kept, or a different
 ### Inheriting join rules
 
 If you make a parent space invite-only, should that (optionally?) cascade into
-child rooms? Seems to have some of the same problems as inheriting power levels,
+child rooms? This would have some of the same problems as inheriting power levels,
 as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
 
 ## Footnotes
@@ -176,7 +174,8 @@ as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
 of the '#catlovers' space" is less useful since:
 
 1. Users in the banned space could simply leave it at any time
-2. This functionality is already somewhat provided by [Moderation policy lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists). [↩](#a1)
+2. This functionality is already partially provided by
+   [Moderation policy lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists). [↩](#a1)
 
 <a id="f2"/>[2]: Note that there is nothing stopping users sending and
 receiving invites in `public` rooms today, and they work as you might expect.
@@ -184,7 +183,7 @@ The only difference is that you are not *required* to hold an invite when
 joining the room. [↩](#a2)
 
 <a id="f3"/>[3]: This is a marginal decrease in security from the current
-situation. Currently, a misbehaving server can allow unauthorized users to join
+situation. Currently, a misbehaving server can allow unauthorised users to join
 any room by first issuing an invite to that user. In theory that can be
 prevented by raising the PL required to send an invite, but in practice that is
 rarely done. [↩](#a3)
