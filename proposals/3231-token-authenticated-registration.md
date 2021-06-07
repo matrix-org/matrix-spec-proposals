@@ -68,6 +68,37 @@ registration logic will be unaffected, with a fallback available for clients
 without native support for the new authentication type.
 
 
+### Checking the validity of a token
+
+A Client may wish to present username and password inputs only after it has
+checked the token is valid.
+
+Clients would be able to check the validity of a token in advance of
+registration with a `GET` request to
+`/_matrix/client/r0/register/m.login.registration_token/validity`.
+This endpoint would take a `token` query parameter, and validity would be
+indicated by the boolean `valid` key in the response.
+
+For example, a client would send:
+
+```
+GET /_matrix/client/r0/register/m.login.registration_token/validity?token=abcd
+```
+
+If `abcd` is a valid token, the server would respond with:
+
+```
+HTTP/1.1 200 OK
+
+{
+	"valid": true
+}
+```
+
+This does not perform any actual authentication, and the validity of the token
+may change between the check and the User-Interactive Authentication.
+
+
 ## Potential issues
 
 The new authentication type would only apply to the
@@ -100,3 +131,5 @@ to do the registration.
 
 Implementations should use `org.matrix.msc3231.login.registration_token` as the
 authentication type until this MSC has passed FCP and been merged.
+Similarly, `/_matrix/client/r0/register/org.matrix.msc3231.login.registration_token/validity`
+should be used as the endpoint for checking the validity of a token in advance.
