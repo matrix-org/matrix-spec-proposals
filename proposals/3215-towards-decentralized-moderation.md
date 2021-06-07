@@ -51,7 +51,7 @@ This proposal is a replacement for MSC 2938, which offers a more specialized mec
 
 ### Invariants
 
-- Each room MAY have a state event `m.room.moderated_by`. If specified, this is the room ID towards which abuse reports MUST be sent. As rooms may be deleted `m.room.moderated_by` MAY be an invalid room ID. A room that has a state event `m.room.moderated_by` supports moderation. Users who wish to set this state event MUST be have a Power Level sufficient to kick and ban users.
+- Each room MAY have a state event `m.room.moderated_by`. If specified, this is the room ID towards which abuse reports MUST be sent. As rooms may be deleted, `m.room.moderated_by` MAY be an invalid room ID. A room that has a state event `m.room.moderated_by` supports moderation. Users who wish to set this state event MUST be have a Power Level sufficient to kick and ban users.
 
 ```jsonc
 {
@@ -403,4 +403,3 @@ During experimentation
 - `m.room.moderation.moderator_of` will be prefixed `org.matrix.msc3215.room.moderation.moderator_of`;
 - `m.abuse.report` will be prefixed `org.matrix.msc3215.abuse.report`;
 - `m.abuse.nature.*` will be prefixed `org.matrix.msc3215.abuse.nature.*`.
-
