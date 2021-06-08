@@ -145,12 +145,11 @@ Users should not need to join the moderation room to be able to send `m.abuse.re
 2. When the Routing Bot receives an event other than `m.abuse.report`, ignore the event.
 3. When the Routing Bot receives an event _E_ with type `m.abuse.report` from Alice:
     - If the Routing Bot is not a member of _E_`.moderated_by_id`, reject the event.
-    - If _M_.`reporter` is not Alice, reject the event.
-    - If room _M_.`moderated_by_id`  does not contain a state event (`m.room.moderation.moderator_of`, `XXX`), where `XXX` is _M_.`room_id`, reject the event. Otherwise, call _S_ this state event.
-    - If _S_ does not have type `m.room.moderation.moderator_of`, reject the event.
+    - If _E_.`reporter` is not Alice, reject the event.
+    - If room _E_.`moderated_by_id`  does not contain a state event (`m.room.moderation.moderator_of`, `XXX`), where `XXX` is _E_.`room_id`, reject the event. Otherwise, call _S_ this state event.
     - If _S_ is missing field `user_id`, reject the event.
     - If _S_.`user_id` is not the id of the Routing Bot, reject the event.
-    - Copy the `content` of _M_ as a new `m.abuse.report` event in room _M_.`room_id`.
+    - Copy the `content` of _E_ as a new `m.abuse.report` event in room _E_.`room_id`.
 
 Note that the empty state key is NOT a universal authorization for the Routing Bot to send messages to the room.
 
@@ -175,7 +174,8 @@ However, it is possible that it can become a vector for attacks if combined with
 
 ### Routing, 2
 
-The Routing Bot does NOT have access to priviledged information. In particular, it CANNOT check whether:
+The Routing Bot does NOT have access to privileged information. In particular, it CANNOT check whether:
+
     - Alice is a member of _M_.`room_id`.
     - Event _M_.`event_id` took place in room _M_.`room_id`.
     - Alice could witness event _M_.`event_id`.
@@ -351,6 +351,7 @@ However, this would require implementing yet another new communication protocol 
 ### Priviledged Routing Bot
 
 The Routing Bot CANNOT check whether:
+
     - Alice is a member of _M_.`room_id`.
     - Event _M_.`event_id` took place in room _M_.`room_id`.
     - Alice could witness event _M_.`event_id`.
@@ -364,6 +365,7 @@ The author believes that this is too risky.
 ### Priviledged Classifier Bot
 
 Again, the Routing Bot CANNOT check whether:
+
     - Alice is a member of _M_.`room_id`.
     - Event _M_.`event_id` took place in room _M_.`room_id`.
     - Alice could witness event _M_.`event_id`.
@@ -375,6 +377,7 @@ The author believes that this is too risky.
 ### One Routing Bot per homeserver
 
 Again, the Routing Bot CANNOT check whether:
+
     - Alice is a member of _M_.`room_id`.
     - Event _M_.`event_id` took place in room _M_.`room_id`.
     - Alice could witness event _M_.`event_id`.
