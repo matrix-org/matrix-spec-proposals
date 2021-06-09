@@ -37,3 +37,7 @@ This could be a specific implementation of those, but still necessary to be stan
 there are no general systems to install logics to custom ephemiral events proposed in MSC2477.
 
 ## Security considerations
+
+This might be abused to monitor unwilling users, so there should be a stage requiring user
+verification at least during the bot's registration stage to the clients. For tranperancy sake
+the client could also display to which bot the events were sent and when, e.g. `poked bot_A at ...`
