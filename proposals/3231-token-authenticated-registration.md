@@ -18,8 +18,8 @@ The [/\_matrix/client/r0/register](https://matrix.org/docs/spec/client_server/r0
 endpoint uses the [User-Interactive Authentication API](https://matrix.org/docs/spec/client_server/r0.6.1#user-interactive-authentication-api).
 A new authentication type `m.login.registration_token` will be defined which requires
 a `token` key to be present in the submitted `auth` dict. The token will be a
-string which the homeserver can match against its records to authenticate the
-registration request.
+string of no more than 64 characters, and contain only characters matched by the
+regex `[A-Za-z0-9-_]`.
 
 For example, when a client attempts registration with no `auth` dict, a server
 may respond with:
