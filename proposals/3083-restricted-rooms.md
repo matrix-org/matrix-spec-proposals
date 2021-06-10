@@ -20,10 +20,12 @@ to trust for membership. For example:
         "join_rule": "restricted",
         "allow": [
             {
+                "type": "room-membership",
                 "room": "!mods:example.org",
                 "via": ["example.org"]
             },
             {
+                "type": "room-membership",
                 "room": "!users:example.org",
                 "via": ["example.org"]
             }
@@ -40,10 +42,14 @@ If the `allow` key is an empty list (or not a list at all), then no users are
 allowed to join without an invite. Each entry is expected to be an object with the
 following keys:
 
+* `type`: `"room-membership"` to describe that we are allowing access via room
+  membership. Future MSCs may define other types.
 * `room`: The room ID to check the membership of.
 * `via`: A list of servers which may be used to peek for membership of the room.
 
-Any entries in the list which do not match the expected format are ignored.
+Any entries in the list which do not match the expected format are ignored. Thus,
+if all entries are invalid, the list behaves as if empty and all users without
+an invite are rejected.
 
 When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
 request from a server, the request should only be permitted if the user has a valid
@@ -166,6 +172,17 @@ It is possible that completely different state should be kept, or a different
 If you make a parent space invite-only, should that (optionally?) cascade into
 child rooms? This would have some of the same problems as inheriting power levels,
 as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
+
+### Additional allow types
+
+Future MSCs may wish to define additional values for the `type` argument, potentially
+restricting access via:
+
+* MXIDs or servers.
+* A shared secret (room password).
+
+These are just examples are not fully thought through for this MSC, but it should
+be possible to add these behaviors in the future.
 
 ## Footnotes
 
