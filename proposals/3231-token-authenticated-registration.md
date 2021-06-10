@@ -75,14 +75,14 @@ checked the token is valid.
 
 Clients would be able to check the validity of a token in advance of
 registration with a `GET` request to
-`/_matrix/client/r0/register/m.login.registration_token/validity`.
-This endpoint would take a `token` query parameter, and validity would be
+`/_matrix/client/v1/register/m.login.registration_token/validity`.
+This endpoint would take a required `token` query parameter, and validity would be
 indicated by the boolean `valid` key in the response.
 
 For example, a client would send:
 
 ```
-GET /_matrix/client/r0/register/m.login.registration_token/validity?token=abcd
+GET /_matrix/client/v1/register/m.login.registration_token/validity?token=abcd
 ```
 
 If `abcd` is a valid token, the server would respond with:
@@ -131,5 +131,5 @@ to do the registration.
 
 Implementations should use `org.matrix.msc3231.login.registration_token` as the
 authentication type until this MSC has passed FCP and been merged.
-Similarly, `/_matrix/client/r0/register/org.matrix.msc3231.login.registration_token/validity`
+Similarly, `/_matrix/client/unstable/org.matrix.msc2321/register/org.matrix.msc3231.login.registration_token/validity`
 should be used as the endpoint for checking the validity of a token in advance.
