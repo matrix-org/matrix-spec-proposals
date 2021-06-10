@@ -20,11 +20,11 @@ to trust for membership. For example:
         "join_rule": "restricted",
         "allow": [
             {
-                "space": "!mods:example.org",
+                "room": "!mods:example.org",
                 "via": ["example.org"]
             },
             {
-                "space": "!users:example.org",
+                "room": "!users:example.org",
                 "via": ["example.org"]
             }
         ]
@@ -32,29 +32,29 @@ to trust for membership. For example:
 }
 ```
 
-This means that a user must be a member of the `!mods:example.org` space or
-`!users:example.org` space in order to join without an invite<sup id="a2">[2](#f2)</sup>.
-Membership in a single space is enough.
+This means that a user must be a member of the `!mods:example.org` room or
+`!users:example.org` room in order to join without an invite<sup id="a2">[2](#f2)</sup>.
+Membership in a single room is enough.
 
 If the `allow` key is an empty list (or not a list at all), then no users are
 allowed to join without an invite. Each entry is expected to be an object with the
 following keys:
 
-* `space`: The room ID of the space to check the membership of.
-* `via`: A list of servers which may be used to peek for membership of the space.
+* `room`: The room ID to check the membership of.
+* `via`: A list of servers which may be used to peek for membership of the room.
 
 Any entries in the list which do not match the expected format are ignored.
 
 When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
 request from a server, the request should only be permitted if the user has a valid
-invite or is in one of the listed spaces.
+invite or is in one of the listed rooms.
 
-If the user is not part of the proper space, the homeserver should return an error
-response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
+If the user is not a member of at least one of the rooms, the homeserver should
+return an error  response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
 It is possible for a homeserver receiving a `/make_join` / `/send_join` request
-to not know if the user is in a particular space (due to not participating in any
-of the necessary spaces). In this case the homeserver should reject the join,
+to not know if the user is in a particular room (due to not participating in any
+of the necessary rooms). In this case the homeserver should reject the join,
 the requesting server may wish to attempt to join via other homeservers.
 
 Unlike the `invite` join rule, confirmation that the `allow` rules were properly
@@ -108,22 +108,22 @@ described above.
 Using an `allow` key with `invite` join rules to broaden who can join was rejected
 as an option since it requires weakening the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules).
 From the perspective of the auth rules, the `restricted` join rule is identical
-to `public` (since the checking of whether a member is in the space is done during
+to `public` (since the checking of whether a member is in the room is done during
 the call to `/join` or `/make_join` / `/send_join` regardless).
 
 ## Future extensions
 
-### Checking space membership over federation
+### Checking room membership over federation
 
-If a server is not in a space (and thus doesn't know the membership of a space) it
-cannot enforce membership of a space during a join. Peeking over federation,
+If a server is not in a room (and thus doesn't know the membership of a room) it
+cannot enforce membership of a room during a join. Peeking over federation,
 as described in [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444),
-could be used to establish if the user is in any of the proper spaces.
+could be used to establish if the user is in any of the proper rooms.
 
 Note that there are additional security considerations with this, namely that
 the peek server has significant power. For example, a poorly chosen peek
-server could lie about the space membership and add an `@evil_user:example.org`
-to a space to gain membership to a room.
+server could lie about the room membership and add an `@evil_user:example.org`
+to a room to gain membership to a room.
 
 This MSC recommends rejecting the join in this case and allowing the requesting
 homeserver to ask another homeserver.
@@ -145,7 +145,7 @@ were offline, other users in the room would still see Bob in the room (and their
 servers would attempt to send message traffic to it).
 
 Another consideration is that users may have joined via a direct invite, not via
-access through a space.
+access through a room.
 
 Fixing this is thorny. Some sort of annotation on the membership events might
 help. but it's unclear what the desired semantics are:
@@ -172,7 +172,7 @@ as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
 <a id="f1"/>[1]: The converse restriction, "anybody can join, provided they are not members
 of the '#catlovers' space" is less useful since:
 
-1. Users in the banned space could simply leave it at any time
+1. Users in the banned room could simply leave it at any time
 2. This functionality is already partially provided by
    [Moderation policy lists](https://matrix.org/docs/spec/client_server/r0.6.1#moderation-policy-lists). [↩](#a1)
 
