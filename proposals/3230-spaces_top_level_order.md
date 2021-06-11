@@ -51,7 +51,7 @@ to a base 10 number for computation and mid point computation, then converted ba
 ````
 
 In order to find mid points between strings of different sizes, the shortest string should be padded
-with \x20 (space) to \x7E (~).
+with the first character of alphabet \x20 (space).
 
 ## Client recommendations:
 
@@ -112,7 +112,8 @@ less flexible as a way to define order compared to [0,1].
 __Room Tags__
 
 
-Order is stored using existing [Room Tagging](https://matrix.org/docs/spec/client_server/latest#room-tagging) mecanism.
+Order is stored using existing [Room Tagging](https://matrix.org/docs/spec/client_server/latest#room-tagging)
+mechanism.
 
 > The tags on a room are received as single m.tag event in the account_data section of a room.
 The content of the m.tag event is a tags key whose value is an object mapping the name of each tag
