@@ -50,7 +50,7 @@ to a base 10 number for computation and mid point computation, then converted ba
 "az" = 65*(95^1) + 90*(95^0) 
 ````
 
-In order to compare strings of different sizes, the shortest string should be padded
+In order to find mid points between strings of different sizes, the shortest string should be padded
 with \x20 (space) to \x7E (~).
 
 ## Client recommendations:
