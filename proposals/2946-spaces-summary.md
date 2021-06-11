@@ -33,8 +33,8 @@ An endpoint is provided to walk the space tree, starting at the provided room ID
 ("the root room"), and visiting other rooms/spaces found via `m.space.child`
 events. It recurses into the children and into their children, etc.
 
-Note that there is no requirement for any of the rooms to be of have a `type` of
-`m.space`, any room with `m.space.child` events is considered.
+Note that only rooms that have a `type` of `m.space` are considered when searching
+for `m.space.child` events.
 
 This endpoint requires authentication and is not subject to rate-limiting.
 
@@ -140,10 +140,10 @@ A rough algorithm follows:
 
 Other notes:
 
-* Any inaccessible children are omitted from the result, but the `m.space.child`
-  events that point to them are still returned.
+* Any inaccessible children are omitted from the result, as well as the
+  `m.space.child` events that point to them.
 * There could be loops in the returned child events - clients (and servers)
-  should handle this  gracefully.
+  should handle this gracefully.
 * Similarly, note that a child room might appear multiple times (e.g. also be a
   grandchild). Clients and servers should handle this appropriately.
 * `suggested_only` applies transitively.
