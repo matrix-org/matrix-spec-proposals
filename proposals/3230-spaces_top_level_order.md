@@ -44,6 +44,12 @@ In order to find mid points between two orders strings, the `order` string can b
 a base N number where N is the length of the allowed alphabet. So the string can be converted
 to a base 10 number for computation and mid point computation, then converted back to base N.
 
+````
+"a" = 65*(95^0) 
+"z" = 90*(95^0) 
+"az" = 65*(95^1) + 90*(95^0) 
+````
+
 In order to compare strings of different sizes, the shortest string should be padded
 with \x20 (space) to \x7E (~).
 
