@@ -99,22 +99,15 @@ could store this information rather than calling `POST /login` at all. This does
 While `POST /register` does work, it is impactical as the sole method of fetching an access token.
   
 
-Most appservices
-which do not implement encryption do not store this information as neither the device_id or access_token are needed f However critically
-this means that bridges will need to be designed to store the access_token and device_id from the point of creating the user,
-so older bridges would be unable to get an access token for existing users as `POST /register` would fail.
-It would difficult to log out these tokens if they got exposed additionally, as the AS would not be able to fetch a new access token.
-Furthermore, the ability to generate access tokens for real users who registered elsewhere would not be possible with this mechanism. 
-
 ## Security considerations
 
 Appservices could use this new functionality to generate devices for any userId that are within its namespace e.g. setting the
-user namespace regex to `@.*:example.com` would allow appservice to control anyone on the homeserver. While this sounds scary, in practise
+user namespace regex to `@.*:example.com` would allow appservice to control anyone on the homeserver. While this sounds scary, in practice
 this is not a problem because:
 
 - Appservice namespaces are mainained by the homeserver admin. If the namespace were to change, then it's reasonable
   to assume that the server admin is aware. There is no defense mechanism to stop a malicious server admin from creating new
-  devices for a given user's account as they could also do so by simply modifying the database.
+  devices for a given user's account, which they could also do by simply modifying the database.
 
 - While an appservice *could* try to masquerade as a user maliciously without the server admin expecting it, it would still 
   be bound by the restrictions of the namespace. Server admins are expected to be aware of the implications of adding new
@@ -124,7 +117,7 @@ this is not a problem because:
   difference is that without a dedicated access token they are unable to receive device messages. While in theory this
   does make them unable to see encrypted messages, this is not designed to be a security mechanism.
 
-In conclusion this MSC only automates the creation of new devices for users inside an AS namespace, which is something
+In conclusion, this MSC only automates the creation of new devices for users inside an AS namespace, which is something
 a server admin could already do. Appservices should always be treated with care and so with these facts in mind the MSC should 
 be considered secure.
 
