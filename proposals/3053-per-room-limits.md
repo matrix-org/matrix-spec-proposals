@@ -110,3 +110,9 @@ another MSC, as an orthogonal feature with changeable ones).
 ## Security considerations
 
 Misuse of this feature might cause permanently forking a room.
+
+## Unstable prefix and room version
+
+As this feature requires a new room version, `org.matrix.msc3053.limits` can be
+used as the unstable room version. And `r0` should be replaced by `unstable` for
+unstable endpoint paths.
