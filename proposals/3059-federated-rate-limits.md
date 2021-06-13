@@ -1,4 +1,4 @@
-# MSC3059: Limits API — Part 3: Federated ratelimiting on Matrix
+# MSC3059: Limits API — Part 3: Federated per-user ratelimiting on Matrix
 
 Not all servers are as lucky as matrix.org to have variable scaling,
 hence some of them will need to place rate limits on users and rooms,
@@ -32,14 +32,13 @@ As **[@ara4n](https://github.com/ara4n)** said in **[#803](https://github.com/is
 >   (i.e. configure that no user is allowed to trigger more than 100 egress messages
 >   per second, or whatever).
 
-All rate limits are in this proposal are applied by the homeserver but
-enforced trustlessly. In more detail: The limits shall be enforced by
-the initiating user's homeserver, based on the server's own time
-of receiving the event and checked by other servers and receiving clients,
-again based of the same `origin_server_ts` value. An event is to be
-rejected immediately if it exceeds the rate limit set for that kind of event.
-Rate limiting events with negative values are ill-formed. Unit of the rate
-limits are events per second, ie `ev Hz`.
+All rate limits are in this proposal are applied by the homeserver.
+In more detail: The limits shall be enforced by the initiating user's homeserver,
+based on the server's own time of receiving the event and checked by other servers
+and receiving clients, again based of the same `origin_server_ts` value. An event
+is to be rejected immediately if it exceeds the rate limit set for that kind of event.
+Rate limiting events with negative values are ill-formed. Unit of the rate limits
+are events per second, ie `ev Hz`.
 
 A rate limit of zero for particular event type means that the event is completely
 disallowed for the applicable users of the rate limit. Rate limit events with
@@ -227,7 +226,16 @@ As **[@ara4n](https://github.com/ara4n)** said:
 Rate limiting events themselves obeying the rate limits may make the limiting
 logic pretty complex and cause a lower practical limit than allowed by the request.
 
+## Alternatives considered
+
+None considered yet.
+
 ## Security considerations
 
 Possible rate limit request spams may cause both server-side and client-side
 performance degradation.
+
+## Unstable prefix
+
+`m.limits.rate` should be replaced by `org.matrix.msc3059.rate`. And unstable API
+endpoints should have `r0` replaced by `unstable` in the endpoint paths.
