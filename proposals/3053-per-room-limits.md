@@ -101,6 +101,12 @@ If the limit for a subtype of room is greater than the general nesting limit
 per room, the subtype limit will be ignored. To set per-room nesting limit,
 user has to have power to `tombstone` and `attach`.
 
+## Alternatives considered
+
+Having those limits as permanent limits specified as fields in the `m.room.create`
+event of the respective room (Later changed the plans to bring this forward as
+another MSC, as an orthogonal feature with changeable ones).
+
 ## Security considerations
 
 Misuse of this feature might cause permanently forking a room.
