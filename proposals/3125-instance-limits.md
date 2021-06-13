@@ -90,6 +90,7 @@ No alternatives considered yet.
 
 Unintentional denial of service by service by server administrators.
 
-## Unstable prefix
+## Unstable prefix and endpoints
 
-No implementations yet.
+`m.limits.instance` should be replaced by `org.matrix.msc3125.instance`
+and the `r0` in the API endpoint paths should be replaced by `unstable`.
