@@ -29,7 +29,7 @@ JSON part is formatted as follows:
 the duration of this sample event in seconds, `sample.length`, `sample.width` and `sample.depth`
 are integers for positional data if exists. For future binary formats such as CBOR as mentioned
 in MSC3079, it is preferred to have a binary encoding that will allow the samples placed raw
-into the event body.
+in the event body.
 
 ### Playback behaviour and restrictions
 
