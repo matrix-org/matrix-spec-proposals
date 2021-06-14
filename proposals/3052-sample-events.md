@@ -1,7 +1,7 @@
 # MSC3052: Sample events
 
 Sample events are intended as a generic representation of timing-sensitive and replayable exchange
-of sample data.
+of sample data. 
 
 ## Proposal
 
@@ -31,12 +31,19 @@ are integers for positional data if exists. For future binary formats such as CB
 in MSC3079, it is preferred to have a binary encoding that will allow the samples placed raw
 into the event body.
 
-When clients encounter multiple sample events from others, they shall align all the samples by timestamp
-and add the required amount of additional latency required to keep the latency invariant true. The latency
-build-up and drop should be as gradual as possible. Clients MUST NOT rescale any of the sample events to
-compensate for latency. Playing a combination of sample events of same type from different senders
-with different sample rates is ill-formed, while combination of multiple sample events of different type
-with different sample rates is implementation defined.
+### Playback behaviour and restrictions
+
+When clients encounter multiple sample events from others, they shall align all the samples
+by timestamp and add the required amount of additional latency required to keep the latency
+invariant true. The latency build-up and drop should be as gradual as possible. Clients
+MUST NOT rescale or resample any of the sample events to compensate for latency. Playing
+a combination of sample events of same type from different senders with different sample rates
+is ill-formed, while combination of multiple sample events of different type with different
+sample rates is implementation defined. Exact alignment algorithm is implementation defined
+except for the constraints described above.
+
+Abovementioned behaviour is designed to allow sample events to be used in any use case where
+both high fidelity playback and reproducible persistence are required.
 
 ## Potential issues
 
@@ -47,8 +54,8 @@ Mistimed sample events can cause a client to hang forever by locking out on that
 * Have signalling on Matrix and actual data separately, which unfortunately means the samples
 and the metadata possibly having different latency.
 
-* Have sample events with `m.samples` as a subtype of `m.room.message` rather than an event type of its
-own right (After all, sample events will just be message events with special client handling).
+* Have sample events with `m.samples` as a subtype of `m.room.message` rather than an event type
+of its own right (After all, sample events will just be message events with special client handling).
 
 ## Security considerations
 
