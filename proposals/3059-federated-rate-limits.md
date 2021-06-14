@@ -113,7 +113,9 @@ than set by these endpoints at some or all times.
 ## Per-user per-room event rate limiting semantics
 
 The event bodies are very similar to above per-user per-server limits.
-The following state event shall be sent:
+An example state event below (in the example below, both the power
+level and roles are specified but normally those two will not appear
+in the same time):
 
 ```
 {
@@ -124,7 +126,7 @@ The following state event shall be sent:
    "users.operator": "include",
    "roles": [],
    "roles.operator": "include_min(1)",
-   "limits": ["m.room.message":123.4567, "m.ban":1.234567]
+   "limits": {"m.room.message":123.4567, "m.ban":1.234567}
 }
 ```
 
@@ -193,6 +195,10 @@ the above with bursting capabilities. Bursting coefficient `burst.coef` is
 multiplied by base limit to calculate effective rate limit during the
 burst period, for up to `burst.duration` seconds.
 
+An example state event below (in the example below, both the power
+level and roles are specified but normally those two will not appear
+in the same time):
+
 ```json
 {
    "type": "m.limits.rate.user",
@@ -200,7 +206,7 @@ burst period, for up to `burst.duration` seconds.
    "power_level.scope": "maximum",
    "roles": [],
    "roles.operator": "exclude(all)",
-   "limits": ["m.room.message":123.4567, "m.ban":1.234567],
+   "limits": {"m.room.message":123.4567, "m.ban":1.234567},
    "burst": [
    {
    "burst.coef": 1.00,
