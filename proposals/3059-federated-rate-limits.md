@@ -83,7 +83,7 @@ To modify per-user event rate limit of all users for some event types:
 PUT /_matrix/client/r0/admin/limits/scoped HTTP/1.1
 {
    "type": "m.limits.rate.user",
-   "limits": ["m.room.message":123.4567, "m.ban":1.234567]
+   "limits": {"m.room.message": 123.4567, "m.ban": 1.234567}
 }
 ```
 
@@ -101,7 +101,7 @@ To modify per-user event rate limit of a particular user for some event types:
 PUT /_matrix/client/r0/admin/limits/{user_id}/scoped HTTP/1.1
 {
    "type": "m.limits.rate.user",
-   "limits": ["m.room.message":123.4567, "m.ban":1.234567]
+   "limits": {"m.room.message": 123.4567, "m.ban": 1.234567}
 }
 ```
 Queries are made to the same paths, using GET method instead.
@@ -126,7 +126,7 @@ in the same time):
    "users.operator": "include",
    "roles": [],
    "roles.operator": "include_min(1)",
-   "limits": {"m.room.message":123.4567, "m.ban":1.234567}
+   "limits": {"m.room.message": 123.4567, "m.ban": 1.234567}
 }
 ```
 
@@ -206,7 +206,7 @@ in the same time):
    "power_level.scope": "maximum",
    "roles": [],
    "roles.operator": "exclude(all)",
-   "limits": {"m.room.message":123.4567, "m.ban":1.234567},
+   "limits": {"m.room.message": 123.4567, "m.ban": 1.234567},
    "burst": [
    {
    "burst.coef": 1.00,
