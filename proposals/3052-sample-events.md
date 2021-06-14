@@ -27,7 +27,9 @@ JSON part is formatted as follows:
 
 `sample.type` is a MIME type, `sample.rate` is the sample rate in Hertz, `sample.duration` is
 the duration of this sample event in seconds, `sample.length`, `sample.width` and `sample.depth`
-are integers for positional data if exists.
+are integers for positional data if exists. For future binary formats such as CBOR as mentioned
+in MSC3079, it is preferred to have a binary encoding that will allow the samples placed raw
+into the event body.
 
 When clients encounter multiple sample events from others, they shall align all the samples by timestamp
 and add the required amount of additional latency required to keep the latency invariant true. The latency
@@ -42,8 +44,11 @@ Mistimed sample events can cause a client to hang forever by locking out on that
 
 ## Alternatives
 
-Having signalling on Matrix and actual data separately, which unfortunately means the samples
+* Have signalling on Matrix and actual data separately, which unfortunately means the samples
 and the metadata possibly having different latency.
+
+* Have sample events with `m.samples` as a subtype of `m.room.message` rather than an event type of its
+own right (After all, sample events will just be message events with special client handling).
 
 ## Security considerations
 
