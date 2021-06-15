@@ -1,4 +1,4 @@
-# MSCXXXX: Room version capabilities
+# MSC3244: Room version capabilities
 
 Room version updates can bring new functionalities, for example v7 is introducing `knocking`.
 
@@ -140,4 +140,4 @@ The following mapping will be used for identifiers in this MSC during developmen
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`room_capabilities` | event type | `org.matrix.mscXXX.room_capabilities`
+`room_capabilities` | event type | `org.matrix.msc3244.room_capabilities`
