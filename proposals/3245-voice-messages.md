@@ -53,7 +53,7 @@ An example voice message would be:
     },
     "m.audio": {
       "duration": 6541,
-      "waveform": [0, 256, /*...*/ 1024] // Not currently proposed anywhere. Would be an independent MSC.
+      "waveform": [0, 256, /*...*/ 1024] // https://github.com/matrix-org/matrix-doc/pull/3246
     },
     "m.voice": {}
   },
