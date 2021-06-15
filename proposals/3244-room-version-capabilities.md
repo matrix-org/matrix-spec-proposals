@@ -2,7 +2,7 @@
 
 Room version updates can bring new functionalities, for example v7 is introducing `knocking`.
 
-There is a delay before a room version became the default version (when supported by enough home servers).
+There is a delay before a room version becomes the default version (when supported by enough home servers).
 And when creating rooms clients should not ask for a specific version (or else they will stick to this
 specific version unless they are updated).
 
@@ -15,7 +15,7 @@ in the room settings section.
 ## Proposal
 
 The __m.room_versions capability__  [`/_matrix/client/r0/capabilities`]([https://matrix.org/docs/spec/client_server/r0.6.1#m-room-versions-capability])
-enpoint could be decorated to provide more information on room version capabilities.
+endpoint could be decorated to provide more information on room version capabilities.
 
 Actual capabilities response:
 ````
@@ -70,7 +70,7 @@ Proposed modification
 ````
 
 A new object is added under `room_capabilities`, each key is the name of a capability.
-This object provides the list of room version supporting this capability as well as the preferred version to use.
+This object provides the list of room versions supporting this capability as well as the preferred version to use.
 
 
 As part of this MSC, two capabilities are defined:
@@ -84,10 +84,10 @@ When presenting room settings, clients should use capabilities in order to displ
 For example if the room support knocking, the client should add this option in the join rule chooser
 (and if not only show `Invite Only` and `Public` for example).
 
-When creating a room, client could check if the needed feature is supported by the server before creating.
+When creating a room, the client could check if the needed feature is supported by the server before creating.
 
 If the feature is not supported, the client could inform the user that this type of room can't be created
-as well as an information message explaining how to contact the homeserver admin.
+as well as an information message explaining how to contact the home server admin.
 
 If the feature is supported by the default room version, then just continue as usual.
 
@@ -110,7 +110,7 @@ Content-Type: application/json
 If multiple capabilities are needed, then the client should peek on of the common stable version
 in `support`even if not defined as `best`
 
-It is not recommanded to use an unstable room version even if it's the only one supporting a given feature.
+It is not recommended to use an unstable room version even if it's the only one supporting a given feature.
 It should be reserved for development.
 
 
@@ -127,8 +127,9 @@ It should be reserved for development.
 ````
 
 A new field is added under `room_capabilities`, and for each available room version a list of `string`
-capabilities is provided.
-The room versions are ordered, if a capabilities is supported by several unstable room version, the latest is the prefered one.
+capabilities are provided.
+The room versions are ordered, if a capability is supported by several unstable room versions,
+the latest is the prefered one.
 
 ## Security considerations
 
@@ -141,3 +142,4 @@ The following mapping will be used for identifiers in this MSC during developmen
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `room_capabilities` | event type | `org.matrix.msc3244.room_capabilities`
+
