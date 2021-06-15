@@ -20,12 +20,12 @@ to trust for membership. For example:
         "join_rule": "restricted",
         "allow": [
             {
-                "type": "room-membership",
+                "type": "m.room_membership",
                 "room": "!mods:example.org",
                 "via": ["example.org"]
             },
             {
-                "type": "room-membership",
+                "type": "m.room_membership",
                 "room": "!users:example.org",
                 "via": ["example.org"]
             }
@@ -42,7 +42,7 @@ If the `allow` key is an empty list (or not a list at all), then no users are
 allowed to join without an invite. Each entry is expected to be an object with the
 following keys:
 
-* `type`: `"room-membership"` to describe that we are allowing access via room
+* `type`: `"m.room_membership"` to describe that we are allowing access via room
   membership. Future MSCs may define other types.
 * `room`: The room ID to check the membership of.
 * `via`: A list of servers which may be used to peek for membership of the room.
@@ -98,8 +98,8 @@ The `restricted` join rule will be included in a future room version to allow
 servers and clients to opt-into the new functionality.
 
 During development, an unstable room version of `org.matrix.msc3083` will be used.
-Since the room version namespaces the behaviour, the `allow` key and the
-`restricted` value do not need unstable prefixes.
+Since the room version namespaces the behaviour, the `allow` key and value, as well
+as the `restricted` join rule value do not need unstable prefixes.
 
 ## Alternatives
 
