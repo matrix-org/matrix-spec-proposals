@@ -123,8 +123,8 @@ the call to `/join` or `/make_join` / `/send_join` regardless).
 ### Checking room membership over federation
 
 If a server is not in a room (and thus doesn't know the membership of a room) it
-cannot enforce membership of a room during a join. Peeking over federation,
-as described in [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444),
+cannot enforce membership of a room during a call to `/make_join`, or `/send_join`.
+Peeking over federation,  as described in [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444),
 could be used to establish if the user is in any of the proper rooms.
 
 Note that there are additional security considerations with this, namely that
@@ -132,8 +132,8 @@ the peek server has significant power. For example, a poorly chosen peek
 server could lie about the room membership and add an `@evil_user:example.org`
 to a room to gain membership to a room.
 
-This MSC recommends rejecting the join in this case and allowing the requesting
-homeserver to ask another homeserver.
+As iterated above, this MSC recommends rejecting the join, potentially allowing
+the requesting homeserver to retry via another homeserver.
 
 ### Kicking users out when they leave the allowed space
 
