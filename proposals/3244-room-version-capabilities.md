@@ -107,31 +107,11 @@ Content-Type: application/json
 }
 ````
 
-If multiple capabilities are needed, then the client should peek on of the common stable version
-in `support`even if not defined as `best`
+If multiple capabilities are needed (e.g mscXX1 and mscXX2), and they have different `best`versions, clients can
+then pick one of the stable version that appears in both `support` array.
 
 It is not recommended to use an unstable room version even if it's the only one supporting a given feature.
 It should be reserved for development.
-
-
-## Potential issues
-
-
-## Alternatives
-
-````
- "room_capabilities": {
-          "7" : ["msc2403"],
-          "8" :  ["msc2403", "msc3083"]
-      }
-````
-
-A new field is added under `room_capabilities`, and for each available room version a list of `string`
-capabilities are provided.
-The room versions are ordered, if a capability is supported by several unstable room versions,
-the latest is the prefered one.
-
-## Security considerations
 
 
 ## Unstable prefix
