@@ -74,7 +74,8 @@ specification for full details, but the summary below should highlight the diffe
 between `public`, `invite`, and `restricted`.
 
 * `public`: anyone can join, subject to `ban` and `server_acls`, as today.
-* `invite`: only people with membership `invite` can join, as today.
+* `invite`: only people with membership `invite` can join, subject to `ban` and
+  `server_acls`, as today.
 * `knock`: the same as `invite`, except anyone can knock, subject to `ban` and
   `server_acls`. See [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
 * `private`: This is reserved, but unspecified.
