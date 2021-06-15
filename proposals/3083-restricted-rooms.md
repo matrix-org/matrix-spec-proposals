@@ -90,8 +90,12 @@ between `public`, `invite`, and `restricted`.
 ## Security considerations
 
 The `allow` feature for `join_rules` places increased trust in the servers in the
-room. We consider this acceptable: if you don't want evil servers randomly
-joining spurious users into your rooms, then:
+room. Any server which is joined to the room will be able to issue join events
+for the room, there are situations which no individual server in the room can
+verify that the membership event was issued in good faith.
+
+We consider this acceptable: if you don't want evil servers randomly joining
+spurious users into your rooms, then:
 
 1. Don't let evil servers in your room in the first place
 2. Don't use `allow` lists, given the expansion increases the attack surface anyway
@@ -121,6 +125,12 @@ as an option since it requires weakening the [auth rules](https://spec.matrix.or
 From the perspective of the auth rules, the `restricted` join rule is identical
 to `public` (since the checking of whether a member is in the room is done during
 the call to `/join` or `/make_join` / `/send_join` regardless).
+
+It was also considered to limit servers which can issue join membership events
+to those in the `via` field (or some other list of trusted servers). This is
+undesirable since it would increase centralization (e.g. a server already in the
+room couldn't issue membership events for another user on that server). It is
+unclear that this would significantly increase the security of the room.
 
 ## Future extensions
 
