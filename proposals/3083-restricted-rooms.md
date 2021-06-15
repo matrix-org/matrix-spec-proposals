@@ -51,6 +51,10 @@ Any entries in the list which do not match the expected format are ignored. Thus
 if all entries are invalid, the list behaves as if empty and all users without
 an invite are rejected.
 
+From the perspective of hee [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
+the `restricted` join rule has the same behavior as `public`. Additional checks
+against the `allow` rules are performed during event generation, as described below.
+
 When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
 request from a server, the request should only be permitted if the user has a valid
 invite or is in one of the listed rooms.
