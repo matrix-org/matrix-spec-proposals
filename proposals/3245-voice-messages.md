@@ -1,4 +1,4 @@
-# MSC0000: Voice messages (using extensible events)
+# MSC3245: Voice messages (using extensible events)
 
 Voice messages are a useful way to quickly send a message to someone without having to use the more
 awkward keyboard. Typically short in length, voice messages can be sent as annotated audio files
@@ -150,7 +150,7 @@ events. For as long as MSC1767's transitional period is in place, the following 
 While this MSC is not considered stable implementations should use the following guidelines:
 
 * Use MSC1767's unstable prefix and migration strategy where possible.
-* Use `org.matrix.msc0000` in place of `m.voice`.
+* Use `org.matrix.msc3245` in place of `m.voice`.
 * Carefully send events which match the example given below. This is to make other implementations easier to
   write.
 
@@ -182,13 +182,13 @@ Example event (using all the unstable prefixing rules):
 
     // This can still be used to identify an audio message from a voice message,
     // even with the fallback of `msgtype: m.audio`
-    "org.matrix.msc0000.voice": {}
+    "org.matrix.msc3245.voice": {}
   },
   // other fields required by the spec, but not important here
 }
 ```
 
-Client implementations should note that instead of `org.matrix.msc0000.voice` there are wild events using
+Client implementations should note that instead of `org.matrix.msc3245.voice` there are wild events using
 `org.matrix.msc2516.voice` as a precursor experiment to this MSC. The MSC2516 namespace is not considered
 correct, though clients may wish to handle it the same.
 
