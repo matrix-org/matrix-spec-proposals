@@ -25,7 +25,7 @@ The server responds with the salt and SRP group:
   "prime": N,
   "generator": g,
   "salt": s,
-  "servervalue": B
+  "server_value": B
 }
 ```
 Here N is the prime and g is the generator of the SRP group. s is the stored salt for the user as supplied in the `POST` and B is the public server value.
@@ -37,8 +37,8 @@ The client will then respond with
 ```
 {
   "type": "m.login.srp6a.verify",
-  "evidencemessage": M1,
-  "clientvalue": A
+  "evidence_message": M1,
+  "client_value": A
 }
 ```
 Here `M1` is the client evidence message, and A is the public client value.
