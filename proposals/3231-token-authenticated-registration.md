@@ -20,6 +20,8 @@ A new authentication type `m.login.registration_token` will be defined which req
 a `token` key to be present in the submitted `auth` dict. The token will be a
 string of no more than 64 characters, and contain only characters matched by the
 regex `[A-Za-z0-9-_]`.
+This will avoid URL encoding issues with the validity checking endpoint, and
+prevent DoS attacks from extremely long tokens.
 
 For example, when a client attempts registration with no `auth` dict, a server
 may respond with:
