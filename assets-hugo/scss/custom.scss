@@ -45,9 +45,6 @@ Custom SCSS for the Matrix spec
   scroll-behavior: smooth;
   overscroll-behavior: contain;
 
-  /* This overrides calc(100vh - 10rem);, which gives us a blank space at the bottom of the sidebar */
-  max-height: calc(100vh - 6rem);
-
   &>.td-sidebar-nav__section {
     margin-top: 1rem;
   }
@@ -88,6 +85,15 @@ Custom SCSS for the Matrix spec
     &.active, &active:hover {
       background-color: $secondary-background;
       font-weight: $font-weight-normal;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  @supports (position: sticky) {
+    .td-sidebar-nav {
+      /* This overrides calc(100vh - 10rem);, which gives us a blank space at the bottom of the sidebar */
+      max-height: calc(100vh - 6rem);
     }
   }
 }
