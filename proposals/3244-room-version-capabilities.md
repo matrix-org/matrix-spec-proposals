@@ -8,8 +8,8 @@ specific version unless they are updated).
 
 So currently clients can't know before creating the room if a feature they need will be supported by the created room.
 
-The goal of this MSC is to give the client a way to have more informations on the supported features of room
-versions available on a given server, to give more feedbacks to users during room creation as well as
+The goal of this MSC is to give the client a way to have more information on the supported features of room
+versions available on a given server, to give more feedback to users during room creation as well as
 in the room settings section.
 
 ## Proposal
@@ -55,12 +55,12 @@ Proposed modification
         "9": "stable"
       },
       "room_capabilities": {
-          "msc2403" : {
-              "best": "7",
+          "knocking" : {
+              "preferred": "7",
               "support" : ["7"]
           },
-          "msc3083" : {
-              "best": "9",
+          "restricted" : {
+              "preferred": "9",
               "support" : ["8", "9"]
           }
       }
@@ -74,8 +74,8 @@ This object provides the list of room versions supporting this capability as wel
 
 
 As part of this MSC, two capabilities are defined:
-- msc2403 a.k.a knocking join rule support
-- msc3083 a.k.a restricted join rule support 
+- `knocking` for knocking join rule support (msc2403)[https://github.com/matrix-org/matrix-doc/pull/2403]
+- `restricted` for restricted join rule support (msc3083)[https://github.com/matrix-org/matrix-doc/pull/3083]
 
 ## Client recommendations:
 
@@ -92,7 +92,7 @@ as well as an information message explaining how to contact the home server admi
 If the feature is supported by the default room version, then just continue as usual.
 
 If the feature is supported but by a stable room version that is not the default one, the client should
-then request to use the preferred version (`best`) that supports the feature, in the create room call:
+then request to use the preferred version (`preferred`) that supports the feature, in the create room call:
 
 ````
 POST /_matrix/client/r0/createRoom HTTP/1.1
@@ -107,8 +107,8 @@ Content-Type: application/json
 }
 ````
 
-If multiple capabilities are needed (e.g mscXX1 and mscXX2), and they have different `best`versions, clients can
-then pick one of the stable version that appears in both `support` array.
+If multiple capabilities are needed (e.g mscXX1 and mscXX2), and they have different `preferred` versions, clients can
+then pick one of the stable version that appears in both `support` arrays.
 
 It is not recommended to use an unstable room version even if it's the only one supporting a given feature.
 It should be reserved for development.
