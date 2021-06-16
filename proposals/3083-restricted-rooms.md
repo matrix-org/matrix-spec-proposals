@@ -8,9 +8,9 @@ their room based on the membership of one or more spaces from
 
 ## Proposal
 
-A new `join_rule` (`restricted`) will be used to reflect a cross between `invite`
-and `public` join rules. The content of the join rules would include the rooms
-to trust for membership. For example:
+In a future room version a new `join_rule` (`restricted`) will be used to reflect
+a cross between `invite` and `public` join rules. The content of the join rules
+would include the rooms to trust for membership. For example:
 
 ```json
 {
@@ -21,12 +21,12 @@ to trust for membership. For example:
         "allow": [
             {
                 "type": "m.room_membership",
-                "room": "!mods:example.org",
+                "room_id": "!mods:example.org",
                 "via": ["example.org"]
             },
             {
                 "type": "m.room_membership",
-                "room": "!users:example.org",
+                "room_id": "!users:example.org",
                 "via": ["example.org"]
             }
         ]
@@ -44,14 +44,14 @@ following keys:
 
 * `type`: `"m.room_membership"` to describe that we are allowing access via room
   membership. Future MSCs may define other types.
-* `room`: The room ID to check the membership of.
+* `room_id`: The room ID to check the membership of.
 * `via`: A list of servers which may be used to peek for membership of the room.
 
 Any entries in the list which do not match the expected format are ignored. Thus,
 if all entries are invalid, the list behaves as if empty and all users without
 an invite are rejected.
 
-From the perspective of hee [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
+From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`. Additional checks
 against the `allow` rules are performed during event generation, as described below.
 
