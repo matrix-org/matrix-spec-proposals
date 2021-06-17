@@ -21,13 +21,11 @@ would include the rooms to trust for membership. For example:
         "allow": [
             {
                 "type": "m.room_membership",
-                "room_id": "!mods:example.org",
-                "via": ["example.org"]
+                "room_id": "!mods:example.org"
             },
             {
                 "type": "m.room_membership",
-                "room_id": "!users:example.org",
-                "via": ["example.org"]
+                "room_id": "!users:example.org"
             }
         ],
         "authorised_servers": ["example.org"]
@@ -46,7 +44,6 @@ following keys:
 * `type`: `"m.room_membership"` to describe that we are allowing access via room
   membership. Future MSCs may define other types.
 * `room_id`: The room ID to check the membership of.
-* `via`: A list of servers which may be used to peek for membership of the room.
 
 Any entries in the list which do not match the expected format are ignored. Thus,
 if all entries are invalid, the list behaves as if empty and all users without
