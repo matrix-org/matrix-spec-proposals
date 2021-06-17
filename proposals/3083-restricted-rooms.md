@@ -29,14 +29,15 @@ would include the rooms to trust for membership. For example:
                 "room_id": "!users:example.org",
                 "via": ["example.org"]
             }
-        ]
+        ],
+        "authorised_servers": ["example.org"]
     }
 }
 ```
 
 This means that a user must be a member of the `!mods:example.org` room or
 `!users:example.org` room in order to join without an invite<sup id="a2">[2](#f2)</sup>.
-Membership in a single room is enough.
+Membership in a single allowed room is enough.
 
 If the `allow` key is an empty list (or not a list at all), then no users are
 allowed to join without an invite. Each entry is expected to be an object with the
@@ -51,30 +52,46 @@ Any entries in the list which do not match the expected format are ignored. Thus
 if all entries are invalid, the list behaves as if empty and all users without
 an invite are rejected.
 
+The `authorised_servers` key lists servers which are trusted to verify the above
+allow rules. It must be a list of string server name, a special value of `"*"`
+can be used to allow any server with a member in the room. Any non-string entries
+are discarded, if the list is non-existent or empty then no users may join without
+an invite.<sup id="a3">[3](#f3)</sup>
+
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
-the `restricted` join rule has the same behavior as `public`. Additional checks
-against the `allow` rules are performed during event generation, as described below.
+the `restricted` join rule has the same behavior as `public`, with the additional
+caveat that servers must ensure that:
 
-When a homeserver receives a `/join` request from a client or a `/make_join` / `/send_join`
-request from a server, the request should only be permitted if the user has a valid
-invite or is in one of the listed rooms.
+* The user's current membership is `invite` or `join`, or
+* The `m.room.member` event has a valid signature from one of the servers listed
+  in `authorised_servers`.
 
-If the user is not a member of at least one of the rooms, the homeserver should
-return an error  response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
+The above check must also be performed against the current room state to potentially
+soft-fail the event. This is the primary mechanism for guarding against state
+changes when old events are referenced. (E.g. if an authorised server is removed
+it should not be able to issue new membership events by referencing an old event
+in the room.)
+
+When an authorised homeserver receives a `/join` request from a client or a
+`/make_join` / `/send_join` request from another homeserver, the request should
+only be  permitted if the user has a valid invite or is in one of the listed rooms.
+If the user is not a member of at least one of the rooms, the authorised homeserver
+should return an error response with HTTP status code of 403 and an `errcode` of
+`M_FORBIDDEN`.
 
 It is possible for a homeserver receiving a `/make_join` / `/send_join` request
 to not know if the user is in a particular room (due to not participating in any
 of the necessary rooms). In this case the homeserver should reject the join,
-the requesting server may wish to attempt to join via other homeservers.
+the requesting server may wish to attempt to join via another authorised homeserver.
 
-Unlike the `invite` join rule, confirmation that the `allow` rules were properly
-checked cannot be enforced over federation by event authorisation, so servers in
-the room are trusted not to allow invalid users to join.<sup id="a3">[3](#f3)</sup>
+Note that the authorised homeservers have significant power, as they are trusted
+to confirm that the `allow` rules were properly checked (since this cannot
+easily be enforced over federation by event authorisation).<sup id="a4">[4](#f4)</sup>
 
 ## Summary of the behaviour of join rules
 
 See the [join rules](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-join-rules)
-specification for full details, but the summary below should highlight the differences
+specification for full details, the summary below is meant to highlight the differences
 between `public`, `invite`, and `restricted`.
 
 * `public`: anyone can join, subject to `ban` and `server_acls`, as today.
@@ -83,23 +100,19 @@ between `public`, `invite`, and `restricted`.
 * `knock`: the same as `invite`, except anyone can knock, subject to `ban` and
   `server_acls`. See [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
 * `private`: This is reserved, but unspecified.
-* `restricted`: the same as `public` from the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
-  but with the additional caveat that servers must check the `allow` rules before
-  generating a `join` event (whether for a local or a remote user).
+* `restricted`: the same as `public`, with the additional caveat that servers must
+  verify the `m.room.member` event is signed by one of the `authorised_servers` if
+  a member is not yet invited or joined to the room.
 
 ## Security considerations
 
-The `allow` feature for `join_rules` places increased trust in the servers in the
-room. Any server which is joined to the room will be able to issue join events
-for the room, there are situations which no individual server in the room can
-verify that the membership event was issued in good faith.
+The `allow` feature for `join_rules` places increased trust in the authorised
+servers. Any authorised server which is joined to the room will be able to issue
+join events for the room which no individual server in the room could verify was
+issued in good faith.
 
-We consider this acceptable: if you don't want evil servers randomly joining
-spurious users into your rooms, then:
-
-1. Don't let evil servers in your room in the first place
-2. Don't use `allow` lists, given the expansion increases the attack surface anyway
-   by letting members in other rooms dictate who's allowed into your room.
+The increased trust in authorised servers is considered an acceptable trade-off
+between increased centralisation and increased security.
 
 ## Unstable prefix
 
@@ -114,42 +127,36 @@ as the `restricted` join rule value do not need unstable prefixes.
 
 It may seem that just having the `allow` key with `public` join rules is enough
 (as originally suggested in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962)),
-but there are concerns that having a `public` join rule that is restricted may
-cause issues if an implementation has not been updated to understand the semantics
-of the `allow` keyword. This could be solved by introducing a new room version,
-but in that case it seems clearer to introduce the `restricted` join rule, as
-described above.
+but there are concerns that changing the behaviour of a pre-existing a `public`
+join rule may cause security issues in older implementations (that do not yet
+understand the new behaviour). This could be solved by introducing a new room
+version, thus it seems clearer to introduce a new join rule -- `restricted`.
 
-Using an `allow` key with `invite` join rules to broaden who can join was rejected
+Using an `allow` key with the `invite` join rules to broaden who can join was rejected
 as an option since it requires weakening the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules).
 From the perspective of the auth rules, the `restricted` join rule is identical
-to `public` (since the checking of whether a member is in the room is done during
-the call to `/join` or `/make_join` / `/send_join` regardless).
-
-It was also considered to limit servers which can issue join membership events
-to those in the `via` field (or some other list of trusted servers). This is
-undesirable since it would increase centralization (e.g. a server already in the
-room couldn't issue membership events for another user on that server). It is
-unclear that this would significantly increase the security of the room.
+to `public` with additional checks on the signature to ensure it was issued by
+an authorised server.
 
 ## Future extensions
 
 ### Checking room membership over federation
 
-If a server is not in a room (and thus doesn't know the membership of a room) it
-cannot enforce membership of a room during a call to `/make_join`, or `/send_join`.
-Peeking over federation,  as described in [MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444),
+If an authorised server is not in an allowed room (and thus doesn't know the
+membership of it) then the server cannot enforce the membership checks while
+generating a join event. Peeking over federation, as described in
+[MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444),
 could be used to establish if the user is in any of the proper rooms.
 
-Note that there are additional security considerations with this, namely that
-the peek server has significant power. For example, a poorly chosen peek
+This would then delegate power out to a (potentially) untrusted server, giving that
+the peek server significant power. For example, a poorly chosen peek
 server could lie about the room membership and add an `@evil_user:example.org`
-to a room to gain membership to a room.
+to an allowed room to gain membership to a room.
 
 As iterated above, this MSC recommends rejecting the join, potentially allowing
 the requesting homeserver to retry via another homeserver.
 
-### Kicking users out when they leave the allowed space
+### Kicking users out when they leave the allowed room
 
 In the above example, suppose `@bob:server.example` leaves `!users:example.org`:
 should they be removed from the room? Likely not, by analogy with what happens
@@ -171,22 +178,22 @@ access through a room.
 Fixing this is thorny. Some sort of annotation on the membership events might
 help. but it's unclear what the desired semantics are:
 
-* Assuming that users in a given space are *not* kicked when that space is
+* Assuming that users in an allowed room are *not* kicked when that room is
   removed from `allow`, are those users then given a pass to remain
-  in the room indefinitely? What happens if the space is added back to
+  in the room indefinitely? What happens if the room is added back to
   `allow` and *then* the user leaves it?
-* Suppose a user joins a room via a space (SpaceA). Later, SpaceB is added to
-  the `allow` list and SpaceA is removed. What should happen when the
-  user leaves SpaceB? Are they exempt from the kick?
+* Suppose a user joins a room via an allowed room (RoomA). Later, RoomB is added
+  to the `allow` list and RoomA is removed. What should happen when the
+  user leaves RoomB? Are they exempt from the kick?
 
 It is possible that completely different state should be kept, or a different
 `m.room.member` state could be used in a more reasonable way to track this.
 
 ### Inheriting join rules
 
-If you make a parent space invite-only, should that (optionally?) cascade into
-child rooms? This would have some of the same problems as inheriting power levels,
-as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
+If an allowed room is a space and you make a parent space invite-only, should that
+(optionally?) cascade into child rooms? This would have some of the same problems
+as inheriting power levels, as discussed in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962).
 
 ### Additional allow types
 
@@ -213,8 +220,12 @@ receiving invites in `public` rooms today, and they work as you might expect.
 The only difference is that you are not *required* to hold an invite when
 joining the room. [↩](#a2)
 
-<a id="f3"/>[3]: This is a marginal decrease in security from the current
-situation. Currently, a misbehaving server can allow unauthorised users to join
-any room by first issuing an invite to that user. In theory that can be
-prevented by raising the PL required to send an invite, but in practice that is
-rarely done. [↩](#a3)
+<a id="f3"/>[3]: This unfortunately introduces another piece of data which must be
+maintained by room administrators. It is recommended that clients initially set
+this to the homeserver of the creator or the special value `"*"`. [↩](#a3)
+
+<a id="f4"/>[4]: This has the downside of increased centralisation, as a homeserver
+that is not an authorised server but is already in the room may not issue a join
+event for another user on that server. (It must go through the `/make_join` /
+`/send_join` flow of an authorised server.) This is considered a reasonable
+trade-off. [↩](#a4)
