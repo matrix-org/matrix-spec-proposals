@@ -8,6 +8,54 @@ A Password Authenticated Key Exchange (PAKE) can prevent the need for sending th
 
 Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
 
+### Registration flow
+*SRP registration flow isn't that different from a normal account registration, but since currently the API only expects 'normal' password auth we may need to add an authentication type key to differentiate from SRP and password*
+
+`GET /_matrix/client/r0/register`
+```
+{
+	"auth_types": ["password", "srp6a"]
+	"srp_groups": [supported groups]
+}
+```  
+Here the server sends it's supported authentication types (in this case only password and srp6a) and if applicable it sends the supported SRP groups, as specified by the [SRP specification](https://datatracker.ietf.org/doc/html/rfc5054#page-16) or [rfc3526](https://datatracker.ietf.org/doc/html/rfc3526).
+
+The client then chooses an srp group and generates a random salt `s`.
+The client then calculates the verifier `v` as:
+
+$ x = H(s, p) $  
+$ v = g^x $
+
+Here H() is a secure hash function, and p is the user specified password.  
+Note that all values are calculated modulo N.
+
+This is then sent to the server, otherwise mimicking the password registration, through:
+
+`POST /_matrix/client/r0/register?kind=user
+```
+{
+  "auth": {
+    "type": "example.type.foo",
+    "session": "xxxxx",
+    "example_credential": "verypoorsharedsecret"
+  },
+  "auth_type": "srp6a",
+  "username": "cheeky_monkey",
+  "verifier": v,
+  "group": [g,N],
+  "salt": s,
+  "device_id": "GHTYAJCE",
+  "initial_device_display_name": "Jungle Phone",
+  "inhibit_login": false
+}
+```
+
+The server stores the verifier, salt, and group next to the username.  
+
+### Convert from password to SRP
+
+*I haven't thought this through, ideas are welcome. It should probably be something along the lines of a password change and otherwise more or less follow the registration as specced above.*
+
 ### Login flow
 
 To start the login flow the client sends it's username to obtain the salt and SRP group as:
@@ -25,12 +73,46 @@ The server responds with the salt and SRP group:
   "prime": N,
   "generator": g,
   "salt": s,
-  "server_value": B
+  "server_value": B,
+  "auth_id": "12345"
 }
 ```
-Here N is the prime and g is the generator of the SRP group. s is the stored salt for the user as supplied in the `POST` and B is the public server value.
+Here N is the prime and g is the generator of the SRP group. s is the stored salt for the user as supplied in the `POST`, B is the public server value, and auth_id is the id of this authentication flow, can by any unique random string.
 
-**TODO:** explain the SRP calculation done clientside and serverside?
+the server calculates B as:
+
+$  B = kv + g^b $
+where b is a private randomly generated value for this session (server side) and k is given as:
+
+$ k = H(N, g) $
+
+The client then calculates:
+
+$ A = g^a $
+where a is a private randomly generated value for this session (client side).
+
+Both then calculate:
+
+$ u = H(A, B) $
+
+Next the client calculates:
+
+$ x = H(s, p) $  
+$ S = (B - kg^x) ^ (a + ux) $
+$ K = H(S) $
+
+The server calculates:
+
+$ S = (Av^u) ^ b $
+$ K = H(S) $
+
+Resulting in the shared session key K.
+
+To complete the authentication we need to prove to the server that the session key K is the same.
+*note that this proof is direcrly lifted from the [SRP spec](http://srp.stanford.edu/design.html), anothe proof can be possible as well.*
+The client calculates:
+
+$ M1 = H(H(N) xor H(g), H(I), s, A, B, K) $
 
 The client will then respond with
 `POST /_matrix/client/r0/login`
@@ -38,18 +120,23 @@ The client will then respond with
 {
   "type": "m.login.srp6a.verify",
   "evidence_message": M1,
-  "client_value": A
+  "client_value": A,
+  "auth_id": "12345"
 }
 ```
 Here `M1` is the client evidence message, and A is the public client value.
-Upon successful authentication the server will respond with the regular login success status code 200:
+Upon successful authentication (ie M1 matches) the server will respond with the regular login success status code 200:
 
-*We can also prove the identity of the server here by adding M2, probably worth it?*
+To prove the identity of the server to the client we can send back M2 as:
+
+$ M2= H(A, M, K) $
+
 ```
 {
   "user_id": "@cheeky_monkey:matrix.org",
   "access_token": "abc123",
   "device_id": "GHTYAJCE",
+  "evidence_message": M2
   "well_known": {
     "m.homeserver": {
       "base_url": "https://example.org"
@@ -60,6 +147,9 @@ Upon successful authentication the server will respond with the regular login su
   }
 }
 ```
+
+The client verifies that M2 matches, and is subsequently logged in.
+
 
 ## Potential issues
 
@@ -78,6 +168,8 @@ OPAQUE is the more modern protocol, which has the added benefit of not sending t
 ## Security considerations
 
 Probably loads, though SRP and OPAQUE have had lots of eyes, I would assume.
+
+This whole scheme only works if the user can trust the client, which may be an issue in the case of a 'random' javascript hosted matrix client, though this is out of scope for this MSC.
 
 ## Unstable prefix
 
