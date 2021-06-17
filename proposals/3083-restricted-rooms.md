@@ -80,6 +80,8 @@ It is possible for a homeserver receiving a `/make_join` / `/send_join` request
 to not know if the user is in a particular room (due to not participating in any
 of the necessary rooms). In this case the homeserver should reject the join,
 the requesting server may wish to attempt to join via another authorised homeserver.
+If no authorised servers are in an allowed room its membership cannot be checked
+(and this is a misconfiguration).
 
 Note that the authorised homeservers have significant power, as they are trusted
 to confirm that the `allow` rules were properly checked (since this cannot
