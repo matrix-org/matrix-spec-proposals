@@ -11,7 +11,7 @@ Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
 ### Registration flow
 *SRP registration flow isn't that different from a normal account registration, but since currently the API only expects 'normal' password auth we may need to add an authentication type key to differentiate from SRP and password*
 
-`GET /_matrix/client/r0/register`
+`GET /_matrix/client/r0/register`  
 ```
 {
 	"auth_types": ["password", "srp6a"]
@@ -23,15 +23,15 @@ Here the server sends it's supported authentication types (in this case only pas
 The client then chooses an srp group and generates a random salt `s`.
 The client then calculates the verifier `v` as:
 
-$ x = H(s, p) $  
-$ v = g^x $
+	x = H(s, p)  
+	v = g^x
 
 Here H() is a secure hash function, and p is the user specified password.  
 Note that all values are calculated modulo N.
 
 This is then sent to the server, otherwise mimicking the password registration, through:
 
-`POST /_matrix/client/r0/register?kind=user
+`POST /_matrix/client/r0/register?kind=user`  
 ```
 {
   "auth": {
@@ -60,7 +60,7 @@ The server stores the verifier, salt, and group next to the username.
 
 To start the login flow the client sends it's username to obtain the salt and SRP group as:
 
-`POST /_matrix/client/r0/login`
+`POST /_matrix/client/r0/login`  
 ```
 {
   "type": "m.login.srp6a.init",
@@ -81,41 +81,41 @@ Here N is the prime and g is the generator of the SRP group. s is the stored sal
 
 the server calculates B as:
 
-$  B = kv + g^b $
+	B = kv + g^b 
 where b is a private randomly generated value for this session (server side) and k is given as:
 
-$ k = H(N, g) $
+	k = H(N, g) 
 
 The client then calculates:
 
-$ A = g^a $
+	A = g^a 
 where a is a private randomly generated value for this session (client side).
 
 Both then calculate:
 
-$ u = H(A, B) $
+	u = H(A, B) 
 
 Next the client calculates:
 
-$ x = H(s, p) $  
-$ S = (B - kg^x) ^ (a + ux) $
-$ K = H(S) $
+	x = H(s, p)  
+	S = (B - kg^x) ^ (a + ux)  
+	K = H(S)
 
 The server calculates:
 
-$ S = (Av^u) ^ b $
-$ K = H(S) $
+	S = (Av^u) ^ b  
+	K = H(S)
 
 Resulting in the shared session key K.
 
 To complete the authentication we need to prove to the server that the session key K is the same.
-*note that this proof is direcrly lifted from the [SRP spec](http://srp.stanford.edu/design.html), anothe proof can be possible as well.*
+*note that this proof is directly lifted from the [SRP spec](http://srp.stanford.edu/design.html), anothe proof can be possible as well.*
 The client calculates:
 
-$ M1 = H(H(N) xor H(g), H(I), s, A, B, K) $
+	M1 = H(H(N) xor H(g), H(I), s, A, B, K)
 
 The client will then respond with
-`POST /_matrix/client/r0/login`
+`POST /_matrix/client/r0/login`  
 ```
 {
   "type": "m.login.srp6a.verify",
@@ -129,7 +129,7 @@ Upon successful authentication (ie M1 matches) the server will respond with the 
 
 To prove the identity of the server to the client we can send back M2 as:
 
-$ M2= H(A, M, K) $
+	M2 = H(A, M, K)
 
 ```
 {
