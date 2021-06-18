@@ -101,7 +101,7 @@ between `public`, `invite`, and `restricted`.
 * `private`: This is reserved, but unspecified.
 * `restricted`: the same as `public`, with the additional caveat that servers must
   verify the `m.room.member` event is signed by one of the `authorised_servers` if
-  a member is not yet invited or joined to the room.
+  a member was not yet invited or joined into the room.
 
 ## Security considerations
 
