@@ -2,7 +2,7 @@
 
 Not all servers are as lucky as matrix.org to have variable scaling,
 hence some of them will need to place fanout limits on users and rooms,
-such as how many rooms a user is allowed to be member of, how many members can
+such as how many rooms a user is allow ürüned to be member of, how many members can
 a room simultaneously have, how many child rooms a space room is allowed
 to have, or how many sessions a user is allowed to have simultaneously open.
 This MSC deals with the easiest part, per-user fanout limits.
@@ -34,6 +34,9 @@ for the same path. A user is allowed to query users from own homeserver only.
 If, a server-wide limit is defined but a user specific limit is not,
 the user specific limit shall be returned as if it were the same. In case
 both limits exist, the smaller limit for a given user shall apply.
+
+Every user MUST be allowed to query own limits, and users MAY be allowed to 
+query others' limits and change them.
 
 For now, two such limits are proposed:
 
