@@ -9,7 +9,8 @@ A Password Authenticated Key Exchange (PAKE) can prevent the need for sending th
 Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
 
 ### Registration flow
-*SRP registration flow isn't that different from a normal account registration, but since currently the API only expects 'normal' password auth we may need to add an authentication type key to differentiate from SRP and password*
+
+To allow clients to discover 
 
 `GET /_matrix/client/r0/register`  
 ```
@@ -109,12 +110,13 @@ The server calculates:
 Resulting in the shared session key K.
 
 To complete the authentication we need to prove to the server that the session key K is the same.
-*note that this proof is directly lifted from the [SRP spec](http://srp.stanford.edu/design.html), anothe proof can be possible as well.*
+*note that this proof is directly lifted from the [SRP spec](http://srp.stanford.edu/design.html), another proof can be possible as well.*
 The client calculates:
 
 	M1 = H(H(N) xor H(g), H(I), s, A, B, K)
 
 The client will then respond with
+
 `POST /_matrix/client/r0/login`  
 ```
 {
@@ -162,12 +164,12 @@ Matthew Green judges it as ["It’s not ideal, but it’s real." and "not obviou
 
 OPAQUE is the more modern protocol, which has the added benefit of not sending the salt in plain text to the client, but rather uses an 'Oblivious Pseudo-Random Function' and can use elliptic curves.
 
-*Bitwardens scheme can be mentioned here as well, since it does allow auth without the server learning the plaintext password, but it isn't a PAKE, but rather something along the lines of a hash of the password before sending the has to the server for auth, practically making the hash the new password, and as such it doesn't protect against a mitm.*
+*Bitwardens scheme can be mentioned here as well, since it does allow auth without the server learning the plaintext password, but it isn't a PAKE, but rather something along the lines of a hash of the password before sending the hash to the server for auth, practically making the hash the new password, and as such it doesn't protect against a mitm.*
 
 
 ## Security considerations
 
-Probably loads, though SRP and OPAQUE have had lots of eyes, I would assume.
+*Probably loads, though SRP and OPAQUE have had lots of eyes, I would assume.*
 
 This whole scheme only works if the user can trust the client, which may be an issue in the case of a 'random' javascript hosted matrix client, though this is out of scope for this MSC.
 
