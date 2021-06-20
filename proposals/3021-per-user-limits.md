@@ -3,7 +3,7 @@
 Not all servers are as lucky as matrix.org to have variable scaling,
 hence some of them will need to place fanout limits on users and rooms,
 such as how many rooms a user is allowed to be member of, how many members can
-a room simultaneously have, how may child rooms a space room is allowed
+a room simultaneously have, how many child rooms a space room is allowed
 to have, or how many sessions a user is allowed to have simultaneously open.
 This MSC deals with the easiest part, per-user fanout limits.
 
