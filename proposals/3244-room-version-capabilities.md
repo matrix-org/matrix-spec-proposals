@@ -1,12 +1,20 @@
 # MSC3244: Room version capabilities
 
-Room version updates can bring new functionalities, for example v7 is introducing `knocking`.
+When a new room version is introduced there is a delay before it becames the default
+version. This delay is related to support of this new room version across the federation.
+If a Home Server were to switch the new version as default to early, it will lock out all other users
+that are on Home Servers that do not understand this version.
 
-There is a delay before a room version becomes the default version (when supported by enough home servers).
-And when creating rooms clients should not ask for a specific version (or else they will stick to this
-specific version unless they are updated).
+But however the new room version might add an interesting feature that some client on some Home
+Servers might want to use earlier. One solution might be for the client to explicitly request a
+version when creating a room but it's a bad practice to force a room version.
 
-So currently clients can't know before creating the room if a feature they need will be supported by the created room.
+If the client is forcing a room version, and server side a new version is added (that support the needed
+feature) the client will still use the old one until it's updated.
+
+As an example v7 is introducing `knock` but it's not default yet, it would be nice for client to 
+start using it until it is supported by the default version and to also use the latest stable version that
+supports this feature in the future.
 
 The goal of this MSC is to give the client a way to have more information on the supported features of room
 versions available on a given server, to give more feedback to users during room creation as well as
@@ -29,7 +37,7 @@ Actual capabilities response:
         "3": "stable",
         "4": "stable",
         "5": "stable",
-        "6": "stable",,
+        "6": "stable",
         "org.matrix.msc2176": "unstable",
         "org.matrix.msc3083": "unstable"
       }
@@ -39,7 +47,8 @@ Actual capabilities response:
 }
 ````
 
-Proposed modification
+Proposed modification.
+In the following hypothetical sample, 3 new versions has been introduced (7, 8 and 9) but 6 is still the default.
 
 ````
 {
@@ -52,10 +61,11 @@ Proposed modification
         "6": "stable",
         "7": "stable",
         "8": "stable",
-        "9": "stable"
+        "9": "stable",
+        "org.matrix.msc6789": "unstable",
       },
       "room_capabilities": {
-          "knocking" : {
+          "knock" : {
               "preferred": "7",
               "support" : ["7"]
           },
@@ -74,10 +84,14 @@ This object provides the list of room versions supporting this capability as wel
 
 
 As part of this MSC, two capabilities are defined:
-- `knocking` for knocking join rule support (msc2403)[https://github.com/matrix-org/matrix-doc/pull/2403]
+- `knock` for knocking join rule support (msc2403)[https://github.com/matrix-org/matrix-doc/pull/2403]
 - `restricted` for restricted join rule support (msc3083)[https://github.com/matrix-org/matrix-doc/pull/3083]
 
 ## Client recommendations:
+
+__Notice__: In real world usage most of the time clients should not specify a room version when creating
+a room, and should let the Home Server select the correct one (via their knowledgeable server admin).
+This is an advanced mechanism to start using feature early.
 
 When presenting room settings, clients should use capabilities in order to display the correct UI. 
 
@@ -107,11 +121,10 @@ Content-Type: application/json
 }
 ````
 
-If multiple capabilities are needed (e.g mscXX1 and mscXX2), and they have different `preferred` versions, clients can
-then pick one of the stable version that appears in both `support` arrays.
+In the hypothetical scenario where multiple capabilities would be needed (e.g mscXX1 and mscXX2), and have different `preferred` versions, clients can then pick one of the stable version that appears in both `support` arrays.
 
-It is not recommended to use an unstable room version even if it's the only one supporting a given feature.
-It should be reserved for development.
+Notice that, it is not recommended to use an unstable room version even if it's the only one supporting a given feature.
+It should be reserved for development. This MSC is only about default version not about unstable.
 
 
 ## Unstable prefix
