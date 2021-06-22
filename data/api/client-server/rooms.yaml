@@ -206,6 +206,7 @@ paths:
           enum:
             - join
             - invite
+            - knock
             - leave
             - ban
           description: |-
@@ -220,6 +221,7 @@ paths:
           enum:
             - join
             - invite
+            - knock
             - leave
             - ban
           description: |-
