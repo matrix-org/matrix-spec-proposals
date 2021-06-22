@@ -55,11 +55,10 @@ not a member of at least one of the rooms, the homeserver should return an error
 response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
 It is possible for a homeserver receiving a `/make_join` / `/send_join` request
-to not know if the user is in a particular room (due to not participating in any
-of the necessary rooms). In this case the homeserver should reject the join,
-the requesting server may wish to attempt to join via another homeserver. If no
-servers are in an allowed room its membership cannot be checked (and this is a
-misconfiguration).
+to not know if the user is in any of the allowed room (due to not participating
+in them). In this case the homeserver should reject the join, the requesting
+server may wish to attempt to join via another homeserver. If no servers are in
+an allowed room its membership cannot be checked (and this is a misconfiguration).
 
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
@@ -78,8 +77,6 @@ event in the room.)
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
 enforced over federation by event authorisation).<sup id="a3">[3](#f3)</sup>
-(The rationale for trusting these homeservers is that they could easily
-side-step the restriction by issuing an invite first.)
 
 ## Summary of the behaviour of join rules
 
@@ -99,15 +96,11 @@ between `public`, `invite`, and `restricted`.
 
 ## Security considerations
 
-Although increased trust to enforce the join rules during `/join` / `/make_join`
-/ `/send_join` is placed in the homeservers whose users can issue invites, this
-is considered only a miniscule change in room security.
-
-This MSC limits the homeservers who can issue join events (via calls to `/join`,
-`/make_join`, and `/send_join`) and trusts those servers to enforce the additional
-allow rules. Although other homeservers may not be able to verify that a join
-event was issued in good faith, there is no benefit for a homeserver to do this
-since they could have issued an invite anyway.
+Increased trust to enforce the join rules during calls to `/join`, `/make_join`,
+and `/send_join` is placed in the homeservers whose users can issue invites.
+Although it is possible for those homeservers to issue a join event in bad faith,
+there is no real-world benefit to doing this as those homeservers could easily
+side-side the restriction by issuing an invite first anyway.
 
 ## Unstable prefix
 
