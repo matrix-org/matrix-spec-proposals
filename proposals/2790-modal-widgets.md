@@ -43,7 +43,7 @@ A modal widget takes a very similar shape to the common widget properties defini
   },
   "waitForIframeLoad": true,
   "buttons": [
-    {"id": "com.example.save", "label": "Submit", "kind": "m.primary"},
+    {"id": "com.example.save", "label": "Submit", "kind": "m.primary", "disabled": true},
     {"id": "m.close", "label": "Cancel", "kind": "m.link"}
   ]
 }
@@ -73,6 +73,8 @@ value is implied to be an empty array (no buttons). Buttons have 3 properties to
   * `m.danger` - A button which is styled to warn the user of imminent risk of severe consequences,
     such as deleting an object. Usually these are red in background colour.
   * `m.link` - A button which looks like a link but has sizing to have it match other buttons.
+* `disabled` - An optional initial disabled state for the button. Setting to `true` prevents having to
+  immediately update the button state with a subsequent request.
 
 The client is not required to have styling rules for all button `kind`s, though is encouraged to
 support at least the ones listed in this MSC. Clients should ignore any buttons that do not fit
@@ -367,18 +369,16 @@ A potential reason for using this data channel is because the calendar widget ma
 through all the hoops to validate the user's identity and authentication, and while the modal can
 do all those same steps again it could be disruptive to the user's experience.
 
-## Potential issues
-
-Modal widgets don't have a way to disable buttons in the dialog with this proposal. This is currently
-a limitation and not planned to be included by this MSC. Likewise are other common button kinds
-like "info", "light", and "dark".
-
 ## Alternatives
 
 A modal widget could instead be the whole dialog (title, buttons - everything), however this has a
 number of concerns relating to styling the buttons for every single client possible. The widget API
 would also need to be extended to pass through theme information, which it may very well want to do
-anyways, but would still be added complexity for a simple form-style widget.
+anyways, but would still be added complexity for a simple form-style widget. Alternative to that,
+clients are already capable of identifying the widget `type` and rendering it natively if they so
+choose, however it's not entirely reasonable for all widgets to be rendered by the client as such.
+This proposal aims to balance "custom" forms with forms that the client might be able to natively
+recognize and render.
 
 A modal widget could also be replaced with a custom HTML declaration or form syntax, though this is
 even harder for clients to sanitize and represent. It would also be limited and require over-specifying
