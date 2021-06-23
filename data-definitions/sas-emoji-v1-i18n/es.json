@@ -47,5 +47,20 @@
     "Robot": "Robot",
     "Hat": "Sombrero",
     "Glasses": "Gafas",
-    "Spanner": "Llave inglesa"
+    "Spanner": "Llave inglesa",
+    "Folder": "Carpeta",
+    "Headphones": "Cascos",
+    "Anchor": "Ancla",
+    "Trophy": "Trofeo",
+    "Rocket": "Cohete",
+    "Aeroplane": "Avión",
+    "Flag": "Bandera",
+    "Lock": "Candado",
+    "Scissors": "Tijeras",
+    "Paperclip": "Clip",
+    "Light Bulb": "Bombilla",
+    "Hourglass": "Reloj de arena",
+    "Umbrella": "Paraguas",
+    "Thumbs Up": "Pulgar arriba",
+    "Santa": "Papá Noel"
 }

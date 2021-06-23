@@ -1,0 +1,29 @@
+{{/*
+
+  For complex objects, example content is sometimes attached to the
+  object's individual properties (and subproperties...), so to get
+  a complete example for the whole object we need to iterate through
+  its properties (and subproperties...) and assemble them.
+
+  That's what this template does.
+
+*/}}
+
+{{ $this_object := partial "json-schema/resolve-allof" . }}
+
+{{ if eq $this_object.type "object" }}
+
+    {{ if not $this_object.example }}
+        {{ $this_object := merge (dict "example" dict ) $this_object }}
+    {{ end }}
+
+    {{ range $key, $property := $this_object.properties}}
+        {{ $this_property_example := partial "json-schema/resolve-example" $property }}
+        {{ if $this_property_example }}
+            {{ $this_object = merge (dict "example" (dict $key $this_property_example)) $this_object }}
+        {{ end }}
+    {{ end }}
+
+{{ end }}
+
+{{ return $this_object.example }}
