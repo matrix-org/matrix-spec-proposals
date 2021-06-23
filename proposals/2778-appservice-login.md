@@ -5,7 +5,7 @@ need a way to generate devices for their users so that they can participate in E
 do so, this proposal suggests implementing an appservice extension to the 
 [`POST /login` endpoint](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-login).
 
-Appservice users do not usually need to login as they do not need their own access token, and do not
+Appservice users do not usually need to log in as they do not need their own access token, and do not
 traditionally need a "device". However, E2E encryption demands that at least one user in a room has a
 Matrix device which means bridge users need to be able to generate a device on demand. In the past,
 bridge developers have used the bridge bot's device for all bridge users in the room, but this causes
@@ -44,13 +44,13 @@ The response body should be unchanged from the existing `/login` specification.
 If one of the following conditions are true:
 
 - The access token is not provided
-- The access token does not correspond to a appservice
+- The access token does not correspond to an appservice
 - Or the user has not previously been registered
 
 Then the servers MUST reject with HTTP 403, with an `errcode` of `"M_FORBIDDEN"`. 
 
-If the access token DOES correspond to a appservice but the user is not inside its namespace,
-then the `errcode` should be `"M_EXCLUSIVE"`.
+If the access token DOES correspond to an appservice but the user is not inside its namespace,
+then the `errcode` must be `"M_EXCLUSIVE"`.
 
 Homeservers should ignore the `access_token` parameter if a type other than
 `m.login.application_service` has been provided.
@@ -109,10 +109,10 @@ Furthermore, the ability to generate access tokens for real users who registered
 ## Security considerations
 
 Appservices could use this new functionality to generate devices for any userId that are within its namespace e.g. setting the
-user namespace regex to `@.*:example.com` would allow appservice to control anyone on the homeserver. While this sounds scary, in practise
+user namespace regex to `@.*:example.com` would allow appservice to control anyone on the homeserver. While this sounds scary, in practice
 this is not a problem because:
 
-- Appservice namespaces are mainained by the homeserver admin. If the namespace were to change, then it's reasonable
+- Appservice namespaces are maintained by the homeserver admin. If the namespace were to change, then it's reasonable
   to assume that the server admin is aware. There is no defense mechanism to stop a malicious server admin from creating new
   devices for a given user's account as they could also do so by simply modifying the database.
 
