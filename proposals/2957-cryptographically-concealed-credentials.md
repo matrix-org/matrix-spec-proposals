@@ -77,17 +77,18 @@ The server generates its own ephemeral Curve25519 key pair
 <S<sub>priv</sub>,S<sub>pub</sub>>, and sends the S<sub>pub</sub> to the user.
 
 The ephemeral keys will be used to encrypt the PBKDF2 parameters and the
-authentication key.  The server's ephemeral key is also used, in conjunction
-with the authentication key, to generate the "confirmation key", which is used
-to ensure that the server that the user registers with is the same as the
-server that the user later logs into.  Since the PBKDF2 parameters and
-authentication key are encrypted using the server's ephemeral key, a
-man-in-the-middle that tries to obtain the PBKDF2 parameters and authentication
-key would need to replace the server's ephemeral key with their own, which
-means that the server would not calculate the same confirmation key as the
-client.  Thus the next time the user logs in, they would be alerted to the fact
-that the entity that they were communicating with is different, unless the same
-man-in-the-middle is present at the next login attempt.
+authentication key when sending them to the server.  The server's ephemeral key
+is also used, in conjunction with the authentication key, to generate the
+"confirmation key", which is used to ensure that the server that the user
+registers with is the same as the server that the user later logs into.  Since
+the PBKDF2 parameters and authentication key are encrypted using the server's
+ephemeral key, a man-in-the-middle that tries to obtain the PBKDF2 parameters
+and authentication key would need to replace the server's ephemeral key with
+their own, which means that the server would not calculate the same
+confirmation key as the client.  Thus the next time the user logs in, they
+would be alerted to the fact that the entity that they were communicating with
+is different, unless the same man-in-the-middle is present at the next login
+attempt.
 
 The client calculates:
 
@@ -99,7 +100,8 @@ The client calculates:
   - the Curve25519 private key A<sub>priv</sub> = HKDF(K<sub>base</sub>, "",
     `authentication key|` + MatrixID, 256) (which is called the "authentication
     key") and the corresponding public key A<sub>pub</sub>
-- parameters used for encrypting the above information:
+- parameters used for encrypting the above information (the server performs the
+  corresponding calculations to decrypt):
   - K<sub>1</sub> = ECDH(C<sub>priv</sub>,S<sub>pub</sub>)
   - K<sub>AES</sub> = HKDF(K<sub>1</sub>, "", `encryption key|`+ MatrixID+ `|` +
     C<sub>pub</sub> + `|` + S<sub>pub</sub>, 256)
@@ -115,7 +117,9 @@ HMAC-SHA-256 using K<sub>MAC</sub> as the key):
 - A<sub>pub</sub>
 - R, and I, which can be used to reconstruct the PBKDF2 parameters
 
-The server stores:
+The server then generates K<sub>1</sub> =
+ECDH(S<sub>priv</sub>,C<sub>pub</sub>) and the derived keys K<sub>AES</sub>,
+K<sub>IV</sub>, and K<sub>MAC</sub>, decrypts the information and stores:
 
 - A<sub>pub</sub>
 - R and I
