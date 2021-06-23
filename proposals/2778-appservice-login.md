@@ -2,7 +2,7 @@
 
 Appservices within Matrix are increasingly attempting to support End-to-End Encryption. As such, they
 need a way to generate devices for their users so that they can participate in E2E rooms. In order to
-do so, this proposal suggests implementing an appservice extension to the 
+do so, this proposal suggests implementing an appservice extension to the
 [`POST /login` endpoint](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-login).
 
 Appservice users do not usually need to log in as they do not need their own access token, and do not
@@ -47,7 +47,7 @@ If one of the following conditions are true:
 - The access token does not correspond to an appservice
 - Or the user has not previously been registered
 
-Then the servers MUST reject with HTTP 403, with an `errcode` of `"M_FORBIDDEN"`. 
+Then the servers MUST reject with HTTP 403, with an `errcode` of `"M_FORBIDDEN"`.
 
 If the access token DOES correspond to an appservice but the user is not inside its namespace,
 then the `errcode` must be `"M_EXCLUSIVE"`.
@@ -95,16 +95,8 @@ could store this information rather than calling `POST /login` at all. This does
 - If user tokens were lost or exposed, there is no way to programattically create new access tokens for these users.
 - Finally, if a user was registered externally and the appservice would like to masquerade as it, it would be unable to fetch
   an access token for that user.
-  
-While `POST /register` does work, it is impactical as the sole method of fetching an access token.
-  
 
-Most appservices
-which do not implement encryption do not store this information as neither the device_id or access_token are needed f However critically
-this means that bridges will need to be designed to store the access_token and device_id from the point of creating the user,
-so older bridges would be unable to get an access token for existing users as `POST /register` would fail.
-It would difficult to log out these tokens if they got exposed additionally, as the AS would not be able to fetch a new access token.
-Furthermore, the ability to generate access tokens for real users who registered elsewhere would not be possible with this mechanism. 
+While `POST /register` does work, it is impactical as the sole method of fetching an access token.
 
 ## Security considerations
 
@@ -116,7 +108,7 @@ this is not a problem because:
   to assume that the server admin is aware. There is no defense mechanism to stop a malicious server admin from creating new
   devices for a given user's account as they could also do so by simply modifying the database.
 
-- While an appservice *could* try to masquerade as a user maliciously without the server admin expecting it, it would still 
+- While an appservice *could* try to masquerade as a user maliciously without the server admin expecting it, it would still
   be bound by the restrictions of the namespace. Server admins are expected to be aware of the implications of adding new
   appservices to their server so the burden of responsibility lies with the server admin.
 
@@ -125,7 +117,7 @@ this is not a problem because:
   does make them unable to see encrypted messages, this is not designed to be a security mechanism.
 
 In conclusion this MSC only automates the creation of new devices for users inside an AS namespace, which is something
-a server admin could already do. Appservices should always be treated with care and so with these facts in mind the MSC should 
+a server admin could already do. Appservices should always be treated with care and so with these facts in mind the MSC should
 be considered secure.
 
 ## Unstable prefix
