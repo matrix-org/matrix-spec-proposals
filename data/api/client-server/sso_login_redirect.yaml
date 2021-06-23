@@ -56,7 +56,7 @@ paths:
 
         The server MUST respond with an HTTP redirect to the SSO interface
         for that IdP.
-      operationId: redirectToSSO
+      operationId: redirectToIdP
       parameters:
         - in: path
           type: string
