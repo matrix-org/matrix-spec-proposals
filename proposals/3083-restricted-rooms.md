@@ -68,11 +68,10 @@ caveat that servers must ensure that:
 * The `m.room.member` event has a valid signature from a homeserver whose users
   have the power to issue invites.
 
-The above check must also be performed against the current room state to potentially
-soft-fail the event. This is the primary mechanism for guarding against state
-changes when old events are referenced. (E.g. if the power levels change, a
-server should not be able to issue new membership events by referencing an old
-event in the room.)
+As normal, the above check is also performed against the current room state during
+[soft-failure](https://matrix.org/docs/spec/server_server/r0.1.4#soft-failure),
+to guard against servers issuing new membership events by referencing old
+events in the room.
 
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
