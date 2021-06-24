@@ -81,7 +81,7 @@ enforced over federation by event authorisation).<sup id="a3">[3](#f3)</sup>
 ## Summary of the behaviour of join rules
 
 See the [join rules](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-join-rules)
-specification for full details, the summary below is meant to highlight the differences
+specification for full details; the summary below is meant to highlight the differences
 between `public`, `invite`, and `restricted`.
 
 * `public`: anyone can join, subject to `ban` and `server_acls`, as today.
@@ -100,7 +100,7 @@ Increased trust to enforce the join rules during calls to `/join`, `/make_join`,
 and `/send_join` is placed in the homeservers whose users can issue invites.
 Although it is possible for those homeservers to issue a join event in bad faith,
 there is no real-world benefit to doing this as those homeservers could easily
-side-side the restriction by issuing an invite first anyway.
+side-step the restriction by issuing an invite first anyway.
 
 ## Unstable prefix
 
