@@ -65,8 +65,8 @@ the `restricted` join rule has the same behavior as `public`, with the additiona
 caveat that servers must ensure that:
 
 * The user's previous membership was `invite` or `join`, or
-* The `m.room.member` event has a valid signature from a homeserver whose users
-  have the power to issue invites.
+* The `m.room.member` event with a `membership` of `join` has a valid signature
+  from a homeserver whose users have the power to issue invites.
 
 As normal, the above check is also performed against the current room state during
 [soft-failure](https://matrix.org/docs/spec/server_server/r0.1.4#soft-failure),
