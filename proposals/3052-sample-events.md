@@ -61,10 +61,19 @@ and the metadata possibly having different latency.
 
 * Have sample events with `m.samples` as a subtype of `m.room.message` rather than an event type
 of its own right (After all, sample events will just be message events with special client handling).
+This would be essentially equivalent, minus the ability to moderate sample events.
+
+* Have sample events as a type of [MSC1767 extensible events](https://github.com/matrix.org/matrix-doc/pull/1767).
+Same issue as sample events as message subtypes.
 
 ## Security considerations
 
 Ability to hijack sample streams to livelock by deliberately mis-timing sample events.
+
+## Future ideas
+
+* Special moderation semantics for sample events
+* Minimum interoperability requirements for sample events that are desired to work in all clients
 
 ## Unstable prefix
 
