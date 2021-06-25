@@ -59,7 +59,8 @@ Example response:
             "num_joined_members": 37,
             "topic": "Tasty tasty cheese",
             "world_readable": true,
-            "room_type": "m.space"
+            "room_type": "m.space",
+            "allowed_spaces": ["!abcdef:bleecker.street"]
         },
         { ... }
     ],
@@ -98,8 +99,10 @@ Response fields:
   `/publicRooms` (see
   [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
   with the addition of:
-  * **`room_type`**: the value of the `m.type` field from the
-    room's `m.room.create` event, if any.
+  * **`room_type`**: the value of the `m.type` field from the room's
+    `m.room.create` event, if any.
+  * **`allowed_room_ids`**: A list of room IDs which give access to this room per
+    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).
 * **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
   `sender`, <sup id="a1">[1](#f1)</sup> with the addition of:
@@ -125,7 +128,8 @@ A rough algorithm follows:
 2. Generate a summary and add it to `rooms`.
 3. Add any `m.space.child` events in the room to `events`.
 4. Recurse into the targets of the `m.space.child` events.
-   1. If the room is inaccessible (as defined by [room history visibility](https://matrix.org/docs/spec/client_server/latest#id87))
+   1. If the user is not joined to the room and is not joinable (as defined by
+      [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173))
       or has already been processed, do not process it.
    2. Generate a summary for the room and add it to `rooms`.
    3. Add any `m.space.child` events of the room to `events`.
@@ -194,8 +198,45 @@ This is largely the same as the Client-Server API, but differences are:
   key).
   * If the target server is not a member of the root room, an empty
     response is returned.
-* Currently, no consideration is given to room membership: the spaces/rooms
-  must be world-readable (ie, peekable) for them to appear in the results.
+* The spaces/rooms must be joinable by the server for them to appear in the
+  results.
+
+Since the server-server API does not know the user who is requesting a summary of
+the space, the response should divulge the above information if any member of a
+requesting server could see it. The requesting server is trusted to properly
+filter this information.
+
+If a room delegates access to a space (via [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083))
+and there are any users on the requesting server in the correct space, the requesting
+server has a right to know about the rooms in that space and should return the
+relevant summaries, along with enough information that the requesting server can
+then do the necessary filtering.
+
+Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
+is not. The remote server will not know whether the request is on behalf of Alice
+or Bob (and hence whether it should share details of restricted rooms within that
+space).
+
+Consider the above with a restricted room on a different server which defers
+access to the above space. When summarizing the space, the homeserver must make
+a request over federation for information on the room. The response would include
+the room (since Alice is able to join it), but the calling server does not know
+*why* they received the room, without additional information the server cannot
+properly filter the returned results.
+
+Note that there are still potential situations where each server individually
+doesn't have enough information to properly return the full summary, but these
+do not seem reasonable in what is considered a normal structure of spaces. (E.g.
+in the above example, if the remote server is not in the space and does not know
+whether the server is in the space or not it cannot return the room.)
+
+(The alternative, where the calling server sends the requesting `user_id`, and
+the target server does the filtering, is unattractive because it rules out a
+future world where the calling server can cache the result.)
+
+This does not decrease security since a server could lie and make a request on
+behalf of a user in the proper space to see the given information. I.e. the
+calling server must be trusted anyway.
 
 ## Potential issues
 
