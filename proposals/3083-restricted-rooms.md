@@ -81,13 +81,13 @@ enforced over federation by event authorisation).<sup id="a3">[3](#f3)</sup>
 
 See the [join rules](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-join-rules)
 specification for full details; the summary below is meant to highlight the differences
-between `public`, `invite`, and `restricted`.
+between `public`, `invite`, and `restricted`. Note that all join rules are subject
+to `ban` and `server_acls`.
 
-* `public`: anyone can join, subject to `ban` and `server_acls`, as today.
-* `invite`: only people with membership `invite` can join, subject to `ban` and
-  `server_acls`, as today.
-* `knock`: the same as `invite`, except anyone can knock, subject to `ban` and
-  `server_acls`. See [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
+* `public`: anyone can join, as today.
+* `invite`: only people with membership `invite` can join, as today.
+* `knock`: the same as `invite`, except anyone can knock. See
+  [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
 * `private`: This is reserved, but unspecified.
 * `restricted`: the same as `public`, with the additional caveat that servers must
   verify the `m.room.member` event is signed by a homeserver whose users may issue
