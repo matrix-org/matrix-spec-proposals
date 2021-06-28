@@ -69,7 +69,18 @@ caveat that servers must ensure that:
 
 * The user's previous membership was `invite` or `join`, or
 * The `m.room.member` event with a `membership` of `join` has a valid signature
-  from a homeserver whose users have the power to issue invites.
+  from a homeserver whose users have the power to issue invites. This implies
+  that:
+
+    * A join event issued via `/make_join` & `/send_join` is signed by the not
+      just the requesting server, but also the resident server. (This seems like
+      an improvement regardless since the resident server is accepting the event
+      on behalf of the joining server and ideally this should be verifiable after
+      the fact, even for current room versions.)
+    * The auth chain of the join event needs to include an event which proves
+      the homeserver can be issuing the join. This can be done by including the
+      `m.room.power_levels` event and an `m.room.member` event with `membership`
+      equal to `join` for a member who could issue invites from that server.
 
 As normal, the above check is also performed against the current room state during
 [soft-failure](https://matrix.org/docs/spec/server_server/r0.1.4#soft-failure),
