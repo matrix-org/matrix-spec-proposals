@@ -106,7 +106,7 @@ side-step the restriction by issuing an invite first anyway.
 The `restricted` join rule will be included in a future room version to allow
 servers and clients to opt-into the new functionality.
 
-During development, an unstable room version of `org.matrix.msc3083` will be used.
+During development, an unstable room version of `org.matrix.msc3083.v2` will be used.
 Since the room version namespaces the behaviour, the `allow` key and value, as well
 as the `restricted` join rule value do not need unstable prefixes.
 
