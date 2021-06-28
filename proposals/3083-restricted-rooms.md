@@ -55,10 +55,13 @@ not a member of at least one of the rooms, the homeserver should return an error
 response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
 It is possible for a homeserver receiving a `/make_join` / `/send_join` request
-to not know if the user is in any of the allowed room (due to not participating
-in them). In this case the homeserver should reject the join, the requesting
-server may wish to attempt to join via another homeserver. If no servers are in
-an allowed room its membership cannot be checked (and this is a misconfiguration).
+to not know if the user is in some of the allowed room (due to not participating
+in them). Any allow room that the homeserver cannot verify the membership should
+be treated as if the user is not in that room. If the user is not in any of the
+rooms (or some of the rooms cannot be verified) the homeserver should reject the
+join, as above. The requesting server may wish to attempt to join via another
+homeserver. If no servers are in any of the allowed rooms its membership cannot
+be verified (and this is a misconfiguration).
 
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
