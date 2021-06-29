@@ -84,8 +84,8 @@ This object provides the list of room versions supporting this capability as wel
 
 
 As part of this MSC, two capabilities are defined:
-- `knock` for knocking join rule support (msc2403)[https://github.com/matrix-org/matrix-doc/pull/2403]
-- `restricted` for restricted join rule support (msc3083)[https://github.com/matrix-org/matrix-doc/pull/3083]
+- `knock` for knocking join rule support [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403)
+- `restricted` for restricted join rule support [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083)
 
 ## Client recommendations:
 
@@ -135,4 +135,3 @@ The following mapping will be used for identifiers in this MSC during developmen
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
 `room_capabilities` | event type | `org.matrix.msc3244.room_capabilities`
-
