@@ -45,10 +45,14 @@ MUST NOT rescale or resample any of the sample events to compensate for latency.
 a combination of sample events of same type from different senders with different sample rates
 is ill-formed, while combination of multiple sample events of different type with different
 sample rates is implementation defined. Exact alignment algorithm is implementation defined
-except for the constraints described above.
+except for the constraints described above. The clients shall also forbid synchronic scaling
+of sample streams when multiple streams are multiplexed together (e.g., it is forbidden to
+allow users to volume down a particular stream and keep other streams at full volume).
 
 Abovementioned behaviour is designed to allow sample events to be used in any use case where
-both high fidelity playback and reproducible persistence are required.
+both high fidelity playback and reproducible persistence are required. Example use cases
+include court-admissible recordings over distributed networks, internet of things with history-
+admissible trail, interplanetary teleconferencing.
 
 ## Potential issues
 
