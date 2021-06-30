@@ -34,9 +34,8 @@ where the subject is the relation event itself; the verb is the `rel_type`
 field of the `m.relates_to` and the object is the `event_id` field.
 
 We consciously do not support multiple different relations within a single event,
-in order to keep the API simple, and in the absence of identifiable use cases.
-Instead, one would send multiple events, each with its own `m.relates_to`
-defined.
+in order to keep the API simple. A future MSC can propose a change to add support
+for multiple relations if it turns out that this would facilitate certain use cases.
 
 A `rel_type` of `m.reference` is defined for future handling replies and
 threading. This let you define an event which references an existing
