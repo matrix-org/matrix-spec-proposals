@@ -20,6 +20,8 @@ JSON part is formatted as follows:
         "sample.width" : undefined,
         "sample.depth" : undefined,
         "sample.encoding" : "encoding",
+        "sample.diachronic": true,
+        "sample.synchronic": true,
         "samples" : "whatever_samples"
     }
 }
@@ -38,18 +40,24 @@ a binary encoding that will allow the samples placed raw in the event body.
 
 ### Playback behaviour and restrictions
 
-When clients encounter multiple sample events from others, they shall align all the samples
-by timestamp and add the required amount of additional latency required to keep the latency
-invariant true. The latency build-up and drop should be as gradual as possible. Clients
-MUST NOT rescale or resample any of the sample events to compensate for latency. Playing
-a combination of sample events of same type from different senders with different sample rates
-is ill-formed, while combination of multiple sample events of different type with different
-sample rates is implementation defined. Exact alignment algorithm is implementation defined
-except for the constraints described above. The clients shall also forbid synchronic scaling
+There are two parametres (`sample.diachronic` and `sample.synchronic`) that control playback
+behaviour, named after the aspects they control (diachronic coupling, and synchronic coupling
+of playback across multiple sample events):
+
+`sample.diachronic`: Unless false, the clients encounter multiple sample events from others,
+they shall align all the samples by timestamp and add the required amount of additional latency
+required to keep the latency invariant true. The latency build-up and drop should be as gradual
+as possible. Clients MUST NOT rescale or resample any of the sample events to compensate
+for latency. Playing a combination of sample events of same type from different senders
+with different sample rates is ill-formed, while combination of multiple sample events
+of different type with different sample rates is implementation defined. Exact alignment algorithm
+is implementation defined except for the constraints described above.
+
+`sample.synchronic` : Unless false, the clients shall forbid synchronic scaling
 of sample streams when multiple streams are multiplexed together (e.g., it is forbidden to
 allow users to volume down a particular stream and keep other streams at full volume).
 
-Abovementioned behaviour is designed to allow sample events to be used in any use case where
+The default behaviour is designed to allow sample events to be used in any use case where
 both high fidelity playback and reproducible persistence are required. Example use cases
 include court-admissible recordings over distributed networks, internet of things with history-
 admissible trail, interplanetary teleconferencing.
