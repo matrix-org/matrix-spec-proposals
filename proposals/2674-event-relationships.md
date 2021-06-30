@@ -74,6 +74,15 @@ The server should postprocess relations if needed before sending them into a
 room, as defined by the relationship type. For example, a relationship type
 might only allow a user to send one related message to a given event.
 
+#### End to end encryption
+
+Since the server has to be able to bundle related events, structural
+information about relations must be visible to the server, and so the
+`m.relates_to` field must be included in the plaintext.
+
+A future MSC may define a method for encrypting certain parts of the
+`m.relates_to` field that may contain sensitive information.
+
 ### Receiving relations
 
 Relations are received during non-gappy incremental syncs (that is, syncs
@@ -83,15 +92,6 @@ response for the given room) as normal discrete Matrix events.
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines ways in
 which the server may aid clients in processing relations by aggregating the
 events.
-
-### End to end encryption
-
-Since the server has to be able to bundle related events, structural
-information about relations must be visible to the server, and so the
-`m.relates_to` field must be included in the plaintext.
-
-A future MSC may define a method for encrypting certain parts of the
-`m.relates_to` field that may contain sensitive information.
 
 ### Redactions
 
