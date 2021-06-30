@@ -10,9 +10,10 @@ Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
 
 ### Registration flow
 
-To allow clients to discover 
+To allow clients to discover the supported groups (and whether srp6a is supported) the client sends a GET request to /_matrix/client/r0/register
 
-`GET /_matrix/client/r0/register`  
+`GET /_matrix/client/r0/register`
+
 ```
 {
 	"auth_types": ["password", "srp6a"]
@@ -32,7 +33,8 @@ Note that all values are calculated modulo N.
 
 This is then sent to the server, otherwise mimicking the password registration, through:
 
-`POST /_matrix/client/r0/register?kind=user`  
+`POST /_matrix/client/r0/register?kind=user`
+
 ```
 {
   "auth": {
@@ -55,20 +57,43 @@ The server stores the verifier, salt, and group next to the username.
 
 ### Convert from password to SRP
 
-*I haven't thought this through, ideas are welcome. It should probably be something along the lines of a password change and otherwise more or less follow the registration as specced above.*
+Mimicking the flow of register above, first a GET request is sent to check if SRP is supported and find the supported groups, here we'll reuse the register endpoint `GET /_matrix/client/r0/register`. *Or we could add a GET endpoint for /_matrix/client/r0/account/password*
+
+To convert to SRP we'll use the change password endpoint with the `"auth_type": "srp6a"` added, and the required `verifier`, `group`, and `salt`.
+
+`POST /_matrix/client/r0/account/password HTTP/1.1`
+
+```
+{
+  "auth_type": "srp6a",
+  "verifier": v,
+  "group": [g,N],
+  "salt": s,
+  "logout_devices": false,
+  "auth": {
+    "type": "example.type.foo",
+    "session": "xxxxx",
+    "example_credential": "verypoorsharedsecret"
+  }
+}
+```
+
+The server then removes the old password (or old verifier, group, and salt) and stores the new values.
 
 ### Login flow
 
 To start the login flow the client sends it's username to obtain the salt and SRP group as:
 
-`POST /_matrix/client/r0/login`  
+`POST /_matrix/client/r0/login`
+
 ```
 {
   "type": "m.login.srp6a.init",
   "username": "cheeky_monkey"
 }
 ```
-The server responds with the salt and SRP group:
+The server responds with the salt and SRP group (looked up from the database), and public value `B`:
+
 ```
 {
   "prime": N,
@@ -78,11 +103,12 @@ The server responds with the salt and SRP group:
   "auth_id": "12345"
 }
 ```
-Here N is the prime and g is the generator of the SRP group. s is the stored salt for the user as supplied in the `POST`, B is the public server value, and auth_id is the id of this authentication flow, can by any unique random string.
+Here N is the prime and g is the generator of the SRP group. s is the stored salt for the user as supplied in the `POST`, B is the public server value, and auth_id is the id of this authentication flow, can by any unique random string, used for the server to keep track of the authentication flow.
 
 the server calculates B as:
 
 	B = kv + g^b 
+
 where b is a private randomly generated value for this session (server side) and k is given as:
 
 	k = H(N, g) 
@@ -111,13 +137,15 @@ Resulting in the shared session key K.
 
 To complete the authentication we need to prove to the server that the session key K is the same.
 *note that this proof is directly lifted from the [SRP spec](http://srp.stanford.edu/design.html), another proof can be possible as well.*
+
 The client calculates:
 
 	M1 = H(H(N) xor H(g), H(I), s, A, B, K)
 
-The client will then respond with
+The client will then respond with:
 
-`POST /_matrix/client/r0/login`  
+`POST /_matrix/client/r0/login`
+
 ```
 {
   "type": "m.login.srp6a.verify",
