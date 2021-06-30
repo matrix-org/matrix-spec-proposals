@@ -74,24 +74,6 @@ The server should postprocess relations if needed before sending them into a
 room, as defined by the relationship type. For example, a relationship type
 might only allow a user to send one related message to a given event.
 
-Similar to membership events, a convenience API is also provided to highlight
-that the server may post-process the event, and whose URL structures the
-semantics of the relation being sent more clearly:
-
-```
-PUT /_matrix/client/r0/rooms/{roomId}/send_relation/{parent_id}/{relation_type}/{event_type}/{txn_id}[?key={relation_key}]
-{
-    // event contents
-}
-```
-
-The `parent_id` is the ID of the event being referenced. In other words, it is
-the `event_id` field that will be in the `m.relates_to` object.
-
-The `relation_key` is for relationships that have a `key` property.
-
-The endpoint does not have any trailing slashes.
-
 ### Receiving relations
 
 Relations are received during non-gappy incremental syncs (that is, syncs
