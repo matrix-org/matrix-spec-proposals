@@ -23,11 +23,13 @@ events to relate to each other.  Together, these proposals replace
 This proposal introduces the concept of relations, which can be used to
 associate new information with an existing event.
 
-Relations are any event which have an `m.relates_to` field in their
-contents. The `m.relates_to` field must include a `rel_type` field that
-gives the type of relationship being defined, and an `event_id` field that
-gives the event which is the target of the relation. All the information about
-the relationship lives under the `m.relates_to` key.
+Events are said to contain a relationship when their `content` object contains
+a `m.relates_to` object which has both a `rel_type` string field that gives the type
+of relationship being defined, and an `event_id` string field that gives the event
+which is the target of the relation. If any of these conditions is not met,
+clients and servers should treat the event as if it does not contain a relationship.
+
+All the information about the relationship lives under the `m.relates_to` key.
 
 If it helps, you can think of relations as a "subject verb object" triple,
 where the subject is the relation event itself; the verb is the `rel_type`
@@ -79,14 +81,6 @@ However, event relationships can still be used in existing room versions, but
 the user experince may worse if redactions are performed.
 
 ## Edge Cases
-
-Can you reply (via m.references) to a [reaction](https://github.com/matrix-org/matrix-doc/pull/2677)/[edit](https://github.com/matrix-org/matrix-doc/pull/2677)?
- * Yes, at the protocol level.  But you shouldn't expect clients to do anything
-   useful with it.
- * Replying to a reaction should be treated like a normal message and have the
-   reply behaviour ignored.
- * Replying to an edit should be treated in the UI as if you had replied to
-   the original message.
 
 What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
