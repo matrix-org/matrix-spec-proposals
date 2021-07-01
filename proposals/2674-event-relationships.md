@@ -39,28 +39,6 @@ like [MSC 3051](https://github.com/matrix-org/matrix-doc/pull/3051),
 can propose a change to add support for multiple relations if it turns out that
 this would facilitate certain use cases.
 
-A `rel_type` of `m.reference` is defined for future handling replies and
-threading. This let you define an event which references an existing
-event. When aggregated, this currently doesn't do anything special, but in
-future could bundle chains of references (i.e. threads). These do not yet
-replace the [reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/latest#rich-replies).
-
-For instance, an `m.room.message` which references an existing event
-would look like:
-
-```json
-{
-    "type": "m.room.message",
-    "content": {
-        "body": "i <3 shelties",
-        "m.relates_to": {
-            "rel_type": "m.reference",
-            "event_id": "$another_event_id"
-        }
-    }
-}
-```
-
 Different subtypes of references could be defined through additional fields on
 the `m.relates_to` object, to distinguish between replies, threads, etc.
 This MSC doesn't attempt to define these subtypes.
@@ -74,15 +52,6 @@ The server should postprocess relations if needed before sending them into a
 room, as defined by the relationship type. For example, a relationship type
 might only allow a user to send one related message to a given event.
 
-#### End to end encryption
-
-Since the server has to be able to bundle related events, structural
-information about relations must be visible to the server, and so the
-`m.relates_to` field must be included in the plaintext.
-
-A future MSC may define a method for encrypting certain parts of the
-`m.relates_to` field that may contain sensitive information.
-
 ### Receiving relations
 
 Relations are received during non-gappy incremental syncs (that is, syncs
@@ -95,8 +64,7 @@ events.
 
 ### Redactions
 
-Relations may be redacted like any other event. In the case of `m.reference` it
-removes the referencing event.
+Relations may be redacted like any other event.
 
 The `m.relates_to`.`rel_type` and `m.relates_to`.`event_id` fields should
 be preserved over redactions, so that clients can distinguish redacted edits
