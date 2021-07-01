@@ -74,8 +74,6 @@ One example is telling redacted edits (as proposed in
 [MSC 2676](https://github.com/matrix-org/matrix-doc/pull/2676)) apart from
 from normal redacted messages, and maintain reply ordering.
 
-  FIXME: synapse doesn't do this yet
-
 This modification to the redaction algorithm requires a new room version.
 However, event relationships can still be used in existing room versions, but
 the user experince may worse if redactions are performed.
