@@ -282,6 +282,16 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 }
 ```
 
+
+### End to end encryption
+
+Since the server has to be able to bundle related events, structural
+information about relations must be visible to the server, and so the
+`m.relates_to` field must be included in the plaintext.
+
+A future MSC may define a method for encrypting certain parts of the
+`m.relates_to` field that may contain sensitive information.
+
 ### Redactions
 
 Trying to call `/relations` or `/aggregations` on a redacted message must return
