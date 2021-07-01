@@ -206,6 +206,24 @@ restricting access via:
 These are just examples are not fully thought through for this MSC, but it should
 be possible to add these behaviors in the future.
 
+### Interaction with `m.space.child` events
+
+[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) defines a `via`
+key in the content of `m.space.child` events:
+
+> the content must contain a via `key` which gives a list of candidate servers
+> that can be used to join the room.
+
+It is possible for the candidate servers and the list of authorised servers to
+not be in sync. In the case where there's no overlap between these lists, it may
+not be possible for a server to complete the request.
+
+If there is some overlap between the lists of servers the join request should
+complete successfully.
+
+A future MSC may define a way to override or update the `via` key in a coherent
+manner.
+
 ## Footnotes
 
 <a id="f1"/>[1]: The converse restriction, "anybody can join, provided they are not members
