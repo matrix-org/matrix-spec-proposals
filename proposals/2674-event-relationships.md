@@ -26,7 +26,7 @@ associate new information with an existing event.
 Relations are any event which have an `m.relates_to` field in their
 contents. The `m.relates_to` field must include a `rel_type` field that
 gives the type of relationship being defined, and an `event_id` field that
-gives the event which is the target of the relation.  All the information about
+gives the event which is the target of the relation. All the information about
 the relationship lives under the `m.relates_to` key.
 
 If it helps, you can think of relations as a "subject verb object" triple,
