@@ -162,6 +162,19 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
    * We'd need to worry about pagination.
    * This is probably the best solution, but can also be added as a v2.
 
+## Limitations
+
+Based solely on this MSC, relations are only received as discrete events in
+the timeline, so clients may only have an incomplete image of all the relations
+with an event if they do not fill gaps in the timeline.
+
+In practice, this has proven not to be too big of a problem, as reactions
+(as proposed in [MSC 2677](https://github.com/matrix-org/matrix-doc/pull/2677))
+tend to be posted close after the target event in the timeline.
+
+A more complete solution to this has been deferred to
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). 
+
 ## Tradeoffs
 
 ### Event shape
