@@ -145,7 +145,8 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
          wrong.
    * We'd need to worry about pagination.
    * This is probably the best solution, but can also be added as a v2.
-
+ * In practice this seems to not be an issue, which is worth complicating the s-s API over. Clients very rarely jump over the federation gap to an edit. In most cases they scroll up, which backfills the server and we have all the edits, when we reach the event before the gap.
+ 
 ## Limitations
 
 Based solely on this MSC, relations are only received as discrete events in
