@@ -48,6 +48,23 @@ Different subtypes of references could be defined through additional fields on
 the `m.relates_to` object, to distinguish between replies, threads, etc.
 This MSC doesn't attempt to define these subtypes.
 
+### Relation types
+
+This MSC does not define any value for `rel_type`, but rather defines the generic
+framework that different kinds of relations have in common and that other MSCs can
+build on. Future definitions for values of `rel_type` should describe *how* the server
+should aggregate relations on the target event
+(as proposed in [MSC 2675](https://github.com/matrix-org/matrix-doc/pull/2675)).
+The goals is to make each rel_type as broadly useful as possible,
+and to keep the amount of types for a server implementation to support down to a minimum.
+
+Multiple client use cases may be served by a single `rel_type` if they require aggregation
+in a similar manner. To further specify how a relation should be displayed in the client,
+MSCs may define additional fields in `m.relates_to` for specific values of `rel_type`.
+
+Any values here should abide the
+[general guidelines for identifiers](https://github.com/matrix-org/matrix-doc/pull/3171).
+
 ### Sending relations
 
 Related events are normal Matrix events, and can be sent by the normal /send
