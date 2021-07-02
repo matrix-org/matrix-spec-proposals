@@ -23,10 +23,10 @@ events to relate to each other.  Together, these proposals replace
 This proposal introduces the concept of relations, which can be used to
 associate new information with an existing event.
 
-Events are said to contain a relationship when their `content` object contains
-a `m.relates_to` object which has both a `rel_type` string field that gives the type
-of relationship being defined, and an `event_id` string field that gives the event
-which is the target of the relation. If any of these conditions is not met,
+A relationship is an object with a field `rel_type`, which is a string describing the type of relation,
+and a field `event_id`, which is a string that represents the event_id of the target of this relation.
+Both of those fields are required. An event is said to contain a relationship if their `content` contains
+a relationship with all the required fields under the `m.relates_to` key. If any of these conditions is not met,
 clients and servers should treat the event as if it does not contain a relationship.
 
 All the information about the relationship lives under the `m.relates_to` key.
