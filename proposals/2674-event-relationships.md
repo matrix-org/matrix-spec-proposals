@@ -76,9 +76,9 @@ might only allow a user to send one related message to a given event.
 
 ### Receiving relations
 
-Relations are received during non-gappy incremental syncs (that is, syncs
-called with a `since` token, and that have `limited: false` in the portion of
-response for the given room) as normal discrete Matrix events.
+Relations are received like other non-state events, with `/sync`,
+`/messages` and `/context`, as normal discrete Matrix events. As explained
+in the limitations, clients may be unaware of some relations using just these endpoints.
 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines ways in
 which the server may aid clients in processing relations by aggregating the
@@ -150,7 +150,8 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
 
 Based solely on this MSC, relations are only received as discrete events in
 the timeline, so clients may only have an incomplete image of all the relations
-with an event if they do not fill gaps in the timeline.
+with an event if they do not fill gaps (syncs with a since token that have 
+`limited: true` set in the sync response for a room) in the timeline.
 
 In practice, this has proven not to be too big of a problem, as reactions
 (as proposed in [MSC 2677](https://github.com/matrix-org/matrix-doc/pull/2677))
