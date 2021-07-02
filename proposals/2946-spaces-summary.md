@@ -59,6 +59,7 @@ Example response:
             "num_joined_members": 37,
             "topic": "Tasty tasty cheese",
             "world_readable": true,
+            "join_rules": "public",
             "room_type": "m.space",
             "allowed_spaces": ["!abcdef:bleecker.street"]
         },
@@ -101,8 +102,6 @@ Response fields:
   with the addition of:
   * **`room_type`**: the value of the `m.type` field from the room's
     `m.room.create` event, if any.
-  * **`allowed_room_ids`**: A list of room IDs which give access to this room per
-    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).
 * **`events`**: `m.space.child` events of the returned rooms. For each event, only the
   following fields are returned: `type`, `state_key`, `content`, `room_id`,
   `sender`, <sup id="a1">[1](#f1)</sup> with the addition of:
@@ -184,6 +183,12 @@ Request parameters are the same as the Client-Server API, with the addition of:
 
 * **`exclude_rooms`**: Optional. A list of room IDs that can be omitted
   from the response.
+
+Response fields are the same as the Client-Server API, with the addition of:
+
+* **`rooms`**: Each room contains an additional field:
+  * **`allowed_room_ids`**: A list of room IDs which give access to this room per
+    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).
 
 This is largely the same as the Client-Server API, but differences are:
 
