@@ -86,7 +86,7 @@ The pack object consists of the following keys:
    image pack event is not in a room, this pack does not have an avatar.
  - `usage`: (String[], optional) An array of the usages for this pack. Possible usages are `emoticon`
    and `sticker`. If the usage is absent or empty, a usage for all possible usage types is to be assumed.
- - `license`: (String, optional) The license of this pack.
+ - `attribution`: (String, optional) The attribution of this pack.
 
 #### Image object
 The image object conists of the following keys:
