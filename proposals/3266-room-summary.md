@@ -110,10 +110,14 @@ access to the summary.
 A request would be made as follows:
 
 ```
-GET /_matrix/federation/v1/summary/{roomidOrAlias}
+GET /_matrix/federation/v1/summary/{roomid}
 ```
 
 The requesting server should cache the response to this request.
+
+Note that the federation API only allows roomids and should use the usual
+protocols to resolve the alias first, since it makes no sense to let anything
+but the authoritive server for that alias resolve it.
 
 ## Potential issues
 
@@ -158,4 +162,4 @@ the request paths during the MSC phase. As a result:
 - the client API will be
     `/_matrix/client/unstable/rooms/{roomidOrAlias}/im.nheko.summary`
 - the federation API will be
-    `/_matrix/federation/unstable/im.nheko.summary/{roomidOrAlias}`
+    `/_matrix/federation/unstable/im.nheko.summary/{roomid}`
