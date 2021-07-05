@@ -1,4 +1,4 @@
-# MSCXXXX: reference relationships
+# MSC 3267: reference relationships
 
 ## Proposal
 
