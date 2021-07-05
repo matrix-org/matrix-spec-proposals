@@ -17,6 +17,8 @@ events to relate to each other.  Together, these proposals replace
 * [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) defines how
   users can annotate events, such as reacting to events with emoji, using this
   mechanism.
+* [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267) defines events
+  can make a reference to other events.
 
 ## Proposal
 
