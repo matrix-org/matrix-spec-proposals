@@ -96,19 +96,6 @@ This modification to the redaction algorithm requires a new room version.
 However, event relationships can still be used in existing room versions, but
 the user experince may worse if redactions are performed.
 
-## Edge Cases
-
-What does it mean to call /context on a relation?
- * We should probably just return the root event for now, and then refine it in
-   future for threading?
- * XXX: what does synapse do here?
-
-Do we need to support retrospective references?
- * For something like "m.duplicate" to retrospectively declare that one event
-   dupes another, we might need to bundle two-levels deep (subject+ref and then
-   ref+target).  We can cross this bridge when we get there though, as a 4th
-   aggregation type
-
 ## Potential issues
 
 ### Federation considerations
