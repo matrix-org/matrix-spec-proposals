@@ -347,3 +347,8 @@ How do you handle ignored users?
    the client, either in bundled or unbundled form.  This is to let you block
    someone from harassing you with emoji reactions (or using edits as a
    side-channel to harass you).
+
+What does it mean to call /context on a relation?
+ * We should probably just return the root event for now, and then refine it in
+   future for threading?
+ * XXX: what does synapse do here?
