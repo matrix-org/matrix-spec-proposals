@@ -171,6 +171,7 @@ versus
 ```
 
 The reasons to go with `rel_type` is:
+ * this format is now in use in the wider matrix ecosystem without a prefix, in spite of the original MSC 1849 not being merged. This situation is not ideal but we still don't want to break compatibility with several clients.
  * we don't need the extra indirection to let multiple relations apply to a given pair of
    events, as that should be expressed as separate relation events.
  * if we want 'adverbs' to apply to 'verbs' in the subject-verb-object triples which
