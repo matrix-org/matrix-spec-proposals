@@ -35,9 +35,6 @@ If it helps, you can think of relations as a "subject verb object" triple,
 where the subject is the relation event itself; the verb is the `rel_type`
 field of the `m.relates_to` and the object is the `event_id` field.
 
-These do not yet replace the 
-[reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/latest#rich-replies).
-
 We consciously do not support multiple different relations within a single event,
 in order to keep the API simple. Another MSC,
 like [MSC 3051](https://github.com/matrix-org/matrix-doc/pull/3051),
@@ -47,6 +44,8 @@ this would facilitate certain use cases.
 Different subtypes of references could be defined through additional fields on
 the `m.relates_to` object, to distinguish between replies, threads, etc.
 This MSC doesn't attempt to define these subtypes.
+Relations do not yet replace the 
+[reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/latest#rich-replies).
 
 ### Relation types
 
