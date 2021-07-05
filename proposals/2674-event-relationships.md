@@ -41,9 +41,6 @@ like [MSC 3051](https://github.com/matrix-org/matrix-doc/pull/3051),
 can propose a change to add support for multiple relations if it turns out that
 this would facilitate certain use cases.
 
-Different subtypes of references could be defined through additional fields on
-the `m.relates_to` object, to distinguish between replies, threads, etc.
-This MSC doesn't attempt to define these subtypes.
 Relations do not yet replace the 
 [reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/latest#rich-replies).
 
