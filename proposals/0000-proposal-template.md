@@ -1,25 +1,12 @@
-# MSC0000: Template for new MSCs
+# MSC0000: An error code for busy servers
 
-*Note: Text written in italics represents notes about the section or proposal process. This document
-serves as an example of what a proposal could look like (in this case, a proposal to have a template)
-and should be used where possible.*
+Sometimes, the server cannot respond because it's too busy.
 
-*In this first section, be sure to cover your problem and a broad overview of the solution. Covering
-related details, such as the expected impact, can also be a good idea. The example in this document
-says that we're missing a template and that things are confusing and goes on to say the solution is
-a template. There's no major expected impact in this proposal, so it doesn't list one. If your proposal
-was more invasive (such as proposing a change to how servers discover each other) then that would be
-a good thing to list here.*
-
-*If you're having troubles coming up with a description, a good question to ask is "how
-does this proposal improve Matrix?" - the answer could reveal a small impact, and that is okay.*
-
-There can never be enough templates in the world, and MSCs shouldn't be any different. The level
-of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
-
+This proposal introduces `M_SERVER_BUSY` for this use case.
 
 ## Proposal
+
+
 
 *Here is where you'll reinforce your position from the introduction in more detail, as well as cover
 the technical points of your proposal. Including rationale for your proposed solution and detailing
