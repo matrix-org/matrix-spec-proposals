@@ -1,4 +1,4 @@
-# MSCXXXX: Symmetric megolm backup
+# MSC3270: Symmetric megolm backup
 The current megolm backup use asymmetric encryption. This was chosen so that
 clients without the private key can still add their own megolm sessions to the
 backup. This, however, allows a homeserver admin to inject their own malicious
@@ -126,4 +126,4 @@ with their secrets, or could select a trusted client to perform the migration.
 
 ## Unstable prefix
 While this feature is in development, implementations should use
-`org.matrix.mscxxxx.v1.aes-hmac-sha2` as the backup version.
+`org.matrix.msc3270.v1.aes-hmac-sha2` as the backup version.
