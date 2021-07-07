@@ -26,7 +26,7 @@ Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
 ### Registration flow
 
 To allow clients to discover the supported groups (and whether srp6a is supported)
-the client sends a GET request to /_matrix/client/r0/register
+the client sends a GET request.
 
 `GET /_matrix/client/r0/register`
 
@@ -47,8 +47,9 @@ The client then calculates the verifier `v` as:
 	x = H(s, p)  
 	v = g^x
 
-Here H() is a secure hash function, and p is the user specified password.  
-Note that all values are calculated modulo N.
+Here H() is a secure hash function, and p is the user specified password, 
+and `g` is the generator of the selected srp group.  
+Note that all values are calculated modulo N (of the selected srp group).
 
 This is then sent to the server, otherwise mimicking the password registration, through:
 
@@ -104,7 +105,20 @@ The server then removes the old password (or old verifier, group, and salt) and 
 
 ### Login flow
 
-To start the login flow the client sends it's username to obtain the salt and SRP group as:
+To start the login flow the client sends a GET request to `/_matrix/client/r0/login`, the server responds with:
+
+```
+{
+  "flows": [
+    {
+      "type": "m.login.srp6a"
+    }
+  ]
+}
+```
+(and any other supported login flows)
+
+Next the client sends it's username to obtain the salt and SRP group as:
 
 `POST /_matrix/client/r0/login`
 
@@ -114,6 +128,18 @@ To start the login flow the client sends it's username to obtain the salt and SR
   "username": "cheeky_monkey"
 }
 ```
+
+If the user hasn't registered with SRP the server responds with:
+
+`Status code: 403`
+
+```
+{
+  "errcode": "M_UNAUTHORIZED",
+  "error": "User has not registered with SRP."
+}
+```
+
 The server responds with the salt and SRP group (looked up from the database), and public value `B`:
 
 ```
@@ -210,6 +236,19 @@ The client verifies that M2 matches, and is subsequently logged in.
 
 Adding this authentication method requires client developers to implement this in all matrix clients.
 
+As long as the plain password login remains available it is not trivial to allow clients to
+assume the server never learns the password, since an evil server can say to a new client that it
+doesn't support SRP and learn the password that way. And with the client not being authenticated
+before login there's no easy way for the client to know whether the user expects SRP to be used.
+The long-term solution to this is to declare the old password authentication as deprecated and
+have all matrix clients refuse to login with `m.password`. This may take a long time; "the best
+moment to plant a tree is 10 years ago, the second best is today."
+The short term solution requires a good UX in clients to notify the user that they expect to
+login with SRP but the server doesn't support this.
+*My initial thought was to look at whether SSSS is set for the user, or even try to decrypt it*
+*with the given password and give a warning if this works, but the server can just lie to the*
+*client about that, leaving the user none the wiser.*
+
 SRP is vulnerable to precomputation attacks and it is incompatible elliptic-curve cryptography.
 Matthew Green judges it as 
 ["It’s not ideal, but it’s real." and "not obviously broken"](https://blog.cryptographyengineering.com/2018/10/19/lets-talk-about-pake/)
@@ -225,12 +264,31 @@ learning the plaintext password, but it isn't a PAKE, but rather something along
 of the password before sending the hash to the server for auth, practically making the hash
 the new password, and as such it doesn't protect against a mitm.*
 
+The UIA-flow can map pretty well on the proposed login flow and would remove the need for `m.login.srp6a.init`.
+This is deemed out of scope for this MSC, but would not be hard to change later.
+
 
 ## Security considerations
 
-*Probably loads, though SRP and OPAQUE have had lots of eyes, I would assume.*
+SRP uses the discreet logarithm problem, deemed unsolved, though Shor's algorithm can become an
+issue when quantum computers get scaled up. Work seems to have been done to create a quantum-safe
+SPR version, see [here](https://eprint.iacr.org/2017/1196.pdf), though I lack the credentials to
+determine whether or not this holds water.
+
 
 This whole scheme only works if the user can trust the client, which may be an issue
 in the case of a 'random' javascript hosted matrix client, though this is out of scope for this MSC.
 
+## Outlook
+This MSC allows for authentication without the server learning the password, and authenticating
+both the server and the client to each other. This may prevent a few security issues, such as
+a CDN learning the users password. The main reason for this MSC is that later this may allow 
+the reuse of the same password for both authentication and SSSS encryption while remaining secure.
+
 ## Unstable prefix
+The following mapping will be used for identifiers in this MSC during development:
+
+
+Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`m.login.srp6a.*` | login type | `com.vgorcum.msc3262.login.srp6a.*`
