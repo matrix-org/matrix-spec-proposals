@@ -80,7 +80,7 @@ Mimicking the flow of register above, first a GET request is sent to check if SR
 supported and find the supported groups, here we'll reuse the register endpoint 
 `GET /_matrix/client/r0/register`. *Or we could add a GET endpoint for /_matrix/client/r0/account/password*
 
-To convert to SRP we'll use the change password endpoint with the 
+To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password) with the 
 `"auth_type": "srp6a"` added, and the required `verifier`, `group`, and `salt`.
 
 `POST /_matrix/client/r0/account/password HTTP/1.1`
