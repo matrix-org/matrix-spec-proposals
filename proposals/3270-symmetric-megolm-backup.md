@@ -42,7 +42,7 @@ As such, a complete `KeyBackupData` object could look as follows:
 ```
 
 ### Encryption
-Encryption works the same as asymmetric SSSS (as such, this section is in parts taken off of the unstable
+Encryption works the same as symmetric SSSS (as such, this section is in parts taken off of the unstable
 spec). The secret name in symmetric SSSS is replaced with the session ID. They are encrypted using
 AES-CTR-256 and authenticated using HMAC-SHA-256. The process works as follows:
 
