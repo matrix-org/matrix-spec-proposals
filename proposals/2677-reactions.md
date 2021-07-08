@@ -30,11 +30,15 @@ field also contains a `key` that indicates the annotation being applied.  For
 example, when reacting with emojis, the `key` contains the emoji being used.
 When aggregated (as in
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), it groups
-events together based on their `key` and `type` and returns a `count`.  Another
+events together based on their `key` and returns a `count`.  Another
 usage of an annotation is e.g. for bots, who could use annotations to report
 the success/failure or progress of a command.
 
-A new message type `m.reaction` is defined to indicate that a user is reacting
+The `type` of the annotating event is not taken into account when aggregating
+as that would prevent accurate server aggregation in end-to-end encrypted rooms.
+
+Given this, annotations of any event type should be accepted as a valid reaction,
+but a new message type `m.reaction` is suggested to indicate that a user is reacting
 to a message.
 
 For example, an `m.reaction` event which annotates an existing event with a 👍
@@ -132,13 +136,11 @@ three thumbsup reaction annotations, and two thumbsdown reaction annotations.
             "m.annotation": {
                 "chunk": [
                   {
-                      "type": "m.reaction",
                       "key": "👍",
                       "origin_server_ts": 1562763768320,
                       "count": 3
                   },
                   {
-                      "type": "m.reaction",
                       "key": "👎",
                       "origin_server_ts": 1562763768320,
                       "count": 2
