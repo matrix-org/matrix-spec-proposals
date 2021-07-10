@@ -164,5 +164,5 @@ servers need to have an accurate (e.g. NTP-synced) clock.
 
 Implementations should use `org.matrix.msc3277.at` in place of the at query
 parameter, and expose/look for `org.matrix.msc3277` in the
-``unstable_features` of `/versions` while this MSC is not in a released
+unstable_features` of `/versions` while this MSC is not in a released
 version of the spec.
