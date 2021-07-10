@@ -68,6 +68,9 @@ The megolm session must be a one-off used just for this scheduled message
 the session used to encrypt that particular message rather than any surrounding
 non-scheduled ones).
 
+E2EE implementations must not discard 'unused' megolm sessions, given they
+may be shared long in advance of the scheduled message.
+
 Sender's clients may optionally attempt to wake themselves up at the deadline
 in order to re-share the megolm session to the current participants in the
 room (and/or be available to respond to keyshare reqs), in order to reduce
