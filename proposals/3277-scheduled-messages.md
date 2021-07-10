@@ -60,8 +60,9 @@ APIs for almost identical functionality.  This is deferred to a future MSC.
 In an E2EE room, the sending client must distribute the megolm session used to
 encrypt the scheduled message immediately to the devices currently in the
 room. We then rely on the normal mechanisms used to share megolm keys with
-new devices (i.e. keyshare requests; online key backup; sharing room keys for
-past messages) to avoid the messages being undecryptable by future devices.
+new devices (i.e. keyshare requests; online key backup; MSC3061-style sharing
+room keys for past messages) to avoid the messages being undecryptable by
+future devices.
 
 The megolm session must be a one-off used just for this scheduled message
 (meaning that as it's shared for future participants in the room, it only exposes
