@@ -63,6 +63,11 @@ room. We then rely on the normal mechanisms used to share megolm keys with
 new devices (i.e. keyshare requests; online key backup; sharing room keys for
 past messages) to avoid the messages being undecryptable by future devices.
 
+The megolm session must be a one-off used just for this scheduled message
+(meaning that as it's shared for future participants in the room, it only exposes
+the session used to encrypt that particular message rather than any surrounding
+non-scheduled ones).
+
 A risk here is that key distribution mechanisms which rely on clients seeing
 an undecryptable message (i.e. keyshare reqs) will not take effect until the
 scheduled message is sent - by which point clients which could service the
@@ -73,27 +78,22 @@ believe the newcomer should be entitled to decrypt the message. This
 introduces the attack that a malicious server admin could add a fake
 user/device to their local copy of a room, and could use this to exfiltrate
 keys from bystanders - but this may be an acceptable tradeoff to improve
-the chances of the message being decryptable in the distant future.  If we
-go with this approach, then we should use a dedicated one-off megolm session
-for the scheduled message (to avoid the leak of that megolm session compromising
-any other messages in the room).  Alternatively, MLS may solve this(??)
+the chances of the message being decryptable in the distant future.
+Alternatively, MLS may solve this(??)
 
 Another improvement could be for the sender's clients to consciously wake
 themselves up at the deadline in order to re-share the megolm session to the
 current participants in the room (and/or be available to respond to keyshare
 reqs).
 
-One problem is that because we share E2EE to users at msg authoring time, if
-users subsequently leave the room, they will still have the keys to read the
-scheduled message when it's revealed.  This is probably inevitable.
-
-Another problem is that MSC3061-style 'sharing room keys for past messages'
+MSC3061-style 'sharing room keys for past messages'
 will need to special-case history visibility rules for scheduled messages.
 Therefore we need to know which sessions are for scheduled messages, and
 include them when sharing keys with new users/devices... but stop once the
-scheduled message has been received.  Therefore we need some metadata on the
-`m.room_key` to-device to indicate the session's lifetime (i.e. the timestamp
-for the event in question).  e.g. `m.forward_until: timestamp`.
+scheduled message has been received.  Therefore we add a `m.forward_until: timestamp`
+field to the `m.room_key` to-device message to indicate the session's lifetime.
+The timestamp should be that of the scheduled event; users who join the room
+after that timestamp should not be able to read the message.
 
 ## Possible issues
 
@@ -102,6 +102,11 @@ no way of being able to cancel their scheduled message.  This could either be
 a feature (ex-employees shouldn't be able to destroy their scheduled
 messages), or a bug (i want to GDPR erase my scheduled messages!).  We
 consider it a feature.
+
+Another problem is that because we share E2EE to users at msg authoring time, if
+users subsequently leave the room, they will still have the keys to read the
+scheduled message when it's revealed.  This is probably inevitable.
+
 
 ## Alternatives
 
