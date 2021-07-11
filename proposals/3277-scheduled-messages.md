@@ -109,7 +109,9 @@ consider it a feature.
 
 Another problem is that because we share E2EE to users at msg authoring time, if
 users subsequently leave the room, they will still have the keys to read the
-scheduled message when it's revealed.  This is probably inevitable.
+scheduled message when it's revealed.  This is probably inevitable.  Clients could
+try to solve it by redacting the scheduled message and resending it with a new megolm
+session whenever they spot that users (or devices?) have left the room.
 
 
 ## Alternatives
