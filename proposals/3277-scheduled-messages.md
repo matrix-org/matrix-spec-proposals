@@ -143,6 +143,12 @@ two timestamps on the event (confusing), complicates E2EE further
 (don't encrypt the `m.pts`), and makes it harder to hide from recipients
 whether a message was scheduled.  So we've stuck with `?at=`.
 
+We could avoid all the e2ee and history visibility problems if the sending
+user simply queued the message in their clients until it was ready to send.
+However, this of course means they have to keep an always on client somewhere
+to send the message at the right time, which feels fragile (or encourages a
+longlived serverside client/bot to be run, which could put E2EE at risk).
+
 ## Security considerations
 
 This MSC allows for spammers to potentially pre-plan their attacks for
