@@ -72,7 +72,7 @@ caveat that servers must ensure that:
   from a homeserver whose users have the power to issue invites. This implies
   that:
 
-    * A join event issued via `/make_join` & `/send_join` is signed by the not
+    * A join event issued via `/make_join` & `/send_join` is signed by not
       just the requesting server, but also the resident server. (This seems like
       an improvement regardless since the resident server is accepting the event
       on behalf of the joining server and ideally this should be verifiable after
