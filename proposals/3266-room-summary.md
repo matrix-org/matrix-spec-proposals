@@ -136,6 +136,21 @@ apply rate limiting if necessary.
 - The spaces summary API could be used, but it doesn't work for arbitrary rooms
     and you always need to pass the parent space, without any control over the
     rooms being returned.
+- For joined rooms, the `/sync` API can be used to get a summary for all joined
+    rooms. Apart from not working for unjoined rooms, like knocks, invites and
+    space children, `/sync` is very heavy for the server and the client needs to
+    cobble together information from the `state`, `timeline` and
+    [`summary`](https://github.com/matrix-org/matrix-doc/issues/688) sections to
+    calculate the room name, topic and other fields provided in this MSC.
+    Furthermore, the membership counts in the summary field are only included, if
+    the client is using lazy loading.
+    This MSC provides similar information as calling `/sync`, but it uses the
+    stripped state, which is needed to allow this to work for unjoined rooms and
+    it excludes `m.heroes` as well as membership events, since those are not
+    included in the stripped state of a room. (A client can call
+    `/joined_members` to receive those if needed. It may still make sense to
+    include heroes, but solving the security implications with that may better
+    be left to a separate MSC.)
 - The `/state` API could be used, but the response is much bigger than needed,
     can't be cached as easily and may need more requests. This also doesn't work
     over federation (yet).
@@ -151,7 +166,7 @@ return wrong results for a summary.
 Those are the same concerns as on [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
 or [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173).
 
-This API could also used for denial of service type attacks. Appropriate
+This API could also be used for denial of service type attacks. Appropriate
 ratelimiting and caching should be able to mitigate that.
 
 ## Unstable prefix
