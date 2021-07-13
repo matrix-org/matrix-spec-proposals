@@ -1,0 +1,23 @@
+# MSC3278: Expose enable_set_displayname in capabilities response 
+
+
+Some home servers like synapse can be configured to enable_set_displayname: false. To enable clients to handle that gracefully in the UI this setting should be exposed.
+
+## Proposal
+
+The m.room_versions capability /_matrix/client/r0/capabilities endpoint could be decorated to provide more information on capabilities.
+```javascript
+{
+  "capabilities": {
+    "m.enable_set_displayname": false,
+    "m.room_versions": {...},
+  }
+}
+```
+As part of this MSC, a capability will be added that exposes the server setting:
+m.enable_set_displayname
+Client recommendations
+When presenting profile settings, clients should use capabilities in order to display the correct UI.
+
+## Unstable prefix
+Implementations won't actually be able to use m.enable_set_displayname until the MSC has finished the Final Comment Period. While the MSC is in review, implementations can use an unstable prefix (im.vector.enable_set_displayname) instead.
