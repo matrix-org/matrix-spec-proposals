@@ -135,7 +135,7 @@ still be running at the scheduled time. On the other hand, it means that you
 are much more likely to break embargos, as one-person homeservers will get
 the message ahead of schedule.  We've gone for the more privacy preserving
 option (send over federation at the scheduled time).  Plus it acts as an
-incentive for people to keep the origin server running ;P
+incentive for people to keep the origin server running ;P.<sup id="a1">[1](#f1)</sup>
 
 Another alternative would be to use an API shape where you put a field on the
 event contents (e.g. `m.pts` for presentation timestamp) to tell servers and
@@ -173,3 +173,10 @@ Implementations should use `org.matrix.msc3277.at` in place of the at query
 parameter, and expose/look for `org.matrix.msc3277` in the
 unstable_features` of `/versions` while this MSC is not in a released
 version of the spec.
+
+## Footnotes
+
+<a id="f1"/>[1]: For P2P, it's likely that the origin server/client will not
+be online at the designated time, so we'll want to special-case scheduled
+messages for P2P such that they are queued on a privacy-preserving relay
+server of some kind rather than queuing on the origin server/client.
