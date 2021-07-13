@@ -100,12 +100,6 @@ keys from bystanders - but this may be an acceptable tradeoff to improve
 the chances of the message being decryptable in the distant future.
 Alternatively, MLS may solve this(??)
 
-Users who send a scheduled message and are then kicked out of a room will have
-no way of being able to cancel their scheduled message.  This could either be
-a feature (ex-employees shouldn't be able to destroy their scheduled
-messages), or a bug (i want to GDPR erase my scheduled messages!).  We
-consider it a feature.
-
 Another problem is that because we share E2EE to users at msg authoring time, if
 users subsequently leave the room, they will still have the keys to read the
 scheduled message when it's revealed.  This is probably inevitable.  Clients could
