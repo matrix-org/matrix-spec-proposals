@@ -1,4 +1,4 @@
-# MSC3279: Expose enable_set_displayname in capabilities response 
+# MSC3282: Expose enable_set_displayname in capabilities response 
 
 
 Some home servers like synapse can be configured to enable_set_displayname: false. To enable clients to handle that gracefully in the UI this setting should be exposed.
