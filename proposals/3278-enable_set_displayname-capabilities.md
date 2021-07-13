@@ -15,8 +15,9 @@ The `/_matrix/client/r0/capabilities` endpoint could be decorated to provide mor
 }
 ```
 As part of this MSC, a capability will be added that exposes the server setting:
-m.enable_set_displayname
-Client recommendations
+`m.enable_set_displayname`
+
+## Client recommendations
 When presenting profile settings, clients should use capabilities in order to display the correct UI.
 
 ## Unstable prefix
