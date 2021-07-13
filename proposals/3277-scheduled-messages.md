@@ -118,8 +118,9 @@ PUT /_matrix/client/r0/rooms/!wherever:example.com/send/m.room.message/123?at=16
 }
 ```
 
-...would result in a message being send to the room recipients
-at Sat Nov 6 10:17:34 2021 UTC of form similar to:
+...would result in the origin server sending the following event to room
+recipients at Sat Nov 6 10:17:34 2021 UTC (assuming the event still passed
+auth checks):
 
 ```json
 {
@@ -138,6 +139,9 @@ at Sat Nov 6 10:17:34 2021 UTC of form similar to:
 }
 ```
 
+N.B. there's nothing interesting in this event other than its
+`origin_server_ts` being set to the `at` parameter, and obviously being
+sent out at the scheduled time.
 
 ## Alternatives
 
