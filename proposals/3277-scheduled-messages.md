@@ -69,9 +69,6 @@ The megolm session must be a one-off used just for this scheduled message
 the session used to encrypt that particular message rather than any surrounding
 non-scheduled ones).
 
-E2EE implementations must not discard 'unused' megolm sessions, given they
-may be shared long in advance of the scheduled message.
-
 Sender's clients may optionally attempt to wake themselves up at the deadline
 in order to re-share the megolm session to the current participants in the
 room (and/or be available to respond to keyshare reqs), in order to reduce
@@ -85,6 +82,10 @@ received.  Therefore we add a `m.forward_until: timestamp` field to the
 `m.room_key` to-device message to indicate the session's lifetime. The
 timestamp should be that of the scheduled event; users who join the room
 after that timestamp should not be able to read the message.
+
+E2EE implementations must not discard 'unused' megolm sessions for scheduled
+messages (i.e. megolm sessions with `m.forward_until` fields), given they may
+be shared long in advance of the scheduled message.
 
 ## Possible issues
 
@@ -106,7 +107,6 @@ users subsequently leave the room, they will still have the keys to read the
 scheduled message when it's revealed.  This is probably inevitable.  Clients could
 try to solve it by redacting the scheduled message and resending it with a new megolm
 session whenever they spot that users (or devices?) have left the room.
-
 
 ## Alternatives
 
@@ -159,6 +159,12 @@ while still maintaining an amount of usability for common scenarios.
 Users could also try to schedule many events at once or schedule such that
 they all get sent at once - servers should apply rate limiting on both the
 scheduling and sending sides to limit the user’s ability to spam a room.
+
+There's a risk that an attacker could DoS a user with fake megolm sessions
+for scheduled messages which never arrive.  This could be mitigated in the
+receiving client by enforcing similar limits to those on the server (e.g.
+if you receive more than N megolm sessions for scheduled messages from 
+a given user in the room, the client could warn and discard them).
 
 This proposal relies on absolute timestamps, and so for it to work sensibly
 servers need to have an accurate (e.g. NTP-synced) clock.
