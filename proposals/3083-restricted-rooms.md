@@ -81,8 +81,11 @@ caveat that servers must ensure that:
   from a homeserver whose users have the power to issue invites. This implies
   that:
 
-    * A join event issued via `/make_join` & `/send_join` is signed by not
-      just the requesting server, but also the resident server.<sup id="a3">[3](#f3)</sup>
+    * A join event issued via `/send_join` is signed by not just the requesting
+      server, but also the resident server.<sup id="a3">[3](#f3)</sup>
+
+      In order for the joining server to receive the proper signatures the join
+      event will be returned via `/send_join` in the `join_event` field.
     * The auth chain of the join event needs to include an event which proves
       the homeserver can be issuing the join. This can be done by including the
       `m.room.power_levels` event and an `m.room.member` event with `membership`
