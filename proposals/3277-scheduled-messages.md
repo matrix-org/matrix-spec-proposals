@@ -19,21 +19,19 @@ and [PUT /state](https://matrix.org/docs/spec/client_server/r0.6.1#put-matrix-cl
 endpoints to indicate when the origin server should aim to send the event
 (milliseconds since the unix epoch). The message is added to the room DAG
 when the sender creates the event, and is immediately relayed to the sender's
-devices (as a remote echo).  However, otherwise it is effectively soft-failed
-until the scheduled `at` time (or as close to it as the server can manage),
-when it is then re-authed and relayed as normal to the members of the room.
+devices (as a remote echo) but not the other members in the room.
 
-At this point, the event is effectively treated as if it had been received
-over federation after a federation delay. As such, all event types can be
-scheduled in this manner, including state events.  Normal event ID and
-redaction behaviour applies.  At the scheduled time, the server re-auths the
-event, and then sends it on to the users in the room (if appropriate,
-otherwise it soft-fails it), including the sender.  Therefore if the event is
-no longer acceptable in the room at its scheduled time (e.g. if the sender is
-no longer in the room, or no longer has PL to send events) then the event is
-soft-failed - just as if a federated server tried to circumvent a user ban by
-sending old messages into the DAG. Scheduled events are sent out over
-federation at the scheduled time in order to minimise embargo leaks.
+It is then effectively soft-failed until the scheduled `at` time (or as close
+to it as the server can manage), when it is then re-authed and relayed as
+normal to all room members (both local and remote, including the sender).
+Scheduled events are sent out over over federation at this point rather than
+creation time in order to minimise embargo leaks.  If the event can't be
+re-authed (e.g. due to the sender no longer being in the room, or no longer
+has sufficient PL to send the event) then the event is soft-failed.  As such,
+the event effectively appears as if it had been received over federation
+after a federation delay.  This means all event types can be scheduled in
+this manner, including state events.  Normal event ID and redaction behaviour
+applies.  
 
 The server must set the `origin_server_ts` of the message is set to be its
 `at` time, given in practice this is the label used for clients to display
