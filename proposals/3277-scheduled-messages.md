@@ -157,9 +157,9 @@ This MSC allows for spammers to potentially pre-plan their attacks for
 off-peak hours when the moderators may not be present. It also potentially
 allows a user to stack up a large number of pending events which all get sent
 throughout the day as a disruption attempt. Servers should impose harsh
-limits to the number of events a user may schedule, such as a maximum of 3
-pending events, to reduce the potential for abuse while still maintaining an
-amount of usability for common scenarios.
+limits to the number of events a user may schedule, such as a maximum of N
+pending events per room (where N < ~5), to reduce the potential for abuse
+while still maintaining an amount of usability for common scenarios.
 
 Users could also try to schedule many events at once or schedule such that
 they all get sent at once - servers should apply rate limiting on both the
