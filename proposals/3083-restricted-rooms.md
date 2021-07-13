@@ -128,7 +128,7 @@ as the `restricted` join rule value do not need unstable prefixes.
 
 It may seem that just having the `allow` key with `public` join rules is enough
 (as originally suggested in [MSC2962](https://github.com/matrix-org/matrix-doc/pull/2962)),
-but there are concerns that changing the behaviour of a pre-existing a `public`
+but there are concerns that changing the behaviour of a pre-existing `public`
 join rule may cause security issues in older implementations (that do not yet
 understand the new behaviour). This could be solved by introducing a new room
 version, thus it seems clearer to introduce a new join rule -- `restricted`.
