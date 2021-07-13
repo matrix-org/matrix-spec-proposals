@@ -82,11 +82,6 @@ caveat that servers must ensure that:
       `m.room.power_levels` event and an `m.room.member` event with `membership`
       equal to `join` for a member who could issue invites from that server.
 
-As normal, the above check is also performed against the current room state during
-[soft-failure](https://matrix.org/docs/spec/server_server/r0.1.4#soft-failure),
-to guard against servers issuing new membership events by referencing old
-events in the room.
-
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
 enforced over federation by event authorisation).<sup id="a3">[3](#f3)</sup>
