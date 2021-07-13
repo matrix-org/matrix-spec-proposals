@@ -108,6 +108,37 @@ scheduled message when it's revealed.  This is probably inevitable.  Clients cou
 try to solve it by redacting the scheduled message and resending it with a new megolm
 session whenever they spot that users (or devices?) have left the room.
 
+## Example
+
+```
+PUT /_matrix/client/r0/rooms/!wherever:example.com/send/m.room.message/123?at=1636197454551
+{
+  "body": "a note to my future self",
+  "msgtype": "m.text"
+}
+```
+
+...would result in a message being send to the room recipients
+at Sat Nov 6 10:17:34 2021 UTC of form similar to:
+
+```json
+{
+  "content": {
+    "body": "a note to my future self",
+    "msgtype": "m.text"
+  },
+  "origin_server_ts": 1636197454551,
+  "sender": "@matthew:matrix.org",
+  "type": "m.room.message",
+  "unsigned": {
+    "age": 391
+  },
+  "event_id": "$FC9MwqLPBzRl1AzLi-qOJbdYeMJFzugORlF6yPJkyII",
+  "room_id": "!xYvNcQPhnkzdUmYczI:matrix.org"
+}
+```
+
+
 ## Alternatives
 
 The origin server could queue the message with a fake event ID and only
