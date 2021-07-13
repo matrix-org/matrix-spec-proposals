@@ -82,18 +82,19 @@ caveat that servers must ensure that:
   that:
 
     * A join event issued via `/make_join` & `/send_join` is signed by not
-      just the requesting server, but also the resident server. (This seems like
-      an improvement regardless since the resident server is accepting the event
-      on behalf of the joining server and ideally this should be verifiable after
-      the fact, even for current room versions.)
+      just the requesting server, but also the resident server.<sup id="a3">[3](#f3)</sup>
     * The auth chain of the join event needs to include an event which proves
       the homeserver can be issuing the join. This can be done by including the
       `m.room.power_levels` event and an `m.room.member` event with `membership`
       equal to `join` for a member who could issue invites from that server.
 
+      In order to find a corresponding event quickly for verification, the
+      content of the join event should include the other user's MXID in the
+      content with the key `join_authorised_via_users_server`.
+
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
-enforced over federation by event authorisation).<sup id="a3">[3](#f3)</sup>
+enforced over federation by event authorisation).<sup id="a4">[4](#f4)</sup>
 
 ## Summary of the behaviour of join rules
 
@@ -242,8 +243,13 @@ receiving invites in `public` rooms today, and they work as you might expect.
 The only difference is that you are not *required* to hold an invite when
 joining the room. [↩](#a2)
 
-<a id="f3"/>[3]: This has the downside of increased centralisation, as some
+<a id="f3"/>[3]: This seems like an improvement regardless since the resident server
+is accepting the event on behalf of the joining server and ideally this should be
+verifiable after the fact, even for current room versions. Requiring all events
+to be signed and verified in this way is left to a future MSC. [↩](#a3)
+
+<a id="f4"/>[4]: This has the downside of increased centralisation, as some
 homeservers that are already in the room may not issue a join event for another
 user on that server. (It must go through the `/make_join` / `/send_join` flow of
 a server whose users may issue invites.) This is considered a reasonable
-trade-off. [↩](#a3)
+trade-off. [↩](#a4)
