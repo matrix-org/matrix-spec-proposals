@@ -4,7 +4,7 @@ A desirable feature is to give room admins the power to restrict membership of
 their room based on the membership of one or more spaces from
 [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772), for example:
 
-> members of the #doglovers space can join this room without an invitation<sup id="a1">[1](#f1)</sup>
+> members of the #doglovers:example.com space can join this room without an invitation<sup id="a1">[1](#f1)</sup>
 
 ## Proposal
 
@@ -222,7 +222,7 @@ manner.
 ## Footnotes
 
 <a id="f1"/>[1]: The converse restriction, "anybody can join, provided they are not members
-of the '#catlovers' space" is less useful since:
+of the #catlovers:example.com space" is less useful since:
 
 1. Users in the banned room could simply leave it at any time
 2. This functionality is already partially provided by
