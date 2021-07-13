@@ -59,7 +59,7 @@ an invite are rejected.
 
 When an homeserver receives a `/join` request from a client or a `/make_join` /
 `/send_join` request from another homeserver, the request should only be permitted
-if the user has a valid invite or is in one of the listed rooms. If the user is
+if the user is invited to this room, or is joined to one of the listed rooms. If the user is
 not a member of at least one of the rooms, the homeserver should return an error
 response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
