@@ -49,10 +49,11 @@ creation time).
 
 The sender's clients will want to track the unsent scheduled messages in its
 various rooms, such that the sender can cancel them by redacting them, or
-edit them (optionally redacting earlier versions, providing private
-drafting).  We propose using the same mechanism as for tracking 'starred'
-(aka 'favourited' or 'flagged') messages, to avoid sprouting two different
-APIs for almost identical functionality.  This is deferred to a future MSC.
+edit them (optionally redacting earlier versions <sup id="a1">[1]
+(#f1)</sup>, providing private drafting).  We propose using the same
+mechanism as for tracking 'starred'(aka 'favourited' or 'flagged') messages,
+to avoid sprouting two different APIs for almost identical functionality.
+This is deferred to a future MSC.
 
 ## Encryption considerations
 
@@ -129,7 +130,8 @@ still be running at the scheduled time. On the other hand, it means that you
 are much more likely to break embargos, as one-person homeservers will get
 the message ahead of schedule.  We've gone for the more privacy preserving
 option (send over federation at the scheduled time).  Plus it acts as an
-incentive for people to keep the origin server running ;P.<sup id="a1">[1](#f1)</sup>
+incentive for people to keep the origin server running ;P. <sup id="a2">[2]
+(#f2)</sup>
 
 Another alternative would be to use an API shape where you put a field on the
 event contents (e.g. `m.pts` for presentation timestamp) to tell servers and
@@ -170,7 +172,13 @@ version of the spec.
 
 ## Footnotes
 
-<a id="f1"/>[1]: For P2P, it's likely that the origin server/client will not
+<a id="f1"/>[1]: A smart server could stop earlier redacted drafts ever
+being sent to the destination servers by placing new drafts as siblings
+to the old drafts in the DAG rather than as children.  This means that
+recipients wouldn't be able to see that the scheduled message was
+drafted.  This is a bit of an overenthusiastic optimisation though.
+
+<a id="f2"/>[2]: For P2P, it's likely that the origin server/client will not
 be online at the designated time, so we'll want to special-case scheduled
 messages for P2P such that they are queued on a privacy-preserving relay
 server of some kind rather than queuing on the origin server/client.
