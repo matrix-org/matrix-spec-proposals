@@ -1,10 +1,19 @@
 # Restricting room membership based on space membership
 
 A desirable feature is to give room admins the power to restrict membership of
-their room based on the membership of one or more spaces from
-[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772), for example:
+their room based on the membership of one or more rooms.
 
-> members of the #doglovers:example.com space can join this room without an invitation<sup id="a1">[1](#f1)</sup>
+Potential usecases include:
+
+* Private spaces (allowing any member of a [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772)
+  space to join child rooms in that space), for example:
+
+  > members of the #doglovers:example.com space can join this room without an invitation<sup id="a1">[1](#f1)</sup>
+* Room upgrades for private rooms (instead of issuing invites to each user).
+* Allowing all users in a private room to be able to join a private breakout room.
+
+This does not preclude members from being directly invited to the room, which is
+still a useful discovery feature.
 
 ## Proposal
 
