@@ -61,18 +61,17 @@ A response includes the stripped state in the following format:
   world_readable: true,
   join_rules: "public",
   room_type: "m.space",
-  is_direct: true,
   membership: "invite",
   is_encrypted: true,
 }
 ```
 
 These are the same fields as those returned by `/publicRooms`, with a few
-additions: `room_type`, `is_direct`, `membership` and `is_encrypted`.
+additions: `room_type`, `membership` and `is_encrypted`.
 
 All those fields are already accessible as the stripped state according to
 [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173), with the
-exception of `membership` and potentially `is_direct`.
+exception of `membership`.
 
 #### Rationale and description of reponse fields
 
@@ -87,21 +86,19 @@ exception of `membership` and potentially `is_direct`.
 | world_readable     | If the room history can be read without joining.                                                                                                      | Copied from `publicRooms`.                                                                                                            |
 | join_rules         | Join rules of the room                                                                                                                                | Copied from `publicRooms`.                                                                                                            |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
-| is_direct          | Optional. If this is a direct chat. The server should use the usual rules to figure out, if this is a direct chat, not just look in the create event. | May be used in previews to distinguish normal rooms from DMs.                                                                         |
 | membership         | The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
 | is_encrypted       | Optional. If the room is encrypted. This is already accessible as stripped state. Currently a bool, but maybe the algorithm makes more sense?         | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption. |
 
 It should be possible to call this API without authentication, but servers may
 rate limit how often they fetch information over federation more heavily, if the
-user is unauthenticated. Also the fields `membership` and `is_direct` will be
+user is unauthenticated. Also the fields `membership` will be
 missing.
 
 ### Server-Server API
 
 The Server-Server API mirrors the Client-Server API, with a few exceptions. The
-`membership` and `is_direct` fields are never present. No `via` field is
-necessary on the request, since servers should not forward the request to other
-servers.
+`membership` fields is never present. No `via` field is necessary on the
+request, since servers should not forward the request to other servers.
 
 The server can't know, which user is requesting the summary. As such it should
 apply visibility rules to check if any user on the requesting server would have
