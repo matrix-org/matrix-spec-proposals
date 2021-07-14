@@ -99,8 +99,14 @@ missing.
 The Server-Server API mirrors the Client-Server API, with a few exceptions. The
 `membership` fields is never present. No `via` field is necessary on the
 request, since servers should not forward the request to other servers.
+The request also contains an additional field `allowed_room_ids`, which list of
+room IDs which give access to this room per
+[MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083). This is needed so
+that the requesting server knows if the user is allowed to see this room. If
+the history is visible without space membership, this field can be ignored by
+the requesting server and doesn't need to be present.
 
-The server can't know, which user is requesting the summary. As such it should
+The server can't know which user is requesting the summary. As such it should
 apply visibility rules to check if any user on the requesting server would have
 access to the summary.
 
