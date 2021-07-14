@@ -71,7 +71,11 @@ additions: `room_type`, `membership` and `is_encrypted`.
 
 All those fields are already accessible as the stripped state according to
 [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173), with the
-exception of `membership`.
+exception of `membership`. These are the same fields as in
+[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) apart from the
+adition of the membership field. The membership can already be accessed by a
+client anyway, this API just provides it as a convenience.
+
 
 #### Rationale and description of reponse fields
 
