@@ -9,7 +9,7 @@ The `/_matrix/client/r0/capabilities` endpoint could be decorated to provide mor
 ```javascript
 {
   "capabilities": {
-    "m.enable_set_displayname": false,
+    "m.set_displayname": { "enabled": false },
     "m.room_versions": {...},
   }
 }
