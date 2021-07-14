@@ -140,9 +140,9 @@ apply rate limiting if necessary.
 
 ## Alternatives
 
-- The spaces summary API could be used, but it doesn't work for arbitrary rooms
-    and you always need to pass the parent space, without any control over the
-    rooms being returned.
+- The spaces summary API could be used, but it returns more data than necessary
+    by default (but it can be limited to just 1 room) such as all the
+    `m.space.child` events in a space.
 - For joined rooms, the `/sync` API can be used to get a summary for all joined
     rooms. Apart from not working for unjoined rooms, like knocks, invites and
     space children, `/sync` is very heavy for the server and the client needs to
@@ -164,6 +164,12 @@ apply rate limiting if necessary.
 - Peeking could solve this too, but with additional overhead and
     [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753) is much more
     complex.
+- This API could take a list of rooms with included `via`s for each room instead
+    of a single room (as a POST request). This may have performance benefits for
+    the federation API and a client could then easily request a summary of all
+    joined rooms. It could still request the summary of a single room by just
+    including only a single room in the POST or a convenience GET could be
+    provided by the server (that looks like this proposal).
 
 ## Security considerations
 
