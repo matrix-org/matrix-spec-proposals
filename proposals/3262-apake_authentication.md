@@ -249,7 +249,7 @@ login with SRP but the server doesn't support this.
 *with the given password and give a warning if this works, but the server can just lie to the*
 *client about that, leaving the user none the wiser.*
 
-SRP is vulnerable to precomputation attacks and it is incompatible elliptic-curve cryptography.
+SRP is vulnerable to precomputation attacks and it is incompatible with elliptic-curve cryptography.
 Matthew Green judges it as 
 ["It’s not ideal, but it’s real." and "not obviously broken"](https://blog.cryptographyengineering.com/2018/10/19/lets-talk-about-pake/)
 and it's a fairly old protocol.
