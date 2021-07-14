@@ -270,7 +270,7 @@ This is deemed out of scope for this MSC, but would not be hard to change later.
 
 ## Security considerations
 
-SRP uses the discreet logarithm problem, deemed unsolved, though Shor's algorithm can become an
+SRP uses the discrete logarithm problem, deemed unsolved, though Shor's algorithm can become an
 issue when quantum computers get scaled up. Work seems to have been done to create a quantum-safe
 SPR version, see [here](https://eprint.iacr.org/2017/1196.pdf), though I lack the credentials to
 determine whether or not this holds water.
