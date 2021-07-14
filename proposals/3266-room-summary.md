@@ -168,10 +168,10 @@ ratelimiting and caching should be able to mitigate that.
 
 ## Unstable prefix
 
-This uses the `im.nheko.summary` unstable prefix instead of the `summary` key in
-the request paths during the MSC phase. As a result:
+This uses the `im.nheko.summary` unstable prefix. As such the paths are prefixed
+with `unstable/im.nheko.summary`.
 
 - the client API will be
-    `/_matrix/client/unstable/rooms/{roomidOrAlias}/im.nheko.summary`
+    `/_matrix/client/unstable/im.nheko.summary/rooms/{roomidOrAlias}/summary`
 - the federation API will be
-    `/_matrix/federation/unstable/im.nheko.summary/{roomid}`
+    `/_matrix/federation/unstable/im.nheko.summary/summary/{roomid}`
