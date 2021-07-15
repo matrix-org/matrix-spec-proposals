@@ -76,6 +76,7 @@ The `refresh_token` parameter can be invalid for two reasons:
 
 In both cases, the server must reply with a `401` HTTP status code and an `M_UNKNOWN_TOKEN` error code.
 This new use case of the `M_UNKNOWN_TOKEN` error code must be reflected in the spec.
+As with other endpoints, the server can include an extra `soft_logout` parameter in the response to signify the client it should do a soft logout.
 
 This new API should be rate-limited and does not require authentication since only the `refresh_token` parameter is needed.
 Identity assertion via the `user_id` query parameter as defined by the Application Service API specification is disabled on this endpoint.
