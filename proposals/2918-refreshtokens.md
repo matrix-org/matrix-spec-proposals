@@ -1,7 +1,13 @@
 # MSC2918: Refresh tokens
 
 In Matrix, requests to the Client-Server API are currently authenticated using non-expiring, revocable access tokens.
-This goes against security best practices known in the OAuth 2.0 world.
+An access token might leak for various reasons, including:
+
+ - leaking from the server database (and its backups)
+ - intercepting it with a man-in-the-middle attack
+ - leaking from the client storage (and its backups)
+
+In the OAuth 2.0 world, this vector of attack is partly mitigated by having expiring access tokens with short lifetimes and rotating refresh tokens to renew them.
 This MSC adds support for expiring access tokens and introduces refresh tokens to renew them.
 
 ## Proposal
