@@ -15,7 +15,7 @@ This MSC adds support for expiring access tokens and introduces refresh tokens t
 The access token returned by the login endpoint expires after a short amount of time, forcing the client to renew it with a refresh token.
 A refresh token is issued on login and rotates on each usage.
 
-Homeservers can choose to make the access tokens signed and non-revocable for performance reasons if the expiration is short enough (less than 5 minutes).
+Homeservers can choose to use signed and non-revocable access tokens (JWTs, Macaroon, etc.) for performance reasons if their expiration is short enough (less than 5 minutes).
 
 ### Login API changes
 
@@ -38,8 +38,10 @@ This also applies to registrations done by application services.
 ### Token refresh API
 
 This API lets the client refresh the access token.
-A new refresh token is also issued. The existing refresh token remains valid until the new access token (or refresh token) is used, at which point it is revoked. This allows for the request getting lost in flight.
-The Matrix server can but does not have to make the old access token invalid, since its lifetime is short enough.
+A new refresh token is also issued.
+The existing refresh token remains valid until the new access token (or refresh token) is used, at which point it is revoked.
+This allows for the request to get lost in flight.
+The Matrix server can revoke the old access token right away, but does not have to since its lifetime is short enough that it will expire anyway soon after.
 
 `POST /_matrix/client/r0/refresh`
 
