@@ -26,6 +26,10 @@ The login API returns two additional fields:
 
 This also applies to logins done by application services.
 
+Both fields are optional.
+If `expires_in_ms` is missing, the client can assume the access token won't expire.
+If `refresh_token` is missing but `expires_in_ms` is present, the client can assume the access token will expire but it won't have a way to refresh the access token without re-logging in.
+
 ### Account registration API changes
 
 Unless `inhibit_login` is `true`, the account registration API returns two additional fields:
@@ -34,6 +38,8 @@ Unless `inhibit_login` is `true`, the account registration API returns two addit
 - `refresh_token`: The refresh token, which can be used to obtain new access tokens.
 
 This also applies to registrations done by application services.
+
+As in the login API, both field are optional.
 
 ### Token refresh API
 
@@ -60,6 +66,8 @@ response:
   "refresh_token": "eeeeffffgggghhhh"
 }
 ```
+
+If the `refresh_token` is missing from the response, the client can assume the refresh token has not changed and use the same token in subsequent token refresh API requests.
 
 The `refresh_token` parameter can be invalid for two reasons:
 
