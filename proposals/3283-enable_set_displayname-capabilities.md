@@ -1,7 +1,7 @@
 # MSC3283: Expose enable_set_displayname in capabilities response 
 
 
-Some home servers like synapse can be configured to enable_set_displayname: false. To enable clients to handle that gracefully in the UI this setting should be exposed.
+Some home servers like Synapse can be configured to enable_set_displayname: false. To enable clients to handle that gracefully in the UI this setting should be exposed.
 
 ## Proposal
 
