@@ -5,7 +5,7 @@ Some home servers like Synapse can be configured to enable_set_displayname: fals
 
 ## Proposal
 
-The `/_matrix/client/r0/capabilities` endpoint could be decorated to provide more information on capabilities.
+The `/_matrix/client/r0/capabilities` endpoint should be decorated to provide more information on capabilities.
 ```javascript
 {
   "capabilities": {
