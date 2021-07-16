@@ -72,6 +72,8 @@ join, as above. The requesting server may wish to attempt to join via another
 homeserver. If no servers are in any of the allowed rooms its membership cannot
 be verified (and this is a misconfiguration).
 
+TODO Better define errors over federation.
+
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
 caveat that servers must ensure that:
@@ -85,35 +87,39 @@ caveat that servers must ensure that:
       server, but also the resident server.<sup id="a3">[3](#f3)</sup>
 
       In order for the joining server to receive the proper signatures the join
-      event will be returned via `/send_join` in the `join_event` field.
+      event will be returned via `/send_join` in the `event` field.
     * The auth chain of the join event needs to include an event which proves
       the homeserver can be issuing the join. This can be done by including the
       `m.room.power_levels` event and an `m.room.member` event with `membership`
       equal to `join` for a member who could issue invites from that server.
 
       In order to find a corresponding event quickly for verification, the
-      content of the join event should include the other user's MXID in the
-      content with the key `join_authorised_via_users_server`.
+      content of the join event should include the chosen user's MXID in the
+      content with the key `join_authorised_via_users_server`. The actual user
+      chosen is arbitrary.
 
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
 enforced over federation by event authorisation).<sup id="a4">[4](#f4)</sup>
 
+To better cope with joining via aliases, homeservers should use the list of
+authorised servers (not the list of candidate servers) when a user attempts to
+join a room.
+
 ## Summary of the behaviour of join rules
 
 See the [join rules](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-join-rules)
 specification for full details; the summary below is meant to highlight the differences
-between `public`, `invite`, and `restricted`. Note that all join rules are subject
-to `ban` and `server_acls`.
+between `public`, `invite`, and `restricted` from a user perspective. Note that
+all join rules are subject to `ban` and `server_acls`.
 
 * `public`: anyone can join, as today.
 * `invite`: only people with membership `invite` can join, as today.
 * `knock`: the same as `invite`, except anyone can knock. See
   [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
 * `private`: This is reserved, but unspecified.
-* `restricted`: the same as `public`, with the additional caveat that servers must
-  verify the `m.room.member` event is signed by a homeserver whose users may issue
-  invites if the joining member was not previously invited or joined into the room.
+* `restricted`: the same as `invite`, except users may also join if they are a
+  member of a room listed in the `allow` rules.
 
 ## Security considerations
 
@@ -214,7 +220,7 @@ restricting access via:
 These are just examples are not fully thought through for this MSC, but it should
 be possible to add these behaviors in the future.
 
-### Interaction with `m.space.child` events
+### Client considerations
 
 [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) defines a `via`
 key in the content of `m.space.child` events:
@@ -222,12 +228,15 @@ key in the content of `m.space.child` events:
 > the content must contain a via `key` which gives a list of candidate servers
 > that can be used to join the room.
 
-It is possible for the candidate servers and the list of authorised servers to
-not be in sync. In the case where there's no overlap between these lists, it may
-not be possible for a server to complete the request.
+It is possible for the list of candidate servers and the list of authorised
+servers to diverge. It may not be possible for a user to join a room if there's
+no overlap between these lists.
 
 If there is some overlap between the lists of servers the join request should
 complete successfully.
+
+Clients should also consider the authorised servers when generating candidate
+servers to embed in links to the room, e.g. via matrix.to.
 
 A future MSC may define a way to override or update the `via` key in a coherent
 manner.
