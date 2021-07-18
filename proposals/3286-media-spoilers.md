@@ -37,7 +37,7 @@ Content of an image with a spoiler reason:
     "spoiler": "Contains spoilers for chapter 6"
   },
   "msgtype": "m.image",
-  "url": "mxc://example.org/abcdef",
+  "url": "mxc://example.org/abcdef"
 }
 ```
 
@@ -52,7 +52,7 @@ Content of a video without a spoiler reason:
     "spoiler": ""
   },
   "msgtype": "m.video",
-  "url": "mxc://example.org/abcdef",
+  "url": "mxc://example.org/abcdef"
 }
 ```
 
