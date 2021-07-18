@@ -26,7 +26,7 @@ spec and clients with groups vs communities. It is, however, imperative to name 
 accurately after what they are.
 
 ### Stickers
-Stickers already exits in Matrix. They are reusable images one can send, usually as a reaction sent
+Stickers already exist in Matrix. They are reusable images one can send, usually as a reaction sent
 in the timeline to something. This MSC adds a way to distribute and define a source for a client to
 send them.
 
