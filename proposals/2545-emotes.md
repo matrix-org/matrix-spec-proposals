@@ -26,7 +26,7 @@ spec and clients with groups vs communities. It is, however, imperative to name 
 accurately after what they are.
 
 ### Stickers
-Stickers already exits in Matrix. They are reusable images one can send, usually as a reaction sent
+Stickers already exist in Matrix. They are reusable images one can send, usually as a reaction sent
 in the timeline to something. This MSC adds a way to distribute and define a source for a client to
 send them.
 
@@ -205,7 +205,7 @@ Related issue: https://github.com/matrix-org/matrix-doc/issues/2418
 ## Unstable prefix
 The `m.image_pack` in the account data is replaced with `im.ponies.user_emotes`. The `m.image_pack` in
 the room state is replaced with `im.ponies.room_emotes`. The `m.image_pack.rooms` is replaced with
-`im.ponies.room_emotes`.
+`im.ponies.emote_rooms`.
 
 Some existing implementations using `im.ponies.user_emotes` and `im.ponies.room_emotes` currently use
 a dict called `short` which is just a map of the shortcode to the mxc url.
