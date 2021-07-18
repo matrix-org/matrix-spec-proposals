@@ -224,14 +224,25 @@ to your own account, offering greater flexibility. In MSC1951 there can also onl
 pack in a room. This could be problematic in e.g. bridged rooms: You set some emotes or stickers from the matrix
 side and a discord bridge would plop all the discord emotes and stickers in another pack in the same room.
 
-MSC1951 defines a way to recommend using a pack of a different room - this MSC does not have an equivalent
-to that. Instead, this MSC allows multiple image packs for a room, and allows you to enable an image
-pack to be globally available for yourself across all rooms you are in.
+The original sharing-focused idea of MSC1951 is still preserved: Once room types are a thing, you could
+still easily have an image pack-only room.
 
-The core difference is how MSC1951 and this MSC define the emotes themselves: In MSC1951 you have to
+MSC1951 defines a way to recommend using a pack of a different room - this MSC does not have an equivalent
+to that. Instead, this MSC allows multiple image packs for a room, typically one where you already
+chat in anyways. Furthermore it allows you to enable an image pack to be globally available for yourself
+across all rooms you are in.
+
+The core difference is how MSC1951 and this MSC define the image packs themselves: In MSC1951 you have to
 set one state event *per image*. While this might seem like a nice idea on the surface, it doesn't
-scale well. There are people who easily use and want hundreds or even thousands of emotes accessible.
+scale well. There are people who easily use and want hundreds or even thousands of image packs accessible.
 A simple dict of shortcode to mxc URI seems more appropriate for this.
 
+In general, MSC1951 feels like a heavier approach to image pack sources, while this MSC is more lightweight.
 
-In general, MSC1951 feels like a heavier approach to emote sources, while this MSC is more lightweight.
+## Looking further
+A couple of interesting points have been raised in the discussions of this MSC tangentially touch
+custom emoticons but warrant an MSC for themselves, as they touch more on how `<img>` is working.
+ - Figuring out how `<img>` should work with encrypted media.
+ - Allow SVGs in the `<img>` tag. Current problem: Clients typically try to thumbnail the mxc URL,
+   and most media repositories can't thumbnail SVGs. Possible solution: Somehow embed the mimetype.
+ - For stickers: Recommend rendering sizes / resolutions
