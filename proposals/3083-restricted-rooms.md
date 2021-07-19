@@ -63,16 +63,16 @@ if the user is invited to this room, or is joined to one of the listed rooms. If
 the user is not a member of at least one of the rooms, the homeserver should return
 an error response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
-It is possible for a homeserver receiving a `/make_join` / `/send_join` request
-to not know if the user is in some of the allowed rooms (due to not participating
-in them). Any allow room that the homeserver cannot verify the membership should
-be treated as if the user is not in that room. If the user is not in any of the
-rooms (or some of the rooms cannot be verified) the homeserver should reject the
-join, as above. The requesting server may wish to attempt to join via another
-homeserver. If no servers are in any of the allowed rooms its membership cannot
-be verified (and this is a misconfiguration).
-
-TODO Better define errors over federation.
+It is possible for a resident homeserver (one which receives a `/make_join` /
+`/send_join` request to not know if the user is in some of the allowed rooms (due
+to not participating in them). If the user is not in any of the allowed rooms that
+are known to the homeserver it should return an error response with HTTP status code
+of 400 with an `errcode` of `M_CANNOT_ALLOW`. The joining server should attempt to
+join via another resident homeserver. If the resident homeserver knows that the
+user is not in *any* of the allowed rooms it should return an error response with
+HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`. Note that it is a
+configuration error if there are allowed rooms with no participating authorised
+servers.
 
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
