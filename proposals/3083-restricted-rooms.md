@@ -67,12 +67,17 @@ It is possible for a resident homeserver (one which receives a `/make_join` /
 `/send_join` request to not know if the user is in some of the allowed rooms (due
 to not participating in them). If the user is not in any of the allowed rooms that
 are known to the homeserver it should return an error response with HTTP status code
-of 400 with an `errcode` of `M_CANNOT_ALLOW`. The joining server should attempt to
-join via another resident homeserver. If the resident homeserver knows that the
-user is not in *any* of the allowed rooms it should return an error response with
-HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`. Note that it is a
+of 400 with an `errcode` of `M_UNABLE_TO_AUTHORISE_JOIN`. The joining server should
+attempt to join via another resident homeserver. If the resident homeserver knows
+that the user is not in *any* of the allowed rooms it should return an error response
+with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`. Note that it is a
 configuration error if there are allowed rooms with no participating authorised
 servers.
+
+A chosen resident homeserver might also be unable to issue invites, in this case
+it should return an error response with HTTP status code of 400 and an `errcode`
+of `M_CANNOT_ALLOW`. The joining server should attempt to join via another
+resident homeserver.
 
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
