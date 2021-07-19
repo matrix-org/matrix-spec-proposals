@@ -82,6 +82,17 @@ In the following hypothetical sample, 3 new versions has been introduced (7, 8 a
 A new object is added under `room_capabilities`, each key is the name of a capability.
 This object provides the list of room versions supporting this capability as well as the preferred version to use.
 
+`preferred` should never point to an unstable version. When a feature is only supported by an unstable version, `preferred`should be set to null, and the unstable versions would be listed in `support`.
+
+````
+"restricted": {
+    "preferred": null,
+    "support": [
+        "org.matrix.msc3083"
+    ]
+}
+````
+
 
 As part of this MSC, two capabilities are defined:
 - `knock` for knocking join rule support [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403)
