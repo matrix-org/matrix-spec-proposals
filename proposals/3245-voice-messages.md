@@ -70,6 +70,7 @@ definition instead.
 
 This proposal suggests that the textual fallback be "Voice message" for moderately sensical push/desktop/email
 notifications. Note that MSC1767 supports internationalization, which clients should make use of as needed.
+Text-to-speech and similar capabilities for voice messages would be covered by a future MSC, if desired.
 
 ## Potential issues
 
