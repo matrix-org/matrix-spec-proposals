@@ -63,6 +63,23 @@ if the user is invited to this room, or is joined to one of the listed rooms. If
 the user is not a member of at least one of the rooms, the homeserver should return
 an error response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
+It is possible for a resident homeserver (one which receives a `/make_join` /
+`/send_join` request) to not know if the user is in some of the allowed rooms (due
+to not participating in them). If the user is not in any of the allowed rooms that
+are known to the homeserver it should return an error response with HTTP status code
+of 400 with an `errcode` of `M_UNABLE_TO_AUTHORISE_JOIN`. The joining server should
+attempt to join via another resident homeserver. If the resident homeserver knows
+that the user is not in *any* of the allowed rooms it should return an error response
+with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`. Note that it is a
+configuration error if there are allowed rooms with no participating authorised
+servers.
+
+A chosen resident homeserver might also be unable to issue invites (which, as below,
+is a pre-requisite for generating a correctly-signed join event). In this case
+it should return an error response with HTTP status code of 400 and an `errcode`
+of `M_CANNOT_ALLOW`. The joining server should attempt to join via another
+resident homeserver.
+
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
 caveat that servers must ensure that:
@@ -86,8 +103,7 @@ caveat that servers must ensure that:
       the homeserver can be issuing the join. This can be done by including:
 
       * The `m.room.power_levels` event
-      * The `m.room.member` event (with `membership` equal to `join`) the user
-        specified in `join_authorised_via_users_server`.
+      * The join event of the user specified in `join_authorised_via_users_server`.
 
       It should be confirmed that the authorising user is in the room. (This
       prevents situations where any homeserver could process the join, even if
@@ -102,22 +118,6 @@ caveat that servers must ensure that:
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
 enforced over federation by event authorisation).<sup id="a4">[4](#f4)</sup>
-
-It is possible for a resident homeserver (one which receives a `/make_join` /
-`/send_join` request) to not know if the user is in some of the allowed rooms (due
-to not participating in them). If the user is not in any of the allowed rooms that
-are known to the homeserver it should return an error response with HTTP status code
-of 400 with an `errcode` of `M_UNABLE_TO_AUTHORISE_JOIN`. The joining server should
-attempt to join via another resident homeserver. If the resident homeserver knows
-that the user is not in *any* of the allowed rooms it should return an error response
-with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`. Note that it is a
-configuration error if there are allowed rooms with no participating authorised
-servers.
-
-A chosen resident homeserver might also be unable to issue invites; in this case
-it should return an error response with HTTP status code of 400 and an `errcode`
-of `M_CANNOT_ALLOW`. The joining server should attempt to join via another
-resident homeserver.
 
 To better cope with joining via aliases, homeservers should use the list of
 authorised servers (not the list of candidate servers) when a user attempts to
