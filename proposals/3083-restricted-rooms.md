@@ -77,7 +77,7 @@ servers.
 A chosen resident homeserver might also be unable to issue invites (which, as below,
 is a pre-requisite for generating a correctly-signed join event). In this case
 it should return an error response with HTTP status code of 400 and an `errcode`
-of `M_CANNOT_ALLOW`. The joining server should attempt to join via another
+of `M_UNABLE_TO_GRANT_JOIN`. The joining server should attempt to join via another
 resident homeserver.
 
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
@@ -88,9 +88,9 @@ caveat that servers must ensure that:
 * The join event has a valid signature from a homeserver whose users have the
   power to issue invites.
 
-  When generating a join event the server should include the MXID of a local user
-  who could issue an invite in the content with the key
-  `join_authorised_via_users_server`. The actual user chosen is arbitrary.
+  When generating a join event for `/join` or `/make_join`, the server should
+  include the MXID of a local user who could issue an invite in the content with
+  the key `join_authorised_via_users_server`. The actual user chosen is arbitrary.
 
   This implies that:
 
