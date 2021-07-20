@@ -64,7 +64,7 @@ the user is not a member of at least one of the rooms, the homeserver should ret
 an error response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
 It is possible for a resident homeserver (one which receives a `/make_join` /
-`/send_join` request to not know if the user is in some of the allowed rooms (due
+`/send_join` request) to not know if the user is in some of the allowed rooms (due
 to not participating in them). If the user is not in any of the allowed rooms that
 are known to the homeserver it should return an error response with HTTP status code
 of 400 with an `errcode` of `M_UNABLE_TO_AUTHORISE_JOIN`. The joining server should
@@ -74,7 +74,7 @@ with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`. Note that it is 
 configuration error if there are allowed rooms with no participating authorised
 servers.
 
-A chosen resident homeserver might also be unable to issue invites, in this case
+A chosen resident homeserver might also be unable to issue invites; in this case
 it should return an error response with HTTP status code of 400 and an `errcode`
 of `M_CANNOT_ALLOW`. The joining server should attempt to join via another
 resident homeserver.
@@ -84,7 +84,7 @@ the `restricted` join rule has the same behavior as `public`, with the additiona
 caveat that servers must ensure that:
 
 * The user's previous membership was `invite` or `join`, or
-* The `m.room.member` event with a `membership` of `join` has a valid signature
+* The join event has a valid signature
   from a homeserver whose users have the power to issue invites. This implies
   that:
 
