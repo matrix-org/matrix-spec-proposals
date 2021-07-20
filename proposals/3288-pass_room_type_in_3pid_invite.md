@@ -62,4 +62,4 @@ The following mapping will be used for identifiers in this MSC during developmen
 
 Proposed final identifier       | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`room_type` | event type | `org.matrix.msc3288.room_type`
+`room_type` | POST body | `org.matrix.msc3288.room_type`
