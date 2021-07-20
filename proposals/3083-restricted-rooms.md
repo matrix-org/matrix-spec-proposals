@@ -113,7 +113,9 @@ The above creates a new restriction on the relationship between the resident
 servers used for `/make_join` and `/send_join` -- they must now both go to
 the same server (since the `join_authorised_via_users_server` is added in
 the call to `/make_join`, while the final signature is added during
-the call to `/send_join`).
+the call to `/send_join`). If a request to `/send_join` is received that includes
+an event from a different resident server it should return an error response with
+HTTP status code of 400.
 
 Note that the homeservers whose users can issue invites are trusted to confirm
 that the `allow` rules were properly checked (since this cannot easily be
