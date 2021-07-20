@@ -26,7 +26,7 @@ sample settings are:
 
 We use Opus to be compatible with other messaging platforms, particularly the ones that can be bridged
 easily to Matrix. This proposal aims to avoid having bridges (and to a degree, clients) transcode
-voice messages as that would liekly push voice messages further away from the "faster communication"
+voice messages as that would likely push voice messages further away from the "faster communication"
 use case. Bridges are already needing to do processing on the events and can see seconds worth of latency:
 an extra couple seconds to re-encode a voice message would not be helping that.
 
