@@ -65,7 +65,7 @@ An alternative solution, which some people currently use, is to embed images
 inline in `m.text` messages, and then tag it using the existing mechanism for
 textual spoilers. However, this is a rather hacky workaround, as it does not
 support other types of media, nor does it support encryption. It also loses the
-semantics of standalone `m.image` events, which makes it difficult for clients
+semantics of standalone `m.image` messages, which makes it difficult for clients
 to render image spoilers differently from regular textual spoilers.
 
 ## Security considerations
