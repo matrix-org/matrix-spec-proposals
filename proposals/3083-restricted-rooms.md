@@ -63,6 +63,46 @@ if the user is invited to this room, or is joined to one of the listed rooms. If
 the user is not a member of at least one of the rooms, the homeserver should return
 an error response with HTTP status code of 403 and an `errcode` of `M_FORBIDDEN`.
 
+From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
+the `restricted` join rule has the same behavior as `public`, with the additional
+caveat that servers must ensure that:
+
+* The user's previous membership was `invite` or `join`, or
+* The join event has a valid signature from a homeserver whose users have the
+  power to issue invites.
+
+  When generating a join event the server should include the MXID of a local user
+  who could issue an invite in the content with the key
+  `join_authorised_via_users_server`. The actual user chosen is arbitrary.
+
+  This implies that:
+
+    * A join event issued via `/send_join` is signed by not just the requesting
+      server, but also the resident server.<sup id="a3">[3](#f3)</sup>
+
+      In order for the joining server to receive the proper signatures the join
+      event will be returned via `/send_join` in the `event` field.
+    * The auth chain of the join event needs to include events which prove
+      the homeserver can be issuing the join. This can be done by including:
+
+      * The `m.room.power_levels` event
+      * The `m.room.member` event (with `membership` equal to `join`) the user
+        specified in `join_authorised_via_users_server`.
+
+      It should be confirmed that the authorising user is in the room. (This
+      prevents situations where any homeserver could process the join, even if
+      they weren't in the room, under certain power level conditions.)
+
+      This creates a new restriction on the relationship between the resident
+      servers used for `/make_join` and `/send_join` -- they must now both go to
+      the same server (since the `join_authorised_via_users_server` is added in
+      the call to `/make_join`, while the final signature is added during
+      the call to `/send_join`).
+
+Note that the homeservers whose users can issue invites are trusted to confirm
+that the `allow` rules were properly checked (since this cannot easily be
+enforced over federation by event authorisation).<sup id="a4">[4](#f4)</sup>
+
 It is possible for a resident homeserver (one which receives a `/make_join` /
 `/send_join` request) to not know if the user is in some of the allowed rooms (due
 to not participating in them). If the user is not in any of the allowed rooms that
@@ -78,40 +118,6 @@ A chosen resident homeserver might also be unable to issue invites; in this case
 it should return an error response with HTTP status code of 400 and an `errcode`
 of `M_CANNOT_ALLOW`. The joining server should attempt to join via another
 resident homeserver.
-
-From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
-the `restricted` join rule has the same behavior as `public`, with the additional
-caveat that servers must ensure that:
-
-* The user's previous membership was `invite` or `join`, or
-* The join event has a valid signature
-  from a homeserver whose users have the power to issue invites. This implies
-  that:
-
-    * A join event issued via `/send_join` is signed by not just the requesting
-      server, but also the resident server.<sup id="a3">[3](#f3)</sup>
-
-      In order for the joining server to receive the proper signatures the join
-      event will be returned via `/send_join` in the `event` field.
-    * The auth chain of the join event needs to include an event which proves
-      the homeserver can be issuing the join. This can be done by including the
-      `m.room.power_levels` event and an `m.room.member` event with `membership`
-      equal to `join` for a member who could issue invites from that server.
-
-      In order to find a corresponding event quickly for verification, the
-      content of the join event should include the chosen user's MXID in the
-      content with the key `join_authorised_via_users_server`. The actual user
-      chosen is arbitrary.
-
-      This creates a new restriction on the relationship between the resident
-      servers used for `/make_join` and `/send_join` -- they must now both go to
-      the same server (since the `join_authorised_via_users_server` is added in
-      the call to `/make_join`, while the final signature is added during
-      the call to `/send_join`).
-
-Note that the homeservers whose users can issue invites are trusted to confirm
-that the `allow` rules were properly checked (since this cannot easily be
-enforced over federation by event authorisation).<sup id="a4">[4](#f4)</sup>
 
 To better cope with joining via aliases, homeservers should use the list of
 authorised servers (not the list of candidate servers) when a user attempts to
