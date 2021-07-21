@@ -1,4 +1,4 @@
-# Restricting room membership based on space membership
+# Restricting room membership based on membership in other rooms
 
 A desirable feature is to give room admins the power to restrict membership of
 their room based on the membership of one or more rooms.
