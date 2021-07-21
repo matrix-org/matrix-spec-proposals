@@ -12,4 +12,4 @@ version may include them.
 
 Room version `8` upon being added to the specification shall be considered stable.
 No other room versions are affected by this MSC. Before room version `8` can enter
-the specification, MSC3083 needs complete its final comment period.
+the specification, MSC3083 needs to complete its final comment period.
