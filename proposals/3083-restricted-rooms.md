@@ -57,7 +57,7 @@ Any entries in the list which do not match the expected format are ignored. Thus
 if all entries are invalid, the list behaves as if empty and all users without
 an invite are rejected.
 
-When an homeserver receives a `/join` request from a client or a `/make_join` /
+When a homeserver receives a `/join` request from a client or a `/make_join` /
 `/send_join` request from another homeserver, the request should only be permitted
 if the user is invited to this room, or is joined to one of the listed rooms. If
 the user is not a member of at least one of the rooms, the homeserver should return
@@ -102,7 +102,7 @@ caveat that servers must ensure that:
     * The auth chain of the join event needs to include events which prove
       the homeserver can be issuing the join. This can be done by including:
 
-      * The `m.room.power_levels` event
+      * The `m.room.power_levels` event.
       * The join event of the user specified in `join_authorised_via_users_server`.
 
       It should be confirmed that the authorising user is in the room. (This
@@ -182,7 +182,7 @@ generating a join event. Peeking over federation, as described in
 could be used to establish if the user is in any of the proper rooms.
 
 This would then delegate power out to a (potentially) untrusted server, giving that
-the peek server significant power. For example, a poorly chosen peek
+peek server significant power. For example, a poorly chosen peek
 server could lie about the room membership and add an `@evil_user:example.org`
 to an allowed room to gain membership to a room.
 
@@ -193,7 +193,7 @@ the requesting homeserver to retry via another homeserver.
 
 In the above example, suppose `@bob:server.example` leaves `!users:example.org`:
 should they be removed from the room? Likely not, by analogy with what happens
-when you switch the join rules from public to invite. Join rules currently govern
+when you switch the join rules from `public` to `invite`. Join rules currently govern
 joins, not existing room membership.
 
 It is left to a future MSC to consider this, but some potential thoughts are
@@ -209,7 +209,7 @@ Another consideration is that users may have joined via a direct invite, not via
 access through a room.
 
 Fixing this is thorny. Some sort of annotation on the membership events might
-help. but it's unclear what the desired semantics are:
+help, but it's unclear what the desired semantics are:
 
 * Assuming that users in an allowed room are *not* kicked when that room is
   removed from `allow`, are those users then given a pass to remain
@@ -236,7 +236,7 @@ restricting access via:
 * MXIDs or servers.
 * A shared secret (room password).
 
-These are just examples are not fully thought through for this MSC, but it should
+These are just examples and are not fully thought through for this MSC, but it should
 be possible to add these behaviors in the future.
 
 ### Client considerations
