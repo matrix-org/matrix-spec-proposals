@@ -82,7 +82,7 @@ resident homeserver.
 
 From the perspective of the [auth rules](https://spec.matrix.org/unstable/rooms/v1/#authorization-rules),
 the `restricted` join rule has the same behavior as `public`, with the additional
-caveat that servers must ensure that:
+caveat that servers must ensure that, for `m.room.member` events with a `membership` of `join`:
 
 * The user's previous membership was `invite` or `join`, or
 * The join event has a valid signature from a homeserver whose users have the
