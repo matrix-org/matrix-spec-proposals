@@ -1,7 +1,6 @@
-# MSC3283: Expose enable_set_displayname in capabilities response 
+# MSC3283: Expose enable_set_displayname, enable_set_avatar_url and enable_3pid_changes in capabilities response 
 
-
-Some home servers like Synapse can be configured to enable_set_displayname: false. To enable clients to handle that gracefully in the UI this setting should be exposed.
+Some home servers like [Synapse](https://github.com/matrix-org/synapse/blob/756fd513dfaebddd28bf783eafa95b4505ce8745/docs/sample_config.yaml#L1207) can be configured to enable_set_displayname: false, enable_set_avatar_url: false or enable_3pid_changes: false. To enable clients to handle that gracefully in the UI this setting should be exposed.
 
 ## Proposal
 
@@ -10,16 +9,24 @@ The `/_matrix/client/r0/capabilities` endpoint should be decorated to provide mo
 {
   "capabilities": {
     "m.set_displayname": { "enabled": false },
+    "m.set_avatar_url": { "enabled": false },
+    "m.3pid_changes": { "enabled": false },
     "m.room_versions": {...},
   }
 }
 ```
-As part of this MSC, a capability will be added that exposes the server setting:
-`m.enable_set_displayname`
+As part of this MSC, a capability for each setting will be added that exposes the server setting:
+`m.set_displayname`,
+`m.set_avatar_url`and
+`m.3pid_changes`
 
 ## Client recommendations
 When presenting profile settings, clients should use capabilities in order to display the correct UI.
+
 If capability is not present the default is true.
 
 ## Unstable prefix
-Implementations won't actually be able to use m.enable_set_displayname until the MSC has finished the Final Comment Period. While the MSC is in review, implementations can use an unstable prefix (im.vector.enable_set_displayname) instead.
+Implementations won't actually be able to use m.set_displayname, m.set_avatar_url or m.3pid_changes until the MSC has finished the Final Comment Period. While the MSC is in review, implementations can use an unstable prefix (e.g. im.vector.set_displayname) instead.
+
+
+
