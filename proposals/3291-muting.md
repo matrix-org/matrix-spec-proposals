@@ -1,4 +1,4 @@
-# MSC0000: Muting in VoIP calls
+# MSC3291: Muting in VoIP calls
 
 During VoIP calls, it is common for a user to mute their microphone/camera.
 Ideally, the other side should be able to see that the opponent's camera is
