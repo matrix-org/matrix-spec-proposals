@@ -39,6 +39,8 @@ Add a new endpoint, `POST /_matrix/client/unstable/org.matrix.msc2716/rooms/<roo
 
 The `state_events`/`events` payload is in **chronological** order (`[0, 1, 2]`) and is processed it in that order so the `prev_events` point to it's older-in-time previous message which is more sane in the DAG. **Depth discussion:** For Synapse, when persisting, we **reverse the list (to make it reverse-chronological)** so we can still get the correct `(topological_ordering, stream_ordering)` so it sorts between A and B as we expect. Why?  `depth` is not re-calculated when historical messages are inserted into the DAG. This means we have to take care to insert in the right order. Events are sorted by `(topological_ordering, stream_ordering)` where `topological_ordering` is just `depth`. Normally, `stream_ordering` is an auto incrementing integer but for `backfilled=true` events, it decrements. Historical messages are inserted all at the same `depth`, and marked as backfilled so the `stream_ordering` decrements and each event is sorted behind the next. (from https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201)
 
+All of the events in the chunk get a content field, `"m.historical": true`, to indicate that they are historical at the point of being added to a room.
+
 With the new process, the DAG will look like:
 
 ![](https://user-images.githubusercontent.com/558581/126577416-68f1a5b0-2818-48c1-b046-21e504a0fe83.png)
@@ -161,6 +163,7 @@ The structure of the chunk event would look like:
   "sender": "@appservice:example.org",
   "content": {
     "m.chunk_id": chunk_id,
+    "m.historical": true
   },
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
   // Doesn't affect much but good to use the same time as the closest event
@@ -205,7 +208,8 @@ The structure of the "marker" event would look like:
     "type": "m.room.marker",
     "sender": "@appservice:example.org",
     "content": {
-        "m.insertion_id": insertion_event.event_id
+        "m.insertion_id": insertion_event.event_id,
+        "m.historical": true
     },
     "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
     "origin_server_ts": 1626914158639,
