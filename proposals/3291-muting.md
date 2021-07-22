@@ -73,4 +73,4 @@ None that I can think of.
 
 |Release      |Development                                           |
 |-------------|------------------------------------------------------|
-|`m.call.mute`|`org.matrix.msc0000.call.sdp_stream_metadata_changed` |
+|`m.call.mute`|`org.matrix.msc3291.call.sdp_stream_metadata_changed` |
