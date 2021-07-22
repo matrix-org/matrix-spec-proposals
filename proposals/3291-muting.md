@@ -49,7 +49,7 @@ muted.
         "call_id": "1414213562373095",
         "party_id": "1732050807568877",
         "sdp_stream_metadata": {
-            "2311546231" {
+            "2311546231": {
                 "purpose": "m.usermedia",
                 "audio_muted:": false,
                 "video_muted": true,
