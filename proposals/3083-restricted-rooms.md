@@ -92,22 +92,22 @@ caveat that servers must ensure that, for `m.room.member` events with a `members
   include the MXID of a local user who could issue an invite in the content with
   the key `join_authorised_via_users_server`. The actual user chosen is arbitrary.
 
-  This implies that:
+The changes to the auth rules imply that:
 
-    * A join event issued via `/send_join` is signed by not just the requesting
-      server, but also the resident server.<sup id="a3">[3](#f3)</sup>
+* A join event issued via `/send_join` is signed by not just the requesting
+  server, but also the resident server.<sup id="a3">[3](#f3)</sup>
 
-      In order for the joining server to receive the proper signatures the join
-      event will be returned via `/send_join` in the `event` field.
-    * The auth chain of the join event needs to include events which prove
-      the homeserver can be issuing the join. This can be done by including:
+  In order for the joining server to receive the proper signatures the join
+  event will be returned via `/send_join` in the `event` field.
+* The auth chain of the join event needs to include events which prove
+  the homeserver can be issuing the join. This can be done by including:
 
-      * The `m.room.power_levels` event.
-      * The join event of the user specified in `join_authorised_via_users_server`.
+  * The `m.room.power_levels` event.
+  * The join event of the user specified in `join_authorised_via_users_server`.
 
-      It should be confirmed that the authorising user is in the room. (This
-      prevents situations where any homeserver could process the join, even if
-      they weren't in the room, under certain power level conditions.)
+  It should be confirmed that the authorising user is in the room. (This
+  prevents situations where any homeserver could process the join, even if
+  they weren't in the room, under certain power level conditions.)
 
 The above creates a new restriction on the relationship between the resident
 servers used for `/make_join` and `/send_join` -- they must now both go to
