@@ -8,19 +8,17 @@ to be quick.
 
 Using pure WebRTC there are two ways to do muting and both have their issues:
 
-+ Disabling the corresponding track - there will be no way to know the track is
-  muted from the opponent's perspective. On the other hand, this is almost
-  instantaneous.
-+ Setting the corresponding track as `recvonly`/`inactive` - this is problematic
-  since it leads to re-negotiation which takes time. This could also conflict
-  with holding (as defined in
-  [MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746)).
++ Disabling the corresponding track
++ Setting the corresponding track as `recvonly`/`inactive`
+
+The Alternatives section describes the issues with using these alone.
 
 ## Proposal
 
-This MSC proposes a solution to this by extending the `SDPStreamMetadata` (see
-[MSC3077](https://github.com/matrix-org/matrix-doc/pull/3077)) by the following
-fields:
+This MSC proposes that clients disable muted tracks (as is almost instantaneous)
+and extends the `SDPStreamMetadata` object (see
+[MSC3077](https://github.com/matrix-org/matrix-doc/pull/3077)) to allow
+indicating the mute state to the other side using the following fields:
 
 + `audio_muted` - a boolean indicating the current audio mute state
 + `video_muted` - a boolean indicating the current video mute state
@@ -65,6 +63,40 @@ muted.
 When the user mutes their camera, the client will meaningless which will waste
 bandwidth.
 
+## Alternatives
+
+### Only disabling the corresponding track
+
+This is the solution that some clients (e.g. Element) use at the moment. While
+this is almost instantaneous, it doesn't allow the other side to know the
+opponent's mute state. This leads to the opponent showing a black screen for a
+muted video track and not doing anything for a muted audio track which is bad
+for UX.
+
+### Setting the corresponding track as `recvonly`/`inactive`
+
+While this would be beneficial for low bandwidth connections, it takes time. The
+delay might be acceptable for video but isn't for audio (with which your would
+assume an instantaneous mute state change). This is also problematic since there
+could be a confusion with holding (as defined in
+[MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746)).
+
+### Using a separate event for muting
+
+While this might feel clearer initially, it doesn't have much real benefit. The
+mute state is in fact a meta information about the stream and using
+`sdp_stream_metadata` is also more flexible for cases where the user joins a
+call already muted. It is also more flexible in general and would be useful if
+we ever decided to do what is described in the next section.
+
+### A combination of disabling tracks, `sdp_stream_metadata` and SDP
+
+An option would be using the current method in combination with setting the
+corresponding track as `recvonly`/`inactive`. Along with this clients would need
+to set the mute state in `sdp_stream_metadata` to avoid conflicts with holding.
+While this solution might be the most flexible solution as it would allow
+clients to choose between bandwidth and a mute state change delay for each
+track, it would be harder to implement and feels generally disjointed.
 
 ## Security considerations
 
