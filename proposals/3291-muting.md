@@ -62,8 +62,9 @@ muted.
 
 ## Potential issues
 
-When the user mutes their camera, the client will keep sending black pixels
-which will waste bandwidth.
+When the user mutes their camera, the client will meaningless which will waste
+bandwidth.
+
 
 ## Security considerations
 
