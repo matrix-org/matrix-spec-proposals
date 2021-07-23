@@ -157,6 +157,9 @@ During development, an unstable room version of `org.matrix.msc3083.v2` will be 
 Since the room version namespaces the behaviour, the `allow` key and value, as well
 as the `restricted` join rule value do not need unstable prefixes.
 
+An unstable key of `org.matrix.msc3083.v2.event` will be used in the response
+from `/send_join` in place of `event` during development.
+
 ## Alternatives
 
 It may seem that just having the `allow` key with `public` join rules is enough
