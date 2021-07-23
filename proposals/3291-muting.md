@@ -71,6 +71,6 @@ None that I can think of.
 
 ## Unstable prefix
 
-|Release      |Development                                           |
-|-------------|------------------------------------------------------|
-|`m.call.mute`|`org.matrix.msc3291.call.sdp_stream_metadata_changed` |
+|Release                             |Development                                           |
+|------------------------------------|------------------------------------------------------|
+|`m.call.sdp_stream_metadata_changed`|`org.matrix.msc3291.call.sdp_stream_metadata_changed` |
