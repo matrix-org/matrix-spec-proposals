@@ -168,7 +168,9 @@ ordered list where you click an entry), the order of the images should be predic
 The ordering could look as following:
 1. User image pack (images set in your own account)
 2. Image pack rooms (rooms whos image packs you enabled to be accessible everywhere)
-3. Room image packs (images defined in the currently open room)
+3. Space image packs (image packs defined in claimed parents (`m.space.parent`), recursively. Important:
+   clients must make sure to break recursion loops), if the user is in them
+4. Room image packs (images defined in the currently open room)
 
 Furthermore, clients are expected to deduplicate images based on their mxc url. This not only ensures
 that, when viewing a room that you also have in `m.image_pack.rooms`, it won't be displayed twice,
