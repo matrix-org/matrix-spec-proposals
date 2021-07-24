@@ -135,6 +135,11 @@ E.g. a discord bridge could set as state key
 `de.sorunome.mx-puppet-bridge.discord` and have all the bridged emotes in said state event, keeping
 bridged emotes from matrix emotes separate.
 
+#### Space image packs
+Clients should suggest image packs of a space that a room is in, if the user is also in the space.
+For that, the client should recursively check the `m.space.parent` state events and suggest emoticons
+and stickers from all the image packs found in those rooms/spaces.
+
 #### Image pack rooms
 While room image packs are specific to a room and are only accessible within that room, image pack
 rooms should be accessible from everywhere. They do not differentiate themselves from room emotes at
@@ -168,8 +173,7 @@ ordered list where you click an entry), the order of the images should be predic
 The ordering could look as following:
 1. User image pack (images set in your own account)
 2. Image pack rooms (rooms whos image packs you enabled to be accessible everywhere)
-3. Space image packs (image packs defined in claimed parents (`m.space.parent`), recursively. Important:
-   clients must make sure to break recursion loops), if the user is in them
+3. Space image packs (packs sent in the space, if present)
 4. Room image packs (images defined in the currently open room)
 
 Furthermore, clients are expected to deduplicate images based on their mxc url. This not only ensures
