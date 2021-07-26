@@ -76,7 +76,7 @@ for UX.
 ### Setting the corresponding track as `recvonly`/`inactive`
 
 While this would be beneficial for low bandwidth connections, it takes time. The
-delay might be acceptable for video but isn't for audio (with which your would
+delay might be acceptable for video but isn't for audio (with which you would
 assume an instantaneous mute state change). This is also problematic since there
 could be a confusion with holding (as defined in
 [MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746)).
