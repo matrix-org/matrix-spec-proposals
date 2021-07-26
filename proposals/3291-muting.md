@@ -60,8 +60,8 @@ muted.
 
 ## Potential issues
 
-When the user mutes their camera, the client will meaningless which will waste
-bandwidth.
+When the user mutes their camera, the client will keep sending meaningless data
+which will waste bandwidth.
 
 ## Alternatives
 
