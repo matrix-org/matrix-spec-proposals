@@ -1,3 +1,15 @@
+x-yaml-aliases:
+  commands:
+    - &hugo_build_environment_setup |
+      # Install package dependencies
+      apk add nodejs npm git hugo
+      # Install the node dependencies necessary to build the spec
+      npm i
+      # Pull all git submodules, required for the hugo theme
+      git submodule update --init --recursive
+      # Pull current proposal information
+      npm run get-proposals
+
 steps:
   - label: ":snake: Build swagger definitions for matrix.org"
     command:
@@ -19,14 +31,7 @@ steps:
 
   - label: ":books: Build the spec"
     command:
-      # Install package dependencies
-      - apk add nodejs npm git hugo
-      # Install the node dependencies necessary to build the spec
-      - npm i
-      # Pull all git submodules, required for the hugo theme
-      - git submodule update --init --recursive
-      # Pull current proposal information
-      - npm run get-proposals
+      - *hugo_build_environment_setup
       # Build the spec, will build to './spec'
       # Set the baseURL as we're deploying to https://spec.matrix.org/unstable
       - hugo --baseURL "/unstable" -d "spec"
@@ -37,3 +42,19 @@ steps:
     plugins:
       - docker#v3.7.0:
           image: alpine
+
+  - label: ":rocket: Release the spec"
+    command:
+      - *hugo_build_environment_setup
+      # Generate a stable version of the spec
+      - scripts/prepare-spec-release.sh "$BUILDKITE_TAG" spec
+      # Package the build as an artefact, which will be downloaded by:
+      # https://github.com/matrix-org/buildkite-webhook-listener
+      - tar -czf spec-release.tar.gz spec
+    artifact_paths:
+      - spec-release.tar.gz
+    plugins:
+      - docker#v3.7.0:
+          image: alpine
+          mount-buildkite-agent: false
+          propogate-environment: true
