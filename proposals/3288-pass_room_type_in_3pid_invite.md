@@ -22,7 +22,7 @@ Add a new `room_type` field in json body of `POST /_matrix/identity/v2/store-inv
 
 | Parameter | Type | Description |
 |--|--|--|
-| room_type  | string  | The room type for the room to which the user is invited. This should be retrieved from the value of `type` in `m.room.create` event.
+| room_type  | string  | The room type for the room to which the user is invited. This should be retrieved from the value of `type` in `m.room.create` event. Do not include paremeter if not `type` not present in `m.room.create`.
 
 ````
 POST /_matrix/identity/v2/store-invite HTTP/1.1
@@ -45,6 +45,10 @@ Content-Type: application/json
 
 The identity server could then use room type to customize the email depending on the room type.
 
+__Email Generation__
+
+The link in the generated email should also pass over the `room_type` to clients ( like it is doing for 
+`inviter_name`, `room_name`, `room_avatar`)
 
 ## Potential issues
 
