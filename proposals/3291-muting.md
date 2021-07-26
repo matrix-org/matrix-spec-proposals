@@ -93,7 +93,8 @@ we ever decided to do what is described in the next section.
 
 An option would be using the current method in combination with setting the
 corresponding track as `recvonly`/`inactive`. Along with this clients would need
-to set the mute state in `sdp_stream_metadata` to avoid conflicts with holding.
+to set the mute state in `sdp_stream_metadata` to avoid conflicts with holding
+(as defined in [MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746)).
 While this solution might be the most flexible solution as it would allow
 clients to choose between bandwidth and a mute state change delay for each
 track, it would be harder to implement and feels generally disjointed.
