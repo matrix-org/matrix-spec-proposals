@@ -104,7 +104,7 @@ public rooms or unknown individuals.
 As with all media events, clients should be wary that the contained file is actually an audio file. Playing JPEGs
 or executables over the user's speakers are unlikely to go down very well.
 
-Voice messages are likely best used in encrypted rooms due to the high liklihood that the members of the room are
+Voice messages are likely best used in encrypted rooms due to the high likelihood that the members of the room are
 trusted, and the user's voice is not uploaded plainly to the media repo. Typically, this will be DMs or other
 forms of private chats in most clients.
 
