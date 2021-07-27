@@ -57,6 +57,8 @@ Any entries in the list which do not match the expected format are ignored. Thus
 if all entries are invalid, the list behaves as if empty and all users without
 an invite are rejected.
 
+The `allow` key is to be protected when redacting an event.
+
 When a homeserver receives a `/join` request from a client or a `/make_join` /
 `/send_join` request from another homeserver, the request should only be permitted
 if the user is invited to this room, or is joined to one of the listed rooms. If
