@@ -105,6 +105,10 @@ None that I can think of.
 
 ## Unstable prefix
 
-|Release                             |Development                                           |
-|------------------------------------|------------------------------------------------------|
-|`m.call.sdp_stream_metadata_changed`|`org.matrix.msc3291.call.sdp_stream_metadata_changed` |
+|Release                             |Development                                  |
+|------------------------------------|---------------------------------------------|
+|`m.call.sdp_stream_metadata_changed`|`org.matrix.call.sdp_stream_metadata_changed`|
+|`sdp_stream_metadata`               |`org.matrix.msc3077.sdp_stream_metadata`     |
+
+We use an unstable prefix for `sdp_stream_metadata` to match
+[MSC3077](https://github.com/matrix-org/matrix-doc/pull/3077).
