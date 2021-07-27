@@ -74,7 +74,7 @@ Text-to-speech and similar capabilities for voice messages would be covered by a
 
 ## Potential issues
 
-The `m.voice` identifier could probably conflict, as `m.audio` could conflict as well. We may be interested in
+The `m.voice` identifier could probably conflict, and `m.audio` could conflict as well. We may be interested in
 discussing `m.message.voice` or similar instead, though likely at MSC1767 rather than this proposal.
 
 This also annotates events with an empty object and potentially a lot of extra information. This is considered
