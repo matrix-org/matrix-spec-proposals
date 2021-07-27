@@ -61,7 +61,6 @@ Example response:
             "world_readable": true,
             "join_rules": "public",
             "room_type": "m.space",
-            "allowed_spaces": ["!abcdef:bleecker.street"]
         },
         { ... }
     ],
