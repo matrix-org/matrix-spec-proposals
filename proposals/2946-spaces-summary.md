@@ -1,4 +1,4 @@
-## MSC2946: Spaces Summary
+# MSC2946: Spaces Summary
 
 This MSC depends on [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772), which
 describes why a Space is useful:
@@ -25,7 +25,7 @@ rooms:
 A new client-server API (and corresponding server-server API) is added which allows
 for querying for the rooms and spaces contained within a space. This allows a client
 to efficiently display a hierarchy of rooms to a user (i.e. without having
-to walk the full state of the space).
+to walk the full state of each room).
 
 ### Client-server API
 
@@ -33,20 +33,81 @@ An endpoint is provided to walk the space tree, starting at the provided room ID
 ("the root room"), and visiting other rooms/spaces found via `m.space.child`
 events. It recurses into the children and into their children, etc.
 
-Note that only rooms that have a `type` of `m.space` are considered when searching
-for `m.space.child` events.
+Any child room that the user is joined or is potentially joinable (TODO REF) is included
+in the response. When a room with a `type` of `m.space` is found, it is searched
+for valid `m.space.child` events to recurse into.
+
+In order to provide a consistent experience, the space tree should be walked in
+a depth-first manner, e.g. whenever a space is found it should be recursed into
+by sorting the children rooms and iterating through them.
+
+There could be loops in the returned child events; clients and servers should
+handle this gracefully. Similarly, note that a child room might appear multiple
+times (e.g. also be a grandchild). Clients and servers should handle this
+appropriately.
 
 This endpoint requires authentication and is not subject to rate-limiting.
 
-Example request:
+TODO Define pagination
+
+#### Request format
+
+```text
+GET /_matrix/client/r0/rooms/{roomID}/spaces
+```
+
+Query Parameters:
+
+* **`suggested_only`**: Optional. If `true`, return only child events and rooms
+  where the `m.space.child` event has `suggested: true`.  Must be a  boolean,
+  defaults to `false`.
+
+  This applies transitively, i.e. if a `suggested_only` is `true` and a space is
+  not suggested then it should not be searched for children. The inverse is also
+  true, if a space is suggested, but a child of that space is not then the child
+  should not be included.
+* **`limit`**: Optional: a client-defined limit to the maximum
+  number of rooms to return per page. Must be a non-negative integer.
+
+  Server implementations should impose a maximum value to avoid resource
+  exhaustion.
+* **`max_depth`**: Optional: The maximum depth in the tree (from the root room)
+  to return. The deepest depth returned will not include children events. Defaults
+  to no-limit. Must be a non-negative integer.
+
+  Server implementations may wish to impose a maximum value to avoid resource
+  exhaustion.
+* **`from`**: Optional. Pagination token given to retrieve the next set of rooms.
+
+#### Response Format
+
+* **`rooms`**: `[object]` For each room/space, starting with the root room, a
+  summary of that room. The fields are the same as those returned by
+  `/publicRooms` (see
+  [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
+  with the addition of:
+  * **`room_type`**: the value of the `m.type` field from the room's
+    `m.room.create` event, if any.
+  * **`children_state`**: The `m.space.child` events of the room. For each event,
+    only the following fields are included<sup id="a1">[1](#f1)</sup>:
+    `type`, `state_key`, `content`, `room_id`, `sender`,  with the addition of:
+    * **`creation_ts`**: the value of the `origin_server_ts` field from the
+      `m.space.child` event. This is required for sorting of rooms as specified
+      below.
+* **`next_token`**: Optional `string`. The token to supply in the `from` param
+  of the next `/spaces` request in order to request more rooms. If this is absent,
+  there are no more results.
+
+#### Example request:
 
 ```text
 GET /_matrix/client/r0/rooms/{roomID}/spaces?
-    max_rooms_per_space=5&
-    suggested_only=true
+    limit=30&
+    suggested_only=true&
+    max_depth=4
 ```
 
-Example response:
+#### Example response:
 
 ```jsonc
 {
@@ -61,104 +122,70 @@ Example response:
             "world_readable": true,
             "join_rules": "public",
             "room_type": "m.space",
+            "children_state": [
+                {
+                    "type": "m.space.child",
+                    "state_key": "!efgh:example.com",
+                    "content": {
+                        "via": ["example.com"],
+                        "suggested": true
+                    },
+                    "room_id": "!ol19s:bleecker.street",
+                    "sender": "@alice:bleecker.street",
+                    "creation_ts": 1432735824653
+                },
+                { ... }
+            ]
         },
         { ... }
     ],
-    "events": [
-        {
-            "type": "m.space.child",
-            "state_key": "!efgh:example.com",
-            "content": {
-                "via": ["example.com"],
-                "suggested": true
-            },
-            "room_id": "!ol19s:bleecker.street",
-            "sender": "@alice:bleecker.street",
-            "creation_ts": 1432735824653
-        },
-        { ... }
-    ]
+    "next_token": "abcdef"
 }
 ```
 
-Request params:
+#### Errors:
 
-* **`suggested_only`**: Optional. If `true`, return only child events and rooms where the
-  `m.space.child` event has `suggested: true`.  Must be a  boolean, defaults to `false`.
-* **`max_rooms_per_space`**: Optional: a client-defined limit to the maximum
-  number of children to return per space. Doesn't apply to the root space (ie,
-  the `room_id` in the request). Must be a non-negative integer.
-
-  Server implementations should impose a maximum value to avoid resource
-  exhaustion.
-
-Response fields:
-
-* **`rooms`**: for each room/space, starting with the root room, a
-  summary of that room. The fields are the same as those returned by
-  `/publicRooms` (see
-  [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
-  with the addition of:
-  * **`room_type`**: the value of the `m.type` field from the room's
-    `m.room.create` event, if any.
-* **`events`**: `m.space.child` events of the returned rooms. For each event, only the
-  following fields are returned: `type`, `state_key`, `content`, `room_id`,
-  `sender`, <sup id="a1">[1](#f1)</sup> with the addition of:
-  * **`creation_ts`**: the value of the `origin_server_ts` field from the
-    `m.space.child` event. This is required for sorting of rooms as specified
-    in [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) and updated
-    below.
-
-Errors:
-
-403 with an error code of `M_FORBIDDEN`: if the user doesn't have permission to
-view/peek the root room (including if that room does not exist). This matches the
+An HTTP response with a status code of 403 and an error code of `M_FORBIDDEN`
+should be returned if the user doesn't have permission to view/peek the root room.
+This should also be returned if that room does not exist, which matches the
 behavior of other room endpoints (e.g.
-[`/_matrix/client/r0/rooms/{roomID}/aliases`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-aliases)).
-To not divulge whether the user doesn't have permission vs whether the room
-does not exist.
+[`/_matrix/client/r0/rooms/{roomID}/aliases`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-aliases))
+to not divulge that a room exists which the user doesn't have permission to view.
 
-#### Algorithm
+An HTTP response with a status code of 400 and an error code of `M_INVALID_PARAM`
+should be returned if the `from` token provided is unknown to the server.
 
-A rough algorithm follows:
+#### Client behaviour
 
-1. Start at the "root" room (the provided room ID).
-2. Generate a summary and add it to `rooms`.
-3. Add any `m.space.child` events in the room to `events`.
-4. Recurse into the targets of the `m.space.child` events.
-   1. If the user is not joined to the room and is not joinable (as defined by
-      [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173))
-      or has already been processed, do not process it.
-   2. Generate a summary for the room and add it to `rooms`.
-   3. Add any `m.space.child` events of the room to `events`.
-5. Recurse into any newly added targets of `m.space.child` events (i.e. repeat
-   step 4), until either all discovered rooms have been inspected, or the
-   server-side limit on the number of rooms is reached.
+TODO
 
-   In the case of the homeserver not having access to the state of a room, the
-   server-server API (see below) can be used to query for this information over
-   federation from one of the servers provided in the `via` key of the
-   `m.space.child` event.
+#### Server behaviour
 
-Other notes:
+The server should generate the response as discussed above, by doing a depth-first
+search (starting at the "root" room) for any `m.space.child` events. Any
+`m.space.child` with an invalid `via` are discarded (invalid is defined as in
+[MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772): missing, not an
+array or an empty array).
 
-* Any inaccessible children are omitted from the result, as well as the
-  `m.space.child` events that point to them.
-* There could be loops in the returned child events - clients (and servers)
-  should handle this gracefully.
-* Similarly, note that a child room might appear multiple times (e.g. also be a
-  grandchild). Clients and servers should handle this appropriately.
-* `suggested_only` applies transitively.
+In the case of the homeserver not having access to the state of a room, the
+server-server API (see below) can be used to query for this information over
+federation from one of the servers provided in the `via` key of the
+`m.space.child` event. It is recommended to cache the federation response for a
+period of time and to prefer local data over data returned over federation.
 
-  For example, if a space A has child space B which is *not* suggested, and space
-  B has suggested child room C, and the client makes a summary request for A with
-  `suggested_only=true`, neither B **nor** C will be returned.
+When the current response page is full, the current state should be persisted
+and a pagination token should be generated (if there is more data to return).
+If the client does not request the next page after a short period of time the
+persisted data may be discarded to limit resource usage. It maybe possible to
+generate reusable pagination tokens (i.e. sharable across users), but this is
+left as an implementation specific detail.
 
-  Similarly, if a space A has child space B which is suggested, and space B has
-  suggested child room C which is suggested, and the client makes a summary request
-  for A with `suggested_only=true`, both B and C will be returned.
-* `m.space.child` with an invalid `via` (invalid is defined as missing, not an
-  array or an empty array) are ignored.
+The persisted state will generally include:
+
+* Any processed rooms (and whether the requesting user is able to join them).
+* A queue of rooms to process (in depth-first order with rooms at the same level
+  ordered according to below).
+* Pending information from the latest federation response.
 
 ### Server-server API
 
@@ -166,87 +193,71 @@ The Server-Server API has almost the same interface as the Client-Server API.
 It is used when a homeserver does not have the state of a room to include in the
 summary.
 
-Example request:
+The main difference is that it does *not* recurse into spaces and does not support
+pagination. This is somewhat equivalent to a Client-Server request with a `max_depth=1`.
+
+If the requesting server wishes to explore a sub-space an additional federation
+request can be made for any returned spaces. This should allow for trivially caching
+responses.
+
+Since the server-server API does not know the requesting user, the response should
+divulge the information if any member of the requesting server could join the room.
+The requesting server is trusted to properly filter this information.
+
+* If the target server is not a member of some children rooms (so would have to
+  send another request over federation to inspect them), no attempt is made to
+  recurse into them. - they are simply omitted from the `rooms` key of the
+  response. (Although they will still appear in the `children_state`key of
+  another room).
+  
+  TODO How do we tell the difference between a room the server does not know about
+  and a room that the requester is not allowed to know about.
+
+#### Request format
+
+```text
+GET /_matrix/federation/v1/spaces/{roomID}
+```
+
+Query Parameters:
+
+* **`suggested_only`**: The same as the Client-Server API.
+
+TODO Do we need any server limits here?
+
+#### Response format
+
+The response format is similar to the Client-Server API:
+
+* **`rooms`**: `[object]` The same as the Client-Server API with an additional
+  field:
+  * **`allowed_room_ids`**: A list of room IDs which give access to this room per
+    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>
+* **`unknown_rooms`**: Optional `[string]`. A list of room IDs which are children
+  of the requested room, but the target server is not a member of. The requesting
+  server may need to request information about them from *other* servers.
+
+  This is used to differentiate between rooms which the requesting server does
+  not have access to (which will simply be missing in the response) vs. those
+  that the target server cannot include in the response.
+
+#### Example request:
 
 ```jsonc
 GET /_matrix/federation/v1/spaces/{roomID}?
-    exclude_rooms=%21a%3Ab&
-    exclude_rooms=%21b%3Ac&
-    max_rooms_per_space=5&
-    suggested_only=true&
+    suggested_only=true
 ```
 
-The response has the same shape as the Client-Server API.
+#### Errors:
 
-Request parameters are the same as the Client-Server API, with the addition of:
+An HTTP response with a status code of 404 is returned if the target server is
+not a member of the requested room.
 
-* **`exclude_rooms`**: Optional. A list of room IDs that can be omitted
-  from the response.
-
-Response fields are the same as the Client-Server API, with the addition of:
-
-* **`rooms`**: Each room contains an additional field:
-  * **`allowed_room_ids`**: A list of room IDs which give access to this room per
-    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).
-
-This is largely the same as the Client-Server API, but differences are:
-
-* The calling server can specify a list of spaces/rooms to omit from the
-  response (via `exclude_rooms`).
-* `max_rooms_per_space` applies to the root room as well as any returned
-  children.
-* If the target server is not a member of any discovered children (so
-  would have to send another request over federation to inspect them), no
-  attempt is made to recurse into them - they" are simply omitted from the
-  `rooms` key of the response. (Although they will still appear in the `events`
-  key).
-  * If the target server is not a member of the root room, an empty
-    response is returned.
-* The spaces/rooms must be joinable by the server for them to appear in the
-  results.
-
-Since the server-server API does not know the user who is requesting a summary of
-the space, the response should divulge the above information if any member of a
-requesting server could see it. The requesting server is trusted to properly
-filter this information.
-
-If a room delegates access to a space (via [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083))
-and there are any users on the requesting server in the correct space, the requesting
-server has a right to know about the rooms in that space and should return the
-relevant summaries, along with enough information that the requesting server can
-then do the necessary filtering.
-
-Consider that Alice and Bob share a server; Alice is a member of a space, but Bob
-is not. The remote server will not know whether the request is on behalf of Alice
-or Bob (and hence whether it should share details of restricted rooms within that
-space).
-
-Consider the above with a restricted room on a different server which defers
-access to the above space. When summarizing the space, the homeserver must make
-a request over federation for information on the room. The response would include
-the room (since Alice is able to join it), but the calling server does not know
-*why* they received the room, without additional information the server cannot
-properly filter the returned results.
-
-Note that there are still potential situations where each server individually
-doesn't have enough information to properly return the full summary, but these
-do not seem reasonable in what is considered a normal structure of spaces. (E.g.
-in the above example, if the remote server is not in the space and does not know
-whether the server is in the space or not it cannot return the room.)
-
-(The alternative, where the calling server sends the requesting `user_id`, and
-the target server does the filtering, is unattractive because it rules out a
-future world where the calling server can cache the result.)
-
-This does not decrease security since a server could lie and make a request on
-behalf of a user in the proper space to see the given information. I.e. the
-calling server must be trusted anyway.
+TODO How to  differentiate between unknown vs. unaccessible rooms. 
 
 ## Potential issues
 
-To reduce complexity, only a limited number of rooms are returned for a room,
-no effort is made to paginate the results. Proper pagination is left to a future
-MSC.
+TODO
 
 ### MSC1772 Ordering
 
@@ -310,25 +321,33 @@ age of the relationship.
 
 ## Alternatives
 
-An initial version of this followed both `m.space.child` and `m.space.parent` events,
-but this is unnecessary to provide the expected user experience.
+Peeking to explore the room state could be used to build the tree of rooms/spaces,
+but this would be significantly more expensive for both clients and servers. It
+would also require peeking over federation (which is explored in
+[MSC2444](https://github.com/matrix-org/matrix-doc/pull/2444)).
 
 ## Security considerations
 
 A space with many rooms on different homeservers could cause multiple federation
-requests to be made. A carefully crafted room with inadequate limits on the maximum
-rooms per space (or a maximum total number of rooms) could be used in a denial
-of service attack.
+requests to be made. A carefully crafted room with inadequate server enforced
+limits could be used in a denial of service attack.
+
+The requesting server over federation is trusted to filter the response for the
+requesting user. The alternative, where the requesting server sends the requesting
+`user_id`, and the target server does the filtering, is unattractive because it
+rules out a caching of the result. This does not decrease security since a server
+could lie and make a request on behalf of a user in the proper space to see the
+given information. I.e. the calling server must be trusted anyway.
 
 ## Unstable prefix
 
 During development of this feature it will be available at unstable endpoints.
 
 The client-server API will be:
-`/_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/spaces`
+`/_matrix/client/unstable/org.matrix.msc2946.v2/rooms/{roomID}/spaces`
 
 The server-server API will be:
-`/_matrix/federation/unstable/org.matrix.msc2946/spaces/{roomID}`
+`/_matrix/federation/unstable/org.matrix.msc2946.v2/spaces/{roomID}`
 
 ## Footnotes
 
@@ -336,3 +355,22 @@ The server-server API will be:
 potential dataleaks (e.g. timestamps, `prev_content`, etc.) and to ensure that
 clients do not treat any of this data as authoritative (e.g. if it came back
 over federation). The data should not be persisted as actual events.[↩](#a1)
+
+<a id="f2"/>[2]: As a worked example, in the context of
+[MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083), consider that Alice
+and Bob share a server; Alice is a member of a space, but Bob is not. A remote
+server will not know whether the request is on behalf of Alice or Bob (and hence
+whether it should share details of restricted rooms within that space).
+
+Consider if the space is modified to include a restricted room on a different server
+which allows access from the space. When summarizing the space, the homeserver must make
+a request over federation for information on the room. The response should include
+the room (since Alice is able to join it). Without additional information the
+calling server does not know *why* they received the room and cannot properly
+filter the returned results.
+
+Note that there are still potential situations where each server individually
+doesn't have enough information to properly return the full summary, but these
+do not seem reasonable in what is considered a normal structure of spaces. (E.g.
+in the above example, if the remote server is not in the space and does not know
+whether the server is in the space or not it cannot return the room.)[↩](#a2)
