@@ -33,8 +33,9 @@ An endpoint is provided to walk the space tree, starting at the provided room ID
 ("the root room"), and visiting other rooms/spaces found via `m.space.child`
 events. It recurses into the children and into their children, etc.
 
-Any child room that the user is joined or is potentially joinable (TODO REF) is included
-in the response. When a room with a `type` of `m.space` is found, it is searched
+Any child room that the user is joined or is potentially joinable (per
+[MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173)) is included in
+the response. When a room with a `type` of `m.space` is found, it is searched
 for valid `m.space.child` events to recurse into.
 
 In order to provide a consistent experience, the space tree should be walked in
@@ -47,8 +48,6 @@ times (e.g. also be a grandchild). Clients and servers should handle this
 appropriately.
 
 This endpoint requires authentication and is not subject to rate-limiting.
-
-TODO Define pagination
 
 #### Request format
 
@@ -204,14 +203,13 @@ Since the server-server API does not know the requesting user, the response shou
 divulge the information if any member of the requesting server could join the room.
 The requesting server is trusted to properly filter this information.
 
-* If the target server is not a member of some children rooms (so would have to
-  send another request over federation to inspect them), no attempt is made to
-  recurse into them. - they are simply omitted from the `rooms` key of the
-  response. (Although they will still appear in the `children_state`key of
-  another room).
-  
-  TODO How do we tell the difference between a room the server does not know about
-  and a room that the requester is not allowed to know about.
+If the target server is not a member of some children rooms (so would have to send
+another request over federation to inspect them), no attempt is made to recurse
+into them. They are simply omitted from the `rooms` key of the response.
+(Although they will still appear in the `children_state`key of another room).
+
+Similarly, if a server set limit on the size of the response is reached, additional
+rooms are not added to the response and can be queried individually.
 
 #### Request format
 
@@ -222,8 +220,6 @@ GET /_matrix/federation/v1/spaces/{roomID}
 Query Parameters:
 
 * **`suggested_only`**: The same as the Client-Server API.
-
-TODO Do we need any server limits here?
 
 #### Response format
 
@@ -251,13 +247,8 @@ GET /_matrix/federation/v1/spaces/{roomID}?
 #### Errors:
 
 An HTTP response with a status code of 404 is returned if the target server is
-not a member of the requested room.
-
-TODO How to  differentiate between unknown vs. unaccessible rooms. 
-
-## Potential issues
-
-TODO
+not a member of the requested room or the requesting server is not allowed to
+access the room.
 
 ### MSC1772 Ordering
 
@@ -319,6 +310,11 @@ for a defined sorting of siblings based purely on the information available in
 the `m.space.child` event while still allowing for a natural ordering due to the
 age of the relationship.
 
+## Potential issues
+
+A large flat space (a single room with many `m.space.child` events) could cause
+a large federation response
+
 ## Alternatives
 
 Peeking to explore the room state could be used to build the tree of rooms/spaces,
@@ -328,9 +324,10 @@ would also require peeking over federation (which is explored in
 
 ## Security considerations
 
-A space with many rooms on different homeservers could cause multiple federation
-requests to be made. A carefully crafted room with inadequate server enforced
-limits could be used in a denial of service attack.
+A space with many sub-spaces and rooms on different homeservers could cause
+a large number of federation requests. A carefully crafted space with inadequate
+server enforced limits could be used in a denial of service attack. Generally
+this is mitigated by enforcing server limits and caching of responses.
 
 The requesting server over federation is trusted to filter the response for the
 requesting user. The alternative, where the requesting server sends the requesting
