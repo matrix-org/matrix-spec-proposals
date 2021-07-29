@@ -90,8 +90,7 @@ Query Parameters:
   * **`children_state`**: The `m.space.child` events of the room. For each event,
     only the following fields are included<sup id="a1">[1](#f1)</sup>:
     `type`, `state_key`, `content`, `room_id`, `sender`,  with the addition of:
-    * **`creation_ts`**: the value of the `origin_server_ts` field from the
-      `m.space.child` event. This is required for sorting of rooms as specified
+    * **`origin_server_ts`**: This is required for sorting of rooms as specified
       below.
 * **`next_token`**: Optional `string`. The token to supply in the `from` param
   of the next `/spaces` request in order to request more rooms. If this is absent,
