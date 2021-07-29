@@ -52,7 +52,7 @@ This endpoint requires authentication and is not subject to rate-limiting.
 #### Request format
 
 ```text
-GET /_matrix/client/r0/rooms/{roomID}/spaces
+GET /_matrix/client/r0/rooms/{roomID}/hierarchy
 ```
 
 Query Parameters:
@@ -100,7 +100,7 @@ Query Parameters:
 #### Example request:
 
 ```text
-GET /_matrix/client/r0/rooms/{roomID}/spaces?
+GET /_matrix/client/r0/rooms/{roomID}/hierarchy?
     limit=30&
     suggested_only=true&
     max_depth=4
@@ -214,7 +214,7 @@ rooms are not added to the response and can be queried individually.
 #### Request format
 
 ```text
-GET /_matrix/federation/v1/spaces/{roomID}
+GET /_matrix/federation/v1/hierarchy/{roomID}
 ```
 
 Query Parameters:
@@ -240,7 +240,7 @@ The response format is similar to the Client-Server API:
 #### Example request:
 
 ```jsonc
-GET /_matrix/federation/v1/spaces/{roomID}?
+GET /_matrix/federation/v1/hierarchy/{roomID}?
     suggested_only=true
 ```
 
@@ -341,10 +341,10 @@ given information. I.e. the calling server must be trusted anyway.
 During development of this feature it will be available at unstable endpoints.
 
 The client-server API will be:
-`/_matrix/client/unstable/org.matrix.msc2946.v2/rooms/{roomID}/spaces`
+`/_matrix/client/unstable/org.matrix.msc2946/rooms/{roomID}/hierarchy`
 
 The server-server API will be:
-`/_matrix/federation/unstable/org.matrix.msc2946.v2/spaces/{roomID}`
+`/_matrix/federation/unstable/org.matrix.msc2946/hierarchy/{roomID}`
 
 ## Footnotes
 
