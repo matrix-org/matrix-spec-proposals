@@ -97,10 +97,9 @@ Next we add "insertion" and "chunk" events so it's more presriptive on how each 
  - Consideration: the "insertion"/"chunk" events add a new way for an application service to tie the chunk reconciliation in knots(similar to the DAG knots that can happen).
 
 
-![](https://user-images.githubusercontent.com/558581/126261578-a6f6c3ec-bf5c-4c82-a128-66ba4a9ac079.png)
+![](https://user-images.githubusercontent.com/558581/127040602-e95ac36a-5e64-4176-904d-6abae2c95ae9.png)
 
-
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBCIC0tLS0tLS0tLS0tLS0tPiBBXG4gICAgZW5kXG4gICAgXG4gICAgc3ViZ3JhcGggY2h1bmswXG4gICAgICAgIGNodW5rMC1jaHVua1tbXCJjaHVua1wiXV0gLS0-IGNodW5rMC0yKChcIjJcIikpIC0tPiBjaHVuazAtMSgoMSkpIC0tPiBjaHVuazAtMCgoMCkpIC0tPiBjaHVuazAtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcblxuICAgIHN1YmdyYXBoIGNodW5rMVxuICAgICAgICBjaHVuazEtY2h1bmtbW1wiY2h1bmtcIl1dIC0tPiBjaHVuazEtMigoXCIyXCIpKSAtLT4gY2h1bmsxLTEoKDEpKSAtLT4gY2h1bmsxLTAoKDApKSAtLT4gY2h1bmsxLWluc2VydGlvblsvaW5zZXJ0aW9uXFxdXG4gICAgZW5kXG4gICAgXG4gICAgc3ViZ3JhcGggY2h1bmsyXG4gICAgICAgIGNodW5rMi1jaHVua1tbXCJjaHVua1wiXV0gLS0-IGNodW5rMi0yKChcIjJcIikpIC0tPiBjaHVuazItMSgoMSkpIC0tPiBjaHVuazItMCgoMCkpIC0tPiBjaHVuazItaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcblxuICAgIFxuICAgIGNodW5rMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF0gLS0tLS0tLT4gQVxuICAgIGNodW5rMC1jaHVuayAtLi0-IGNodW5rMC1pbnNlcnRpb25CYXNlXG4gICAgY2h1bmswLWluc2VydGlvbiAtLS0tLS0tPiBBXG4gICAgY2h1bmsxLWluc2VydGlvbiAtLT4gQVxuICAgIGNodW5rMS1jaHVuayAtLi0-IGNodW5rMC1pbnNlcnRpb25cbiAgICBjaHVuazItaW5zZXJ0aW9uIC0tPiBBXG4gICAgY2h1bmsyLWNodW5rIC0uLT4gY2h1bmsxLWluc2VydGlvbiIsIm1lcm1haWQiOiJ7fSIsInVwZGF0ZUVkaXRvciI6ZmFsc2UsImF1dG9TeW5jIjp0cnVlLCJ1cGRhdGVEaWFncmFtIjpmYWxzZX0)
+[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBCIC0tLS0tLS0tLS0tLS0tLS0tPiBBXG4gICAgZW5kXG4gICAgXG4gICAgc3ViZ3JhcGggY2h1bmswXG4gICAgICAgIGNodW5rMC1jaHVua1tbXCJjaHVua1wiXV0gLS0-IGNodW5rMC0yKChcIjJcIikpIC0tPiBjaHVuazAtMSgoMSkpIC0tPiBjaHVuazAtMCgoMCkpIC0tPiBjaHVuazAtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcblxuICAgIHN1YmdyYXBoIGNodW5rMVxuICAgICAgICBjaHVuazEtY2h1bmtbW1wiY2h1bmtcIl1dIC0tPiBjaHVuazEtMigoXCIyXCIpKSAtLT4gY2h1bmsxLTEoKDEpKSAtLT4gY2h1bmsxLTAoKDApKSAtLT4gY2h1bmsxLWluc2VydGlvblsvaW5zZXJ0aW9uXFxdXG4gICAgZW5kXG4gICAgXG4gICAgc3ViZ3JhcGggY2h1bmsyXG4gICAgICAgIGNodW5rMi1jaHVua1tbXCJjaHVua1wiXV0gLS0-IGNodW5rMi0yKChcIjJcIikpIC0tPiBjaHVuazItMSgoMSkpIC0tPiBjaHVuazItMCgoMCkpIC0tPiBjaHVuazItaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcblxuICAgIFxuICAgIGNodW5rMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF0gLS0tLS0tLS0tLS0tLT4gQVxuICAgIGNodW5rMC1jaHVuayAtLi0-IGNodW5rMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF1cbiAgICBjaHVuazEtY2h1bmsgLS4tPiBjaHVuazAtaW5zZXJ0aW9uXG4gICAgY2h1bmsyLWNodW5rIC0uLT4gY2h1bmsxLWluc2VydGlvblxuIiwibWVybWFpZCI6Int9IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
 
 <details>
 <summary>mermaid graph syntax</summary>
@@ -108,7 +107,7 @@ Next we add "insertion" and "chunk" events so it's more presriptive on how each 
 ```mermaid
 flowchart BT
     subgraph live
-        B --------------> A
+        B -----------------> A
     end
     
     subgraph chunk0
@@ -124,17 +123,13 @@ flowchart BT
     end
 
     
-    chunk0-insertionBase[/insertion\] -------> A
-    chunk0-chunk -.-> chunk0-insertionBase
-    chunk0-insertion -------> A
-    chunk1-insertion --> A
+    chunk0-insertionBase[/insertion\] -------------> A
+    chunk0-chunk -.-> chunk0-insertionBase[/insertion\]
     chunk1-chunk -.-> chunk0-insertion
-    chunk2-insertion --> A
     chunk2-chunk -.-> chunk1-insertion
 ```
 
 </details>
-
 
 
 
@@ -216,9 +211,9 @@ The structure of the "marker" event would look like:
 }
 ```
 
-![](https://user-images.githubusercontent.com/558581/126578757-7171c714-ee6b-49ea-a998-fe73bb3f4450.png)
+![](https://user-images.githubusercontent.com/558581/127429607-d67b6785-050f-4944-bd11-f31870ed43a0.png)
 
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBtYXJrZXIxPlwibWFya2VyXCJdIC0tLS0-IEIgLS0tLS0tLS0tLS0tLS0-IEFcbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBjaHVuazBcbiAgICAgICAgY2h1bmswLWNodW5rW1tcImNodW5rXCJdXSAtLT4gY2h1bmswLTIoKFwiMlwiKSkgLS0-IGNodW5rMC0xKCgxKSkgLS0-IGNodW5rMC0wKCgwKSkgLS0-IGNodW5rMC1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgc3ViZ3JhcGggY2h1bmsxXG4gICAgICAgIGNodW5rMS1jaHVua1tbXCJjaHVua1wiXV0gLS0-IGNodW5rMS0yKChcIjJcIikpIC0tPiBjaHVuazEtMSgoMSkpIC0tPiBjaHVuazEtMCgoMCkpIC0tPiBjaHVuazEtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBjaHVuazJcbiAgICAgICAgY2h1bmsyLWNodW5rW1tcImNodW5rXCJdXSAtLT4gY2h1bmsyLTIoKFwiMlwiKSkgLS0-IGNodW5rMi0xKCgxKSkgLS0-IGNodW5rMi0wKCgwKSkgLS0-IGNodW5rMi1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgbWFya2VyMSAtLi0-IGNodW5rMC1pbnNlcnRpb25CYXNlXG4gICAgY2h1bmswLWluc2VydGlvbkJhc2VbL2luc2VydGlvblxcXSAtLS0tLS0tPiBBXG4gICAgY2h1bmswLWNodW5rIC0uLT4gY2h1bmswLWluc2VydGlvbkJhc2VcbiAgICBjaHVuazAtaW5zZXJ0aW9uIC0tLS0tLS0-IEFcbiAgICBjaHVuazEtaW5zZXJ0aW9uIC0tPiBBXG4gICAgY2h1bmsxLWNodW5rIC0uLT4gY2h1bmswLWluc2VydGlvblxuICAgIGNodW5rMi1pbnNlcnRpb24gLS0-IEFcbiAgICBjaHVuazItY2h1bmsgLS4tPiBjaHVuazEtaW5zZXJ0aW9uIiwibWVybWFpZCI6Int9IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
+[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBtYXJrZXIxPlwibWFya2VyXCJdIC0tLS0-IEIgLS0tLS0tLS0tLS0tLS0tLS0-IEFcbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBjaHVuazBcbiAgICAgICAgY2h1bmswLWNodW5rW1tcImNodW5rXCJdXSAtLT4gY2h1bmswLTIoKFwiMlwiKSkgLS0-IGNodW5rMC0xKCgxKSkgLS0-IGNodW5rMC0wKCgwKSkgLS0-IGNodW5rMC1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgc3ViZ3JhcGggY2h1bmsxXG4gICAgICAgIGNodW5rMS1jaHVua1tbXCJjaHVua1wiXV0gLS0-IGNodW5rMS0yKChcIjJcIikpIC0tPiBjaHVuazEtMSgoMSkpIC0tPiBjaHVuazEtMCgoMCkpIC0tPiBjaHVuazEtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBjaHVuazJcbiAgICAgICAgY2h1bmsyLWNodW5rW1tcImNodW5rXCJdXSAtLT4gY2h1bmsyLTIoKFwiMlwiKSkgLS0-IGNodW5rMi0xKCgxKSkgLS0-IGNodW5rMi0wKCgwKSkgLS0-IGNodW5rMi1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgXG4gICAgbWFya2VyMSAtLi0-IGNodW5rMC1pbnNlcnRpb25CYXNlXG4gICAgY2h1bmswLWluc2VydGlvbkJhc2VbL2luc2VydGlvblxcXSAtLS0tLS0tLS0tLS0tPiBBXG4gICAgY2h1bmswLWNodW5rIC0uLT4gY2h1bmswLWluc2VydGlvbkJhc2VbL2luc2VydGlvblxcXVxuICAgIGNodW5rMS1jaHVuayAtLi0-IGNodW5rMC1pbnNlcnRpb25cbiAgICBjaHVuazItY2h1bmsgLS4tPiBjaHVuazEtaW5zZXJ0aW9uXG4iLCJtZXJtYWlkIjoie30iLCJ1cGRhdGVFZGl0b3IiOmZhbHNlLCJhdXRvU3luYyI6dHJ1ZSwidXBkYXRlRGlhZ3JhbSI6ZmFsc2V9)
 
 <details>
 <summary>mermaid graph syntax</summary>
@@ -226,7 +221,7 @@ The structure of the "marker" event would look like:
 ```mermaid
 flowchart BT
     subgraph live
-        marker1>"marker"] ----> B --------------> A
+        marker1>"marker"] ----> B -----------------> A
     end
     
     subgraph chunk0
@@ -241,18 +236,15 @@ flowchart BT
         chunk2-chunk[["chunk"]] --> chunk2-2(("2")) --> chunk2-1((1)) --> chunk2-0((0)) --> chunk2-insertion[/insertion\]
     end
 
+    
     marker1 -.-> chunk0-insertionBase
-    chunk0-insertionBase[/insertion\] -------> A
-    chunk0-chunk -.-> chunk0-insertionBase
-    chunk0-insertion -------> A
-    chunk1-insertion --> A
+    chunk0-insertionBase[/insertion\] -------------> A
+    chunk0-chunk -.-> chunk0-insertionBase[/insertion\]
     chunk1-chunk -.-> chunk0-insertion
-    chunk2-insertion --> A
     chunk2-chunk -.-> chunk1-insertion
 ```
 
 </details>
-
 
 
 
