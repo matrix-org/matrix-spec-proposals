@@ -12,7 +12,7 @@ This feature is known by apps like:
 - Instagram
 - WhatsApp
 - Facebook
-- Twitter (upcoming fleets feature)
+- Twitter (cancelled fleets feature)
 
 The use cases are simple:
 - User wants to add a post to their story.
