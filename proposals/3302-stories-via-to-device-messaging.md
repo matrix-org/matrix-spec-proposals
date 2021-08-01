@@ -199,5 +199,5 @@ The client should let the user know if it is able to encrypted stories.
 
 ## Unstable prefix
 
-Until this MSC is merged, clients should use the prefix `org.matrix.msc3302.stories.*` instead of
+Until this MSC is merged, clients should use the prefix `im.fluffychat.stories.*` instead of
 `m.stories.*`
