@@ -1,4 +1,4 @@
-# MSC0000: How to count unread messages
+# MSC3306: How to count unread messages
 
 ## Preface
 
