@@ -45,7 +45,10 @@
     {{ $status := .Site.Params.version.status }}
 
     {{ if ne $status "unstable"}}
-        {{ $ret = .Site.Params.version.number }}
+        {{ $path := path.Join "changelogs" }}
+        {{ $release_info := readFile (path.Join $path "release.yaml") | transform.Unmarshal }}
+
+        {{ $ret = $release_info.tag }}
         {{ $ret = delimit (slice "version" $ret) " " }}
     {{ end }}
 
