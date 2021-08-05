@@ -1,0 +1,1 @@
+Corrects the `/_matrix/federation/v1/user/devices/{userId}` response which actually returns `"self_signing_key"` instead of `"self_signing_keys"`.
