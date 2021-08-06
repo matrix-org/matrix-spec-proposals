@@ -282,7 +282,6 @@ Example:
     "body": "something-important.jpg",
     "file": {
       "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
-      "mimetype": "image/jpeg",
       "v": "v2",
       "key": {
         "alg": "A256CTR",
@@ -312,7 +311,6 @@ Example:
           "key_ops": ["encrypt", "decrypt"],
           "kty": "oct"
         },
-        "mimetype": "image/jpeg",
         "url": "mxc://example.org/pmVJxyxGlmxHposwVSlOaEOv",
         "v": "v2"
       },
