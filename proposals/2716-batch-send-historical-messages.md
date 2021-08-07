@@ -61,7 +61,7 @@ Here is what scrollback is expected to look like in Element:
 
 **Content fields:**
 
- - `m.historical` (`[true|false]`): Used on any event to indicate they were
+ - `m.historical` (`[true|false]`): Used on any event to indicate that it was
    historically imported after the fact
  - `m.next_chunk_id` (`string`): This is a random unique string for a
    `m.room.insertion` event to indicate what ID the next "chunk" event should
@@ -208,8 +208,9 @@ breakdown which incrementally explains how everything fits together.
     this as `?chunk_id`
  1. A "chunk" event is added to the end of the chunk. This is the event that
     connects to an insertion event by `?chunk_id`.
- 1. If `?chunk_id` is not specified (usually for the first chunk), create base
-    "insertion" event as a jumping off point from `?prev_event`.
+ 1. If `?chunk_id` is not specified (usually only for the first chunk), create a
+    base "insertion" event as a jumping off point from `?prev_event` which can
+    be added to the end of the `events` list in the response.
  1. All of the events in the historical chunk get a content field,
     `"m.historical": true`, to indicate that they are historical at the point of
     being added to a room.
@@ -236,14 +237,14 @@ breakdown which incrementally explains how everything fits together.
 
 #### Basic chunk structure
 
-Here is the starting point how the historical chunk concept look like in the
-DAG. We're going to build from this in the next sections.
+Here is the starting point for how the historical chunk concept looks like in
+the DAG. We're going to build from this in the next sections.
 
  - `A` is the oldest-in-time message
  - `B` is the newest-in-time message
  - `chunk0` is the first chunk we try to import
- - Each chunk of messages is older-in-time than the last (`chunk1` is older than
-   `chunk0`, etc)
+ - Each chunk of messages is older-in-time than the last (`chunk1` is
+   older-in-time than `chunk0`, etc)
 
 
 ![](https://user-images.githubusercontent.com/558581/126577416-68f1a5b0-2818-48c1-b046-21e504a0fe83.png)
@@ -290,18 +291,18 @@ flowchart BT
 
 #### Adding "insertion" and "chunk" events
 
-Next we add "insertion" and "chunk" events so it's more presriptive on how each
+Next we add "insertion" and "chunk" events so it's more prescriptive on how each
 historical chunk should connect to each other and how the homeserver can
 navigate the DAG.
 
  - With "insertion" events, we just add them to the start of each chronological
    chunk (where the oldest message in the chunk is). The next older-in-time
    chunk can connect to that "insertion" point from the previous chunk.
- - The initial "insertion" event could be from the main DAG or we can create it
-   ad-hoc in the first chunk so the homeserver can start traversing up the chunk
-   from there after a "marker" event points to it.
+ - The initial base "insertion" event could be from the main DAG or we can
+   create it ad-hoc in the first chunk so the homeserver can start traversing up
+   the chunk from there after a "marker" event points to it.
  - We use `m.room.chunk` events to indicate which `m.room.insertion` event it
-   connects to by its `m.next_chunk_id` field
+   connects to by its `m.next_chunk_id` field.
 
 ![](https://user-images.githubusercontent.com/558581/127040602-e95ac36a-5e64-4176-904d-6abae2c95ae9.png)
 
@@ -338,7 +339,7 @@ flowchart BT
 </details>
 
 
-The structure of the insertion event would look like:
+The structure of the insertion event looks like:
 ```js
 {
   "type": "m.room.insertion",
@@ -354,7 +355,7 @@ The structure of the insertion event would look like:
 ```
 
 
-The structure of the chunk event would look like:
+The structure of the chunk event looks like:
 ```js
 {
   "type": "m.room.chunk",
@@ -374,15 +375,15 @@ The structure of the chunk event would look like:
 #### Adding marker events
 
 Finally, we add "marker" events into the mix so that federated remote servers
-can also navigate and to know where/how to fetch historical messages correctly.
+also know where in the DAG they should look for historical messages.
 
 To lay out the different types of servers consuming these historical messages
 (more context on why we need "marker" events):
 
  1. Local server
-    - This can pretty much work out of the box. Just add the events to the
-      database and they're available. The new endpoint is just a mechanism to
-      insert the events.
+    - This pretty much works out of the box. It's possible to just add the
+      historical events to the database and they're available. The new endpoint
+      is just a mechanism to insert the events.
  1. Federated remote server that already has all scrollback history and then new
     history is inserted
     - The big problem is how does a HS know it needs to go fetch more history if
@@ -390,18 +391,18 @@ To lay out the different types of servers consuming these historical messages
       with "marker" events which are sent on the "live" timeline and point back
       to the "insertion" event where we inserted history next to. The HS can
       then go and backfill the "insertion" event and continue navigating the
-      chunks from there.
+      historical chunks from there.
  1. Federated remote server that joins a new room with historical messages
-    - We need to update the `/backfill` response to include historical messages
-      from the chunks
+    - The originating homeserver just needs to update the `/backfill` response
+      to include historical messages from the chunks.
  1. Federated remote server already in the room when history is inserted
     - Depends on whether the HS has the scrollback history. If the HS already
       has all history, see scenario 2, if doesn't, see scenario 3.
  1. For federated servers already in the room that haven't implemented MSC2716
     - Those homeservers won't have historical messages available because they're
-      unable to navigate the "marker"/"insertion" events. But the historical
-      messages would be available once the HS implements MSC2716 and processes
-      the "marker" events that point to the history.
+      unable to navigate the "marker"/"insertion"/"chunk" events. But the
+      historical messages would be available once the HS implements MSC2716 and
+      processes the "marker" events that point to the history.
 
 
 ---
@@ -424,23 +425,17 @@ To lay out the different types of servers consuming these historical messages
       timeline and misses the "marker" and expects to see the historical
       messages. They will be missing the historical messages until they can
       backfill the gap where they left.
- - A "marker" event is not needed for every chunk/batch of historical messages.
-   Multiple chunks can be inserted then once we're done importing everything, we
-   can add one "marker" event pointing at the root "insertion" event
+ - A "marker" event is not needed for every chunk of historical messages added
+   via `/batch_send`. Multiple chunks can be inserted then once we're done
+   importing everything, we can add one "marker" event pointing at the root
+   "insertion" event
     - If more history is decided to be added later, another "marker" can be sent to let the homeservers know again.
  - When a remote federated homeserver, receives a "marker" event, it can mark
    the "insertion" prev events as needing to backfill from that point again and
    can fetch the historical messages when the user scrolls back to that area in
    the future.
- - We could remove the need for "marker" events if we decided to only allow
-   sending "insertion" events on the "live" timeline at any point where you
-   would later want to add history.  But this isn't compatible with our dynamic
-   insertion use cases like Gitter where the rooms already exist with no
-   "insertion" events at the start of the room, and the examples from this MSC
-   like NNTP (newsgroup) and email which can potentially want to branch off of
-   everything.
 
-The structure of the "marker" event would look like:
+The structure of the "marker" event looks like:
 ```js
 {
     "type": "m.room.marker",
@@ -498,8 +493,8 @@ This doesn't provide a way for a HS to tell an AS that a client has tried to
 call `/messages` beyond the beginning of a room, and that the AS should try to
 lazy-insert some more messages (as per
 https://github.com/matrix-org/matrix-doc/issues/698). For this MSC to be
-properly useful, we might want to flesh that out. Another related problem with
-the existing appservice query APIs is that they don't include who is querying,
+extra useful, we might want to flesh that out. Another related problem with
+the existing AS query APIs is that they don't include who is querying,
 so they're hard to use in bridges that require logging in. If a similar query
 API is added here, it should include the ID of the user who's asking for
 history.
@@ -564,9 +559,6 @@ via SS API.
 
 
 ## Unstable prefix
-
-Event types, event content fields, and the API endpoint are all using the
-unstable prefix `org.matrix.msc2716`:
 
 **Endpoints:**
 
