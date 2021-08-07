@@ -512,6 +512,13 @@ rather than extending the AS API.  However, it seems unnecessarily burdensome to
 make bridge authors understand the SS API, especially when we already have so
 many AS API bridges.  Hence these minor extensions to the existing AS API.
 
+Another way of doing this is using the existing single send state and event API
+endpoints. We could use `PUT /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}`
+with `?historical=true` which would create the floating outlier state events.
+Then we could use `PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}`,
+with `?prev_event` pointing at that floating state to auth the event and where we
+want to insert the event.
+
 Another way of doing this might be to store the different eras of the room as
 different versions of the room, using `m.room.tombstone` events to form a linked
 list of the eras. This has the advantage of isolating room state between
@@ -528,7 +535,20 @@ importing a mail or newsgroup archive and you stumble across a lost mbox with a
 few msgs in retrospect, you wouldn't want or be able to splice a whole new room
 in with tombstones.
 
+Another way could be to let the server who issued the `m.room.create` also go
+and retrospectively insert events into the room outside the context of the DAG
+(i.e. without parent prev_events or signatures).  To quote the original
+[bug](https://github.com/matrix-org/matrix-doc/issues/698#issuecomment-259478116):
 
+> You could just create synthetic events which look like normal DAG events but
+  exist before the m.room.create event. Their signatures and prev-events would
+  all be missing, but they would be blindly trusted based on the HS who is
+  allowed to serve them (based on metadata in the m.room.create event). Thus
+  you'd have a perimeter in the DAG beyond which events are no longer
+  decentralised or signed, but are blindly trusted to let HSes insert ancient
+  history provided by ASes.
+
+However, this feels needlessly complicated if the DAG approach is sufficient.
 
 
 ## Security considerations
