@@ -45,7 +45,7 @@ Here is what scrollback is expected to look like in Element:
 
 **Endpoint:**
 
- - `POST /_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event=<eventID>&chunk_id=<chunkID>`
+ - `POST /_matrix/client/r0/rooms/<roomID>/batch_send?prev_event=<eventID>&chunk_id=<chunkID>`
 
 **Event types:**
 
