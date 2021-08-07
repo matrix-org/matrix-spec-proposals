@@ -33,7 +33,8 @@ This is currently not supported because:
 
 ### Expectation
 
-Historical messages that we insert should appear in the timeline just like they would if they were sent back at that time.
+Historical messages that we insert should appear in the timeline just like they
+would if they were sent back at that time.
 
 Here is what scrollback is expected to look like in Element:
 
@@ -48,26 +49,48 @@ Here is what scrollback is expected to look like in Element:
 
 **Event types:**
 
- - `m.room.insertion`: Events that mark points in time where you can insert historical messages
- - `m.room.chunk`: This is what connects one historical chunk to the other. In the DAG, we navigate from an insertion event to the chunk event that points at it, up the historical messages to the insertion event, then repeat the process
- - `m.room.marker`: Used to hint to homeservers (and potentially to cache bust on clients) that there is new history back time that you should go fetch next time someone scrolls back around the specified insertion event.
+ - `m.room.insertion`: Events that mark points in time where you can insert
+   historical messages
+ - `m.room.chunk`: This is what connects one historical chunk to the other. In
+   the DAG, we navigate from an insertion event to the chunk event that points
+   at it, up the historical messages to the insertion event, then repeat the
+   process
+ - `m.room.marker`: Used to hint to homeservers (and potentially to cache bust
+   on clients) that there is new history back time that you should go fetch next
+   time someone scrolls back around the specified insertion event.
 
 **Content fields:**
 
- - `m.historical` (`[true|false]`): Used on any event to indicate they were historically imported after the fact
- - `m.next_chunk_id` (`string`): This is a random unique string for a `m.room.insertion` event to indicate what ID the next "chunk" event should specify in order to connect to it
- - `m.chunk_id` (`string`): Used on `m.room.chunk` events to indicate which `m.room.insertion` event it connects to by its `m.next_chunk_id` field
- - `m.marker.insertion` (another `event_id` string): For `m.room.marker` events to point at an `m.room.insertion` event by `event_id`
+ - `m.historical` (`[true|false]`): Used on any event to indicate they were
+   historically imported after the fact
+ - `m.next_chunk_id` (`string`): This is a random unique string for a
+   `m.room.insertion` event to indicate what ID the next "chunk" event should
+   specify in order to connect to it
+ - `m.chunk_id` (`string`): Used on `m.room.chunk` events to indicate which
+   `m.room.insertion` event it connects to by its `m.next_chunk_id` field
+ - `m.marker.insertion` (another `event_id` string): For `m.room.marker` events
+   to point at an `m.room.insertion` event by `event_id`
 
 **Power level:**
 
-Since events being silently sent in the past is hard to moderate, it will probably be good to limit who can add historical messages to the timeline. The batch send endpoint is already limited to application services but we also need to limit who can send "insertion", "chunk", and "marker" events since someone can attempt to send them via the normal `/send` API (we don't want any nasty weird knots to reconcile either).
+Since events being silently sent in the past is hard to moderate, it will
+probably be good to limit who can add historical messages to the timeline. The
+batch send endpoint is already limited to application services but we also need
+to limit who can send "insertion", "chunk", and "marker" events since someone
+can attempt to send them via the normal `/send` API (we don't want any nasty
+weird knots to reconcile either).
 
- - `historical`: This controls who can send `m.room.insertion`, `m.room.chunk`, and `m.room.marker` in the room.
+ - `historical`: This controls who can send `m.room.insertion`, `m.room.chunk`,
+   and `m.room.marker` in the room.
 
 **Room version:**
 
-The redaction algorithm changes are the only hard requirement for a new room version because we need to make sure when redacting, we only strip out fields without affecting anything at the protocol level. This means that we need to keep all of the structural fields that allow us to navigate the chunks of history in the DAG. We also only want to auth events against fields that wouldn't be removed during redaction. In practice, this means:
+The redaction algorithm changes are the only hard requirement for a new room
+version because we need to make sure when redacting, we only strip out fields
+without affecting anything at the protocol level. This means that we need to
+keep all of the structural fields that allow us to navigate the chunks of
+history in the DAG. We also only want to auth events against fields that
+wouldn't be removed during redaction. In practice, this means:
 
  - When redacting `m.room.insertion` events, keep the `m.next_chunk_id` content field around
  - When redacting `m.room.chunk` events, keep the `m.chunk_id` content field around
@@ -77,17 +100,32 @@ The redaction algorithm changes are the only hard requirement for a new room ver
 
 #### Backwards compatibility
 
-However, this MSC is mostly backwards compatible and can be used with the current room version with the fact that redactions aren't supported for `m.room.insertion`, `m.room.chunk`, `m.room.marker` events. We can protect people from this limitation by throwing an error when they try to use `PUT /_matrix/client/r0/rooms/{roomId}/redact/{eventId}/{txnId}` to redact one of those events. We would have to accept the redaction if it came over federation to avoid split-brained rooms.
+However, this MSC is mostly backwards compatible and can be used with the
+current room version with the fact that redactions aren't supported for
+`m.room.insertion`, `m.room.chunk`, `m.room.marker` events. We can protect
+people from this limitation by throwing an error when they try to use `PUT
+/_matrix/client/r0/rooms/{roomId}/redact/{eventId}/{txnId}` to redact one of
+those events. We would have to accept the redaction if it came over federation
+to avoid split-brained rooms.
 
-Because we also can't use the `historical` power level for controlling who can send these events in the existing room version, we instead only allow the room `creator` to send `m.room.insertion`, `m.room.chunk`, and `m.room.chunk` events.
+Because we also can't use the `historical` power level for controlling who can
+send these events in the existing room version, we instead only allow the room
+`creator` to send `m.room.insertion`, `m.room.chunk`, and `m.room.chunk` events.
 
 
 
 ### New historical batch send endpoint
 
-Add a new endpoint, `POST /_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event=<eventID>&chunk_id=<chunkID>`, which can insert a chunk of events historically back in time next to the given `prev_event`. This endpoint can only be used by application services. 
+Add a new endpoint, `POST
+/_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event=<eventID>&chunk_id=<chunkID>`,
+which can insert a chunk of events historically back in time next to the given
+`prev_event`. This endpoint can only be used by application services. 
 
-This endpoint will handle the complexity of creating "insertion" and "chunk" events. All the application service has to do is use `?chunk_id` which comes from `next_chunk_id` in the response of the batch send endpoint. `next_chunk_id` is derived from the insertion events added to each chunk and is not required for the first batch send.
+This endpoint will handle the complexity of creating "insertion" and "chunk"
+events. All the application service has to do is use `?chunk_id` which comes
+from `next_chunk_id` in the response of the batch send endpoint. `next_chunk_id`
+is derived from the insertion events added to each chunk and is not required for
+the first batch send.
 
 Request body:
 ```json
@@ -125,38 +163,72 @@ Request body:
 ```
 
 Request response:
-```json
+```jsonc
 {
-  "state_events": [list of state event ID's we inserted...],
-  # List of historical event ID's we inserted which includes the
-  # auto-generated insertion and chunk events...
+  "state_events": [
+    // list of state event ID's we inserted...
+  ],
+  // List of historical event ID's we inserted which includes the
+  // auto-generated insertion and chunk events...
   "events": [
-    { "insertion event for chunk" },
-    { "historical message 1" },
-    { "historical message 2" },
-    { "chunk event" },
-    { "base insertion event" }
+    // insertion event ID for chunk
+    // historical message1 event ID
+    // historical message2 event ID
+    // chunk event ID
+    // base insertion event ID
   ],
   "next_chunk_id": "random-unique-string",
 }
 ```
 
 
-`state_events_at_start` is used to define the historical state events needed to auth the `events` like invite and join events. These events can float outside of the normal DAG. In Synapse, these are called `outlier`'s and won't be visible in the chat history which also allows us to insert multiple chunks without having a bunch of `@mxid joined the room` noise between each chunk. **The state will not be resolved into the current state of the room.**
+`state_events_at_start` is used to define the historical state events needed to
+auth the `events` like invite and join events. These events can float outside of
+the normal DAG. In Synapse, these are called `outlier`'s and won't be visible in
+the chat history which also allows us to insert multiple chunks without having a
+bunch of `@mxid joined the room` noise between each chunk. **The state will not
+be resolved into the current state of the room.**
 
-`events` is chronological chunk/list of events you want to insert. For Synapse, there is a reverse-chronological constraint on chunks so once you insert one chunk of messages, you can only insert older an older chunk after that. **tldr; Insert from your most recent chunk of history -> oldest history.**
+`events` is chronological chunk/list of events you want to insert. For Synapse,
+there is a reverse-chronological constraint on chunks so once you insert one
+chunk of messages, you can only insert older an older chunk after that. **tldr;
+Insert from your most recent chunk of history -> oldest history.**
 
 
 #### What does the batch send endpoint do behind the scenes?
 
-This section explains the homeserver magic that happens when someone uses the `batch_send` endpoint. If you're just trying to understand how the "insertion", "chunk", "marker" events work, you might want to just skip down to the room DAG breakdown which incrementally explains how everything fits together.
+This section explains the homeserver magic that happens when someone uses the
+`batch_send` endpoint. If you're just trying to understand how the "insertion",
+"chunk", "marker" events work, you might want to just skip down to the room DAG
+breakdown which incrementally explains how everything fits together.
 
- 1. An "insertion" event for the "chunk" is added to the start of the chunk. This is the starting point of the next chunk and holds the `next_chunk_id` that we return in the batch send response. The application service passes this as `?chunk_id`
- 1. A "chunk" event is added to the end of the chunk. This is the event that connects to an insertion event by `?chunk_id`.
- 1. If `?chunk_id` is not specified (usually for the first chunk), create base "insertion" event as a jumping off point from `?prev_event`.
- 1. All of the events in the historical chunk get a content field, `"m.historical": true`, to indicate that they are historical at the point of being added to a room.
- 1. The `state_events_at_start`/`events` payload is in **chronological** order (`[0, 1, 2]`) and is processed in that order so the `prev_events` point to it's older-in-time previous message which gives us a nice straight line in the DAG.
-    - **Depth discussion:** For Synapse, when persisting, we **reverse the list (to make it reverse-chronological)** so we can still get the correct `(topological_ordering, stream_ordering)` so it sorts between A and B as we expect. Why?  `depth` is not re-calculated when historical messages are inserted into the DAG. This means we have to take care to insert in the right order. Events are sorted by `(topological_ordering, stream_ordering)` where `topological_ordering` is just `depth`. Normally, `stream_ordering` is an auto incrementing integer but for `backfilled=true` events, it decrements. Historical messages are inserted all at the same `depth`, and marked as backfilled so the `stream_ordering` decrements and each event is sorted behind the next. (from https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201)
+ 1. An "insertion" event for the "chunk" is added to the start of the chunk.
+    This is the starting point of the next chunk and holds the `next_chunk_id`
+    that we return in the batch send response. The application service passes
+    this as `?chunk_id`
+ 1. A "chunk" event is added to the end of the chunk. This is the event that
+    connects to an insertion event by `?chunk_id`.
+ 1. If `?chunk_id` is not specified (usually for the first chunk), create base
+    "insertion" event as a jumping off point from `?prev_event`.
+ 1. All of the events in the historical chunk get a content field,
+    `"m.historical": true`, to indicate that they are historical at the point of
+    being added to a room.
+ 1. The `state_events_at_start`/`events` payload is in **chronological** order
+    (`[0, 1, 2]`) and is processed in that order so the `prev_events` point to
+    it's older-in-time previous message which gives us a nice straight line in
+    the DAG.
+    - **Depth discussion:** For Synapse, when persisting, we **reverse the list
+      (to make it reverse-chronological)** so we can still get the correct
+      `(topological_ordering, stream_ordering)` so it sorts between A and B as
+      we expect. Why?  `depth` is not re-calculated when historical messages are
+      inserted into the DAG. This means we have to take care to insert in the
+      right order. Events are sorted by `(topological_ordering,
+      stream_ordering)` where `topological_ordering` is just `depth`. Normally,
+      `stream_ordering` is an auto incrementing integer but for
+      `backfilled=true` events, it decrements. Historical messages are inserted
+      all at the same `depth`, and marked as backfilled so the `stream_ordering`
+      decrements and each event is sorted behind the next. (from
+      https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201)
 
 
 
@@ -164,13 +236,14 @@ This section explains the homeserver magic that happens when someone uses the `b
 
 #### Basic chunk structure
 
-Here is the starting point how the historical chunk concept look like in the DAG.
-We're going to build from this in the next sections.
+Here is the starting point how the historical chunk concept look like in the
+DAG. We're going to build from this in the next sections.
 
  - `A` is the oldest-in-time message
  - `B` is the newest-in-time message
  - `chunk0` is the first chunk we try to import
- - Each chunk of messages is older-in-time than the last (`chunk1` is older than `chunk0`, etc)
+ - Each chunk of messages is older-in-time than the last (`chunk1` is older than
+   `chunk0`, etc)
 
 
 ![](https://user-images.githubusercontent.com/558581/126577416-68f1a5b0-2818-48c1-b046-21e504a0fe83.png)
@@ -217,12 +290,18 @@ flowchart BT
 
 #### Adding "insertion" and "chunk" events
 
-Next we add "insertion" and "chunk" events so it's more presriptive on how each historical chunk should connect to each other and how the homeserver can navigate the DAG.
+Next we add "insertion" and "chunk" events so it's more presriptive on how each
+historical chunk should connect to each other and how the homeserver can
+navigate the DAG.
 
- - With "insertion" events, we just add them to the start of each chronological chunk (where the oldest message in the chunk is). The next older-in-time chunk can connect to that "insertion" point from the previous chunk.
- - The initial "insertion" event could be from the main DAG or we can create it ad-hoc in the first chunk so the homeserver can start traversing up the chunk from there after a "marker" event points to it.
- - We use "chunk" events to point to the "insertion" event by referencing the "next_chunk_id" from the "insertion" event.
- - Consideration: the "insertion"/"chunk" events add a new way for an application service to tie the chunk reconciliation in knots(similar to the DAG knots that can happen).
+ - With "insertion" events, we just add them to the start of each chronological
+   chunk (where the oldest message in the chunk is). The next older-in-time
+   chunk can connect to that "insertion" point from the previous chunk.
+ - The initial "insertion" event could be from the main DAG or we can create it
+   ad-hoc in the first chunk so the homeserver can start traversing up the chunk
+   from there after a "marker" event points to it.
+ - We use `m.room.chunk` events to indicate which `m.room.insertion` event it
+   connects to by its `m.next_chunk_id` field
 
 ![](https://user-images.githubusercontent.com/558581/127040602-e95ac36a-5e64-4176-904d-6abae2c95ae9.png)
 
@@ -294,32 +373,72 @@ The structure of the chunk event would look like:
 
 #### Adding marker events
 
-Finally, we add "marker" events into the mix so that federated remote servers can also navigate and to know where/how to fetch historical messages correctly.
+Finally, we add "marker" events into the mix so that federated remote servers
+can also navigate and to know where/how to fetch historical messages correctly.
 
-To lay out the different types of servers consuming these historical messages (more context on why we need "marker" events):
+To lay out the different types of servers consuming these historical messages
+(more context on why we need "marker" events):
 
  1. Local server
-    - This can pretty much work out of the box. Just add the events to the database and they're available. The new endpoint is just a mechanism to insert the events.
- 1. Federated remote server that already has all scrollback history and then new history is inserted
-    - The big problem is how does a HS know it needs to go fetch more history if they already fetched all of the history in the room? We're solving this with "marker" events which are sent on the "live" timeline and point back to the "insertion" event where we inserted history next to. The HS can then go and backfill the "insertion" event and continue navigating the chunks from there.
+    - This can pretty much work out of the box. Just add the events to the
+      database and they're available. The new endpoint is just a mechanism to
+      insert the events.
+ 1. Federated remote server that already has all scrollback history and then new
+    history is inserted
+    - The big problem is how does a HS know it needs to go fetch more history if
+      they already fetched all of the history in the room? We're solving this
+      with "marker" events which are sent on the "live" timeline and point back
+      to the "insertion" event where we inserted history next to. The HS can
+      then go and backfill the "insertion" event and continue navigating the
+      chunks from there.
  1. Federated remote server that joins a new room with historical messages
-    - We need to update the `/backfill` response to include historical messages from the chunks
+    - We need to update the `/backfill` response to include historical messages
+      from the chunks
  1. Federated remote server already in the room when history is inserted
-    - Depends on whether the HS has the scrollback history. If the HS already has all history, see scenario 2, if doesn't, see scenario 3.
+    - Depends on whether the HS has the scrollback history. If the HS already
+      has all history, see scenario 2, if doesn't, see scenario 3.
  1. For federated servers already in the room that haven't implemented MSC2716
-    - Those homeservers won't have historical messages available because they're unable to navigate the "marker"/"insertion" events. But the historical messages would be available once the HS implements MSC2716 and processes the "marker" events that point to the history.
+    - Those homeservers won't have historical messages available because they're
+      unable to navigate the "marker"/"insertion" events. But the historical
+      messages would be available once the HS implements MSC2716 and processes
+      the "marker" events that point to the history.
 
 
 ---
 
  - A "marker" event simply points back to an "insertion" event.
- - The "marker" event solves the problem of, how does a federated homeserver know about the historical events which won't come down incremental sync? And the scenario where the federated HS already has all the history in the room, so it won't do a full sync of the room again.
- - Unlike the historical events sent via `/batch_send`, **the "marker" event is sent separately as a normal event on the "live" timeline** so that comes down incremental sync and is available to all homeservers regardless of how much scrollback history they already have.
-    - Note: If a server joins after a "marker" event is sent, it could be lost in the middle of the timeline and they could jump back in time past the "marker" and never pick it up. But `backfill/` response should have historical messages included. It gets a bit hairy if the server has the room backfilled, the user leaves, a "marker" event is sent, more messages put it back in the timeline, the user joins back, jumps back in the timeline and misses the "marker" and expects to see the historical messages. They will be missing the historical messages until they can backfill the gap where they left.
- - A "marker" event is not needed for every chunk/batch of historical messages. Multiple chunks can be inserted then once we're done importing everything, we can add one "marker" event pointing at the root "insertion" event
+ - The "marker" event solves the problem of, how does a federated homeserver
+   know about the historical events which won't come down incremental sync? And
+   the scenario where the federated HS already has all the history in the room,
+   so it won't do a full sync of the room again.
+ - Unlike the historical events sent via `/batch_send`, **the "marker" event is
+   sent separately as a normal event on the "live" timeline** so that comes down
+   incremental sync and is available to all homeservers regardless of how much
+   scrollback history they already have.
+    - Note: If a server joins after a "marker" event is sent, it could be lost
+      in the middle of the timeline and they could jump back in time past the
+      "marker" and never pick it up. But `backfill/` response should have
+      historical messages included. It gets a bit hairy if the server has the
+      room backfilled, the user leaves, a "marker" event is sent, more messages
+      put it back in the timeline, the user joins back, jumps back in the
+      timeline and misses the "marker" and expects to see the historical
+      messages. They will be missing the historical messages until they can
+      backfill the gap where they left.
+ - A "marker" event is not needed for every chunk/batch of historical messages.
+   Multiple chunks can be inserted then once we're done importing everything, we
+   can add one "marker" event pointing at the root "insertion" event
     - If more history is decided to be added later, another "marker" can be sent to let the homeservers know again.
- - When a remote federated homeserver, receives a "marker" event, it can mark the "insertion" prev events as needing to backfill from that point again and can fetch the historical messages when the user scrolls back to that area in the future.
- - We could remove the need for "marker" events if we decided to only allow sending "insertion" events on the "live" timeline at any point where you would later want to add history.  But this isn't compatible with our dynamic insertion use cases like Gitter where the rooms already exist with no "insertion" events at the start of the room, and the examples from this MSC like NNTP (newsgroup) and email which can potentially want to branch off of everything.
+ - When a remote federated homeserver, receives a "marker" event, it can mark
+   the "insertion" prev events as needing to backfill from that point again and
+   can fetch the historical messages when the user scrolls back to that area in
+   the future.
+ - We could remove the need for "marker" events if we decided to only allow
+   sending "insertion" events on the "live" timeline at any point where you
+   would later want to add history.  But this isn't compatible with our dynamic
+   insertion use cases like Gitter where the rooms already exist with no
+   "insertion" events at the start of the room, and the examples from this MSC
+   like NNTP (newsgroup) and email which can potentially want to branch off of
+   everything.
 
 The structure of the "marker" event would look like:
 ```js
@@ -371,14 +490,63 @@ flowchart BT
 </details>
 
 
+## Potential issues
+
+Also see the security considerations section below.
+
+This doesn't provide a way for a HS to tell an AS that a client has tried to
+call `/messages` beyond the beginning of a room, and that the AS should try to
+lazy-insert some more messages (as per
+https://github.com/matrix-org/matrix-doc/issues/698). For this MSC to be
+properly useful, we might want to flesh that out. Another related problem with
+the existing appservice query APIs is that they don't include who is querying,
+so they're hard to use in bridges that require logging in. If a similar query
+API is added here, it should include the ID of the user who's asking for
+history.
 
 
+## Alternatives
+
+We could insist that we use the SS API to import history history in this manner
+rather than extending the AS API.  However, it seems unnecessarily burdensome to
+make bridge authors understand the SS API, especially when we already have so
+many AS API bridges.  Hence these minor extensions to the existing AS API.
+
+Another way of doing this might be to store the different eras of the room as
+different versions of the room, using `m.room.tombstone` events to form a linked
+list of the eras. This has the advantage of isolating room state between
+different eras of the room, simplifying state resolution calculations and
+avoiding risk of any cross-talk.  It's also easier to reason about, and avoids
+exposing the DAG to bridge developers.  However, it would require better
+presentation of room versions in clients, and it would require support for
+retrospectively specifying the `predecessor` of the current room when you
+retrospectively import history.  Currently `predecessor` is in the immutable
+`m.room.create` event of a room, so cannot be changed retrospectively - and
+doing so in a safe and race-free manner sounds Hard. A big problem with this
+approach is if you just want to inject a few old lost messages - eg if you're
+importing a mail or newsgroup archive and you stumble across a lost mbox with a
+few msgs in retrospect, you wouldn't want or be able to splice a whole new room
+in with tombstones.
+
+
+
+
+## Security considerations
+
+The "insertion" and "chunk" events add a new way for an application service to
+tie the chunk reconciliation in knots(similar to the DAG knots that can happen)
+which can potentially DoS message and backfill navigation on the server.
+
+This also makes it much easier for an AS to maliciously spoof history.  This is
+a bit unavoidable given the nature of the feature, and is also possible today
+via SS API.
 
 
 
 ## Unstable prefix
 
-Event types, event content fields, and the API endpoint are all using the unstable prefix `org.matrix.msc2716`:
+Event types, event content fields, and the API endpoint are all using the
+unstable prefix `org.matrix.msc2716`:
 
 **Endpoints:**
 
@@ -399,8 +567,10 @@ Event types, event content fields, and the API endpoint are all using the unstab
 
 **Room version:**
 
- - `org.matrix.msc2716` and `org.matrix.msc2716v2`, etc as we develop and iterate along the way
+ - `org.matrix.msc2716` and `org.matrix.msc2716v2`, etc as we develop and
+   iterate along the way
 
 **Power level:**
 
- - `historical` (does not need prefixing because it's already under an experimental room version)
+ - `historical` (does not need prefixing because it's already under an
+   experimental room version)
