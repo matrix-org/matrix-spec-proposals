@@ -7,7 +7,7 @@ To enable clients to handle that gracefully in the UI this setting should be exp
 ## Proposal
 
 The `/_matrix/client/r0/capabilities` endpoint should be decorated to provide more information on capabilities.
-```javascript
+```jsonc
 {
   "capabilities": {
     "m.set_displayname": { "enabled": false },
