@@ -1,0 +1,1 @@
+Add support for m.login.appservice, as per [MSC2778](https://github.com/matrix-org/matrix-doc/pull/2778).
