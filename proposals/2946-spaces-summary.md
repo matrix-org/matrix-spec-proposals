@@ -187,9 +187,8 @@ The persisted state will generally include:
 
 ### Server-server API
 
-The Server-Server API has almost the same interface as the Client-Server API.
-It is used when a homeserver does not have the state of a room to include in the
-summary.
+The Server-Server API has a similar interface to the Client-Server API. It is
+used when a homeserver does not have the state of a room to include in the summary.
 
 The main difference is that it does *not* recurse into spaces and does not support
 pagination. This is somewhat equivalent to a Client-Server request with a `max_depth=1`.
@@ -224,17 +223,25 @@ Query Parameters:
 
 The response format is similar to the Client-Server API:
 
-* **`rooms`**: `[object]` The same as the Client-Server API with an additional
-  field:
+* **`room`**: `[obejct]` The summary of the requested room.
+* **`children`**: `[object]` For each room/space, a summary of that room. The fields
+  are the same as those returned by `/publicRooms` (see
+  [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
+  with the addition of:
+  * **`room_type`**: the value of the `m.type` field from the room's
+    `m.room.create` event, if any.
   * **`allowed_room_ids`**: A list of room IDs which give access to this room per
-    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>
-* **`unknown_rooms`**: Optional `[string]`. A list of room IDs which are children
-  of the requested room, but the target server is not a member of. The requesting
-  server may need to request information about them from *other* servers.
-
+    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>* **`next_token`**: Optional `string`. The token to supply in the `from` param
+  of the next `/spaces` request in order to request more rooms. If this is absent,
+  there are no more results.
+* **`inaccessible_children`**: Optional `[string]`. A list of room IDs which are
+  children of the requested room, but are inaccessible to the requesting server.
+  The requesting server should not attempt to request information about them
+  from other servers.
+  
   This is used to differentiate between rooms which the requesting server does
-  not have access to (which will simply be missing in the response) vs. those
-  that the target server cannot include in the response.
+  not have access to from those that the target server cannot include in the
+  response (which will simply be missing in the response).
 
 #### Example request:
 
