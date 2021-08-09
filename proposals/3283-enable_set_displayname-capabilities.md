@@ -1,7 +1,7 @@
 # MSC3283: Expose enable_set_displayname, enable_set_avatar_url and enable_3pid_changes in capabilities response 
 
 Some home servers like [Synapse](https://github.com/matrix-org/synapse/blob/756fd513dfaebddd28bf783eafa95b4505ce8745/docs/sample_config.yaml#L1207) 
-can be configured to enable_set_displayname: false, enable_set_avatar_url: false or enable_3pid_changes: false. 
+can be configured to `enable_set_displayname: false`, `enable_set_avatar_url: false` or `enable_3pid_changes: false`. 
 To enable clients to handle that gracefully in the UI this setting should be exposed.
 
 ## Proposal
