@@ -7,22 +7,26 @@
   it expects to find newsfragments describing changes to that API.
 
   If the `version.status` setting in config.toml is anything other than
-  "unstable", then it also expects to find a "release.yaml" file in /changelogs,
-  which contains:
-  - `tag`: Git tag for this release
-  - `date`: date of this release
-  It then renders this info a table, before the list of changes.
+  "unstable", then it also expects to find additional settings under
+  `version` in config.toml:
+  - `major`: the major version number of the release
+  - `minor`: the minor version number of the release
+  - `release_date`: the date of the release
+
+  The release tag is calculated as `v<major>.<minor>`; for example `v1.5`.
+
+  It then renders this into a table displayed before the list of changes.
 
 */}}
 
 {{ $path := path.Join "changelogs" }}
 {{ $status := .Site.Params.version.status }}
+{{ $release_tag := delimit (slice "v" .Site.Params.version.major "." .Site.Params.version.minor) "" }}
 
 {{ if ne $status "unstable" }}
-{{ $release_info := readFile (path.Join $path "release.yaml") | transform.Unmarshal }}
 <table class="release-info">
-<tr><th>Git commit</th><td><a href="https://github.com/matrix-org/matrix-doc/tree/{{ $release_info.tag }}">https://github.com/matrix-org/matrix-doc/tree/{{ $release_info.tag }}</a></td>
-<tr><th>Release date</th><td>{{ $release_info.date }}</td>
+<tr><th>Git commit</th><td><a href="https://github.com/matrix-org/matrix-doc/tree/{{ $release_tag }}">https://github.com/matrix-org/matrix-doc/tree/{{ $release_tag }}</a></td>
+<tr><th>Release date</th><td>{{ .Site.Params.version.release_date }}</td>
 </table>
 {{ end }}
 
