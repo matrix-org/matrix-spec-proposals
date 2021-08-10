@@ -45,7 +45,7 @@ steps:
 
   - label: ":rocket: Release the spec"
     # Only execute this step on tags matching "vX.Y"
-    if: build.tag =~ /^v\d+\.\d+$/
+    if: build.tag =~ /^v\d+\.\d+$$/
     command:
       - *hugo_build_environment_setup
       # Generate a stable version of the spec
