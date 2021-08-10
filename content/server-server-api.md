@@ -134,6 +134,15 @@ to send. The process overall is as follows:
     8448 and a `Host` header containing the `<hostname>`. The target
     server must present a valid certificate for `<hostname>`.
 
+{{% boxes/note %}}
+The reasons we require `<hostname>` rather than `<delegated_hostname>` for SRV
+delegation are:
+  1. DNS is insecure (not all domains have DNSSEC), so the target of the delegation
+      must prove that it is a valid delegate for `<hostname>` via TLS.
+  2. Consistency with the recommendations in [RFC6125](https://datatracker.ietf.org/doc/html/rfc6125#section-6.2.1)
+     and other applications using SRV records such [XMPP](https://datatracker.ietf.org/doc/html/rfc6120#section-13.7.2.1).
+{{% /boxes/note %}}
+
 The TLS certificate provided by the target server must be signed by a
 known Certificate Authority. Servers are ultimately responsible for
 determining the trusted Certificate Authorities, however are strongly
