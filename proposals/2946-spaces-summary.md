@@ -180,10 +180,10 @@ left as an implementation specific detail.
 
 The persisted state will generally include:
 
-* Any processed rooms (and whether the requesting user is able to join them).
+* Any processed rooms.
 * A queue of rooms to process (in depth-first order with rooms at the same level
   ordered according to below).
-* Pending information from the latest federation response.
+* Pending information from federation responses.
 
 ### Server-server API
 
@@ -238,7 +238,7 @@ The response format is similar to the Client-Server API:
   children of the requested room, but are inaccessible to the requesting server.
   The requesting server should not attempt to request information about them
   from other servers.
-  
+
   This is used to differentiate between rooms which the requesting server does
   not have access to from those that the target server cannot include in the
   response (which will simply be missing in the response).
