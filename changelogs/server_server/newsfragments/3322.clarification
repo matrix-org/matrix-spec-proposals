@@ -1,0 +1,1 @@
+Explain the reasons why `<hostname>` TLS certificate is needed rather than `<delegated_hostname>` for SRV delegation.
