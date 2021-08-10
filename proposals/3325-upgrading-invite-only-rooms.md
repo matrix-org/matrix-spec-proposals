@@ -1,4 +1,4 @@
-# MSCxxxx: Upgrading invite-only rooms
+# MSC3325: Upgrading invite-only rooms
 
 Rooms occasionally need to be upgraded to newer versions to take use new
 features or for security reasons.  When public rooms are upgraded, the new room
