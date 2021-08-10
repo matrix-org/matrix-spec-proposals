@@ -48,7 +48,7 @@
         {{ $path := path.Join "changelogs" }}
 
 		{{/* produces a string similar to "version v1.5" */}}
-		{{ $ret = delimit (slice "version" " v" .Site.Params.version.major "." .Site.Params.version.minor) "" }}
+		{{ $ret = delimit (slice "version v" .Site.Params.version.major "." .Site.Params.version.minor) "" }}
     {{ end }}
 
     {{ return $ret }}
