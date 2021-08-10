@@ -14,8 +14,6 @@
 
 {{ else }}
 
-{{ $path := path.Join "changelogs" }}
-{{ $release_info := readFile (path.Join $path "release.yaml") | transform.Unmarshal }}
-<p>This is version <strong>{{ $release_info.tag }}</strong> of the Matrix specification.</p>
+<p>This is version <strong>v{{ .Site.Params.version.major }}.{{ .Site.Params.version.minor }}</strong> of the Matrix specification.</p>
 
 {{ end }}

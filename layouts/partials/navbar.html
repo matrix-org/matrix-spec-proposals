@@ -46,10 +46,9 @@
 
     {{ if ne $status "unstable"}}
         {{ $path := path.Join "changelogs" }}
-        {{ $release_info := readFile (path.Join $path "release.yaml") | transform.Unmarshal }}
 
-        {{ $ret = $release_info.tag }}
-        {{ $ret = delimit (slice "version" $ret) " " }}
+		{{/* produces a string similar to "version v1.5" */}}
+		{{ $ret = delimit (slice "version" " v" .Site.Params.version.major "." .Site.Params.version.minor) "" }}
     {{ end }}
 
     {{ return $ret }}
