@@ -55,7 +55,7 @@ notifications for users however, which is why they are solved here.
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use `org.matrix.msc2285` as a namespace
-for identifiers. `m.hidden` becomes `org.matrix.msc2885.hidden` for example.
+for identifiers. `m.hidden` becomes `org.matrix.msc2285.hidden` for example.
 
 To detect server support, clients can either rely on the spec version (when stable) or the presence of
 a `org.matrix.msc2285` flag in `unstable_features` on `/versions`. Clients are recommended to check for
