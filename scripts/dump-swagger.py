@@ -98,10 +98,9 @@ for filename in os.listdir(cs_api_dir):
             path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
                                              major_version)
             for method, spec in methods.items():
-                if "tags" in spec.keys():
-                    if path not in output["paths"]:
-                        output["paths"][path] = {}
-                    output["paths"][path][method] = spec
+                if path not in output["paths"]:
+                    output["paths"][path] = {}
+                output["paths"][path][method] = spec
 
 print("Generating %s" % output_file)
 
