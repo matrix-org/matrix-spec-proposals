@@ -35,12 +35,29 @@ Other tools that are used to upgrade rooms should behave similarly.
 
 ## Potential issues
 
-None?
+This proposal only applies to rooms with `m.room.join_rules` set to `invite` or
+`restricted`, and not `knock` since rooms cannot (currently) be set to both
+knock and to allow users based on membership in another room.  If a future room
+version allows both to be used, then this proposal can be extended at that
+time.
+
+If the room is encrypted, users will not receive the keys to decrypt messages
+until they join the room.  This is similar to the current room upgrade issue
+where if the `m.room.history_visibility` is set to `joined`, in which users
+will not be able to see messages from before they join.
 
 ## Alternatives
 
 As mentioned in the introduction, we could continue to invite members of the
 original room to the upgraded room.
+
+Alternatively, the homeserver that creates the room could set the membership
+in the new room for each member of the original room to `invited`, without
+actually sending the invite, thus avoiding the problem of invite spam.
+
+[MSC2214](https://github.com/matrix-org/matrix-doc/pull/2214) proposes a new
+state event that indicates a user's membership in the original room, which can
+be used to verify if a user is allowed to join the room.
 
 ## Security considerations
 
@@ -51,6 +68,12 @@ The security consideration listed in MSC3083 applies to this proposal as well:
 > Although it is possible for those homeservers to issue a join event in bad faith,
 > there is no real-world benefit to doing this as those homeservers could easily
 > side-step the restriction by issuing an invite first anyway.
+
+A user may get kicked from the upgraded room, but still be able to rejoin due
+to being a member of the original room.  This is in contrast with an
+invite-only room, where a user who is kicked cannot rejoin unless they are
+re-invited.  This can be worked around by banning the user rather than kicking
+them.
 
 ## Unstable prefix
 
