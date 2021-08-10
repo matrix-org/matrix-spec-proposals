@@ -470,6 +470,8 @@ paths:
               "errcode": "M_THREEPID_IN_USE",
               "error": "Third party identifier already in use"
             }
+      tags:
+        - User data
   "/account/3pid/msisdn/requestToken":
     post:
       summary: Begins the validation process for a phone number for association with the user's account.
@@ -518,3 +520,5 @@ paths:
               "errcode": "M_THREEPID_IN_USE",
               "error": "Third party identifier already in use"
             }
+      tags:
+        - User data
