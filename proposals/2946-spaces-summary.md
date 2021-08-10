@@ -78,6 +78,9 @@ Query Parameters:
   exhaustion.
 * **`from`**: Optional. Pagination token given to retrieve the next set of rooms.
 
+  Note that if a pagination token is provided, then the parameters given for
+  `suggested_only` and `max_depth` must be the same.
+
 #### Response Format
 
 * **`rooms`**: `[object]` For each room/space, starting with the root room, a
@@ -151,7 +154,8 @@ behavior of other room endpoints (e.g.
 to not divulge that a room exists which the user doesn't have permission to view.
 
 An HTTP response with a status code of 400 and an error code of `M_INVALID_PARAM`
-should be returned if the `from` token provided is unknown to the server.
+should be returned if the `from` token provided is unknown to the server or if
+the `suggested_only` or `max_depth` parameters are modified during pagination.
 
 #### Client behaviour
 
