@@ -5,7 +5,7 @@ features or for security reasons.  When public rooms are upgraded, the new room
 is public as well, so users in the old room are able to join the new room
 freely.
 
-However, if the new room are only accessible to invited users (which will
+However, if the new room is only accessible to invited users (which will
 usually be the case when the original room was only accessible to invited
 users), users will need to be invited to the new room, which means that the
 person who upgrades the room will need to send out many invites.
