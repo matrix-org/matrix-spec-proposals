@@ -409,6 +409,7 @@ paths:
           description: The update succeeded.
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -519,6 +520,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -580,6 +582,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -692,6 +695,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -773,6 +777,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -895,6 +900,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
