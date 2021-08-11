@@ -95,7 +95,7 @@ Query Parameters:
     `type`, `state_key`, `content`, `room_id`, `sender`,  with the addition of:
     * **`origin_server_ts`**: This is required for sorting of rooms as specified
       below.
-* **`next_token`**: Optional `string`. The token to supply in the `from` param
+* **`next_batch`**: Optional `string`. The token to supply in the `from` param
   of the next `/spaces` request in order to request more rooms. If this is absent,
   there are no more results.
 
@@ -140,7 +140,7 @@ GET /_matrix/client/r0/rooms/{roomID}/hierarchy?
         },
         { ... }
     ],
-    "next_token": "abcdef"
+    "next_batch": "abcdef"
 }
 ```
 
@@ -235,9 +235,7 @@ The response format is similar to the Client-Server API:
   * **`room_type`**: the value of the `m.type` field from the room's
     `m.room.create` event, if any.
   * **`allowed_room_ids`**: A list of room IDs which give access to this room per
-    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>* **`next_token`**: Optional `string`. The token to supply in the `from` param
-  of the next `/spaces` request in order to request more rooms. If this is absent,
-  there are no more results.
+    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>
 * **`inaccessible_children`**: Optional `[string]`. A list of room IDs which are
   children of the requested room, but are inaccessible to the requesting server.
   The requesting server should not attempt to request information about them
