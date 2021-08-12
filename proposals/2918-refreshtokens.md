@@ -106,7 +106,7 @@ The TTL of access tokens should not exceed 15 minutes if they are revocable and 
 
 ## Unstable prefix
 
-While this MSC is not in a released version of the specification, clients should add a `org.matrix.msc2918.refresh_token=true` query parameter on the login endpoint, e.g. `/_matrix/client/r0/login?org.matrix.msc2918.refresh_token=true`.
+While this MSC is not in a released version of the specification, clients should add a `org.matrix.msc2918.refresh_token=true` query parameter on the login and registration endpoints, e.g. `/_matrix/client/r0/login?org.matrix.msc2918.refresh_token=true`.
 The refresh token endpoint should be served and used using the unstable prefix: `POST /_matrix/client/unstable/org.matrix.msc2918/refresh`.
 
 ## Detailed rationale
