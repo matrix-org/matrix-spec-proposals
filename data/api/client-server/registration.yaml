@@ -214,7 +214,7 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Account management
   "/register/email/requestToken":
     post:
       summary: Begins the validation process for an email to be used during registration.
@@ -266,7 +266,7 @@ paths:
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:
-        - User data
+        - Account management
   "/register/msisdn/requestToken":
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of registering an account
@@ -318,7 +318,7 @@ paths:
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:
-        - User data
+        - Account management
   "/account/password":
     post:
       summary: "Changes a user's password."
@@ -382,7 +382,7 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Account management
   "/account/password/email/requestToken":
     post:
       summary: Requests a validation token be sent to the given email address for the purpose of resetting a user's password
@@ -439,7 +439,7 @@ paths:
               "error": "Email not found"
             }
       tags:
-        - User data
+        - Account management
   "/account/password/msisdn/requestToken":
     post:
       summary: Requests a validation token be sent to the given phone number for the purpose of resetting a user's password.
@@ -496,7 +496,7 @@ paths:
               "error": "Phone number not found"
             }
       tags:
-        - User data
+        - Account management
   "/account/deactivate":
     post:
       summary: "Deactivate a user's account."
@@ -573,7 +573,7 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Account management
   "/register/available":
     get:
       summary: Checks to see if a username is available on the server.
@@ -635,4 +635,4 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Account management
