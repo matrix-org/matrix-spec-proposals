@@ -9,6 +9,7 @@ An access token might leak for various reasons, including:
 
 In the OAuth 2.0 world, this vector of attack is partly mitigated by having expiring access tokens with short lifetimes and rotating refresh tokens to renew them.
 This MSC adds support for expiring access tokens and introduces refresh tokens to renew them.
+A more [detailed rationale](#detailed-rationale) of what kind of attacks it mitigates lives at the end of this document.
 
 ## Proposal
 
@@ -107,3 +108,42 @@ The TTL of access tokens should not exceed 15 minutes if they are revocable and 
 
 While this MSC is not in a released version of the specification, clients should add a `org.matrix.msc2918.refresh_token=true` query parameter on the login endpoint, e.g. `/_matrix/client/r0/login?org.matrix.msc2918.refresh_token=true`.
 The refresh token endpoint should be served and used using the unstable prefix: `POST /_matrix/client/unstable/org.matrix.msc2918/refresh`.
+
+## Detailed rationale
+
+This MSC does not aim to protect against a completely compromised client.
+More specifically, it does not protect against an attacker that managed to distribute an alternate, compromised version of the client to users.
+In contrast, it protects against a whole range of attacks where the access token and/or refresh token get leaked but the client isn't completely compromised.
+
+For example, those tokens can leak from user backups (user backs up his device on a NAS, the NAS gets compromised and leaks a backup of the client's secret storage), but one can assume those backups could be at least 5 min old.
+If the leak only includes the access token, it is useless to the attacker since it would have expired.
+If it also includes the refresh token, it is useless *if* the token was refreshed before (which will happen if the user just opens their Matrix client in between).
+
+Worst case scenario, the leaked refresh token is still valid: in this case, the attacker would consume the refresh token to get a valid access token, but when the original client tries to use the same refresh token, the homeserver can detect it, consider the session has been compromised, end the session and warn the user.
+
+This kind of attack also applies to leakage from the server, which could happen from database backups, for example.
+
+The important thing here is while it does not completely prevent attacks in case of a token leakage, it does make this range of attack a lot more time-sensitive and detectable.
+A homeserver will notice if a refresh token is being used twice.
+
+The IETF has interesting [guidelines for refresh tokens](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.13.2).
+They recommend that either:
+
+ - the refresh tokens are sender-bound and require client authentication (making token leakage completely useless if the client credentials are not leaked at the same time)
+ - or make them rotate to make the attack a lot harder, as described just above.
+
+Since all clients are "public" in the Matrix world, there are no client-bound credentials that could be used, hence the rotation of refresh tokens.
+
+---
+
+The other kind of scenario where this change makes sense is to help further changes in the homeservers.
+A good, recent example of this, is in Synapse v1.34.0 [they moved away from macaroons for access tokens](https://github.com/matrix-org/synapse/pull/5588) to random, shorter, saved in database tokens, similar to [what GitHub did recently](https://github.blog/2021-04-05-behind-githubs-new-authentication-token-formats/).
+
+Because there is no refresh token mechanism in the C2S API, most Synapse instances now have a mix of the two formats of tokens, and for a long time.
+It makes it impossible to enforce the new format of tokens without invalidating all existing sessions, making it impossible to roll out changes like a web-app firewall in front of Synapse that verifies the shape and checksums of tokens even before reaching Synapse.
+
+---
+
+Lastly, expiring tokens already exist in Synapse (via the `session_lifetime` configuration parameter).
+Before this MSC, clients had no idea when the session would end and relied on the server replying with a 401 error with `soft_logout: true` in the response on a random request to trigger a soft logout and go through the authentication process again.
+A side effect of this MSC (although it could have been introduced separately) is that the login responses can now include a `expires_in_ms` to inform the clients when the token will expire.
