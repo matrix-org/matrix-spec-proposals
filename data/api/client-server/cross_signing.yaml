@@ -66,6 +66,12 @@ paths:
                   request.
                 allOf:
                   - $ref: definitions/cross_signing_key.yaml
+              auth:
+                description: |-
+                  Additional authentication information for the
+                  user-interactive authentication API.
+                allOf:
+                - $ref: "definitions/auth_data.yaml"
             example: {
               "master_key": {
                 "user_id": "@alice:example.com",
