@@ -48,16 +48,19 @@ paths:
            (and not other members) permission to send state events. Overridden
            by the `power_level_content_override` parameter.
 
-        4. Events set by the `preset`. Currently these are the `m.room.join_rules`,
+        4. An `m.room.canonical_alias` event if `room_alias_name` is given and
+           no `m.room.canonical_alias` event is given in `initial_state`.
+
+        5. Events set by the `preset`. Currently these are the `m.room.join_rules`,
            `m.room.history_visibility`, and `m.room.guest_access` state events.
 
-        5. Events listed in `initial_state`, in the order that they are
+        6. Events listed in `initial_state`, in the order that they are
            listed.
 
-        6. Events implied by `name` and `topic` (`m.room.name` and `m.room.topic`
+        7. Events implied by `name` and `topic` (`m.room.name` and `m.room.topic`
            state events).
 
-        7. Invite events implied by `invite` and `invite_3pid` (`m.room.member` with
+        8. Invite events implied by `invite` and `invite_3pid` (`m.room.member` with
            `membership: invite` and `m.room.third_party_invite`).
 
         The available presets do the following with respect to room state:
@@ -112,7 +115,8 @@ paths:
                   would be `#foo:example.com`.
 
                   The complete room alias will become the canonical alias for
-                  the room.
+                  the room and an `m.room.canonical_alias` event will be sent
+                  into the room.
               name:
                 type: string
                 description: |-
