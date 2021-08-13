@@ -48,8 +48,7 @@ paths:
            (and not other members) permission to send state events. Overridden
            by the `power_level_content_override` parameter.
 
-        4. An `m.room.canonical_alias` event if `room_alias_name` is given and
-           no `m.room.canonical_alias` event is given in `initial_state`.
+        4. An `m.room.canonical_alias` event if `room_alias_name` is given.
 
         5. Events set by the `preset`. Currently these are the `m.room.join_rules`,
            `m.room.history_visibility`, and `m.room.guest_access` state events.
