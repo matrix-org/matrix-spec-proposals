@@ -96,7 +96,7 @@ Query Parameters:
     * **`origin_server_ts`**: This is required for sorting of rooms as specified
       below.
 * **`next_batch`**: Optional `string`. The token to supply in the `from` param
-  of the next `/spaces` request in order to request more rooms. If this is absent,
+  of the next `/hierarchy` request in order to request more rooms. If this is absent,
   there are no more results.
 
 #### Example request:
