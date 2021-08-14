@@ -136,6 +136,8 @@ paths:
               "errcode": "M_FORBIDDEN",
               "error": "Key ID in use"
             }
+      tags:
+        - End-to-end encryption
   "/keys/signatures/upload":
     post:
       summary: Upload cross-signing signatures.
@@ -230,3 +232,5 @@ paths:
                     }
                   }
                 }
+      tags:
+        - End-to-end encryption

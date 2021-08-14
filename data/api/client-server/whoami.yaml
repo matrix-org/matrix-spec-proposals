@@ -89,4 +89,4 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Session management

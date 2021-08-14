@@ -87,7 +87,7 @@ paths:
                         associated the third party identifier with the user.
                   required: ['medium', 'address', 'validated_at', 'added_at']
       tags:
-        - User data
+        - Account management
     post:
       summary: Adds contact information to the user's account.
       description: |-
@@ -179,7 +179,7 @@ paths:
           schema:
             "$ref": "definitions/errors/error.yaml"
       tags:
-        - User data
+        - Account management
   "/account/3pid/add":
     post:
       summary: Adds contact information to the user's account.
@@ -235,7 +235,7 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Account management
   "/account/3pid/bind":
     post:
       summary: Binds a 3PID to the user's account through an Identity Service.
@@ -289,7 +289,7 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - Account management
   "/account/3pid/delete":
     post:
       summary: Deletes a third party identifier from the user's account
@@ -354,7 +354,7 @@ paths:
             required:
               - id_server_unbind_result
       tags:
-        - User data
+        - Account management
   "/account/3pid/unbind":
     post:
       summary: Removes a user's third party identifier from an identity server.
@@ -418,7 +418,7 @@ paths:
             required:
               - id_server_unbind_result
       tags:
-        - User data
+        - Account management
   "/account/3pid/email/requestToken":
     post:
       summary: Begins the validation process for an email address for association with the user's account.
@@ -470,6 +470,8 @@ paths:
               "errcode": "M_THREEPID_IN_USE",
               "error": "Third party identifier already in use"
             }
+      tags:
+        - Account management
   "/account/3pid/msisdn/requestToken":
     post:
       summary: Begins the validation process for a phone number for association with the user's account.
@@ -518,3 +520,5 @@ paths:
               "errcode": "M_THREEPID_IN_USE",
               "error": "Third party identifier already in use"
             }
+      tags:
+        - Account management

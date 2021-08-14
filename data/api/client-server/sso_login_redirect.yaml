@@ -46,6 +46,8 @@ paths:
           headers:
             Location:
               type: "string"
+      tags:
+       - Session management
   "/login/sso/redirect/{idpId}":
     get:
       summary: Redirect the user's browser to the SSO interface for an IdP.
@@ -83,3 +85,5 @@ paths:
             The IdP ID was not recognized by the server. The server is encouraged
             to provide a user-friendly page explaining the error given the user
             will be navigated to it.
+      tags:
+       - Session management
