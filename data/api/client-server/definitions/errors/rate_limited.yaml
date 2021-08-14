@@ -13,6 +13,7 @@
 # limitations under the License.
 $ref: error.yaml
 type: object
+title: RateLimitError
 description: The rate limit was reached for this request
 properties:
   errcode:
