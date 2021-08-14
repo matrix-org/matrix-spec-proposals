@@ -487,6 +487,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
     delete:
       summary: Delete a key from the backup.
       description: |-
@@ -547,6 +549,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
   "/room_keys/keys/{roomId}":
     put:
       summary: Store several keys in the backup for a given room.
@@ -666,6 +670,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
     delete:
       summary: Delete the keys from the backup for a given room.
       description: |-
@@ -720,6 +726,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
   "/room_keys/keys":
     put:
       summary: Store several keys in the backup.
@@ -875,6 +883,8 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
     delete:
       summary: Delete the keys from the backup.
       description: |-
@@ -923,3 +933,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
