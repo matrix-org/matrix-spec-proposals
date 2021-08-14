@@ -24,3 +24,4 @@ properties:
       rooms/{roomId}/messages endpoint.
     type: string
 type: object
+title: TimelineBatch
