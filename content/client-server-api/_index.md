@@ -613,7 +613,6 @@ This specification defines the following auth types:
 -   `m.login.email.identity`
 -   `m.login.msisdn`
 -   `m.login.dummy`
--   `m.login.appservice`
 
 ##### Password-based
 
