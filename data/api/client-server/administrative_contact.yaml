@@ -346,7 +346,7 @@ paths:
                 description: |-
                   An indicator as to whether or not the homeserver was able to unbind
                   the 3PID from the identity server. `success` indicates that the
-                  indentity server has unbound the identifier whereas `no-support`
+                  identity server has unbound the identifier whereas `no-support`
                   indicates that the identity server refuses to support the request
                   or the homeserver was not able to determine an identity server to
                   unbind from.
