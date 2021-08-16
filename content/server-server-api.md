@@ -333,15 +333,16 @@ after all other known events.
 
 For example, consider a room whose events form the DAG shown below. A
 server creating a new event in this room should populate the new event's
-`prev_events` field with `E4` and `E5`, since neither event yet has a
-child:
+`prev_events` field with both `E4` and `E6`, since neither event yet has
+a child:
 
     E1
     ^
     |
-    +-> E2 <-+
-    |        |
-    E3       E5
+    E2 <--- E5
+    ^       ^
+    |       |
+    E3      E6
     ^
     |
     E4
