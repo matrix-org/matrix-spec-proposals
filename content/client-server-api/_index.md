@@ -763,37 +763,6 @@ follows:
 Note that `id_server` (and therefore `id_access_token`) is optional if
 the `/requestToken` request did not include them.
 
-##### Appservice Login
-
-| Type                 | Description                                                                                  |
-|----------------------|----------------------------------------------------------------------------------------------|
-| `m.login.appservice` | The client provides an appservice token that includes the identified user in it's namespace. |
-
-This request must be authenticated by the [appservice `as_token`](../application-service-api#registration) 
-(see [Client Authentication](#client-authentication) on how to provide the token). The resulting access token and 
-device MUST be limited to the identified user.
-
-To use this authentication type, appservices should submit an auth dict as follows:
-
-```json
-{
-  "type": "m.login.appservice",
-  "identifier": {
-    "type": "m.id.user",
-    "user": "<user_id or user localpart>"
-  }
-}
-```
-
-where the `identifier` property is a user identifier object, as described in [Identifier types](#identifier-types).
-
-If the access token is not valid, does not correspond to an appservice or the user has not previously been registered
-then the homeserver will respond with an errcode of `M_FORBIDDEN`.
-
-If the access token does correspond to an appservice, but the user does not exist within it's namespace then the
-homeserver will respond with an errcode of `M_EXCLUSIVE`.
-
-
 ##### Dummy Auth
 
 | Type             | Description                                                            |
@@ -1053,9 +1022,36 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
+#### Appservice Login
+
+An appservice can also choose to login for a user in it's namespace.
+
+This request must be authenticated by the [appservice `as_token`](../application-service-api#registration) 
+(see [Client Authentication](#client-authentication) on how to provide the token). The resulting access token and 
+device MUST be limited to the identified user.
+
+To use this login type, clients should submit a `/login` request as follows:
+
+```json
+{
+  "type": "m.login.appservice",
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+}
+```
+
+If the access token is not valid, does not correspond to an appservice or the user has not previously been registered
+then the homeserver will respond with an errcode of `M_FORBIDDEN`.
+
+If the access token does correspond to an appservice, but the user does not exist within it's namespace then the
+homeserver will respond with an errcode of `M_EXCLUSIVE`.
+
 {{% http-api spec="client-server" api="login" %}}
 
 {{% http-api spec="client-server" api="logout" %}}
+
 
 #### Login Fallback
 
