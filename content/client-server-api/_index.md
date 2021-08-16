@@ -1024,11 +1024,18 @@ is complete, the client will need to submit a `/login` request matching
 
 #### Appservice Login
 
-An appservice can also choose to login for a user in it's namespace.
+A appservice can login by providing a valid appservice token and a user within the appservice's
+namespace. 
+
+{{% boxes/note %}}
+Appservices do not need to login as individual users in all cases, as they
+can perform [Identity Assertion](http://localhost:1313/application-service-api/#identity-assertion)
+using the appservice token. However, if the appservice needs a scoped token
+for a single user then they can use this API instead.
+{{% /boxes/note %}}
 
 This request must be authenticated by the [appservice `as_token`](../application-service-api#registration) 
-(see [Client Authentication](#client-authentication) on how to provide the token). The resulting access token and 
-device MUST be limited to the identified user.
+(see [Client Authentication](#client-authentication) on how to provide the token).
 
 To use this login type, clients should submit a `/login` request as follows:
 
@@ -1042,11 +1049,13 @@ To use this login type, clients should submit a `/login` request as follows:
 }
 ```
 
-If the access token is not valid, does not correspond to an appservice or the user has not previously been registered
-then the homeserver will respond with an errcode of `M_FORBIDDEN`.
+If the access token is not valid, does not correspond to an appservice
+or the user has not previously been registered then the homeserver will
+respond with an errcode of `M_FORBIDDEN`.
 
-If the access token does correspond to an appservice, but the user does not exist within it's namespace then the
-homeserver will respond with an errcode of `M_EXCLUSIVE`.
+If the access token does correspond to an appservice, but the user does
+not exist within it's namespace then the homeserver will respond with an
+errcode of `M_EXCLUSIVE`.
 
 {{% http-api spec="client-server" api="login" %}}
 
