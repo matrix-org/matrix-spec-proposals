@@ -177,7 +177,7 @@ paths:
                   If the `kind` is `"email"`, this is the email address to
                   send notifications to.
               kind:
-                type: string
+                type: [string, "null"]
                 description: |-
                   The kind of pusher to configure. `"http"` makes a pusher that
                   sends HTTP pokes. `"email"` makes a pusher that emails the

@@ -435,7 +435,7 @@ paths:
             type: object
             properties:
               m.upload.size:
-                type: integer
+                type: [integer, "null"]
                 format: int64
                 description: |-
                   The maximum size an upload can be in bytes.
