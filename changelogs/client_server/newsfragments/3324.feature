@@ -1,1 +1,1 @@
-Add support for m.login.appservice, as per [MSC2778](https://github.com/matrix-org/matrix-doc/pull/2778).
+Extend `/_matrix/client/r0/login` to accept a `m.login.appservice`, as per [MSC2778](https://github.com/matrix-org/matrix-doc/pull/2778).
