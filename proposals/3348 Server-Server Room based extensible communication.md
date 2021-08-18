@@ -34,7 +34,8 @@ The IDs the homeservers should use is currently recommended to be a simple @:ide
 (identifier in this case replaces domain just to accommodate that P2P is a thing so we cant count on
 it always being domain.) The author is currently not aware that using essentially a empty identifier
 would be a problem. This identifier is currently completely off-limits and therefore perfect
-and its completely implementation agnostic so it wont discriminate certain implementations or come into clash
+and it's completely implementation agnostic so it wont discriminate certain implementations or come into clash
+
 with cases where a user has chosen to call them self's for example @dendrite:example.com or @synapse:example.com
 or @conduit:example.com since that would also be a logical naming scheme to have the name be up to
 each Homeserver implementation but this would complicate matters more than need be. 
