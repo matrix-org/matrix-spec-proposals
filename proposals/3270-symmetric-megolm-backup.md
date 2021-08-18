@@ -60,7 +60,7 @@ AES-CTR-256 and authenticated using HMAC-SHA-256. The process works as follows:
 4. Stringify the JSON object and encrypt it using AES-CTR-256 using the AES key
    generated above. This encrypted data, encoded using base64, becomes the
    `ciphertext` property.
-5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256 using the MAC generated
+5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256 using the MAC key generated
    above. The resulting MAC is base64-encoded and becomes the `mac` property.
 
 ### `auth_data`
