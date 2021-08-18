@@ -16,7 +16,8 @@ of the rooms utilised for this.
 ## The basics
 
 These rooms can also be extended quite easily with custom functionality. One example of how this functionality
-could be extended is to add a mjolnir module that upon seeing a event that it listens for it will cause
+could be extended is to add a mjolnir module that upon seeing an event that it listens for it will cause
+
 the homeserver to drop any event coming from its own HS that matches a rule it has been asked to follow.
 So if purple.example informs blue.example that invites to Smith from John are automatically rejected
 by Smith then blue.example could just drop the events in the first place as to not waste the resources
