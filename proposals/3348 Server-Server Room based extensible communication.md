@@ -1,4 +1,4 @@
-# MSC0000: Server-Server Room based extensible communication
+# MSC3348: Server-Server Room based extensible communication
 
 ## Background and Introduction
 
