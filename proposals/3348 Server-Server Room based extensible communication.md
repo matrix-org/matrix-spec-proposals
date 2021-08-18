@@ -9,7 +9,8 @@ but well its not exactly the most extensible thing in the world or flexible thin
 Using rooms for Server to Server (This document uses the word server even tho saying node is probably
 more accurate to compensate for clients that are Hybrids of Homeserver and Client as is the case for P2P Clients)
 communication has benefits in that interfacing with rooms is well a whole world easier for developers
-and will allow for having presistent states that the servers can agree on via state resolution
+and will allow for having persistent states that the servers can agree on via state resolution
+
 of the rooms utilised for this.
 
 ## The basics
