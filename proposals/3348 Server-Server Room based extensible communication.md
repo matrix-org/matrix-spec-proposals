@@ -110,7 +110,8 @@ it replies to your `m.s2s.upgrade` event with a `m.s2s.upgrade.fail` with the `e
 Server users may be used to snoop into end-to-end conversation. To solve this problem, this paper
 proposes server users joining rooms without `"type":  "m.s2s"` be ill-formed.
 
-Room Upgrade Negotiation is vulnernable to Downgrade attacks in theory if the HS is not properly configured
+Room Upgrade Negotiation is vulnerable to Downgrade attacks in theory if the HS is not properly configured
+
 but the author consideres this an acceptable compromise.
 
 The MSC also provides a Very clear way to avoid the downgrade attack problem as a HS by saying
