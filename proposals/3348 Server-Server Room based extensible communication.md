@@ -83,12 +83,11 @@ the other homeserver it will send a `m.s2s.upgrade.accept` event if they match. 
 if both homeservers are running the Exact same software or if they follow the same system for
 determining when its time to jump to a new room version for S2S.
 
-After the homeserver that initiated the process recives a `m.s2s.upgrade.accept` event it will send
-a `m.s2s.upgrade.ack` event in reply to the accept event and wait for a `m.s2s.upgrade.ack` reply.
-This has the goal of making it so that both homeservers have to atleast once see the other homeserver
-accept the upgrade plan. If this passes upgrade the room using the upgrade invite only room procedure
-from MSC3325 and the room version to upgrade to is the one that has been accepted by both homeservers
-as their most prefered choice. 
+After the homeserver that initiated the process receives a `m.s2s.upgrade.accept` event it will send
+a `m.s2s.upgrade.ack` event in reply to the accept event consider negotiation completed and proceed
+using the selected room version with the invite only room upgrade procedure from MSC3325.
+This has the goal of making it so that both homeservers have to at least once see the other homeserver
+accept the upgrade plan.
 
 If the homeservers dissagree on their lists the process is to go down the list and check
 what room versions they do agree on and what ratings they have. The version that both parties agrees
