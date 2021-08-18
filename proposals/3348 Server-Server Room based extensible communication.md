@@ -43,7 +43,8 @@ each Homeserver implementation but this would complicate matters more than need 
 ## Clients need not support this room type
 
 Server to Server communication rooms should also use a special type attribute as to communicate to clients
-and other servers about their special nature. The type of `'type': 'm.s2s' should be used for this.
+and other servers about their special nature. The type of `'type': 'm.s2s'` should be used for this.
+
 The nature of these rooms is important for clients to be aware of because well. Clients are not expected
 to need to implement support for rendering a lot of the events in these rooms what so ever. 
 
