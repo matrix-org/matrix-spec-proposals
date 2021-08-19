@@ -66,6 +66,12 @@ Lists should:
 * Be used where they provide clarity.
 * Contain entries which start with a capital and end with a full stop.
 
+When talking about properties in JSON objects, prefer the word "property" to "field",
+"member", or various other alternatives. For example: "this property will be set to
+X if ...". Also avoid the term "key" unless you are specifically talking about the 
+*name* of a property - and be mindful of the scope for confusion with cryptographic
+keys.
+
 OpenAPI
 ~~~~~~~
 
