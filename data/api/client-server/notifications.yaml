@@ -41,7 +41,9 @@ paths:
         - in: query
           type: string
           name: from
-          description: Pagination token given to retrieve the next set of events.
+          description: |-
+            Pagination token to continue from. This should be the `next_token`
+            returned from an earlier call to this endpoint.
           required: false
           x-example: "xxxxx"
         - in: query

@@ -73,7 +73,8 @@ paths:
           name: since
           type: string
           description: |-
-            A point in time to continue a sync from.
+            A point in time to continue a sync from. This should be the
+            `next_batch` token returned by an earlier call to this endpoint.
           x-example: "s72594_4483_1934"
         - in: query
           name: full_state
