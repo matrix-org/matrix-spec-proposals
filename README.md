@@ -59,13 +59,19 @@ Additionally, the following directories may be of interest:
 Please read [CONTRIBUTING.rst](./CONTRIBUTING.rst) before authoring a change to the spec. Note that spec authoring takes
 place after an MSC has been accepted, not as part of a proposal itself.
 
-1. Install the extended version (often the OS default) of Hugo: <https://gohugo.io/getting-started/installing>
+1. Install the extended version (often the OS default) of Hugo:
+   <https://gohugo.io/getting-started/installing>. Note that at least Hugo
+   v0.74 is required.
+
+   Alternatively, use the Docker image at https://hub.docker.com/r/klakegg/hugo/.
 2. Run `git submodule update --init --recursive` for good measure.
 3. Run `npm i` to install the dependencies. Note that this will require NodeJS to be installed.
 4. Run `npm run get-proposals` to seed proposal data. This is merely for populating the content of the "Spec Change Proposals"
    page and is not required.
-5. Run `hugo serve` to run a local webserver which builds whenever a file change is detected. If watching doesn't appear
-   to be working for you, try `hugo serve --disableFastRender` instead.
+5. Run `hugo serve` (or `docker run --rm -it -v $(pwd):/src -p 1313:1313
+   klakegg/hugo serve`) to run a local webserver which builds whenever a file
+   change is detected. If watching doesn't appear to be working for you, try
+   adding `--disableFastRender` to the commandline.
 6. Edit the specification 🙂
 
 We use a highly customized [Docsy](https://www.docsy.dev/) theme for our generated site, which uses Bootstrap and Font
