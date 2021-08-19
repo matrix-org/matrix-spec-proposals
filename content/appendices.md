@@ -1039,3 +1039,22 @@ The event signing algorithm should emit the following signed event:
     }
 }
 ```
+
+## Conventions for Matrix APIs
+
+This section is intended primarily to guide those adding new APIs to the Matrix
+protocol. It sets out guidelines which API designers should seek to follow when
+adding new APIs. This is important to maintain consistency with the Matrix
+protocol, and thus improve developer experience.
+
+### HTTP Endpoint and JSON property naming
+
+The names of the API endpoints for the HTTP transport follow a convention of
+using underscores to separate words (for example `/delete_devices`).
+
+The key names in JSON objects passed over the API also follow this convention.
+
+{{% boxes/note %}}
+There are a few historical exceptions to this rule, such as `/createRoom`.
+These inconsistencies may be addressed in future versions of this specification.
+{{% /boxes/note %}}
