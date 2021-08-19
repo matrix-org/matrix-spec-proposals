@@ -8,7 +8,7 @@ in.
 Format
 ------
 
-Documentation is written in github-flavored markdown.
+Documentation is written in Commonmark markdown.
 
 Sections
 --------
