@@ -1,0 +1,53 @@
+name: "Spec"
+on: [push, pull_request]
+jobs:
+  build-openapi:
+    name: "🐍 Build OpenAPI definitions for matrix.org"
+    runs-on: ubuntu-latest
+    container: "python:3.9"
+    steps:
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+      - name: "📦 Asset creation"
+        run: |
+          python3 -m venv env && . env/bin/activate
+          pip install -r scripts/requirements.txt
+          scripts/generate-matrix-org-assets
+      - name: "📤 Artifact upload"
+        uses: actions/upload-artifact@v2
+        with:
+          name: openapi-artifact
+          path: assets.tar.gz
+  build-spec:
+    name: "📖 Build the spec"
+    runs-on: ubuntu-latest
+    container:
+      image: "alpine"
+      options: --user root
+    steps:
+      - name: "➕ Install missing packages"
+        run: apk add nodejs npm git hugo
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: "⚙️ npm"
+        run: |
+          npm i
+          npm run get-proposals
+      - name: "⚙️ hugo"
+        run: hugo --baseURL "/unstable" -d "spec"
+      - name: "📦 Tarball creation"
+        run: tar -czf spec.tar.gz spec
+      - name: "📤 Artifact upload"
+        uses: actions/upload-artifact@v2
+        with:
+          name: spec-artifact
+          path: spec.tar.gz
+  rebuild-matrixdotorg:
+    name: "👷 Rebuild matrix.org"
+    needs: build-openapi
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Triggering rebuild of matrix.org"
+        run: echo "TODO"
