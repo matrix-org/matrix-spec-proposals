@@ -100,7 +100,8 @@ a5026e6d2e726f6f6d2e6d65737361676503a2181b6b48656c6c6f20576f726c64181c666d2e7465
 CoAP is defined in [RFC 7252: Constrained Application Protocol](https://tools.ietf.org/html/rfc7252)
 and is intended to be bandwidth efficient. It defines mappings to and from HTTP. Implementations exist
 in [many languages](https://coap.technology/impls.html). This allows the existing HTTP CS API to be mapped
-to CoAP request/responses.
+to CoAP request/responses. Low bandwidth Matrix requires the baseline CoAP RFC and
+[RFC7959: Blockwise Transfer](https://datatracker.ietf.org/doc/html/rfc7959) to be implemented.
 
 This proposal goes beyond just "Use CoAP" however. This proposal also specifies single character path
 enums which act as shorthand for certain commonly used CS API paths. This compresses data more efficiently.
