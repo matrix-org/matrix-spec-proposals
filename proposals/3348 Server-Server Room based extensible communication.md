@@ -77,25 +77,17 @@ a `m.s2s.upgrade.proposal` event that follows the following structure where it l
 its room versions it will accept upgrading to and what it prefers.
 
 `Event Breakdown here`
-The next step is for the other Homeserver to send a `m.s2s.upgrade.reply` event where it sends back
-its own list of room versions if its list is diffrent. If the list is has matches the list of
-the other homeserver it will send a `m.s2s.upgrade.accept` event if they match. This is expected
-if both homeservers are running the Exact same software or if they follow the same system for
-determining when its time to jump to a new room version for S2S.
+The next step is for the other homeserver to send a `m.s2s.upgrade.accept` where the homeserver will
+include its selected version based on the versions in the proposal. 
 
 After the homeserver that initiated the process receives a `m.s2s.upgrade.accept` event it will send
 a `m.s2s.upgrade.ack` event in reply to the accept event consider negotiation completed and proceed
 using the selected room version with the invite only room upgrade procedure from MSC3325.
-This has the goal of making it so that both homeservers have to at least once see the other homeserver
-accept the upgrade plan.
 
-If the homeservers dissagree on their lists the process is to go down the list and check
-what room versions they do agree on and what ratings they have. The version that both parties agrees
-on with the highest rating in each servers list that is in both servers lists gets choosen.
-If the servers fail to find a room version that they can agree on the server who started the process
-is to send a `m.s2s.upgrade.fail` event with a `error` field with the contents `no match`. This error
-is to be expected by servers choosing to operate in the highest Security mode where you only accept
-to upgrade to the most secure room version avavible and not to compromise on this. 
+If the second server fails to find a match between the proposed versions and its own list is to send 
+a `m.s2s.upgrade.fail` event with a `error` field with the contents `no match`. This error is to be 
+expected by servers choosing to operate in the highest Security mode where you only accept to upgrade
+to the most secure room version avavible and not to compromise on this. 
 
 Vendor exists to allow custom behavior like if we say for example the Synapse and Dendrite homeservers
 want to only allow v6 to upgrade to v8 then they can call their vendor upgrade type and then negotiate
