@@ -80,9 +80,10 @@ its room versions it will accept upgrading to and what it prefers.
 The next step is for the other homeserver to send a `m.s2s.upgrade.accept` where the homeserver will
 include its selected version based on the versions in the proposal. 
 
-After the homeserver that initiated the process receives a `m.s2s.upgrade.accept` event it will send
-a `m.s2s.upgrade.ack` event in reply to the accept event consider negotiation completed and proceed
-using the selected room version with the invite only room upgrade procedure from MSC3325.
+After the homeserver that initiated the process receives a `m.s2s.upgrade.accept` event it consider 
+negotiation completed and proceed using the selected room version with the invite only room upgrade procedure 
+from MSC3325. The other homeserver will use the invite to the new room as validation that the upgrade has
+been completed correctly.
 
 If the second server fails to find a match between the proposed versions and its own list is to send 
 a `m.s2s.upgrade.fail` event with a `error` field with the contents `no match`. This error is to be 
