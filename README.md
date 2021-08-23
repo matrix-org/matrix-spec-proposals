@@ -11,37 +11,37 @@ Spec authors and proposal writers are welcome to join [#matrix-spec:matrix.org](
 
 The Matrix spec is compiled with [Hugo](https://gohugo.io/) (a static site generator) with the following structure:
 
-* `/assets`: assets that need postprocessing using [Hugo Pipes](https://gohugo.io/hugo-pipes/introduction/). 
+* `/assets`: assets that need postprocessing using [Hugo Pipes](https://gohugo.io/hugo-pipes/introduction/).
   For example, Sass files would go here.
 
-* `/content`: files that will become pages in the site go here. Typically these are Markdown files with some YAML front 
-  matter indicating, [among other things](https://gohugo.io/content-management/front-matter/), what layout should be 
-  applied to this page. The organization of files under `/content` determines the organization of pages in the built 
+* `/content`: files that will become pages in the site go here. Typically these are Markdown files with some YAML front
+  matter indicating, [among other things](https://gohugo.io/content-management/front-matter/), what layout should be
+  applied to this page. The organization of files under `/content` determines the organization of pages in the built
   site.
 
-* `/data`: this can contain TOML, YAML, or JSON files. Files kept here are directly available to template code as 
-  [data objects](https://gohugo.io/templates/data-templates/), so templates don't need to load them from a file and 
-  parse them. This is also where our 
+* `/data`: this can contain TOML, YAML, or JSON files. Files kept here are directly available to template code as
+  [data objects](https://gohugo.io/templates/data-templates/), so templates don't need to load them from a file and
+  parse them. This is also where our
 
-* `/layouts`: this contains [Hugo templates](https://gohugo.io/templates/). Some templates define the overall layout of 
+* `/layouts`: this contains [Hugo templates](https://gohugo.io/templates/). Some templates define the overall layout of
   a page: for example, whether it has header, footer, sidebar, and so on.
-    * `/layouts/partials`: these templates can be called from other templates, so they can be used to factor out 
-      template code that's used in more than one template. An obvious example here is something like a sidebar, where 
-      several different page layouts might all include the sidebar. But also, partial templates can return values: this 
+    * `/layouts/partials`: these templates can be called from other templates, so they can be used to factor out
+      template code that's used in more than one template. An obvious example here is something like a sidebar, where
+      several different page layouts might all include the sidebar. But also, partial templates can return values: this
       means they can be used like functions, that can be called by multiple templates to do some common processing.
     * `/layouts/shortcodes`: these templates can be called directly from files in `/content`.
 
 * `/static`: static files which don't need preprocessing. JS or CSS files could live here.
 
-* `/themes`: you can use just Hugo or use it with a theme. Themes primarily provide additional templates, which are 
-  supplied in a `/themes/$theme_name/layouts` directory. You can use a theme but customise it by providing your own 
-  versions of any of the them layouts in the base `/layouts` directory. That is, if a theme provides 
-  `/themes/$theme_name/layouts/sidebar.html` and you provide `/layouts/sidebar.html`, then your version of this 
+* `/themes`: you can use just Hugo or use it with a theme. Themes primarily provide additional templates, which are
+  supplied in a `/themes/$theme_name/layouts` directory. You can use a theme but customise it by providing your own
+  versions of any of the them layouts in the base `/layouts` directory. That is, if a theme provides
+  `/themes/$theme_name/layouts/sidebar.html` and you provide `/layouts/sidebar.html`, then your version of this
   template will be used.
 
 It also has the following top-level file:
 
-* `config.toml`: site-wide configuration settings. Some of these are built-in and you can add your own. Config settings 
+* `config.toml`: site-wide configuration settings. Some of these are built-in and you can add your own. Config settings
   defined here are available in templates. All these directories above are configurable via `config.toml` settings.
 
 Additionally, the following directories may be of interest:
@@ -53,8 +53,6 @@ Additionally, the following directories may be of interest:
 * `/meta`: Documentation relating to the spec's processes that are otherwise untracked (release instructions, etc).
 * `/scripts`: Various scripts for generating the spec.
 * `/proposals`: Matrix Spec Change (MSC) proposals. See <https://spec.matrix.org/unstable/proposals/>.
-* `/api`: [OpenAPI](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md) / Swagger definitions for
-  the spec.
 
 ## Authoring changes to the spec
 
@@ -69,8 +67,8 @@ place after an MSC has been accepted, not as part of a proposal itself.
    to be working for you, try `hugo serve --disableFastRender` instead.
 6. Edit the specification 🙂
 
-We use a highly customized [Docsy](https://www.docsy.dev/) theme for our generated site, which uses Bootstrap and Font 
-Awesome. If you're looking at making design-related changes to the spec site, please coordinate with us in 
+We use a highly customized [Docsy](https://www.docsy.dev/) theme for our generated site, which uses Bootstrap and Font
+Awesome. If you're looking at making design-related changes to the spec site, please coordinate with us in
 [#matrix-docs:matrix.org](https://matrix.to/#/#matrix-docs:matrix.org) before opening a PR.
 
 ## Building the specification
@@ -87,7 +85,7 @@ To make use of the generated file, there are a number of options:
   http://editor.swagger.io/
 * You can run a local HTTP server by running `./scripts/swagger-http-server.py`, and then view the documentation via an
   online viewer; for example, at <http://petstore.swagger.io/?url=http://localhost:8000/api-docs.json>
-* You can host the swagger UI yourself. See <https://github.com/swagger-api/swagger-ui#how-to-run> for advice on how to 
+* You can host the swagger UI yourself. See <https://github.com/swagger-api/swagger-ui#how-to-run> for advice on how to
   do so.
 
 ## Issue tracking
