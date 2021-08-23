@@ -4,7 +4,7 @@ weight: 10
 type: docs
 ---
 
-The client-server API provides a simple lightweight API to let clients
+The client-server API allows clients to
 send messages, control rooms and synchronise conversation history. It is
 designed to support both lightweight clients which store no state and
 lazy-load data from the server as required - as well as heavyweight
@@ -20,20 +20,15 @@ supported as optional extensions - e.g. a packed binary encoding over
 stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip
 mobile usage. For the default HTTP transport, all API calls use a
 Content-Type of `application/json`. In addition, all strings MUST be
-encoded as UTF-8. Clients are authenticated using opaque `access_token`
-strings (see [Client Authentication](#client-authentication) for
-details), passed as a query string parameter on all requests.
+encoded as UTF-8.
 
-The names of the API endpoints for the HTTP transport follow a
-convention of using underscores to separate words (for example
-`/delete_devices`). The key names in JSON objects passed over the API
-also follow this convention.
+Clients are authenticated using opaque `access_token` strings (see [Client
+Authentication](#client-authentication) for details).
 
-{{% boxes/note %}}
-There are a few historical exceptions to this rule, such as
-`/createRoom`. A future version of this specification will address the
-inconsistency.
-{{% /boxes/note %}}
+See also [Conventions for Matrix APIs](/appendices#conventions-for-matrix-apis)
+in the Appendices for conventions which all Matrix APIs are expected to follow.
+
+### Standard error response
 
 Any errors which occur at the Matrix API level MUST return a "standard
 error response". This is a JSON object which looks like:
@@ -46,15 +41,17 @@ error response". This is a JSON object which looks like:
 ```
 
 The `error` string will be a human-readable error message, usually a
-sentence explaining what went wrong. The `errcode` string will be a
-unique string which can be used to handle an error message e.g.
-`M_FORBIDDEN`. These error codes should have their namespace first in
-ALL CAPS, followed by a single \_ to ease separating the namespace from
-the error code. For example, if there was a custom namespace
-`com.mydomain.here`, and a `FORBIDDEN` code, the error code should look
-like `COM.MYDOMAIN.HERE_FORBIDDEN`. There may be additional keys
-depending on the error, but the keys `error` and `errcode` MUST always
-be present.
+sentence explaining what went wrong.
+
+The `errcode` string will be a unique string which can be used to handle an
+error message e.g.  `M_FORBIDDEN`. Error codes should have their namespace
+first in ALL CAPS, followed by a single `_`. For example, if there was a custom
+namespace `com.mydomain.here`, and a `FORBIDDEN` code, the error code should
+look like `COM.MYDOMAIN.HERE_FORBIDDEN`. Error codes defined by this
+specification should start `M_`.
+
+Some `errcode`s define additional keys which should be present in the error
+response object, but the keys `error` and `errcode` MUST always be present.
 
 Errors are generally best expressed by their error code rather than the
 HTTP status code returned. When encountering the error code `M_UNKNOWN`,
@@ -66,7 +63,9 @@ found. However, if the client were to receive an error code of
 `M_UNKNOWN` with a 400 Bad Request, the client should assume that the
 request being made was invalid.
 
-The common error codes are:
+#### Common error codes
+
+These error codes can be returned by any API endpoint:
 
 `M_FORBIDDEN`
 Forbidden access, e.g. joining a room without permission, failed login.
@@ -98,7 +97,11 @@ then try again.
 `M_UNKNOWN`
 An unknown error has occurred.
 
-Other error codes the client might encounter are:
+#### Other error codes
+
+The following error codes are specific to certain endpoints.
+
+<!-- TODO: move them to the endpoints that return them -->.
 
 `M_UNRECOGNIZED`
 The server did not understand the request.
