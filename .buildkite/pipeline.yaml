@@ -50,7 +50,7 @@ steps:
       - *hugo_build_environment_setup
       # Generate a stable version of the spec
       - scripts/prepare-spec-release.sh "$BUILDKITE_TAG" spec
-      # Package the build as an artefact, which will be downloaded by:
+      # Package the build as an artifact, which will be downloaded by:
       # https://github.com/matrix-org/buildkite-webhook-listener
       - tar -czf spec-release.tar.gz spec
     artifact_paths:
