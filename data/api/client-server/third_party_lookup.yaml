@@ -42,6 +42,8 @@ paths:
           description: The protocols supported by the homeserver.
           schema:
             $ref: ../application-service/definitions/protocol_metadata.yaml
+      tags:
+        - Third Party Lookup
   "/thirdparty/protocol/{protocol}":
     get:
       summary: Retrieve metadata about a specific protocol that the homeserver supports.
@@ -71,6 +73,8 @@ paths:
             }
           schema:
             $ref: definitions/errors/error.yaml
+      tags:
+        - Third Party Lookup
   "/thirdparty/location/{protocol}":
     get:
       summary: Retrieve Matrix-side portals rooms leading to a third party location.
@@ -112,6 +116,8 @@ paths:
             }
           schema:
             $ref: definitions/errors/error.yaml
+      tags:
+        - Third Party Lookup
   "/thirdparty/user/{protocol}":
     get:
       summary: Retrieve the Matrix User ID of a corresponding third party user.
@@ -147,6 +153,8 @@ paths:
             }
           schema:
             $ref: definitions/errors/error.yaml
+      tags:
+        - Third Party Lookup
   "/thirdparty/location":
     get:
       summary: Reverse-lookup third party locations given a Matrix room alias.
@@ -177,6 +185,8 @@ paths:
             }
           schema:
             $ref: definitions/errors/error.yaml
+      tags:
+        - Third Party Lookup
   "/thirdparty/user":
     get:
       summary: Reverse-lookup third party users given a Matrix User ID.
@@ -206,3 +216,5 @@ paths:
             }
           schema:
             $ref: definitions/errors/error.yaml
+      tags:
+        - Third Party Lookup

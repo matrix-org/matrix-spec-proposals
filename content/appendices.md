@@ -756,11 +756,11 @@ Represents E-Mail addresses. The `address` is the raw email address in
 other text such as real name, angle brackets or a mailto: prefix.
 
 In addition to lowercasing the domain component of an email address,
-implementations are expected to lowercase the localpart as described
-in [the unicode mapping file](https://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt)
-prior to any processing. For example, `Strauß@Example.com` must be
-considered to be `strauss@example.com` while processing the email
-address.
+implementations are expected to apply the unicode case-folding algorithm
+as described under "Caseless Matching" in
+[chapter 5 of the unicode standard](https://www.unicode.org/versions/Unicode13.0.0/ch05.pdf#G21790).
+For example, `Strauß@Example.com` must be considered to be `strauss@example.com`
+while processing the email address.
 
 ### PSTN Phone numbers
 
@@ -1039,3 +1039,22 @@ The event signing algorithm should emit the following signed event:
     }
 }
 ```
+
+## Conventions for Matrix APIs
+
+This section is intended primarily to guide API designers when adding to Matrix,
+setting guidelines to follow for how those APIs should work. This is important to 
+maintain consistency with the Matrix protocol, and thus improve developer 
+experience.
+
+### HTTP endpoint and JSON property naming
+
+The names of the API endpoints for the HTTP transport follow a convention of
+using underscores to separate words (for example `/delete_devices`).
+
+The key names in JSON objects passed over the API also follow this convention.
+
+{{% boxes/note %}}
+There are a few historical exceptions to this rule, such as `/createRoom`.
+These inconsistencies may be addressed in future versions of this specification.
+{{% /boxes/note %}}

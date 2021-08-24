@@ -375,7 +375,7 @@ paths:
       summary: Store a key in the backup.
       description: |-
         Store a key in the backup.
-      operationId: postRoomKeysKeyRoomIdSessionId
+      operationId: putRoomKeysBySessionId
       security:
         - accessToken: []
       parameters:
@@ -409,6 +409,7 @@ paths:
           description: The update succeeded.
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -443,10 +444,10 @@ paths:
       tags:
         - End-to-end encryption
     get:
-      summary: Retrieve a key from the backup
+      summary: Retrieve a key from the backup.
       description: |-
         Retrieve a key from the backup.
-      operationId: getRoomKeysKeyRoomIdSessionId
+      operationId: getRoomKeysBySessionId
       security:
         - accessToken: []
       parameters:
@@ -487,11 +488,13 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
     delete:
-      summary: Delete a key from the backup
+      summary: Delete a key from the backup.
       description: |-
         Delete a key from the backup.
-      operationId: deleteRoomKeysKeyRoomIdSessionId
+      operationId: deleteRoomKeysBySessionId
       security:
         - accessToken: []
       parameters:
@@ -519,6 +522,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -547,12 +551,14 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
   "/room_keys/keys/{roomId}":
     put:
       summary: Store several keys in the backup for a given room.
       description: |-
-        Store a key in the backup.
-      operationId: postRoomKeysKeyRoomId
+        Store several keys in the backup for a given room.
+      operationId: putRoomKeysByRoomId
       security:
         - accessToken: []
       parameters:
@@ -580,6 +586,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -624,10 +631,10 @@ paths:
       tags:
         - End-to-end encryption
     get:
-      summary: Retrieve the keys from the backup for a given room
+      summary: Retrieve the keys from the backup for a given room.
       description: |-
-        Retrieve the keys from the backup for a given room
-      operationId: getRoomKeysKeyRoomId
+        Retrieve the keys from the backup for a given room.
+      operationId: getRoomKeysByRoomId
       security:
         - accessToken: []
       parameters:
@@ -666,11 +673,13 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
     delete:
-      summary: Delete a key from the backup
+      summary: Delete the keys from the backup for a given room.
       description: |-
-        Delete a key from the backup.
-      operationId: deleteRoomKeysKeyRoomId
+        Delete the keys from the backup for a given room.
+      operationId: deleteRoomKeysByRoomId
       security:
         - accessToken: []
       parameters:
@@ -692,6 +701,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -720,12 +730,14 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
   "/room_keys/keys":
     put:
       summary: Store several keys in the backup.
       description: |-
         Store several keys in the backup.
-      operationId: postRoomKeysKey
+      operationId: putRoomKeys
       security:
         - accessToken: []
       parameters:
@@ -773,6 +785,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -817,10 +830,10 @@ paths:
       tags:
         - End-to-end encryption
     get:
-      summary: Retrieve the keys from the backup for a given room
+      summary: Retrieve the keys from the backup.
       description: |-
-        Retrieve the keys from the backup for a given room
-      operationId: getRoomKeysKeyRoomId
+        Retrieve the keys from the backup.
+      operationId: getRoomKeys
       security:
         - accessToken: []
       parameters:
@@ -875,11 +888,13 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption
     delete:
-      summary: Delete a key from the backup
+      summary: Delete the keys from the backup.
       description: |-
-        Delete a key from the backup.
-      operationId: deleteRoomKeysKeyRoomId
+        Delete the keys from the backup.
+      operationId: deleteRoomKeys
       security:
         - accessToken: []
       parameters:
@@ -895,6 +910,7 @@ paths:
           description: The update succeeded
           schema:
             type: object
+            title: RoomKeysUpdateResponse
             properties:
               etag:
                 description: |-
@@ -923,3 +939,5 @@ paths:
           description: This request was rate-limited.
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - End-to-end encryption

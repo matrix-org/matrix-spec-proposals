@@ -134,6 +134,15 @@ to send. The process overall is as follows:
     8448 and a `Host` header containing the `<hostname>`. The target
     server must present a valid certificate for `<hostname>`.
 
+{{% boxes/note %}}
+The reasons we require `<hostname>` rather than `<delegated_hostname>` for SRV
+delegation are:
+  1. DNS is insecure (not all domains have DNSSEC), so the target of the delegation
+      must prove that it is a valid delegate for `<hostname>` via TLS.
+  2. Consistency with the recommendations in [RFC6125](https://datatracker.ietf.org/doc/html/rfc6125#section-6.2.1)
+     and other applications using SRV records such [XMPP](https://datatracker.ietf.org/doc/html/rfc6120#section-13.7.2.1).
+{{% /boxes/note %}}
+
 The TLS certificate provided by the target server must be signed by a
 known Certificate Authority. Servers are ultimately responsible for
 determining the trusted Certificate Authorities, however are strongly
@@ -500,15 +509,15 @@ Example
 
 As an example consider the event graph:
 
-    A
-    /
+      A
+     /
     B
 
 where `B` is a ban of a user `X`. If the user `X` tries to set the topic
 by sending an event `C` while evading the ban:
 
-    A
-    / \
+      A
+     / \
     B   C
 
 servers that receive `C` after `B` should soft fail event `C`, and so
@@ -518,11 +527,11 @@ will neither relay `C` to its clients nor send any events referencing
 If later another server sends an event `D` that references both `B` and
 `C` (this can happen if it received `C` before `B`):
 
-    A
-    / \
+      A
+     / \
     B   C
-    \ /
-    D
+     \ /
+      D
 
 then servers will handle `D` as normal. `D` is sent to the servers'
 clients (assuming `D` passes auth checks). The state at `D` may resolve
@@ -539,18 +548,18 @@ state of the `C` branch.
 
 Let's go back to the graph before `D` was sent:
 
-    A
-    / \
+      A
+     / \
     B   C
 
 If all the servers in the room saw `B` before `C` and so soft fail `C`,
 then any new event `D'` will not reference `C`:
 
-    A
-    / \
+      A
+     / \
     B   C
     |
-    D
+    D'
 
 #### Retrieving event authorization information
 
@@ -584,15 +593,15 @@ state.
 For example, consider the following event graph (where the oldest event,
 E0, is at the top):
 
-    E0
-    |
-    E1
-    /  \
+      E0
+      |
+      E1
+     /  \
     E2  E4
     |    |
     E3   |
-    \  /
-    E5
+     \  /
+      E5
 
 Suppose E3 and E4 are both `m.room.name` events which set the name of
 the room. What should the name of the room be at E5?
