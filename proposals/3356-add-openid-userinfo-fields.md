@@ -1,4 +1,4 @@
-# MSCNNNN: Add additional fields to the openid user info
+# MSC3356: Add additional fields to the openid user info
 
 The Matrix OpenID user info API (represented by the endpoints `/_matrix/client/r0/user/.../openid/request_token` and `/_matrix/federation/v1/openid/userinfo`) may be used by widgets (i.e. third party applications) to authenticate users against their current Matrix session.
 
