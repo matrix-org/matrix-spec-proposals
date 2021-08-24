@@ -10,7 +10,11 @@ have been excluded from the specification due to lack of documentation and lack 
 implementation to influence the spec writing process.
 
 This proposal aims to bring the functionality originally proposed by MSC1236 into the widget
-specification with the accuracy and implementation validation required by modern MSCs.
+specification with the accuracy and implementation validation required by modern MSCs. Additionally,
+this MSC explores options for widgets being able to see events/state for rooms in which they aren't
+operating directly. An example usecase of this is a calendar system built on top of Matrix where a
+calendar view might belong to a room but needs information from "calendar event rooms". The widget
+would therefore need to query state from these other rooms.
 
 ## Prerequisite background
 
@@ -115,13 +119,18 @@ properties of `data` are required.
 The client is responsible for encrypting the event before sending, if required by the room. The widget
 should not need to be made aware of encryption or have to encrypt events.
 
-If the widget did not get approved for the capability required to send the event, the client MUST
-send an error response (as required currently by the capabilities system for widgets). If the widget
-was approved, the client MUST only send the event to the room the user is currently viewing.
+The widget can add an additional `room_id` property to the `data` object if it would like to target
+a specific room. This requires that the widget be approved for sending to that room, which is dicussed
+later in this document.
+
+If the widget did not get approved for the capability/capabilities required to send the event, the
+client MUST send an error response (as required currently by the capabilities system for widgets). If
+the widget has permission to send to the room, defaulting to whichever room the user is currently
+viewing, the client MUST try to send the event to that room.
 
 The client SHOULD NOT modify the `type`, `state_key`, or `content` of the request unless required for
 encryption. The widget is responsible for producing valid events - the client MUST pass through any
-errors to the widget using the standard error response in the Widget API.
+errors, such as permission errors, to the widget using the standard error response in the Widget API.
 
 For added clarity, the client picks either the `/send` or `/state` endpoint to use on the homeserver
 depending on the presence of a `state_key` in the request data. The client then forms a request using
@@ -201,6 +210,9 @@ established with the widget (after the widget's capabilities are negotiated). Cl
 to apply the same semantics as the send event capabilities: widgets don't receive `m.emote` msgtypes
 unless they asked for it (and were approved), and they receive *decrypted* events.
 
+Note that the client should also be sending the widget any events in rooms where the widget is permitted
+to receive events from. The exact details of these permissions are covered later in this document.
+
 Widgets can also read the events they were approved to receive on demand with the following `fromWidget`
 API action:
 
@@ -238,14 +250,19 @@ can reject the request with an error.
 
 The recommended maximum `limit`s are:
 
-* For `m.room.member` state events, no limit.
-* For all other events, 25.
+* For `m.room.member` state events, no limit per room.
+* For all other events, 25 per room.
 
 The client is not required to backfill (use the `/messages` endpoint) to get more events for the
 client, and is able to return less than the requested amount of events. When returning state events,
 the client should always return the current state event (in the client's view) rather than the history
 of an event. For example, `{"type":"m.room.topic", "state_key": "", "limit": 5}` should return zero
 or one topic events, not 5, even if the topic has changed more than once.
+
+An optional `room_ids` property may also be added to the `data` object by the widget, indicating which
+room(s) to listen for events in. This is either an array of room IDs, undefined, or the special string
+`"*"` to denote "any room in which the widget has permission for reading that event" (covered later).
+When undefined, the client should send events sent in the user's currently viewed room only.
 
 The client's response would look like so (note that because of how Widget API actions work, the request
 itself is repeated in the response - the actual response from the client is held within the `response`
@@ -286,6 +303,27 @@ object):
 The `events` array is simply the array of events requested. When no matching events are found, this
 array must be defined but can be empty.
 
+## Proposal (accessing other rooms)
+
+As mentioned earlier in this MSC, widgets are typically limited to the room in which the user is currently
+viewing - they cannot typically reach out into other rooms or see what other rooms are out there. This
+has limitations on certain kinds of widgets which rely on room structures to store data outside of a
+single canonical room, however.
+
+To complement the send/receive event capabilities, a single capability is introduced to access the timelines
+of other rooms: `m.timeline:<Room ID>`. The `<Room ID>` can either be an actual room ID, or a `*` to denote
+all joined or invited rooms the client is able to see, current and future. The widget can limit its exposure
+by simply requesting highly scoped send/receive capabilities to accompany the timeline capability.
+
+Do note that a widget does not need to request capabilities for all rooms if it only ever interacts with the
+user's currently viewed room. Widgets such as stickerpickers will not need to request timeline capabilities
+because they'll always send events to the user's currently viewed room, and the client will let them do that
+without special room timeline permissions.
+
+There is no Widget API action exposed for listing the user's invited/joined rooms: the widget can request
+permission to read/receive the `m.room.create` state event of rooms and query that way. Clients should be
+aware of this trick and describe the situation appropriately to users.
+
 ## Alternatives
 
 Widgets could be powered by a bot or some sort of backend which allows them to filter the room state
@@ -307,6 +345,13 @@ Clients should apply strict limits to the number of events they are willing to p
 and ensure that users are prompted to explicitly approve the permissions requested, like in MSC2762.
 
 Clients may also wish to consider putting iconography next to room messages when a widget reads them.
+
+This MSC allows widgets to arbitrarily access/modify history in, at worst, all of the user's rooms.
+Clients should apply strict limits or checks to ensure the user understands what the widget is trying
+to do and isn't unreasonably accessing the user's account. For example, a large warning saying that
+a room-based widget is trying to access messages in *all rooms* might be suitable. Another approach
+might be to simply limit the number of rooms a widget can access, requiring the widget to know what
+room IDs it specifically wants (ie: denying the `*` request on behalf of the user).
 
 ## Unstable prefix
 
