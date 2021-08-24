@@ -254,7 +254,7 @@ The recommended maximum `limit`s are:
 * For all other events, 25 per room.
 
 The client is not required to backfill (use the `/messages` endpoint) to get more events for the
-client, and is able to return less than the requested amount of events. When returning state events,
+widget, and is able to return less than the requested amount of events. When returning state events,
 the client should always return the current state event (in the client's view) rather than the history
 of an event. For example, `{"type":"m.room.topic", "state_key": "", "limit": 5}` should return zero
 or one topic events, not 5, even if the topic has changed more than once.
