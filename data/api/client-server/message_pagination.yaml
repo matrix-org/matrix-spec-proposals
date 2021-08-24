@@ -53,6 +53,10 @@ paths:
             The token to start returning events from. This token can be obtained
             from a `prev_batch` or `next_batch` token returned by the `/sync` endpoint,
             or from an `end` token returned by a previous request to this endpoint.
+
+            Some server implementations also accept a value returned as a `start` token
+            by a previous request to this endpoint, but this is not required, and
+            clients should not rely on it.
           required: true
           x-example: "s345_678_333"
         - in: query
@@ -114,7 +118,8 @@ paths:
                 description: |-
                   A list of room events. The order depends on the `dir` parameter.
                   For `dir=b` events will be in reverse-chronological order,
-                  for `dir=f` in chronological order.
+                  for `dir=f` in chronological order. (The exact definition of `chronological`
+                  is dependent on the server implementation.)
 
                   Note that an empty `chunk` does not *necessarily* imply that no more events
                   are available. Clients should continue to paginate until no `end` property
