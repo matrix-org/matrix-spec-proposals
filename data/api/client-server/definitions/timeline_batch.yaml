@@ -21,7 +21,11 @@ properties:
     type: boolean
   prev_batch:
     description: A token that can be supplied to the `from` parameter of the
-      rooms/{roomId}/messages endpoint.
+      [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+      endpoint in order to retrieve earlier events.
+
+      If no earlier events are available, this property may be omitted from
+      the response.
     type: string
 type: object
 title: TimelineBatch
