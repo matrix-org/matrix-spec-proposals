@@ -200,7 +200,7 @@ which fields should be aggregated.
 }
 ```
 
-These would then aggregated, based on target_id, and returned as annotations on
+These would then be aggregated, based on target_id, and returned as annotations on
 the source event in an `aggregation_data` field:
 
 ```json
