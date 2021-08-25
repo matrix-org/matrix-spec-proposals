@@ -53,8 +53,8 @@ framework that different kinds of relations have in common and that other MSCs c
 build on. Future definitions for values of `rel_type` should describe *how* the server
 should aggregate relations on the target event
 (as proposed in [MSC 2675](https://github.com/matrix-org/matrix-doc/pull/2675)).
-The goals is to make each rel_type as broadly useful as possible,
-and to keep the amount of types for a server implementation to support down to a minimum.
+The goals are to make each `rel_type` as broadly useful as possible,
+and to keep the number of types for a server implementation to support down to a minimum.
 
 Multiple client use cases may be served by a single `rel_type` if they require aggregation
 in a similar manner. To further specify how a relation should be displayed in the client,
