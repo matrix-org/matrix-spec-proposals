@@ -130,7 +130,10 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
          wrong.
    * We'd need to worry about pagination.
    * This is probably the best solution, but can also be added as a v2.
- * In practice this seems to not be an issue, which is worth complicating the s-s API over. Clients very rarely jump over the federation gap to an edit. In most cases they scroll up, which backfills the server and we have all the edits, when we reach the event before the gap.
+ * In practice this seems to not be an issue, which is worth complicating
+   the s-s API over. Clients very rarely jump over the federation gap to an edit.
+   In most cases they scroll up, which backfills the server and we have all the
+   edits, when we reach the event before the gap.
  
 ## Limitations
 
@@ -173,7 +176,9 @@ versus
 ```
 
 The reasons to go with `rel_type` is:
- * this format is now in use in the wider matrix ecosystem without a prefix, in spite of the original MSC 1849 not being merged. This situation is not ideal but we still don't want to break compatibility with several clients.
+ * this format is now in use in the wider matrix ecosystem without a prefix,
+   in spite of the original MSC 1849 not being merged. This situation is not ideal
+   but we still don't want to break compatibility with several clients.
  * we don't need the extra indirection to let multiple relations apply to a given pair of
    events, as that should be expressed as separate relation events.
  * if we want 'adverbs' to apply to 'verbs' in the subject-verb-object triples which
