@@ -44,7 +44,7 @@ can propose a change to add support for multiple relations if it turns out that
 this would facilitate certain use cases.
 
 Relations do not yet replace the 
-[reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/latest#rich-replies).
+[reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/r0.6.1#rich-replies).
 
 ### Relation types
 
