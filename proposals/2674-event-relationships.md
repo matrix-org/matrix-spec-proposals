@@ -65,7 +65,7 @@ Any values here should abide the
 
 ### Sending relations
 
-Related events are normal Matrix events, and can be sent by the normal /send
+Related events are normal Matrix events, and can be sent by the normal `/send`
 API.
 
 The server should postprocess relations if needed before sending them into a
