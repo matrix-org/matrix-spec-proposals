@@ -31,6 +31,19 @@ Both of those fields are required. An event is said to contain a relationship if
 a relationship with all the required fields under the `m.relates_to` key. If any of these conditions is not met,
 clients and servers should treat the event as if it does not contain a relationship.
 
+Here's a (partial) example of an event relating to another event:
+
+```json
+{
+  "content": {
+      "m.relates_to": {
+          "rel_type": "m.replace",
+          "event_id": "$abc:server.tld"
+      }
+  }
+}
+```
+
 All the information about the relationship lives under the `m.relates_to` key.
 
 If it helps, you can think of relations as a "subject verb object" triple,
