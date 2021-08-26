@@ -47,6 +47,27 @@ When decoding Base64, implementations SHOULD accept input with or
 without padding characters wherever possible, to ensure maximum
 interoperability.
 
+## Binary data
+
+In some cases it is necessary to encapsulate binary data, for example,
+public keys or signatures. Given that JSON cannot safely represent raw
+binary data, all binary values should be encoded and represented in
+JSON as unpadded Base64 strings as described above.
+
+In cases where the Matrix specification refers to either opaque byte
+or opaque Base64 values, the value is considered to be opaque AFTER
+Base64 decoding, rather than the encoded representation itself.
+
+It is safe for a client or homeserver implementation to check for
+correctness of a Base64-encoded value at any point, and to altogether
+reject a value which is not encoded properly. However, this is optional
+and is considered to be an implementation detail.
+
+Special consideration is given for future protocol transformations,
+such as those which do not use JSON, where Base64 encoding may not be
+necessary in order to represent a binary value safely. In these cases,
+Base64 encoding of binary values may be skipped altogether.
+
 ## Signing JSON
 
 Various points in the Matrix specification require JSON objects to be
