@@ -169,6 +169,13 @@ this MSC. If this proposal is able to land in the specification before the widge
 release, the `m.sticker` approach described in the prerequisite background section is not to be
 included in the release (existing clients may still support it for legacy purposes).
 
+### Special case: Redactions
+
+Due to the `redacts` key being at the top level, [at least for now](https://github.com/matrix-org/matrix-doc/pull/2174),
+clients should interpret a `redacts` in the content for `m.room.redaction` events as needing to call
+the [`/redact` endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#put-matrix-client-r0-rooms-roomid-redact-eventid-txnid)
+on behalf of the widget.
+
 ## Proposal (receiving events in a widget)
 
 In addition to being able to send events into the room, some widgets have an interest in reacting
