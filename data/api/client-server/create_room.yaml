@@ -174,7 +174,7 @@ paths:
                 type: object
                 description: |-
                   Extra keys, such as `m.federate`, to be added to the content
-                  of the [`m.room.create`](client-server-api/#mroomcreate) event. The server will clobber the following
+                  of the [`m.room.create`](/client-server-api/#mroomcreate) event. The server will clobber the following
                   keys: `creator`, `room_version`. Future versions of the specification
                   may allow the server to clobber other keys.
               initial_state:
@@ -224,7 +224,7 @@ paths:
                 description: |-
                   The power level content to override in the default power level
                   event. This object is applied on top of the generated
-                  [`m.room.power_levels`](client-server-api/#mroompower_levels)
+                  [`m.room.power_levels`](/client-server-api/#mroompower_levels)
                   event content prior to it being sent to the room. Defaults to
                   overriding nothing.
       responses:
