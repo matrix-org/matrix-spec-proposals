@@ -1064,8 +1064,8 @@ The event signing algorithm should emit the following signed event:
 ## Conventions for Matrix APIs
 
 This section is intended primarily to guide API designers when adding to Matrix,
-setting guidelines to follow for how those APIs should work. This is important to 
-maintain consistency with the Matrix protocol, and thus improve developer 
+setting guidelines to follow for how those APIs should work. This is important to
+maintain consistency with the Matrix protocol, and thus improve developer
 experience.
 
 ### HTTP endpoint and JSON property naming
@@ -1079,3 +1079,29 @@ The key names in JSON objects passed over the API also follow this convention.
 There are a few historical exceptions to this rule, such as `/createRoom`.
 These inconsistencies may be addressed in future versions of this specification.
 {{% /boxes/note %}}
+
+### Pagination
+
+REST API endpoints which can return multiple "pages" of results should adopt the
+following conventions.
+
+ * If more results are available, the endpoint should return a property named
+   `next_batch`. The value should be a string token which can be passed into
+   a subsequent call to the endpoint to retrieve the next page of results.
+
+   If no more results are available, this is indicated by *omitting* the
+   `next_batch` property from the results.
+
+ * The endpoint should accept a query-parameter named `from` which the client
+   is expected to set to the value of a previous `next_batch`.
+
+ * Some endpoints might support pagination in two directions (example:
+   `/messages`, which can be used to move forward or backwards in the timeline
+   from a known point). In this case, the endpoint should return a `prev_batch`
+   property which can be passed into `from` to receive the previous page of
+   results.
+
+   Avoid having a separate "direction" parameter, which is generally redundant:
+   the tokens returned by `next_batch` and `prev_batch` should contain enough
+   information for subsequent calls to the API to know which page of results
+   they should return.
