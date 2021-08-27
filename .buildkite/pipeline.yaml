@@ -15,7 +15,7 @@ steps:
   - label: "rebuild matrix.org"
     trigger: "matrix-dot-org"
     async: true
-    branches: "master"
+    branches: "main"
 
   - label: ":books: Build the spec"
     command:
