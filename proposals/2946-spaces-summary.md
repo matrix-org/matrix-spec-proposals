@@ -178,37 +178,37 @@ period of time and to prefer local data over data returned over federation.
 When the current response page is full, the current state should be persisted
 and a pagination token should be generated (if there is more data to return).
 If the client does not request the next page after a short period of time the
-persisted data may be discarded to limit resource usage. It maybe possible to
-generate reusable pagination tokens (i.e. sharable across users), but this is
-left as an implementation specific detail.
+persisted data may be discarded to limit resource usage.
 
-The persisted state will generally include:
+The persisted state will includes:
 
-* Any processed rooms.
-* A queue of rooms to process (in depth-first order with rooms at the same level
-  ordered according to below).
-* Pending information from federation responses.
+* The processed rooms.
+* Rooms to process (in depth-first order with rooms at the same depth
+  ordered according [according to MSC1772, as updated to below](#msc1772-ordering)).
+* Room information from federation responses for rooms which have yet to be
+  processed.
 
 ### Server-server API
 
-The Server-Server API has a similar interface to the Client-Server API. It is
-used when a homeserver does not have the state of a room to include in the summary.
+The Server-Server API has a similar interface to the Client-Server API, but a
+simplified response. It is used when a homeserver is not participating in a room
+(and cannot summarize room due to not having the state).
 
 The main difference is that it does *not* recurse into spaces and does not support
 pagination. This is somewhat equivalent to a Client-Server request with a `max_depth=1`.
 
-If the requesting server wishes to explore a sub-space an additional federation
-request can be made for any returned spaces. This should allow for trivially caching
-responses.
+Additional federation requests are made to recurse into sub-spaces. This allows
+for trivially caching responses for a short period of time (since it is not
+easily known the room summary might have changed).
 
 Since the server-server API does not know the requesting user, the response should
-divulge the information if any member of the requesting server could join the room.
-The requesting server is trusted to properly filter this information.
+divulge information based on if any member of the requesting server could join
+the room. The requesting server is trusted to properly filter this information.
 
 If the target server is not a member of some children rooms (so would have to send
 another request over federation to inspect them), no attempt is made to recurse
-into them. They are simply omitted from the `rooms` key of the response.
-(Although they will still appear in the `children_state`key of another room).
+into them. They are simply omitted from the `children` key of the response.
+(Although they will still appear in the `children_state`key of the `room`.)
 
 Similarly, if a server set limit on the size of the response is reached, additional
 rooms are not added to the response and can be queried individually.
@@ -227,7 +227,8 @@ Query Parameters:
 
 The response format is similar to the Client-Server API:
 
-* **`room`**: `[obejct]` The summary of the requested room.
+* **`room`**: `[object]` The summary of the requested room, as given in the
+  Client-Server API response.
 * **`children`**: `[object]` For each room/space, a summary of that room. The fields
   are the same as those returned by `/publicRooms` (see
   [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
