@@ -2,7 +2,7 @@
 
 
 ## Proposal
-The example in the spec currently lists `mimetype` in the examples for `EncryptedFile` but not in
+The example in the spec currently lists `mimetype` in the [examples for `EncryptedFile`](https://matrix.org/docs/spec/client_server/r0.6.1#extensions-to-m-message-msgtypes) but not in
 the object definition. As that is duplicate information of the `info` block of file events, the
 mimetype should just be removed alltogether.
 
