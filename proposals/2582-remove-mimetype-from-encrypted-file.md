@@ -8,4 +8,5 @@ mimetype should just be removed alltogether.
 
 
 ## Potential issues
-Some clients might depend on this?
+Some clients might depend on this.  However, as of August 2021, all known clients have
+been confirmed to not use this.
