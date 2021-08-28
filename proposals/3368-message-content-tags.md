@@ -53,4 +53,4 @@ None known
 
 ## Unstable prefix
 
-None
+The `tags` object should be replaced with `space.0x1a8510f2.msc3368.tags` and all its subkeys should be prefixed with `space.0x1a8510f2.msc3368.` instead of `m.`.
