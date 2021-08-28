@@ -1,4 +1,4 @@
-# MSCxxxx: Message Content Tags
+# MSC3368: Message Content Tags
 
 Inspired by [MSC3286](https://github.com/matrix-org/matrix-doc/pull/3286), this proposal aims to solve the same
 and similar problems in a more generic way, taking into consideration more possible reasons for hiding
