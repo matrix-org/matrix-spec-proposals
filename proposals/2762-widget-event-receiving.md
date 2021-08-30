@@ -255,10 +255,9 @@ the widget requested 25, it will only ever get 5 maximum back. When `limit` is n
 assumed that the widget wants as many events as the client will give it. When negative, the client
 can reject the request with an error.
 
-The recommended maximum `limit`s are:
-
-* For `m.room.member` state events, no limit per room.
-* For all other events, 25 per room.
+There is no recommended maximum `limit`, though clients will want to consider local limitations in
+being able to send events. Web clients, for example, may be more able to send *every* event it knows
+about. The default assumption is that the client will send over as much as possible as an upper limit.
 
 The client is not required to backfill (use the `/messages` endpoint) to get more events for the
 widget, and is able to return less than the requested amount of events. When returning state events,
