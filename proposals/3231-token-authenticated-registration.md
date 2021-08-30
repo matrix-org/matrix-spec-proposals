@@ -100,6 +100,7 @@ HTTP/1.1 200 OK
 This does not perform any actual authentication, and the validity of the token
 may change between the check and the User-Interactive Authentication.
 
+This endpoint should be rate limited in order to prevent dictionary attacks.
 
 ## Potential issues
 
