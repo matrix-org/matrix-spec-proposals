@@ -8,29 +8,35 @@ events by default, like:
 - NSFW
 - graphic / potentially disturbing
 
-To summarise, this proposal intends to provide hints for clients as to the contents of an event primarily to allow
+To summarise, this proposal intends to provide hints for clients as to the contents of a message primarily to allow
 them to automatically hide certain types of content which the user may not wish to see.
 
 ## Proposal
 
 To facilitate this, the proposal adds an optional `tags` object to the `content` object of `m.room.message` events.
-This object can contain any combination of any/all of the following keys:
+This object can contain any combination of any/all of the following keys except when the keys are related AND have
+a non-sibling relationship (e.g., `m.health_risk` and `m.health_risk.flashing_lights` should not be combined - the
+more specific key should always be picked). This is to keep the size of `tags` object down and make it easier for
+clients to display the tag.
 
-  - `m.spoiler` (content which provides information the user may wish to acquire themselves)
-  - `m.nsfw` (not safe for work / 18+ content)
-  - `m.medical` (content which may negatively affect people with certain health issues e.g., photosensitive epilepsy)
-  - `m.graphic` (content which can be seen as disturbing)
-  - `m.hidden` (content which is recommended to be hidden by default; should only be used when a more specific tag for the type of
+- `m.spoiler` (content which provides information the user may wish to acquire themselves)
+- `m.nsfw` (not safe for work / 18+ content)
+- `m.health_risk` (content which may negatively affect people with certain health issues e.g., photosensitive epilepsy)
+  - `m.health_risk.flashing` (specifically content which is a health risk due to containing flashing lights/patterns)
+- `m.graphic` (content which can be seen as disturbing)
+- `m.hidden` (content which is recommended to be hidden by default; should only be used when a more specific tag for the type of
  content does not exist to allow clients/users to more easily decide which content to show/see)
 
 The presence of a key indicates that the content is tagged as such.
 
-Each key must map to a string value describing why the content has this tag. The value can be an empty string if
+Each key must map to a human-readable string value describing why the content has this tag. The value can be an empty string if
 no reason is provided. This is to allow users to decide if they wish to see an individual message.
 
 Despite the fact that all currently-defined tag types could warrant hiding by default, clients should not assume
 that the presence of the `tags` object indicates that the message should be hidden by default. This is to allow
 for expanding the use of the `tags` object in the future for other purposes like searching, for example.
+
+All child keys of existing keys are reserved in case additional, more specific keys need to be added by future MSCs.
 
 ## Potential issues
 
