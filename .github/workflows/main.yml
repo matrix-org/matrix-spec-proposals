@@ -28,12 +28,16 @@ jobs:
   build-spec:
     name: "📖 Build the spec"
     runs-on: ubuntu-latest
-    container:
-      image: "alpine"
-      options: --user root
     steps:
-      - name: "➕ Install missing packages"
-        run: apk add nodejs npm git hugo
+      - name: "➕ Setup Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: "➕ Setup Hugo"
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.85.0'
+          extended: true
       - name: "📥 Source checkout"
         uses: actions/checkout@v2
         with:
