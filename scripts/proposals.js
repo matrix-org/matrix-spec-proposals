@@ -127,7 +127,7 @@ function getProposalFromIssue(issue) {
    */
   function getDirective(directiveName, issue) {
     const re = new RegExp(`^${directiveName}: (.+?)$`, "m");
-    const found = issue.body.match(re);
+    const found = issue.body?.match(re);
     return found? found[1]: null;
   }
 
