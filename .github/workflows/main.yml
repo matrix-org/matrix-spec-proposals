@@ -60,7 +60,7 @@ jobs:
     name: "👷 Rebuild matrix.org"
     needs: build-openapi
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/head/main' }}
+    if: ${{ false && github.event_name == 'push' && github.ref == 'refs/head/main' }}
     steps:
       - name: "🪄 Triggering rebuild of matrix.org"
         run: |
