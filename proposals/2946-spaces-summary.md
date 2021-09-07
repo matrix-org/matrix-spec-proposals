@@ -157,10 +157,6 @@ An HTTP response with a status code of 400 and an error code of `M_INVALID_PARAM
 should be returned if the `from` token provided is unknown to the server or if
 the `suggested_only` or `max_depth` parameters are modified during pagination.
 
-#### Client behaviour
-
-TODO
-
 #### Server behaviour
 
 The server should generate the response as discussed above, by doing a depth-first
