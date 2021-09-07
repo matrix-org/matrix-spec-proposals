@@ -8,51 +8,35 @@ in.
 Format
 ------
 
-Documentation is written either in github-flavored markdown or RST.
+Documentation is written in Commonmark markdown.
 
 Sections
 --------
 
-RST support lots of different punctuation characters for underlines on sections.
-Content in the specification MUST use the same characters in order for the
-complete specification to be merged correctly. These characters are:
-
-- ``=``
-- ``-``
-- ``~``
-- ``+``
-- ``^``
-- \ `````
-- ``@``
-- ``:``
-
-If you find yourself using ``^`` or beyond, you should rethink your document
-layout if possible.
+Markdown supports headings through the `#` prefix on text. Please avoid heavily
+nested titles (h6, or 6 `#` characters) and instead re-evaluate the document structure.
 
 Correct capitalisation for long section names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Headings should start with a capital letter, and use lower-case otherwise.
-
+Headings should start with a capital letter, and use lower-case otherwise. This
+document is an example of what we mean.
 
 TODOs
 -----
 
-Any RST file in this repository may make it onto ``matrix.org``. We do not want
-``TODO`` markers visible there. For internal comments, notes, TODOs, use standard
-RST comments like so::
-
-  .. TODO-Bob
-    There is something to do here. This will not be rendered by something like
-    rst2html.py so it is safe to put internal comments here.
-
-You SHOULD put your username with the TODO so we know who to ask about it.
+Any file in this repository might make it onto the matrix.org site, and as such
+we do not want ``TODO`` markers visible there. For internal comments, notes, TODOs,
+etc please use standard markdown comments (`<!-- TODO TravisR: Fix this -->`). Please
+include your name in the TODO comment so we know who to ask about it in the future.
 
 Line widths
 -----------
 
-We use 80 characters for line widths. This is a guideline and can be flouted IF
+We use 80 characters for line widths. This is a guideline and can be ignored IF
 AND ONLY IF it makes reading more legible. Use common sense.
+
+For proposals, please use 120 characters as a guide.
 
 Stylistic notes
 ---------------
@@ -81,6 +65,12 @@ Lists should:
 * Be introduced with a colon.
 * Be used where they provide clarity.
 * Contain entries which start with a capital and end with a full stop.
+
+When talking about properties in JSON objects, prefer the word "property" to "field",
+"member", or various other alternatives. For example: "this property will be set to
+X if ...". Also avoid the term "key" unless you are specifically talking about the 
+*name* of a property - and be mindful of the scope for confusion with cryptographic
+keys.
 
 OpenAPI
 ~~~~~~~
