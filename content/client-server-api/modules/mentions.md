@@ -3,9 +3,9 @@ type: module
 weight: 300
 ---
 
-### User, room, and group mentions
+### User and room mentions
 
-This module allows users to mention other users, rooms, and groups
+This module allows users to mention other users and rooms
 within a room message. This is achieved by including a [matrix.to
 URI](/appendices/#matrixto-navigation) in the HTML body of an
 [m.room.message](#mroommessage) event. This module does not have any server-specific
@@ -41,7 +41,6 @@ events to be sent:
     listed on the room. If no alias can be found, fall back to the room
     ID. In all cases, use the alias/room ID being linked to as the
     anchor's text.
--   When referencing groups, use the group ID as the anchor's text.
 
 The text component of the anchor should be used in the event's `body`
 where the mention would normally be represented, as shown in the example
@@ -57,4 +56,4 @@ mention differently from other mentions, such as by using a red
 background color to signify to the user that they were mentioned.
 
 When clicked, the mention should navigate the user to the appropriate
-room, group, or user information.
+room or user information.
