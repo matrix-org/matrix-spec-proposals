@@ -524,7 +524,7 @@ presentation of room versions in clients, and it would require support for
 retrospectively specifying the `predecessor` of the current room when you
 retrospectively import history.  Currently `predecessor` is in the immutable
 `m.room.create` event of a room, so cannot be changed retrospectively - and
-doing so in a safe and race-free manner sounds Hard. A big problem with this
+doing so in a safe and race-free manner sounds hard. A big problem with this
 approach is if you just want to inject a few old lost messages - eg if you're
 importing a mail or newsgroup archive and you stumble across a lost mbox with a
 few msgs in retrospect, you wouldn't want or be able to splice a whole new room
