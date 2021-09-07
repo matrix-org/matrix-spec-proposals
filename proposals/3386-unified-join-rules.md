@@ -1,4 +1,4 @@
-# MSC0000: Unified Join Rules
+# MSC3386: Unified Join Rules
 
 [MSC2403 Knock](./2403-knock.md) and [MSC3083 Restricting room membership based on membership in other rooms](./3083-restricted-rooms.md) both update the join rules of a room to allow a new feature. The former defines `join_rule: knock` which allows anyone to knock to enter a room and the latter defines `join_rule: restricted` to restrict who can join a room based on a set of rules. Unfortunately these features can not be used together as a room can only have one `join_rule`.
 
