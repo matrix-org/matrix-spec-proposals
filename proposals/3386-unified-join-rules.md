@@ -1,6 +1,6 @@
 # MSC3386: Unified Join Rules
 
-[MSC2403 Knock](./2403-knock.md) and [MSC3083 Restricting room membership based on membership in other rooms](./3083-restricted-rooms.md) both update the join rules of a room to allow a new feature. The former defines `join_rule: knock` which allows anyone to knock to enter a room and the latter defines `join_rule: restricted` to restrict who can join a room based on a set of rules. Unfortunately these features can not be used together as a room can only have one `join_rule`.
+[MSC2403 Knock](https://github.com/matrix-org/matrix-doc/pull/2403) and [MSC3083 Restricting room membership based on membership in other rooms](https://github.com/matrix-org/matrix-doc/pull/3083) both update the join rules of a room to allow a new feature. The former defines `join_rule: knock` which allows anyone to knock to enter a room and the latter defines `join_rule: restricted` to restrict who can join a room based on a set of rules. Unfortunately these features can not be used together as a room can only have one `join_rule`.
 
 This MSC aims to solve the proliferation of `join_rule`s and allow these features to interoperate.
 
@@ -10,7 +10,7 @@ As an added benefit this MSC is backwards-compatible. The `allow_knock` field ca
 
 ### `allow_knock`
 
-`join_rule: restricted` will be updated with the `allow_knock` key. This functions identically to the `allow` key except that it controls who can knock, instead of controlling who can join. Please see [MSC3083 Restricting room membership based on membership in other rooms](./3083-restricted-rooms.md) for how the rules are evaluated and [MSC2403 Knock](./2403-knock.md) for what it means to knock.
+`join_rule: restricted` will be updated with the `allow_knock` key. This functions identically to the `allow` key except that it controls who can knock, instead of controlling who can join. Please see [MSC3083 Restricting room membership based on membership in other rooms](https://github.com/matrix-org/matrix-doc/pull/3083) for how the rules are evaluated and [MSC2403 Knock](https://github.com/matrix-org/matrix-doc/pull/2403) for what it means to knock.
 
 The `allow_knock` key may be absent in which case it is treated as if it was set to `[]` (the empty list). In this case no one is allowed to knock.
 
