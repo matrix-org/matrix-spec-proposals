@@ -36,7 +36,7 @@ Whether users can change the 3PIDs associated with their accounts
 ## Client recommendations
 When presenting profile settings, clients should use capabilities in order to display the correct UI.
 
-If capability is not present the default is true.
+Capability should always be present.
 
 ## Unstable prefix
 Implementations won't actually be able to use m.set_displayname, m.set_avatar_url or m.3pid_changes 
