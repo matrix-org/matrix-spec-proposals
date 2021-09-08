@@ -728,8 +728,9 @@ endpoint.
 
 the resident homeserver then adds its signature to this event and
 accepts it into the room's event graph. The joining server receives
-the full set of state for the newly-joined room. The resident server
-must also send the event to other servers participating in the room.
+the full set of state for the newly-joined room as well as the freshly
+signed membership event. The resident server must also send the event
+to other servers participating in the room.
 
 {{% http-api spec="server-server" api="joins-v1" %}}
 

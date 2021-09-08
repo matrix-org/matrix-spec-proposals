@@ -55,4 +55,12 @@ properties:
         properties: []
       example:
         $ref: "../examples/minimal_pdu.json"
+  event:
+    type: object
+    title: SignedMembershipEvent
+    description: |-
+      Required if the room version is based upon [v8](/rooms/v8). The signed copy of the membership
+      event sent to other servers by the resident server, including the resident server's signature.
+    example:
+      $ref: "../examples/minimal_pdu.json"
 required: ["auth_chain", "state", "origin"]

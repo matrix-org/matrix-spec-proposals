@@ -118,7 +118,10 @@ paths:
                       join_authorised_via_users_server:
                         type: string
                         description: |-
-                          Required if the room is [restricted](/client-server-api/#restricted-rooms).
+                          Required if the room is [restricted](/client-server-api/#restricted-rooms)
+                          and is joining through one of the conditions available. If the
+                          user is responding to an invite, this is not required.
+
                           An arbitrary user ID belonging to the resident server in
                           the room being joined that is able to issue invites to other
                           users. This is used in later validation of the auth rules for
@@ -278,7 +281,10 @@ paths:
                   join_authorised_via_users_server:
                     type: string
                     description: |-
-                      Required if the room is [restricted](/client-server-api/#restricted-rooms).
+                      Required if the room is [restricted](/client-server-api/#restricted-rooms)
+                      and is joining through one of the conditions available. If the
+                      user is responding to an invite, this is not required.
+
                       An arbitrary user ID belonging to the resident server in
                       the room being joined that is able to issue invites to other
                       users. This is used in later validation of the auth rules for
@@ -327,6 +333,7 @@ paths:
               {
                 "origin": "matrix.org",
                 "auth_chain": [{"$ref": "examples/minimal_pdu.json"}],
-                "state": [{"$ref": "examples/minimal_pdu.json"}]
+                "state": [{"$ref": "examples/minimal_pdu.json"}],
+                "event": {"$ref": "examples/pdu_v4_join_membership.json"}
               }
             ]
