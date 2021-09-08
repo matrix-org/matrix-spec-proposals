@@ -20,7 +20,7 @@ The `m.any` allow type will be defined. This type allows any user to perform the
 
 ### Example: Anyone can knock
 
-This shows an example of a room where you can join if you are a member of `#users:example.org` otherwise you can only knock.
+This shows an example of a room where you can join if you are a member of `!users:example.org` otherwise you can only knock.
 
 ```json5
 {
@@ -30,7 +30,7 @@ This shows an example of a room where you can join if you are a member of `#user
 		"join_rule": "restricted"
 		"allow": [{
 			"type": "m.room_membership"
-			"room_id": "#users:example.org"
+			"room_id": "!users:example.org"
 		}]
 		"allow_knock": [{
 			"type": "m.any"
@@ -41,7 +41,7 @@ This shows an example of a room where you can join if you are a member of `#user
 
 ### Example: Restricted knock
 
-This shows an example of a room where anyone in the `#users:example.org` room (or space) can knock, but anyone in `#mods:example.org` can join directly.
+This shows an example of a room where anyone in the `!users:example.org` room (or space) can knock, but anyone in `!mods:example.org` can join directly.
 
 ```json5
 {
@@ -51,11 +51,11 @@ This shows an example of a room where anyone in the `#users:example.org` room (o
 		"join_rule": "restricted"
 		"allow": [{
 			"type": "m.room_membership"
-			"room_id": "#mods:example.org"
+			"room_id": "!mods:example.org"
 		}]
 		"allow_knock": [{
 			"type": "m.room_membership"
-			"room_id": "#users:example.org"
+			"room_id": "!users:example.org"
 		}]
 	}
 }
@@ -79,7 +79,7 @@ It is possible that entires in `allow_knock` are redundant because they are also
 		// This is irrelevant because anyone can directly join.
 		"allow_knock": [{
 			"type": "m.room_membership"
-			"room_id": "#users:example.org"
+			"room_id": "!users:example.org"
 		}]
 	}
 }
@@ -93,12 +93,12 @@ It is possible that entires in `allow_knock` are redundant because they are also
 		"join_rule": "restricted"
 		"allow": [{
 			"type": "m.room_membership",
-			"room_id": "#users:example.org"
+			"room_id": "!users:example.org"
 		}]
 		// This is irrelevant because everyone in this room can join directly.
 		"allow_knock": [{
 			"type": "m.room_membership"
-			"room_id": "#users:example.org"
+			"room_id": "!users:example.org"
 		}]
 	}
 }
@@ -115,7 +115,7 @@ It is possible that entires in `allow_knock` are redundant because they are also
 		}, {
 			// This is irrelevant because of the m.any rule.
 			"type": "m.room_membership",
-			"room_id": "#users:example.org"
+			"room_id": "!users:example.org"
 		}]
 	}
 }
