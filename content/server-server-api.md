@@ -754,10 +754,11 @@ to validate any of the conditions, usually because the resident server
 does not have state information about rooms required by the conditions.
 
 The resident server uses a 400 `M_UNABLE_TO_GRANT_JOIN` error on `/make_join`
-and `/send_join` to denote that the joining server satisfies at least
-one of the conditions, though the resident server would be unable to
-meet the auth rules governing `join_authorised_via_users_server` on the
-resulting `m.room.member` event.
+and `/send_join` to denote that the joining server should try a different
+server. This is typically because the resident server can see that the
+joining user satisfies one of the conditions, though the resident server
+would be unable to meet the auth rules governing `join_authorised_via_users_server`
+on the resulting `m.room.member` event.
 
 If the joining server fails all conditions then a 403 `M_FORBIDDEN` error
 is used by the resident server.
