@@ -1734,6 +1734,12 @@ This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
 to rooms based upon [room version 7](/rooms/v7).
 
+`restricted`
+This room can be joined if you were invited or if you are a member of another
+room listed in the join rules. If the server cannot verify membership for any
+of the listed rooms then you can only join with an invite. Note that this join
+rule is only available to rooms based upon [room version 8](/rooms/v8).
+
 The allowable state transitions of membership are:
 
 ![membership-flow-diagram](/diagrams/membership.png)
@@ -1780,6 +1786,30 @@ to the client to handle. Clients can expect to see the join event if the
 server chose to auto-accept.
 
 {{% http-api spec="client-server" api="knocking" %}}
+
+##### Restricted rooms
+
+Restricted rooms are rooms with a `join_rule` of `restricted`. These rooms
+are accompanied by "allow conditions" as described in the
+[`m.room.join_rules`](#mroomjoin_rules) state event.
+
+If the user has an invite to the room then the restrictions will not affect
+them. They should be able to join by simply accepting the invite.
+
+Currently there is only one condition available: `m.room_membership`. This
+condition requires the user trying to join the room to be a *joined* member
+of another room (specifically, the `room_id` accompanying the condition).
+
+When joining without an invite, the server MUST verify that the requesting
+user meets at least one of the conditions. If no conditions can be verified
+or no conditions are satisfied, the user will not be able to join. This
+validation is additionally done over federation when using a remote server
+to join the room.
+
+If the room is `restricted` but no valid conditions are presented then the
+room is effectively invite only. The user does not need to maintain the
+conditions in order to stay a member of the room: the conditions are only
+checked/evaluated during the join process.
 
 #### Leaving rooms
 

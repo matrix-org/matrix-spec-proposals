@@ -407,21 +407,26 @@ the sender permission to send the event. The `auth_events` for the
 `m.room.create` event in a room is empty; for other events, it should be
 the following subset of the room state:
 
--   The `m.room.create` event.
+- The `m.room.create` event.
 
--   The current `m.room.power_levels` event, if any.
+- The current `m.room.power_levels` event, if any.
 
--   The sender's current `m.room.member` event, if any.
+- The sender's current `m.room.member` event, if any.
 
--   If type is `m.room.member`:
+- If type is `m.room.member`:
 
-    -   The target's current `m.room.member` event, if any.
-    -   If `membership` is `join` or `invite`, the current
-        `m.room.join_rules` event, if any.
-    -   If membership is `invite` and `content` contains a
-        `third_party_invite` property, the current
-        `m.room.third_party_invite` event with `state_key` matching
-        `content.third_party_invite.signed.token`, if any.
+    - The target's current `m.room.member` event, if any.
+    - If `membership` is `join` or `invite`, the current
+      `m.room.join_rules` event, if any.
+    - If membership is `invite` and `content` contains a
+      `third_party_invite` property, the current
+      `m.room.third_party_invite` event with `state_key` matching
+      `content.third_party_invite.signed.token`, if any.
+    - If `content.join_authorised_via_users_server` is present,
+      the `m.room.member` event with `state_key` matching
+      `content.join_authorised_via_users_server`. Due to the
+      auth rules for the event, the target membership event should
+      always be eligible for inclusion.
 
 #### Rejection
 
@@ -721,14 +726,40 @@ To complete the join handshake, the joining server must now submit this
 new event to a resident homeserver, by using the `PUT /send_join`
 endpoint.
 
-The resident homeserver then accepts this event into the room's event
-graph, and responds to the joining server with the full set of state for
-the newly-joined room. The resident server must also send the event to
-other servers participating in the room.
+the resident homeserver then adds its signature to this event and
+accepts it into the room's event graph. The joining server receives
+the full set of state for the newly-joined room. The resident server
+must also send the event to other servers participating in the room.
 
 {{% http-api spec="server-server" api="joins-v1" %}}
 
 {{% http-api spec="server-server" api="joins-v2" %}}
+
+### Restricted rooms
+
+Restricted rooms are described in detail in the
+[client-server API](/client-server-api/#restricted-rooms) and are available
+in room versions based on [v8](/rooms/v8).
+
+A resident server attempting to join a server to a restricted room must
+ensure that the joining server satisfies at least one of the conditions
+specified by `m.room.join_rules`. If no conditions are available, or none
+match the required schema, then the joining server is considered to have
+failed all conditions.
+
+The resident server uses a 400 `M_UNABLE_TO_AUTHORISE_JOIN` error on
+`/make_join` and `/send_join` to denote that the resident server is unable
+to validate any of the conditions, usually because the resident server
+does not have state information about rooms required by the conditions.
+
+The resident server uses a 400 `M_UNABLE_TO_GRANT_JOIN` error on `/make_join`
+and `/send_join` to denote that the joining server satisfies at least
+one of the conditions, though the resident server would be unable to
+meet the auth rules governing `join_authorised_via_users_server` on the
+resulting `m.room.member` event.
+
+If the joining server fails all conditions then a 403 `M_FORBIDDEN` error
+is used by the resident server.
 
 ## Knocking upon a room
 

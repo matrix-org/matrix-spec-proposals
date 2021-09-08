@@ -523,6 +523,10 @@ The available room versions are:
 -   [Version 6](/rooms/v6) - **Stable**. Alters several
     authorization rules for events.
 -   [Version 7](/rooms/v7) - **Stable**. Introduces knocking.
+-   [Version 8](/rooms/v8) - **Stable**. Adds a join rule to allow members
+    of another room to join without invite.
+-   [Version 9](/rooms/v9) - **Stable**. Builds on v8 to fix issues when
+    redacting some membership events.
 
 ## Specification Versions
 

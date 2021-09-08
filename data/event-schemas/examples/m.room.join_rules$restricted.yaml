@@ -1,0 +1,18 @@
+{
+  "$ref": "core/state_event.json",
+  "type": "m.room.join_rules",
+  "state_key": "",
+  "content": {
+    "join_rule": "restricted",
+    "allow": [
+      {
+        "type": "m.room_membership",
+        "room_id": "!other:example.org"
+      },
+      {
+        "type": "m.room_membership",
+        "room_id": "!elsewhere:example.org"
+      }
+    ]
+  }
+}

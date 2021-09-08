@@ -115,6 +115,14 @@ paths:
                         type: string
                         description: The value `join`.
                         example: "join"
+                      join_authorised_via_users_server:
+                        type: string
+                        description: |-
+                          Required if the room is [restricted](/client-server-api/#restricted-rooms).
+                          An arbitrary user ID belonging to the resident server in
+                          the room being joined that is able to issue invites to other
+                          users. This is used in later validation of the auth rules for
+                          the `m.room.member` event.
                     required: ['membership']
                 required:
                   - state_key
@@ -134,7 +142,8 @@ paths:
                 "origin_server_ts": 1549041175876,
                 "sender": "@someone:example.org",
                 "content": {
-                  "membership": "join"
+                  "membership": "join",
+                  "join_authorised_via_users_server": "@anyone:resident.example.org"
                 }
               }
             }
@@ -146,6 +155,19 @@ paths:
 
             The error should be passed through to clients so that they
             may give better feedback to users.
+
+            If the room is [restricted](/client-server-api/#restricted-rooms)
+            and none of the conditions can be validated by the server then
+            the `errcode` `M_UNABLE_TO_AUTHORISE_JOIN` must be used. This can
+            happen if the server does not know about any of the rooms listed
+            as conditions, for example.
+
+            If the room is [restricted](/client-server-api/#restricted-rooms)
+            and the user meets at least one of the conditions, but the server
+            does not have permission to send invites (a prerequisite for later
+            authorisation of the `m.room.member` event) then an `errcode` of
+            `M_UNABLE_TO_GRANT_JOIN` is returned. The joining server should
+            attempt another resident server.
           schema:
             allOf:
               - $ref: "../client-server/definitions/errors/error.yaml"
@@ -162,7 +184,20 @@ paths:
               "error": "Your homeserver does not support the features required to join this room",
               "room_version": "3"
             }
+        403:
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          description: |-
+            The room that the joining server is attempting to join does not permit the user
+            to join.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You are not invited to this room",
+            }
         404:
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
           description: |-
             The room that the joining server is attempting to join is unknown
             to the receiving server.
@@ -240,6 +275,19 @@ paths:
                     type: string
                     description: The value `join`.
                     example: "join"
+                  join_authorised_via_users_server:
+                    type: string
+                    description: |-
+                      Required if the room is [restricted](/client-server-api/#restricted-rooms).
+                      An arbitrary user ID belonging to the resident server in
+                      the room being joined that is able to issue invites to other
+                      users. This is used in later validation of the auth rules for
+                      the `m.room.member` event.
+
+                      The resident server which owns the provided user ID must have a
+                      valid signature on the event. If the resident server is receiving
+                      the `/send_join` request, the signature must be added before sending
+                      or persisting the event to other servers.
                 required: ['membership']
             required:
               - state_key
@@ -256,7 +304,8 @@ paths:
             "origin_server_ts": 1549041175876,
             "sender": "@someone:example.org",
             "content": {
-                "membership": "join"
+                "membership": "join",
+                "join_authorised_via_users_server": "@anyone:resident.example.org"
             }
           }
       responses:
