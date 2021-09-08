@@ -11,6 +11,9 @@ events by default, like:
 To summarise, this proposal intends to provide hints for clients as to the contents of a message primarily to allow
 them to automatically hide certain types of content which the user may not wish to see.
 
+As secondary goals, this MSC allows for grouping of events based on their contents using tags, which may be beneficial
+to non-instant massaging Matrix clients.
+
 ## Proposal
 
 To facilitate this, the proposal adds an optional `tags` object to the `content` object of `m.room.message` events.
@@ -29,14 +32,18 @@ clients to display the tag.
 
 The presence of a key indicates that the content is tagged as such.
 
-Each key must map to a human-readable string value describing why the content has this tag. The value can be an empty string if
-no reason is provided. This is to allow users to decide if they wish to see an individual message.
+Each key must map to an object providing metadata about the tags.
+
+The metadata object should (but does not have to) contain a `reason` key, mapping to a human-readable string value describing
+why the content has this tag. This is to allow users to decide if they wish to see a message on an individual basis.
+
+Other keys in the tag metadata object may be defined by future MSCs.
 
 Despite the fact that all currently-defined tag types could warrant hiding by default, clients should not assume
 that the presence of the `tags` object indicates that the message should be hidden by default. This is to allow
 for expanding the use of the `tags` object in the future for other purposes like searching, for example.
 
-All child keys of existing keys are reserved in case additional, more specific keys need to be added by future MSCs.
+All related keys of existing keys are reserved in case additional, more specific keys need to be added by future MSCs.
 
 ## Potential issues
 
