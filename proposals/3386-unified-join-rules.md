@@ -65,7 +65,7 @@ This shows an example of a room where anyone in the `!users:example.org` room (o
 
 ### Useless allow_knock entires.
 
-It is possible that entires in `allow_knock` are redundant because they are also included in `allow` so could simply join directly. While this is unsightly it is non-harmful and will not affect users or servers.
+It is possible that entries in `allow_knock` are redundant because they are also included in `allow` so could simply join directly. While this is unsightly it is non-harmful and will not affect users or servers.
 
 ```json5
 {
