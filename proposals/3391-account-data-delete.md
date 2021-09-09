@@ -50,10 +50,10 @@ Account Data changes are announced through sync, this proposal also aims to add 
         // ...
         "account_data": {
           "events": [
-              {
-                // ...
-              }
-            ],
+            {
+              // ...
+            }
+          ],
           "removed_events": ["m.tag", "m.fully_read"] // <- NEW
         }
         // ...
@@ -101,7 +101,7 @@ DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/account_data/{t
 DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/rooms/{roomId}/account_data/{type}
 ```
 
-And `org.matrix.msc3391.account_data_removed` for sync.
+And `org.matrix.msc3391.removed_events` for `account_data` sync.
 
 **Note:** As this operation would be largely "unknown" to clients,
 cache invalidation problems could occur as clients could aggressively cache account data.
