@@ -34,15 +34,31 @@ Account Data changes are announced through sync, this proposal also aims to add 
 
 {
   // ...
-  "account_data_removed": ["m.direct", "m.push_rules"], // <- NEW
+  "account_data": {
+    "events": [
+      {
+        // ...
+      }
+    ],
+    "removed_events": ["m.direct", "m.push_rules"] // <- NEW
+  },
   // ...
   "rooms": {
     "join": {
+
       "!this-is-a-room:example.com": {
         // ...
-        "account_data_removed": ["m.tag", "m.fully_read"], // <- NEW
+        "account_data": {
+          "events": [
+              {
+                // ...
+              }
+            ],
+          "removed_events": ["m.tag", "m.fully_read"] // <- NEW
+        }
         // ...
-      }
+      },
+
     }
   },
   // ...
@@ -50,18 +66,19 @@ Account Data changes are announced through sync, this proposal also aims to add 
 
 ```
 
-Providing an optional `account_data_removed` key, containing an array which references the deleted account-data types.
+Providing an optional `removed_events` key per every `account_data` object,
+containing an array which references the deleted account-data types.
 
-Which are the tags that were removed since `since` and `next_batch`, if `since` is specified and valid.
+These are the tags that were removed since `since` and `next_batch`, if `since` is specified and valid.
 
 If between `since` and `next_batch` the account data has been deleted and re-created, this field shouldn't exist,
-and data should be just put in `account_data` as if it's a normal change/creation.
+and data should be just put in `account_data.events` as if it's a normal change/creation.
 
-If, for some reason, an event type exists in both `account_data_removed` and `account_data`, the reference in
-`account_data_removed` must be ignored.
+If, for some reason, an event type exists in both `account_data.events` and `account_data.removed_events`, the reference in
+`.removed_events` must be ignored.
 
-Full-state syncs must not include `account_data_removed`, but consequently clients must see anything
-in `account_data` as replacing what existed previously.
+Full-state syncs must not include `.removed_events`, but consequently clients must see anything
+in `events` as replacing what existed previously.
 
 ## Potential issues
 
