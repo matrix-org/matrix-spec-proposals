@@ -1,4 +1,4 @@
-# MSCXXXX: Deleting account data
+# MSC3391: Deleting account data
 
 ## Proposal
 
@@ -66,15 +66,15 @@ Though, for the purposes of this proposal, that is seen as a proper feature of C
 
 ## Unstable prefix
 
-When implementing this proposal, servers should use the `org.matrix.mscXXXX` unstable prefix;
+When implementing this proposal, servers should use the `org.matrix.msc3391` unstable prefix;
 
 ```
-DELETE /_matrix/client/unstable/org.matrix.mscXXXX/user/{userId}/account_data/{type}
+DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/account_data/{type}
 
-DELETE /_matrix/client/unstable/org.matrix.mscXXXX/user/{userId}/rooms/{roomId}/account_data/{type}
+DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/rooms/{roomId}/account_data/{type}
 ```
 
-And `org.matrix.mscXXXX.account_data_removed` for sync.
+And `org.matrix.msc3391.account_data_removed` for sync.
 
 **Note:** As this operation would be largely "unknown" to clients,
 cache invalidation problems could occur as clients could aggressively cache account data.
