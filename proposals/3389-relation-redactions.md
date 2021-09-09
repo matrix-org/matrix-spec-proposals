@@ -1,4 +1,4 @@
-# MSCXXXX: Redaction changes for events with a relation
+# MSC3389: Redaction changes for events with a relation
 
 [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) defines a
 standard shape for indicating events which relate to other events.
