@@ -13,10 +13,11 @@ A more [detailed rationale](#detailed-rationale) of what kind of attacks it miti
 
 ## Proposal
 
-The access token returned by the login endpoint expires after a short amount of time, forcing the client to renew it with a refresh token.
+Homeservers can choose to have access tokens returned by the registration and login endpoints after a short amount of time, forcing the client to renew it with a refresh token.
 A refresh token is issued on login and rotates on each usage.
 
-Homeservers can choose to use signed and non-revocable access tokens (JWTs, Macaroon, etc.) for performance reasons if their expiration is short enough (less than 5 minutes).
+It allows homeservers to opt for signed and non-revocable access tokens (JWTs, Macaroon, etc.) for performance reasons if their expiration is short enough (less than 5 minutes).
+Whether the access token expire and what lifetime they have is up to the homeserver, but client have to support refreshing tokens.
 
 ### Login API changes
 
@@ -108,6 +109,8 @@ The TTL of access tokens should not exceed 15 minutes if they are revocable and 
 
 While this MSC is not in a released version of the specification, clients should add a `org.matrix.msc2918.refresh_token=true` query parameter on the login and registration endpoints, e.g. `/_matrix/client/r0/login?org.matrix.msc2918.refresh_token=true`.
 The refresh token endpoint should be served and used using the unstable prefix: `POST /_matrix/client/unstable/org.matrix.msc2918/refresh`.
+
+Once this MSC is in a released version of the specification, clients using endpoints from that version must support refreshing token, even if the homeserver might choose to keep sending non-refreshing ones.
 
 ## Detailed rationale
 
