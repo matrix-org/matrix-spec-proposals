@@ -112,7 +112,7 @@ from normal redacted messages, and maintain reply ordering.
 
 This modification to the redaction algorithm requires a new room version.
 However, event relationships can still be used in existing room versions, but
-the user experince may be worse if redactions are performed.
+the user experience may be worse if redactions are performed.
 
 ## Potential issues
 
