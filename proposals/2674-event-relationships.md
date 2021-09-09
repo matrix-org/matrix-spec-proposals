@@ -186,18 +186,21 @@ versus
 ```
 
 The reasons to go with `rel_type` is:
- * this format is now in use in the wider matrix ecosystem without a prefix,
+ * This format is now in use in the wider matrix ecosystem without a prefix,
    in spite of the original MSC 1849 not being merged. This situation is not ideal
    but we still don't want to break compatibility with several clients.
- * we don't need the extra indirection to let multiple relations apply to a given pair of
+ * We don't need the extra indirection to let multiple relations apply to a given pair of
    events, as that should be expressed as separate relation events.
- * if we want 'adverbs' to apply to 'verbs' in the subject-verb-object triples which
+ * If we want 'adverbs' to apply to 'verbs' in the subject-verb-object triples which
    relations form, then we apply it as mixins to the relation data itself rather than trying
    to construct subject-verb-verb-object sentences.
- * so, we should pick a simpler shape rather than inheriting the mistakes of m.in_reply_to
-   and we have to keep ugly backwards compatibility around for m.in_reply_to
-   but we can entirely separately worry about migrating replies to new-style-aggregations in future
-   perhaps at the same time as doing threads.
+ * We decided to not adopt the format used by `m.in_reply_to` as it allows for multiple relations
+   and is hence overly flexible. Also, the relation type of `m.in_reply_to` is also overly specific
+   judged by the guidelines for `rel_type`s laid out in this MSC. Having replies use the same
+   format as relations is postponed to a later MSC, but it would likely involve replies
+   adopting the relation format with a more broadly useful `rel_type` (possibly the `m.reference`
+   type proposed in [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267)),
+   rather than relations adopting the replies format.
 
 ## Historical context
 
