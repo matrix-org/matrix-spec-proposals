@@ -19,6 +19,9 @@ events to relate to each other.  Together, these proposals replace
   mechanism.
 * [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267) defines how events
   can make a reference to other events.
+* [MSC3389](https://github.com/matrix-org/matrix-doc/pull/3389) defines changes to
+  the redaction algorithm, to preserve the type and target id of a relation.
+
 
 ## Proposal
 
