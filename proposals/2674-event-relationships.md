@@ -99,18 +99,9 @@ events.
 
 Events with a relation may be redacted like any other event.
 
-The `m.relates_to`.`rel_type` and `m.relates_to`.`event_id` fields should
-be preserved over redactions, so that clients can still distinguish
-redacted relations from other redacted events of the same event type.
-If `m.relates_to` is not an object, or `m._relates_to` would be
-an empty object after redacting any other keys, then `m.relates_to`
-should also be removed from `content`.
+[MSC3389](https://github.com/matrix-org/matrix-doc/pull/3389) proposes that
+the redaction algorithm should preserve the type and target id of a relation.
 
-One example is telling redacted edits (as proposed in
-[MSC 2676](https://github.com/matrix-org/matrix-doc/pull/2676)) apart from
-from normal redacted messages, and maintain reply ordering.
-
-This modification to the redaction algorithm requires a new room version.
 However, event relationships can still be used in existing room versions, but
 the user experience may be worse if redactions are performed.
 
