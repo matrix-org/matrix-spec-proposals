@@ -176,7 +176,7 @@ and a pagination token should be generated (if there is more data to return).
 If the client does not request the next page after a short period of time the
 persisted data may be discarded to limit resource usage.
 
-The persisted state will includes:
+The persisted state will include:
 
 * The processed rooms.
 * Rooms to process (in depth-first order with rooms at the same depth
