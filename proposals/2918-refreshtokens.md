@@ -13,11 +13,17 @@ A more [detailed rationale](#detailed-rationale) of what kind of attacks it miti
 
 ## Proposal
 
-Homeservers can choose to have access tokens returned by the registration and login endpoints after a short amount of time, forcing the client to renew it with a refresh token.
+Homeservers can choose to have access tokens expire after a short amount of time, forcing the client to renew them with a refresh token.
 A refresh token is issued on login and rotates on each usage.
 
 It allows homeservers to opt for signed and non-revocable access tokens (JWTs, Macaroon, etc.) for performance reasons if their expiration is short enough (less than 5 minutes).
 Whether the access token expire and what lifetime they have is up to the homeserver, but client have to support refreshing tokens.
+
+It is heavily recommended for clients to support refreshing tokens for additional security.
+They can advertise their support by adding a `"refresh_token": true` field in the request body on the `/login` and `/register` APIs.
+
+Handling of clients that do *not* support refreshing access tokens is up to individual homeserver deployments.
+For example, server administrators may choose to support such clients for backwards-compatibility, or to expire access tokens anyway for improved security at the cost of inferior user experience in legacy clients.
 
 ### Login API changes
 
@@ -32,6 +38,8 @@ Both fields are optional.
 If `expires_in_ms` is missing, the client can assume the access token won't expire.
 If `refresh_token` is missing but `expires_in_ms` is present, the client can assume the access token will expire but it won't have a way to refresh the access token without re-logging in.
 
+Clients advertise their support for refreshing tokens by setting the `refresh_token` field to `true` in the request body.
+
 ### Account registration API changes
 
 Unless `inhibit_login` is `true`, the account registration API returns two additional fields:
@@ -42,6 +50,8 @@ Unless `inhibit_login` is `true`, the account registration API returns two addit
 This also applies to registrations done by application services.
 
 As in the login API, both field are optional.
+
+Clients advertise their support for refreshing tokens by setting the `refresh_token` field to `true` in the request body.
 
 ### Token refresh API
 
@@ -103,14 +113,12 @@ This MSC defines a new endpoint for token refresh, but it could also be integrat
 
 The time to live (TTL) of access tokens isn't enforced in this MSC but is advised to be kept relatively short.
 Servers might choose to have stateless, digitally signed access tokens (JWT are good examples of this), which makes them non-revocable.
-The TTL of access tokens should not exceed 15 minutes if they are revocable and 5 minutes if they are not.
+The TTL of access tokens should be around 15 minutes if they are revocable and should not exceed 5 minutes if they are not.
 
 ## Unstable prefix
 
-While this MSC is not in a released version of the specification, clients should add a `org.matrix.msc2918.refresh_token=true` query parameter on the login and registration endpoints, e.g. `/_matrix/client/r0/login?org.matrix.msc2918.refresh_token=true`.
+While this MSC is not in a released version of the specification, clients should use the `org.matrix.msc2918.refresh_token` field in place of the `refresh_token` field in requests to the login and registration endpoints.
 The refresh token endpoint should be served and used using the unstable prefix: `POST /_matrix/client/unstable/org.matrix.msc2918/refresh`.
-
-Once this MSC is in a released version of the specification, clients using endpoints from that version must support refreshing token, even if the homeserver might choose to keep sending non-refreshing ones.
 
 ## Detailed rationale
 
