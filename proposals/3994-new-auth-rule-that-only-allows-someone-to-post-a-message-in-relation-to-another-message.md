@@ -1,4 +1,4 @@
-# Example: new auth rule that only allows someone to post a message in relation to another message
+# MSC3994: new auth rule that only allows someone to post a message in relation to another message
 
 Today, chat platforms are used broadly in order to broadcast information to large audiences. An example of this are [Telegram channels](https://telegram.org/tour/channels/).
 
