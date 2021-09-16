@@ -6,7 +6,7 @@ Currently the Matrix user id (Field `sub`) is the only field included in the use
 
 ## Proposal
 
-To enable third party applications for simple room-based access control, the openid user info returned by `/_matrix/federation/v1/openid/userinfo` shall be extended by the following fields:
+To enable third party applications for simple room-based access control, the OpenID user info returned by `/_matrix/federation/v1/openid/userinfo` shall be extended by the following fields:
 
 1. `name` The user's current display name. This value may be used to enforce consistent user names between Matrix and the third party application.
 
@@ -24,4 +24,15 @@ To enable third party applications for simple room-based access control, the ope
       "!omkHaNDeHnPdcmHCcE:example.com": 50
    }
 }
+```
+
+## Security Considerations
+
+As the additional fields may contain sensitive information, they shall not be exposed by default. Instead, the [OpenID token request endpoint](https://matrix.org/docs/spec/client_server/latest#id603)  `/_matrix/client/r0/user/.../openid/request_token` shall be extended to accept a user-/client-defined set of requested user info fields for the specific token. The set may be specified as an array `userinfo_fields` in an optional JSON request body:
+
+```
+POST /_matrix/client/r0/user/%40johndoe%3Aexample.com/openid/request_token HTTP/1.1
+Content-Type: application/json
+
+{ "userinfo_fields": [ "display_name", "room_powerlevels" ] }
 ```
