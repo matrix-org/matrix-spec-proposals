@@ -20,7 +20,7 @@ For clarity, this MSC introduces a modest set events that could be extended by f
 ## Proposal
 
 An appservice must subscribe to the changes that it wishes to listen for. This can be done by setting a new
-key in the appservice registration file: `m.synthetic_events`:
+key in the appservice registration file: `m.synthetic_events`, under the `namespaces` key:
 
 ```yaml
 m.synthetic_events:
@@ -31,8 +31,14 @@ m.synthetic_events:
         - "m.user.deactivated"
 ```
 
-Then, when the homeserver wishes to inform a appservice of an event it would send the event over the appservice `/transaction`
-API. If the application service is down, these events SHOULD be retried when the appservice comes back up.
+Currently only the `namespaces.users` field can contain this key, though the door is left open for
+future MSCs to expand upon this feature and allow synthetic events for different contexts.
+
+Then, when the homeserver wishes to inform a appservice of an event it would send the event over the
+appservice `/transaction` API. If the application service is down, these events SHOULD be retried when
+the appservice comes back up.
+
+As the synthetic events are namespaced, the AS should only be sent events for users in that namespace.
 
 ```
 PUT /_matrix/app/v1/transactions/{txnId}
@@ -113,7 +119,8 @@ This should be sent when an existing user deactivates their account.
 
 Appservices can now request permissions to reveal quite intimate details about each user, which means that homeserver
 administrators will need to be more careful when adding new appservice registrations. However, it has always been the
-case that appservices should be considered powerful tools that need review before being connected.
+case that appservices should be considered powerful tools that need review before being connected. The ability to 
+namespace the events sent allows for fine-grained control.
 
 This proposal would not work over a federated context, as federated homeservers are not aware of foregin appservices.
 That being said the events suggested in this proposal are sensitive and are expected to only be shared with immediate
