@@ -8,7 +8,9 @@ Currently the Matrix user id (Field `sub`) is the only field included in the use
 
 To enable third party applications for simple room-based access control, the openid user info returned by `/_matrix/federation/v1/openid/userinfo` shall be extended by the following fields:
 
-1. `name` The user's current display name.
+1. `name` The user's current display name. This value may be used to enforce consistent user names between Matrix and the third party application.
+
+2. `avatar_url` The user's avatar url _(optional)_.
 
 2. `room_powerlevels` A map between the id of the local rooms the user is joined to and the respective currently held power level.
 
@@ -16,6 +18,7 @@ To enable third party applications for simple room-based access control, the ope
 {
    "sub": "@johndoe:example.com",
    "name": "John Doe",
+   "avatar_url": "https://eu.ui-avatars.com/api/?name=John+Doe",
    "room_powerlevels": {
       "!zqoHDglfYXhEaDJxKy:example.com": 100,
       "!omkHaNDeHnPdcmHCcE:example.com": 50
