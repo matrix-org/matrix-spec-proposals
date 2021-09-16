@@ -95,8 +95,11 @@ The image object conists of the following keys:
    the emote alt text. Defaults to the short code.
  - `info`: (`ImageInfo`, optional) The already speced `ImageInfo` object used for the `info` block of
    `m.sticker` events.
- - `usage`: (String[], optional) An array of the usages for this image. If present and non-emtpy,
-   this overrides the usage defined at pack level for this particular image.
+ - `usage`: (String[], optional) An array of the usages for this image. If present and non-empty,
+   this overrides the usage defined at pack level for this particular image. This is useful to e.g.
+   have one pack contain mixed emotes and stickers. Additionally there is only a single account data
+   level image pack, meaning this is required to have a mixture of emotes and stickers available in
+   account data.
 
 #### Example image pack event
 Taking all this into account, an example pack event may look as following:
@@ -136,9 +139,9 @@ E.g. a discord bridge could set as state key
 bridged emotes from matrix emotes separate.
 
 #### Space image packs
-Clients should suggest image packs of a space that a room is in, if the user is also in the space.
-For that, the client should recursively check the `m.space.parent` state events and suggest emoticons
-and stickers from all the image packs found in those rooms/spaces.
+Clients should suggest image packs of a canonical space that a room is in, if the user is also in the
+space. This should be done recursively on canonical spaces. So, if a room has a canonical space and
+that space again has a canonical space, the clients should suggest image packs of both of those spaces.
 
 #### Image pack rooms
 While room image packs are specific to a room and are only accessible within that room, image pack
@@ -147,7 +150,7 @@ all, instead you set an event in your account data of type `m.image_pack.rooms` 
 which room image pack states are globally accessible for that user. For that, a `room` key contains
 a map of room ids that map to state keys that map to an object. While this MSC does not define any
 contents for this object, having this an object means greater flexibility in case of future changes.
-The the contents of `m.image_pack.rooms` could look like the following:
+The contents of `m.image_pack.rooms` could look like the following:
 
 ```json
 {
@@ -227,7 +230,7 @@ already exists, so it is reasonable to compare this one with that one:
 ### Comparison with MSC1951
 MSC1951 defines a dedicated room as the only image pack source. This MSC, however, also allows you to bind image packs
 to your own account, offering greater flexibility. In MSC1951 there can also only be a single image pack
-pack in a room. This could be problematic in e.g. bridged rooms: You set some emotes or stickers from the matrix
+in a room. This could be problematic in e.g. bridged rooms: You set some emotes or stickers from the matrix
 side and a discord bridge would plop all the discord emotes and stickers in another pack in the same room.
 
 The original sharing-focused idea of MSC1951 is still preserved: Once room types are a thing, you could
