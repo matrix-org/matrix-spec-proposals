@@ -23,12 +23,17 @@ An appservice must subscribe to the changes that it wishes to listen for. This c
 key in the appservice registration file: `m.synthetic_events`, under the `namespaces` key:
 
 ```yaml
-m.synthetic_events:
-    events:
-        - "m.user.registration"
-        - "m.user.login"
-        - "m.user.logout"
-        - "m.user.deactivated"
+namespaces:
+  users:
+    - exclusive: false # This needs to be false to allow for registrations
+      regex: "@.*:mydomain"
+      m.events: false # Allow or disallow normal events to be sent from this namespace.
+      m.synthetic_events:
+          events:
+              - "m.user.registration"
+              - "m.user.login"
+              - "m.user.logout"
+              - "m.user.deactivated"
 ```
 
 Currently only the `namespaces.users` field can contain this key, though the door is left open for
@@ -39,6 +44,9 @@ appservice `/transaction` API. If the application service is down, these events 
 the appservice comes back up.
 
 As the synthetic events are namespaced, the AS should only be sent events for users in that namespace.
+
+Because a namespace is listed for these users, the AS will also recieve room events for these users by default. To opt-out
+of sending room events to the AS (and allow only synthetic events to be sent), the key `m.events` can be set to `false`.
 
 ```
 PUT /_matrix/app/v1/transactions/{txnId}
