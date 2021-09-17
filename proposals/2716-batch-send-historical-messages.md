@@ -43,7 +43,7 @@ Here is what scrollback is expected to look like in Element:
 
 **Endpoint:**
 
- - `POST /_matrix/client/r0/rooms/<roomID>/batch_send?prev_event=<eventID>&chunk_id=<chunkID>`
+ - `POST /_matrix/client/r0/rooms/<roomID>/batch_send?prev_event_id=<eventID>&chunk_id=<chunkID>`
 
 **Event types:**
 
@@ -115,9 +115,9 @@ send these events in the existing room version, we instead only allow the room
 ### New historical batch send endpoint
 
 Add a new endpoint, `POST
-/_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event=<eventID>&chunk_id=<chunkID>`,
+/_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event_id=<eventID>&chunk_id=<chunkID>`,
 which can insert a chunk of events historically back in time next to the given
-`prev_event`. This endpoint can only be used by application services. 
+`prev_event_id`. This endpoint can only be used by application services. 
 
 This endpoint will handle the complexity of creating "insertion" and "chunk"
 events. All the application service has to do is use `?chunk_id` which comes
@@ -213,7 +213,7 @@ breakdown which incrementally explains how everything fits together.
  1. A "chunk" event is added to the end of the chunk. This is the event that
     connects to an insertion event by `?chunk_id`.
  1. If `?chunk_id` is not specified (usually only for the first chunk), create a
-    base "insertion" event as a jumping off point from `?prev_event` which can
+    base "insertion" event as a jumping off point from `?prev_event_id` which can
     be added to the end of the `events` list in the response.
  1. All of the events in the historical chunk get a content field,
     `"m.historical": true`, to indicate that they are historical at the point of
@@ -515,7 +515,7 @@ Another way of doing this is using the existing single send state and event API
 endpoints. We could use `PUT /_matrix/client/r0/rooms/{roomId}/state/{eventType}/{stateKey}`
 with `?historical=true` which would create the floating outlier state events.
 Then we could use `PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}`,
-with `?prev_event` pointing at that floating state to auth the event and where we
+with `?prev_event_id` pointing at that floating state to auth the event and where we
 want to insert the event.
 
 Another way of doing this might be to store the different eras of the room as
