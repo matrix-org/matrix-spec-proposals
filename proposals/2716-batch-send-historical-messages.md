@@ -17,8 +17,6 @@ gradually added into the history of the room - slowly building up the complete
 history of the conversations over time.
 
 This is currently not supported because:
- * There is no way to set historical room state in a room via the CS or AS API -
-   you can only edit current room state.
  * There is no way to create messages in the context of historical room state in
    a room via CS or AS API - you can only create events relative to current room
    state.
