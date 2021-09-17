@@ -165,19 +165,25 @@ Request body:
 Request response:
 ```jsonc
 {
-  "state_events": [
-    // list of state event ID's we inserted...
+  // List of state event ID's we inserted
+  "state_event_ids": [
+    // member state event ID
   ],
-  // List of historical event ID's we inserted which includes the
-  // auto-generated insertion and chunk events...
-  "events": [
-    // insertion event ID for chunk
+  // List of historical event ID's we inserted
+  "event_ids": [
     // historical message1 event ID
     // historical message2 event ID
-    // chunk event ID
-    // base insertion event ID
   ],
   "next_chunk_id": "random-unique-string",
+  "insertion_event_id": "$X9RSsCPKu5gTVIJCoDe6HeCmsrp6kD31zXjMRfBCADE",
+  "chunk_event_id": "$kHspK8a5kQN2xkTJMDWL-BbmeYVYAloQAA9QSLOsOZ4",
+  // When `?chunk_id` isn't provided, the homeserver automatically creates an
+  // insertion event as a starting place to hang the history off of. This automatic
+  // insertion event ID is returned in this field.
+  //
+  // When `?chunk_id` is provided, this field is not present because we can hang
+  // the history off the insertione event specified associated by the chunk ID. 
+  "base_insertion_event_id": "$pmmaTamxhcyLrrOKSrJf3c1zNmfvsE5SGpFpgE_UvN0"
 }
 ```
 
