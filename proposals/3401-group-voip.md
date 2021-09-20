@@ -8,7 +8,7 @@ This has some limitations, especially if you try to broaden the approach to mult
  * VoIP signalling can generate a lot of events as candidates are incrementally discovered, and for rapid call setup these need to be relayed as rapidly as possible.
    * Putting these into the room timeline means that if the client has a gappy sync, for VoIP to be reliable it will need to go back and fill in the gap before it can process any VoIP events, slowing things down badly.
    * Timeline events are (currently) subject to harsh rate limiting, as they are assumed to be a spam vector.
- * VoIP signalling leak IP addresses.  There is no reason to keep these around for posterity, and they should only be exposed to the devices which care about them.
+ * VoIP signalling leaks IP addresses.  There is no reason to keep these around for posterity, and they should only be exposed to the devices which care about them.
  * Candidates are ephemeral data, and there is no reason to keep them around for posterity - they're just clogging up the DAG.
 
 Meanwhile we have no native signalling for group calls at all, forcing you to instead embed a separate system such as Jitsi, which has its own dependencies and doesn't directly leverage any of Matrix's encryption, decentralisation, access control or data model.
