@@ -44,6 +44,8 @@ SFU (aka Focus):
                | 
                |
                C
+
+Where F is an SFU focus
 ```
 
 Cascaded decentralised SFU:
@@ -57,6 +59,8 @@ Cascaded decentralised SFU:
                Fc
               |  |
              C1  C2
+
+Where Fa, Fb and Fc are SFU foci, one per homeserver, each with two clients.
 ```
 
 ### m.conf state event
@@ -76,7 +80,7 @@ The user who wants to initiate a call sends a `m.conf` state event into the room
 
 For instance:
 
-```json
+```jsonc
 {
     "type": "m.conf",
     "state_key": "",
@@ -107,14 +111,14 @@ The fields within the `m.conf` field are:
 
 For instance:
 
-```json
+```jsonc
 {
     "type": "m.room.member",
     "state_key": "@matthew:matrix.org",
     "content": {
         "avatar_url": "mxc://matrix.org/oUxxDyzQOHdVDMxgwFzyCWEe",
         "displayname": "Matthew",
-        "membership": "join"
+        "membership": "join",
         "m.conf": {
             "m.conf_id": "cvsiu2893",
             "m.foci": [
@@ -190,7 +194,7 @@ The client does this by establishing an optional datachannel connection to the S
 
 To select a stream over this channel, the peer sends:
 
-```json
+```jsonc
 {
     "op": "select",
     "conf_id": "cvsiu2893",
