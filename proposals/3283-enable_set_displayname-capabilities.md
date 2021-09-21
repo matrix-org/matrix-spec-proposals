@@ -32,6 +32,7 @@ Useful when provisioning users based on the contents of a third-party directory.
 
 Whether users can change the 3PIDs associated with their accounts
 (email address and msisdn).
+Useful when provisioning users based on the contents of a third-party directory.
 
 ## Client recommendations
 When presenting profile settings, clients should use capabilities in order to display the correct UI.
