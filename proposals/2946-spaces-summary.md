@@ -288,10 +288,10 @@ Space A, Room B, and Room C are on HS1, while Room D is on HS2. HS1 has no users
 in Room D (and thus has no state from it). Room B, C, and D do not have an
 `order` field set (and default to using the ordering rules above).
 
-When a user asks HS1 for the space summary with a `max_rooms_per_space` equal to
-`2` it cannot fulfill this request since it is unsure how to order Room B, Room
-C, and Room D, but it can only return 2 of them. It *can* reach out over
-federation to HS2 and request a space summary for Room D, but this is undesirable:
+When a user asks HS1 for the space summary with a `limit` equal to `2` it cannot
+fulfill this request since it is unsure how to order Room B, Room C, and Room D,
+but it can only return 2 of them. It *can* reach out over federation to HS2 and
+request a space summary for Room D, but this is undesirable:
 
 * HS1 might not have the permissions to know any  of the state of Room D, so might
   receive a 403 error.
@@ -309,10 +309,10 @@ This proposes changing the ordering rules from MSC1772 to the following:
 > more than 50 characters, are forbidden and the field should be ignored if
 > received.
 
-This modifies the clauses for calculating the `origin_server_ts` of the
-`m.room.create` event to refer to the `m.space.child` event instead. This allows
+This modifies the clause for calculating the order to use the `origin_server_ts`
+of the `m.space.child` event instead of the `m.room.create` event.. This allows
 for a defined sorting of siblings based purely on the information available in
-the `m.space.child` event while still allowing for a natural ordering due to the
+the state of the space while still allowing for a natural ordering due to the
 age of the relationship.
 
 ## Potential issues
