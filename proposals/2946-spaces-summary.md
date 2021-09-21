@@ -133,7 +133,7 @@ GET /_matrix/client/r0/rooms/{roomID}/hierarchy?
                     },
                     "room_id": "!ol19s:bleecker.street",
                     "sender": "@alice:bleecker.street",
-                    "creation_ts": 1432735824653
+                    "origin_server_ts": 1432735824653
                 },
                 { ... }
             ]
