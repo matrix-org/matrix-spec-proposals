@@ -39,8 +39,5 @@ When presenting profile settings, clients should use capabilities in order to di
 Capability should always be present.
 
 ## Unstable prefix
-Implementations won't actually be able to use m.set_displayname, m.set_avatar_url or m.3pid_changes 
-until the MSC has finished the Final Comment Period. 
 
-While the MSC is in review, implementations can use an unstable prefix 
-(e.g. im.vector.set_displayname) instead.
+While this MSC is not considered stable, implementations should use `org.matrix.msc3283.` in place of `m.` throughout this proposal.
