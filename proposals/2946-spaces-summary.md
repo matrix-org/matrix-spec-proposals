@@ -251,9 +251,9 @@ GET /_matrix/federation/v1/hierarchy/{roomID}?
 
 #### Errors:
 
-An HTTP response with a status code of 404 is returned if the target server is
-not a member of the requested room or the requesting server is not allowed to
-access the room.
+An HTTP response with a status code of 404 and an error code of `M_NOT_FOUND` is
+returned if the target server is not a member of the requested room or the
+requesting server is not allowed to access the room.
 
 ### MSC1772 Ordering
 
