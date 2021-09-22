@@ -4,19 +4,29 @@
 
 This MSC aims to solve the proliferation of `join_rule`s and allow these features to interoperate.
 
-As an added benefit this MSC is backwards-compatible. The `allow_knock` field can be added to an existing `join_rules: restricted` room and people can start knocking as it is supported by their servers and clients.
-
 ## Proposal
+
+In a future room version the meaning of the `m.room.join_rules` state event will be changed to the following.
+
+### `join_rule`
+
+The `join_rule` key is removed.
+
+### `allow_join`
+
+`allow` will be renamed to `allow_join`. Otherwise its meaning is unchanged.
+
+The `allow_join` key may be absent in which case it is treated as if it was set to `[]` (the empty list). In this case no one is allowed to join without an invite.
 
 ### `allow_knock`
 
-`join_rule: restricted` will be updated with the `allow_knock` key. This functions identically to the `allow` key except that it controls who can knock, instead of controlling who can join. Please see [MSC3083 Restricting room membership based on membership in other rooms](https://github.com/matrix-org/matrix-doc/pull/3083) for how the rules are evaluated and [MSC2403 Knock](https://github.com/matrix-org/matrix-doc/pull/2403) for what it means to knock.
+An `allow_knock` key will be allowed. This functions identically to the `allow_join` key except that it controls who can knock, instead of controlling who can join. Please see [MSC3083 Restricting room membership based on membership in other rooms](https://github.com/matrix-org/matrix-doc/pull/3083) for how the rules are evaluated and [MSC2403 Knock](https://github.com/matrix-org/matrix-doc/pull/2403) for what it means to knock.
 
 The `allow_knock` key may be absent in which case it is treated as if it was set to `[]` (the empty list). In this case no one is allowed to knock.
 
 ### `m.any`
 
-The `m.any` allow type will be defined. This type allows any user to perform the relevant action. The may be used in both the `allow` and `allow_knock` fields.
+The `m.any` allow type will be defined. This type allows any user to perform the relevant action. The may be used in both the `allow_join` and `allow_knock` fields.
 
 ### Example: Anyone can knock
 
@@ -27,8 +37,7 @@ This shows an example of a room where you can join if you are a member of `!user
 	"type": "m.room.join_rules"
 	"state_key": ""
 	"content": {
-		"join_rule": "restricted"
-		"allow": [{
+		"allow_join": [{
 			"type": "m.room_membership"
 			"room_id": "!users:example.org"
 		}]
@@ -48,8 +57,7 @@ This shows an example of a room where anyone in the `!users:example.org` room (o
 	"type": "m.room.join_rules"
 	"state_key": ""
 	"content": {
-		"join_rule": "restricted"
-		"allow": [{
+		"allow_join": [{
 			"type": "m.room_membership"
 			"room_id": "!mods:example.org"
 		}]
@@ -61,11 +69,69 @@ This shows an example of a room where anyone in the `!users:example.org` room (o
 }
 ```
 
-## Potential issues
+### Conversion
 
-### Useless allow_knock entires.
+When upgrading a room the following rules can be used to generate a new `join_rules` that matches the previous `join_rules`.
 
-It is possible that entries in `allow_knock` are redundant because they are also included in `allow` so could simply join directly. While this is unsightly it is non-harmful and will not affect users or servers.
+#### `invite`
+
+A `join_rules` state event with `join_rule: invite` can be replaced by the following `join_rules`.
+
+```json5
+{
+	"type": "m.room.join_rules"
+	"state_key": ""
+	"content": {}
+}
+```
+
+#### `public`
+
+A `join_rules` state event with `join_rule: public` can be replaced by the following `join_rules`.
+
+```json5
+{
+	"type": "m.room.join_rules"
+	"state_key": ""
+	"content": {
+		"allow_join": [{
+			"type": "m.any"
+		}]
+	}
+}
+```
+
+#### `knock`
+
+A `join_rules` state event with `join_rule: knock` can be replaced by the following `join_rules`.
+
+```json5
+{
+	"type": "m.room.join_rules"
+	"state_key": ""
+	"content": {
+		"allow_knock": [{
+			"type": "m.any"
+		}]
+	}
+}
+```
+
+#### `restricted`
+
+A `join_rules` state event with `join_rule: restricted` can be replaced by an event with the following template. Substitute the previous elements from the `allow` attribute into the `allow_join` attribute.
+
+```json5
+{
+	"type": "m.room.join_rules"
+	"state_key": ""
+	"content": {
+		"allow_join": // Value from `allow` attribute of previous `join_rules`.
+	}
+}
+```
+
+For example the following `join_rules`...
 
 ```json5
 {
@@ -73,7 +139,47 @@ It is possible that entries in `allow_knock` are redundant because they are also
 	"state_key": ""
 	"content": {
 		"join_rule": "restricted"
-		"allow": [{
+		"allow": [ {
+			"type": "m.room_membership"
+			"room_id": "!mods:example.org"
+		}, {
+			"type": "m.room_membership"
+			"room_id": "!users:example.org"
+		}]
+	}
+}
+```
+
+...becomes...
+
+```json5
+{
+	"type": "m.room.join_rules"
+	"state_key": ""
+	"content": {
+		"allow_join": [{
+			"type": "m.room_membership"
+			"room_id": "!mods:example.org"
+		}, {
+			"type": "m.room_membership"
+			"room_id": "!users:example.org"
+		}]
+	}
+}
+```
+
+## Potential issues
+
+### Useless `allow_knock` entires.
+
+It is possible that entries in `allow_knock` are redundant because they are also included in `allow_join` so could simply join directly. While this is unsightly it is non-harmful and will not affect users or servers.
+
+```json5
+{
+	"type": "m.room.join_rules"
+	"state_key": ""
+	"content": {
+		"allow_join": [{
 			"type": "m.any"
 		}]
 		// This is irrelevant because anyone can directly join.
@@ -90,8 +196,7 @@ It is possible that entries in `allow_knock` are redundant because they are also
 	"type": "m.room.join_rules"
 	"state_key": ""
 	"content": {
-		"join_rule": "restricted"
-		"allow": [{
+		"allow_join": [{
 			"type": "m.room_membership",
 			"room_id": "!users:example.org"
 		}]
@@ -109,8 +214,7 @@ It is possible that entries in `allow_knock` are redundant because they are also
 	"type": "m.room.join_rules"
 	"state_key": ""
 	"content": {
-		"join_rule": "restricted"
-		"allow": [{
+		"allow_join": [{
 			"type": "m.any"
 		}, {
 			// This is irrelevant because of the m.any rule.
@@ -121,57 +225,7 @@ It is possible that entries in `allow_knock` are redundant because they are also
 }
 ```
 
-Clients may consider helping users to clean up unnecessary elements from the `allow` and `allow_knock` lists.
-
-### Multiple ways to specify the same rules.
-
-After this MSC is implemented it will be possible to specify all other (current) `join_rule` types in terms of `join_rule: restricted`.
-
-This is considered a feature. Once this MSC is widely supported it is expected that rooms are created using `join_rule: restricted` preferentially for simplicity. The other types can be considered deprecated. In order to simplify the protocol a future room version may consider dropping support for anything but `restricted`.
-
-The following is equivalent to `join_rule: public` (as far as join rules are concerned).
-
-```json5
-{
-	"type": "m.room.join_rules"
-	"state_key": ""
-	"content": {
-		"join_rule": "restricted"
-		"allow": [{
-			"type": "m.any"
-		}]
-	}
-}
-```
-
-The following is equivalent to `join_rule: invite`.
-
-```json5
-{
-	"type": "m.room.join_rules"
-	"state_key": ""
-	"content": {
-		"join_rule": "restricted"
-		"allow": []
-	}
-}
-```
-
-The following is equivalent to `join_rule: knock`.
-
-```json5
-{
-	"type": "m.room.join_rules"
-	"state_key": ""
-	"content": {
-		"join_rule": "restricted"
-		"allow": []
-		"allow_knock": [{
-			"type": "m.any"
-		}]
-	}
-}
-```
+Clients may consider helping users to clean up unnecessary elements from the `allow_join` and `allow_knock` lists.
 
 ## Alternatives
 
