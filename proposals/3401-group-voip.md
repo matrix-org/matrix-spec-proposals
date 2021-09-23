@@ -75,7 +75,7 @@ The user who wants to initiate a call sends a `m.call` state event into the room
  * `m.terminated` if this event indicates that the call in question has finished, including the reason why. (A voice/video room will never terminate.) (do we need a duration, or can we figure that out from the previous state event?).  
  * `m.name` as an optional human-visible label for the call (e.g. "Conference call").
  * `m.foci` as an optional list of recommended SFUs that the call initiator can recommend to users who do not want to use their own SFU (because they don't have one, or because they would be the only person on their SFU for their call, and so choose to connect direct to save bandwidth).
- * The State key is a unique ID for that call. (We can't use the event ID, given `m.type` and `m.terminated` is mutable).  If there are multiple non-termianted conf ID state events in the room, the client should display the most recently edited event.
+ * The State key is a unique ID for that call. (We can't use the event ID, given `m.type` and `m.terminated` is mutable).  If there are multiple non-terminated conf ID state events in the room, the client should display the most recently edited event.
 
 For instance:
 
