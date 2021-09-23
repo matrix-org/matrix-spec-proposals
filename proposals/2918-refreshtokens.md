@@ -24,7 +24,7 @@ They can advertise their support by adding a `"refresh_token": true` field in th
 Handling of clients that do *not* support refreshing access tokens is up to individual homeserver deployments.
 For example, server administrators may choose to support such clients for backwards-compatibility, or to expire access tokens anyway for improved security at the cost of inferior user experience in legacy clients.
 
-If a client uses an access token that has expired, the server will respond with an `M_UNKNOWN_TOKEN` error.
+If a client uses an access token that has expired, the server will respond with an `M_UNKNOWN_TOKEN` error, preferably with the `soft_logout` parameter set to `true` to improve the user experience in legacy clients.
 Thus, if a client receives an `M_UNKNOWN_TOKEN` error, and it has a refresh token available, it should no longer assume that it has been logged out, and instead attempt to refresh the token.
 If the client was in fact logged out, then the server will respond with an `M_UNKNOWN_TOKEN` error to the token refresh request, possibly with the `soft_logout` parameter set.
 
