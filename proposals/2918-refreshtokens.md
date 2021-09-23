@@ -26,7 +26,7 @@ For example, server administrators may choose to support such clients for backwa
 
 If a client uses an access token that has expired, the server will respond with an `M_UNKNOWN_TOKEN` error.
 Thus, if a client receives an `M_UNKNOWN_TOKEN` error, and it has a refresh token available, it should no longer assume that it has been logged out, and instead attempt to refresh the token.
-If the client was in fact logged out, then the server will respond with an `M_UNKNOWN_TOKEN` error, possibly with the `soft_logout` parameter set.
+If the client was in fact logged out, then the server will respond with an `M_UNKNOWN_TOKEN` error to the token refresh request, possibly with the `soft_logout` parameter set.
 
 ### Login API changes
 
