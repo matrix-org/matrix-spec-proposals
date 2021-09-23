@@ -17,7 +17,6 @@ Homeservers can choose to have access tokens expire after a short amount of time
 A refresh token is issued on login and rotates on each usage.
 
 It allows homeservers to opt for signed and non-revocable access tokens (JWTs, Macaroon, etc.) for performance reasons if their expiration is short enough (less than 5 minutes).
-Whether the access token expire and what lifetime they have is up to the homeserver, but client have to support refreshing tokens.
 
 It is heavily recommended for clients to support refreshing tokens for additional security.
 They can advertise their support by adding a `"refresh_token": true` field in the request body on the `/login` and `/register` APIs.
