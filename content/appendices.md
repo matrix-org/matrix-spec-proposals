@@ -706,7 +706,7 @@ they need to go, however they should also be aware of [issue
 A room (or room permalink) which isn't using a room alias should supply
 at least one server using `via` in the `<additional arguments>`, like
 so:
-`https://matrix.to/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`.
+`https://matrix.to/#/!somewhere%3Aexample.org?via=example.org&via=alt.example.org`.
 The parameter can be supplied multiple times to specify multiple servers
 to try.
 
