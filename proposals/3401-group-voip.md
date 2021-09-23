@@ -69,12 +69,12 @@ The user who wants to initiate a call sends a `m.call` state event into the room
 
  * `m.intent` to describe the intended UX for handling the call.  One of:
      * `m.ring` if the call is meant to cause the room participants devices to ring (e.g. 1:1 call or group call)
-     * `m.conference` is the call should be presented as a conference call which users in the room may connect to
+     * `m.prompt` is the call should be presented as a conference call which users in the room are prompted to connect to
      * `m.room` if the call should be presented as a voice/video channel in which the user is immediately immersed on selecting the room.
  * `m.type` to say whether the initial type of call is voice only (`m.voice`) or video (`m.video`).  This signals the intent of the user when placing the call to the participants (i.e. "i want to have a voice call with you" or "i want to have a video call with you") and warns the receiver whether they may be expected to view video or not, and provide suitable initial UX for displaying that type of call... even if it later gets upgraded to a video call.
  * `m.terminated` if this event indicates that the call in question has finished, including the reason why. (A voice/video room will never terminate.) (do we need a duration, or can we figure that out from the previous state event?).  
  * `m.name` as an optional human-visible label for the call (e.g. "Conference call").
- * `m.foci` as an optional list of recommended SFUs that the call initiator can recommend to users who do not want to use their own SFU (because they don't have one, or because they spot they would be the only person on their SFU for their call, and so choose to connect direct to save bandwidth).
+ * `m.foci` as an optional list of recommended SFUs that the call initiator can recommend to users who do not want to use their own SFU (because they don't have one, or because they would be the only person on their SFU for their call, and so choose to connect direct to save bandwidth).
  * The State key is a unique ID for that call. (We can't use the event ID, given `m.type` and `m.terminated` is mutable).  If there are multiple non-termianted conf ID state events in the room, the client should display the most recently edited event.
 
 For instance:
@@ -126,7 +126,7 @@ For instance:
                         "id": "qegwy64121wqw",
                         "name": "Webcam", // optional, just to help users understand what multiple streams from the same person mean.
                         "device_id": "ASDUHDGFYUW", // just in case people ending up dialing this directly for full mesh or 1:1
-                        "voice": [
+                        "audio": [
                             { "id": "zbhsbdhwe", "format": { "channels": 2, "rate": 48000, "maxbr": 32000 } },
                         ],
                         "video": [
@@ -170,14 +170,15 @@ Call setup then uses the normal `m.call.*` events, except they are sent over to-
  * When initiating a group call, we need to decide which devices to actually talk to.
      * If the client has no SFU configured, we try to use the `m.foci` in the `m.call` event.
          * If there are multiple `m.foci`, we select the closest one based on latency, e.g. by trying to connect to all of them simultaneously and discarding all but the first call to answer.
-         * If there are no `m.foci` in the `m.call` event, then we look at which foci in `m.room.member` that are already in use by existing participants, and select the most common one.  (If the foci is overloaded it can reject us and we should then try the next most populous one, etc).
-         * If there are no `m.foci` in the `m.room.member`, then we connect full mesh.
+         * If there are no `m.foci` in the `m.call` event, then we look at which foci in `m.call.member` that are already in use by existing participants, and select the most common one.  (If the foci is overloaded it can reject us and we should then try the next most populous one, etc).
+         * If there are no `m.foci` in the `m.call.member`, then we connect full mesh.
          * If subsequently `m.foci` are introduced into the conference, then we should transfer the call to them (effectively doing a 1:1->group call upgrade).
      * If the client does have an SFU configured, then we decide whether to use it. 
          * If other conf participants are already using it, then we use it.
          * If there are other users from our homeserver in the conference, then we use it (as presumably they should be using it too)
          * If there are no other `m.foci` (either in the `m.call` or in the participant state) then we use it.
          * Otherwise, we save bandwidth on our SFU by not cascading and instead behaving as if we had no SFU configured.
+ * We do not recommend that users utilise an SFU to hide behind for privacy, but instead use a TURN server, only providing relay candidates, rather than consuming SFU resources and unnecessarily mandating the presence of an SFU.
 
 TODO: spec how clients discover their homeserver's preferred SFU foci
 
@@ -205,13 +206,11 @@ To select a stream over this channel, the peer sends:
 }
 ```
 
-Rather than sending arrays one can send `"all"` to either `start` or `stop` to start or stop all streams.
-
 All streams are sent within a single media session (rather than us having multiple sessions or calls), and there is no difference between a peer sending simulcast streams from a webcam versus two SFUs trunking together.
 
 If no DC is established, then 1:1 calls should send all streams without prompting, and SFUs should send no streams by default.
 
-If you are using your SFU in a call, it will need to know how to connect to other SFUs present in order to participate in the fullmesh of SFU traffic (if any).  One option here is for SFUs to act as an AS and sniff the `m.room.member` traffic of their associated server, and automatically call any other `m.foci` which appear.  (They don't need to make outbound calls to clients, as clients always dial in).  Otherwise, we could consider an `"op": "connect"` command sent by clients, but then you have the problem of deciding which client(s) are responsible for reminding the SFU to connect to other SFUs.  Much better to trust the server.
+If you are using your SFU in a call, it will need to know how to connect to other SFUs present in order to participate in the fullmesh of SFU traffic (if any).  One option here is for SFUs to act as an AS and sniff the `m.call.member` traffic of their associated server, and automatically call any other `m.foci` which appear.  (They don't need to make outbound calls to clients, as clients always dial in).  Otherwise, we could consider an `"op": "connect"` command sent by clients, but then you have the problem of deciding which client(s) are responsible for reminding the SFU to connect to other SFUs.  Much better to trust the server.
 
 Also, in order to authenticate that only legitimate users are allowed to subscribe to a given conf_id on an SFU, it would make sense for the SFU to act as an AS and sniff the `m.call` events on their associated server, and only act on to-device `m.call.*` events which come from a user who is confirmed to be in the room for that `m.call`.  (In practice, if the conf is E2EE then it's of limited use to connect to the SFU without having the keys to decrypt the traffic, but this feature is desirable for non-E2EE confs and to stop bandwidth DoS)
 
@@ -248,6 +247,8 @@ Another option is to treat 1:1 (and full mesh) entirely differently to SFU based
 An alternative to to-device messages is to use DMs.  You still risk gappy sync problems though due to lots of traffic, as well as the hassle of creating DMs and requiring canonical DMs to set up the calls.  It does make debugging easier though, rather than having to track encrypted ephemeral to-device msgs.
 
 ## Security considerations
+
+State events are not encrypted currently, and so this leaks that a call is happening, and who is participating in it, and from which devices.
 
 Malicious users could try to DoS SFUs by specifying them as their foci.
 
