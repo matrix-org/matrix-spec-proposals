@@ -127,11 +127,22 @@ For instance:
                         "name": "Webcam", // optional, just to help users understand what multiple streams from the same person mean.
                         "device_id": "ASDUHDGFYUW", // just in case people ending up dialing this directly for full mesh or 1:1
                         "audio": [
-                            { "id": "zbhsbdhwe", "format": { "channels": 2, "rate": 48000, "maxbr": 32000 } },
+                            {
+                                "id": "zbhsbdhwe",
+                                "purpose": "m.usermedia",
+                                "format": { "channels": 2, "rate": 48000, "maxbr": 32000 } },
                         ],
                         "video": [
-                            { "id": "zbhsbdhzs", "format": { "res": { "width": 1280, "height": 720 }, "fps": 30, "maxbr": 512000 } },
-                            { "id": "zbhsbdhzx", "format": { "res": { "width": 320, "height": 240 }, "fps": 15, "maxbr": 48000 } },
+                            {
+                                "id": "zbhsbdhzs", 
+                                "purpose": "m.usermedia", 
+                                "format": { "res": { "width": 1280, "height": 720 }, "fps": 30, "maxbr": 512000 } 
+                            },
+                            { 
+                                "id": "zbhsbdhzx", 
+                                "purpose": "m.usermedia", 
+                                "format": { "res": { "width": 320, "height": 240 }, "fps": 15, "maxbr": 48000 }
+                            },
                         ],
                         "mosaic": {}, // for composited video streams?
                     },
@@ -140,8 +151,16 @@ For instance:
                         "name": "Screenshare", // optional
                         "device_id": "ASDUHDGFYUW",
                         "video": [
-                            { "id": "xhsbdhzs", "format": { "res": { "width": 1280, "height": 720 }, "fps": 30, "maxbr": 512000 } },
-                            { "id": "xbhsbdhzx", "format": { "res": { "width": 320, "height": 240 }, "fps": 15, "maxbr": 48000 } },
+                            { 
+                                "id": "xhsbdhzs",
+                                "purpose": "m.screenshare", 
+                                "format": { "res": { "width": 1280, "height": 720 }, "fps": 30, "maxbr": 512000 }
+                            },
+                            { 
+                                "id": "xbhsbdhzx",
+                                "purpose": "m.screenshare", 
+                                "format": { "res": { "width": 320, "height": 240 }, "fps": 15, "maxbr": 48000 }
+                            },
                         ]
                     },
                 ]
