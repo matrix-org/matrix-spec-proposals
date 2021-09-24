@@ -1593,17 +1593,15 @@ some events cannot be simply deleted, e.g. membership events, we instead
 not required by the protocol. This stripped down event is thereafter
 returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
-content from the databases. Events that have been redacted include a
-`redacted_because` key whose value is the event that caused it to be
-redacted, which may include a reason.
+content from the databases. Events that have been redacted should
+include a copy of the `m.room.redaction` event under `unsigned` as
+`redacted_because`.
 
 The exact algorithm to apply against an event is defined in the [room
 version specification](../index.html#room-versions).
 
-The server should add the event causing the redaction to the `unsigned`
-property of the redacted event, under the `redacted_because` key. When a
-client receives a redaction event it should change the redacted event in
-the same way a server does.
+When a client receives an `m.room.redaction` event, it should change
+the affected event in the same way a server does.
 
 {{% boxes/note %}}
 Redacted events can still affect the state of the room. When redacted,
