@@ -1593,9 +1593,9 @@ some events cannot be simply deleted, e.g. membership events, we instead
 not required by the protocol. This stripped down event is thereafter
 returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
-content from the databases. Events that have been redacted should
-include a copy of the `m.room.redaction` event under `unsigned` as
-`redacted_because` by the local server (not over federation).
+content from the databases. Servers should include a copy of the 
+`m.room.redaction` event under `unsigned` as `redacted_because` 
+when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
 version specification](../index.html#room-versions).
