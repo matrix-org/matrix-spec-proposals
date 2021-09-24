@@ -1595,7 +1595,7 @@ returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
 content from the databases. Events that have been redacted should
 include a copy of the `m.room.redaction` event under `unsigned` as
-`redacted_because`.
+`redacted_because` by the local server (not over federation).
 
 The exact algorithm to apply against an event is defined in the [room
 version specification](../index.html#room-versions).
