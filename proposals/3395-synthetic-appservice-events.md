@@ -159,4 +159,4 @@ is not impacted.
 
 ## Unstable prefix
 
-All keys mentioned in this document beginning with `m.` will use `uk.half-shot.mscXXXX.` as the prefix.
+All keys mentioned in this document beginning with `m.` will use `uk.half-shot.msc3395.` as the prefix.
