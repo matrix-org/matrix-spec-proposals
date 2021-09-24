@@ -165,12 +165,14 @@ paths:
             happen if the server does not know about any of the rooms listed
             as conditions, for example.
 
-            If the room is [restricted](/client-server-api/#restricted-rooms)
-            and the user meets at least one of the conditions, but the server
-            does not have permission to send invites (a prerequisite for later
-            authorisation of the `m.room.member` event) then an `errcode` of
-            `M_UNABLE_TO_GRANT_JOIN` is returned. The joining server should
-            attempt another resident server.
+            `M_UNABLE_TO_GRANT_JOIN` is returned to denote that a different
+            server should be attempted for the join. This is typically because
+            the resident server can see that the joining user satisfies one or
+            more conditions, such as in the case of
+            [restricted rooms](/client-server-api/#restricted-rooms), but the
+            resident server would be unable to meet the auth rules governing
+            `join_authorised_via_users_server` on the resulting `m.room.member`
+            event.
           schema:
             allOf:
               - $ref: "../client-server/definitions/errors/error.yaml"
