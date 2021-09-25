@@ -233,11 +233,11 @@ To select a stream over this channel, the peer sends:
     "op": "select",
     "conf_id": "cvsiu2893",
     "start": [
-        "zbhsbdhwe",
-        "zbhsbdhzs",
+        { "stream_id": "qegwy64121wqw", "track_id": "zbhsbdhwe" }
+        { "stream_id": "qegwy64121wqw", "track_id": "zbhsbdhzs" }
     ],
     "stop": [
-        "zbhsbdhxz",
+        { "stream_id": "suigv372y8378", "track_id": "xbhsbdhzs" }
     ]    
 }
 ```
