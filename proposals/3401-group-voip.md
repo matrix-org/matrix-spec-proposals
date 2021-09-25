@@ -105,7 +105,7 @@ The fields within the item in the `m.calls` contents are:
 
  * `m.call_id` - the ID of the conference the user is claiming to participate in.  If this doesn't match an unterminated `m.call` event, it should be ignored.
  * `m.foci` - Optionally, if the user wants to be contacted via an SFU rather than called directly (either 1:1 or full mesh), the user can also specify the SFUs their client(s) are connecting to.
- * `m.sources` - Optionally, the user can list the various combinations of media streams they are able to send.  This is important if connecting to an SFU, as it lets the SFU know what simulcast resolutions the sender can send.  In theory the offered SDP should include this, but if we are multiplexing all streams into the same SDP it seems likely that this will get lost, hence publishing it here.  If the conference has no SFU, this list defines the devices which other devices should connect to full-mesh in order to participate.
+ * `m.sources` - Optionally, the user can list the various media streams (and tracks within the streams) they are able to send.  This is important if connecting to an SFU, as it lets the SFU know what simulcast tracks the sender can send.  In theory the offered SDP should include this, but if we are multiplexing all streams into the same SDP it seems likely that this will get lost, hence publishing it here.  If the conference has no SFU, this list defines the devices which other devices should connect to full-mesh in order to participate.
 
 For instance:
 
@@ -123,25 +123,40 @@ For instance:
                 ],
                 "m.sources": [
                     {
-                        "id": "qegwy64121wqw",
+                        "id": "qegwy64121wqw", // WebRTC MediaStream id
+                        "purpose": "m.usermedia",
                         "name": "Webcam", // optional, just to help users understand what multiple streams from the same person mean.
                         "device_id": "ASDUHDGFYUW", // just in case people ending up dialing this directly for full mesh or 1:1
                         "audio": [
                             {
-                                "id": "zbhsbdhwe",
-                                "purpose": "m.usermedia",
-                                "format": { "channels": 2, "rate": 48000, "maxbr": 32000 } },
+                                "id": "zbhsbdhwe", // WebRTC MediaStreamTrack id
+                                "settings": { // WebRTC MediaTrackSettings object
+                                    "channelCount": 2,
+                                    "sampleRate": 48000,
+                                    "m.maxbr": 32000, // Matrix-specific extension to advertise the max bitrate of this track
+                                }
+                            },
                         ],
                         "video": [
                             {
                                 "id": "zbhsbdhzs", 
-                                "purpose": "m.usermedia", 
-                                "format": { "res": { "width": 1280, "height": 720 }, "fps": 30, "maxbr": 512000 } 
+                                "settings": {
+                                    "width": 1280,
+                                    "height": 720,
+                                    "facingMode": "user",
+                                    "frameRate": 30.0,
+                                    "m.maxbr": 512000,
+                                } 
                             },
                             { 
                                 "id": "zbhsbdhzx", 
-                                "purpose": "m.usermedia", 
-                                "format": { "res": { "width": 320, "height": 240 }, "fps": 15, "maxbr": 48000 }
+                                "settings": {
+                                    "width": 320,
+                                    "height": 240,
+                                    "facingMode": "user",
+                                    "frameRate": 15.0,
+                                    "m.maxbr": 64000,
+                                } 
                             },
                         ],
                         "mosaic": {}, // for composited video streams?
@@ -149,17 +164,19 @@ For instance:
                     {
                         "id": "suigv372y8378",
                         "name": "Screenshare", // optional
+                        "purpose": "m.screenshare", 
                         "device_id": "ASDUHDGFYUW",
                         "video": [
-                            { 
-                                "id": "xhsbdhzs",
-                                "purpose": "m.screenshare", 
-                                "format": { "res": { "width": 1280, "height": 720 }, "fps": 30, "maxbr": 512000 }
-                            },
-                            { 
-                                "id": "xbhsbdhzx",
-                                "purpose": "m.screenshare", 
-                                "format": { "res": { "width": 320, "height": 240 }, "fps": 15, "maxbr": 48000 }
+                            {
+                                "id": "xbhsbdhzs", 
+                                "settings": {
+                                    "width": 3072,
+                                    "height": 1920,
+                                    "cursor": "moving",
+                                    "displaySurface": "monitor",
+                                    "frameRate": 30.0,
+                                    "m.maxbr": 768000,
+                                } 
                             },
                         ]
                     },
@@ -170,7 +187,7 @@ For instance:
 }
 ```
 
-XXX: properly specify the formats here (webrtc constraints perhaps)?  
+This builds on MSC #3077, which describes streams in `m.call.*` events via a `sdp_stream_metadata` field, but providing the full set of information needed for all devices in the room to know what streams are available in the group call without having to independently discover them from the SFU.
 
 It's acceptable to advertise rigid formats here rather than dynamically negotiating resolution, bitrate etc, as in a group call we should just pick plausible desirable formats rather than try to please everyone.
 
