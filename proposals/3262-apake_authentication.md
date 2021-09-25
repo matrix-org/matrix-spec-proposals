@@ -41,7 +41,7 @@ and if applicable it sends the supported SRP groups, as specified by the
 [SRP specification](https://datatracker.ietf.org/doc/html/rfc5054#page-16) or 
 [rfc3526](https://datatracker.ietf.org/doc/html/rfc3526).
 
-The client then chooses an srp group and generates a random salt `s`.
+The client then chooses an srp group from the SRP specification and generates a random salt `s`.
 The client then calculates the verifier `v` as:
 
 	x = H(s, p)  
@@ -258,6 +258,8 @@ and it's a fairly old protocol.
 
 OPAQUE is the more modern protocol, which has the added benefit of not sending the salt in plain text to the client,
 but rather uses an 'Oblivious Pseudo-Random Function' and can use elliptic curves.
+
+[SCRAM](https://www.isode.com/whitepapers/scram.html) serves a similar purpose and is used by (amongst others) XMPP. SRP seems superior here because it does not store enough information server-side to make a valid authentication against the server in case the database is somehow leaked without the server being otherwise compromised.
 
 *Bitwardens scheme can be mentioned here as well, since it does allow auth without the server
 learning the plaintext password, but it isn't a PAKE, but rather something along the lines of a hash
