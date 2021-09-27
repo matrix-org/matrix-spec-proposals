@@ -282,7 +282,6 @@ Example:
     "body": "something-important.jpg",
     "file": {
       "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",
-      "mimetype": "image/jpeg",
       "v": "v2",
       "key": {
         "alg": "A256CTR",
@@ -312,7 +311,6 @@ Example:
           "key_ops": ["encrypt", "decrypt"],
           "kty": "oct"
         },
-        "mimetype": "image/jpeg",
         "url": "mxc://example.org/pmVJxyxGlmxHposwVSlOaEOv",
         "v": "v2"
       },
@@ -1019,8 +1017,8 @@ The process between Alice and Bob verifying each other would be:
    is able to scan.  Bob's client prompts displays a QR code that Alice can
    scan if Alice's client indicated the ability to scan, and an option to scan
    Alice's QR code if his client is able to scan. The format for the QR code
-   is described below. Other options, like starting SAS Emoji verification, 
-   can be presented alongside the QR code if the devices have appropriate 
+   is described below. Other options, like starting SAS Emoji verification,
+   can be presented alongside the QR code if the devices have appropriate
    support.
 5. Alice scans Bob's QR code.
 6. Alice's device ensures that the keys encoded in the QR code match the
