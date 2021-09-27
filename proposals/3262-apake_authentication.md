@@ -32,22 +32,25 @@ the client sends a GET request.
 
 ```
 {
-	"auth_types": ["password", "srp6a"]
-	"srp_groups": [supported groups]
+	"auth_types": ["password", "srp6a"],
+	"srp_groups": [supported groups],
+	"hash": [supported hashes]
 }
 ```  
 Here the server sends it's supported authentication types (in this case only password and srp6a)
 and if applicable it sends the supported SRP groups, as specified by the 
 [SRP specification](https://datatracker.ietf.org/doc/html/rfc5054#page-16) or 
-[rfc3526](https://datatracker.ietf.org/doc/html/rfc3526).
+[rfc3526](https://datatracker.ietf.org/doc/html/rfc3526). The supported hashes are a list of supported hashes
+by the server. Initially for this MSC we suggest supporting pbkdf2 and bcrypt, though this may change over time.
 
-The client then chooses an srp group from the SRP specification and generates a random salt `s`.
+The client then chooses an srp group from the SRP specification,
+and a hash function from the supported list and generates a random salt `s`.
 The client then calculates the verifier `v` as:
 
 	x = H(s, p)  
 	v = g^x
 
-Here H() is a secure hash function, and p is the user specified password, 
+Here H() is the chose secure hash function, and p is the user specified password, 
 and `g` is the generator of the selected srp group.  
 Note that all values are calculated modulo N (of the selected srp group).
 
@@ -58,14 +61,16 @@ This is then sent to the server, otherwise mimicking the password registration, 
 ```
 {
   "auth": {
-    "type": "example.type.foo",
+    "type": "m.login.srp6a",
     "session": "xxxxx",
     "example_credential": "verypoorsharedsecret"
   },
   "auth_type": "srp6a",
   "username": "cheeky_monkey",
   "verifier": v,
-  "group": [g,N],
+  "group": "selected group",
+  "hash": "H",
+  "hash_iterations": i,
   "salt": s,
   "device_id": "GHTYAJCE",
   "initial_device_display_name": "Jungle Phone",
@@ -73,7 +78,7 @@ This is then sent to the server, otherwise mimicking the password registration, 
 }
 ```
 
-The server stores the verifier, salt, and group next to the username.  
+The server stores the verifier, salt, hash function, hash iterations, and group next to the username.
 
 ### Convert from password to SRP
 
@@ -90,7 +95,9 @@ To convert to SRP we'll use the [change password endpoint](https://matrix.org/do
 {
   "auth_type": "srp6a",
   "verifier": v,
-  "group": [g,N],
+  "group": "selected group",
+  "hash": "H",
+  "hash_iterations": i,
   "salt": s,
   "logout_devices": false,
   "auth": {
@@ -144,16 +151,19 @@ The server responds with the salt and SRP group (looked up from the database), a
 
 ```
 {
-  "prime": N,
-  "generator": g,
+  "group": "selected group",
+  "hash": "H",
+  "hash_iterations": i,
   "salt": s,
   "server_value": B,
   "auth_id": "12345"
 }
 ```
-Here N is the prime and g is the generator of the SRP group. s is the stored salt for the user
-as supplied in the `POST`, B is the public server value, and auth_id is the id of this authentication flow,
-can by any unique random string, used for the server to keep track of the authentication flow.
+The client looks up N (the prime) and g (the generator) of the selected SRP group as sent by the server,
+`H` is the has algorithm used with `i` iterations.
+s is the stored salt for the user as supplied during registration, B is the public server value,
+and auth_id is the id of this authentication flow, can be any unique random string,
+used for the server to keep track of the authentication flow.
 
 the server calculates B as:
 
@@ -259,7 +269,9 @@ and it's a fairly old protocol.
 OPAQUE is the more modern protocol, which has the added benefit of not sending the salt in plain text to the client,
 but rather uses an 'Oblivious Pseudo-Random Function' and can use elliptic curves.
 
-[SCRAM](https://www.isode.com/whitepapers/scram.html) serves a similar purpose and is used by (amongst others) XMPP. SRP seems superior here because it does not store enough information server-side to make a valid authentication against the server in case the database is somehow leaked without the server being otherwise compromised.
+[SCRAM](https://www.isode.com/whitepapers/scram.html) serves a similar purpose and is used by (amongst others) XMPP. 
+SRP seems superior here because it does not store enough information server-side to make a valid authentication 
+against the server in case the database is somehow leaked without the server being otherwise compromised.
 
 *Bitwardens scheme can be mentioned here as well, since it does allow auth without the server
 learning the plaintext password, but it isn't a PAKE, but rather something along the lines of a hash
@@ -286,6 +298,19 @@ This MSC allows for authentication without the server learning the password, and
 both the server and the client to each other. This may prevent a few security issues, such as
 a CDN learning the users password. The main reason for this MSC is that later this may allow 
 the reuse of the same password for both authentication and SSSS encryption while remaining secure.
+
+Phasing out the old plain password login will take time, as older clients may still immediately
+`POST` the plaintext password to `/login` invisibly to the end user, without any checks.
+The server should then just respond with a `HTTP Status code 403`:
+
+```
+{  
+  "errcode": "M_UNAUTHORIZED",  
+  "error": "Password authentication is not supported."  
+}
+```
+
+But then the server still has access to the plain text password.
 
 ## Unstable prefix
 The following mapping will be used for identifiers in this MSC during development:
