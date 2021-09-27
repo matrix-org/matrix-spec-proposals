@@ -101,7 +101,7 @@ To convert to SRP we'll use the [change password endpoint](https://matrix.org/do
   "salt": s,
   "logout_devices": false,
   "auth": {
-    "type": "example.type.foo",
+    "type": "m.login.srp6a",
     "session": "xxxxx",
     "example_credential": "verypoorsharedsecret"
   }
