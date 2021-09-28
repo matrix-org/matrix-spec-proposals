@@ -64,18 +64,6 @@ jobs:
       - run:
           name: "Doc build is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/public/index.html"; echo $DOCS_URL
-  build-swagger:
-    docker:
-      - image: uhoreg/matrix-doc-build
-    steps:
-      - checkout
-      - run: *genswagger
-      - run: *buildswaggerui
-      - store_artifacts:
-          path: api/client-server/
-      - run:
-          name: "Swagger UI is available at:"
-          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
   build-dev-scripts:
     docker:
       - image: golang:1.10
@@ -93,7 +81,6 @@ workflows:
   build-spec:
     jobs:
       - build-docs
-      - build-swagger
       - check-docs
       - validate-docs
       - build-dev-scripts
