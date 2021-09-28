@@ -5,10 +5,10 @@
     },
     "signatures": {
         "example.com": {
-            "ed25519:key_version:": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+            "ed25519:key_version": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
         },
         "resident.example.com": {
-            "ed25519:key_version:": "a different signature"
+            "ed25519:other_key_version": "a different signature"
         }
     },
     "auth_events": [

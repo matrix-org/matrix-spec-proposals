@@ -742,7 +742,7 @@ Restricted rooms are described in detail in the
 [client-server API](/client-server-api/#restricted-rooms) and are available
 in room versions based on [v8](/rooms/v8).
 
-A resident server attempting to join a server to a restricted room must
+A resident server processing a request to join a restricted room must
 ensure that the joining server satisfies at least one of the conditions
 specified by `m.room.join_rules`. If no conditions are available, or none
 match the required schema, then the joining server is considered to have
