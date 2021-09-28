@@ -75,7 +75,7 @@ output = {
         "url": "https://{homeserver_address}/",
         "variables": {
             "homeserver_address": {
-                "default": "matrix.org",
+                "default": "matrix-client.matrix.org",
                 "description": "The base URL for your homeserver",
             }
         }
