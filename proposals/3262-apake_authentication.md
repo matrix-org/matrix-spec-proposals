@@ -33,24 +33,26 @@ the client sends a GET request.
 ```
 {
 	"auth_types": ["password", "srp6a"],
-	"srp_groups": [supported groups],
-	"hash": [supported hashes]
+	"srp": {
+	    "groups": [supported groups],
+	    "hash": [supported hashes] 
+	}
 }
 ```  
-Here the server sends it's supported authentication types (in this case only password and srp6a)
+Here the server sends it's supported authentication types (in this example only password and srp6a)
 and if applicable it sends the supported SRP groups, as specified by the 
 [SRP specification](https://datatracker.ietf.org/doc/html/rfc5054#page-16) or 
 [rfc3526](https://datatracker.ietf.org/doc/html/rfc3526). The supported hashes are a list of supported hashes
 by the server. Initially for this MSC we suggest supporting pbkdf2 and bcrypt, though this may change over time.
 
-The client then chooses an srp group from the SRP specification,
+The client then chooses a supported srp group from the SRP specification,
 and a hash function from the supported list and generates a random salt `s`.
 The client then calculates the verifier `v` as:
 
 	x = H(s, p)  
 	v = g^x
 
-Here H() is the chose secure hash function, and p is the user specified password, 
+Here H() is the chosen secure hash function, p is the user specified password, 
 and `g` is the generator of the selected srp group.  
 Note that all values are calculated modulo N (of the selected srp group).
 
@@ -83,8 +85,8 @@ The server stores the verifier, salt, hash function, hash iterations, and group 
 ### Convert from password to SRP
 
 Mimicking the flow of register above, first a GET request is sent to check if SRP is 
-supported and find the supported groups, here we'll reuse the register endpoint 
-`GET /_matrix/client/r0/register`. *Or we could add a GET endpoint for /_matrix/client/r0/account/password*
+supported and find the supported groups, and hash functions here we'll reuse the register endpoint 
+`GET /_matrix/client/r0/register`.
 
 To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password) with the 
 `"auth_type": "srp6a"` added, and the required `verifier`, `group`, and `salt`.
@@ -108,7 +110,7 @@ To convert to SRP we'll use the [change password endpoint](https://matrix.org/do
 }
 ```
 
-The server then removes the old password (or old verifier, group, and salt) and stores the new values.
+The server then removes the old password (or old verifier, hash function, hash iterations, group, and salt) and stores the new values.
 
 ### Login flow
 
@@ -196,8 +198,6 @@ The server calculates:
 Resulting in the shared session key K.
 
 To complete the authentication we need to prove to the server that the session key K is the same.
-*note that this proof is directly lifted from the [SRP spec](http://srp.stanford.edu/design.html),
-another proof can be possible as well.*
 
 The client calculates:
 
@@ -255,9 +255,6 @@ have all matrix clients refuse to login with `m.password`. This may take a long 
 moment to plant a tree is 10 years ago, the second best is today."
 The short term solution requires a good UX in clients to notify the user that they expect to
 login with SRP but the server doesn't support this.
-*My initial thought was to look at whether SSSS is set for the user, or even try to decrypt it*
-*with the given password and give a warning if this works, but the server can just lie to the*
-*client about that, leaving the user none the wiser.*
 
 SRP is vulnerable to precomputation attacks and it is incompatible with elliptic-curve cryptography.
 Matthew Green judges it as 
@@ -272,11 +269,6 @@ but rather uses an 'Oblivious Pseudo-Random Function' and can use elliptic curve
 [SCRAM](https://www.isode.com/whitepapers/scram.html) serves a similar purpose and is used by (amongst others) XMPP. 
 SRP seems superior here because it does not store enough information server-side to make a valid authentication 
 against the server in case the database is somehow leaked without the server being otherwise compromised.
-
-*Bitwardens scheme can be mentioned here as well, since it does allow auth without the server
-learning the plaintext password, but it isn't a PAKE, but rather something along the lines of a hash
-of the password before sending the hash to the server for auth, practically making the hash
-the new password, and as such it doesn't protect against a mitm.*
 
 The UIA-flow can map pretty well on the proposed login flow and would remove the need for `m.login.srp6a.init`.
 This is deemed out of scope for this MSC, but would not be hard to change later.
