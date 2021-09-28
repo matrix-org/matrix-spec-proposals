@@ -235,8 +235,8 @@ The response format is similar to the Client-Server API:
     [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>
 * **`inaccessible_children`**: Optional `[string]`. A list of room IDs which are
   children of the requested room, but are inaccessible to the requesting server.
-  The requesting server should not attempt to request information about them
-  from other servers.
+  Other servers are unlikely to have information about them as well, thus the
+  requesting server can consider the rooms inaccessible from everywhere.
 
   This is used to differentiate between rooms which the requesting server does
   not have access to from those that the target server cannot include in the
