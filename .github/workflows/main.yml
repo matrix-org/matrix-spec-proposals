@@ -64,4 +64,4 @@ jobs:
     steps:
       - name: "🪄 Triggering rebuild of matrix.org"
         run: |
-          curl -XPOST -u "${{secrets.TRIGGER_MATRIXORG_REBUILD_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ github.repository_owner }}/matrix.org/actions/workflows/build-matrix.org.yml/dispatches --data '{"ref": "${{ github.ref }}" }'
+          curl -XPOST -u "${{secrets.TRIGGER_MATRIXORG_REBUILD_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ github.repository_owner }}/matrix.org/actions/workflows/build-matrix.org.yml/dispatches --data '{"ref": "master" }'
