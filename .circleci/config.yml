@@ -16,19 +16,6 @@ genswagger: &genswagger
     scripts/check-swagger-sources.py
     scripts/dump-swagger.py
 
-buildswaggerui: &buildswaggerui
-  name: Build Swagger UI
-  command: |
-    ls scripts/
-    mkdir -p api/client-server
-    git clone https://github.com/matrix-org/swagger-ui swagger-ui
-    cp -r swagger-ui/dist/* api/client-server/
-    mkdir -p api/client-server/json
-    cp scripts/swagger/api-docs.json api/client-server/json/
-    wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/content/swagger.css -O api/client-server/swagger.css
-    wget https://raw.githubusercontent.com/matrix-org/matrix.org/master/scripts/swagger-ui.patch
-    patch api/client-server/index.html swagger-ui.patch
-
 checkexamples: &checkexamples
   name: Check Event Examples
   command: |
@@ -77,18 +64,6 @@ jobs:
       - run:
           name: "Doc build is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/public/index.html"; echo $DOCS_URL
-  build-swagger:
-    docker:
-      - image: uhoreg/matrix-doc-build
-    steps:
-      - checkout
-      - run: *genswagger
-      - run: *buildswaggerui
-      - store_artifacts:
-          path: api/client-server/
-      - run:
-          name: "Swagger UI is available at:"
-          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/api/client-server/index.html"; echo $DOCS_URL
   build-dev-scripts:
     docker:
       - image: golang:1.10
@@ -106,7 +81,6 @@ workflows:
   build-spec:
     jobs:
       - build-docs
-      - build-swagger
       - check-docs
       - validate-docs
       - build-dev-scripts
