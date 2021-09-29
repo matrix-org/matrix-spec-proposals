@@ -169,7 +169,10 @@ In the case of the homeserver not having access to the state of a room, the
 server-server API (see below) can be used to query for this information over
 federation from one of the servers provided in the `via` key of the
 `m.space.child` event. It is recommended to cache the federation response for a
-period of time and to prefer local data over data returned over federation.
+period of time. The federation results may contain information on a room
+that the requesting server is already participating in; the requesting server
+should use its local data for such rooms rather than the data returned over
+federation.
 
 When the current response page is full, the current state should be persisted
 and a pagination token should be generated (if there is more data to return).
