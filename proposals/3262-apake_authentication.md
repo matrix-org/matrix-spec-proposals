@@ -45,10 +45,16 @@ Content-Type: application/json
 {
   "flows": [
     {
-      "stages": [ "m.login.srp6a.init", "m.auth.login.verify" ]
+      "stages": [ "m.login.srp6a.register"]
     }
   ],
-  "session": "xxxxx"
+  "session": "xxxxx",
+  "params": {
+    "m.login.srp6a.register": {
+      "groups": [supported groups],
+      "hash": [supported hashes] 
+	  }
+    }
 }
 ```  
 Here the server sends it's supported authentication types (in this example only password and srp6a)
@@ -273,7 +279,7 @@ Content-Type: application/json
 {
   "flows": [
     {
-      "stages": [ "m.login.srp6a.init", "m.auth.login.verify" ]
+      "stages": [ "m.login.srp6a.init", "m.login.srp6a.verify" ]
     }
   ],
   "session": "12345"
