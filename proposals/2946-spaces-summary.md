@@ -202,7 +202,9 @@ easily known the room summary might have changed).
 
 Since the server-server API does not know the requesting user, the response should
 divulge information based on if any member of the requesting server could join
-the room. The requesting server is trusted to properly filter this information.
+the room. The requesting server is trusted to properly filter this information
+using the `world_readable`, `join_rules`, and `allowed_room_ids` fields from the
+response.
 
 If the target server is not a member of some children rooms (so would have to send
 another request over federation to inspect them), no attempt is made to recurse
