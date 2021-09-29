@@ -180,7 +180,7 @@ The persisted state will include:
 
 * The processed rooms.
 * Rooms to process (in depth-first order with rooms at the same depth
-  ordered according [according to MSC1772, as updated to below](#msc1772-ordering)).
+  ordered [according to MSC1772, as updated to below](#msc1772-ordering)).
 * Room information from federation responses for rooms which have yet to be
   processed.
 
@@ -206,7 +206,7 @@ another request over federation to inspect them), no attempt is made to recurse
 into them. They are simply omitted from the `children` key of the response.
 (Although they will still appear in the `children_state`key of the `room`.)
 
-Similarly, if a server set limit on the size of the response is reached, additional
+Similarly, if a server-set limit on the size of the response is reached, additional
 rooms are not added to the response and can be queried individually.
 
 #### Request format
@@ -310,7 +310,7 @@ This proposes changing the ordering rules from MSC1772 to the following:
 > received.
 
 This modifies the clause for calculating the order to use the `origin_server_ts`
-of the `m.space.child` event instead of the `m.room.create` event.. This allows
+of the `m.space.child` event instead of the `m.room.create` event. This allows
 for a defined sorting of siblings based purely on the information available in
 the state of the space while still allowing for a natural ordering due to the
 age of the relationship.
@@ -318,7 +318,7 @@ age of the relationship.
 ## Potential issues
 
 A large flat space (a single room with many `m.space.child` events) could cause
-a large federation response
+a large federation response.
 
 ## Alternatives
 
