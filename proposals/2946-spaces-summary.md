@@ -90,9 +90,9 @@ Query Parameters:
   with the addition of:
   * **`room_type`**: the value of the `m.type` field from the room's
     `m.room.create` event, if any.
-  * **`children_state`**: The `m.space.child` events of the room. For each event,
-    only the following fields are included<sup id="a1">[1](#f1)</sup>:
-    `type`, `state_key`, `content`, `room_id`, `sender`,  with the addition of:
+  * **`children_state`**: The stripped state of the `m.space.child` events of
+    the room per [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173).
+    In addition to the standard stripped state fields, the following is included:
     * **`origin_server_ts`**: This is required for sorting of rooms as specified
       below.
 * **`next_batch`**: Optional `string`. The token to supply in the `from` param
@@ -235,7 +235,7 @@ The response format is similar to the Client-Server API:
   * **`room_type`**: the value of the `m.type` field from the room's
     `m.room.create` event, if any.
   * **`allowed_room_ids`**: A list of room IDs which give access to this room per
-    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a2">[2](#f2)</sup>
+    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a1">[1](#f1)</sup>
 * **`inaccessible_children`**: Optional `[string]`. A list of room IDs which are
   children of the requested room, but are inaccessible to the requesting server.
   Other servers are unlikely to have information about them as well, thus the
@@ -356,12 +356,7 @@ The server-server API will be:
 
 ## Footnotes
 
-<a id="f1"/>[1]: The rationale for including stripped events here is to reduce
-potential dataleaks (e.g. timestamps, `prev_content`, etc.) and to ensure that
-clients do not treat any of this data as authoritative (e.g. if it came back
-over federation). The data should not be persisted as actual events.[↩](#a1)
-
-<a id="f2"/>[2]: As a worked example, in the context of
+<a id="f1"/>[1]: As a worked example, in the context of
 [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083), consider that Alice
 and Bob share a server; Alice is a member of a space, but Bob is not. A remote
 server will not know whether the request is on behalf of Alice or Bob (and hence
@@ -378,4 +373,4 @@ Note that there are still potential situations where each server individually
 doesn't have enough information to properly return the full summary, but these
 do not seem reasonable in what is considered a normal structure of spaces. (E.g.
 in the above example, if the remote server is not in the space and does not know
-whether the server is in the space or not it cannot return the room.)[↩](#a2)
+whether the server is in the space or not it cannot return the room.)[↩](#a1)
