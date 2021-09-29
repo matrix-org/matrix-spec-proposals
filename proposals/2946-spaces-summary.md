@@ -102,7 +102,7 @@ Query Parameters:
 #### Example request:
 
 ```text
-GET /_matrix/client/r0/rooms/{roomID}/hierarchy?
+GET /_matrix/client/r0/rooms/%21ol19s%3Ableecker.street/hierarchy?
     limit=30&
     suggested_only=true&
     max_depth=4
