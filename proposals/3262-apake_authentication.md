@@ -42,7 +42,17 @@ the client sends a GET request.
 Here the server sends it's supported authentication types (in this example only password and srp6a)
 and if applicable it sends the supported SRP groups, as specified by the 
 [SRP specification](https://datatracker.ietf.org/doc/html/rfc5054#page-16) or 
-[rfc3526](https://datatracker.ietf.org/doc/html/rfc3526). The supported hashes are a list of supported hashes
+[rfc3526](https://datatracker.ietf.org/doc/html/rfc3526). 
+The groups are referenced by name as:
+
+```
+["1536","2048","3072","4096","6144","8192","1536MODP","2048MODP",
+"3072MODP","4096MODP","6144MODP","8192MODP"]
+```
+
+Note that the ``"1024"` is explicitly excluded as it is now too small to provide practical security.
+
+The supported hashes are a list of supported hashes
 by the server. Initially for this MSC we suggest supporting pbkdf2 and bcrypt, though this may change over time.
 
 The client then chooses a supported srp group from the SRP specification,
@@ -56,7 +66,7 @@ Here H() is the chosen secure hash function, p is the user specified password,
 and `g` is the generator of the selected srp group.  
 Note that all values are calculated modulo N (of the selected srp group).
 
-This is then sent to the server, otherwise mimicking the password registration, through:
+This is then sent (base64 encoded) to the server, otherwise mimicking the password registration, through:
 
 `POST /_matrix/client/r0/register?kind=user`
 
@@ -83,13 +93,13 @@ This is then sent to the server, otherwise mimicking the password registration, 
 The server stores the verifier, salt, hash function, hash iterations, and group next to the username.
 
 ### Convert from password to SRP
-
+	
 Mimicking the flow of register above, first a GET request is sent to check if SRP is 
 supported and find the supported groups, and hash functions here we'll reuse the register endpoint 
 `GET /_matrix/client/r0/register`.
 
-To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password) with the 
-`"auth_type": "srp6a"` added, and the required `verifier`, `group`, and `salt`.
+To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password) 
+with the `"auth_type": "srp6a"` added, and the required `verifier`, `group`, and `salt`.
 
 `POST /_matrix/client/r0/account/password HTTP/1.1`
 
@@ -127,7 +137,7 @@ To start the login flow the client sends a GET request to `/_matrix/client/r0/lo
 ```
 (and any other supported login flows)
 
-Next the client sends it's username to obtain the salt and SRP group as:
+Next the client sends its username to obtain the salt and SRP group as:
 
 `POST /_matrix/client/r0/login`
 
@@ -158,13 +168,13 @@ The server responds with the salt and SRP group (looked up from the database), a
   "hash_iterations": i,
   "salt": s,
   "server_value": B,
-  "auth_id": "12345"
+  "session": "12345"
 }
 ```
 The client looks up N (the prime) and g (the generator) of the selected SRP group as sent by the server,
 `H` is the has algorithm used with `i` iterations.
 s is the stored salt for the user as supplied during registration, B is the public server value,
-and auth_id is the id of this authentication flow, can be any unique random string,
+and `session` is the session id of this authentication flow, can be any unique random string,
 used for the server to keep track of the authentication flow.
 
 the server calculates B as:
@@ -212,13 +222,13 @@ The client will then respond with:
   "type": "m.login.srp6a.verify",
   "evidence_message": M1,
   "client_value": A,
-  "auth_id": "12345"
+  "session": "12345"
 }
 ```
-Here `M1` is the client evidence message, and A is the public client value.
+Here `M1` is the (base64 encoded) client evidence message, and A is the public client value.
 Upon successful authentication (ie M1 matches) the server will respond with the regular login success status code 200:
 
-To prove the identity of the server to the client we can send back M2 as:
+To prove the identity of the server to the client we can send back M2 (base64 encoded) as:
 
 	M2 = H(A, M, K)
 
@@ -240,6 +250,131 @@ To prove the identity of the server to the client we can send back M2 as:
 ```
 
 The client verifies that M2 matches, and is subsequently logged in.
+
+### UIA flow
+
+The client starts the UIA flow by sending a post without the `auth` object, to which the server reponds with:
+
+```
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "flows": [
+    {
+      "stages": [ "m.login.srp6a.init", "m.auth.login.verify" ]
+    }
+  ],
+  "session": "12345"
+}
+```
+
+The client then sends its username to obtain the salt and SRP group as:
+
+`POST`
+
+```
+auth: {
+  "type": "m.login.srp6a.init",
+  "username": "cheeky_monkey"
+  "session": "12345"
+  }
+```
+
+If the user hasn't registered with SRP the server responds with:
+
+`Status code: 403`
+
+```
+auth: {
+  "errcode": "M_UNAUTHORIZED",
+  "error": "User has not registered with SRP."
+  }
+```
+
+The server responds with the salt and SRP group (looked up from the database), and public value `B`:
+
+```
+auth: {
+  "group": "selected group",
+  "hash": "H",
+  "hash_iterations": i,
+  "salt": s,
+  "server_value": B,
+  "session": "12345"
+  }
+```
+The client looks up N (the prime) and g (the generator) of the selected SRP group as sent by the server,
+`H` is the has algorithm used with `i` iterations.
+s is the stored salt for the user as supplied during registration, B is the public server value,
+and `session` is the session id of this authentication flow, can be any unique random string,
+used for the server to keep track of the authentication flow.
+
+the server calculates B as:
+
+	B = kv + g^b 
+
+where b is a private randomly generated value for this session (server side) and k is given as:
+
+	k = H(N, g) 
+
+The client then calculates:
+
+	A = g^a 
+where a is a private randomly generated value for this session (client side).
+
+Both then calculate:
+
+	u = H(A, B) 
+
+Next the client calculates:
+
+	x = H(s, p)  
+	S = (B - kg^x) ^ (a + ux)  
+	K = H(S)
+
+The server calculates:
+
+	S = (Av^u) ^ b  
+	K = H(S)
+
+Resulting in the shared session key K.
+
+To complete the authentication we need to prove to the server that the session key K is the same.
+
+The client calculates:
+
+	M1 = H(H(N) xor H(g), H(I), s, A, B, K)
+
+The client will then respond with:
+
+`POST`
+
+```
+auth: {
+  "type": "m.login.srp6a.verify",
+  "evidence_message": M1,
+  "client_value": A,
+  "session": "12345"
+  }
+```
+Here `M1` is the (base64 encoded) client evidence message, and A is the public client value.
+Upon successful authentication (ie M1 matches) the server will respond with the regular login success status code 200:
+
+To prove the identity of the server to the client we can send back M2 (base64 encoded) as:
+
+	M2 = H(A, M, K)
+
+```
+{
+  "evidence_message": M2
+}
+```
+
+Along with any other data expected returned by the API endpoint.
+
+The client verifies that M2 matches, and is subsequently authenticated.
+
 
 
 ## Potential issues
@@ -270,9 +405,8 @@ but rather uses an 'Oblivious Pseudo-Random Function' and can use elliptic curve
 SRP seems superior here because it does not store enough information server-side to make a valid authentication 
 against the server in case the database is somehow leaked without the server being otherwise compromised.
 
-The UIA-flow can map pretty well on the proposed login flow and would remove the need for `m.login.srp6a.init`.
-This is deemed out of scope for this MSC, but would not be hard to change later.
-
+The UIA `/login` flow as proposed by [MSC2835](https://github.com/matrix-org/matrix-doc/pull/2835) would basically remove 
+the whole `/login` part of this MSC, making it a lot simpler.
 
 ## Security considerations
 
