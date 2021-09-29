@@ -299,7 +299,7 @@ but it can only return 2 of them. It *can* reach out over federation to HS2 and
 request a space summary for Room D, but this is undesirable:
 
 * HS1 might not have the permissions to know any  of the state of Room D, so might
-  receive a 403 error.
+  receive a 404 error.
 * If we expand the example above to many rooms than this becomes expensive to
   query a remote server simply for ordering.
 
