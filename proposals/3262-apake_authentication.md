@@ -25,18 +25,30 @@ Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
 
 ### Registration flow
 
-To allow clients to discover the supported groups (and whether srp6a is supported)
-the client sends a GET request.
+Registration follows the UIA flow, which means the client starts with sending a `POST`
+with the requested username to ``
+this allow clients to discover the supported groups (and whether srp6a is supported).
 
-`GET /_matrix/client/r0/register`
-
+`POST /_matrix/client/r0/register`
 ```
 {
-	"auth_types": ["password", "srp6a"],
-	"srp": {
-	    "groups": [supported groups],
-	    "hash": [supported hashes] 
-	}
+  username: "cheeky_monkey"
+}
+```
+
+To which the server reponds with:
+
+```
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "flows": [
+    {
+      "stages": [ "m.login.srp6a.init", "m.auth.login.verify" ]
+    }
+  ],
+  "session": "xxxxx"
 }
 ```  
 Here the server sends it's supported authentication types (in this example only password and srp6a)
@@ -93,19 +105,18 @@ This is then sent (base64 encoded) to the server, otherwise mimicking the passwo
 The server stores the verifier, salt, hash function, hash iterations, and group next to the username.
 
 ### Convert from password to SRP
-	
-Mimicking the flow of register above, first a GET request is sent to check if SRP is 
-supported and find the supported groups, and hash functions here we'll reuse the register endpoint 
-`GET /_matrix/client/r0/register`.
 
-To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password) 
-with the `"auth_type": "srp6a"` added, and the required `verifier`, `group`, and `salt`.
+To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password).
+This uses the UIA flow to authenticate which as the first step return the flows, with srp support as defined in register above.
+
+After the initial UIA the last step is to send the new credentials to be stored with
+`"auth_type": "m.login.srp6a"` added, and the required `verifier`, `group`, and `salt`.
 
 `POST /_matrix/client/r0/account/password HTTP/1.1`
 
 ```
 {
-  "auth_type": "srp6a",
+  "auth_type": "m.login.srp6a",
   "verifier": v,
   "group": "selected group",
   "hash": "H",
@@ -113,7 +124,7 @@ with the `"auth_type": "srp6a"` added, and the required `verifier`, `group`, and
   "salt": s,
   "logout_devices": false,
   "auth": {
-    "type": "m.login.srp6a",
+    "type": "m.login.password",
     "session": "xxxxx",
     "example_credential": "verypoorsharedsecret"
   }
