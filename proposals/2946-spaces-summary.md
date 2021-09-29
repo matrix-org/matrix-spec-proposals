@@ -284,7 +284,7 @@ Consider the following case of a space with 3 child rooms:
 Room B   Room C   Room D
 ```
 
-Space A, Room B, and Room C are on HS1, while Room D is on HS2. HS1 has no users
+HS1 has users in Space A, Room B, and Room C, while HS2 has users in Room D. HS1 has no users
 in Room D (and thus has no state from it). Room B, C, and D do not have an
 `order` field set (and default to using the ordering rules above).
 
