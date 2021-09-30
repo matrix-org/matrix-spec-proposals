@@ -1,4 +1,4 @@
-# MSC0000 Call room room type
+# MSC3417 Call room room type
 
 [MSC3401](https://github.com/matrix-org/matrix-doc/pull/3401) defines how native
 Matrix group calls can work. It allows for immersive voice/video/call rooms.
@@ -47,4 +47,4 @@ this feels weird as the room type feels like the place where we should put this.
 
 |Stable  |Unstable                 |
 |--------|-------------------------|
-|`m.call`|`org.matrix.msc0000.call`|
+|`m.call`|`org.matrix.msc3417.call`|
