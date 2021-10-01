@@ -71,7 +71,7 @@ output = {
     # The servers value will be picked up by RapiDoc to provide a way
     # to switch API servers. Useful when one wants to test compliance
     # of their server with the API.
-    "servers": {
+    "servers": [{
         "url": "https://{homeserver_address}/",
         "variables": {
             "homeserver_address": {
@@ -79,7 +79,7 @@ output = {
                 "description": "The base URL for your homeserver",
             }
         }
-    },
+    }],
     "schemes": ["https"],
     "info": {
         "title": "Matrix Client-Server API",
