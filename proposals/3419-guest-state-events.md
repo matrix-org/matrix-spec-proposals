@@ -10,7 +10,7 @@ Let guests send arbitrary state events much like a normal user. Servers may rate
 
 ## Security considerations
 
-The only reason that guests are denied from performing certain operations is to avoid malicious unauthorised users consuming resources and causing a DoS.  In this instance, sending state events can be quite resource intensive, so if we didn't have a good use case that needed them it's be right to veto them.
+The only reason that guests are denied from performing certain operations is to avoid malicious unauthorised users consuming resources and causing a DoS.  In this instance, sending state events can be quite resource intensive, so if we didn't have a good use case that needed them it'd be right to veto them.
 
 ## Alternatives
 
