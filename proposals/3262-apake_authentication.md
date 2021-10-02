@@ -52,9 +52,10 @@ Content-Type: application/json
   "params": {
     "m.login.srp6a.register": {
       "groups": [supported groups],
+      "passwordhash": [supported hashes], 
       "hash": [supported hashes] 
 	  }
-    }
+    }		
 }
 ```  
 Here the server sends it's supported authentication types (in this example only password and srp6a)
@@ -64,23 +65,24 @@ and if applicable it sends the supported SRP groups, as specified by the
 The groups are referenced by name as:
 
 ```
-["1536","2048","3072","4096","6144","8192","1536MODP","2048MODP",
-"3072MODP","4096MODP","6144MODP","8192MODP"]
+["2048","3072","4096","6144","8192","1536MODP","2048MODP","3072MODP","4096MODP","6144MODP","8192MODP"]
 ```
 
-Note that the ``"1024"` is explicitly excluded as it is now too small to provide practical security.
+Note that the `"1024"` and `"1536"` are explicitly excluded as they are now too small to provide practical security.
 
-The supported hashes are a list of supported hashes
-by the server. Initially for this MSC we suggest supporting pbkdf2 and bcrypt, though this may change over time.
+The supported password hashes are a list of supported password hashes by the server, referred to as `PH()` throughout this MSC.
+Initially for this MSC we suggest supporting pbkdf2 and bcrypt, though this may change over time.
+The supported hashes are the hashfunctions used for all other hash calculations, referred to as `H()` throughout this MSC.
+Initially we suggest at least supporting `SHA256` and `SHA512`.
 
 The client then chooses a supported srp group from the SRP specification,
 and a hash function from the supported list and generates a random salt `s`.
 The client then calculates the verifier `v` as:
 
-	x = H(s, p)  
+	x = PH(p, s)  
 	v = g^x
 
-Here H() is the chosen secure hash function, p is the user specified password, 
+Here PH() is the chosen secure password hash function, p is the user specified password, 
 and `g` is the generator of the selected srp group.  
 Note that all values are calculated modulo N (of the selected srp group).
 
@@ -98,10 +100,13 @@ This is then sent (base64 encoded) to the server, otherwise mimicking the passwo
   "auth_type": "srp6a",
   "username": "cheeky_monkey",
   "verifier": v,
-  "group": "selected group",
-  "hash": "H",
-  "hash_iterations": i,
   "salt": s,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
   "device_id": "GHTYAJCE",
   "initial_device_display_name": "Jungle Phone",
   "inhibit_login": false
@@ -124,10 +129,13 @@ After the initial UIA the last step is to send the new credentials to be stored 
 {
   "auth_type": "m.login.srp6a",
   "verifier": v,
-  "group": "selected group",
-  "hash": "H",
-  "hash_iterations": i,
   "salt": s,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
   "logout_devices": false,
   "auth": {
     "type": "m.login.password",
@@ -180,16 +188,19 @@ The server responds with the salt and SRP group (looked up from the database), a
 
 ```
 {
-  "group": "selected group",
-  "hash": "H",
-  "hash_iterations": i,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
   "salt": s,
   "server_value": B,
   "session": "12345"
 }
 ```
 The client looks up N (the prime) and g (the generator) of the selected SRP group as sent by the server,
-`H` is the has algorithm used with `i` iterations.
+`PH` is the hash algorithm used with `i` iterations.
 s is the stored salt for the user as supplied during registration, B is the public server value,
 and `session` is the session id of this authentication flow, can be any unique random string,
 used for the server to keep track of the authentication flow.
@@ -202,6 +213,7 @@ where b is a private randomly generated value for this session (server side) and
 
 	k = H(N, g) 
 
+Here H() is a secure hash function
 The client then calculates:
 
 	A = g^a 
@@ -213,7 +225,7 @@ Both then calculate:
 
 Next the client calculates:
 
-	x = H(s, p)  
+	x = PH(p, s)  
 	S = (B - kg^x) ^ (a + ux)  
 	K = H(S)
 
@@ -247,7 +259,7 @@ Upon successful authentication (ie M1 matches) the server will respond with the 
 
 To prove the identity of the server to the client we can send back M2 (base64 encoded) as:
 
-	M2 = H(A, M, K)
+	M2 = H(A, M1, K)
 
 ```
 {
@@ -313,10 +325,13 @@ The server responds with the salt and SRP group (looked up from the database), a
 
 ```
 auth: {
-  "group": "selected group",
-  "hash": "H",
-  "hash_iterations": i,
   "salt": s,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
   "server_value": B,
   "session": "12345"
   }
@@ -346,7 +361,7 @@ Both then calculate:
 
 Next the client calculates:
 
-	x = H(s, p)  
+	x = PH(p, s)  
 	S = (B - kg^x) ^ (a + ux)  
 	K = H(S)
 
@@ -380,7 +395,7 @@ Upon successful authentication (ie M1 matches) the server will respond with the 
 
 To prove the identity of the server to the client we can send back M2 (base64 encoded) as:
 
-	M2 = H(A, M, K)
+	M2 = H(A, M1, K)
 
 ```
 {
