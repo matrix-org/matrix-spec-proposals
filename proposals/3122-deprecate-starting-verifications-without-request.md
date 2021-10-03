@@ -1,7 +1,7 @@
 # MSC3122: Deprecate starting key verifications without requesting first
 
 Currently, the [Key verification
-framework](https://spec.matrix.org/unstable/client-server-api/#key-verification-framework)
+framework](https://matrix.org/docs/spec/client_server/r0.6.1#key-verification-framework)
 allows a device to begin a verification via to-device messages by sending an
 `m.key.verification.start` event without first sending or receiving an
 `m.key.verification.request` message.  (The last sentence of the 5th paragraph
