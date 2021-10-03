@@ -1142,7 +1142,7 @@ Some examples of what should **not** be a capability are:
 -   Whether the server supports a feature in the `unstable`
     specification.
 -   Media size limits - these are handled by the
-    `/media/v3/config` API.
+    [`/config`](#get_matrixmediav3config) API.
 -   Optional encodings or alternative transports for communicating with
     the server.
 
