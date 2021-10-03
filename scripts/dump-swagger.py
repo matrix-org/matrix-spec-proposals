@@ -107,7 +107,7 @@ for filename in os.listdir(cs_api_dir):
 
         basePath = api['basePath']
         for path, methods in api["paths"].items():
-            path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
+            path = (basePath + path).replace('v3',
                                              major_version)
             for method, spec in methods.items():
                 if "tags" in spec.keys():
@@ -126,5 +126,5 @@ except OSError as e:
 with open(output_file, "w") as f:
     text = json.dumps(output, sort_keys=True, indent=4)
     text = text.replace("%CLIENT_RELEASE_LABEL%", release_label)
-    text = text.replace("%CLIENT_MAJOR_VERSION%", major_version)
+    text = text.replace("v3", major_version)
     f.write(text)

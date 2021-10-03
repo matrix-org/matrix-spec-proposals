@@ -799,7 +799,7 @@ type, it can direct the user to a web browser with the URL of a fallback
 page which will allow the user to complete that login step out-of-band
 in their web browser. The URL it should open is:
 
-    /_matrix/client/%CLIENT_MAJOR_VERSION%/auth/<auth type>/fallback/web?session=<session ID>
+    /_matrix/client/v3/auth/<auth type>/fallback/web?session=<session ID>
 
 Where `auth type` is the type name of the stage it is attempting and
 `session ID` is the ID of the session given by the homeserver.
@@ -843,7 +843,7 @@ window which will handle unknown login types:
  *     homeserverUrl: the base url of the homeserver (e.g. "https://matrix.org")
  *
  *     apiEndpoint: the API endpoint being used (e.g.
- *        "/_matrix/client/%CLIENT_MAJOR_VERSION%/account/password")
+ *        "/_matrix/client/v3/account/password")
  *
  *     loginType: the loginType being attempted (e.g. "m.login.recaptcha")
  *
@@ -879,7 +879,7 @@ function unknownLoginType(homeserverUrl, apiEndpoint, loginType, sessionID, onCo
     window.addEventListener("message", eventListener);
 
     var url = homeserverUrl +
-        "/_matrix/client/%CLIENT_MAJOR_VERSION%/auth/" +
+        "/_matrix/client/v3/auth/" +
         encodeURIComponent(loginType) +
         "/fallback/web?session=" +
         encodeURIComponent(sessionID);
@@ -1142,7 +1142,7 @@ Some examples of what should **not** be a capability are:
 -   Whether the server supports a feature in the `unstable`
     specification.
 -   Media size limits - these are handled by the
-    `/media/%CLIENT_MAJOR_VERSION%/config` API.
+    `/media/v3/config` API.
 -   Optional encodings or alternative transports for communicating with
     the server.
 
@@ -1593,8 +1593,8 @@ some events cannot be simply deleted, e.g. membership events, we instead
 not required by the protocol. This stripped down event is thereafter
 returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
-content from the databases. Servers should include a copy of the 
-`m.room.redaction` event under `unsigned` as `redacted_because` 
+content from the databases. Servers should include a copy of the
+`m.room.redaction` event under `unsigned` as `redacted_because`
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room

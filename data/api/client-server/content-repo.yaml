@@ -20,7 +20,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/media/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/media/v3
 consumes:
   - application/json
   - "*/*"

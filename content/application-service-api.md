@@ -271,11 +271,11 @@ should identify itself to the Client-Server API by providing its
 `as_token` for the `access_token` alongside the user the application
 service would like to masquerade as.
 
-Inputs:  
+Inputs:
 -   Application service token (`as_token`)
 -   User ID in the AS namespace to act as.
 
-Notes:  
+Notes:
 -   This applies to all aspects of the Client-Server API, except for
     Account Management.
 -   The `as_token` is inserted into `access_token` which is usually
@@ -295,7 +295,7 @@ by the `sender_localpart` property of the registration.
 
 An example request would be:
 
-    GET /_matrix/client/%CLIENT_MAJOR_VERSION%/account/whoami?user_id=@_irc_user:example.org
+    GET /_matrix/client/v3/account/whoami?user_id=@_irc_user:example.org
     Authorization: Bearer YourApplicationServiceTokenHere
 
 #### Timestamp massaging
@@ -325,7 +325,7 @@ achieved by including the `as_token` on a `/register` request, along
 with a login type of `m.login.application_service` to set the desired
 user ID without a password.
 
-    POST /_matrix/client/%CLIENT_MAJOR_VERSION%/register
+    POST /_matrix/client/v3/register
     Authorization: Bearer YourApplicationServiceTokenHere
 
     Content:

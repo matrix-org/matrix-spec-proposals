@@ -159,7 +159,7 @@ the generic `/redirect` endpoint instead of the `/redirect/{idpId}` endpoint.
 ###### Redirecting to the Authentication server
 
 The server should handle
-`/_matrix/client/%CLIENT_MAJOR_VERSION%/login/sso/redirect` as follows:
+`/_matrix/client/v3/login/sso/redirect` as follows:
 
 1.  It should build a suitable request for the SSO system.
 2.  It should store enough state that the flow can be securely resumed
@@ -197,7 +197,7 @@ The homeserver then proceeds as follows:
     around five seconds.
 4.  The homeserver adds a query parameter of `loginToken`, with the
     value of the generated login token, to the `redirectUrl` given in
-    the `/_matrix/client/%CLIENT_MAJOR_VERSION%/login/sso/redirect`
+    the `/_matrix/client/v3/login/sso/redirect`
     request. (Note: `redirectURL` may or may not include existing query
     parameters. If it already includes one or more `loginToken`
     parameters, they should be removed before adding the new one.)
@@ -219,7 +219,7 @@ The homeserver then proceeds as follows:
     are happy to grant access to their matrix account to the site named
     in the `redirectUrl`. This can be done either *before* redirecting
     to the SSO login page when handling the
-    `/_matrix/client/%CLIENT_MAJOR_VERSION%/login/sso/redirect`
+    `/_matrix/client/v3/login/sso/redirect`
     endpoint, or *after* login when handling the callback from the
     authentication server. (If the check is performed before
     redirecting, it is particularly important that the homeserver guards
@@ -232,7 +232,7 @@ The homeserver then proceeds as follows:
 2.  For added security, homeservers SHOULD guard against unsolicited
     authentication attempts by tracking pending requests. One way to do
     this is to set a cookie when handling
-    `/_matrix/client/%CLIENT_MAJOR_VERSION%/login/sso/redirect`, which
+    `/_matrix/client/v3/login/sso/redirect`, which
     is checked and cleared when handling the callback from the
     authentication server.
 
@@ -254,7 +254,7 @@ Clients do not need to take any particular additional steps beyond
 ensuring that the fallback mechanism has been implemented, and treating
 the `m.login.sso` authentication type the same as any other unknown type
 (i.e. they should open a browser window for
-`/_matrix/client/%CLIENT_MAJOR_VERSION%/auth/m.login.sso/fallback/web?session=<session_id>`.
+`/_matrix/client/v3/auth/m.login.sso/fallback/web?session=<session_id>`.
 Once the flow has completed, the client retries the request with the
 session only.)
 
@@ -263,9 +263,9 @@ session only.)
 ##### Redirecting to the Authentication server
 
 The server should handle
-`/_matrix/client/%CLIENT_MAJOR_VERSION%/auth/m.login.sso/fallback/web`
+`/_matrix/client/v3/auth/m.login.sso/fallback/web`
 in much the same way as
-`/_matrix/client/%CLIENT_MAJOR_VERSION%/login/sso/redirect`, which is to
+`/_matrix/client/v3/login/sso/redirect`, which is to
 say:
 
 1.  It should build a suitable request for the SSO system.
@@ -312,7 +312,7 @@ fallback completion](#fallback) page to the user's browser.
 
     This confirmation could take place before redirecting to the SSO
     authentication page (when handling the
-    `/_matrix/client/%CLIENT_MAJOR_VERSION%/auth/m.login.sso/fallback/web`
+    `/_matrix/client/v3/auth/m.login.sso/fallback/web`
     endpoint), or *after* authentication when handling the callback from
     the authentication server. (If the check is performed before
     redirecting, it is particularly important that the homeserver guards
@@ -321,6 +321,6 @@ fallback completion](#fallback) page to the user's browser.
 2.  For added security, homeservers SHOULD guard against unsolicited
     authentication attempts by tracking pending requests. One way to do
     this is to set a cookie when handling
-    `/_matrix/client/%CLIENT_MAJOR_VERSION%/auth/m.login.sso/fallback/web`,
+    `/_matrix/client/v3/auth/m.login.sso/fallback/web`,
     which is checked and cleared when handling the callback from the
     authentication server.
