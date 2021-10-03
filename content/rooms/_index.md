@@ -20,34 +20,25 @@ versions by "upgrading" to the desired version. Due to versions not
 being ordered or hierarchical, this means a room can "upgrade" from
 version 2 to version 1, if it is so desired.
 
-## Room version grammar
+## Feature matrix
 
-Room versions are used to change properties of rooms that may not be
-compatible with other servers. For example, changing the rules for event
-authorization would cause older servers to potentially end up in a
-split-brain situation due to not understanding the new rules.
+Some functionality is only available in specific room versions, such
+as knocking. The table below shows which versions support which features
+from a client's perspective. Server implementation are still welcome
+to reference the following table, however the detailed per-version
+specifications are more likely to be of interest.
 
-A room version is defined as a string of characters which MUST NOT
-exceed 32 codepoints in length. Room versions MUST NOT be empty and
-SHOULD contain only the characters `a-z`, `0-9`, `.`, and `-`.
+<!--
+Dev note: When the room version columns get overwhelming, merge versions
+1 through 6 as "1 ... 6" or similar given they don't add any features.
 
-Room versions are not intended to be parsed and should be treated as
-opaque identifiers. Room versions consisting only of the characters
-`0-9` and `.` are reserved for future versions of the Matrix protocol.
+Alternatively, consider flipping the column/row organization to be features
+up top and versions on the left.
+-->
 
-The complete grammar for a legal room version is:
-
-    room_version = 1*room_version_char
-    room_version_char = DIGIT
-                      / %x61-7A         ; a-z
-                      / "-" / "."
-
-Examples of valid room versions are:
-
--   `1` (would be reserved by the Matrix protocol)
--   `1.2` (would be reserved by the Matrix protocol)
--   `1.2-beta`
--   `com.example.version`
+| Feature \ Version | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|-------------------|---|---|---|---|---|---|---|
+| **Knocking**      | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✔ |
 
 ## Complete list of room versions
 
@@ -77,3 +68,32 @@ The available room versions are:
 -   [Version 6](/rooms/v6) - **Stable**. Alters several
     authorization rules for events.
 -   [Version 7](/rooms/v7) - **Stable**. Introduces knocking.
+
+## Room version grammar
+
+Room versions are used to change properties of rooms that may not be
+compatible with other servers. For example, changing the rules for event
+authorization would cause older servers to potentially end up in a
+split-brain situation due to not understanding the new rules.
+
+A room version is defined as a string of characters which MUST NOT
+exceed 32 codepoints in length. Room versions MUST NOT be empty and
+SHOULD contain only the characters `a-z`, `0-9`, `.`, and `-`.
+
+Room versions are not intended to be parsed and should be treated as
+opaque identifiers. Room versions consisting only of the characters
+`0-9` and `.` are reserved for future versions of the Matrix protocol.
+
+The complete grammar for a legal room version is:
+
+    room_version = 1*room_version_char
+    room_version_char = DIGIT
+                      / %x61-7A         ; a-z
+                      / "-" / "."
+
+Examples of valid room versions are:
+
+-   `1` (would be reserved by the Matrix protocol)
+-   `1.2` (would be reserved by the Matrix protocol)
+-   `1.2-beta`
+-   `com.example.version`

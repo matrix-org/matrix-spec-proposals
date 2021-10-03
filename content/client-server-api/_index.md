@@ -1593,8 +1593,8 @@ some events cannot be simply deleted, e.g. membership events, we instead
 not required by the protocol. This stripped down event is thereafter
 returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
-content from the databases. Servers should include a copy of the 
-`m.room.redaction` event under `unsigned` as `redacted_because` 
+content from the databases. Servers should include a copy of the
+`m.room.redaction` event under `unsigned` as `redacted_because`
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
@@ -1730,7 +1730,7 @@ This room can only be joined if you were invited.
 `knock`
 This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
-to rooms based upon [room version 7](/rooms/v7).
+in room versions [which support knocking](/rooms/#feature-matrix).
 
 The allowable state transitions of membership are:
 
