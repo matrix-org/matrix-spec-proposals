@@ -437,7 +437,7 @@ paths:
           type: string
           description: |-
              The desired start point of the list. Should be the `next_batch` field
-             from a response to an earlier call to [`/sync`](/client-server-api/#get_matrixclientr0sync). Users who have not
+             from a response to an earlier call to [`/sync`](/client-server-api/#get_matrixclientv3sync). Users who have not
              uploaded new device identity keys since this point, nor deleted
              existing devices with identity keys since then, will be excluded
              from the results.
@@ -448,7 +448,7 @@ paths:
           type: string
           description: |-
              The desired end point of the list. Should be the `next_batch`
-             field from a recent call to [`/sync`](/client-server-api/#get_matrixclientr0sync) - typically the most recent
+             field from a recent call to [`/sync`](/client-server-api/#get_matrixclientv3sync) - typically the most recent
              such call. This may be used by the server as a hint to check its
              caches are up to date.
           required: true

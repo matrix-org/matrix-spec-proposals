@@ -22,7 +22,7 @@ paths:
 
         This endpoint was deprecated in r0 of this specification. There is no
         direct replacement; the relevant information is returned by the
-        [`/sync`](/client-server-api/#get_matrixclientr0sync) API. See the
+        [`/sync`](/client-server-api/#get_matrixclientv3sync) API. See the
         [migration guide](https://matrix.org/docs/guides/migrating-from-client-server-api-v-1#deprecated-endpoints).
       operationId: roomInitialSync
       security:
@@ -99,7 +99,7 @@ paths:
                     type: string
                     description: |-
                       A token which correlates to the start of `chunk`. Can be passed to
-                      [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+                      [`/rooms/<room_id>/messages`](#get_matrixclientv3roomsroomidmessages)
                       to retrieve earlier events.
 
                       If no earlier events are available, this property may be omitted from
@@ -108,7 +108,7 @@ paths:
                     type: string
                     description: |-
                       A token which correlates to the end of `chunk`. Can be passed to
-                      [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+                      [`/rooms/<room_id>/messages`](#get_matrixclientv3roomsroomidmessages)
                       to retrieve later events.
                   chunk:
                     type: array

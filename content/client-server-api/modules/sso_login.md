@@ -47,12 +47,12 @@ buttons. These are known as "identity providers" (IdPs).
 
 An overview of the process is as follows:
 
-1.  The Matrix client calls [`GET /login`](/client-server-api/#get_matrixclientr0login) to find the supported login
+1.  The Matrix client calls [`GET /login`](/client-server-api/#get_matrixclientv3login) to find the supported login
     types, and the homeserver includes a flow with
     `"type": "m.login.sso"` in the response.
 2.  To initiate the `m.login.sso` login type, the Matrix client
     instructs the user's browser to navigate to the
-    [`/login/sso/redirect`](/client-server-api/#get_matrixclientr0loginssoredirect) endpoint on the user's homeserver.
+    [`/login/sso/redirect`](/client-server-api/#get_matrixclientv3loginssoredirect) endpoint on the user's homeserver.
     Note that this may be the IdP-dependent version of the endpoint if the
     user has selected one of the `identity_providers` from the flow.
 3.  The homeserver responds with an HTTP redirect to the SSO user
@@ -63,7 +63,7 @@ An overview of the process is as follows:
 5.  The browser is directed to the `redirectUrl` provided by the client
     with a `loginToken` query parameter for the client to log in with.
 6.  The client exchanges the login token for an access token by calling
-    the [`/login`](/client-server-api/#post_matrixclientr0login) endpoint with a `type` of `m.login.token`.
+    the [`/login`](/client-server-api/#post_matrixclientv3login) endpoint with a `type` of `m.login.token`.
 
 For native applications, typically steps 1 to 4 are carried out by
 opening an embedded web view.
@@ -108,8 +108,8 @@ otherwise the same.
 ##### Client behaviour
 
 The client starts the process by instructing the browser to navigate to
-[`/login/sso/redirect`](/client-server-api/#get_matrixclientr0loginssoredirect)
-(or [`/login/sso/redirect/{idpId}`](/client-server-api/#get_matrixclientr0loginssoredirectidpid)
+[`/login/sso/redirect`](/client-server-api/#get_matrixclientv3loginssoredirect)
+(or [`/login/sso/redirect/{idpId}`](/client-server-api/#get_matrixclientv3loginssoredirectidpid)
 when using one of the `identity_providers`)
 with an appropriate `redirectUrl`. Once
 authentication is successful, the browser will be redirected to that
@@ -193,7 +193,7 @@ The homeserver then proceeds as follows:
     registered as a new user.
 3.  The homeserver should generate a short-term login token. This is an
     opaque token, suitable for use with the `m.login.token` type of the
-    [`/login`](/client-server-api/#post_matrixclientr0login) API. The lifetime of this token SHOULD be limited to
+    [`/login`](/client-server-api/#post_matrixclientv3login) API. The lifetime of this token SHOULD be limited to
     around five seconds.
 4.  The homeserver adds a query parameter of `loginToken`, with the
     value of the generated login token, to the `redirectUrl` given in
