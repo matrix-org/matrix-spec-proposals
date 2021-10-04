@@ -992,6 +992,8 @@ user-signing keys.
 
 ##### QR codes
 
+{{% added-in v="1.1" %}}
+
 Verifying by QR codes provides a quick way to verify when one of the parties
 has a device capable of scanning a QR code. The QR code encodes both parties'
 master signing keys as well as a random shared secret that is used to allow

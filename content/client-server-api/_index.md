@@ -1039,9 +1039,9 @@ This returns an HTML and JavaScript page which can perform the entire
 login process. The page will attempt to call the JavaScript function
 `window.onLogin` when login has been successfully completed.
 
-Non-credential parameters valid for the `/login` endpoint can be
-provided as query string parameters here. These are to be forwarded to
-the login endpoint during the login process. For example:
+{{% added-in v="1.1" %}} Non-credential parameters valid for the `/login`
+endpoint can be provided as query string parameters here. These are to be
+forwarded to the login endpoint during the login process. For example:
 
     GET /_matrix/static/client/login/?device_id=GHTYAJCE
 
@@ -1593,8 +1593,8 @@ some events cannot be simply deleted, e.g. membership events, we instead
 not required by the protocol. This stripped down event is thereafter
 returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
-content from the databases. Servers should include a copy of the 
-`m.room.redaction` event under `unsigned` as `redacted_because` 
+content from the databases. Servers should include a copy of the
+`m.room.redaction` event under `unsigned` as `redacted_because`
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
@@ -1745,6 +1745,8 @@ The allowable state transitions of membership are:
 {{% http-api spec="client-server" api="joining" %}}
 
 ##### Knocking on rooms
+
+{{% added-in v="1.1" %}}
 
 <!--
 This section is here because it's most similar to being invited/joining a

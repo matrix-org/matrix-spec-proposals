@@ -15,7 +15,7 @@ room itself such as a room name and topic.
 
 {{% event event="m.room.message.feedback" %}}
 
-Usage of this event is discouraged for several reasons:  
+Usage of this event is discouraged for several reasons:
 -   The number of feedback events will grow very quickly with the number
     of users in the room. This event provides no way to "batch"
     feedback, unlike the [receipts module](#receipts).
@@ -62,25 +62,25 @@ listed for the tags below. Where `data-mx-bg-color` and `data-mx-color`
 are listed, clients should translate the value (a 6-character hex color
 code) to the appropriate CSS/attributes for the tag.
 
-`font`  
+`font`
 `data-mx-bg-color`, `data-mx-color`, `color`
 
-`span`  
-`data-mx-bg-color`, `data-mx-color`, `data-mx-spoiler` (see 
+`span`
+`data-mx-bg-color`, `data-mx-color`, `data-mx-spoiler` (see
 [spoiler messages](#spoiler-messages))
 
-`a`  
+`a`
 `name`, `target`, `href` (provided the value is not relative and has a
 scheme matching one of: `https`, `http`, `ftp`, `mailto`, `magnet`)
 
-`img`  
+`img`
 `width`, `height`, `alt`, `title`, `src` (provided it is a [Matrix
 Content (MXC) URI](#matrix-content-mxc-uris))
 
-`ol`  
+`ol`
 `start`
 
-`code`  
+`code`
 `class` (only classes which start with `language-` for syntax
 highlighting)
 
@@ -464,14 +464,16 @@ text should be `"sent a video."`. For `m.audio`, the text should be
 
 ##### Spoiler messages
 
-Parts of a message can be hidden visually from the user through use of spoilers. 
-This does not affect the server's representation of the event content - it 
-is simply a visual cue to the user that the message may reveal important 
+{{% added-in v="1.1" %}}
+
+Parts of a message can be hidden visually from the user through use of spoilers.
+This does not affect the server's representation of the event content - it
+is simply a visual cue to the user that the message may reveal important
 information about something, spoiling any relevant surprise.
 
-To send spoilers clients MUST use the `formatted_body` and therefore the 
+To send spoilers clients MUST use the `formatted_body` and therefore the
 `org.matrix.custom.html` format, described above. This makes spoilers valid on
-any `msgtype` which can support this format appropriately. 
+any `msgtype` which can support this format appropriately.
 
 Spoilers themselves are contained with `span` tags, with the reason (optionally)
 being in the `data-mx-spoiler` attribute. Spoilers without a reason must at least
