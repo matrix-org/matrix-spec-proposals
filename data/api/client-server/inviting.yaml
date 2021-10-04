@@ -72,6 +72,7 @@ paths:
                 type: string
                 description: The fully qualified user ID of the invitee.
               reason:
+                addedInMatrixVersion: {v: 1.1}
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent

@@ -64,6 +64,7 @@ properties:
         description: Flag indicating if the room containing this event was created with the intention of being a direct chat. See [Direct Messaging](/client-server-api/#direct-messaging).
         type: boolean
       reason:
+        addedInMatrixVersion: {v: 1.1}
         type: string
         description: |-
           Optional user-supplied text for why their membership has changed. For kicks and bans, this is typically the reason for the kick or ban.
