@@ -29,6 +29,7 @@ securityDefinitions:
 paths:
   "/make_knock/{roomId}/{userId}":
     get:
+      addedInMatrixVersion: {v: 1.1}
       summary: Get information required to make a knock event for a room.
       description: |-
         Asks the receiving server to return information that the sending
@@ -190,6 +191,7 @@ paths:
 
   "/send_knock/{roomId}/{eventId}":
     put:
+      addedInMatrixVersion: {v: 1.1}
       summary: Submit a signed knock event to a resident server.
       description: |-
         Submits a signed knock event to the resident server for it to

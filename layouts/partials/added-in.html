@@ -1,0 +1,16 @@
+{{ $ver := .v }}
+{{ $priorTo := .priorTo }}
+{{ $this := .this }}
+
+{{/*
+    This differs from the shortcode added-in by wanting to be a block instead of inline
+    and by slightly altering the rendered text as a result.
+*/}}
+
+{{ if $this }}
+  **New in this version.**
+{{ else if $priorTo }}
+  **Added in a version prior to `v{{ $priorTo }}`**
+{{ else }}
+  **Added in `v{{ $ver }}`**
+{{ end }}

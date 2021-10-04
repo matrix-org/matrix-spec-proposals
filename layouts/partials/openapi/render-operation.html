@@ -39,6 +39,12 @@
     {{ partial "alert" (dict "type" "warning" "omit_title" "true" "content" "This API is deprecated and will be removed from a future release.") }}
 {{ end }}
 
+{{ if $operation_data.addedInMatrixVersion }}
+  {{ partial "added-in" $operation_data.addedInMatrixVersion }}
+{{ else }}
+  {{ partial "added-in" (dict "priorTo" "1.1") }}
+{{ end }}
+
 <p>{{ $operation_data.description | markdownify }}</p>
 
 </summary>

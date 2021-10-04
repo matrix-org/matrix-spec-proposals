@@ -25,6 +25,12 @@
 
   <hr/>
 
+{{ if $event_data.addedInMatrixVersion }}
+  {{ partial "added-in" $event_data.addedInMatrixVersion }}
+{{ else }}
+  {{ partial "added-in" (dict "priorTo" "1.1") }}
+{{ end }}
+
 {{ $event_data.description | markdownify }}
 
 </summary>

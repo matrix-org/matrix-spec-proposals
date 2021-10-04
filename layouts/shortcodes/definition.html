@@ -37,6 +37,12 @@
 
 <hr/>
 
+{{ if $definition.addedInMatrixVersion }}
+  {{ partial "added-in" $definition.addedInMatrixVersion }}
+{{ else }}
+  {{ partial "added-in" (dict "priorTo" "1.1") }}
+{{ end }}
+
 {{ $definition.description | markdownify }}
 
 </summary>

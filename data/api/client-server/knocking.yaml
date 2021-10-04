@@ -29,6 +29,7 @@ securityDefinitions:
 paths:
   "/knock/{roomIdOrAlias}":
     post:
+      addedInMatrixVersion: {v: 1.1}
       summary: Knock on a room, requesting permission to join.
       description: |-
         *Note that this API takes either a room ID or alias, unlike other membership APIs.*
