@@ -88,6 +88,20 @@ If matrix.to were to offer an API into this, it'd also need to access the same i
 this proposal. In fact, the public view for matrix.to already loops through the room directory to try
 and resolve a room preview where an API like this could instead be used.
 
+### [MSC3266](https://github.com/matrix-org/matrix-doc/pull/3266)
+
+*Author's note*: MSC3266 was discovered after this proposal was opened, so is considered an alternative
+rather than taking the details of this MSC and commenting them all over MSC3266. GitHub search failed
+to identify the competing MSC.
+
+MSC3266 introduces effectively the same idea, though with slightly different mechanics and shape. The
+major difference is that this proposal works off the idea of stripped state whereas MSC3266 relies upon
+its own mechanics. The shape of this MSC is a bit more representative of the long term approach for
+stripped state events where adding new information doesn't require adding new fields to several endpoints.
+
+Updating or altering MSC3266 to take into account the new stripped state guidelines would be suitable as
+well.
+
 ## Security considerations
 
 This new endpoint exposes public information about a room that not everyone is comfortable with sharing.
