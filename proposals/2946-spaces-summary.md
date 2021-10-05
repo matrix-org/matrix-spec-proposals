@@ -176,8 +176,8 @@ federation.
 
 When the current response page is full, the current state should be persisted
 and a pagination token should be generated (if there is more data to return).
-If the client does not request the next page after a short period of time the
-persisted data may be discarded to limit resource usage.
+To prevent resource exhaustion, the server may expire persisted data that it
+deems to be stale.
 
 The persisted state will include:
 
