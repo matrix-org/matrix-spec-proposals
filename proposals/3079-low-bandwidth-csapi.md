@@ -177,14 +177,13 @@ handshake.
 
 ### Versioning
 
-In order to aid discovery, servers MUST add an extra key to `/_matrix/client/r0/versions` which indicates
+In order to aid discovery, servers MUST add an extra key to `/_matrix/client/versions` which indicates
 which low bandwidth features are supported on this server. This object looks like:
 ```
 "m.low_bandwidth": {
   "dtls": 8008,            // advertise that this server runs a UDP listener for DTLS here.
   "cbor_enum_version": 1,  // which table is used for integer keys. This proposal is version 1. Omission indicates no support.
-  "coap_enum_version": 1,  // which table is used for coap path enums. This proposal is version 1. Omission indicates no support.
-  "observe": 1,            // Set to 1 if /sync supports OBSERVE. Omission indicates no support for OBSERVE.
+  "coap_enum_version": 1  // which table is used for coap path enums. This proposal is version 1. Omission indicates no support.
 }
 ```
 
