@@ -65,12 +65,8 @@ In some cases, the schema will have HTTP response code definitions like
 `2xx`, `3xx`, and `4xx`. These indicate that a response code within those
 ranges (`2xx` = `200` to `299`) is valid for the schema.
 
-## Custom `addedInMatrixVersion` key
+## Custom `x-addedInMatrixVersion` key
 
 This property is added throughout the OpenAPI schemas to denote which version
 of the Matrix specification added the associated object (endpoint, parameter,
 property, etc).
-
-The value of `addedInMatrixVersion` maps directly to the `added-in` shortcode
-and partial for the spec rendering. It will typically be an object with a single
-key `v` to point at the Matrix specification version.
