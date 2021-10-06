@@ -38,9 +38,7 @@
 <hr/>
 
 {{ if $definition.addedInMatrixVersion }}
-  {{ partial "added-in" $definition.addedInMatrixVersion }}
-{{ else }}
-  {{ partial "added-in" (dict "priorTo" "1.1") }}
+  {{ partial "added-in" (dict "v" $definition.addedInMatrixVersion) }}
 {{ end }}
 
 {{ $definition.description | markdownify }}

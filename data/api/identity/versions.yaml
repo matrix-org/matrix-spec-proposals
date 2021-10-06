@@ -24,7 +24,7 @@ produces:
 paths:
   "/versions":
     get:
-      addedInMatrixVersion: {v: 1.1}
+      addedInMatrixVersion: "1.1"
       summary: Gets the versions of the specification supported by the server.
       description: |-
         Gets the versions of the specification supported by the server.

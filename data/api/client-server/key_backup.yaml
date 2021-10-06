@@ -29,7 +29,7 @@ securityDefinitions:
 paths:
   "/room_keys/version":
     post:
-      addedInMatrixVersion: {v: 1.1}
+      addedInMatrixVersion: "1.1"
       summary: Create a new backup.
       description: |-
         Creates a new backup.
@@ -158,7 +158,7 @@ paths:
         - End-to-end encryption
   "/room_keys/version/{version}":
     get:
-      addedInMatrixVersion: {v: 1.1}
+      addedInMatrixVersion: "1.1"
       summary: Get information about an existing backup.
       description: |-
         Get information about an existing backup.
@@ -736,7 +736,7 @@ paths:
         - End-to-end encryption
   "/room_keys/keys":
     put:
-      addedInMatrixVersion: {v: 1.1}
+      addedInMatrixVersion: "1.1"
       summary: Store several keys in the backup.
       description: |-
         Store several keys in the backup.

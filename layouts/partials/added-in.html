@@ -1,5 +1,4 @@
 {{ $ver := .v }}
-{{ $priorTo := .priorTo }}
 {{ $this := .this }}
 
 {{/*
@@ -9,8 +8,6 @@
 
 {{ if $this }}
   **New in this version.**
-{{ else if $priorTo }}
-  **Added in a version prior to `v{{ $priorTo }}`**
 {{ else }}
   **Added in `v{{ $ver }}`**
 {{ end }}

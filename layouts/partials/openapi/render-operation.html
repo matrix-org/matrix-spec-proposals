@@ -40,9 +40,7 @@
 {{ end }}
 
 {{ if $operation_data.addedInMatrixVersion }}
-  {{ partial "added-in" $operation_data.addedInMatrixVersion }}
-{{ else }}
-  {{ partial "added-in" (dict "priorTo" "1.1") }}
+  {{ partial "added-in" (dict "v" $operation_data.addedInMatrixVersion) }}
 {{ end }}
 
 <p>{{ $operation_data.description | markdownify }}</p>

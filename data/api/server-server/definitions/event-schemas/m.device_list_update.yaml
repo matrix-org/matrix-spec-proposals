@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-addedInMatrixVersion: {v: 1.1}
+addedInMatrixVersion: "1.1"
 type: object
 title: m.device_list_update
 description: |-
