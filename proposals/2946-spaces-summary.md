@@ -47,7 +47,7 @@ handle this gracefully. Similarly, note that a child room might appear multiple
 times (e.g. also be a grandchild). Clients and servers should handle this
 appropriately.
 
-This endpoint requires authentication and is not subject to rate-limiting.
+This endpoint requires authentication and is subject to rate-limiting.
 
 #### Request format
 
