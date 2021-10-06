@@ -461,7 +461,7 @@ paths:
                   },
                   "knock": {
                     "!223asd456:example.com": {
-                      "invite_state": {
+                      "knock_state": {
                         "events": [
                           {
                             "sender": "@alice:example.com",
