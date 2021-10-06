@@ -29,12 +29,6 @@ validateapi: &validateapi
     npm install
     node validator.js -s "../data/api/client-server"
 
-buildspeculator: &buildspeculator
-  name: Build Speculator
-  command: |
-    cd scripts/speculator
-    go build -v
-
 version: 2
 jobs:
   validate-docs:
@@ -64,16 +58,6 @@ jobs:
       - run:
           name: "Doc build is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/public/index.html"; echo $DOCS_URL
-  build-dev-scripts:
-    docker:
-      - image: golang:1.10
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: |
-            go get -v github.com/hashicorp/golang-lru
-      - run: *buildspeculator
 
 workflows:
   version: 2
@@ -83,7 +67,6 @@ workflows:
       - build-docs
       - check-docs
       - validate-docs
-      - build-dev-scripts
 
 notify:
   webhooks:
