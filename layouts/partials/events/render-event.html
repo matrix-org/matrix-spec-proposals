@@ -25,8 +25,8 @@
 
   <hr/>
 
-{{ if $event_data.addedInMatrixVersion }}
-  {{ partial "added-in" (dict "v" $event_data.addedInMatrixVersion) }}
+{{ if (index $event_data "x-addedInMatrixVersion") }}
+  {{ partial "added-in" (dict "v" (index $event_data "x-addedInMatrixVersion")) }}
 {{ end }}
 
 {{ $event_data.description | markdownify }}

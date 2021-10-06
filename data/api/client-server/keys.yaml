@@ -238,7 +238,7 @@ paths:
                       }
                     }
               master_keys:
-                addedInMatrixVersion: "1.1"
+                x-addedInMatrixVersion: "1.1"
                 type: object
                 description: |-
                   Information on the master cross-signing keys of the queried users.
@@ -260,7 +260,7 @@ paths:
                   }
                 }
               self_signing_keys:
-                addedInMatrixVersion: "1.1"
+                x-addedInMatrixVersion: "1.1"
                 type: object
                 description: |-
                   Information on the self-signing keys of the queried users. A map

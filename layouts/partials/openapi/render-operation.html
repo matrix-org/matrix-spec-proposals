@@ -39,8 +39,8 @@
     {{ partial "alert" (dict "type" "warning" "omit_title" "true" "content" "This API is deprecated and will be removed from a future release.") }}
 {{ end }}
 
-{{ if $operation_data.addedInMatrixVersion }}
-  {{ partial "added-in" (dict "v" $operation_data.addedInMatrixVersion) }}
+{{ if (index $operation_data "x-addedInMatrixVersion") }}
+  {{ partial "added-in" (dict "v" (index $operation_data "x-addedInMatrixVersion")) }}
 {{ end }}
 
 <p>{{ $operation_data.description | markdownify }}</p>

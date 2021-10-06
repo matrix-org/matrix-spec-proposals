@@ -29,7 +29,7 @@ securityDefinitions:
 paths:
   "/keys/device_signing/upload":
     post:
-      addedInMatrixVersion: "1.1"
+      x-addedInMatrixVersion: "1.1"
       summary: Upload cross-signing keys.
       description: |-
         Publishes cross-signing keys for the user.
@@ -141,7 +141,7 @@ paths:
         - End-to-end encryption
   "/keys/signatures/upload":
     post:
-      addedInMatrixVersion: "1.1"
+      x-addedInMatrixVersion: "1.1"
       summary: Upload cross-signing signatures.
       description: |-
         Publishes cross-signing signatures for the user.  The request body is a

@@ -62,7 +62,7 @@ paths:
             }
             properties:
               reason:
-                addedInMatrixVersion: "1.1"
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent

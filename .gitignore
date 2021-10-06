@@ -1,9 +1,8 @@
-/api/node_modules
+node_modules
 /assets
 /assets.tar.gz
 /data/msc
 /env*
-/node_modules
 /resources
 /scripts/gen
 /scripts/continuserv/continuserv
