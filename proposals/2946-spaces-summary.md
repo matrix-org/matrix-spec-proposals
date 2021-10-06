@@ -325,6 +325,13 @@ age of the relationship.
 A large flat space (a single room with many `m.space.child` events) could cause
 a large federation response.
 
+Room version upgrades of rooms in a space are unsolved and left to a future MSC.
+When upgrading a room it is unclear if the old room should be removed (in which
+case users who have not yet joined the new room will no longer see it in the space)
+or leave the old room (in which case users who have joined the new room will see
+both). The current recommendation is for clients de-duplicate rooms which are
+known old versions of rooms in the space.
+
 ## Alternatives
 
 Peeking to explore the room state could be used to build the tree of rooms/spaces,
