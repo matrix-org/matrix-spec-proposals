@@ -38,12 +38,14 @@ user is already a member of that room.
 A request could look like this:
 
 ```
-GET /_matrix/client/r0/rooms/{roomidOrAlias}/summary?
+GET /_matrix/client/r0/summary/{roomIdOrAlias}?
     via=matrix.org&
     via=neko.dev
 ```
 
-- `roomidOrAlias` can be the roomid or an alias to a room.
+(This is not under `/rooms`, because it can be used with an alias.
+
+- `roomIdOrAlias` can be the roomid or an alias to a room.
 - `via` are servers, that should be tried to request a summary from, if it can't
   be generated locally. These can be from a matrix URI, matrix.to link or a
   `m.space.child` event for example.
@@ -100,31 +102,27 @@ missing.
 
 ### Server-Server API
 
-The Server-Server API mirrors the Client-Server API, with a few exceptions. The
-`membership` fields is never present. No `via` field is necessary on the
-request, since servers should not forward the request to other servers.
-The request also contains an additional field `allowed_room_ids`, which list of
-room IDs which give access to this room per
-[MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083). This is needed so
-that the requesting server knows if the user is allowed to see this room. If
-the history is visible without space membership, this field can be ignored by
-the requesting server and doesn't need to be present.
+For the federation API
+[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) is reused. This
+provides almost all the information needed in this MSC, but it also provides a
+few additional fields and one level of children of this room.
 
-The server can't know which user is requesting the summary. As such it should
-apply visibility rules to check if any user on the requesting server would have
-access to the summary.
+One small modifications is needed to that endpoint, so that it can be reused
+for this MSC:
 
-A request would be made as follows:
+- the `allowed_room_ids` field is added to the `room` object too. Originally
+    this was only added for child rooms, but this makes it impossible to
+    calculate the access rules for the top most room, as such this should be a
+    reasonable addition.
 
-```
-GET /_matrix/federation/v1/summary/{roomid}
-```
+In theory one could also add the `max_depth` parameter with allowed values of 0
+and 1, so that child rooms are excluded, but this performance optimization does
+not seem necessary at this time and could be added at any later point while
+degrading gracefully.
 
-The requesting server should cache the response to this request.
-
-Note that the federation API only allows roomids and should use the usual
-protocols to resolve the alias first, since it makes no sense to let anything
-but the authoritive server for that alias resolve it.
+(Originally there was a separate federation API for this, but it was decided
+that lowering the duplication on the federation side is the way to go by the
+author.)
 
 ## Potential issues
 
@@ -142,7 +140,7 @@ apply rate limiting if necessary.
 
 - The spaces summary API could be used, but it returns more data than necessary
     by default (but it can be limited to just 1 room) such as all the
-    `m.space.child` events in a space.
+    `m.space.child` events in a space. (We do reuse the federation API now.)
 - For joined rooms, the `/sync` API can be used to get a summary for all joined
     rooms. Apart from not working for unjoined rooms, like knocks, invites and
     space children, `/sync` is very heavy for the server and the client needs to
@@ -160,7 +158,10 @@ apply rate limiting if necessary.
     be left to a separate MSC.)
 - The `/state` API could be used, but the response is much bigger than needed,
     can't be cached as easily and may need more requests. This also doesn't work
-    over federation (yet).
+    over federation (yet). The variant of this API, which returns the full state
+    of a room, also does not return stripped events, which prevents it from
+    being used by non-members. The event for specific events DOES return
+    stripped events, but could not provide a member count for a room.
 - Peeking could solve this too, but with additional overhead and
     [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753) is much more
     complex.
@@ -170,6 +171,14 @@ apply rate limiting if necessary.
     joined rooms. It could still request the summary of a single room by just
     including only a single room in the POST or a convenience GET could be
     provided by the server (that looks like this proposal).
+- [MSC3429](https://github.com/matrix-org/matrix-doc/pull/3429) is an
+    alternative implementation, but it chooses a different layout. While this
+    layout might make sense in the future, it is inconsistent with the APIs
+    already in use, harder to use for clients (iterate array over directly
+    including the interesting fields) and can't reuse the federation API. In my
+    opinion an MSC in the future, that bases all summary APIs on a list of
+    stripped events seems like the more reasonable approach to me and would make
+    the APIs more extensible.
 
 ## Security considerations
 
@@ -188,6 +197,8 @@ This uses the `im.nheko.summary` unstable prefix. As such the paths are prefixed
 with `unstable/im.nheko.summary`.
 
 - the client API will be
-    `/_matrix/client/unstable/im.nheko.summary/rooms/{roomidOrAlias}/summary`
-- the federation API will be
-    `/_matrix/federation/unstable/im.nheko.summary/summary/{roomid}`
+    `/_matrix/client/unstable/im.nheko.summary/{roomIdOrAlias}`.
+
+Earlier versions of this MSC used
+    `/_matrix/client/unstable/im.nheko.summary/rooms/{roomIdOrAlias}/summary`,
+    but this was a mistake. Endpoints using aliases shouldn't be under /rooms.
