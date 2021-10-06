@@ -66,7 +66,7 @@ Query Parameters:
   true, if a space is suggested, but a child of that space is not then the child
   should not be included.
 * **`limit`**: Optional: a client-defined limit to the maximum
-  number of rooms to return per page. Must be a non-negative integer.
+  number of rooms to return per page. Must an integer greater than zero.
 
   Server implementations should impose a maximum value to avoid resource
   exhaustion.
