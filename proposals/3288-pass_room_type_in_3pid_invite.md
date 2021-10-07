@@ -18,7 +18,7 @@ Homeservers should also send the `room_type` to the identity server when perform
 
 __Proposed change:__
 
-Add a new `room_type` field in json body of `POST /_matrix/identity/v2/store-invite`
+Add a new `room_type` field in json body of [`POST /_matrix/identity/v2/store-invite`](https://matrix.org/docs/spec/identity_service/r0.3.0#post-matrix-identity-v2-store-invite):
 
 | Parameter | Type | Description |
 |--|--|--|
