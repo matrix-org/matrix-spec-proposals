@@ -328,7 +328,7 @@ Federation maintains *shared data structures* per-room between multiple
 homeservers. The data is split into `message events` and `state events`.
 
 Message events:
-These describe transient 'one-off' activity in a room such as an
+These describe transient 'one-off' activity in a room such as
 instant messages, VoIP call setups, file transfers, etc. They generally
 describe communication activity.
 
