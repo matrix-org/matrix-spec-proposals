@@ -13,7 +13,7 @@ The goal of this proposal is to make 3pid invites space aware.
 
 ## Proposal
 
-Home servers should also send the `room_type` to the identity server when performing a third party invite (__Invitation storage__).
+Homeservers should also send the `room_type` to the identity server when performing a third party invite (__Invitation storage__).
 
 
 __Proposed change:__
