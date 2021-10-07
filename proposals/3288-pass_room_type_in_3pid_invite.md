@@ -22,7 +22,7 @@ Add a new `room_type` field in json body of [`POST /_matrix/identity/v2/store-in
 
 | Parameter | Type | Description |
 |--|--|--|
-| room_type  | string  | The room type for the room to which the user is invited. This should be retrieved from the value of `type` in the `m.room.create` event's `content`. Do not include parameter if not `type` not present in `m.room.create`.
+| room_type  | string  | The room type for the room to which the user is invited. This should be retrieved from the value of `type` in the `m.room.create` event's `content`. Do not include parameter if `type` is not present in `m.room.create`.
 
 ````
 POST /_matrix/identity/v2/store-invite HTTP/1.1
