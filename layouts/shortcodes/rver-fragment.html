@@ -1,0 +1,9 @@
+{{ $name := .Params.name }}
+{{ $withVersioning := .Params.withVersioning }}
+
+{{ $page := .Site.GetPage (path.Join .Page.Dir "fragments" (printf "%s%s" $name ".md"))}}
+{{ $content := $page.Content }}
+{{ if not $withVersioning }}
+    {{ $content = (replace $content "[New in this version]" "") }}
+{{ end }}
+{{ $content | safeHTML }}

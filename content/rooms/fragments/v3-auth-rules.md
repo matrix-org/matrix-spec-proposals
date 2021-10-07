@@ -1,56 +1,3 @@
----
-title: Room Version 6
-type: docs
-weight: 60
----
-
-This room version builds on [version 5](/rooms/v5) while changing various
-authorization rules performed on events.
-
-## Client considerations
-
-Clients may need to consider some algorithms performed by the server for
-their own implementation.
-
-### Redactions
-
-{{% added-in this=true %}} All significant meaning for `m.room.aliases`
-has been removed from the redaction algorithm. The remaining rules are
-the same as past room versions.
-
-{{% rver-fragment name="v6-redactions" %}}
-
-## Server implementation components
-
-{{% boxes/warning %}}
-The information contained in this section is strictly for server
-implementors. Applications which use the Client-Server API are generally
-unaffected by the intricacies contained here. The section above
-regarding client considerations is the resource that Client-Server API
-use cases should reference.
-{{% /boxes/warning %}}
-
-Room version 6 makes the following alterations to algorithms described
-in [room version 5](/rooms/v5).
-
-### Redactions
-
-[See above](#redactions).
-
-### Authorization rules for events
-
-{{% added-in this=true %}} Like redactions, all rules relating specifically
-to events of type `m.room.aliases` are removed. They must still pass
-authorization checks relating to state events.
-
-{{% added-in this=true %}} Additionally, the authorization rules for events
-of type `m.room.power_levels` now include the content key `notifications`.
-This new rule takes the place of the rule which checks the `events` and
-`users` keys.
-
-**The following is a complete set of the authorization rules for this room
-version.**
-
 In room versions 1 and 2, events need a signature from the domain of
 the `event_id` in order to be considered valid. This room version does
 not include an `event_id` over federation in the same respect, so does
@@ -89,7 +36,11 @@ The rules are as follows:
         algorithm described in the server specification.
 3.  If event does not have a `m.room.create` in its `auth_events`,
     reject.
-4.  If type is `m.room.member`:
+4.  If type is `m.room.aliases`:
+    1.  If event has no `state_key`, reject.
+    2.  If sender's domain doesn't matches `state_key`, reject.
+    3.  Otherwise, allow.
+5.  If type is `m.room.member`:
     1.  If no `state_key` key or `membership` key in `content`, reject.
     2.  If `membership` is `join`:
         1.  If the only previous event is an `m.room.create` and the
@@ -146,15 +97,15 @@ The rules are as follows:
             than the `sender`'s power level, allow.
         3.  Otherwise, reject.
     6.  Otherwise, the membership is unknown. Reject.
-5.  If the `sender`'s current membership state is not `join`, reject.
-6.  If type is `m.room.third_party_invite`:
+6.  If the `sender`'s current membership state is not `join`, reject.
+7.  If type is `m.room.third_party_invite`:
     1.  Allow if and only if `sender`'s current power level is greater
         than or equal to the *invite level*.
-7.  If the event type's *required power level* is greater than the
+8.  If the event type's *required power level* is greater than the
     `sender`'s power level, reject.
-8.  If the event has a `state_key` that starts with an `@` and does not
+9.  If the event has a `state_key` that starts with an `@` and does not
     match the `sender`, reject.
-9. If type is `m.room.power_levels`:
+10. If type is `m.room.power_levels`:
     1.  If `users` key in `content` is not a dictionary with keys that
         are valid user IDs with values that are integers (or a string
         that is an integer), reject.
@@ -168,7 +119,7 @@ The rules are as follows:
         2.  If the new value is higher than the `sender`'s current power
             level, reject.
     4.  For each entry being added, changed or removed in both the
-        `events`, `users`, and `notifications` keys:
+        `events` and `users` keys:
         1.  If the current value is higher than the `sender`'s current
             power level, reject.
         2.  If the new value is higher than the `sender`'s current power
@@ -178,13 +129,14 @@ The rules are as follows:
         1.  If the current value is equal to the `sender`'s current
             power level, reject.
     6.  Otherwise, allow.
-10. Otherwise, allow.
+11. Otherwise, allow.
 
 {{% boxes/note %}}
 
-`m.room.redaction` events are no longer explicitly part of the above rules.
-They are still subject to the minimum power level rules, but should always
-fall into "10. Otherwise, allow".
+{{% added-in this=true %}} `m.room.redaction` events are no longer
+explicitly part of the above rules. They are still subject to the
+minimum power level rules, but should always fall into "11. Otherwise,
+allow".
 
 Redactions should only be sent to clients once both the redaction and
 redacted event are received and validated by the server. If both events
@@ -211,26 +163,3 @@ Some consequences of these rules:
     to both the kick *and* ban levels, *and* greater than the target
     user's power level.
 {{% /boxes/note %}}
-
-### Canonical JSON
-
-{{% rver-fragment name="v6-canonical-json" %}}
-
-## Unchanged from v5
-
-The following sections have not been modified since v5, but are included for
-completeness.
-
-### State resolution
-
-{{% rver-fragment name="v2-state-res" %}}
-
-### Authorization rules
-
-{{% rver-fragment name="v3-auth-rules" %}}
-
-### Event format
-
-{{% rver-fragment name="v4-event-explainer" %}}
-
-{{% definition path="api/server-server/definitions/pdu_v4" %}}
