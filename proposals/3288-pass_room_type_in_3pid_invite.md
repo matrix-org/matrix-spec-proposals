@@ -5,7 +5,7 @@ like for example the room name and avatar as well as the inviter name.
 This allows the identity server to generate a rich email to the invitee.
 
 Now that the matrix spec supports spaces, it would be nice to also provide this information to the identity server
-so that the email invite could be customized for spaces, current implementation would say wrongly that 
+so that the email invite could be customized for spaces.  The current implementation would say wrongly that 
 you are invited to a room when the room is actually a space.
 
 The goal of this proposal is to make 3pid invites space aware.
