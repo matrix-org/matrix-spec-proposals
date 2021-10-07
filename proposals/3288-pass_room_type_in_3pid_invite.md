@@ -1,6 +1,6 @@
 # MSC3288: Make email invites space aware
 
-Currently when inviting via 3pid, the Identity Server is getting some information about the room,
+Currently when inviting via 3pid, the Identity Server receives some information about the room,
 like for example the room name and avatar as well as the inviter name.
 This allows the identity server to generate a rich email to the invitee.
 
