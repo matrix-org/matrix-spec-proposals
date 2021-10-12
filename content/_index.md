@@ -37,28 +37,6 @@ The [Matrix Client-Server API Swagger
 Viewer](https://matrix.org/docs/api/client-server/) is useful for
 browsing the Client-Server API.
 
-### Matrix versions
-
-{{% boxes/note %}}
-As of June 10th 2019, the Matrix specification is considered out of beta
-- indicating that all currently released APIs are considered stable and
-secure to the best of our knowledge, and the spec should contain the
-complete information necessary to develop production-grade
-implementations of Matrix without the need for external reference.
-{{% /boxes/note %}}
-
-Matrix 1.0 (released June 10th, 2019) consists of the following minimum
-API versions:
-
-| API/Specification       | Version |
-|-------------------------|---------|
-| Client-Server API       | r0.5.0  |
-| Server-Server API       | r0.1.2  |
-| Application Service API | r0.1.1  |
-| Identity Service API    | r0.1.1  |
-| Push Gateway API        | r0.1.0  |
-| Room Version            | v5      |
-
 ## Introduction to the Matrix APIs
 
 Matrix is a set of open APIs for open-federated Instant Messaging (IM),
@@ -526,18 +504,79 @@ The available room versions are:
 
 ## Specification Versions
 
-The specification for each API is versioned in the form `rX.Y.Z`.
--   A change to `X` reflects a breaking change: a client implemented
-    against `r1.0.0` may need changes to work with a server which
-    supports (only) `r2.0.0`.
--   A change to `Y` represents a change which is backwards-compatible
-    for existing clients, but not necessarily existing servers: a client
-    implemented against `r1.1.0` will work without changes against a
-    server which supports `r1.2.0`; but a client which requires `r1.2.0`
-    may not work correctly with a server which implements only `r1.1.0`.
--   A change to `Z` represents a change which is backwards-compatible on
-    both sides. Typically this implies a clarification to the
-    specification, rather than a change which must be implemented.
+Matrix as a whole is released under a single specification number in the
+form `vX.Y`.
+
+* A change to `X` reflects a breaking or substantially invasive change.
+  When exactly to increment this number is left to the Spec Core Team,
+  however it is intended for changes such as moving away from JSON,
+  altering the signing algorithm, or when a large number of `Y` changes
+  feel deserving of a major version increase.
+* A change to `Y` represents a backwards compatible or "managed" backwards
+  compatible change to the specification, usually in the form of features.
+
+Additionally, the spec version may have arbitrary metadata applied to it
+when followed by a `-`. For example, `v1.1-alpha`. Usage of this is not
+strictly specified but is intended for usage of pre-release builds of the
+specification.
+
+Note that while `v1.2` is meant to be backwards compatible with `v1.1`, it
+is not guaranteed that future versions will be fully backwards compatible
+with `v1.1`. For example, if `/test` were to be introduced in `v1.1` and
+deprecated in `v1.2`, then it can be removed in `v1.3`. More information
+about this is described in the [deprecation policy](#deprecation-policy)
+below.
+
+### Endpoint versioning
+
+All API endpoints within the specification are versioned individually.
+This means that `/v3/sync` (for example) can get deprecated in favour
+of `/v4/sync` without affecting `/v3/profile` at all. A server supporting
+`/v4/sync` would keep serving `/v3/profile` as it always has.
+
+When an MSC proposes a breaking change to an endpoint it should also
+deprecate the existing endpoint. For some endpoints this might be implicit,
+such as `/v4/sync` being introduced (deprecating `/v3/sync`), however
+for more nuanced examples the MSC should deprecate the endpoint explicitly.
+
+### Deprecation policy
+
+An MSC is required to transition something from stable (the default) to
+deprecated. Once something has been deprecated for suitably long enough
+(usually 1 version), it is eligible for removal from the specification
+with another MSC.
+
+Implementations of Matrix are required to implement deprecated functionality
+of the specification, though when the functionality is later removed then
+the implementation is welcome to drop support (if they don't advertise
+support for a version which includes deprecated functionality). For
+example, if `/test` were deprecated in `v1.2` and removed in `v1.3`, then
+an implementation which wants to advertise support for `v1.2` would have
+to implement `/test`, even if the implementation also advertises support
+for `v1.3`. If that implementation *only* advertises support for `v1.3`
+then it would not be required to implement `/test`.
+
+### Legacy versioning
+
+Prior to this system, the different APIs of Matrix were versioned individually.
+This is no longer possible with the new specification versioning approach.
+
+For historical reference, the APIs were versioned as `rX.Y.Z` where `X`
+roughly represents a breaking change, `Y` a backwards-compatible change, and
+`Z` a patch or insignificant alteration to the API.
+
+`v1.0` of Matrix was released on June 10th, 2019 with the following API
+versions:
+
+| API/Specification       | Version |
+|-------------------------|---------|
+| Client-Server API       | r0.5.0  |
+| Server-Server API       | r0.1.2  |
+| Application Service API | r0.1.1  |
+| Identity Service API    | r0.1.1  |
+| Push Gateway API        | r0.1.0  |
+| Room Version            | v5      |
+
 
 ## License
 
