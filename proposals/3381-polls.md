@@ -29,7 +29,7 @@ A poll can be started by sending an `m.poll.start` room event, similar to the fo
       "question": {
         "m.text": "What should we order for the party?"
       },
-      "kind": "m.poll.open",
+      "kind": "m.poll.disclosed",
       "max_selections": 1,
       "answers": [
         { "id": "pizza", "m.text": "Pizza 🍕" },
@@ -60,12 +60,12 @@ extensible events within them, such as the `question` and the elements of `answe
 text component to them. HTML is allowed, though clients are generally encouraged to rely on the plain text
 representation for an unbiased rendering. Meme value of HTML might be desirable to some clients, however.
 
-The `kind` refers to whether the poll is "secret" or "open". Secret polls reveal the results after the poll
-has closed while open polls show the results at any time (or, if the client prefers, immediately after the
-user has voted). These translate to `m.poll.secret` and `m.poll.open` under this MSC, though custom values
-using the standardized naming convention are supported. Unknown values are to be treated as `m.poll.secret`
-for maximum compatibility with theoretical values. More specific detail as to the difference between open
-and secret polls comes up later in this MSC.
+The `kind` refers to whether the poll's votes are disclosed while the poll is still open. `m.poll.undisclosed`
+means the results are revealed once the poll is closed. `m.poll.disclosed` is the opposite: the votes are
+visible up until and including when the poll is closed. Custom values are permitted using the standardized
+naming convention are supported. Unknown values are to be treated as `m.poll.undisclosed` for maximum
+compatibility with theoretical values. More specific detail as to the difference between two polls come up
+later in this MSC.
 
 `answers` must be an array with at least 1 option and no more than 20. Lengths outside this range are invalid
 and must not be rendered by clients. Most polls are expected to have 2-8 options. The answer `id` is an
@@ -160,36 +160,33 @@ not to ruin the fun. Also, don't use polls for things that are important.
 Clients should disable voting interactions with polls once they are closed. Events which claim to close
 the poll from senders other than the creator are to be treated as invalid and thus ignored.
 
-### Open polls
+### Disclosed versus undisclosed polls
 
-These are most similar to what is seen on Twitch and often Twitter: members of the room are able to see
-the results and vote accordingly. Clients are welcome to hide the poll results until after the user has
-voted to avoid biasing the user.
+Disclosed polls are most similar to what is seen on Twitch and often Twitter: members of the room are able
+to see the results and vote accordingly. Clients are welcome to hide the poll results until after the user
+has voted to avoid biasing the user.
 
-Once the poll ends, the results are shown regardless.
+Undisclosed polls do track who voted for what, though don't reveal the results until the poll has been
+closed, even after a user has voted themselves. This is enforced visually and not by the protocol given
+the votes are sent to the room for local tallying - this is considered more of a social trust issue than
+a technical one. This MSC expects that rooms (and clients) won't spoil the results of an undisclosed poll
+before it is closed.
 
-### Secret polls
-
-With these polls, members of the room cannot see the results of a poll until the poll ends, regardless
-of whether or not they've voted. This is enforced visually and not by the protocol given the votes
-are sent to the room for local tallying - this is considered a social issue rather than a technical one.
-Don't go spoiling the results if the sender didn't intend for you to see them.
-
-The poll results should additionally be hidden from the poll creator until the poll is closed by that
-creator.
+In either case, once the poll ends the results are shown regardless of kind. Clients might wish to avoid
+disclosing who voted for what in an undisclosed poll, though this MSC leaves that at just a suggestion.
 
 ## Potential issues
 
 As mentioned, poll responses are sent to the room regardless of the kind of poll. For open polls this
-isn't a huge deal, but it can be considered an issue with secret polls. This MSC strongly considers the
-problem a social one: users who are looking to "cheat" at the results are unlikely to engage with the
+isn't a huge deal, but it can be considered an issue with undisclosed polls. This MSC strongly considers
+the problem a social one: users who are looking to "cheat" at the results are unlikely to engage with the
 poll in a productive way in the first place. And, of course, polls should never be used for something
 important like electing a new leader for a country.
 
 Poll responses are also de-anonymized by nature of having the sender attached to a response. Clients
-are strongly encouraged to demonstrate anonymization by not showing who voted for who, but might want
-to warn/hint at the user that their vote is not anonymous. For example, saying "22 total responses,
-including from TravisR, Matthew, and Alice" before the user votes.
+are strongly encouraged to demonstrate anonymization by not showing who voted for who, but should consider
+warning the user that their vote is not anonymous. For example, saying "22 total responses, including
+from TravisR, Matthew, and Alice" before the user votes.
 
 Limiting polls to client-side enforcement could be problematic if the MSC was interested in reliable
 or provable votes, however as a chat feature this should reasonably be able to achieve user expectations.
@@ -266,6 +263,11 @@ to solve:
 * Allowing voters/room members to add their own freeform options. The edits system doesn't prevent other
   members from editing messages, though clients tend to reject edits which are not made by the original
   author. Altering this rule to allow it on some polls could be useful in a future MSC.
+
+* Verifiable or cryptographically secret polls. There is interest in a truly enforceable undisclosed poll
+  where even if the client wanted to it could not reveal the results before the poll is closed. Approaches
+  like [MSC3184](https://github.com/matrix-org/matrix-doc/pull/3184) or Public Key Infrastructure (PKI)
+  might be worthwhile to investigate in a future MSC.
 
 ## Unstable prefix
 
