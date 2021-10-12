@@ -2,7 +2,7 @@
 
 ## Problem
 
-Currently guest users are not allowed to create arbitrary state events.  This is a problem for MSC3401, where it would be useful for guests to be able to create `m.call.member` events in order to participate in a call.
+Currently guest users are not allowed to create arbitrary state events.  This is a problem for [MSC3401](https://github.com/matrix-org/matrix-doc/pull/3401), where it would be useful for guests to be able to create `m.call.member` events in order to participate in a call.
 
 ## Proposal
 
