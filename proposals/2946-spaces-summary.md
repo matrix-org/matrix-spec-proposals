@@ -52,7 +52,7 @@ This endpoint requires authentication and is subject to rate-limiting.
 #### Request format
 
 ```text
-GET /_matrix/client/r0/rooms/{roomID}/hierarchy
+GET /_matrix/client/v1/rooms/{roomID}/hierarchy
 ```
 
 Query Parameters:
@@ -102,7 +102,7 @@ Query Parameters:
 #### Example request:
 
 ```text
-GET /_matrix/client/r0/rooms/%21ol19s%3Ableecker.street/hierarchy?
+GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/hierarchy?
     limit=30&
     suggested_only=true&
     max_depth=4
