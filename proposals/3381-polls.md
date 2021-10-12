@@ -283,19 +283,19 @@ The 3 examples above can be rewritten as:
 
 ```json5
 {
-  "type": "org.matrix.msc3381.poll",
+  "type": "org.matrix.msc3381.poll.start",
   "sender": "@alice:example.org",
   "content": {
-    "org.matrix.msc3381.poll": {
+    "org.matrix.msc3381.poll.start": {
       "question": {
         "org.matrix.msc1767.text": "What should we order for the party?"
       },
-      "kind": "m.open",
+      "kind": "org.matrix.msc3381.poll.disclosed",
       "answers": [
-        { "org.matrix.msc1767.text": "Pizza 🍕" },
-        { "org.matrix.msc1767.text": "Poutine 🍟" },
-        { "org.matrix.msc1767.text": "Italian 🍝" },
-        { "org.matrix.msc1767.text": "Wings 🔥" }
+        { "id": "pizza", "org.matrix.msc1767.text": "Pizza 🍕" },
+        { "id": "poutine", "org.matrix.msc1767.text": "Poutine 🍟" },
+        { "id": "italian", "org.matrix.msc1767.text": "Italian 🍝" },
+        { "id": "wings", "org.matrix.msc1767.text": "Wings 🔥" }
       ]
     },
     "org.matrix.msc1767.message": [
@@ -323,7 +323,7 @@ The 3 examples above can be rewritten as:
       "event_id": "$poll"
     },
     "org.matrix.msc3381.poll.response": {
-      "answer": 2 // index of the answers array selected (zero-indexed)
+      "answers": ["italian"]
     }
   },
   // other fields that aren't relevant here
