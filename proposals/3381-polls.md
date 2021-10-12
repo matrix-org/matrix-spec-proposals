@@ -119,7 +119,13 @@ are the `id` of each answer from the original poll start event. If *any* of the 
 or the field is otherwise invalid, then the user's vote is spoiled. Spoiled votes are also how users can
 "un-vote" from a poll - redacting, or setting `answers` to an empty array, will spoil that user's vote.
 
-Only the poll creator can close a poll. It is done as follows:
+Only the poll creator or anyone with a suitable power level for redactions can close the poll. The rationale
+for using the redaction power level is to help aid moderation efforts: while moderators can just redact the
+original poll and invalidate it entirely, they might prefer to just close it and leave it on the historical
+record.
+
+Closing a poll is done as follows:
+
 ```json5
 {
   "type": "m.poll.end",
