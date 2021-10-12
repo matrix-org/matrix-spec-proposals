@@ -18,14 +18,14 @@ be able to send arbitrary event types, which they already should be capable of.
 
 The events in this MSC make heavy use of [MSC1767: Extensible Events](https://github.com/matrix-org/matrix-doc/pull/1767).
 
-A poll can be started by sending an `m.poll` room event, similar to the following:
+A poll can be started by sending an `m.poll.start` room event, similar to the following:
 
 ```json5
 {
-  "type": "m.poll",
+  "type": "m.poll.start",
   "sender": "@alice:example.org",
   "content": {
-    "m.poll": {
+    "m.poll.start": {
       "question": {
         "m.text": "What should we order for the party?"
       },
@@ -93,7 +93,7 @@ To respond to a poll, the following event is sent:
 }
 ```
 
-Like `m.poll`, this `m.poll.response` event supports Extensible Events. However, it is strongly discouraged
+Like `m.poll.start`, this `m.poll.response` event supports Extensible Events. However, it is strongly discouraged
 for clients to include renderable types like `m.text` and `m.message` which could impact the usability of
 the room (particularly for large rooms with lots of responses). The relationship is a normal MSC2675 reference
 relationship, avoiding conflicts with message reactions described by [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677).
