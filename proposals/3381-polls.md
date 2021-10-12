@@ -254,6 +254,12 @@ the exception of spoiled votes: those are treated as "unvoting" or chosing nothi
 encouraged to try and fall back to something sensible, even if just an error message saying the poll
 is invalid.
 
+Users should be wary of polls changing their question after they have voted. Considering polls can be
+edited, responses might no longer be relevant. For example, if a poll was opened for "do you like
+cupcakes?" and you select "yes", the question may very well become "should we outlaw cupcakes?" where
+your "yes" no longer applies. This MSC considers this problem more of a social issue than a technical
+one, and reminds the reader that polls should not be used for anything important/serious at the moment.
+
 ## Future considerations
 
 Some aspects of polls are explicitly not covered by this MSC, and are intended for another future MSC
