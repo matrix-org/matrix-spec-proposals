@@ -228,16 +228,9 @@ Query Parameters:
 
 The response format is similar to the Client-Server API:
 
-* **`room`**: `[object]` The summary of the requested room, as given in the
-  Client-Server API response.
-* **`children`**: `[object]` For each room/space, a summary of that room. The fields
-  are the same as those returned by `/publicRooms` (see
-  [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
-  with the addition of:
-  * **`room_type`**: the value of the `m.type` field from the room's
-    `m.room.create` event, if any.
-  * **`allowed_room_ids`**: A list of room IDs which give access to this room per
-    [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a1">[1](#f1)</sup>
+* **`room`**: `object` The summary of the requested room, see below for details.
+* **`children`**: `[object]` For each room/space, a summary of that room, see
+  below for details.
 * **`inaccessible_children`**: Optional `[string]`. A list of room IDs which are
   children of the requested room, but are inaccessible to the requesting server.
   Other servers are unlikely to have information about them as well, thus the
@@ -246,6 +239,15 @@ The response format is similar to the Client-Server API:
   This is used to differentiate between rooms which the requesting server does
   not have access to from those that the target server cannot include in the
   response (which will simply be missing in the response).
+
+For both the `room` and `children` fields the summary of the room/space includes
+the fields returned by `/publicRooms` (see [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
+with the addition of:
+
+* **`room_type`**: the value of the `m.type` field from the room's `m.room.create`
+  event, if any.
+* **`allowed_room_ids`**: A list of room IDs which give access to this room per
+  [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a1">[1](#f1)</sup>
 
 #### Example request:
 
