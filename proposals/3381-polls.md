@@ -29,7 +29,7 @@ A poll can be started by sending an `m.poll.start` room event, similar to the fo
       "question": {
         "m.text": "What should we order for the party?"
       },
-      "kind": "m.open",
+      "kind": "m.poll.open",
       "answers": [
         { "m.text": "Pizza 🍕" },
         { "m.text": "Poutine 🍟" },
@@ -61,10 +61,10 @@ representation for an unbiased rendering. Meme value of HTML might be desirable 
 
 The `kind` refers to whether the poll is "secret" or "open". Secret polls reveal the results after the poll
 has closed while open polls show the results at any time (or, if the client prefers, immediately after the
-user has voted). These translate to `m.secret` and `m.open` under this MSC, though custom values using the
-standardized naming convention are supported. Unknown values are to be treated as `m.secret` for maximum
-compatibility with theoretical values. More specific detail as to the difference between open and secret
-polls comes up later in this MSC.
+user has voted). These translate to `m.poll.secret` and `m.poll.open` under this MSC, though custom values
+using the standardized naming convention are supported. Unknown values are to be treated as `m.poll.secret`
+for maximum compatibility with theoretical values. More specific detail as to the difference between open
+and secret polls comes up later in this MSC.
 
 There is no limit to the number of `answers`, though more than 20 is considered bad form. Clients should
 truncate the list at no less than 20. Similarly, there is no minimum though a poll of zero or one options
