@@ -254,6 +254,15 @@ the exception of spoiled votes: those are treated as "unvoting" or chosing nothi
 encouraged to try and fall back to something sensible, even if just an error message saying the poll
 is invalid.
 
+## Future considerations
+
+Some aspects of polls are explicitly not covered by this MSC, and are intended for another future MSC
+to solve:
+
+* Allowing voters/room members to add their own freeform options. The edits system doesn't prevent other
+  members from editing messages, though clients tend to reject edits which are not made by the original
+  author. Altering this rule to allow it on some polls could be useful in a future MSC.
+
 ## Unstable prefix
 
 While this MSC is not eligible for stable usage, the `org.matrix.msc3381.` prefix can be used in place
