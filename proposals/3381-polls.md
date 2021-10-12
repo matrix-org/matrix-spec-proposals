@@ -67,11 +67,9 @@ using the standardized naming convention are supported. Unknown values are to be
 for maximum compatibility with theoretical values. More specific detail as to the difference between open
 and secret polls comes up later in this MSC.
 
-There is no limit to the number of `answers`, though more than 20 is considered bad form. Clients should
-truncate the list at no less than 20. Similarly, there is no minimum though a poll of zero or one options
-is fairly useless - clients should render polls with less than 2 options as invalid or otherwise unvotable.
-Most polls are expected to have 2-8 options. The answer `id` is an arbitrary string used within the polls
-schemas. Clients should not attempt to parse or understand it.
+`answers` must be an array with at least 1 option and no more than 20. Lengths outside this range are invalid
+and must not be rendered by clients. Most polls are expected to have 2-8 options. The answer `id` is an
+arbitrary string used within the poll events. Clients should not attempt to parse or understand the `id`.
 
 `max_selections` is optional and denotes the maximum number of responses a user is able to select. Users
 can select fewer options, but not more. This defaults to `1`. Cannot be less than 1.
