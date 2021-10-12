@@ -269,6 +269,11 @@ to solve:
   like [MSC3184](https://github.com/matrix-org/matrix-doc/pull/3184) or Public Key Infrastructure (PKI)
   might be worthwhile to investigate in a future MSC.
 
+## Other notes
+
+If a client/user wishes to make a poll statically visible, they should check out
+[pinned messages](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-pinned-events).
+
 ## Unstable prefix
 
 While this MSC is not eligible for stable usage, the `org.matrix.msc3381.` prefix can be used in place
