@@ -99,7 +99,9 @@ We mandate at most one call per room at any given point to avoid UX nightmares -
 
 ### Call participation
 
-Users who want to participate in the call declare this by publishing a `m.call.member` state event using their matrix ID as the state key (thus ensuring other users cannot edit it).  The event contains an array of `m.calls` object describing which calls the user is participating in within that room.  This array must contain one item (for now)>
+Users who want to participate in the call declare this by publishing a `m.call.member` state event using their matrix ID as the state key (thus ensuring other users cannot edit it).  The event contains an array of `m.calls` object describing which calls the user is participating in within that room.  This array must contain one item (for now).
+
+`m.call.member` state events must be ignored if their user's `m.room.member` event's membership field is not `join`.
 
 The fields within the item in the `m.calls` contents are:
 
