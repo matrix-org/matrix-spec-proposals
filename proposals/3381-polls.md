@@ -30,11 +30,12 @@ A poll can be started by sending an `m.poll.start` room event, similar to the fo
         "m.text": "What should we order for the party?"
       },
       "kind": "m.poll.open",
+      "max_selections": 1,
       "answers": [
-        { "m.text": "Pizza 🍕" },
-        { "m.text": "Poutine 🍟" },
-        { "m.text": "Italian 🍝" },
-        { "m.text": "Wings 🔥" }
+        { "id": "pizza", "m.text": "Pizza 🍕" },
+        { "id": "poutine", "m.text": "Poutine 🍟" },
+        { "id": "italian", "m.text": "Italian 🍝" },
+        { "id": "wings", "m.text": "Wings 🔥" }
       ]
     },
     "m.message": [
@@ -69,7 +70,11 @@ and secret polls comes up later in this MSC.
 There is no limit to the number of `answers`, though more than 20 is considered bad form. Clients should
 truncate the list at no less than 20. Similarly, there is no minimum though a poll of zero or one options
 is fairly useless - clients should render polls with less than 2 options as invalid or otherwise unvotable.
-Most polls are expected to have 2-8 options.
+Most polls are expected to have 2-8 options. The answer `id` is an arbitrary string used within the polls
+schemas. Clients should not attempt to parse or understand it.
+
+`max_selections` is optional and denotes the maximum number of responses a user is able to select. Users
+can select fewer options, but not more. This defaults to `1`. Cannot be less than 1.
 
 The `m.message` fallback should be representative of the poll, but is not required and has no mandatory
 format. Clients are encouraged to be inspired by the example above when sending poll events.
@@ -86,7 +91,9 @@ To respond to a poll, the following event is sent:
       "event_id": "$poll"
     },
     "m.poll.response": {
-      "answer": 2 // index of the answers array selected (zero-indexed)
+      "answers": [
+        "poutine",
+      ]
     }
   },
   // other fields that aren't relevant here
@@ -106,9 +113,11 @@ to react to polls while also aggregating poll responses.
 Users can vote multiple times, however only the user's most recent vote (by timestamp) shall be considered
 by the client when calculating results. Votes are accepted until the poll is closed (again, by timestamp).
 
-The `answer` field is the zero-indexed position from the original `answers` array. Out of range or otherwise
-invalid values must be considered a spoiled vote by a client. Spoiled votes are also how a user can "un-vote"
-from a poll - redacting the vote event would cause the vote to become spoiled.
+The `answers` array in the response is the user's selection(s) for the poll. Clients should only consider
+the first `max_selections` worth of entries as valid: anything beyond that is simply ignored. The entries
+are the `id` of each answer from the original poll start event. If *any* of the supplied answers is unknown,
+or the field is otherwise invalid, then the user's vote is spoiled. Spoiled votes are also how users can
+"un-vote" from a poll - redacting, or setting `answers` to an empty array, will spoil that user's vote.
 
 Only the poll creator can close a poll. It is done as follows:
 ```json5
