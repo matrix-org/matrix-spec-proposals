@@ -8,7 +8,7 @@ Currently guest users are not allowed to create arbitrary state events.  This is
 
 Let guests send arbitrary state events much like a normal user. Servers may rate limit state events from guests much more aggressively to mitigate abuse.
 
-We also relax the arbitrary requirement that guests are only allowed to send `m.room.message` events, but any kind of event allowed by the room's power level configuration as if they were a normal user.
+We also relax the existing requirement that guests are only allowed to send `m.room.message` events, instead allowing them to send any kind of event allowed by the room's power level configuration as if they were a normal user.
 
 ## Security considerations
 
