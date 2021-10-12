@@ -68,6 +68,18 @@ output = {
     "consumes": ["application/json"],
     "produces": ["application/json"],
     "host": "matrix.org",
+    # The servers value will be picked up by RapiDoc to provide a way
+    # to switch API servers. Useful when one wants to test compliance
+    # of their server with the API.
+    "servers": [{
+        "url": "https://{homeserver_address}/",
+        "variables": {
+            "homeserver_address": {
+                "default": "matrix-client.matrix.org",
+                "description": "The base URL for your homeserver",
+            }
+        }
+    }],
     "schemes": ["https"],
     "info": {
         "title": "Matrix Client-Server API",

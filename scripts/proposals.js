@@ -58,7 +58,7 @@ const states = [
     title: "Merged"
   },
   {
-    label: "proposal-postoned",
+    label: "proposal-postponed",
     title: "Postponed"
   },
   {
