@@ -1200,7 +1200,7 @@ An example of the capability API's response for this capability is:
 ```
 
 This capability mirrors the same restrictions of [room
-versions](../index.html#room-versions) to describe which versions are
+versions](/rooms) to describe which versions are
 stable and unstable. Clients should assume that the `default` version is
 `stable`. Any version not explicitly labelled as `stable` in the
 `available` versions is to be treated as `unstable`. For example, a
@@ -1290,7 +1290,7 @@ any given point in time:
 
 {{% boxes/warning %}}
 The format of events can change depending on room version. Check the
-[room version specification](../index.html#room-versions) for specific
+[room version specification](/rooms) for specific
 details on what to expect for event formats. Examples contained within
 the client-server specification are expected to be compatible with all
 specified room versions, however some differences may still apply.
@@ -1598,7 +1598,7 @@ content from the databases. Servers should include a copy of the
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
-version specification](../index.html#room-versions).
+version specification](/rooms).
 
 When a client receives an `m.room.redaction` event, it should change
 the affected event in the same way a server does.
@@ -1730,7 +1730,7 @@ This room can only be joined if you were invited.
 `knock`
 This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
-to rooms based upon [room version 7](/rooms/v7).
+in room versions [which support knocking](/rooms/#feature-matrix).
 
 The allowable state transitions of membership are:
 

@@ -8,7 +8,7 @@ which apply:
    that the client-server API currently ties the major version of its spec document version to the
    endpoint, thus making most endpoints under it `/r0/` (currently).
 3. Room versions which define a set of behaviour and algorithms on a per-room basis. These are well
-   defined in the spec and are not covered here: https://matrix.org/docs/spec/#room-versions
+   defined in the spec and are not covered here: https://spec.matrix.org/unstable/rooms/
 4. An overarching "Matrix" version, largely for marketing purposes. So far we've only cut Matrix 1.0
    back when we finalized the initial versions of the spec documents, but have not cut another one
    since.

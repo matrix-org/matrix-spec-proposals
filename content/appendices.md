@@ -384,7 +384,7 @@ the following:
 ## Identifier Grammar
 
 Some identifiers are specific to given room versions, please refer to
-the [room versions specification](/#room-versions) for more
+the [room versions specification](/rooms) for more
 information.
 
 ### Server Name
@@ -599,7 +599,7 @@ A room has exactly one room ID. A room ID has the format:
     !opaque_id:domain
 
 An event has exactly one event ID. The format of an event ID depends
-upon the [room version specification](/#room-versions).
+upon the [room version specification](/rooms).
 
 The `domain` of a room ID is the [server name](#server-name) of the
 homeserver which created the room/event. The domain is used only for
@@ -680,7 +680,7 @@ the client if possible.
 {{% boxes/note %}}
 Clients should be aware that decoding a matrix.to URI may result in
 extra slashes appearing due to some [room
-versions](/#room-versions). These slashes should normally be
+versions](/rooms). These slashes should normally be
 encoded when producing matrix.to URIs, however.
 {{% /boxes/note %}}
 
