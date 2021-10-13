@@ -130,7 +130,7 @@ paths:
                 type: array
                 description: |-
                   The missing events. The event format varies depending on the room version - check
-                  the [room version specification](/#room-versions) for precise event formats.
+                  the [room version specification](/rooms) for precise event formats.
                 items:
                   type: object
                   title: PDU

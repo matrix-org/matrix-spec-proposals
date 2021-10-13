@@ -29,7 +29,7 @@ this identity server supports. Its response uses the following format:
 ## Alternative solutions
 
 Another solution which was considered was using the status check endpoint ([`GET
-/_matrix/api/v1`](https://matrix.org/docs/spec/identity_service/latest#get-matrix-identity-api-v1))
+/_matrix/api/v1`](https://matrix.org/docs/spec/identity_service/r0.2.0#get-matrix-identity-api-v1))
 to serve this information. This solution was discarded because it's using a
 versioned endpoint, which doesn't make sense to advertise the supported versions
 of the API to use.

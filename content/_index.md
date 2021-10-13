@@ -19,45 +19,21 @@ To propose a change to the Matrix Spec, see the explanations at
 
 The specification consists of the following parts:
 
-* [Client-Server API](client-server-api)
-* [Server-Server API](server-server-api)
-* [Application Service API](application-service-api)
-* [Identity Service API](identity-service-api)
-* [Push Gateway API](push-gateway-api)
+* [Client-Server API](/client-server-api)
+* [Server-Server API](/server-server-api)
+* [Application Service API](/application-service-api)
+* [Identity Service API](/identity-service-api)
+* [Push Gateway API](/push-gateway-api)
+* [Room Versions](/rooms)
+* [Appendices](/appendices)
 
 Additionally, this introduction page contains the key baseline
 information required to understand the specific APIs, including the
-sections on [room versions](#room-versions) and [overall
-architecture](#architecture).
-
-The [Appendices](/appendices) contain supplemental information not
-specific to one of the above APIs.
+section the [overall architecture](#architecture).
 
 The [Matrix Client-Server API Swagger
 Viewer](https://matrix.org/docs/api/client-server/) is useful for
 browsing the Client-Server API.
-
-### Matrix versions
-
-{{% boxes/note %}}
-As of June 10th 2019, the Matrix specification is considered out of beta
-- indicating that all currently released APIs are considered stable and
-secure to the best of our knowledge, and the spec should contain the
-complete information necessary to develop production-grade
-implementations of Matrix without the need for external reference.
-{{% /boxes/note %}}
-
-Matrix 1.0 (released June 10th, 2019) consists of the following minimum
-API versions:
-
-| API/Specification       | Version |
-|-------------------------|---------|
-| Client-Server API       | r0.5.0  |
-| Server-Server API       | r0.1.2  |
-| Application Service API | r0.1.1  |
-| Identity Service API    | r0.1.1  |
-| Push Gateway API        | r0.1.0  |
-| Room Version            | v5      |
 
 ## Introduction to the Matrix APIs
 
@@ -328,7 +304,7 @@ Federation maintains *shared data structures* per-room between multiple
 homeservers. The data is split into `message events` and `state events`.
 
 Message events:
-These describe transient 'one-off' activity in a room such as an
+These describe transient 'one-off' activity in a room such as
 instant messages, VoIP call setups, file transfers, etc. They generally
 describe communication activity.
 
@@ -448,96 +424,81 @@ Unless otherwise stated, timestamps are measured as milliseconds since
 the Unix epoch. Throughout the specification this may be referred to as
 POSIX, Unix, or just "time in milliseconds".
 
-## Room Versions
-
-Rooms are central to how Matrix operates, and have strict rules for what
-is allowed to be contained within them. Rooms can also have various
-algorithms that handle different tasks, such as what to do when two or
-more events collide in the underlying DAG. To allow rooms to be improved
-upon through new algorithms or rules, "room versions" are employed to
-manage a set of expectations for each room. New room versions are
-assigned as needed.
-
-There is no implicit ordering or hierarchy to room versions, and their
-principles are immutable once placed in the specification. Although
-there is a recommended set of versions, some rooms may benefit from
-features introduced by other versions. Rooms move between different
-versions by "upgrading" to the desired version. Due to versions not
-being ordered or hierarchical, this means a room can "upgrade" from
-version 2 to version 1, if it is so desired.
-
-### Room version grammar
-
-Room versions are used to change properties of rooms that may not be
-compatible with other servers. For example, changing the rules for event
-authorization would cause older servers to potentially end up in a
-split-brain situation due to not understanding the new rules.
-
-A room version is defined as a string of characters which MUST NOT
-exceed 32 codepoints in length. Room versions MUST NOT be empty and
-SHOULD contain only the characters `a-z`, `0-9`, `.`, and `-`.
-
-Room versions are not intended to be parsed and should be treated as
-opaque identifiers. Room versions consisting only of the characters
-`0-9` and `.` are reserved for future versions of the Matrix protocol.
-
-The complete grammar for a legal room version is:
-
-    room_version = 1*room_version_char
-    room_version_char = DIGIT
-                      / %x61-7A         ; a-z
-                      / "-" / "."
-
-Examples of valid room versions are:
-
--   `1` (would be reserved by the Matrix protocol)
--   `1.2` (would be reserved by the Matrix protocol)
--   `1.2-beta`
--   `com.example.version`
-
-### Complete list of room versions
-
-Room versions are divided into two distinct groups: stable and unstable.
-Stable room versions may be used by rooms safely. Unstable room versions
-are everything else which is either not listed in the specification or
-flagged as unstable for some other reason. Versions can switch between
-stable and unstable periodically for a variety of reasons, including
-discovered security vulnerabilities and age.
-
-Clients should not ask room administrators to upgrade their rooms if the
-room is running a stable version. Servers SHOULD use **room version 6** as
-the default room version when creating new rooms.
-
-The available room versions are:
-
--   [Version 1](/rooms/v1) - **Stable**. The current version of most
-    rooms.
--   [Version 2](/rooms/v2) - **Stable**. Implements State Resolution
-    Version 2.
--   [Version 3](/rooms/v3) - **Stable**. Introduces events whose IDs
-    are the event's hash.
--   [Version 4](/rooms/v4) - **Stable**. Builds on v3 by using
-    URL-safe base64 for event IDs.
--   [Version 5](/rooms/v5) - **Stable**. Introduces enforcement of
-    signing key validity periods.
--   [Version 6](/rooms/v6) - **Stable**. Alters several
-    authorization rules for events.
--   [Version 7](/rooms/v7) - **Stable**. Introduces knocking.
-
 ## Specification Versions
 
-The specification for each API is versioned in the form `rX.Y.Z`.
--   A change to `X` reflects a breaking change: a client implemented
-    against `r1.0.0` may need changes to work with a server which
-    supports (only) `r2.0.0`.
--   A change to `Y` represents a change which is backwards-compatible
-    for existing clients, but not necessarily existing servers: a client
-    implemented against `r1.1.0` will work without changes against a
-    server which supports `r1.2.0`; but a client which requires `r1.2.0`
-    may not work correctly with a server which implements only `r1.1.0`.
--   A change to `Z` represents a change which is backwards-compatible on
-    both sides. Typically this implies a clarification to the
-    specification, rather than a change which must be implemented.
+Matrix as a whole is released under a single specification number in the
+form `vX.Y`.
+
+* A change to `X` reflects a breaking or substantially invasive change.
+  When exactly to increment this number is left to the Spec Core Team,
+  however it is intended for changes such as moving away from JSON,
+  altering the signing algorithm, or when a large number of `Y` changes
+  feel deserving of a major version increase.
+* A change to `Y` represents a backwards compatible or "managed" backwards
+  compatible change to the specification, usually in the form of features.
+
+Additionally, the spec version may have arbitrary metadata applied to it
+when followed by a `-`. For example, `v1.1-alpha`. Usage of this is not
+strictly specified but is intended for usage of pre-release builds of the
+specification.
+
+Note that while `v1.2` is meant to be backwards compatible with `v1.1`, it
+is not guaranteed that future versions will be fully backwards compatible
+with `v1.1`. For example, if `/test` were to be introduced in `v1.1` and
+deprecated in `v1.2`, then it can be removed in `v1.3`. More information
+about this is described in the [deprecation policy](#deprecation-policy)
+below.
+
+### Endpoint versioning
+
+All API endpoints within the specification are versioned individually.
+This means that `/v3/sync` (for example) can get deprecated in favour
+of `/v4/sync` without affecting `/v3/profile` at all. A server supporting
+`/v4/sync` would keep serving `/v3/profile` as it always has.
+
+When an MSC proposes a breaking change to an endpoint it should also
+deprecate the existing endpoint. For some endpoints this might be implicit,
+such as `/v4/sync` being introduced (deprecating `/v3/sync`), however
+for more nuanced examples the MSC should deprecate the endpoint explicitly.
+
+### Deprecation policy
+
+An MSC is required to transition something from stable (the default) to
+deprecated. Once something has been deprecated for suitably long enough
+(usually 1 version), it is eligible for removal from the specification
+with another MSC.
+
+Implementations of Matrix are required to implement deprecated functionality
+of the specification, though when the functionality is later removed then
+the implementation is welcome to drop support (if they don't advertise
+support for a version which includes deprecated functionality). For
+example, if `/test` were deprecated in `v1.2` and removed in `v1.3`, then
+an implementation which wants to advertise support for `v1.2` would have
+to implement `/test`, even if the implementation also advertises support
+for `v1.3`. If that implementation *only* advertises support for `v1.3`
+then it would not be required to implement `/test`.
+
+### Legacy versioning
+
+Prior to this system, the different APIs of Matrix were versioned individually.
+This is no longer possible with the new specification versioning approach.
+
+For historical reference, the APIs were versioned as `rX.Y.Z` where `X`
+roughly represents a breaking change, `Y` a backwards-compatible change, and
+`Z` a patch or insignificant alteration to the API.
+
+`v1.0` of Matrix was released on June 10th, 2019 with the following API
+versions:
+
+| API/Specification       | Version |
+|-------------------------|---------|
+| Client-Server API       | r0.5.0  |
+| Server-Server API       | r0.1.2  |
+| Application Service API | r0.1.1  |
+| Identity Service API    | r0.1.1  |
+| Push Gateway API        | r0.1.0  |
+| Room Version            | v5      |
+
 
 ## License
 

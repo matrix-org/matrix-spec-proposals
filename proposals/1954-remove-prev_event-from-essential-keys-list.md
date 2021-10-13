@@ -27,7 +27,7 @@ implementations) have not implemented the bug and already omit
 ## Tradeoffs
 
 When sending events over federation the events are [hashed and
-signed](https://matrix.org/docs/spec/server_server/unstable.html#adding-hashes-and-signatures-to-outgoing-events),
+signed](https://matrix.org/docs/spec/server_server/r0.1.0#adding-hashes-and-signatures-to-outgoing-events),
 this involves operating not only on the original event but also the redacted
 form of the event. The redacted hash and redacted signed event are necessary if
 the event is ever redacted in future. As a result, any change of the essential

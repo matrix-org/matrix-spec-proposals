@@ -19,7 +19,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 consumes:
   - application/json
 produces:
@@ -46,7 +46,7 @@ paths:
         history visibility to the user.
 
         The knock will appear as an entry in the response of the
-        [`/sync`](/client-server-api/#get_matrixclientr0sync) API.
+        [`/sync`](/client-server-api/#get_matrixclientv3sync) API.
       operationId: knockRoom
       security:
         - accessToken: []

@@ -6,7 +6,6 @@ node_modules
 /resources
 /scripts/gen
 /scripts/continuserv/continuserv
-/scripts/speculator/speculator
 /scripts/swagger
 /scripts/tmp
 /templating/out

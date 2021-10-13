@@ -35,9 +35,9 @@ CS API: Remove
   /_matrix/client/r0/presence/list/{userId}](https://matrix.org/docs/spec/client_server/r0.4.0.html#get-matrix-client-r0-presence-list-userid)
 
 SS API: Remove
- * [m.presence_invite](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-invite-schema)
- * [m.presence_accept](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-accept-schema)
- * [m.presence_deny](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-deny-schema)
+ * [m.presence_invite](https://github.com/matrix-org/matrix-doc/blob/8b65da1cf6fce5f657a2a46b5c6c8bcc24d32ae3/api/server-server/definitions/event-schemas/m.presence_invite.yaml)
+ * [m.presence_accept](https://github.com/matrix-org/matrix-doc/blob/8b65da1cf6fce5f657a2a46b5c6c8bcc24d32ae3/api/server-server/definitions/event-schemas/m.presence_accept.yaml)
+ * [m.presence_deny](https://github.com/matrix-org/matrix-doc/blob/8b65da1cf6fce5f657a2a46b5c6c8bcc24d32ae3/api/server-server/definitions/event-schemas/m.presence_deny.yaml)
 
 
 ## Tradeoffs

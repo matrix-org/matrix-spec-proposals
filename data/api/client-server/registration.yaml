@@ -19,7 +19,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 consumes:
   - application/json
 produces:
@@ -393,7 +393,7 @@ paths:
         `/account/password` endpoint.
 
         This API's parameters and response are identical to that of the
-        [`/register/email/requestToken`](/client-server-api/#post_matrixclientr0registeremailrequesttoken)
+        [`/register/email/requestToken`](/client-server-api/#post_matrixclientv3registeremailrequesttoken)
         endpoint, except that
         `M_THREEPID_NOT_FOUND` may be returned if no account matching the
         given email address could be found. The server may instead send an
@@ -450,7 +450,7 @@ paths:
         `/account/password` endpoint.
 
         This API's parameters and response are identical to that of the
-        [`/register/msisdn/requestToken`](/client-server-api/#post_matrixclientr0registermsisdnrequesttoken)
+        [`/register/msisdn/requestToken`](/client-server-api/#post_matrixclientv3registermsisdnrequesttoken)
         endpoint, except that
         `M_THREEPID_NOT_FOUND` may be returned if no account matching the
         given phone number could be found. The server may instead send the SMS

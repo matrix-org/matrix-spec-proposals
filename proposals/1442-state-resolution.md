@@ -571,7 +571,7 @@ rejected.
 
 [^1]: In the current room protocol these are: the create event, power levels,
      membership, join rules and third party invites. See the
-     [spec](https://matrix.org/docs/spec/server_server/unstable.html#pdu-fields).
+     [spec](https://github.com/matrix-org/matrix-doc/blob/7cb918407dc8c505c67c750578c63b43042c8425/specification/server_server_api.rst#41pdu-fields).
 
 [^2]: In the current protocol these are: power levels, kicks, bans and join
      rules.
