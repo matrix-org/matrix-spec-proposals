@@ -18,7 +18,7 @@ For example, mentions of the `sender`'s power level can also refer to
 the default power level for users in the room.
 {{% /boxes/note %}}
 
-The rules are as follows:
+The complete list of rules, as of room version 3, is as follows:
 
 1.  If type is `m.room.create`:
     1.  If it has any previous events, reject.
