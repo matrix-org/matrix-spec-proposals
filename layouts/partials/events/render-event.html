@@ -25,6 +25,10 @@
 
   <hr/>
 
+{{ if (index $event_data "x-addedInMatrixVersion") }}
+  {{ partial "added-in" (dict "v" (index $event_data "x-addedInMatrixVersion")) }}
+{{ end }}
+
 {{ $event_data.description | markdownify }}
 
 </summary>

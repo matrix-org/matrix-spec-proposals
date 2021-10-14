@@ -23,6 +23,7 @@ basePath: /_matrix/client/v3
 paths:
   "/login/sso/redirect":
     get:
+      x-addedInMatrixVersion: "1.1"
       summary: Redirect the user's browser to the SSO interface.
       description: |-
         A web-based Matrix client should instruct the user's browser to
@@ -50,6 +51,7 @@ paths:
        - Session management
   "/login/sso/redirect/{idpId}":
     get:
+      x-addedInMatrixVersion: "1.1"
       summary: Redirect the user's browser to the SSO interface for an IdP.
       description: |-
         This endpoint is the same as `/login/sso/redirect`, though with an

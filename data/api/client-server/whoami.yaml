@@ -58,6 +58,7 @@ paths:
                 type: string
                 description: The user ID that owns the access token.
               device_id:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Device ID associated with the access token. If no device

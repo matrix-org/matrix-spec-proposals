@@ -62,3 +62,9 @@ doesn't work, as in the following example:
 In some cases, the schema will have HTTP response code definitions like
 `2xx`, `3xx`, and `4xx`. These indicate that a response code within those
 ranges (`2xx` = `200` to `299`) is valid for the schema.
+
+## Custom `x-addedInMatrixVersion` key
+
+This property is added throughout the OpenAPI schemas to denote which version
+of the Matrix specification added the associated object (endpoint, parameter,
+property, etc).

@@ -44,7 +44,7 @@ for retrieving events:
 -   [GET /rooms/:room\_id/event/:event\_id](#get_matrixclientv3roomsroomideventeventid)
 -   [GET /rooms/:room\_id/state/:event\_type/:state\_key](#get_matrixclientv3roomsroomidstateeventtypestatekey)
 -   [GET /rooms/:room\_id/messages](#get_matrixclientv3roomsroomidmessages)
--   [GET /rooms/:room\_id/members](#get_matrixclientv3roomsroomidmembers)
+-   {{% added-in v="1.1" %}} [GET /rooms/:room\_id/members](#get_matrixclientv3roomsroomidmembers)
 -   [GET /rooms/:room\_id/initialSync](#get_matrixclientv3roomsroomidinitialsync)
 -   [GET /sync](#get_matrixclientv3sync)
 -   [GET /events](#get_matrixclientv3events) as used for room previews.

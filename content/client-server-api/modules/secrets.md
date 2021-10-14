@@ -5,6 +5,8 @@ weight: 110
 
 ### Secrets
 
+{{% added-in v="1.1" %}}
+
 Clients may have secret information that they wish to be made available
 to other authorised clients, but that the server should not be able to
 see, so the information must be encrypted as it passes through the
