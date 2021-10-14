@@ -1,8 +1,15 @@
-In room versions 1 and 2, events need a signature from the domain of
-the `event_id` in order to be considered valid. This room version does
-not include an `event_id` over federation in the same respect, so does
-not need a signature from that server. The event must still be signed by
+In room versions 1 and 2, events need a signature from the domain of the
+`event_id` in order to be considered valid. This room version does not
+include an `event_id` over federation in the same respect, so does not
+need a signature from that server. The event must still be signed by
 the server denoted by the `sender`, however.
+
+{{% added-in this=true %}} `m.room.redaction` events are no longer
+explicitly part of the auth rules. They are still subject to the
+minimum power level rules, but should always fall into "11. Otherwise,
+allow". Instead of being authorized at the time of receipt, they are
+authorized at a later stage: see the [Handling Redactions](#handling-redactions)
+section below for more information.
 
 The types of state events that affect authorization are:
 
@@ -130,28 +137,6 @@ The complete list of rules, as of room version 3, is as follows:
             power level, reject.
     6.  Otherwise, allow.
 11. Otherwise, allow.
-
-{{% boxes/note %}}
-
-{{% added-in this=true %}} `m.room.redaction` events are no longer
-explicitly part of the above rules. They are still subject to the
-minimum power level rules, but should always fall into "11. Otherwise,
-allow".
-
-Redactions should only be sent to clients once both the redaction and
-redacted event are received and validated by the server. If both events
-are valid and have been seen by the server, then the server applies the
-redaction if one of the following conditions is met:
-
-1. The power level of the redaction event's `sender` is greater than or
-   equal to the *redact level*.
-2. The domain of the redaction event's `sender` matches that of the
-   original event's `sender`.
-
-If the server would apply a redaction, the redaction event is also sent
-to clients. Otherwise, the server simply waits for a valid partner event
-to arrive where it can then re-check the above.
-{{% /boxes/note %}}
 
 {{% boxes/note %}}
 Some consequences of these rules:
