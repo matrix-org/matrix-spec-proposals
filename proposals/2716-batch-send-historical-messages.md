@@ -499,6 +499,66 @@ flowchart BT
 </details>
 
 
+
+#### Add in the historical state
+
+In order to show the display name and avatar for the historical messages,
+the state provided by `state_events_at_start` needs to resolve when one of
+the historical messages is fetched.
+
+It's probably most semantic to have the state float outside of the normal DAG
+in a chain by referencing a fake `prev_event`. Then the insertion event
+reference the last piece in the floating state chain.
+
+In Synapse, the fake `prev_event` causes it to look like an "outlier" because
+the homeserver can't fully fetch and resolve the state at the point. As a
+result, the state will not be resolved into the current state of the room,
+and it won't be visible in the chat history. This allows us to insert multiple
+batches without having a bunch of `@mxid joined the room` noise between each
+batch.
+
+![](https://user-images.githubusercontent.com/558581/137247868-b7d5b996-02ac-49f8-bbfa-1417ddc60bae.png)
+
+[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBtYXJrZXIxPlwibWFya2VyXCJdIC0tLS0-IEIgLS0tLS0tLS0tLS0tLS0tLS0-IEFcbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDBcbiAgICAgICAgYmF0Y2gwLWJhdGNoW1tcImJhdGNoXCJdXSAtLT4gYmF0Y2gwLTIoKFwiMlwiKSkgLS0-IGJhdGNoMC0xKCgxKSkgLS0-IGJhdGNoMC0wKCgwKSkgLS0-IGJhdGNoMC1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgc3ViZ3JhcGggYmF0Y2gxXG4gICAgICAgIGJhdGNoMS1iYXRjaFtbXCJiYXRjaFwiXV0gLS0-IGJhdGNoMS0yKChcIjJcIikpIC0tPiBiYXRjaDEtMSgoMSkpIC0tPiBiYXRjaDEtMCgoMCkpIC0tPiBiYXRjaDEtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDJcbiAgICAgICAgYmF0Y2gyLWJhdGNoW1tcImJhdGNoXCJdXSAtLT4gYmF0Y2gyLTIoKFwiMlwiKSkgLS0-IGJhdGNoMi0xKCgxKSkgLS0-IGJhdGNoMi0wKCgwKSkgLS0-IGJhdGNoMi1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG5cbiAgICBiYXRjaDAtaW5zZXJ0aW9uIC0tPiBtZW1iZXJCb2IwKFtcIm0ucm9vbS5tZW1iZXIgKGJvYilcIl0pIC0tPiBtZW1iZXJBbGljZTAoW1wibS5yb29tLm1lbWJlciAoYWxpY2UpXCJdKSAtLT4gZmFrZVByZXZFdmVudDB7e2Zha2VfcHJldl9ldmVudH19XG4gICAgYmF0Y2gxLWluc2VydGlvbiAtLT4gbWVtYmVyQm9iMShbXCJtLnJvb20ubWVtYmVyIChib2IpXCJdKSAtLT4gbWVtYmVyQWxpY2UxKFtcIm0ucm9vbS5tZW1iZXIgKGFsaWNlKVwiXSkgLS0-IGZha2VQcmV2RXZlbnQxe3tmYWtlX3ByZXZfZXZlbnR9fVxuICAgIGJhdGNoMi1pbnNlcnRpb24gLS0-IG1lbWJlckJvYjIoW1wibS5yb29tLm1lbWJlciAoYm9iKVwiXSkgLS0-IG1lbWJlckFsaWNlMihbXCJtLnJvb20ubWVtYmVyIChhbGljZSlcIl0pIC0tPiBmYWtlUHJldkV2ZW50Mnt7ZmFrZV9wcmV2X2V2ZW50fX1cblxuICAgIG1hcmtlcjEgLS4tPiBiYXRjaDAtaW5zZXJ0aW9uQmFzZVxuICAgIGJhdGNoMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF0gLS0tLS0tLS0tLS0tLS0tPiBBXG4gICAgYmF0Y2gwLWJhdGNoIC0uLT4gYmF0Y2gwLWluc2VydGlvbkJhc2VbL2luc2VydGlvblxcXVxuICAgIGJhdGNoMS1iYXRjaCAtLi0-IGJhdGNoMC1pbnNlcnRpb25cbiAgICBiYXRjaDItYmF0Y2ggLS4tPiBiYXRjaDEtaW5zZXJ0aW9uXG4iLCJtZXJtYWlkIjoie1xuICBcInRoZW1lXCI6IFwiZGVmYXVsdFwiXG59IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
+
+<details>
+<summary>mermaid graph syntax</summary>
+
+```mermaid
+flowchart BT
+    subgraph live
+        marker1>"marker"] ----> B -----------------> A
+    end
+    
+    subgraph batch0
+        batch0-batch[["batch"]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
+    end
+
+    subgraph batch1
+        batch1-batch[["batch"]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
+    end
+    
+    subgraph batch2
+        batch2-batch[["batch"]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
+    end
+
+
+    batch0-insertion --> memberBob0(["m.room.member (bob)"]) --> memberAlice0(["m.room.member (alice)"]) --> fakePrevEvent0{{fake_prev_event}}
+    batch1-insertion --> memberBob1(["m.room.member (bob)"]) --> memberAlice1(["m.room.member (alice)"]) --> fakePrevEvent1{{fake_prev_event}}
+    batch2-insertion --> memberBob2(["m.room.member (bob)"]) --> memberAlice2(["m.room.member (alice)"]) --> fakePrevEvent2{{fake_prev_event}}
+
+    marker1 -.-> batch0-insertionBase
+    batch0-insertionBase[/insertion\] ---------------> A
+    batch0-batch -.-> batch0-insertionBase[/insertion\]
+    batch1-batch -.-> batch0-insertion
+    batch2-batch -.-> batch1-insertion
+```
+
+</details>
+
+
+
+
 ## Potential issues
 
 Also see the security considerations section below.
