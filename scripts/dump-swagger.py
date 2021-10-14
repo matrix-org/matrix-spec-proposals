@@ -93,7 +93,7 @@ output = {
 cs_api_dir = os.path.join(api_dir, 'client-server')
 with open(os.path.join(cs_api_dir, 'definitions',
                        'security.yaml')) as f:
-    output['securityDefinitions'] = yaml.load(f)
+    output['securityDefinitions'] = yaml.safe_load(f)
 
 for filename in os.listdir(cs_api_dir):
     if not filename.endswith(".yaml"):
@@ -102,7 +102,7 @@ for filename in os.listdir(cs_api_dir):
 
     print("Reading swagger API: %s" % filepath)
     with open(filepath, "r") as f:
-        api = yaml.load(f.read())
+        api = yaml.safe_load(f.read())
         api = units.resolve_references(filepath, api)
 
         basePath = api['basePath']
