@@ -1,10 +1,6 @@
 # no doubt older versions would be fine for many of these but these were
 # current at the time of writing
 
-docutils >= 0.14
-pygments >= 2.2.0
-Jinja2 >= 2.9.6
-
 # jsonschema 3.0.0 objects to the $refs in our schema file. TODO: figure out
 # why.
 jsonschema >= 2.6.0, < 3.0.0
@@ -12,4 +8,3 @@ jsonschema >= 2.6.0, < 3.0.0
 PyYAML >= 3.12
 requests >= 2.18.4
 towncrier == 18.6.0
-six >= 1.11.0
