@@ -4,11 +4,8 @@ node_modules
 /data/msc
 /env*
 /resources
-/scripts/gen
-/scripts/continuserv/continuserv
 /scripts/swagger
 /scripts/tmp
-/templating/out
 /hugo-config.toml
 /public
 *.pyc
