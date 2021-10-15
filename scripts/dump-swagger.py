@@ -30,12 +30,29 @@ import yaml
 
 
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
-templating_dir = os.path.join(scripts_dir, "templating")
 api_dir = os.path.join(os.path.dirname(scripts_dir), "data", "api")
 
-sys.path.insert(0, templating_dir)
+def resolve_references(path, schema):
+    if isinstance(schema, dict):
+        # do $ref first
+        if '$ref' in schema:
+            value = schema['$ref']
+            path = os.path.join(os.path.dirname(path), value)
+            with open(path, encoding="utf-8") as f:
+                ref = yaml.safe_load(f)
+            result = resolve_references(path, ref)
+            del schema['$ref']
+        else:
+            result = {}
 
-from matrix_templates import units
+        for key, value in schema.items():
+            result[key] = resolve_references(path, value)
+        return result
+    elif isinstance(schema, list):
+        return [resolve_references(path, value) for value in schema]
+    else:
+        return schema
+
 
 parser = argparse.ArgumentParser(
     "dump-swagger.py - assemble the Swagger specs into a single JSON file"
@@ -103,7 +120,7 @@ for filename in os.listdir(cs_api_dir):
     print("Reading swagger API: %s" % filepath)
     with open(filepath, "r") as f:
         api = yaml.safe_load(f.read())
-        api = units.resolve_references(filepath, api)
+        api = resolve_references(filepath, api)
 
         basePath = api['basePath']
         for path, methods in api["paths"].items():
