@@ -14,3 +14,4 @@ _rendered.rst
 /.vscode/
 /.idea/
 /spec/
+changelogs/rendered.*
