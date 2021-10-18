@@ -30,9 +30,14 @@ A new relation would be used to express that an event belongs to a thread.
 ```
 Where $thread_root is the event ID of the root message in the thread.
 
-A big advantage of relations over quote replies is that they can be server-side aggregated. It means that a client is not bound to download the entire history of a room to have a comprehensive list of events being part of a thread.
+A big advantage of relations over quote replies is that they can be server-side 
+aggregated. It means that a client is not bound to download the entire history of 
+a room to have a comprehensive list of events being part of a thread.
 
-It will have a custom aggregation  which is a summary of the thread: the latest message, a list of participants and the total count of messages. I.e. in places which include bundled relations (per [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), the thread root would include additional information in the `unsigned` field:
+When a thread head is aggregated (as in MSC2675), returns a summary of the thread: 
+the latest message, a list of participants and the total count of messages. 
+I.e. in places which include bundled relations (per [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), 
+the thread root would include additional information in the `unsigned` field:
 
 ```json
 {
@@ -110,7 +115,46 @@ Synchronising the synthesized notification count across devices will present its
 
 #### Single-layer event aggration
 
-Bundling only includes relations a single-layer deep, so it might return an event with `m.thread` relation, the `m.annotation` to that event and the `m.reference` relations to that event, but not the `m.annotation` to the `m.reference`.
+Bundling only includes relations a single-layer deep. Given the following list of 
+events, `ev4` would not be returned as it isn't a direct reference to `ev1`.
+
+```
+[
+  {
+    "event_id": "ev1",
+    ...
+  },
+  {
+    "event_id": "ev2",
+    ...
+    "m.relates_to": {
+      "rel_type": "m.thread",
+      "event_id": "ev1",
+      "m.in_reply_to": {
+          "event_id": "ev1"
+      }
+    }
+  },
+  {
+    "event_id": "ev3",
+    ...
+    "m.relates_to": {
+      "rel_type": "m.annotation",
+      "event_id": "ev1",
+      "key": "✅"
+    }
+  },
+  {
+    "event_id": "ev4",
+    ...
+    "m.relates_to": {
+      "rel_type": "m.annotation",
+      "event_id": "ev1",
+      "key": "❎"
+    }
+  }
+]
+```
 
 ### Client considerations
 
@@ -122,11 +166,28 @@ Failing to do the above should still render the event in the room's timeline. It
 
 #### Sending `m.thread` before fully implementing threads
 
-To ensure maximum compability and continuity in the conversation it is recommend for clients who do not fully support threads yet to adapt the `m.relates_to` body to use the `m.thread` relation type when replying to a threaded event.
+Clients that do not support threads yet should include a `m.thread` relation to the 
+event body if a user is replying to an event that has an `m.thread` relation type
 
-This will help threads enabled clients to render the event in the place that gives the maximum context to the users.
+This is done so that clients that support threads can render the event in the most 
+relevant context.
 
-As a fallback, it is recommended that clients make clicking on a quote reply related to a threaded event open that thread and highlight the corresponding event
+If a client does not include that relation type to the outgoing event, it will be 
+rendered in the room timeline with a quote reply that should open and highlight the 
+event in the thread context when clicked.
+
+When replying to the following event, a client that does not support thread should 
+copy in `rel_type` and `event_id` properties in their reply mixin.
+
+```
+{
+  ...
+  "m.relates_to": {
+    "rel_type": "m.thread",
+    "event_id": "ev1"
+  }
+}
+```
 
 ## Alternatives
 
