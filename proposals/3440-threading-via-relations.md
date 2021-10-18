@@ -78,7 +78,9 @@ GET /_matrix/client/unstable/rooms/!room_id:domain/relations/$thread_root/m.thre
 
 Where `$thread_root` is the event ID of the root message in the thread.
 
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) would need to be clarified to ensure that returned messages include any bundled relations necessary for displaying the thread, e.g. reactions to the threaded events.
+In order to properly display a thread it is necessary to retrieve the relations to threaded events, e.g. the reactions to the threaded events. This proposes clarifying [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) that the `/relations` API includes bundled relations. This follows what MSC2675 already describes:
+
+> Any API which receives events should bundle relations (apart from non-gappy incremental syncs), for instance: initial sync, gappy incremental sync, /messages and /context.
 
 ### Fetch all threads in a room
 
