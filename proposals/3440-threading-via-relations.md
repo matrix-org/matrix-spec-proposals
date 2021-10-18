@@ -191,7 +191,12 @@ copy in `rel_type` and `event_id` properties in their reply mixin.
 
 ## Alternatives
 
-[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836), "Threading as rooms", building on `m.in_reply_to` are the main alternatives here. The first two are non-overlapping with this MSC.
+[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836), "Threading as rooms", 
+building on `m.in_reply_to` are the main alternatives here. The first two are 
+non-overlapping with this MSC.
+
+It is also worth noting that relations in this MSC could be expressed using the 
+scalable relation format described in [MSC3051](https://github.com/matrix-org/matrix-doc/pull/3051).
 
 ### Threads as rooms
 
