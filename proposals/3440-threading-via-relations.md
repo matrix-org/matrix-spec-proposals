@@ -59,6 +59,10 @@ No recommendation to modifying quote replies is made, this would still be handle
 }
 ```
 
+It is possible that an `m.in_reply_to` event targets an event that is outside the
+related thread. Clients should always do their upmost to display the quote-reply
+and upon clicking it the event should be displayed and highlighted in its original context.
+
 ### Fetch all replies to a thread
 
 To fetch an entire thread, the `/relations` API can be used as defined in [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)
@@ -114,7 +118,7 @@ Bundling only includes relations a single-layer deep, so it might return an even
 
 It is possible for clients to provide a backwards compatible experience for users by treating the new relation `m.thread` the same way they would treat a `m.in_reply_to` event.
 
-Failing to do the above will still render the event in the room. It might create a disjointed experience as events might lack the original context for correct understanding.
+Failing to do the above should still render the event in the room's timeline. It might create a disjointed experience as events might lack the original context for correct understanding.
 
 #### Sending `m.thread` before fully implementing threads
 
