@@ -12,8 +12,10 @@ to follow and smoother to read.
 
 There have been several experiments in threading for Matrix...
 
- - [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326): Label based filtering
- - [MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836): Threading by serverside traversal of relationships
+ - [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326): 
+ Label based filtering
+ - [MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836): 
+ Threading by serverside traversal of relationships
  - "Threads as rooms"
 
 ...but none have yet been widely adopted due to the upheaval of implementing an 
@@ -42,8 +44,9 @@ a room to have a comprehensive list of events being part of a thread.
 
 When a thread head is aggregated (as in MSC2675), returns a summary of the thread: 
 the latest message, a list of participants and the total count of messages. 
-I.e. in places which include bundled relations (per [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), 
-the thread root would include additional information in the `unsigned` field:
+I.e. in places which include bundled relations (per 
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), the thread root 
+would include additional information in the `unsigned` field:
 
 ```json
 {
@@ -127,11 +130,17 @@ Where filter would be JSON and URL-encoded string include the above new fields:
 
 #### Read receipts
 
-Read receipts and read markers assume a single chronological timeline. Threading changes that assumption making the current API not very practical.
+Read receipts and read markers assume a single chronological timeline. Threading 
+changes that assumption making the current API not very practical.
 
-Clients can synthetize read receipts but it is possible that some notification get lost upon a fresh start where the clients have to start off the `m.read` information received from the homeserver.
+Clients can synthetize read receipts but it is possible that some notification get 
+lost upon a fresh start where the clients have to start off the `m.read` 
+information received from the homeserver.
 
-Synchronising the synthesized notification count across devices will present its own challenges and is probably undesirable at this stage. The preferred route would be to create another MSC to make read receipts support multiple timelines in a single room.
+Synchronising the synthesized notification count across devices will present its 
+own challenges and is probably undesirable at this stage. The preferred route 
+would be to create another MSC to make read receipts support multiple timelines 
+in a single room.
 
 #### Single-layer event aggration
 
