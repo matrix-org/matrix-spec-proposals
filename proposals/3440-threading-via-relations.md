@@ -2,9 +2,13 @@
 
 ## Problem
 
-Threading is a great way to create alternative timelines to group messages related to each other. This is particularly useful in high traffic rooms where multiple conversations can happen in parallel or when a single discussion might stretch over a very long period of time.
+Threading is a great way to create alternative timelines to group messages related 
+to each other. This is particularly useful in high traffic rooms where multiple 
+conversations can happen in parallel or when a single discussion might stretch 
+over a very long period of time.
 
-The main goal when implementing threads is to create conversations that are easier to follow and smoother to read.
+The main goal when implementing threads is to create conversations that are easier 
+to follow and smoother to read.
 
 There have been several experiments in threading for Matrix...
 
@@ -12,9 +16,11 @@ There have been several experiments in threading for Matrix...
  - [MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836): Threading by serverside traversal of relationships
  - "Threads as rooms"
 
-...but none have yet been widely adopted due to the upheaval of implementing an entirely new Client-Server API construct in the core message sending/display path.
+...but none have yet been widely adopted due to the upheaval of implementing an 
+entirely new Client-Server API construct in the core message sending/display path.
 
-Meanwhile, threading is very clearly a core requirement for any modern messaging solution, and Matrix uptake is suffering due to the lack of progress.
+Meanwhile, threading is very clearly a core requirement for any modern messaging 
+solution, and Matrix uptake is suffering due to the lack of progress.
 
 ## Proposal
 
@@ -52,7 +58,8 @@ the thread root would include additional information in the `unsigned` field:
 
 #### Quote replies in a thread 
 
-No recommendation to modifying quote replies is made, this would still be handled via the `m.in_reply_to` field of `m.relates_to`. Thus you could quote a reply in a thread:
+No recommendation to modifying quote replies is made, this would still be handled 
+via the `m.in_reply_to` field of `m.relates_to`. Thus you could quote a reply in a thread:
 
 ```json
 "m.relates_to": {
@@ -70,7 +77,8 @@ and upon clicking it the event should be displayed and highlighted in its origin
 
 ### Fetch all replies to a thread
 
-To fetch an entire thread, the `/relations` API can be used as defined in [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)
+To fetch an entire thread, the `/relations` API can be used as defined in 
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)
 
 ```
 GET /_matrix/client/unstable/rooms/!room_id:domain/relations/$thread_root/m.thread
@@ -78,18 +86,28 @@ GET /_matrix/client/unstable/rooms/!room_id:domain/relations/$thread_root/m.thre
 
 Where `$thread_root` is the event ID of the root message in the thread.
 
-In order to properly display a thread it is necessary to retrieve the relations to threaded events, e.g. the reactions to the threaded events. This proposes clarifying [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) that the `/relations` API includes bundled relations. This follows what MSC2675 already describes:
+In order to properly display a thread it is necessary to retrieve the relations 
+to threaded events, e.g. the reactions to the threaded events. This proposes 
+clarifying [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) that 
+the `/relations` API includes bundled relations. This follows what MSC2675 already describes:
 
-> Any API which receives events should bundle relations (apart from non-gappy incremental syncs), for instance: initial sync, gappy incremental sync, /messages and /context.
+> Any API which receives events should bundle relations (apart from non-gappy 
+incremental syncs), for instance: initial sync, gappy incremental sync, 
+/messages and /context.
 
 ### Fetch all threads in a room
 
-To fetch all threads in a room it is proposed to use the [`/messages`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-messages) API and expand the room event filtering to include relations. The `RoomEventFilter` will take additional parameters:
+To fetch all threads in a room it is proposed to use the 
+[`/messages`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-messages) 
+API and expand the room event filtering to include relations. The `RoomEventFilter` 
+will take additional parameters:
 
-* `relation_types`: A list of relation types which must be bundled with the event to include it. If this list is absent then no filtering is done on relation types.
+* `relation_types`: A list of relation types which must be bundled with the event 
+to include it. If this list is absent then no filtering is done on relation types.
 * `relation_senders`: A list of senders of relations...
 
-This can also be combined with the `sender` field to search for threads which a user has participated in (or not participated in).
+This can also be combined with the `sender` field to search for threads which a 
+user has participated in (or not participated in).
 
 ```
 GET /_matrix/client/unstable/rooms/!room_id:domain/messages/filter=...
@@ -162,9 +180,12 @@ events, `ev4` would not be returned as it isn't a direct reference to `ev1`.
 
 #### Display "m.thread" as "m.in_reply_to"
 
-It is possible for clients to provide a backwards compatible experience for users by treating the new relation `m.thread` the same way they would treat a `m.in_reply_to` event.
+It is possible for clients to provide a backwards compatible experience for users 
+by treating the new relation `m.thread` the same way they would treat a `m.in_reply_to` event.
 
-Failing to do the above should still render the event in the room's timeline. It might create a disjointed experience as events might lack the original context for correct understanding.
+Failing to do the above should still render the event in the room's timeline. 
+It might create a disjointed experience as events might lack the original context 
+for correct understanding.
 
 #### Sending `m.thread` before fully implementing threads
 
@@ -202,24 +223,40 @@ scalable relation format described in [MSC3051](https://github.com/matrix-org/ma
 
 ### Threads as rooms
 
-The provides full server-side APIs for navigating trees of events, and could be considered an extension of this MSC for scenarios which require that capability (e.g. Twitter-style microblogging as per [Cerulean](https://matrix.org/blog/2020/12/18/introducing-cerulean), or building an NNTP or IMAP or Reddit style threaded UI)
+The provides full server-side APIs for navigating trees of events, and could be 
+considered an extension of this MSC for scenarios which require that capability 
+(e.g. Twitter-style microblogging as per [Cerulean](https://matrix.org/blog/2020/12/18/introducing-cerulean), 
+or building an NNTP or IMAP or Reddit style threaded UI)
 
-"Threads as rooms" is the idea that each thread could just get its own Matrix room in parallel with the one which spawned the thread.
+"Threads as rooms" is the idea that each thread could just get its own Matrix room 
+in parallel with the one which spawned the thread.
 
 Advantages to "Threads as rooms" include:
  * May be simpler for client implementations.
  * Also requires minimal Client-Server API changes
 
 Disadvantages include:
- * Access control, membership, history visibility, room versions etc needs to be synced between the thread-room and the parent room
- * Harder to control lifetime of threads in the context of the parent room if they're completely split off
+ * Access control, membership, history visibility, room versions etc needs to be 
+ synced between the thread-room and the parent room
+ * Harder to control lifetime of threads in the context of the parent room if 
+ they're completely split off
  * Clients which aren't aware of them are going to fill up with a lot of rooms.
- * Bridging to non-threaded chat systems is trickier as you may have to splice together rooms
- * The sheer number of rooms involved probably makes it dependent on `/sync` v3 landing (the to-be-specced next generation of `/sync` which is constant-time complexity with your room count).
+ * Bridging to non-threaded chat systems is trickier as you may have to splice 
+ together rooms
+ * The sheer number of rooms involved probably makes it dependent on `/sync` v3 
+ landing (the to-be-specced next generation of `/sync` which is constant-time 
+ complexity with your room count).
 
 ### Threads via m.in_reply_to
 
-The rationale for using a new relation type instead of building on `m.in_reply_to` is to re-use the event relationship APIs provided by [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The MSC3267 definition of `m.reference` relationships could be updated to mention threads (perhaps by using the key field from [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) as the thread ID), but it is clearer to define a new relation type. It is unclear what impact this would have on [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267), but that is unimplemented by clients.
+The rationale for using a new relation type instead of building on `m.in_reply_to` 
+is to re-use the event relationship APIs provided by 
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The MSC3267 definition 
+of `m.reference` relationships could be updated to mention threads (perhaps by 
+using the key field from [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) 
+as the thread ID), but it is clearer to define a new relation type. It is unclear 
+what impact this would have on [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267), 
+but that is unimplemented by clients.
 
 ## Security considerations
 
@@ -227,8 +264,11 @@ None
 
 ## Unstable prefix
 
-Clients and servers should use list of unstable prefixes listed below while this MSC has not been included in a spec release.
+Clients and servers should use list of unstable prefixes listed below while this 
+MSC has not been included in a spec release.
 
   * `io.element.thread` should be used in place of `m.thread` as relation type
-  * `io.element.relation_senders` should be used in place of `relation_senders` in the `RoomEventFilter`
-  * `io.element.relation_types` should be used in place of `relation_types` in the `RoomEventFilter`
+  * `io.element.relation_senders` should be used in place of `relation_senders` 
+  in the `RoomEventFilter`
+  * `io.element.relation_types` should be used in place of `relation_types` 
+  in the `RoomEventFilter`
