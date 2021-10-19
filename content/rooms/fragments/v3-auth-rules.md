@@ -1,8 +1,14 @@
-In room versions 1 and 2, events need a signature from the domain of the
-`event_id` in order to be considered valid. This room version does not
-include an `event_id` over federation in the same respect, so does not
-need a signature from that server. The event must still be signed by
-the server denoted by the `sender`, however.
+---
+# unused frontmatter - just fixing a hugo issue where it doesn't parse
+# shortcodes at the start of a file.
+---
+
+{{% added-in this=true %}} In room versions 1 and 2, events need a
+signature from the domain of the `event_id` in order to be considered
+valid. This room version does not include an `event_id` over federation
+in the same respect, so does not need a signature from that server.
+The event must still be signed by the server denoted by the `sender`,
+however.
 
 The types of state events that affect authorization are:
 
