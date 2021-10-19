@@ -18,8 +18,8 @@
     "url": "https://github.com/matrix-org/matrix-doc"
   },
   "homepage": "https://github.com/matrix-org/matrix-doc#readme",
-  "dependencies": {},
   "devDependencies": {
+    "@iarna/toml": "^2.2.5",
     "autoprefixer": "^9.8.6",
     "node-fetch": "^2.6.1",
     "postcss-cli": "^7.1.2"

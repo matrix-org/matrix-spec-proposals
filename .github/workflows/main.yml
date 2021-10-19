@@ -3,12 +3,14 @@ on:
   push:
     branches:
       - main
+    tags:
+      - v*
   pull_request:
   workflow_dispatch:
 
 jobs:
   build-openapi:
-    name: "🐍 Build OpenAPI definitions for matrix.org"
+    name: "🐍 Build OpenAPI definitions"
     runs-on: ubuntu-latest
     container: "python:3.9"
     steps:
@@ -46,15 +48,33 @@ jobs:
         run: |
           npm i
           npm run get-proposals
-      - name: "⚙️ hugo"
+      - name: "⚙️ hugo (unstable)"
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: hugo --baseURL "/unstable" -d "spec"
+      - name: "⚙️ hugo (release)"
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+      - name: "🔀 Switch status to historical"  # See referenced script for why we do this
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: node ./scripts/make-historical.js
+      - name: "⚙️ hugo (future old)"
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec2"
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
+      - name: "📦 Tarball creation (future old)"
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: tar -czf spec-future-old.tar.gz spec2
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
           name: spec-artifact
           path: spec.tar.gz
+      - name: "📤 Artifact upload (future old)"
+        uses: actions/upload-artifact@v2
+        with:
+          name: spec-future-old-artifact
+          path: spec-future-old.tar.gz
 
   rebuild-matrixdotorg:
     name: "👷 Rebuild matrix.org"
