@@ -4,13 +4,6 @@ include an `event_id` over federation in the same respect, so does not
 need a signature from that server. The event must still be signed by
 the server denoted by the `sender`, however.
 
-{{% added-in this=true %}} `m.room.redaction` events are no longer
-explicitly part of the auth rules. They are still subject to the
-minimum power level rules, but should always fall into "11. Otherwise,
-allow". Instead of being authorized at the time of receipt, they are
-authorized at a later stage: see the [Handling Redactions](#handling-redactions)
-section below for more information.
-
 The types of state events that affect authorization are:
 
 -   `m.room.create`
