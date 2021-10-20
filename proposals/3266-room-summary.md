@@ -197,8 +197,8 @@ This uses the `im.nheko.summary` unstable prefix. As such the paths are prefixed
 with `unstable/im.nheko.summary`.
 
 - the client API will be
-    `/_matrix/client/unstable/im.nheko.summary/{roomIdOrAlias}`.
+    `/_matrix/client/unstable/im.nheko.summary/summary/{roomIdOrAlias}`.
 
-Earlier versions of this MSC used
+Some implementations still use
     `/_matrix/client/unstable/im.nheko.summary/rooms/{roomIdOrAlias}/summary`,
-    but this was a mistake. Endpoints using aliases shouldn't be under /rooms.
+    but this was a mistake in this MSC. Endpoints using aliases shouldn't be under /rooms.
