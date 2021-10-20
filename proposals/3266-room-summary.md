@@ -104,16 +104,8 @@ missing.
 
 For the federation API
 [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) is reused. This
-provides almost all the information needed in this MSC, but it also provides a
+provides all the information needed in this MSC, but it also provides a
 few additional fields and one level of children of this room.
-
-One small modifications is needed to that endpoint, so that it can be reused
-for this MSC:
-
-- the `allowed_room_ids` field is added to the `room` object too. Originally
-    this was only added for child rooms, but this makes it impossible to
-    calculate the access rules for the top most room, as such this should be a
-    reasonable addition.
 
 In theory one could also add the `max_depth` parameter with allowed values of 0
 and 1, so that child rooms are excluded, but this performance optimization does
