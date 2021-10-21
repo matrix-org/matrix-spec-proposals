@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-openapi:
-    name: "🐍 Build OpenAPI definitions for matrix.org"
+    name: "🐍 Build OpenAPI definitions"
     runs-on: ubuntu-latest
     container: "python:3.9"
     steps:
@@ -55,13 +55,3 @@ jobs:
         with:
           name: spec-artifact
           path: spec.tar.gz
-
-  rebuild-matrixdotorg:
-    name: "👷 Rebuild matrix.org"
-    needs: build-openapi
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    steps:
-      - name: "🪄 Triggering rebuild of matrix.org"
-        run: |
-          curl -XPOST -u "${{secrets.TRIGGER_MATRIXORG_REBUILD_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ github.repository_owner }}/matrix.org/actions/workflows/build-matrix.org.yml/dispatches --data '{"ref": "master" }'
