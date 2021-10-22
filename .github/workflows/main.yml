@@ -46,8 +46,19 @@ jobs:
         run: |
           npm i
           npm run get-proposals
+
+      # for PRs, set the baseURL to `/`. Otherwise, set it to `/unstable`.
+      - name: "⚙️ Calculate baseURL"
+        id: set-baseurl
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+              echo ::set-output name=baseURL::/
+          else
+              echo ::set-output name=baseURL::/unstable
+          fi
+
       - name: "⚙️ hugo"
-        run: hugo --baseURL "/unstable" -d "spec"
+        run: hugo --baseURL "${{ steps.set-baseurl.outputs.baseURL }}" -d "spec"
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
       - name: "📤 Artifact upload"
