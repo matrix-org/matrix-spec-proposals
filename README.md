@@ -99,4 +99,4 @@ there are a number of options:
 
 Specification issues are tracked on github at <https://github.com/matrix-org/matrix-doc/issues>.
 
-See [meta/github-labels.rst](./meta/github-labels.rst) for information on what the labels mean.
+See [meta/github-labels.rst](./meta/github-labels.rst) for information on what the labels mean....
