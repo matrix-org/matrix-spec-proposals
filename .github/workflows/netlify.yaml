@@ -1,0 +1,55 @@
+# GHA workflow which publishes previews of spec PRs to netlify.
+#
+# We keep this in a separate workflow to the main spec build, because it
+# requires access to the Netlify secret. By having it run on `workflow_run`, we
+# will only use the workflow definition file on the default branch, so we can
+# ensure that the secret can't be exfiltrated.
+#
+
+name: Upload Preview Build to Netlify
+on:
+  workflow_run:
+    workflows: [Spec]
+    types: [completed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    steps:
+      - name: "🔍 Read PR number"
+        id: readctx
+        run: |
+          echo "::set-output name=prnumber::${{ github.event.workflow_run.pull_requests[0].number }}"
+        
+      - name: '📥 Download artifact'
+        uses: dawidd6/action-download-artifact@af92a8455a59214b7b932932f2662fdefbd78126 # v2.15.0
+        with:
+          workflow: main.yaml
+          run_id: github.event.workflow_run.id
+          name: spec-artifact
+
+      - name: "📤 Deploy to Netlify"
+        id: netlify
+        # v1.2.2
+        uses: nwtgck/actions-netlify@f517512ae75beec8896aa7b027c1c72f01816200
+        with:
+          publish-dir: spec
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: false
+          alias: pr${{ github.event.workflow_run.pull_requests[0].number }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
+
+      - name: "📝 Edit PR Description"
+        # v1.0.1
+        uses: velas/pr-description@3e19bf4239eecaf552a1c24ee730da2ba84b41cf
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          pull-request-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          description-message: |
+            Preview: ${{ steps.netlify.outputs.deploy-url }}
