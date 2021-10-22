@@ -53,7 +53,7 @@ jobs:
           deploy-message: "Deploy from GitHub Actions"
           enable-pull-request-comment: false
           enable-commit-comment: false
-          alias: pr${{ github.steps.readctx.outputs.prnumber }}
+          alias: pr${{ steps.readctx.outputs.prnumber }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -65,6 +65,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          pull-request-number: ${{ github.steps.readctx.outputs.prnumber }}
+          pull-request-number: ${{ steps.readctx.outputs.prnumber }}
           description-message: |
             Preview: ${{ steps.netlify.outputs.deploy-url }}
