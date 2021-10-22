@@ -23,8 +23,16 @@ jobs:
           
       - name: "🔍 Read PR number"
         id: readctx
+        # we need to find the PR number that corresponds to the branch, which we do by
+        # searching the GH API
         run: |
-          echo "::set-output name=prnumber::${{ github.event.workflow_run.pull_requests[0].number }}"
+          head_branch='${{github.event.workflow_run.head_repository.owner.login}}:${{github.event.workflow_run.head_branch}}'
+          echo "head branch: $head_branch"
+          pr_number=$(curl -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+               'https://api.github.com/repos/${{ github.repository }}/pulls?head=$head_branch' |
+               jq -r '.[] | .number')
+          echo "PR number: $pr_number"
+          echo "::set-output name=prnumber::$pr_number"
         
       - name: '📥 Download artifact'
         uses: dawidd6/action-download-artifact@af92a8455a59214b7b932932f2662fdefbd78126 # v2.15.0
@@ -45,7 +53,7 @@ jobs:
           deploy-message: "Deploy from GitHub Actions"
           enable-pull-request-comment: false
           enable-commit-comment: false
-          alias: pr${{ github.event.workflow_run.pull_requests[0].number }}
+          alias: pr${{ github.steps.readctx.outputs.prnumber }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -57,6 +65,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          pull-request-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+          pull-request-number: ${{ github.steps.readctx.outputs.prnumber }}
           description-message: |
             Preview: ${{ steps.netlify.outputs.deploy-url }}
