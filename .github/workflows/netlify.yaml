@@ -29,6 +29,9 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           name: spec-artifact
 
+      - name: "📦 Extract Artifacts"
+        run: tar -xzvf spec.tar.gz && rm spec.tar.gz
+        
       - name: "📤 Deploy to Netlify"
         id: netlify
         # v1.2.2
