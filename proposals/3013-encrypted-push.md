@@ -10,19 +10,29 @@ to fetch the full event, and then create the notification based on that.
 This, however, introduces the issue of having to perform an additional HTTP request to be able to
 display the full event notification. On some systems (e.g. some weird vendor-specific android phones,
 or while driving through ~~rural germany~~ places with patchy cellular network availability) this isn't
-always the case.
+always possible.
 
 This proposal adds a method to encrypt the push message in a way only the recipient client can decrypt
 it, allowing the server to send the full event over push again, with this MSC and [MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782).
 
 ## Proposal
 
-A new pusher kind `http.encrypted.curve25519-aes-sha2` is introduced. It behaves the same as the pusher
-kind `http`, except that the content it pushes is encrypted. That means it inherits all the pusher
-data requirements, all the formats etc. It adds a new pusher data field, `public_key`, which is a
-(optionally unpadded) base64-encoded curve25519 public key. This new field is not to be added to the
-actual push payload being sent to push gateways. As such, setting such a pusher could look as
-following (assuming [MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782) has been merged):
+A new pusher data field, `algorithm`, is introduced for pushers of the kind `http`. It is an enum,
+represented as string. The currently allowed values are `m.plain` and `m.curve25519-aes-sha2`. Is the
+field absent, then an algorithm of `m.plain` is assumed. The algorithms are defined as following:
+
+### `m.plain` algorithm
+
+The `m.plain` algorithm (the default algorithm) denotes that push is to be delivered in plaintext.
+That is no change to current http pushers, thus this MSC is backwards compatible.
+
+### `m.curve25519-aes-sha2` algorithm
+
+The `m.curve25519-aes-sha2` algorithm indicates that the push payloads are to be sent encrypted.
+For this, another pusher data field, `public_key`, is required. This key is an (optionally unpadded)
+base64-encoded curve25519 public key. This new field is not to be added to the actual push payload
+being sent to push gateways. As such, setting such a pusher could look as following (assuming
+[MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782) has been merged):
 
 ```
 POST /_matrix/client/r0/pushers/set HTTP/1.1
@@ -30,13 +40,14 @@ Content-Type: application/json
 
 {
   "lang": "en",
-  "kind": "http.encrypted.curve25519-aes-sha2",
+  "kind": "http",
   "app_display_name": "Mat Rix",
   "device_display_name": "iPhone 9",
   "profile_tag": "xxyyzz",
   "app_id": "com.example.app.ios",
   "pushkey": "APA91bHPRgkF3JUikC4ENAHEeMrd41Zxv3hVZjC9KtT8OvPVGJ-hQMRKRrZuJAEcl7B338qju59zJMjw2DELjzEvxwYv7hH5Ynpc1ODQ0aT4U4OFEeco8ohsN5PjL1iC2dNtk2BAokeMCg2ZXKqpc8FXKmhX94kIxQ",
   "data": {
+    "algorithm": "m.curve25519-aes-sha2",
     "url": "https://push-gateway.location.here/_matrix/push/v1/notify",
     "format": "full_event",
     "public_key": "GkZgmbbxnYZfFtywxF4K7NUPqA50Kb7TEsyHeVWyHBI"
@@ -137,7 +148,9 @@ Resulting in the following final message being pushed out to the push gateway:
         "app_id": "org.matrix.matrixConsole.ios",
         "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
         "pushkey_ts": 12345678,
-        "data": {},
+        "data": {
+          "algorithm": "m.curve25519-aes-sha2"
+        },
         "tweaks": {
           "sound": "bing"
         }
@@ -153,11 +166,11 @@ It is currently implied that a homeserver could push the same notification out t
 at once, by populating the `devices` array with more than one element. Due to the nature of cryptography,
 this won't be possible anymore.
 
-It is still unclear how well this will work with iOS and its limitations, especially concerning badge-only
-updates if a message was read on another device.
+~~It is still unclear how well this will work with iOS and its limitations, especially concerning badge-only
+updates if a message was read on another device.~~ --> This should work?
 
 If the gateway does additional processing, like marking call attempts differently, the relevant data
-musn't be encrypted.
+musn't be encrypted. That means that clients which rely on that can't use this kind of pusher.
 
 ## Alternatives
 
@@ -174,5 +187,5 @@ a new key to encrypt the push message.
 
 ## Unstable prefix
 
-Is this needed here? If so, how? Soru is kinda confused as the pusher kinds are just `http` and `email`,
-not having any `m.` prefix.
+The unstable prefix for the algorithms are `com.famedly`, meaning the unstable prefixes for the new
+algorithms introduced are `com.famedly.plain` and `com.famedly.curve25519-aes-sha2`.
