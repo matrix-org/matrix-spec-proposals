@@ -18,9 +18,6 @@ There have been several experiments in threading for Matrix...
  Threading by serverside traversal of relationships
  - "Threads as rooms"
 
-...but none have yet been widely adopted due to the upheaval of implementing an 
-entirely new Client-Server API construct in the core message sending/display path.
-
 Meanwhile, threading is very clearly a core requirement for any modern messaging 
 solution, and Matrix uptake is suffering due to the lack of progress.
 
@@ -236,12 +233,12 @@ considered an extension of this MSC for scenarios which require that capability
 (e.g. Twitter-style microblogging as per [Cerulean](https://matrix.org/blog/2020/12/18/introducing-cerulean), 
 or building an NNTP or IMAP or Reddit style threaded UI)
 
-"Threads as rooms" is the idea that each thread could just get its own Matrix room 
-in parallel with the one which spawned the thread.
+"Threads as rooms" is the idea that each thread could just get its own Matrix room..
 
 Advantages to "Threads as rooms" include:
  * May be simpler for client implementations.
- * Also requires minimal Client-Server API changes
+ * Restricting events visiblity as the room creator
+ * Ability to create read-only threads
 
 Disadvantages include:
  * Access control, membership, history visibility, room versions etc needs to be 
