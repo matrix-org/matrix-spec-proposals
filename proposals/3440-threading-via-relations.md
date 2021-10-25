@@ -144,8 +144,13 @@ in a single room.
 
 #### Single-layer event aggration
 
-Bundling only includes relations a single-layer deep. Given the following list of 
-events, `ev4` would not be returned as it isn't a direct reference to `ev1`.
+Bundling only includes relations a single-layer deep. This MSC is not looking to
+solve nested threading but is rather focusing on bringing mechanisms to allow
+threading in chat applications
+
+Nested threading is out of scope for this proposal and would be the subject of
+a different MSC.
+A `m.thread` event can only reference events that do not have a `rel_type`
 
 ```
 [
@@ -172,18 +177,12 @@ events, `ev4` would not be returned as it isn't a direct reference to `ev1`.
       "event_id": "ev1",
       "key": "✅"
     }
-  },
-  {
-    "event_id": "ev4",
-    ...
-    "m.relates_to": {
-      "rel_type": "m.annotation",
-      "event_id": "ev1",
-      "key": "❎"
-    }
   }
 ]
 ```
+
+Given the above list of events, only `ev1` would be a valid target for an `m.thread`
+relation event.
 
 ### Client considerations
 
