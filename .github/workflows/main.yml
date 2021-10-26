@@ -56,27 +56,49 @@ jobs:
         # Check if this run *is* the result of a git tag
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
-      - name: "🔀 Switch status to historical"  # See referenced script for why we do this
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: node ./scripts/make-historical.js
-      - name: "⚙️ hugo (future old)"
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec2"
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
-      - name: "📦 Tarball creation (future old)"
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: tar -czf spec-future-old.tar.gz spec2
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
           name: spec-artifact
           path: spec.tar.gz
-      - name: "📤 Artifact upload (future old)"
+
+  build-historical-spec:
+    name: "📖 Build the historical backup spec"
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    steps:
+      - name: "➕ Setup Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: "➕ Setup Hugo"
+        uses: peaceiris/actions-hugo@c03b5dbed22245418539b65eb9a3b1d5fdd9a0a6
+        with:
+          hugo-version: '0.85.0'
+          extended: true
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: "⚙️ npm"
+        run: |
+          npm i
+          npm run get-proposals
+      - name: "🔀 Switch status to historical"  # See referenced script for why we do this
+        run: node ./scripts/make-historical.js
+      - name: "⚙️ hugo (future old)"
+        # Create a baseURL like `/v1.2` out of the `v1.2` tag
+        run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+      - name: "📦 Tarball creation"
+        run: tar -czf spec-historical.tar.gz spec
+      - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
-          name: spec-future-old-artifact
-          path: spec-future-old.tar.gz
+          name: spec-historical-artifact
+          path: spec-historical.tar.gz
+
 
   rebuild-matrixdotorg:
     name: "👷 Rebuild matrix.org"
