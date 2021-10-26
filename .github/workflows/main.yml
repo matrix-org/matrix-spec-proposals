@@ -49,9 +49,11 @@ jobs:
           npm i
           npm run get-proposals
       - name: "⚙️ hugo (unstable)"
+        # Check if this run *is not* the result of a git tag
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: hugo --baseURL "/unstable" -d "spec"
       - name: "⚙️ hugo (release)"
+        # Check if this run *is* the result of a git tag
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
       - name: "🔀 Switch status to historical"  # See referenced script for why we do this
