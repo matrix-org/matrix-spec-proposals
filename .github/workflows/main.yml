@@ -48,14 +48,19 @@ jobs:
         run: |
           npm i
           npm run get-proposals
-      - name: "⚙️ hugo (unstable)"
-        # Check if this run *is not* the result of a git tag
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        run: hugo --baseURL "/unstable" -d "spec"
-      - name: "⚙️ hugo (release)"
-        # Check if this run *is* the result of a git tag
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+
+      # for PRs, set the baseURL to `/`. Otherwise, set it to `/unstable`.
+      - name: "⚙️ Calculate baseURL"
+        id: set-baseurl
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+              echo ::set-output name=baseURL::/
+          else
+              echo ::set-output name=baseURL::/unstable
+          fi
+
+      - name: "⚙️ hugo"
+        run: hugo --baseURL "${{ steps.set-baseurl.outputs.baseURL }}" -d "spec"
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
       - name: "📤 Artifact upload"
