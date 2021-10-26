@@ -29,7 +29,9 @@ paths:
       description: |-
         Gets the versions of the specification supported by the server.
 
-        Values will take the form `rX.Y.Z`. <!-- TODO: TravisR: Global versioning spec -->
+        Values will take the form `vX.Y` or `rX.Y.Z` in historical cases. See
+        [the Specification Versioning](../#specification-versions) for more
+        information.
 
         All supported versions, including patch versions, are reported by the server.
       operationId: getVersions
@@ -38,7 +40,7 @@ paths:
           description: The versions supported by the server.
           examples:
             application/json: {
-              "versions": ["r0.1.0", "r0.2.0", "r0.2.1"]
+              "versions": ["r0.2.0", "r0.2.1", "v1.1"]
             }
           schema:
             type: object
