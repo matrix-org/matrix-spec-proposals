@@ -97,11 +97,11 @@ jobs:
         run: |
           npm i
           npm run get-proposals
-      - name: "🔀 Switch status to historical"
-        run: echo -e '[params.version]\nstatus="historical"' > historical.toml
       - name: "⚙️ hugo"
         # Create a baseURL like `/v1.2` out of the `v1.2` tag
-        run: hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+        run: |
+          echo -e '[params.version]\nstatus="historical"' > historical.toml
+          hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
       - name: "📦 Tarball creation"
         run: tar -czf spec-historical.tar.gz spec
       - name: "📤 Artifact upload"
