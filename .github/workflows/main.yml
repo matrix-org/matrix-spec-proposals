@@ -49,12 +49,18 @@ jobs:
           npm i
           npm run get-proposals
 
-      # for PRs, set the baseURL to `/`. Otherwise, set it to `/unstable`.
+      # For PRs, set the baseURL to `/`.
+      # For releases, set the baseURL to `/$tag` (eg: `/v1.2`).
+      # Otherwise, set it to `/unstable`.
       - name: "⚙️ Calculate baseURL"
         id: set-baseurl
+        # Double brackets on the elif to avoid auto-escaping refs/tags/* because we need
+        # the asterisk matching behaviour, not the literal string.
         run: |
           if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
               echo ::set-output name=baseURL::/
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              echo ::set-output name=baseURL::"/${GITHUB_REF/refs\/tags\//}"
           else
               echo ::set-output name=baseURL::/unstable
           fi
@@ -93,7 +99,7 @@ jobs:
           npm run get-proposals
       - name: "🔀 Switch status to historical"  # See referenced script for why we do this
         run: node ./scripts/make-historical.js
-      - name: "⚙️ hugo (future old)"
+      - name: "⚙️ hugo"
         # Create a baseURL like `/v1.2` out of the `v1.2` tag
         run: hugo --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
       - name: "📦 Tarball creation"
@@ -103,7 +109,6 @@ jobs:
         with:
           name: spec-historical-artifact
           path: spec-historical.tar.gz
-
 
   rebuild-matrixdotorg:
     name: "👷 Rebuild matrix.org"
