@@ -93,8 +93,9 @@ Query Parameters:
   * **`children_state`**: The stripped state of the `m.space.child` events of
     the room per [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173).
     In addition to the standard stripped state fields, the following is included:
-    * **`origin_server_ts`**: This is required for sorting of rooms as specified
-      below.
+    * **`origin_server_ts`**: `integer`. The `origin_server_ts` field from the
+      room's `m.space.child` event. This is required for sorting of rooms as
+      specified below.
 * **`next_batch`**: Optional `string`. The token to supply in the `from` param
   of the next `/hierarchy` request in order to request more rooms. If this is absent,
   there are no more results.
