@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - v*
   pull_request:
   workflow_dispatch:
 
@@ -47,12 +49,18 @@ jobs:
           npm i
           npm run get-proposals
 
-      # for PRs, set the baseURL to `/`. Otherwise, set it to `/unstable`.
+      # For PRs, set the baseURL to `/`.
+      # For releases, set the baseURL to `/$tag` (eg: `/v1.2`).
+      # Otherwise, set it to `/unstable`.
       - name: "⚙️ Calculate baseURL"
         id: set-baseurl
+        # Double brackets on the elif to avoid auto-escaping refs/tags/* because we need
+        # the asterisk matching behaviour, not the literal string.
         run: |
           if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
               echo ::set-output name=baseURL::/
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              echo ::set-output name=baseURL::"/${GITHUB_REF/refs\/tags\//}"
           else
               echo ::set-output name=baseURL::/unstable
           fi
@@ -66,3 +74,38 @@ jobs:
         with:
           name: spec-artifact
           path: spec.tar.gz
+
+  build-historical-spec:
+    name: "📖 Build the historical backup spec"
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    steps:
+      - name: "➕ Setup Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: "➕ Setup Hugo"
+        uses: peaceiris/actions-hugo@c03b5dbed22245418539b65eb9a3b1d5fdd9a0a6
+        with:
+          hugo-version: '0.85.0'
+          extended: true
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: "⚙️ npm"
+        run: |
+          npm i
+          npm run get-proposals
+      - name: "⚙️ hugo"
+        # Create a baseURL like `/v1.2` out of the `v1.2` tag
+        run: |
+          echo -e '[params.version]\nstatus="historical"' > historical.toml
+          hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+      - name: "📦 Tarball creation"
+        run: tar -czf spec-historical.tar.gz spec
+      - name: "📤 Artifact upload"
+        uses: actions/upload-artifact@v2
+        with:
+          name: spec-historical-artifact
+          path: spec-historical.tar.gz
