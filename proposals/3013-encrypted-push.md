@@ -189,3 +189,16 @@ a new key to encrypt the push message.
 
 The unstable prefix for the algorithms are `com.famedly`, meaning the unstable prefixes for the new
 algorithms introduced are `com.famedly.plain` and `com.famedly.curve25519-aes-sha2`.
+
+Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions`
+response, with the key `com.famedly.msc3013` set to `true`. So, the response could look then as
+following:
+
+```json
+{
+    "versions": ["r0.6.0"],
+    "unstable_features": {
+        "com.famedly.msc3013": true
+    }
+}
+```
