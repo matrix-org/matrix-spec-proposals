@@ -24,7 +24,7 @@ version 2 to version 1, if it is so desired.
 
 Some functionality is only available in specific room versions, such
 as knocking. The table below shows which versions support which features
-from a client's perspective. Server implementation are still welcome
+from a client's perspective. Server implementations are still welcome
 to reference the following table, however the detailed per-version
 specifications are more likely to be of interest.
 
@@ -97,3 +97,4 @@ Examples of valid room versions are:
 -   `1.2` (would be reserved by the Matrix protocol)
 -   `1.2-beta`
 -   `com.example.version`
+
