@@ -1,8 +1,0 @@
-{
-  "$ref": "core/state_event.json",
-  "type": "m.room.canonical_alias",
-  "state_key": "",
-  "content": {
-    "alias": "#somewhere:localhost"
-  }
-}
