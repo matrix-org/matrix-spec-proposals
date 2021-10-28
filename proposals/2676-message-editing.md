@@ -119,10 +119,8 @@ What happens when we edit a reply?
    can assume that any client which can handle edits can also display replies
    natively.
 
-   XXX: make Element do this
-
 What power level do you need to be able to edit other people's messages, and how
-does it fit in with fedeation event auth rules?
+does it fit in with federation event auth rules?
  * 50, by default?
 
     XXX: Synapse doesn't impose this currently - it lets anyone send an edit,
