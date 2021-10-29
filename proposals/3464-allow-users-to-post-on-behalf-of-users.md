@@ -113,21 +113,16 @@ of those lists.
 
 #### Timeline display
 
-If the message content does not have an `m.on_behalf_of` field, then clients
-MUST display the message as if it came from the sender.
+Clients MUST display the message as if it came from the sender in any of the
+following cases:
 
-If the message content has an `m.on_behalf_of` field, but the user listed in
-that field is not in the room, then clients MUST display the message as if it
-came from the sender.
-
-If the message content has an `m.on_behalf_of` field and the message sender is
-in in neither the `allow` nor the `deny` list for the user listed in
-`m.on_behalf_of`, then clients MUST display the message as if it came from the
-sender.
-
-If the message content has an `m.on_behalf_of` field and the message sender is
-in the `deny` list for the user listed in `m.on_behalf_of`, then clients MUST
-display the message as if it came from the sender.
+* The message content does not have an `m.on_behalf_of` field.
+* The message content has an `m.on_behalf_of` field, but the user listed in that
+  field is not in the room.
+* The message content has an `m.on_behalf_of` field, but the sender is in the
+  `deny` list for the user listed in `m.on_behalf_of`.
+* The message content has an `m.on_behalf_of` field, but the sender is not in
+  the `allow` list for the user listed in `m.on_behalf_of`.
 
 If the message content has an `m.on_behalf_of` field and the message sender is
 in the `allow` list for the user listed in `m.on_behalf_of`, then
