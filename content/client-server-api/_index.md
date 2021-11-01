@@ -1598,7 +1598,9 @@ content from the databases. Servers should include a copy of the
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
-version specification](/rooms).
+version specification](/rooms), as are the criteria homeservers should
+use when deciding whether to accept a redaction event from a remote
+homeserver.
 
 When a client receives an `m.room.redaction` event, it should change
 the affected event in the same way a server does.

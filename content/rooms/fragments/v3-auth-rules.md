@@ -1,47 +1,14 @@
 ---
-title: Room Version 7
-type: docs
-weight: 60
+# unused frontmatter - just fixing a hugo issue where it doesn't parse
+# shortcodes at the start of a file.
 ---
 
-This room version builds on [version 6](/rooms/v6) to introduce knocking
-as a possible join rule and membership state.
-
-## Client considerations
-
-This is the first room version to support knocking completely. As such,
-users will not be able to knock on rooms which are not based off v7.
-
-Though unchanged in this room version, clients which implement the
-redaction algorithm locally should refer to the [redactions](#redactions)
-section below for a full overview.
-
-## Server implementation components
-
-{{% boxes/warning %}}
-The information contained in this section is strictly for server
-implementors. Applications which use the Client-Server API are generally
-unaffected by the intricacies contained here. The section above
-regarding client considerations is the resource that Client-Server API
-use cases should reference.
-{{% /boxes/warning %}}
-
-Room version 7 adds new authorization rules for events to support knocking.
-[Room version 6](/rooms/v6) has details of other authorization rule changes,
-as do the versions v6 is based upon.
-
-### Authorization rules
-
-{{% added-in this=true %}} For checks perfomed upon `m.room.member` events, a
-new point for `membership=knock` is added.
-
-Events must be signed by the server denoted by the `sender` key.
-
-`m.room.redaction` events are not explicitly part of the auth rules.
-They are still subject to the minimum power level rules, but should always
-fall into "10. Otherwise, allow". Instead of being authorized at the time
-of receipt, they are authorized at a later stage: see the
-[Redactions](#redactions) section below for more information.
+{{% added-in this=true %}} In room versions 1 and 2, events need a
+signature from the domain of the `event_id` in order to be considered
+valid. This room version does not include an `event_id` over federation
+in the same respect, so does not need a signature from that server.
+The event must still be signed by the server denoted by the `sender`,
+however.
 
 The types of state events that affect authorization are:
 
@@ -57,7 +24,7 @@ For example, mentions of the `sender`'s power level can also refer to
 the default power level for users in the room.
 {{% /boxes/note %}}
 
-The rules are as follows:
+The complete list of rules, as of room version 3, is as follows:
 
 1.  If type is `m.room.create`:
     1.  If it has any previous events, reject.
@@ -75,7 +42,11 @@ The rules are as follows:
         algorithm described in the server specification.
 3.  If event does not have a `m.room.create` in its `auth_events`,
     reject.
-4.  If type is `m.room.member`:
+4.  If type is `m.room.aliases`:
+    1.  If event has no `state_key`, reject.
+    2.  If sender's domain doesn't matches `state_key`, reject.
+    3.  Otherwise, allow.
+5.  If type is `m.room.member`:
     1.  If no `state_key` key or `membership` key in `content`, reject.
     2.  If `membership` is `join`:
         1.  If the only previous event is an `m.room.create` and the
@@ -131,21 +102,16 @@ The rules are as follows:
             the *ban level*, and the *target user*'s power level is less
             than the `sender`'s power level, allow.
         3.  Otherwise, reject.
-    6. If `membership` is `knock`:
-        1.  If the `join_rule` is anything other than `knock`, reject.
-        2.  If `sender` does not match `state_key`, reject.
-        3.  If the `sender`'s current membership is not `ban`, `invite`,
-            or `join`, allow.
-    7.  Otherwise, the membership is unknown. Reject.
-5.  If the `sender`'s current membership state is not `join`, reject.
-6.  If type is `m.room.third_party_invite`:
+    6.  Otherwise, the membership is unknown. Reject.
+6.  If the `sender`'s current membership state is not `join`, reject.
+7.  If type is `m.room.third_party_invite`:
     1.  Allow if and only if `sender`'s current power level is greater
         than or equal to the *invite level*.
-7.  If the event type's *required power level* is greater than the
+8.  If the event type's *required power level* is greater than the
     `sender`'s power level, reject.
-8.  If the event has a `state_key` that starts with an `@` and does not
+9.  If the event has a `state_key` that starts with an `@` and does not
     match the `sender`, reject.
-9. If type is `m.room.power_levels`:
+10. If type is `m.room.power_levels`:
     1.  If `users` key in `content` is not a dictionary with keys that
         are valid user IDs with values that are integers (or a string
         that is an integer), reject.
@@ -159,7 +125,7 @@ The rules are as follows:
         2.  If the new value is higher than the `sender`'s current power
             level, reject.
     4.  For each entry being added, changed or removed in both the
-        `events`, `users`, and `notifications` keys:
+        `events` and `users` keys:
         1.  If the current value is higher than the `sender`'s current
             power level, reject.
         2.  If the new value is higher than the `sender`'s current power
@@ -169,7 +135,7 @@ The rules are as follows:
         1.  If the current value is equal to the `sender`'s current
             power level, reject.
     6.  Otherwise, allow.
-10. Otherwise, allow.
+11. Otherwise, allow.
 
 {{% boxes/note %}}
 Some consequences of these rules:
@@ -181,32 +147,3 @@ Some consequences of these rules:
     to both the kick *and* ban levels, *and* greater than the target
     user's power level.
 {{% /boxes/note %}}
-
-## Unchanged from v6
-
-The following sections have not been modified since v6, but are included for
-completeness.
-
-### State resolution
-
-{{% rver-fragment name="v2-state-res" %}}
-
-### Event format
-
-{{% rver-fragment name="v4-event-explainer" %}}
-
-{{% definition path="api/server-server/definitions/pdu_v4" %}}
-
-### Canonical JSON
-
-{{% rver-fragment name="v6-canonical-json" %}}
-
-### Signing key validity period
-
-{{% rver-fragment name="v5-signing-requirements" %}}
-
-### Redactions
-
-{{% rver-fragment name="v3-handling-redactions" %}}
-
-{{% rver-fragment name="v6-redactions" %}}
