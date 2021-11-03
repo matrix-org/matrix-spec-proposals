@@ -1,4 +1,4 @@
-# MSC0000: MXCs to Hashes
+# MSC3468: MXCs to Hashes
 
 Currently, matrix media/content repositories work with a MXC to blob mapping, fetching the media
 from the domain embedded in the MXC to present it to the user.
