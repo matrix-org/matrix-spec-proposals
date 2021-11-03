@@ -47,6 +47,15 @@ Like MSC2409, any user the appservice would be considered "interested" in (user 
 namespace, or sharing a room with an appservice user/namespaced room) would qualify for the device
 list changes section.
 
+In order to allow the appservice to masquerade as its users, an extension to the existing
+[identity assertion](https://matrix.org/docs/spec/application_service/r0.1.2#identity-assertion)
+ability is proposed. To compliment the (optional) `user_id` when using an `as_token` as an access
+token, a similarly optional `device_id` query parameter is proposed. When provided, the server asserts
+that the device ID is valid for the user, and that the appservice is able to masquerade as that user.
+If valid, that device ID should be assumed as being used for that request. For many requests, this
+means updating the "last seen IP" and "last seen timestamp" for the device, however for some endpoints
+it means interacting with that device (such as when uploading keys).
+
 ## Potential issues
 
 Servers would have to track and send this information to appservices, however this is still perceived
