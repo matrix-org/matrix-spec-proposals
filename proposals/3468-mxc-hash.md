@@ -33,7 +33,7 @@ fetching the media to a hash.
 This proposal would like to add the following two methods to CS;
 
 ```
-POST _matrix/media/v4/clone/{serverName}/{mediaId}
+POST _matrix/media/v1/clone/{serverName}/{mediaId}
 
 Rate-limited: Yes
 Authentication: Yes
@@ -51,7 +51,7 @@ Responses:
 ```
 
 ```
-GET _matrix/media/v4/hash/{serverName}/{mediaId}
+GET _matrix/media/v1/hash/{serverName}/{mediaId}
 
 Rate-limited: Yes
 Authentication: Yes
@@ -74,7 +74,7 @@ Responses:
 This proposal would like to add the following two endpoints to S2S;
 
 ```
-GET _matrix/federation/v?/media/hash
+GET _matrix/federation/v1/media/hash
 
 Rate-limited: No
 Authentication: Yes
@@ -88,7 +88,7 @@ Responses:
 ```
 
 ```
-GET _matrix/media/v?/media/fetch/{hash}
+GET _matrix/media/v1/media/fetch/{hash}
 
 Rate-limited: Yes
 Authentication: Yes
