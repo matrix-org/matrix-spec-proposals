@@ -1,4 +1,4 @@
-# MSCXXXX: HTTP Range on content repository
+# MSC3469: HTTP Range on content repository
 
 ## Proposal
 
