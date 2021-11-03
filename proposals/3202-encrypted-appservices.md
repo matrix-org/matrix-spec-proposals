@@ -80,3 +80,7 @@ unstable capacity) should be fine, though encryption might not function properly
 responsibility of the appservice to try and recover safely and sanely, if desired, when the server is not
 implementing this in an unstable capacity. This is not a concern once the MSC becomes stable in a released
 version of the specification, as servers will be required to implement it.
+
+For servers wishing to force appservices to opt-in to this behaviour, they may use `org.matrix.msc3202: true`
+in the registration file. Servers will be able to check for "opt-in" behaviour once this MSC is stable by
+seeing whether or not the appservice has an encryption-capable device recorded in its users namespaces.
