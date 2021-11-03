@@ -1,1 +1,1 @@
-Make the auth stages for email and msisdn actually match the implementations.
+Fix documentation errors around `threepid_creds`.
