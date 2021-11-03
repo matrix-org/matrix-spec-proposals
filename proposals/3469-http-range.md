@@ -12,6 +12,12 @@ make some media playback unable to be scrubbed through.
 
 This would only affect CS endpoint `/_matrix/media/v3/download/{serverName}/{mediaId}`.
 
+## Additional context
+
+Related: https://github.com/vector-im/element-web/issues/4265
+
+This MSC is to make the behavior standard, and consistent across the matrix ecosystem.
+
 ## Unstable prefix
 
 This MSC would only add a well-known HTTP capability to an existing endpoint, which can easily be
