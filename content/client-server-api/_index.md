@@ -719,14 +719,12 @@ follows:
 ```json
 {
   "type": "m.login.email.identity",
-  "threepidCreds": [
-    {
-      "sid": "<identity server session id>",
-      "client_secret": "<identity server client secret>",
-      "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
-      "id_access_token": "<access token previously registered with the identity server>"
-    }
-  ],
+  "threepid_creds": {
+    "sid": "<identity server session id>",
+    "client_secret": "<identity server client secret>",
+    "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+    "id_access_token": "<access token previously registered with the identity server>"
+  },
   "session": "<session ID>"
 }
 ```
@@ -750,14 +748,12 @@ follows:
 ```json
 {
   "type": "m.login.msisdn",
-  "threepidCreds": [
-    {
-      "sid": "<identity server session id>",
-      "client_secret": "<identity server client secret>",
-      "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
-      "id_access_token": "<access token previously registered with the identity server>"
-    }
-  ],
+  "threepid_creds": {
+    "sid": "<identity server session id>",
+    "client_secret": "<identity server client secret>",
+    "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+    "id_access_token": "<access token previously registered with the identity server>"
+  },
   "session": "<session ID>"
 }
 ```
