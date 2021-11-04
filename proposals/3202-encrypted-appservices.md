@@ -93,3 +93,6 @@ version of the specification, as servers will be required to implement it.
 For servers wishing to force appservices to opt-in to this behaviour, they may use `org.matrix.msc3202: true`
 in the registration file. Servers will be able to check for "opt-in" behaviour once this MSC is stable by
 seeing whether or not the appservice has an encryption-capable device recorded in its users namespaces.
+
+To use device ID masquerading, implementations should use `org.matrix.msc3202.device_id` instead of `device_id`
+in the query string while this MSC is considered unstable.
