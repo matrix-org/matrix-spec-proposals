@@ -1,1 +1,1 @@
-Add auth property to UIA endpoint uploadCrossSigningKeys.
+Add User-Interactive Authentication fields to cross-signing APIs as per [MSC1756](https://github.com/matrix-org/matrix-doc/pull/1756).

@@ -1,1 +1,1 @@
-Fix some errors in the end-to-end encryption spec.
+Fix schema issues in `m.key.verification.accept` and secret storage.
