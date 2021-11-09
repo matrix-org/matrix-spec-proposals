@@ -1,1 +1,0 @@
-Document `curve25519-hkdf-sha256` key agreement method for SAS verification, and deprecate old method as per [MSC2630](https://github.com/matrix-org/matrix-doc/pull/2630).

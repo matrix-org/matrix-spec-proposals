@@ -1,1 +1,0 @@
-Add cross-signing information to `GET /user/keys` and `GET /user/devices/{userId}`, `m.device_list_update` EDU, and a new `m.signing_key_update` EDU as per [MSC1756](https://github.com/matrix-org/matrix-doc/pull/1756).

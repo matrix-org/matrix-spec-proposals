@@ -1,1 +1,0 @@
-Remove unimplemented `m.login.oauth2` and `m.login.token` user-interactive authentication mechanisms as per [MSC2610](https://github.com/matrix-org/matrix-doc/pull/2610) and [MSC2611](https://github.com/matrix-org/matrix-doc/pull/2611).

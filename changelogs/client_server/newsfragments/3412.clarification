@@ -1,1 +1,0 @@
-Remove extraneous `mimetype` from `EncryptedFile` examples, as per [MSC2582](https://github.com/matrix-org/matrix-doc/pull/2582).
