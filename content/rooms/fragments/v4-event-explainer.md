@@ -1,3 +1,7 @@
+---
+toc_hide: true
+---
+
 The event ID is the [reference
 hash](/server-server-api#calculating-the-reference-hash-for-an-event) of
 the event encoded using a variation of [Unpadded

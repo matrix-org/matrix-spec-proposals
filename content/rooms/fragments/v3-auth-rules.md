@@ -1,6 +1,5 @@
 ---
-# unused frontmatter - just fixing a hugo issue where it doesn't parse
-# shortcodes at the start of a file.
+toc_hide: true
 ---
 
 {{% added-in this=true %}} In room versions 1 and 2, events need a
