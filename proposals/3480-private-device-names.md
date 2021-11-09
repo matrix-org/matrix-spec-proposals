@@ -1,4 +1,4 @@
-# MSCxxxx: Make device names private
+# MSC3480: Make device names private
 
 Matrix allows users to use their account with multiple devices simultaneously.
 These devices may be given a human-readable name (`device_display_name` or
