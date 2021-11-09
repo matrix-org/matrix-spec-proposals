@@ -1,3 +1,7 @@
+---
+toc_hide: true
+---
+
 When validating event signatures, servers MUST enforce the
 `valid_until_ts` property from a key request is at least as large as the
 `origin_server_ts` for the event being validated. Servers missing a copy

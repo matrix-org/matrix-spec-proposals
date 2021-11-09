@@ -1,3 +1,7 @@
+---
+toc_hide: true
+---
+
 Servers MUST strictly enforce the JSON format specified in the
 [appendices](/appendices#canonical-json). This translates to a
 400 `M_BAD_JSON` error on most endpoints, or discarding of events over

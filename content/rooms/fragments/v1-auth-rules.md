@@ -1,3 +1,7 @@
+---
+toc_hide: true
+---
+
 The types of state events that affect authorization are:
 
 -   `m.room.create`
