@@ -1,0 +1,2 @@
+Make `AesHmacSha2KeyDescription` consistent with `KeyDescription` in marking
+`name` as optional.
