@@ -38,6 +38,8 @@ Useful when provisioning users based on the contents of a third-party directory.
 When presenting profile settings, clients should use capabilities in order to display the correct UI.
 
 Capability should always be present.
+Servers should always send these capabilities. If they aren't (because the server does not support 
+a new enough spec version or for any other reason), clients should behave as if they were present and set to true.
 
 ## Unstable prefix
 
