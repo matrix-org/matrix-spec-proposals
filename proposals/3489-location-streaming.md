@@ -29,7 +29,7 @@ metadata being duplicated as location data is shared.
 
 An example `m.beacon_info.*` event is:
 
-```json
+```json5
 {
     "type": "m.beacon_info.self",
     "state_key": "@matthew:matrix.org",
