@@ -34,10 +34,10 @@ extensible event types when available.
 XXX: should description be localised?
 
 ```json
-		"m.location": {
-		    "uri": "geo:51.5008,0.1247;u=35",
-		    "description": "Our destination",
-		},
+        "m.location": {
+            "uri": "geo:51.5008,0.1247;u=35",
+            "description": "Our destination",
+        },
 ```
 
 If sharing the location of an object, one would add another subtype (e.g. a
@@ -54,15 +54,15 @@ Example for sharing a static location:
 
 ```json
 {
-	"type": "m.location",
-	"content": {
-		"m.location": {
-		    "uri": "geo:51.5008,0.1247;u=35",
-		    "description": "Matthew's whereabouts",
-		},
-		"m.ts": 1636829458432,
-		"m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021"
-	}
+    "type": "m.location",
+    "content": {
+        "m.location": {
+            "uri": "geo:51.5008,0.1247;u=35",
+            "description": "Matthew's whereabouts",
+        },
+        "m.ts": 1636829458432,
+        "m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021"
+    }
 }
 ```
 
@@ -74,10 +74,10 @@ annotations than location sharing. It would look something like this if we
 used it:
 
 ```json
-		"m.geo": {
-		    "type": "Point", 
-			"coordinates": [30.0, 10.0]
-		}
+        "m.geo": {
+            "type": "Point", 
+            "coordinates": [30.0, 10.0]
+        }
 ```
 
 Another design choice is to represent static shared locations as a normal room
