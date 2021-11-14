@@ -94,8 +94,8 @@ a room), hence adopting them for this.
 
 ## Alternatives
 
-We could behave like MSC3401 and broadcast and announce users' beacons in
-`m.beacon_info.*` (similar to MSC3401's `m.calls`), and then send location
+We could behave like MSC3401 and announce users' beacons in
+`m.beacon_info.*` (similar to MSC3401's `m.call`), and then send location
 data via to-device messages to interested devices.
  * Pros:
    * Doesn't thrash state resolution by storing new location points every time they change
@@ -107,7 +107,7 @@ data via to-device messages to interested devices.
    * means new joiners to a room won't even be able to see the most recent location for someone
    * MSC1763 data retention lets us control the historical data anyway.
 
-Alternatively, we could sell location data as normal E2EE messages. However,
+Alternatively, we could send location data as normal E2EE messages. However,
 clients would have to back-paginate in an unbounded fashion to confidently
 say what the various beacons are doing rather than simply fishing it out of
 room state.
