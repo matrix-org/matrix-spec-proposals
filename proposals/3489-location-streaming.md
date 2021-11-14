@@ -126,7 +126,7 @@ unencrypted or persisted. The same security considerations apply as for
 
 ## Unstable prefix
 
-`m.beacon_info.*` should be referred to as `org.matrix.msc3489.beacon_info.*` until this MSC lands.
-`m.beacon.*` should be referred to as `org.matrix.msc3489.beacon.*` until this MSC lands.
-`m.location` should be referred to as `org.matrix.msc3488.location.*` until MSC3488 lands.
-`m.ts` should be referred to as `org.matrix.msc3488.ts.*` until MSC3488 lands.
+ * `m.beacon_info.*` should be referred to as `org.matrix.msc3489.beacon_info.*` until this MSC lands.
+ * `m.beacon.*` should be referred to as `org.matrix.msc3489.beacon.*` until this MSC lands.
+ * `m.location` should be referred to as `org.matrix.msc3488.location.*` until MSC3488 lands.
+ * `m.ts` should be referred to as `org.matrix.msc3488.ts.*` until MSC3488 lands.
