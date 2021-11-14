@@ -98,6 +98,6 @@ very real risk of real-world abuse from location data.
 
 ## Unstable prefix
 
-`m.location` used as a event type and extensible event field name should be
+ * `m.location` used as a event type and extensible event field name should be
 referred to as `org.matrix.msc3488.location` until this MSC lands.
-`m.ts` should be referred to as `org.matrix.msc3488.ts` until this MSC lands.
+ * `m.ts` should be referred to as `org.matrix.msc3488.ts` until this MSC lands.
