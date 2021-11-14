@@ -74,6 +74,10 @@ The special ID `self` is used to indicate that the beacon describes the
 primary asset associated with that mxid (e.g. the whereabouts of its human
 user).
 
+The `m.location` section of the `m.beacon.*` event should not include a
+`description` field, as this instead resides on the matching
+`m.beacon_info.*` state event.
+
 ## Encryption
 
 Location data should be stored end-to-end encrypted for obvious data privacy
