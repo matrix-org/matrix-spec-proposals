@@ -132,7 +132,6 @@ GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/hierarchy?
                         "via": ["example.com"],
                         "suggested": true
                     },
-                    "room_id": "!ol19s:bleecker.street",
                     "sender": "@alice:bleecker.street",
                     "origin_server_ts": 1432735824653
                 },
