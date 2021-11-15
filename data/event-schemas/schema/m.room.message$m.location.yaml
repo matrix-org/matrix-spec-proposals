@@ -9,7 +9,7 @@ properties:
         description: "A description of the location e.g. 'Big Ben, London, UK', or some kind of content description for accessibility e.g. 'location attachment'."
         type: string
       geo_uri:
-        description: A geo URI representing this location.
+        description: A [geo URI](https://datatracker.ietf.org/doc/html/rfc5870) (RFC5870) representing this location.
         type: string
       msgtype:
         enum:
