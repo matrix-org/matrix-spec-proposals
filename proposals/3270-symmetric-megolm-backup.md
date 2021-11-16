@@ -2,16 +2,16 @@
 The current megolm backup use asymmetric encryption. This was chosen so that
 clients without the private key can still add their own megolm sessions to the
 backup. This, however, allows a homeserver admin to inject their own malicious
-megolm session into someones backup and then send an encrypted message as that
+megolm session into someone’s backup and then send an encrypted message as that
 user.  Due to this, some clients such as Element [warn the
 user](https://github.com/vector-im/element-web/issues/14323#issuecomment-740855963)
 that a message cannot be authenticated when the megolm session for that
 message was obtained from backup.
 
 Using symmetric encryption for megolm backup would fix this attack vector,
-since keys added by untrusted devices be undecryptable, thus allowing keys
+since keys added by untrusted devices would be undecryptable, thus allowing keys
 obtained from backup to be trusted.  Additionally, many clients cache the
-megolm private key anyways, making the original factor for choosing asymmetric
+megolm private key anyway, making the original reason for choosing asymmetric
 encryption obsolete.
 
 **Credits:** This proposal was originally written by @sorunome.
