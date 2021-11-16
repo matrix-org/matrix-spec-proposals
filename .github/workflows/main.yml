@@ -31,11 +31,11 @@ jobs:
   check-examples:
     name: "🔎 Check Event schema examples"
     runs-on: ubuntu-latest
+    container: uhoreg/matrix-doc-build
     steps:
       - name: "📥 Source checkout"
         uses: actions/checkout@v2
       - name: "🔎 Run validator"
-        container: uhoreg/matrix-doc-build
         run: |
           /env/bin/python scripts/check-event-schema-examples.py
         
