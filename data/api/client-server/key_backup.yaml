@@ -377,7 +377,7 @@ paths:
       summary: Store a key in the backup.
       description: |-
         Store a key in the backup.
-      operationId: putRoomKeysBySessionId
+      operationId: putRoomKeyBySessionId
       security:
         - accessToken: []
       parameters:
@@ -449,7 +449,7 @@ paths:
       summary: Retrieve a key from the backup.
       description: |-
         Retrieve a key from the backup.
-      operationId: getRoomKeysBySessionId
+      operationId: getRoomKeyBySessionId
       security:
         - accessToken: []
       parameters:
@@ -496,7 +496,7 @@ paths:
       summary: Delete a key from the backup.
       description: |-
         Delete a key from the backup.
-      operationId: deleteRoomKeysBySessionId
+      operationId: deleteRoomKeyBySessionId
       security:
         - accessToken: []
       parameters:
