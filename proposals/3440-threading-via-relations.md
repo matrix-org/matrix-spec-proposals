@@ -185,12 +185,16 @@ relation event.
 
 #### Display "m.thread" as "m.in_reply_to"
 
-It is possible for clients to provide a backwards compatible experience for users 
-by treating the new relation `m.thread` the same way they would treat a `m.in_reply_to` event.
+Clients that don't support threads will render threaded messages in the room's 
+timeline at the point at which they were sent. This does risk a confusing experience 
+for those on such clients, but options to mitigate this are limited.
 
-Failing to do the above should still render the event in the room's timeline. 
-It might create a disjointed experience as events might lack the original context 
-for correct understanding.
+Having older clients treat threaded messages as replies would give a better 
+experience, but adding reply metadata in addition to thread metadata would mean 
+replies could not then be used in threads and would be significant extra metadata.
+
+Clients that wish to offer basic thread support can display threads as replies to 
+the thread root message. See matrix-org/matrix-react-sdk#7109 for an example.
 
 #### Sending `m.thread` before fully implementing threads
 
