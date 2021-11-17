@@ -64,20 +64,25 @@ Relations do not yet replace the
 
 ### Relation types
 
-This MSC does not define any value for `rel_type`, but rather defines the generic
-framework that different kinds of relations have in common and that other MSCs can
-build on. Future definitions for values of `rel_type` should describe *how* the server
-should aggregate relations on the target event
-(as proposed in [MSC 2675](https://github.com/matrix-org/matrix-doc/pull/2675)).
-The goal is to make each `rel_type` as broadly useful as possible,
-and to keep the number of types for a server implementation to support down to a minimum.
-
-Multiple client use cases may be served by a single `rel_type` if they require aggregation
-in a similar manner. To further specify how a relation should be displayed in the client,
-MSCs may define additional fields in `m.relates_to` for specific values of `rel_type`.
-
-Any values here should abide the
+Any values for `rel_type` should abide the
 [general guidelines for identifiers](https://github.com/matrix-org/matrix-doc/pull/3171).
+
+The `rel_type` property determines how an event relates to another and can be used
+by clients to determine how and in what context a relation should be displayed.
+
+[MSC 2675](https://github.com/matrix-org/matrix-doc/pull/2675) proposes to also interpret the `rel_type` server-side.
+
+It is left up to the discretion of other MSCs building on this one whether they introduce
+`rel_type`s that are specific to their use case or that can serve a broad range
+of use cases. MSCs may define additional properties on the relation object for a given `rel_type`.
+
+Currently, a few `rel_type`s are already proposed. Here's a non-exhaustive list:
+
+ - `m.replace` in [MSC 2676](https://github.com/matrix-org/matrix-doc/pull/2676).
+ - `m.annotation` in [MSC 2677](https://github.com/matrix-org/matrix-doc/pull/2677).
+ - `m.reference` in [MSC 3267](https://github.com/matrix-org/matrix-doc/pull/3267).
+ - `m.thread` in [MSC 3440](https://github.com/matrix-org/matrix-doc/pull/3440).
+
 
 ### Sending relations
 
