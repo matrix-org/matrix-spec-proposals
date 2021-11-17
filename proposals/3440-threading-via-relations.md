@@ -51,7 +51,6 @@ would include additional information in the `unsigned` field:
     "content": { ... },
     ...
   },
-  "senders": ["@john:example.com", ...],
   "count": 7
 }
 ```
@@ -102,18 +101,20 @@ To fetch all threads in a room it is proposed to use the
 API and expand the room event filtering to include relations. The `RoomEventFilter` 
 will take additional parameters:
 
-* `relation_types`: A list of relation types which must be bundled with the event 
-to include it. If this list is absent then no filtering is done on relation types.
-* `relation_senders`: A list of senders of relations...
+* `relation_types`: A list of relation types which must be exist pointing to the event
+  being filtered. If this list is absent then no filtering is done on relation types.
+* `relation_senders`: A list of senders of relations which must be exist pointing to
+  the event being filtered. If this list is absent then no filtering is done on relation types.
 
 This can also be combined with the `sender` field to search for threads which a 
 user has participated in (or not participated in).
 
 ```
-GET /_matrix/client/unstable/rooms/!room_id:domain/messages/filter=...
+GET /_matrix/client/unstable/rooms/!room_id:domain/messages?filter=...
 ```
 
-Where filter would be JSON and URL-encoded string include the above new fields:
+The filter string would include the new fields, above. In this example, the URL 
+encoded JSON is presented unencoded and formatted for legibility:
 
 ```json
 {
@@ -130,7 +131,7 @@ Where filter would be JSON and URL-encoded string include the above new fields:
 Read receipts and read markers assume a single chronological timeline. Threading 
 changes that assumption making the current API not very practical.
 
-Clients can synthetize read receipts but it is possible that some notification get 
+Clients can synthetize read receipts but it is possible that some notifications get 
 lost upon a fresh start where the clients have to start off the `m.read` 
 information received from the homeserver.
 
