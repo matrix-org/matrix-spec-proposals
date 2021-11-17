@@ -17,6 +17,7 @@ There have been several experiments in threading for Matrix...
  - [MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836): 
  Threading by serverside traversal of relationships
  - "Threads as rooms"
+ - Building threads off `m.in_reply_to`
 
 Meanwhile, threading is very clearly a core requirement for any modern messaging 
 solution, and Matrix uptake is suffering due to the lack of progress.
@@ -103,7 +104,7 @@ will take additional parameters:
 
 * `relation_types`: A list of relation types which must be exist pointing to the event
   being filtered. If this list is absent then no filtering is done on relation types.
-* `relation_senders`: A list of senders of relations which must be exist pointing to
+* `relation_senders`: A list of senders of relations which must exist pointing to
   the event being filtered. If this list is absent then no filtering is done on relation types.
 
 This can also be combined with the `sender` field to search for threads which a 
@@ -253,9 +254,22 @@ Disadvantages include:
  * Clients which aren't aware of them are going to fill up with a lot of rooms.
  * Bridging to non-threaded chat systems is trickier as you may have to splice 
  together rooms
- * The sheer number of rooms involved probably makes it dependent on `/sync` v3 
- landing (the to-be-specced next generation of `/sync` which is constant-time 
- complexity with your room count).
+
+### Threads via serverside traversal of relationships MSC2836
+
+Advantages include:
+ * Fits other use cases than instant messaging
+ * Simple possible API shape to implement threading in a useful way
+
+Disadvantages include:
+ * Relationships are queried using `/event_relationships` which is outside the 
+ bounds of the `/sync` API so lacks the nice things /sync gives you (live updates). 
+ That being said, the event will come down `/sync`, you just may not have the 
+ context required to see parents/siblings/children.
+ * Threads can be of arbitrary width (unlimited direct replies to a single message) 
+ and depth (unlimited chain of replies) which complicates UI design when you just 
+ want "simple" threading.
+ * Does not consider use cases like editing or reactions
 
 ### Threads via m.in_reply_to
 
