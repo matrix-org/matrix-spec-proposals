@@ -29,7 +29,8 @@ This proposal introduces the concept of relations, which can be used to
 associate new information with an existing event.
 
 A relationship is an object with a field `rel_type`, which is a string describing the type of relation,
-and a field `event_id`, which is a string that represents the event_id of the target of this relation.
+and a field `event_id`, which is a string that represents the event_id of the target event of this relation.
+The target event must exist in the same room as the relating event is sent.
 Both of those fields are required. An event is said to contain a relationship if their `content` contains
 a relationship with all the required fields under the `m.relates_to` key. If any of these conditions is not met,
 clients and servers should treat the event as if it does not contain a relationship.
