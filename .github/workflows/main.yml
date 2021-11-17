@@ -9,6 +9,36 @@ on:
   workflow_dispatch:
 
 jobs:
+  validate-openapi:
+    name: "🔎 Validate OpenAPI specifications"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+      - name: "➕ Setup Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: "⚙️ npm"
+        working-directory: "./scripts"
+        run: |
+          npm install
+      - name: "🔎 Run validator"
+        working-directory: "./scripts"
+        run: |
+          node validator.js -s "../data/api/client-server"
+
+  check-examples:
+    name: "🔎 Check Event schema examples"
+    runs-on: ubuntu-latest
+    container: uhoreg/matrix-doc-build
+    steps:
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+      - name: "🔎 Run validator"
+        run: |
+          /env/bin/python scripts/check-event-schema-examples.py
+        
   build-openapi:
     name: "🐍 Build OpenAPI definitions"
     runs-on: ubuntu-latest
