@@ -18,17 +18,31 @@ These types of use cases are not supported by the current Matrix API because it 
 
 ## Proposal
 
-Add the `?around=<timestamp>` query parameter to the `GET /_matrix/client/r0/rooms/{roomId}/messages` endpoint. This will start the response at the message with `origin_server_ts` closest to the provided `around` timestamp. The direction is determined by the existing `?dir` query parameter.
 
-Use topoligical ordering, just as Element would use if you follow a permalink.
+Add new client API endpoint `GET /_matrix/client/r0/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]` which fetches the closest event to the given timestamp `ts` query parameter in the direction specified by the `dir` query parameter.
+
+In order to solve the problem where a remote federated homeserver does not have all of the history in a room and no suitably close event, we also add a server API endpoint `GET /_matrix/federation/v1/timestamp_to_event/{roomId}?ts=<timestamp>?dir=[f|b]` which other homeservers can use to ask about their closest event to the timestamp.
+
+The heuristics for deciding when to ask another homeserver for a closer event if your homeserver doesn't have something close, is left up to the homeserver implementation. Although the heuristics will probably be based on whether the closest event is a forward/backward extremity indicating it's next to a gap of events which are potentially closer.
+
+---
+
+In order to paginate `/messages`, we needa pagination token which we can get using `GET /_matrix/client/r0/rooms/{roomId}/context/{eventId}?limi=0` for the `event_id` returned by `/timestamp_to_event`.
 
 
 ## Potential issues
 
-If you ask for “the message with `origin_server_ts` closest to Jan 1st 2018” you might actually get a rogue random delayed one that was backfilled from a federated server, but the human can figure that out by trying again with a slight variation on the date or something.
+If you ask for "the message with `origin_server_ts` closest to Jan 1st 2018" you might actually get a rogue random delayed one that was backfilled from a federated server, but the human can figure that out by trying again with a slight variation on the date or something.
 
 
 ## Alternatives
+
+
+### Paginate `/messages` from timestamp 
+
+Add the `?around=<timestamp>` query parameter to the `GET /_matrix/client/r0/rooms/{roomId}/messages` endpoint. This will start the response at the message with `origin_server_ts` closest to the provided `around` timestamp. The direction is determined by the existing `?dir` query parameter.
+
+Use topoligical ordering, just as Element would use if you follow a permalink.
 
 ### Filter by date in `RoomEventFilter`
 
