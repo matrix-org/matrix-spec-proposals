@@ -55,7 +55,9 @@ where the subject is the relation event itself; the verb is the `rel_type`
 field of the `m.relates_to` and the object is the `event_id` field.
 
 We consciously do not support multiple different relations within a single event,
-in order to keep the API simple. Another MSC,
+in order to keep the API simple.  This means that if event A relates to event B
+in two different ways you would send two events to describe the two relations,
+rather than bundling them into a single event.  Another MSC,
 like [MSC 3051](https://github.com/matrix-org/matrix-doc/pull/3051),
 can propose a change to add support for multiple relations if it turns out that
 this would facilitate certain use cases.
