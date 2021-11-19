@@ -52,9 +52,15 @@ would include additional information in the `unsigned` field:
     "content": { ... },
     ...
   },
-  "count": 7
+  "count": 7,
+  "currentUserParticipated": true
 }
 ```
+
+* `latest_event`: A reference to the last `m.thread` relation part of the thread
+* `count`: An integer counting the number of `m.thread` events
+* `currentUserParticipated`: A flag set to `true` if the current logged in user
+  has participated in the thread
 
 #### Quote replies in a thread 
 
