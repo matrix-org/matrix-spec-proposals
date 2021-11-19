@@ -103,3 +103,8 @@ For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pul
 should be used to document things such as what endpoints and names are being used while the feature is
 in development, the name of the unstable feature flag to use to detect support for the feature, or what
 migration steps are needed to switch to newer versions of the proposal.*
+
+## Dependencies
+
+This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
+into the spec).
