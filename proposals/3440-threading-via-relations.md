@@ -296,3 +296,9 @@ MSC has not been included in a spec release.
   in the `RoomEventFilter`
   * `io.element.relation_types` should be used in place of `relation_types` 
   in the `RoomEventFilter`
+
+## Dependencies
+
+This MSC builds on [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) 
+and [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) (which at the 
+time of writing have not yet been accepted into the spec).
