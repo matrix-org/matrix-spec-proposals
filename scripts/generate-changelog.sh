@@ -11,7 +11,8 @@ cd changelogs
 # Pre-cleanup just in case it wasn't done on the last run
 rm -f rendered.*
 
-# Reversed order so the push gateway ends up on the bottom
+# Reversed order so that room versions ends up on the bottom
+towncrier --name "Room Versions" --dir "./room_versions" --config "./pyproject.toml" --yes
 towncrier --name "Push Gateway API" --dir "./push_gateway" --config "./pyproject.toml" --yes
 towncrier --name "Identity Service API" --dir "./identity_service" --config "./pyproject.toml" --yes
 towncrier --name "Application Service API" --dir "./application_service" --config "./pyproject.toml" --yes
