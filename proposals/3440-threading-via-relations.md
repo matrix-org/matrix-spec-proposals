@@ -225,7 +225,7 @@ copy in `rel_type` and `event_id` properties in their reply mixin.
 
 ## Alternatives
 
-[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836), "Threading as rooms", 
+[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836), "Threading as rooms", and 
 building on `m.in_reply_to` are the main alternatives here. The first two are 
 non-overlapping with this MSC.
 
@@ -234,10 +234,11 @@ scalable relation format described in [MSC3051](https://github.com/matrix-org/ma
 
 ### Threads as rooms
 
-The provides full server-side APIs for navigating trees of events, and could be 
-considered an extension of this MSC for scenarios which require that capability 
-(e.g. Twitter-style microblogging as per [Cerulean](https://matrix.org/blog/2020/12/18/introducing-cerulean), 
-or building an NNTP or IMAP or Reddit style threaded UI)
+Threads as rooms could provide full server-side APIs for navigating trees of events, 
+and could be considered an extension of this MSC for scenarios which require that 
+capability  (e.g. Twitter-style microblogging as per 
+[Cerulean](https://matrix.org/blog/2020/12/18/introducing-cerulean), or building 
+an NNTP or IMAP or Reddit style threaded UI)
 
 "Threads as rooms" is the idea that each thread could just get its own Matrix room..
 
