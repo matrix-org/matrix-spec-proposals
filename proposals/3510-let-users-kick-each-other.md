@@ -9,7 +9,8 @@ them.  Scenarios where this is problematic include:
 
  * If the admin becomes abusive (e.g. due to change in circumstances, betrayal
    of trust, compromise of their account)
- * If the admin is on a homeserver which is no more, they are stuck in the roomlist forever
+ * If the admin is on a homeserver which is no more, they are stuck in the
+   roomlist forever
 
 We also have a problem that it is very disturbing that admins don't have full
 control to admin the users in their room. Admins quite reasonably expect to
@@ -45,10 +46,10 @@ thresholds in `m.room.power_levels` are good enough though.
 You could also introduce the concept of a room 'owner' to provide an escape
 hatch against a coup between admins.  For instance, you could special-case
 the `m.room.create` sender to always be able to promote themselves to admin.
-Or you could maintain an `owner` field in `m.power_levels` in order to track
-a set of matrix IDs which are allowed to override powerlevels to promote
-themselves to admin whatever happens.  However, this is orthogonal to this
-proposal and should be considered in a separate MSC.
+Or you could maintain an `owner` field in `m.room.power_levels` in order to
+track a set of matrix IDs which are allowed to override powerlevels to
+promote themselves to admin whatever happens.  However, this is orthogonal to
+this proposal and should be considered in a separate MSC.
 
 ## Security considerations
 
