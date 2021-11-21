@@ -6,14 +6,14 @@ We also need proper stickers, too!
 
 ## Terminology
 ### Emoticons
-Since there is a lot of confusion of how this relates to `m.emote`, why this isn't called custom emoji
-etc, there it is:
+Since there is a lot of confusion of how this relates to `m.emote`, why this isn't called "custom emoji"
+etc.:
 
 `m.emote` is for emotion - and it has been incorrectly named this way. `m.action` would have been more
 appropriate, as you use it to describe *actions*, not *emotions*. E.g. "/me is walking to the gym", or
 "/me is happy" and *not* "/me happy".
 
-That, however, is *not* what this MSC is about. Instead it is about emoticons, also known in short as
+That, however, is *not* what this MSC is about. Instead, it is about emoticons, also known in short as
 emotes.
 
 Emoticons are just little images or text describing emotions or other things. Emoji are a subset of
@@ -21,24 +21,24 @@ emoticons, namely those found within unicode. Custom emoji here would actually r
 font, that is your own rendering of 🦊, 🐱, etc., *not* new images. New images is what custom emoticons
 are for.
 
-Now, a client may choose to name these however they like, we already have a naming disparity between
+Now, a client may choose to name these however they like. We already have a naming disparity between
 spec and clients with groups vs communities. It is, however, imperative to name things in the spec
 accurately after what they are.
 
 ### Stickers
-Stickers already exist in Matrix. They are reusable images one can send, usually as a reaction sent
-in the timeline to something. This MSC adds a way to distribute and define a source for a client to
+Stickers already exist in Matrix. They are reusable images one can send, usually as a reaction to
+something sent in the timeline. This MSC adds a way to distribute and define a source for a client to
 send them.
 
 ## Proposal
 ### Emoticons in the formatted body
-Emoticons have at least a shortcode and an mxc uri. They are sent as `<img>` tags currently already in
-the spec, as such existing clients should already be able to render them, though not all clients currently
-handle `img` tags. To allow clients to distinguish emoticons from other inline images, a new
-property, `data-mx-emoticon`, is introduced. A client can chose to ignore the size attributes of emoticons
+Emoticons have at least a shortcode and a mxc uri. They are sent as `<img>` tags, which are currently in
+the spec. As such, many existing clients are already be able to render them.
+To allow clients to distinguish emoticons from other inline images, a new
+property, `data-mx-emoticon`, is introduced. A client can choose to ignore the size attributes of emoticons
 when rendering, and instead pick the size based on other circumstances. This could e.g. be used to
-display emoticons in messages with only emoticons and emoji larger than usual, which is commonly found in
-messengers. Such an `<img>` tag of a shortcode `emote` and an mxc uri `mxc://example.org/emote`
+display messages with only emoticons as larger than usual, which is commonly found in
+messengers. Such an `<img>` tag of a shortcode `emote` and a mxc uri `mxc://example.org/emote`
 could look as follows:
 
 ```html
@@ -53,13 +53,13 @@ The `height` is just a height that looks good on most devices with the normal, d
 No width is displayed as to not weirdly squish non-square emotes. In order to maintain backwards-compatibility
 with clients not supporting emotes, specifying the `height` is required.
 
-If the new `data-mx-emoticon` attribute has a value it is ignored. Due to limitations of some libraries
+If the new `data-mx-emoticon` attribute has a value, it is ignored. Due to limitations of some libraries,
 the attribute may even look like `data-mx-emoticon=""`.
 
-The `src` attribute *must* be an mxc url. Other URIs, such as `https`, `mailto` etc. are not allowed.
+The `src` attribute *must* be a mxc url. Other URIs, such as `https`, `mailto` etc. are not allowed.
 
 ### Sending stickers
-To send stickers the already speced `m.sticker` is used.
+To send stickers, the already spec'd `m.sticker` is used.
 
 ### Image types
 Emoticons are recommended to have a size of about 128x128 pixels. Even though the fallback specifies
@@ -70,46 +70,46 @@ Stickers are recommended to have a size of up to 512x512 pixels.
 Furthermore, these images should either have a mimetype of `image/png`, `image/gif` or `image/webp`.
 They can be animated.
 
-Due to the low resolution of emotes, `image/jpg`/`image/jpeg` has been purposefully excluded from this
+Due to the low resolution of emotes, `image/jpg` and `image/jpeg` have been purposefully excluded from this
 list.
 
 ### Image pack event
 The image pack event has a type of `m.image_pack`. It contains a key `images`, which is a map from a
-short code to an image object. It may also contain a key `pack`, which is a pack object.
+shortcode to an image object. It may also contain a key `pack`, which is a pack object, described in
+the following section.
 
 #### Pack object
 The pack object consists of the following keys:
  - `display_name`: (String, optional) A display name for the pack. Defaults to the room name, if the
-   image pack event is in the room. This does not have to be unique within all packs of a room.
- - `avatar_url`: (String, optional) The mxc uri of an avatar/icon to dipslay for the pack. Defautls
-   to the room avatar, if the pack is in the room. If the room also does not have an avatar, or the
-   image pack event is not in a room, this pack does not have an avatar.
- - `usage`: (String[], optional) An array of the usages for this pack. Possible usages are `emoticon`
-   and `sticker`. If the usage is absent or empty, a usage for all possible usage types is to be assumed.
+   image pack event is in a room. This does not have to be unique from other packs in a room.
+ - `avatar_url`: (String, optional) The mxc uri of an avatar/icon to display for the pack. Defaults
+   to the room avatar, if the pack is in a room. Otherwise, the pack does not have an avatar.
+ - `usage`: (String[], optional) An array of the usages for this pack. Possible usages are `"emoticon"`
+   and `"sticker"`. Defaults to `["emoticon", "sticker"]` if absent or an empty array.
  - `attribution`: (String, optional) The attribution of this pack.
 
 #### Image object
-The image object conists of the following keys:
- - `url`: (String, requried) The mxc URL for this image
- - `body`: (String, optional) An optional body for this image, useful for the sticker body text or
-   the emote alt text. Defaults to the short code.
- - `info`: (`ImageInfo`, optional) The already speced `ImageInfo` object used for the `info` block of
+The image object consists of the following keys:
+ - `url`: (String, required) The mxc URL for this image.
+ - `body`: (String, optional) An optional text body for this image. Useful for the sticker body text or
+   the emote alt text. Defaults to the shortcode.
+ - `info`: (`ImageInfo`, optional) The already spec'd `ImageInfo` object used for the `info` block of
    `m.sticker` events.
- - `usage`: (String[], optional) An array of the usages for this image. If present and non-empty,
-   this overrides the usage defined at pack level for this particular image. This is useful to e.g.
-   have one pack contain mixed emotes and stickers. Additionally there is only a single account data
-   level image pack, meaning this is required to have a mixture of emotes and stickers available in
-   account data.
+ - `usage`: (String[], optional) An array of the usages for this image. The possible values match those 
+   of the `usage` key of a pack object. If present and non-empty, this overrides the usage defined at
+   pack level for this particular image. This is useful to e.g. have one pack contain mixed emotes and
+   stickers. Additionally, as there is only a single account data level image pack, this is required to
+   have a mixture of emotes and stickers available in account data.
 
 #### Example image pack event
-Taking all this into account, an example pack event may look as following:
+Taking all of this into account, an example pack event may look like the following:
 ```json
 {
   "images": {
-    "emote": {
+    "myemote": {
       "url": "mxc://example.org/blah"
     },
-    "sticker": {
+    "mysticker": {
       "url": "mxc://example.org/sticker",
       "usage": ["sticker"]
     }
@@ -123,33 +123,36 @@ Taking all this into account, an example pack event may look as following:
 
 ### Image sources
 There are several places where a client is expected to look for these `m.image_pack` events, mainly
-in their own account data and in room states.
+in their own account data and in room state.
 
 #### User image packs
-Each user can have their own personal image pack defined in their own account data, with the normal
-`m.image_pack` event. The user is expected to be presented with these images in all rooms.
+Each user can have their own personal image pack defined in their account data, under the
+`m.image_pack` key. The value matches the shape of the `m.image_pack` room state event.
+The user is expected to be presented with these images in all rooms.
 
 #### Room image packs
 A room can have an unlimited amount of image packs, by specifying the `m.image_pack` state event with
-different state keys. The user is expected to be presented with these images only in the room they
-are defined in. To enable them to be presented in all rooms, see the section below.
+different state keys. By default, the user is expected to be presented with these images only in the room
+they are defined in. To enable them to be presented in all rooms, see the "Image pack rooms" section.
 An empty state key is the default pack for a room.
 E.g. a discord bridge could set as state key
 `de.sorunome.mx-puppet-bridge.discord` and have all the bridged emotes in said state event, keeping
 bridged emotes from matrix emotes separate.
 
 #### Space image packs
-Clients should suggest image packs of a canonical space that a room is in, if the user is also in the
-space. This should be done recursively on canonical spaces. So, if a room has a canonical space and
-that space again has a canonical space, the clients should suggest image packs of both of those spaces.
+Clients should suggest image packs of a room's canonical space if the user is in that space.
+This should be done recursively on canonical spaces. So, if a room has a canonical space and
+that space again has a canonical space, clients should suggest image packs of both spaces.
 
 #### Image pack rooms
-While room image packs are specific to a room and are only accessible within that room, image pack
-rooms should be accessible from everywhere. They do not differentiate themselves from room emotes at
-all, instead you set an event in your account data of type `m.image_pack.rooms` which outlines
-which room image pack states are globally accessible for that user. For that, a `room` key contains
-a map of room ids that map to state keys that map to an object. While this MSC does not define any
-contents for this object, having this an object means greater flexibility in case of future changes.
+While room image packs are specific to a room, they can be made accessible from anywhere by setting
+the `m.image_pack.rooms` key in a user's account data. The value is an object, with a `room` key containing
+a map of room ids to state keys to an object. If a room id / state key combination is provided in this form,
+clients should make the corresponding room image pack globally accessible in all rooms.
+
+Note that while this MSC does not define any for the bottom-level object, defining it as an object means greater
+flexibility in case of future changes.
+
 The contents of `m.image_pack.rooms` could look like the following:
 
 ```json
@@ -168,38 +171,40 @@ The contents of `m.image_pack.rooms` could look like the following:
 
 Here three emote packs are globally accessible to the user: Two defined in `!someroom:example.org`
 (one with blank state key and one with state key `de.sorunome.mx-puppet-bridge.discord`) and one in
-`!someotherroom:example.org`.
+`!someotherroom:example.org` (with a blank state key).
 
-### Image pack source priority and deduplicating
-If a client gives image suggestions (emotes, stickers) to the user in some ordered fassion (e.g. a
-ordered list where you click an entry), the order of the images should be predictable between rooms.
-The ordering could look as following:
-1. User image pack (images set in your own account)
-2. Image pack rooms (rooms whos image packs you enabled to be accessible everywhere)
-3. Space image packs (packs sent in the space, if present)
-4. Room image packs (images defined in the currently open room)
+### Image pack source priority and de-duplication
+If a client gives image suggestions (emotes, stickers) to the user in some ordered fashion (e.g. an
+ordered list where you click on an entry), the order of the images should be predictable between rooms.
+A suggestion for clients of image pack ordering is as follows:
+1. the User image pack (defined in your own account data)
+2. Image pack rooms (defined in the `m.image_pack.rooms` account data object)
+3. Space image packs (defined in the hierarchy of canonical spaces for the current room)
+4. Room image packs (defined in the currently open room's state)
 
-Furthermore, clients are expected to deduplicate images based on their mxc url. This not only ensures
-that, when viewing a room that you also have in `m.image_pack.rooms`, it won't be displayed twice,
-but also if you have e.g. a bot which syncs emotes over multiple rooms, those will also be deduplicated.
+Furthermore, clients are expected to de-duplicate images based on their mxc url. Common cases where this
+is necessary is:
+
+1. when viewing a room that has a pack defined in the `m.image_pack.rooms` account data object, and
+2. a bot which syncs emotes over multiple rooms.
 
 ### Sending
 #### Emoticons
-For emoticons a client could add deliminators (e.g. `:`) around around the image shortcode, meaning
+For emoticons a client could add deliminators (e.g. `:`) around the image shortcode, meaning
 that if an image has a shortcode of `emote`, the user can enter `:emote:` to send it. If there are
-multiple emoticons with the same shortcode in a room the client could e.g. slugify the packs display
-name and then have the user enter `:slug~emote:`. As slugs typically match `^[\w-]+$` that should
+multiple emoticons with the same shortcode in a room, the client could e.g. slugify the packs display
+name and then have the user enter `:slug~emote:`. As slugs typically match `^[\w-]+$`, that should
 ensure complete-ability.
 
-The alt / title text fo the `<img>` tag is expected to be the `body` of the emote, or, if absent, its
-shotcode, optionally with tacked on deliminators.
+The alt / title text for the `<img>` tag is expected to be the `body` of the emote. If absent, its
+shortcode should be used instead, optionally with tacked on deliminators.
 
 #### Stickers
-When sending a sticker the `body` of the `m.sticker` event should be set to the `body` defined for that
-image, or its shortcode, if absent.
+When sending a sticker, the `body` of the `m.sticker` event should be set to the `body` defined for that
+image, or if absent, its shortcode.
 
-Furthermore, the `info` of the `m.sticker` event should be set to the `info` defined for that image,
-or a blank object, if absent.
+The `info` object of the `m.sticker` event should be set to the `info` object of the image, or if absent,
+an empty object.
 
 ## Security Considerations
 When sending an `<img>` tag in an encrypted room, the client will make a request to fetch
@@ -207,7 +212,7 @@ said image, in this case an emote. As there is no way to encrypt content behind 
 this could potentially leak part of the conversation. This is **not** a new security consideration,
 it already exists. This, however, isn't much different from posting someone a link in an e2ee chat and
 the recipient opens the link. Additionally, images, and thus emotes, are often cached by the client,
-not even necessarily leading to an http query.
+not even necessarily leading to a http query.
 
 Related issue: https://github.com/matrix-org/matrix-doc/issues/2418
 
@@ -238,7 +243,7 @@ still easily have an image pack-only room.
 
 MSC1951 defines a way to recommend using a pack of a different room - this MSC does not have an equivalent
 to that. Instead, this MSC allows multiple image packs for a room, typically one where you already
-chat in anyways. Furthermore it allows you to enable an image pack to be globally available for yourself
+chat in anyways. Furthermore, it allows you to enable an image pack to be globally available for yourself
 across all rooms you are in.
 
 The core difference is how MSC1951 and this MSC define the image packs themselves: In MSC1951 you have to
@@ -249,8 +254,8 @@ A simple dict of shortcode to mxc URI seems more appropriate for this.
 In general, MSC1951 feels like a heavier approach to image pack sources, while this MSC is more lightweight.
 
 ## Looking further
-A couple of interesting points have been raised in the discussions of this MSC tangentially touch
-custom emoticons but warrant an MSC for themselves, as they touch more on how `<img>` is working.
+A couple of interesting points have been raised in discussion of this MSC that tangentially touch
+custom emoticons. Each warrant an MSC for themselves however, as they touch more on how `<img>` works.
  - Figuring out how `<img>` should work with encrypted media.
  - Allow SVGs in the `<img>` tag. Current problem: Clients typically try to thumbnail the mxc URL,
    and most media repositories can't thumbnail SVGs. Possible solution: Somehow embed the mimetype.
