@@ -72,8 +72,9 @@ Historically in Matrix, static locations have been shared via the `m.location`
 msgtype in `m.room.message`. Until that API is deprecated from the spec,
 clients should share static locations in a backwards-compatible way by mixing
 in the `m.location` extensible event type from this MSC into the old-style
-`m.room.message`.  During this migratory phase, this necessarily duplicates
-the relevant data.
+`m.room.message`.  During this migratory phase, this necessarily duplicates the
+relevant data.  If both fields are present, clients that speak MSC3488 should
+favour the contents of the MSC3488 fields over the legacy `geo_uri` field.
 
 ```json
 {
