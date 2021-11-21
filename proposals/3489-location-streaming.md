@@ -51,9 +51,11 @@ location history where desirable.  If history is not wanted, then one can use
 data retention policies(e.g. exploding messages) to ensure it does not
 accumulate unnecessarily.
 
-`m.beacon.*` events should be sent every 2 seconds while the location of
-the asset is moving.  If the asset is not moving, it should be refreshed
-every 30 seconds.
+`m.beacon.*` events should be sent at a variable rate which is meaningful for
+the use case for the asset being tracked. This rate should not be more
+frequent than sending an event every 2 seconds. If the asset is not moving,
+the state event should still be refreshed on a regular basis to convey that
+information - e.g. every 30 seconds.
 
 An example `m.beacon.*` event is:
 
@@ -117,6 +119,10 @@ stream low-latency geospatial data over the participating devices in the room.
 This doesn't give us historical data, however, and requiring a WebRTC stack
 is prohibitively complicated for simple clients (e.g. basic IOT devices
 reporting spatial telemetry).
+
+We could include velocity data as well as displacement data here(especially as
+the W3C geolocation API provides it); this has been left for a future MSC in
+the interests of avoiding scope creep.
 
 ## Security considerations
 
