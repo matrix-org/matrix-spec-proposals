@@ -1,4 +1,4 @@
-# MSCXXXX: Mention Pushrule
+# MSC3517: Mention Pushrule
 
 Pings in matrix can be inconsistent for someone coming from an environment where pings are explicit
 (e.g. Discord, Telegram, Slack, Whatsapp, etc.)
