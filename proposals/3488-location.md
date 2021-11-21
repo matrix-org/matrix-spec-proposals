@@ -66,6 +66,40 @@ Example for sharing a static location:
 }
 ```
 
+## Migration from the `m.location` msgtype
+
+Historically in Matrix, static locations have been shared via the `m.location`
+msgtype in `m.room.message`. Until that API is deprecated from the spec,
+clients should share static locations in a backwards-compatible way by mixing
+in the `m.location` extensible event type from this MSC into the old-style
+`m.room.message`.  During this migratory phase, this necessarily duplicates
+the relevant data.
+
+```json
+{
+    "type": "m.room.message",
+    "content": {
+        "body": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021",
+        "msgtype": "m.location",
+        "geo_uri": "geo:51.5008,0.1247;u=35",
+        "m.location": {
+            "uri": "geo:51.5008,0.1247;u=35",
+            "description": "Matthew's whereabouts",
+        },
+        "m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021",
+        "m.ts": 1636829458432,
+    }
+}
+```
+
+This means that clients which do not yet implement MSC3488 will be able to
+correctly handle the location share. In future, an MSC will be written to
+officially deprecate the `m.location` msgtype from the spec, at which point
+clients should start sending `m.location` event types instead.  Clients should
+grandfather in the old `m.location` msgtype format for posterity in order to
+display old events; this is unavoidable (similar to HTML being doomed to display
+blink tags until the end of days).
+
 ## Alternatives
 
 We could use GeoJSON (RFC7946) to describe the location.  However, it doesn't
@@ -95,6 +129,8 @@ Geographic location data is high risk from a privacy perspective.
 Clients should remind users to be careful where they send location data,
 and encourage them to do so in end-to-end encrypted rooms, given the
 very real risk of real-world abuse from location data.
+
+All points from https://www.w3.org/TR/geolocation/#security apply.
 
 ## Unstable prefix
 
