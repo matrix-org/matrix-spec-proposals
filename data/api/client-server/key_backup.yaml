@@ -878,6 +878,8 @@ paths:
                     }
                   }
                 }
+            required:
+              - rooms
         404:
           description: The backup was not found.
           examples:
