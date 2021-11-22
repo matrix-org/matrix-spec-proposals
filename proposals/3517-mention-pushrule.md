@@ -10,7 +10,7 @@ alternative that only gives notifications on explicit pings does not exist.
 
 ## Proposal
 
-This proposal aims to change that, adding the following push rule;
+This proposal aims to change that, adding the following default push rule:
 
 ```json
 {
