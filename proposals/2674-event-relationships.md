@@ -34,7 +34,8 @@ The target event must exist in the same room as the relating event is sent.
 Both of those fields are required. An event is said to contain a relationship if its `content` contains
 a relationship with all the required fields under the `m.relates_to` key. If any of these conditions is not met,
 clients and servers should treat the event as if it does not contain a relationship.
-Servers should reject events not meeting these conditions with an HTTP 400 error when they are received via the client-server API
+Servers should reject events not meeting these conditions with an HTTP 400 error when
+they are received via the client-server API.
 
 Here's a (partial) example of an event relating to another event:
 
