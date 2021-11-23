@@ -32,7 +32,8 @@ A relationship is an object with a field `rel_type`, which is a string describin
 and a field `event_id`, which is a string that represents the event_id of the target event of this relation.
 The target event must exist in the same room as the relating event is sent.
 Both of those fields are required. An event is said to contain a relationship if its `content` contains
-a relationship with all the required fields under the `m.relates_to` key.
+a relationship with all the required fields under the `m.relates_to` key. If any of these conditions is not met,
+clients and servers should treat the event as if it does not contain a relationship.
 
 Here's a (partial) example of an event relating to another event:
 
