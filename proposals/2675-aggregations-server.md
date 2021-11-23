@@ -54,9 +54,15 @@ bundled relation (or bundled aggregation), and by sending a summary of the
 aggregations, avoids us having to always send lots of individual unbundled
 relation events individually to the client.
 
-Any API which returns events should bundle relations (apart from non-gappy
-incremental syncs), for instance: initial sync, gappy incremental sync,
-/messages and /context.
+The following Client-Server APIs should bundle relations:
+
+  - `/rooms/{roomId}/messages`
+  - `/rooms/{roomId}/context`
+  - `/rooms/{roomId}/event/{eventId}`
+  - `/sync`, only for room sections in the response where `limited` field is `true`; this amounts to all rooms in the response if the `since` request parameter was not passed, also known as an initial sync.
+  - `/relations`, as proposed in this MSC.
+
+Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required to bundle relations.
 
 The bundled relations are grouped according to their `rel_type`, and then
 paginated within each group using Matrix's defined pagination idiom of `count`,
