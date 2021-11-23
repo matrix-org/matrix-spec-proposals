@@ -118,58 +118,7 @@ three thumbsup reaction annotations, one replace, and one reference.
 }
 ```
 
-#### Handling limited (gappy) syncs
-
-For the special case of a gappy incremental sync, many relations (particularly
-reactions) may have occurred during the gap.  It would be inefficient to send
-each one individually to the client, but it would also be inefficient to send
-all possible bundled aggregations to the client.
-
-The simplest thing a client can do is to just throw away its history for a
-room on seeing a gappy incremental sync, and then re-paginate the history of
-the room using /messages in order to get a consistent view of the relations
-which may have changed during the gap.  However, this is quite inefficient,
-and prohibits the client from persisting multiple sections of timeline for a
-given room.
-
-Alternatively, the server tells the client the event IDs of events which
-predate the gap which received relations during the gap.  This means that the
-client can invalidate its copy of those events (if any) and then requery them
-(including their bundled relations) from the server if/when needed.
-
-The server does this with the new `stale_events` field of each room object
-in the sync response.  The `stale_events` field lists all the event IDs
-prior to the gap which had updated relations during the gap.  The event IDs
-are grouped by relation type, and limited to N entries for efficiency.  N
-should be 100.  If the number of events with stale relations exceeds N, the
-list is marked as `limited` as per the normal Matrix pagination model.  We do
-not include events referenced by `m.reference` as stale, in favour of more
-sophisticated pagination techniques in future. For instance:
-
-```json
-"!roomid:matrix.org": {
-  "account_data": {},
-  "ephemeral": {},
-  "state": {},
-  "summary": {},
-  "timeline": {},
-  "unread_notifications": {},
-  "stale_events": {
-    "m.annotations": {
-      "chunk": [
-        "$12345676321:matrix.org",
-        "$12345321432:matrix.org"
-      ],
-      "limited": false
-    }
-  }
-}
-```
-
-This shows that in the gappy sync response, a given room has two events prior
-to the gap which received new annotations during the gap. Therefore if the
-client has cached a local copy of those events, it should invalidate them, and
-subsequently refresh them as needed.
+#### Batch API for fetching events with bundled relations
 
 To refresh events, we need an API to load arbitrary events from the room in
 bulk, which the CS API doesn't currently provide.  We propose extending GET
@@ -358,3 +307,58 @@ What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
    future for threading?
  * XXX: what does synapse do here?
+
+## Future extensions
+
+### Handling limited (gappy) syncs
+
+For the special case of a gappy incremental sync, many relations (particularly
+reactions) may have occurred during the gap.  It would be inefficient to send
+each one individually to the client, but it would also be inefficient to send
+all possible bundled aggregations to the client.
+
+The simplest thing a client can do is to just throw away its history for a
+room on seeing a gappy incremental sync, and then re-paginate the history of
+the room using /messages in order to get a consistent view of the relations
+which may have changed during the gap. However, this is quite inefficient,
+and prohibits the client from persisting multiple sections of timeline for a
+given room.
+
+Alternatively, the server tells the client the event IDs of events which
+predate the gap which received relations during the gap.  This means that the
+client can invalidate its copy of those events (if any) and then requery them
+(including their bundled relations) from the server if/when needed.
+
+The server does this with the new `stale_events` field of each room object
+in the sync response.  The `stale_events` field lists all the event IDs
+prior to the gap which had updated relations during the gap.  The event IDs
+are grouped by relation type, and limited to N entries for efficiency.  N
+should be 100.  If the number of events with stale relations exceeds N, the
+list is marked as `limited` as per the normal Matrix pagination model.  We do
+not include events referenced by `m.reference` as stale, in favour of more
+sophisticated pagination techniques in future. For instance:
+
+```json
+"!roomid:matrix.org": {
+  "account_data": {},
+  "ephemeral": {},
+  "state": {},
+  "summary": {},
+  "timeline": {},
+  "unread_notifications": {},
+  "stale_events": {
+    "m.annotations": {
+      "chunk": [
+        "$12345676321:matrix.org",
+        "$12345321432:matrix.org"
+      ],
+      "limited": false
+    }
+  }
+}
+```
+
+This shows that in the gappy sync response, a given room has two events prior
+to the gap which received new annotations during the gap. Therefore if the
+client has cached a local copy of those events, it should invalidate them, and
+subsequently refresh them as needed.
