@@ -1,4 +1,4 @@
-# MSC0000: Timeboxed/ranged relations endpoint
+# MSC3523: Timeboxed/ranged relations endpoint
 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines a new `/relations` endpoint
 which clients can use to get information about reactions, replies, edits, etc made to an event, however
@@ -66,5 +66,5 @@ into the future.
 
 While this MSC is not considered stable, the following transformations apply:
 
-* `from_target` -> `org.matrix.msc0000.from_target`
-* `to_target` -> `org.matrix.msc0000.to_target`
+* `from_target` -> `org.matrix.msc3523.from_target`
+* `to_target` -> `org.matrix.msc3523.to_target`
