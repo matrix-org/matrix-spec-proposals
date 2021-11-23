@@ -1,15 +1,11 @@
-/api/node_modules
+node_modules
 /assets
 /assets.tar.gz
 /data/msc
 /env*
-/node_modules
 /resources
-/scripts/gen
-/scripts/continuserv/continuserv
 /scripts/swagger
 /scripts/tmp
-/templating/out
 /hugo-config.toml
 /public
 *.pyc
@@ -18,3 +14,4 @@ _rendered.rst
 /.vscode/
 /.idea/
 /spec/
+changelogs/rendered.*

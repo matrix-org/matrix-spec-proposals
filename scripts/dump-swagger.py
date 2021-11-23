@@ -30,12 +30,29 @@ import yaml
 
 
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
-templating_dir = os.path.join(scripts_dir, "templating")
 api_dir = os.path.join(os.path.dirname(scripts_dir), "data", "api")
 
-sys.path.insert(0, templating_dir)
+def resolve_references(path, schema):
+    if isinstance(schema, dict):
+        # do $ref first
+        if '$ref' in schema:
+            value = schema['$ref']
+            path = os.path.join(os.path.dirname(path), value)
+            with open(path, encoding="utf-8") as f:
+                ref = yaml.safe_load(f)
+            result = resolve_references(path, ref)
+            del schema['$ref']
+        else:
+            result = {}
 
-from matrix_templates import units
+        for key, value in schema.items():
+            result[key] = resolve_references(path, value)
+        return result
+    elif isinstance(schema, list):
+        return [resolve_references(path, value) for value in schema]
+    else:
+        return schema
+
 
 parser = argparse.ArgumentParser(
     "dump-swagger.py - assemble the Swagger specs into a single JSON file"
@@ -93,7 +110,7 @@ output = {
 cs_api_dir = os.path.join(api_dir, 'client-server')
 with open(os.path.join(cs_api_dir, 'definitions',
                        'security.yaml')) as f:
-    output['securityDefinitions'] = yaml.load(f)
+    output['securityDefinitions'] = yaml.safe_load(f)
 
 for filename in os.listdir(cs_api_dir):
     if not filename.endswith(".yaml"):
@@ -102,13 +119,11 @@ for filename in os.listdir(cs_api_dir):
 
     print("Reading swagger API: %s" % filepath)
     with open(filepath, "r") as f:
-        api = yaml.load(f.read())
-        api = units.resolve_references(filepath, api)
+        api = yaml.safe_load(f.read())
+        api = resolve_references(filepath, api)
 
         basePath = api['basePath']
         for path, methods in api["paths"].items():
-            path = (basePath + path).replace('%CLIENT_MAJOR_VERSION%',
-                                             major_version)
             for method, spec in methods.items():
                 if "tags" in spec.keys():
                     if path not in output["paths"]:
@@ -126,5 +141,4 @@ except OSError as e:
 with open(output_file, "w") as f:
     text = json.dumps(output, sort_keys=True, indent=4)
     text = text.replace("%CLIENT_RELEASE_LABEL%", release_label)
-    text = text.replace("%CLIENT_MAJOR_VERSION%", major_version)
     f.write(text)

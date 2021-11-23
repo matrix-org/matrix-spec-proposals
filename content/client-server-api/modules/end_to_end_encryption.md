@@ -113,13 +113,13 @@ key, and a number of signed Curve25519 one-time keys.
 ##### Uploading keys
 
 A device uploads the public parts of identity keys to their homeserver
-as a signed JSON object, using the [`/keys/upload`](/client-server-api/#post_matrixclientr0keysupload) API. The JSON object
+as a signed JSON object, using the [`/keys/upload`](/client-server-api/#post_matrixclientv3keysupload) API. The JSON object
 must include the public part of the device's Ed25519 key, and must be
 signed by that key, as described in [Signing
 JSON](/appendices/#signing-json).
 
 One-time keys are also uploaded to the homeserver using the
-[`/keys/upload`](/client-server-api/#post_matrixclientr0keysupload) API.
+[`/keys/upload`](/client-server-api/#post_matrixclientv3keysupload) API.
 
 Devices must store the private part of each key they upload. They can
 discard the private part of a one-time key when they receive a message
@@ -134,12 +134,12 @@ too many private keys may discard keys starting with the oldest.
 Before Alice can send an encrypted message to Bob, she needs a list of
 each of his devices and the associated identity keys, so that she can
 establish an encryption session with each device. This list can be
-obtained by calling [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery), passing Bob's user ID in the
+obtained by calling [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery), passing Bob's user ID in the
 `device_keys` parameter.
 
 From time to time, Bob may add new devices, and Alice will need to know
 this so that she can include his new devices for later encrypted
-messages. A naive solution to this would be to call [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery)
+messages. A naive solution to this would be to call [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery)
 before sending each message -however, the number of users and devices
 may be large and this would be inefficient.
 
@@ -157,23 +157,23 @@ process:
     list, and a separate flag to indicate that its list of Bob's devices
     is outdated. Both flags should be in storage which persists over
     client restarts.
-2.  It then makes a request to [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery), passing Bob's user ID in
+2.  It then makes a request to [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery), passing Bob's user ID in
     the `device_keys` parameter. When the request completes, it stores
     the resulting list of devices in persistent storage, and clears the
     'outdated' flag.
-3.  During its normal processing of responses to [`/sync`](/client-server-api/#get_matrixclientr0sync), Alice's client
+3.  During its normal processing of responses to [`/sync`](/client-server-api/#get_matrixclientv3sync), Alice's client
     inspects the `changed` property of the [`device_lists`](/client-server-api/#extensions-to-sync-1) field. If it
     is tracking the device lists of any of the listed users, then it
     marks the device lists for those users outdated, and initiates
-    another request to [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery) for them.
+    another request to [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery) for them.
 4.  Periodically, Alice's client stores the `next_batch` field of the
-    result from [`/sync`](/client-server-api/#get_matrixclientr0sync) in persistent storage. If Alice later restarts her
+    result from [`/sync`](/client-server-api/#get_matrixclientv3sync) in persistent storage. If Alice later restarts her
     client, it can obtain a list of the users who have updated their
-    device list while it was offline by calling [`/keys/changes`](/client-server-api/#get_matrixclientr0keyschanges),
+    device list while it was offline by calling [`/keys/changes`](/client-server-api/#get_matrixclientv3keyschanges),
     passing the recorded `next_batch` field as the `from` parameter. If
     the client is tracking the device list of any of the users listed in
     the response, it marks them as outdated. It combines this list with
-    those already flagged as outdated, and initiates a [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery)
+    those already flagged as outdated, and initiates a [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery)
     request for all of them.
 
 {{% boxes/warning %}}
@@ -339,7 +339,7 @@ Example:
 
 A client wanting to set up a session with another device can claim a
 one-time key for that device. This is done by making a request to the
-[`/keys/claim`](/client-server-api/#post_matrixclientr0keysclaim) API.
+[`/keys/claim`](/client-server-api/#post_matrixclientv3keysclaim) API.
 
 A homeserver should rate-limit the number of one-time keys that a given
 user or remote server can claim. A homeserver should discard the public
@@ -860,11 +860,11 @@ key, then Alice's device can trust Bob's master key, and she can sign it
 with her user-signing key.
 
 Users upload their cross-signing keys to the server using [POST
-/\_matrix/client/r0/keys/device\_signing/upload](/client-server-api/#post_matrixclientr0keysdevice_signingupload). When Alice uploads
+/\_matrix/client/r0/keys/device\_signing/upload](/client-server-api/#post_matrixclientv3keysdevice_signingupload). When Alice uploads
 new cross-signing keys, her user ID will appear in the `changed`
 property of the `device_lists` field of the `/sync` of response of all
 users who share an encrypted room with her. When Bob sees Alice's user
-ID in his `/sync`, he will call [POST /\_matrix/client/r0/keys/query](/client-server-api/#post_matrixclientr0keysquery)
+ID in his `/sync`, he will call [POST /\_matrix/client/r0/keys/query](/client-server-api/#post_matrixclientv3keysquery)
 to retrieve Alice's device and cross-signing keys.
 
 If Alice has a device and wishes to send an encrypted message to Bob,
@@ -991,6 +991,8 @@ user-signing keys.
 {{% http-api spec="client-server" api="cross_signing" %}}
 
 ##### QR codes
+
+{{% added-in v="1.1" %}}
 
 Verifying by QR codes provides a quick way to verify when one of the parties
 has a device capable of scanning a QR code. The QR code encodes both parties'
@@ -1166,17 +1168,17 @@ However, as the session keys are stored on the server encrypted, it
 requires users to enter a decryption key to decrypt the session keys.
 
 To create a backup, a client will call [POST
-/\_matrix/client/r0/room\_keys/version](#post_matrixclientr0room_keysversion) and define how the keys are to
+/\_matrix/client/r0/room\_keys/version](#post_matrixclientv3room_keysversion) and define how the keys are to
 be encrypted through the backup's `auth_data`; other clients can
 discover the backup by calling [GET
-/\_matrix/client/r0/room\_keys/version](#get_matrixclientr0room_keysversion). Keys are encrypted according
+/\_matrix/client/r0/room\_keys/version](#get_matrixclientv3room_keysversion). Keys are encrypted according
 to the backup's `auth_data` and added to the backup by calling [PUT
-/\_matrix/client/r0/room\_keys/keys](#put_matrixclientr0room_keyskeys) or one of its variants, and can
-be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys](#get_matrixclientr0room_keyskeys) or
+/\_matrix/client/r0/room\_keys/keys](#put_matrixclientv3room_keyskeys) or one of its variants, and can
+be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys](#get_matrixclientv3room_keyskeys) or
 one of its variants. Keys can only be written to the most recently
 created version of the backup. Backups can also be deleted using [DELETE
-/\_matrix/client/r0/room\_keys/version/{version}](#delete_matrixclientr0room_keysversionversion), or individual keys
-can be deleted using [DELETE /\_matrix/client/r0/room\_keys/keys](#delete_matrixclientr0room_keyskeys) or
+/\_matrix/client/r0/room\_keys/version/{version}](#delete_matrixclientv3room_keysversionversion), or individual keys
+can be deleted using [DELETE /\_matrix/client/r0/room\_keys/keys](#delete_matrixclientv3room_keyskeys) or
 one of its variants.
 
 Clients must only store keys in backups after they have ensured that the
@@ -1458,7 +1460,7 @@ correspond to the user who sent the event, `recipient` to the local
 user, and `recipient_keys` to the local ed25519 key.
 
 Clients must confirm that the `sender_key` and the `ed25519` field value
-under the `keys` property match the keys returned by [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery) for
+under the `keys` property match the keys returned by [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery) for
 the given user, and must also verify the signature of the payload.
 Without this check, a client cannot be sure that the sender device owns
 the private part of the ed25519 key it claims to have in the Olm
@@ -1590,17 +1592,17 @@ messages.
 
 ##### Extensions to /sync
 
-This module adds an optional `device_lists` property to the [`/sync`](/client-server-api/#get_matrixclientr0sync)  response,
+This module adds an optional `device_lists` property to the [`/sync`](/client-server-api/#get_matrixclientv3sync)  response,
 as specified below. The server need only populate this property for an
 incremental `/sync` (i.e., one where the `since` parameter was
-specified). The client is expected to use [`/keys/query`](/client-server-api/#post_matrixclientr0keysquery) or
-[`/keys/changes`](/client-server-api/#get_matrixclientr0keyschanges) for the equivalent functionality after an initial
+specified). The client is expected to use [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery) or
+[`/keys/changes`](/client-server-api/#get_matrixclientv3keyschanges) for the equivalent functionality after an initial
 sync, as documented in [Tracking the device list for a
 user](#tracking-the-device-list-for-a-user).
 
 It also adds a `one_time_keys_count` property. Note the spelling
 difference with the `one_time_key_counts` property in the
-[`/keys/upload`](/client-server-api/#post_matrixclientr0keysupload) response.
+[`/keys/upload`](/client-server-api/#post_matrixclientv3keysupload) response.
 
 | Parameter                  | Type               | Description                                                                                                            |
 |----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------|

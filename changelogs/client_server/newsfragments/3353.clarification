@@ -1,1 +1,0 @@
-Clarify the documentation around the pagination tokens used by `/sync`, `/rooms/{room_id}/messages`, `/initialSync`, `/rooms/{room_id}/initialSync`, and `/notifications`.

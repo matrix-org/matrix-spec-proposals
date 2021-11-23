@@ -20,7 +20,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 consumes:
   - application/json
 produces:
@@ -427,7 +427,7 @@ paths:
         already associated with an account on this homeserver. This API should
         be used to request validation tokens when adding an email address to an
         account. This API's parameters and response are identical to that of
-        the [`/register/email/requestToken`](/client-server-api/#post_matrixclientr0registeremailrequesttoken)
+        the [`/register/email/requestToken`](/client-server-api/#post_matrixclientv3registeremailrequesttoken)
         endpoint. The homeserver should validate
         the email itself, either by sending a validation email itself or by using
         a service it has control over.
@@ -480,7 +480,7 @@ paths:
         already associated with an account on this homeserver. This API should
         be used to request validation tokens when adding a phone number to an
         account. This API's parameters and response are identical to that of
-        the [`/register/msisdn/requestToken`](/client-server-api/#post_matrixclientr0registermsisdnrequesttoken)
+        the [`/register/msisdn/requestToken`](/client-server-api/#post_matrixclientv3registermsisdnrequesttoken)
         endpoint. The homeserver should validate
         the phone number itself, either by sending a validation message itself or by using
         a service it has control over.

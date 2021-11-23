@@ -29,6 +29,7 @@ securityDefinitions:
 paths:
   "/make_knock/{roomId}/{userId}":
     get:
+      x-addedInMatrixVersion: "1.1"
       summary: Get information required to make a knock event for a room.
       description: |-
         Asks the receiving server to return information that the sending
@@ -63,7 +64,7 @@ paths:
           description: |-
             A template to be used for the rest of the [Knocking Rooms](/server-server-api/#knocking-rooms)
             handshake. Note that events have a different format depending on room version - check the
-            [room version specification](/#room-versions) for precise event formats. **The response body
+            [room version specification](/rooms) for precise event formats. **The response body
             here describes the common event fields in more detail and may be missing other
             required fields for a PDU.**
           schema:
@@ -77,7 +78,7 @@ paths:
               event:
                 description: |-
                   An unsigned template event. Note that events have a different format
-                  depending on the room version - check the [room version specification](/#room-versions)
+                  depending on the room version - check the [room version specification](/rooms)
                   for precise event formats.
                 type: object
                 title: Event Template
@@ -190,12 +191,13 @@ paths:
 
   "/send_knock/{roomId}/{eventId}":
     put:
+      x-addedInMatrixVersion: "1.1"
       summary: Submit a signed knock event to a resident server.
       description: |-
         Submits a signed knock event to the resident server for it to
         accept into the room's graph. Note that events have
         a different format depending on the room version - check
-        the [room version specification](/#room-versions) for precise event formats.
+        the [room version specification](/rooms) for precise event formats.
         **The request and response body here describe the common
         event fields in more detail and may be missing other required
         fields for a PDU.**

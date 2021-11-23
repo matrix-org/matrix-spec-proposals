@@ -719,14 +719,12 @@ follows:
 ```json
 {
   "type": "m.login.email.identity",
-  "threepidCreds": [
-    {
-      "sid": "<identity server session id>",
-      "client_secret": "<identity server client secret>",
-      "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
-      "id_access_token": "<access token previously registered with the identity server>"
-    }
-  ],
+  "threepid_creds": {
+    "sid": "<identity server session id>",
+    "client_secret": "<identity server client secret>",
+    "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+    "id_access_token": "<access token previously registered with the identity server>"
+  },
   "session": "<session ID>"
 }
 ```
@@ -750,14 +748,12 @@ follows:
 ```json
 {
   "type": "m.login.msisdn",
-  "threepidCreds": [
-    {
-      "sid": "<identity server session id>",
-      "client_secret": "<identity server client secret>",
-      "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
-      "id_access_token": "<access token previously registered with the identity server>"
-    }
-  ],
+  "threepid_creds": {
+    "sid": "<identity server session id>",
+    "client_secret": "<identity server client secret>",
+    "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+    "id_access_token": "<access token previously registered with the identity server>"
+  },
   "session": "<session ID>"
 }
 ```
@@ -799,7 +795,7 @@ type, it can direct the user to a web browser with the URL of a fallback
 page which will allow the user to complete that login step out-of-band
 in their web browser. The URL it should open is:
 
-    /_matrix/client/%CLIENT_MAJOR_VERSION%/auth/<auth type>/fallback/web?session=<session ID>
+    /_matrix/client/v3/auth/<auth type>/fallback/web?session=<session ID>
 
 Where `auth type` is the type name of the stage it is attempting and
 `session ID` is the ID of the session given by the homeserver.
@@ -843,7 +839,7 @@ window which will handle unknown login types:
  *     homeserverUrl: the base url of the homeserver (e.g. "https://matrix.org")
  *
  *     apiEndpoint: the API endpoint being used (e.g.
- *        "/_matrix/client/%CLIENT_MAJOR_VERSION%/account/password")
+ *        "/_matrix/client/v3/account/password")
  *
  *     loginType: the loginType being attempted (e.g. "m.login.recaptcha")
  *
@@ -879,7 +875,7 @@ function unknownLoginType(homeserverUrl, apiEndpoint, loginType, sessionID, onCo
     window.addEventListener("message", eventListener);
 
     var url = homeserverUrl +
-        "/_matrix/client/%CLIENT_MAJOR_VERSION%/auth/" +
+        "/_matrix/client/v3/auth/" +
         encodeURIComponent(loginType) +
         "/fallback/web?session=" +
         encodeURIComponent(sessionID);
@@ -1039,9 +1035,9 @@ This returns an HTML and JavaScript page which can perform the entire
 login process. The page will attempt to call the JavaScript function
 `window.onLogin` when login has been successfully completed.
 
-Non-credential parameters valid for the `/login` endpoint can be
-provided as query string parameters here. These are to be forwarded to
-the login endpoint during the login process. For example:
+{{% added-in v="1.1" %}} Non-credential parameters valid for the `/login`
+endpoint can be provided as query string parameters here. These are to be
+forwarded to the login endpoint during the login process. For example:
 
     GET /_matrix/static/client/login/?device_id=GHTYAJCE
 
@@ -1142,7 +1138,7 @@ Some examples of what should **not** be a capability are:
 -   Whether the server supports a feature in the `unstable`
     specification.
 -   Media size limits - these are handled by the
-    `/media/%CLIENT_MAJOR_VERSION%/config` API.
+    [`/config`](#get_matrixmediav3config) API.
 -   Optional encodings or alternative transports for communicating with
     the server.
 
@@ -1200,7 +1196,7 @@ An example of the capability API's response for this capability is:
 ```
 
 This capability mirrors the same restrictions of [room
-versions](../index.html#room-versions) to describe which versions are
+versions](/rooms) to describe which versions are
 stable and unstable. Clients should assume that the `default` version is
 `stable`. Any version not explicitly labelled as `stable` in the
 `available` versions is to be treated as `unstable`. For example, a
@@ -1271,9 +1267,9 @@ The expected pattern for using lazy-loading is currently:
 
 The current endpoints which support lazy-loading room members are:
 
--   [`/sync`](/client-server-api/#get_matrixclientr0sync)
--   [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages)
--   [`/rooms/{roomId}/context/{eventId}`](/client-server-api/#get_matrixclientr0roomsroomidcontexteventid)
+-   [`/sync`](/client-server-api/#get_matrixclientv3sync)
+-   [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
+-   [`/rooms/{roomId}/context/{eventId}`](/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)
 
 ### API endpoints
 
@@ -1290,7 +1286,7 @@ any given point in time:
 
 {{% boxes/warning %}}
 The format of events can change depending on room version. Check the
-[room version specification](../index.html#room-versions) for specific
+[room version specification](/rooms) for specific
 details on what to expect for event formats. Examples contained within
 the client-server specification are expected to be compatible with all
 specified room versions, however some differences may still apply.
@@ -1419,13 +1415,13 @@ events.
 ### Syncing
 
 To read events, the intended flow of operation is for clients to first
-call the [`/sync`](/client-server-api/#get_matrixclientr0sync) API without a `since` parameter. This returns the
+call the [`/sync`](/client-server-api/#get_matrixclientv3sync) API without a `since` parameter. This returns the
 most recent message events for each room, as well as the state of the
 room at the start of the returned timeline. The response also includes a
 `next_batch` field, which should be used as the value of the `since`
 parameter in the next call to `/sync`. Finally, the response includes,
 for each room, a `prev_batch` field, which can be passed as a `start`
-parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages) API to retrieve earlier
+parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API to retrieve earlier
 messages.
 
 You can visualise the range of events being returned as:
@@ -1462,7 +1458,7 @@ containing only the most recent message events. A state "delta" is also
 returned, summarising any state changes in the omitted part of the
 timeline. The client may therefore end up with "gaps" in its knowledge
 of the message timeline. The client can fill these gaps using the
-[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientr0roomsroomidmessages) API. This situation looks like this:
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API. This situation looks like this:
 
 ```
     | gap |
@@ -1593,12 +1589,14 @@ some events cannot be simply deleted, e.g. membership events, we instead
 not required by the protocol. This stripped down event is thereafter
 returned anytime a client or remote server requests it. Redacting an
 event cannot be undone, allowing server owners to delete the offending
-content from the databases. Servers should include a copy of the 
-`m.room.redaction` event under `unsigned` as `redacted_because` 
+content from the databases. Servers should include a copy of the
+`m.room.redaction` event under `unsigned` as `redacted_because`
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
-version specification](../index.html#room-versions).
+version specification](/rooms), as are the criteria homeservers should
+use when deciding whether to accept a redaction event from a remote
+homeserver.
 
 When a client receives an `m.room.redaction` event, it should change
 the affected event in the same way a server does.
@@ -1730,7 +1728,7 @@ This room can only be joined if you were invited.
 `knock`
 This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
-to rooms based upon [room version 7](/rooms/v7).
+in room versions [which support knocking](/rooms/#feature-matrix).
 
 The allowable state transitions of membership are:
 
@@ -1745,6 +1743,8 @@ The allowable state transitions of membership are:
 {{% http-api spec="client-server" api="joining" %}}
 
 ##### Knocking on rooms
+
+{{% added-in v="1.1" %}}
 
 <!--
 This section is here because it's most similar to being invited/joining a
@@ -1786,7 +1786,7 @@ must have been invited to or have joined the room before they are
 eligible to leave the room. Leaving a room to which the user has been
 invited rejects the invite, and can retract a knock. Once a user leaves
 a room, it will no longer appear in the response to the
-[`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is
+[`/sync`](/client-server-api/#get_matrixclientv3sync) API unless it is
 explicitly requested via a filter with the `include_leave` field set
 to `true`.
 
@@ -1795,7 +1795,7 @@ Whether or not they actually joined the room, if the room is an
 re-join the room.
 
 A user can also forget a room which they have left. Rooms which have
-been forgotten will never appear the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API,
+been forgotten will never appear the response to the [`/sync`](/client-server-api/#get_matrixclientv3sync) API,
 until the user re-joins, is re-invited, or knocks.
 
 A user may wish to force another user to leave a room. This can be done
@@ -1816,7 +1816,7 @@ target user to leave the room and prevents them from re-joining the
 room. A banned user will not be treated as a joined user, and so will
 not be able to send or receive events in the room. In order to ban
 someone, the user performing the ban MUST have the required power level.
-To ban a user, a request should be made to [`/rooms/<room_id>/ban`](/client-server-api/#post_matrixclientr0roomsroomidban)
+To ban a user, a request should be made to [`/rooms/<room_id>/ban`](/client-server-api/#post_matrixclientv3roomsroomidban)
 with:
 
 ```json
@@ -1838,7 +1838,7 @@ target member's state, by making a request to
 ```
 
 A user must be explicitly unbanned with a request to
-[`/rooms/<room_id>/unban`](/client-server-api/#post_matrixclientr0roomsroomidunban) before they can re-join the room or be
+[`/rooms/<room_id>/unban`](/client-server-api/#post_matrixclientv3roomsroomidunban) before they can re-join the room or be
 re-invited.
 
 {{% http-api spec="client-server" api="banning" %}}

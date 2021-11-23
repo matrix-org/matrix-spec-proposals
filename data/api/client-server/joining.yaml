@@ -19,7 +19,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 consumes:
   - application/json
 produces:
@@ -40,8 +40,8 @@ paths:
         events associated with the room until the user leaves the room.
 
         After a user has joined a room, the room will appear as an entry in the
-        response of the [`/initialSync`](/client-server-api/#get_matrixclientr0initialsync)
-        and [`/sync`](/client-server-api/#get_matrixclientr0sync) APIs.
+        response of the [`/initialSync`](/client-server-api/#get_matrixclientv3initialsync)
+        and [`/sync`](/client-server-api/#get_matrixclientv3sync) APIs.
       operationId: joinRoomById
       security:
         - accessToken: []
@@ -66,6 +66,7 @@ paths:
                   `m.room.third_party_invite` event in the room, and perform
                   key validity checking if required by the event.
               reason:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent
@@ -117,8 +118,8 @@ paths:
         events associated with the room until the user leaves the room.
 
         After a user has joined a room, the room will appear as an entry in the
-        response of the [`/initialSync`](/client-server-api/#get_matrixclientr0initialsync)
-        and [`/sync`](/client-server-api/#get_matrixclientr0sync) APIs.
+        response of the [`/initialSync`](/client-server-api/#get_matrixclientv3initialsync)
+        and [`/sync`](/client-server-api/#get_matrixclientv3sync) APIs.
       operationId: joinRoom
       security:
         - accessToken: []
@@ -152,6 +153,7 @@ paths:
                   that it matches a pending `m.room.third_party_invite` event in the
                   room, and perform key validity checking if required by the event.
               reason:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent

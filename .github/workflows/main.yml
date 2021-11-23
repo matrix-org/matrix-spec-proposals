@@ -3,12 +3,44 @@ on:
   push:
     branches:
       - main
+    tags:
+      - v*
   pull_request:
   workflow_dispatch:
 
 jobs:
+  validate-openapi:
+    name: "🔎 Validate OpenAPI specifications"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+      - name: "➕ Setup Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: "⚙️ npm"
+        working-directory: "./scripts"
+        run: |
+          npm install
+      - name: "🔎 Run validator"
+        working-directory: "./scripts"
+        run: |
+          node validator.js -s "../data/api/client-server"
+
+  check-examples:
+    name: "🔎 Check Event schema examples"
+    runs-on: ubuntu-latest
+    container: uhoreg/matrix-doc-build
+    steps:
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+      - name: "🔎 Run validator"
+        run: |
+          /env/bin/python scripts/check-event-schema-examples.py
+        
   build-openapi:
-    name: "🐍 Build OpenAPI definitions for matrix.org"
+    name: "🐍 Build OpenAPI definitions"
     runs-on: ubuntu-latest
     container: "python:3.9"
     steps:
@@ -46,8 +78,25 @@ jobs:
         run: |
           npm i
           npm run get-proposals
+
+      # For PRs, set the baseURL to `/`.
+      # For releases, set the baseURL to `/$tag` (eg: `/v1.2`).
+      # Otherwise, set it to `/unstable`.
+      - name: "⚙️ Calculate baseURL"
+        id: set-baseurl
+        # Double brackets on the elif to avoid auto-escaping refs/tags/* because we need
+        # the asterisk matching behaviour, not the literal string.
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+              echo ::set-output name=baseURL::/
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              echo ::set-output name=baseURL::"/${GITHUB_REF/refs\/tags\//}"
+          else
+              echo ::set-output name=baseURL::/unstable
+          fi
+
       - name: "⚙️ hugo"
-        run: hugo --baseURL "/unstable" -d "spec"
+        run: hugo --baseURL "${{ steps.set-baseurl.outputs.baseURL }}" -d "spec"
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
       - name: "📤 Artifact upload"
@@ -56,12 +105,37 @@ jobs:
           name: spec-artifact
           path: spec.tar.gz
 
-  rebuild-matrixdotorg:
-    name: "👷 Rebuild matrix.org"
-    needs: build-openapi
+  build-historical-spec:
+    name: "📖 Build the historical backup spec"
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     steps:
-      - name: "🪄 Triggering rebuild of matrix.org"
+      - name: "➕ Setup Node"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: "➕ Setup Hugo"
+        uses: peaceiris/actions-hugo@c03b5dbed22245418539b65eb9a3b1d5fdd9a0a6
+        with:
+          hugo-version: '0.85.0'
+          extended: true
+      - name: "📥 Source checkout"
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: "⚙️ npm"
         run: |
-          curl -XPOST -u "${{secrets.TRIGGER_MATRIXORG_REBUILD_TOKEN}}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ github.repository_owner }}/matrix.org/actions/workflows/build-matrix.org.yml/dispatches --data '{"ref": "master" }'
+          npm i
+          npm run get-proposals
+      - name: "⚙️ hugo"
+        # Create a baseURL like `/v1.2` out of the `v1.2` tag
+        run: |
+          echo -e '[params.version]\nstatus="historical"' > historical.toml
+          hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+      - name: "📦 Tarball creation"
+        run: tar -czf spec-historical.tar.gz spec
+      - name: "📤 Artifact upload"
+        uses: actions/upload-artifact@v2
+        with:
+          name: spec-historical-artifact
+          path: spec-historical.tar.gz

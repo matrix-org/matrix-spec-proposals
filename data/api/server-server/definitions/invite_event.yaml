@@ -15,7 +15,7 @@ type: object
 title: InviteEvent
 description: |-
   An invite event. Note that events have a different format depending on the
-  room version - check the [room version specification](/#room-versions) for precise event formats.
+  room version - check the [room version specification](/rooms) for precise event formats.
 allOf:
   - type: object
     properties:

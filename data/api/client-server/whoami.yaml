@@ -19,7 +19,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 produces:
   - application/json
 securityDefinitions:
@@ -58,6 +58,7 @@ paths:
                 type: string
                 description: The user ID that owns the access token.
               device_id:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Device ID associated with the access token. If no device

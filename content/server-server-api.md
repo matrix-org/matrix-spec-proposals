@@ -348,7 +348,7 @@ a child:
     E4
 
 For a full schema of what a PDU looks like, see the [room version
-specification](../index.html#room-versions).
+specification](/rooms).
 
 ### Checks performed on receipt of a PDU
 
@@ -398,7 +398,7 @@ state. A given event is checked multiple times against different sets of
 state, as specified above. Each room version can have a different
 algorithm for how the rules work, and which rules are applied. For more
 detailed information, please see the [room version
-specification](../index.html#room-versions).
+specification](/rooms).
 
 ##### Auth events selection
 
@@ -609,7 +609,7 @@ the room. What should the name of the room be at E5?
 
 The algorithm to be used for state resolution depends on the room
 version. For a description of each room version's algorithm, please see
-the [room version specification](/#room-versions).
+the [room version specification](/rooms).
 
 ## Backfilling and retrieving missing events
 
@@ -1111,7 +1111,7 @@ the full copy it received.
 The *reference hash* of an event covers the essential fields of an
 event, including content hashes. It is used for event identifiers in
 some room versions. See the [room version
-specification](/#room-versions) for more information. It is
+specification](/rooms) for more information. It is
 calculated as follows.
 
 1.  The event is put through the redaction algorithm.
