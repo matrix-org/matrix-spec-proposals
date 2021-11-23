@@ -54,7 +54,7 @@ bundled relation (or bundled aggregation), and by sending a summary of the
 aggregations, avoids us having to always send lots of individual unbundled
 relation events individually to the client.
 
-The following Client-Server APIs should bundle relations:
+The following client-server APIs should bundle relations in the `unsigned` property of events they return:
 
   - `/rooms/{roomId}/messages`
   - `/rooms/{roomId}/context`
