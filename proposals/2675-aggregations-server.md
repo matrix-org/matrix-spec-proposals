@@ -54,7 +54,7 @@ bundled relation (or bundled aggregation), and by sending a summary of the
 aggregations, avoids us having to always send lots of individual unbundled
 relation events individually to the client.
 
-Any API which receives events should bundle relations (apart from non-gappy
+Any API which returns events should bundle relations (apart from non-gappy
 incremental syncs), for instance: initial sync, gappy incremental sync,
 /messages and /context.
 
