@@ -202,7 +202,7 @@ Much of the handling for this proposal is covered by other MSCs already:
   with a given key once, preventing most issues of users voting for the same answer multiple times.
 * [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines the server-side aggregation approach
   which can be useful to clients to determine which votes there are on an event.
-* [MSC0001](https://github.com/matrix-org/matrix-doc/pull/0001) defines how clients can get all relations
+* [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) defines how clients can get all relations
   for an event between point A and B (namely the poll start and close).
 
 No further behaviour is defined by this MSC: servers do not have to understand the rules of a poll in order
@@ -211,13 +211,16 @@ the above MSCs.
 
 ### Client behaviour
 
-Clients should rely on [MSC0001](https://github.com/matrix-org/matrix-doc/pull/0001) and
+Clients should rely on [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) and
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) for handling limited ("gappy") syncs.
 Otherwise, it is anticipated that clients re-process polls entirely on their own to ensure accurate counts
 with encrypted events (the response events might be encrypted, so the server-side aggregations endpoint
 will be unaware of whether an event is a reaction, poll response, or some other random type). As mentioned
 in the proposal text, clients should filter out non-sensical `key`s to automatically filter out reactions
 and other non-poll-response types.
+
+For clarity: clients using [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) should use the
+time-based shape of the endpoint, not the event ID shape, in order to honour the poll rules.
 
 ## Potential issues
 
