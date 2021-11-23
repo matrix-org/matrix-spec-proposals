@@ -1441,20 +1441,6 @@ any given point in time:
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
 {{% boxes/warning %}}
-The format of events can change depending on room version. Check the
-[room version specification](/rooms) for specific
-details on what to expect for event formats. Examples contained within
-the client-server specification are expected to be compatible with all
-specified room versions, however some differences may still apply.
-
-For this version of the specification, clients only need to worry about
-the event ID format being different depending on room version. Clients
-should not be parsing the event ID, and instead be treating it as an
-opaque string. No changes should be required to support the currently
-available room versions.
-{{% /boxes/warning %}}
-
-{{% boxes/warning %}}
 Event bodies are considered untrusted data. This means that any application using
 Matrix must validate that the event body is of the expected shape/schema
 before using the contents verbatim.
