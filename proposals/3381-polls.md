@@ -251,6 +251,11 @@ with the `m.message` parts of the events. For absolute clarity: if a client has 
 it can outright ignore any irrelevant data from the events such as the message fallback or other
 representations that senders stick onto the event (like thumbnails, captions, attachments, etc).
 
+It's theoretically possible for a client which starts a poll to use answer IDs which conflict with
+reactions. Clients are discouraged from doing this and should instead use strings which are unlikely
+to be used in other annotations/reactions. For example, using `pollAnswer_${uuid}_${answerIndex}` as
+a template.
+
 ## Alternatives
 
 The primary competition to this MSC is the author's own [MSC2192](https://github.com/matrix-org/matrix-doc/pull/2192)
