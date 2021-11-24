@@ -45,38 +45,60 @@ called with a `since` token, and that have `limited: false` in the portion of
 response for the given room) as normal discrete Matrix events.  These are
 called "unbundled relation events".
 
-#### Bundled relations
+#### Aggregation
 
-Other than during non-gappy incremental syncs, an aggregate view of relation
-events should be bundled into the unsigned data of the event they relate to,
-rather than sending un-bundled individual relation events.  This is called a
-bundled relation (or bundled aggregation), and by sending a summary of the
-aggregations, avoids us having to always send lots of individual unbundled
-relation events individually to the client.
+Relation events can be aggregated per `rel_type` by the server.
+The format of the aggregated value (hereafter called "aggregation")
+in the bundle depends on the relation type.
 
-The following client-server APIs should bundle relations in the `unsigned` property of events they return:
+Some `rel_type`s might additionally group the aggregations by the `key` property
+in the relation and aggregate to an array,
+others might aggregate to a single object or any other value really.
+
+##### Bundled aggregation
+
+Other than during non-gappy incremental syncs, events that have other events
+relate to it should bundle the aggregation of those related events
+in the `m.relations` property of their unsigned data.  These are called
+bundled aggregations, and by sending a summary of the relations,
+avoids us having to always send lots of individual unbundled relation events
+to the client.
+
+Here's an example of what that can look like for some ficticious `rel_type`s:
+
+```json
+{
+  "event_id": "abc",
+  "unsigned": {
+    "m.relations": {
+      "some_rel_type": { "some_prop": true }, // aggregation for some_rel_type
+      "other_rel_type": { "other_prop": false }, // aggregation for other_rel_type
+    }
+  }
+}
+```
+
+The following client-server APIs should bundle aggregations
+in the `unsigned` property of events they return:
 
   - `/rooms/{roomId}/messages`
   - `/rooms/{roomId}/context`
   - `/rooms/{roomId}/event/{eventId}`
-  - `/sync`, only for room sections in the response where `limited` field is `true`; this amounts to all rooms in the response if the `since` request parameter was not passed, also known as an initial sync.
+  - `/sync`, only for room sections in the response where `limited` field
+    is `true`; this amounts to all rooms in the response if 
+    the `since` request parameter was not passed, also known as an initial sync.
   - `/relations`, as proposed in this MSC.
 
-Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required to bundle relations.
+Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required
+to bundle aggregations.
 
-The bundled relations are grouped according to their `rel_type`, and then
-paginated within each group using Matrix's defined pagination idiom of `count`,
+The bundled aggregations are grouped according to their `rel_type`.
+For relation types that aggregate to an array, future MSCs could opt to 
+paginate within each group using Matrix's defined pagination idiom of `count`,
 `limited` and `chunk` fields - respectively giving the total number of
 elements in the list, whether that list has been truncated, and an array of
-elements in the list.
-
-The format of the aggregated value in the bundle depends on the relation type.
-
-`m.reference` list the `event_id` and event `type` of the events which
-reference that event.
-
-The formats for other relation types may be defined in the proposals that
-define the relation types.
+elements in the list. Only the first page is bundled, pagination of subsequent
+pages happens through the `/aggregations` API that is defined in this MSC.
 
 For instance, the below example shows an event with five bundled relations:
 three thumbsup reaction annotations, one replace, and one reference.
@@ -118,7 +140,7 @@ three thumbsup reaction annotations, one replace, and one reference.
 }
 ```
 
-#### Paginating relations and aggregations
+#### Paginating relations
 
 A single event can have lots of associated relations, and we do not want to
 overload the client by including them all in a bundle. Instead, we provide two
@@ -158,9 +180,12 @@ The endpoint does not have any trailing slashes.
   edits.  Either we specialcase it for edits, or we just have the client go
   call /event to grab the contents of the original?
 
-The `/aggregations` API lets you iterate over **bundled** relations, and within them.
+#### Paginating aggregations
 
-To iterate over the bundled relations for an event (optionally filtering by
+The `/aggregations` API lets you iterate over aggregations for the relations
+of a given event, and the unbundled relations within them.
+
+To iterate over the aggregations for an event (optionally filtering by
 relation type and target event type):
 
 ```
@@ -220,7 +245,7 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 
 ### End to end encryption
 
-Since the server has to be able to bundle related events, structural
+Since the server has to be able to aggregate relation events, structural
 information about relations must be visible to the server, and so the
 `m.relates_to` field must be included in the plaintext.
 
@@ -237,7 +262,7 @@ a 404.
 As clients only receive unbundled events through /sync, they need to locally
 aggregate these unbundled events for their parent event, on top of any
 server-side aggregation that might have already happened, to get a complete
-picture of the aggregated relations for a given parent event, as a client
+picture of the aggregations for a given parent event, as a client
 might not be aware of all relations for an event. Local aggregation should
 thus also take the `m.relation` data in the `unsigned` of the parent event
 into account if it has been sent already. The aggregation algorithm is the
