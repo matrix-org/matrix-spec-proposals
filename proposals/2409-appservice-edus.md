@@ -104,24 +104,31 @@ The reason for a new key rather than bundling the events into `events` is that
 existing appservices may mistake them for PDUs and could cause undefined behaviour.
 While `events` may now be a somewhat misleading name, this is an acceptable tradeoff.
 
-`to-device` messages are a bit special as they are aimed at a particular user/device ID
+Note that the EDU is otherwise formatted as it would for client-server API transport.
+
+To-device messages are a bit special as they are aimed at a particular user/device ID
 combo. These events are annotated by the server with a `to_device_id` and `to_user_id`
-field at the top level of the EDU for transport to the appservice:
+field at the top level of the message for transport to the appservice:
 
 ```json5
 {
-  "type": "m.new_device",
+  "type": "org.example.to_device_event_type",
   "sender": "@alice:example.com",
   "to_user_id": "@_irc_bob:example.org",
   "to_device_id": "ABCDEF123",
   "content": {
-    "device_id": "XYZABCDE",
-    "rooms": ["!726s6s6q:example.com"]
+    "hello": "world"
   }
 }
 ```
 
-Note that the EDU is otherwise formatted as it would for client-server API transport.
+Unlike other ephemeral events, to-device messages are included at a top level `to_device`
+array in the transaction. If there are no messages to be sent, the array can be omitted.
+This is primarily due to how to-device messages work over federation: they get wrapped in
+an EDU (`m.direct_to_device`) but that parent EDU is stripped out before sending the message
+off to clients. This can lead to potential conflict where if down the line we support EDUs
+and to-device messages with the same event type: consumers would be uncertain as to whether
+they are handling an EDU or to-device message.
 
 ### Expectations of when an EDU should be pushed to an appservice
 
