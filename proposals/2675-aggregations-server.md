@@ -118,26 +118,6 @@ three thumbsup reaction annotations, one replace, and one reference.
 }
 ```
 
-#### Batch API for fetching events with bundled relations
-
-To refresh events, we need an API to load arbitrary events from the room in
-bulk, which the CS API doesn't currently provide.  We propose extending GET
-`{roomId}/event/{eventId}` to accept a list of event IDs on the URL, e.g:
-
-`POST /_matrix/client/r0/rooms/{roomId}/event`
-```json
-{
-    "event_ids": [
-        "$12345676321:matrix.org",
-        "$12345321432:matrix.org"
-    ]
-}
-```
-
-...which returns an array of events with the given IDs.
-
-  XXX: Is this implemented in Synapse yet?
-
 #### Paginating relations and aggregations
 
 A single event can have lots of associated relations, and we do not want to
@@ -320,11 +300,14 @@ all possible bundled aggregations to the client.
 The server could tell the client the event IDs of events which
 predate the gap which received relations during the gap. This means that the
 client could invalidate its copy of those events (if any) and then requery them
-(including their bundled relations) from the server if/when needed using the proposed extension of the `/event` API for batch requests.
+(including their bundled relations) from the server if/when needed,
+for example using an extension of the `/event` API for batch requests.
 
 The server could do this with a new `stale_events` field of each room object
 in the sync response. The `stale_events` field would list all the event IDs
 prior to the gap which had updated relations during the gap. The event IDs
-would be grouped by relation type, and paginated as per the normal Matrix pagination model.
+would be grouped by relation type,
+and paginated as per the normal Matrix pagination model.
 
-This was originally part of this MSC but left out to limit the scope to what is implemented at the time of writing.
+This was originally part of this MSC but left out to limit the scope
+to what is implemented at the time of writing.
