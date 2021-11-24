@@ -130,6 +130,53 @@ off to clients. This can lead to potential conflict where if down the line we su
 and to-device messages with the same event type: consumers would be uncertain as to whether
 they are handling an EDU or to-device message.
 
+A complete example of the transaction with all 3 arrays populated would be:
+
+```json5
+{
+  "ephemeral": [
+    {
+      "edu_type": "m.typing",
+      "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+      "content": {
+        "user_ids": [
+          "@alice:example.com"
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "content": {
+        "membership": "join",
+        "avatar_url": "mxc://domain.com/SEsfnsuifSDFSSEF#auto",
+        "displayname": "Alice Margatroid"
+      },
+      "type": "m.room.member",
+      "event_id": "$143273582443PhrSn:domain.com",
+      "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
+      "sender": "@example:domain.com",
+      "origin_server_ts": 1432735824653,
+      "unsigned": {
+        "age": 1234
+      },
+      "state_key": "@alice:domain.com"
+    }
+  ],
+  "to_device": [
+    {
+      "type": "org.example.to_device_event_type",
+      "sender": "@alice:example.com",
+      "to_user_id": "@_irc_bob:example.org",
+      "to_device_id": "ABCDEF123",
+      "content": {
+        "hello": "world"
+      }
+    }
+  ]
+}
+```
+
 ### Expectations of when an EDU should be pushed to an appservice
 
 It is not clear at face value what should be pushed to an appservice. Appservices claim
