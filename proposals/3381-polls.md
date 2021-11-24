@@ -84,13 +84,12 @@ To respond to a poll, the following event is sent:
   "type": "m.poll.response",
   "sender": "@bob:example.org",
   "content": {
-    "m.relates_to": {
-      "rel_type": "m.annotation", // from MSC2677: https://github.com/matrix-org/matrix-doc/pull/2677
-      "key": "poutine",
+    "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
+      "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
       "event_id": "$poll"
     },
     "m.poll.response": {
-      // empty object: useful information is in the relationship `key`.
+      "answers": ["poutine"]
     }
   },
   // other fields that aren't relevant here
@@ -101,38 +100,24 @@ Like `m.poll.start`, this `m.poll.response` event supports Extensible Events. Ho
 for clients to include renderable types like `m.text` and `m.message` which could impact the usability of
 the room (particularly for large rooms with lots of responses).
 
-Note that the response event annotates the poll start event, forming a relationship which can be aggregated
-by the server under [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The event also supports
-only one answer: for polls which permit multiple responses, and where multiple responses are given, the
-client would send multiple response events. If the user deselected (unvoted) an option, the corresponding
-response event would be redacted to match [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677)'s
-handling of "un-reacting" to an event.
+The response event forms a reference relationship with the poll start event. This kind of relationship doesn't
+easily allow for server-side aggregation, however the alternatives section goes into detail as to why this
+isn't a requirement for Polls.
 
-This MSC borrows a lot of the structure provided by reactions in [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677)
-but intentionally does not define how notifications (if desired) or other UX features work: this MSC
-purely intends to use the server-side aggregation capability where possible.
+Only a user's latest response event (by `origin_server_ts`) will be considered by clients. If that response
+is after the poll has closed, the user is considered to have not voted. Votes are accepted until the poll
+is closed (according to the `origin_server_ts` on the end/closure event).
 
-If a user sends multiple responses for the same answer, the user is considered to have voted for the answer
-only once. They will need to redact/unvote *all* of those answers to have been fully considered as not voting
-for that answer.
+The `answers` array in the response is the user's selection(s) for the poll. The array length is truncated
+to `max_selections` length during processing. The entries are the `id` of each answer from the original poll
+start event. If *any* of the supplied answers is unknown, or the field is otherwise invalid, then the user's
+vote is spoiled. Spoiled votes are also how users can "un-vote" from a poll - redacting, or setting `answers`
+to an empty array, will spoil that user's vote.
 
 Votes are accepted until the poll is closed according to timestamp: servers/clients which receive votes
 which are timestamped before the close event's timestamp (or, when no close event has been sent) are valid.
 Late votes should be ignored. Early votes (from before the start event) are considered to be valid for the
 sake of handling clock drift as gracefully as possible.
-
-To enforce `max_selections`, distinct responses are ordered by timestamp and truncated at `max_selections`.
-For example, if a user votes as `[A, B, A, A, D]` and `max_selections` is 2, then the valid votes would be
-`[B, A]` (because `A` was voted for multiple times, the most recent being after `B` was voted for). `D`
-would simply be ignored as it is out of range. If the user redacted *all* of their `A` votes, then it'd
-be `[B, D]`.
-
-Responses with a non-sensical `key` (eg: not a valid answer) are simply ignored. This is primarily important
-when using server-side endpoints for fetching all relations: some will be emoji or short text strings to
-denote reactions. Those events can be implicitly ignored with sufficiently complex/unlikely answer IDs as
-the client would automatically filter out `👍` reactions. This is particularly important in a world where
-the event type for all associated events is `m.room.encrypted` rather than `m.reaction` or `m.poll.response`
-from a server's perspective.
 
 Only the poll creator or anyone with a suitable power level for redactions can close the poll. The rationale
 for using the redaction power level is to help aid moderation efforts: while moderators can just redact the
@@ -192,32 +177,12 @@ before it is closed.
 In either case, once the poll ends the results are shown regardless of kind. Clients might wish to avoid
 disclosing who voted for what in an undisclosed poll, though this MSC leaves that at just a suggestion.
 
-### Server behaviour
-
-Much of the handling for this proposal is covered by other MSCs already:
-
-* [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) defines how to aggregate the annotations
-  (poll responses), though notes that encrypted events can potentially be an issue. The aggregation is
-  also unaware of a stop time to honour the poll closure. MSC2677 also defines that users may only annotate
-  with a given key once, preventing most issues of users voting for the same answer multiple times.
-* [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines the server-side aggregation approach
-  which can be useful to clients to determine which votes there are on an event.
-* [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) defines how clients can get all relations
-  for an event between point A and B (namely the poll start and close).
-
-No further behaviour is defined by this MSC: servers do not have to understand the rules of a poll in order
-to support the client's implementation. They do however need to implement a lot of server-side handling for
-the above MSCs.
-
-### Client behaviour
+### Client implementation notes
 
 Clients should rely on [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) and
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) for handling limited ("gappy") syncs.
-Otherwise, it is anticipated that clients re-process polls entirely on their own to ensure accurate counts
-with encrypted events (the response events might be encrypted, so the server-side aggregations endpoint
-will be unaware of whether an event is a reaction, poll response, or some other random type). As mentioned
-in the proposal text, clients should filter out non-sensical `key`s to automatically filter out reactions
-and other non-poll-response types.
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) for handling limited ("gappy") syncs. The
+relations endpoint can give (paginated) information about which results have been selected and when the
+poll has closed, overriding any stale local state the client might have.
 
 For clarity: clients using [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) should use the
 time-based shape of the endpoint, not the event ID shape, in order to honour the poll rules.
@@ -254,11 +219,6 @@ with the `m.message` parts of the events. For absolute clarity: if a client has 
 it can outright ignore any irrelevant data from the events such as the message fallback or other
 representations that senders stick onto the event (like thumbnails, captions, attachments, etc).
 
-It's theoretically possible for a client which starts a poll to use answer IDs which conflict with
-reactions. Clients are discouraged from doing this and should instead use strings which are unlikely
-to be used in other annotations/reactions. For example, using `pollAnswer_${uuid}_${answerIndex}` as
-a template.
-
 ## Alternatives
 
 The primary competition to this MSC is the author's own [MSC2192](https://github.com/matrix-org/matrix-doc/pull/2192)
@@ -286,6 +246,31 @@ Finally, MSC2192 is simply inferior due to not being able to restrict who can po
 and closures can also be limited arbitrarily by room admins, so clients might want to check to make
 sure that the sender has a good chance of being able to close the poll they're about to create just
 to avoid future issues.
+
+### Aggregations instead of references?
+
+A brief moment in this MSC's history described an approach which used aggregations (annotations/reactions)
+instead of the proposed reference relationships, though this had immediate concerns of being too
+complicated for practical use.
+
+While it is beneficial for votes to be quickly tallied by the server, the client still needs to do
+post-processing on the data from the server in order to accurately represent the valid votes. The
+server should not be made aware of the poll rules as it can lead to over-dependence on the server,
+potentially causing excessive network requests from clients.
+
+As such, the reference relationship is maintained by this proposal in order to remain consistent with
+how the poll close event is sent: instead of clients having to process two paginated requests they can
+use a single request to get the same information, but in a more valuable form.
+
+For completeness, the approach of aggregations-based responses is summarized as:
+
+* `m.annotation` `rel_type`
+* `key` is an answer ID
+* Multiple response events for multi-select polls. Only the most recent duplicate is considered valid.
+* Unvoting is done through redaction.
+
+Additional concerns are how the client needs to ensure that the answer IDs won't collide with a reaction
+or other annotation, adding additional complexity in the form of magic strings.
 
 ## Security considerations
 
@@ -331,9 +316,6 @@ If a client/user wishes to make a poll statically visible, they should check out
 While this MSC is not eligible for stable usage, the `org.matrix.msc3381.` prefix can be used in place
 of `m.`. Note that extensible events has a different unstable prefix for those fields.
 
-**Note**: Due to changes during the unstable period, poll responses are additionally annotated with a
-`v2` to denote a change on November 21, 2021. For details, see below.
-
 The 3 examples above can be rewritten as:
 
 ```json5
@@ -370,16 +352,15 @@ The 3 examples above can be rewritten as:
 
 ```json5
 {
-  "type": "org.matrix.msc3381.v2.poll.response", // note the v2 in the event type!
+  "type": "org.matrix.msc3381.poll.response",
   "sender": "@bob:example.org",
   "content": {
-    "m.relates_to": {
-      "rel_type": "m.annotation",
-      "key": "italian",
+    "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
+      "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
       "event_id": "$poll"
     },
     "org.matrix.msc3381.poll.response": {
-      // empty body
+      "answers": ["poutine"]
     }
   },
   // other fields that aren't relevant here
@@ -405,39 +386,3 @@ The 3 examples above can be rewritten as:
 Note that the extensible event fallbacks did not fall back to `m.room.message` in this MSC: this
 is deliberate to ensure polls are treated as first-class citizens. Client authors not willing/able
 to support polls are encouraged to instead support Extensible Events for better fallbacks.
-
-### Historical implementation: November 22, 2021
-
-As of November 21, 2021 this proposal moved away from a global `m.reference` relationship to using
-`m.annotation` on poll responses. The following documents the previous behaviour for implementations
-which might run across the now-legacy event types/format.
-
-Unstable representation (never made it to stable):
-```json5
-{
-  "type": "org.matrix.msc3381.poll.response", // note the *lack* v2 in the event type!
-  "sender": "@bob:example.org",
-  "content": {
-    "m.relates_to": {
-      "rel_type": "m.reference", // this changed!
-      "event_id": "$poll"
-    },
-    "org.matrix.msc3381.poll.response": {
-      "answers": ["italian"] // answers are recorded here!
-    }
-  },
-  // other fields that aren't relevant here
-}
-```
-
-The processing rules for this kind of response event were:
-
-1. Only the latest response event is considered. All others are ignored.
-2. `answers` is truncated to `max_selections` - the remainder are ignored.
-3. Users can un-vote by casting a ballot of `[]` or redacting all of their response events.
-
-All other rules (particularly related to late responses) remain the same.
-
-Clients can theoretically rely on the server-side relations endpoint for gappy syncs, though this
-has not been fully verified. It is intended that implementations switch over to the proposal's new
-text instead.
