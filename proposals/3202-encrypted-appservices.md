@@ -59,6 +59,13 @@ Like MSC2409, any user the appservice would be considered "interested" in (user 
 namespace, or sharing a room with an appservice user/namespaced room) would qualify for the device
 list changes section.
 
+Note that it's typical for clients to pause sync loops when processing device list changes to avoid
+a scenario where they are unable to decrypt/encrypt a message from/to a particular device. Appservices
+are expected to mirror this by ensuring the transaction request does not complete until processing
+is complete. In the worst case, the server will time out the request and retry it verbatim, so
+appservices might wish to track which device list changes in which transaction they already processed
+or keep processing transactions in the background while retries are attempted.
+
 In order to allow the appservice to masquerade as its users, an extension to the existing
 [identity assertion](https://matrix.org/docs/spec/application_service/r0.1.2#identity-assertion)
 ability is proposed. To compliment the (optional) `user_id` when using an `as_token` as an access
