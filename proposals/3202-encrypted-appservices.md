@@ -22,14 +22,19 @@ defining a new set of keys on the appservice `/transactions` endpoint, similar t
   "ephemeral": [
     // MSC2409
   ],
+  "to_device": [
+    // MSC2409
+  ],
   "device_lists": {
     "changed": ["@alice:example.org"],
     "left": ["@bob:example.com"]
   },
   "device_one_time_keys_count": {
     "@_irc_bob:example.org": {
-      "curve25519": 10,
-      "signed_curve25519": 20
+      "DEVICEID": {
+        "curve25519": 10,
+        "signed_curve25519": 20
+      }
     }
   }
 }
@@ -41,7 +46,7 @@ in the client-server API.
 Both new fields can be omitted if there are no changes for the appservice to handle. For
 `device_one_time_keys_count`, the format is slightly different from the client-server API to better
 map the appservice's user namespace users to the counts. Users in the namespace without keys or
-which have unchanged keys since the last transaction can be omitted.
+which have unchanged keys since the last transaction can be omitted (more details on this later on).
 
 Like MSC2409, any user the appservice would be considered "interested" in (user in the appservice's
 namespace, or sharing a room with an appservice user/namespaced room) would qualify for the device
@@ -55,6 +60,45 @@ that the device ID is valid for the user, and that the appservice is able to mas
 If valid, that device ID should be assumed as being used for that request. For many requests, this
 means updating the "last seen IP" and "last seen timestamp" for the device, however for some endpoints
 it means interacting with that device (such as when uploading keys).
+
+### Optimization: when to send OTKs
+
+As mentioned above, in order to keep the transaction byte size down the server can (and should) exclude
+OTK counts when they haven't changed since the last transaction. Appservices however should be tolerable
+of the server over-communicating the counts as a quick/cheap approach would be to *always* include the
+counts for all known users rather than trying to detect changes.
+
+As a middle ground, servers might be interested in an algorithm which doesn't detect changes between
+transactions but does attempt to reduce traffic. If the appservice is about to receive an event or
+message typically associated with encryption, the counts for the affected users could be included. This
+would result in the following rules:
+* If an `m.room.encrypted` event is being included in the transaction's `events`, include OTK counts for
+  all appservice users which reside in that room.
+* If an appservice user is receiving a to-device message in the transaction's `to_device` array, include
+  OTK counts for that user.
+
+This approach has the advantage of typically minimal changes to the internals of the homeserver, works
+similar to `/sync`, and reduces noisy traffic in the transaction sending. This additionally still honours
+the "when they change, send the counts" requirement to a reasonable degree: typically a use of an OTK will
+be followed by a to-device message. It is theoretically possible for an appservice to run out of OTKs if
+a remote user claims all OTKs without actually using them. Implementations may be interested in
+[MSC2732: Fallback keys](https://github.com/matrix-org/matrix-doc/pull/2732) which will avoid a scenario
+where the appservice can no longer decrypt messages.
+
+However, as mentioned, servers are free to include this information as little or often as they'd like,
+provided they send it at least as often as when it changes.
+
+### Optimization: Don't encrypt as often
+
+Appservices theoretically do not need to establish Olm sessions with other appservice users as the appservice
+will typically be managing the devices in one place. In short, this means that a room with 10k appservice
+users and only 1 non-appservice user can be sped up by only encrypting from the appservice's users to the
+non-appservice user. The appservice would not need to set up 10k * 10k Olm sessions given the encryption
+and decryption all happens in the same place. As an added bonus, this improves performance of the appservice
+as it doesn't have to handle to-device messages sent to itself.
+
+Some implementations might not be able to support this sort of optimization though, so it is still permitted
+to establish sessions and such between appservice users.
 
 ## Potential issues
 
