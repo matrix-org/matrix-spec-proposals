@@ -124,6 +124,8 @@ for using the redaction power level is to help aid moderation efforts: while mod
 original poll and invalidate it entirely, they might prefer to just close it and leave it on the historical
 record.
 
+Closure events which are sent by users without appropriate permission are ignored.
+
 Closing a poll is done as follows:
 
 ```json5
