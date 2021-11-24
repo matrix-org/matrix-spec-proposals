@@ -193,6 +193,27 @@ shares a room with (or is under the appservice's namespace) would be sent to the
 To-device messages for devices belonging to the appservice's user namespaces should always
 be sent.
 
+### Implementation detail: when to delete a to-device message
+
+Not defined by this MSC is an explicit algorithm for when to delete a to-device message (mark
+it as sent). This is left as an implementation detail, though a suggested approach is as
+follows:
+
+* If the message is sent to a user under an appservice's *exclusive* namespace, mark it as sent
+  and delete it. Note that retried transactions will still need to include the message.
+* If the message is sent to a user under an appservice's *inclusive* namespace, mark it as sent
+  to the appservice but do not delete it until a `/sync` request is completed which includes the
+  message. Note that retried transactions will still need to include the message.
+
+This approach is largely to align with how namespaces are used by appservices in practice, but
+is not applicable to all scenarios (and thus is an implementation detail). The majority of known
+appservices use exclusive namespaces, which typically also means that those users will not be
+calling `/sync`. Because of this, the server may never get another opportunity to delete the
+messages until it has confirmed that the appservice received the transaction successfully. Inclusive
+namespaces are typically used when the appservice wants to impact a subset of users, but without
+controlling those users explicitly. Typically, inclusive users are also calling `/sync` and so
+the appservice should be CC'd on the to-device messages that would normally go down `/sync`.
+
 ## Potential issues
 
 Determining which EDUs to transmit to the appservice could lead to quite some overhead on the
@@ -208,5 +229,7 @@ that EDU.
 ## Unstable prefix
 
 In the transaction body, instead of `ephemeral`, `de.sorunome.msc2409.ephemeral` is used.
+
+In the transaction body, instead of `to_device`, `de.sorunome.msc2409.to_device` is used.
 
 In the registration file, instead of `push_ephemeral`, `de.sorunome.msc2409.push_ephemeral` is used.
