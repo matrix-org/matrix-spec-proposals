@@ -36,6 +36,11 @@ defining a new set of keys on the appservice `/transactions` endpoint, similar t
         "signed_curve25519": 20
       }
     }
+  },
+  "device_unused_fallback_key_types": {
+    "@_irc_bob:example.org": {
+      "DEVICEID": ["signed_curve25519"]
+    }
   }
 }
 ```
@@ -43,10 +48,12 @@ defining a new set of keys on the appservice `/transactions` endpoint, similar t
 These fields are heavily inspired by [the extensions to /sync](https://matrix.org/docs/spec/client_server/r0.6.1#id84)
 in the client-server API.
 
-Both new fields can be omitted if there are no changes for the appservice to handle. For
-`device_one_time_keys_count`, the format is slightly different from the client-server API to better
-map the appservice's user namespace users to the counts. Users in the namespace without keys or
-which have unchanged keys since the last transaction can be omitted (more details on this later on).
+All the new fields can be omitted if there are no changes for the appservice to handle. For
+`device_one_time_keys_count` and `device_unused_fallback_key_types`, the format is slightly different
+from the client-server API to better map the appservice's user namespace users to the counts. Users
+in the namespace without keys or which have unchanged keys since the last transaction can be omitted
+(more details on this later on). Note that fallback keys are described in
+[MSC2732](https://github.com/matrix-org/matrix-doc/pull/2732) as of writing.
 
 Like MSC2409, any user the appservice would be considered "interested" in (user in the appservice's
 namespace, or sharing a room with an appservice user/namespaced room) would qualify for the device
@@ -61,21 +68,22 @@ If valid, that device ID should be assumed as being used for that request. For m
 means updating the "last seen IP" and "last seen timestamp" for the device, however for some endpoints
 it means interacting with that device (such as when uploading keys).
 
-### Optimization: when to send OTKs
+### Optimization: when to send OTKs/fallback keys
 
 As mentioned above, in order to keep the transaction byte size down the server can (and should) exclude
-OTK counts when they haven't changed since the last transaction. Appservices however should be tolerable
-of the server over-communicating the counts as a quick/cheap approach would be to *always* include the
-counts for all known users rather than trying to detect changes.
+OTK counts and unused fallback keys when they haven't changed since the last transaction. Appservices
+however should be tolerable of the server over-communicating the counts as a quick/cheap approach would
+be to *always* include the OTK counts/unused fallback keys for all known users rather than trying to
+detect changes.
 
 As a middle ground, servers might be interested in an algorithm which doesn't detect changes between
 transactions but does attempt to reduce traffic. If the appservice is about to receive an event or
 message typically associated with encryption, the counts for the affected users could be included. This
 would result in the following rules:
-* If an `m.room.encrypted` event is being included in the transaction's `events`, include OTK counts for
-  all appservice users which reside in that room.
+* If an `m.room.encrypted` event is being included in the transaction's `events`, include OTK counts and
+  unused fallback key types for all appservice users which reside in that room.
 * If an appservice user is receiving a to-device message in the transaction's `to_device` array, include
-  OTK counts for that user.
+  OTK counts and unused fallback key types for that user.
 
 This approach has the advantage of typically minimal changes to the internals of the homeserver, works
 similar to `/sync`, and reduces noisy traffic in the transaction sending. This additionally still honours
