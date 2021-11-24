@@ -142,6 +142,7 @@ While this MSC is not considered stable for implementation, implementations shou
 as a prefix to the fields on the `/transactions` endpoint. For example:
 * `device_lists` becomes `org.matrix.msc3202.device_lists`
 * `device_one_time_keys_count` becomes `org.matrix.msc3202.device_one_time_keys_count`
+* `device_unused_fallback_key_types` becomes `org.matrix.msc3202.device_unused_fallback_key_types`
 
 Appservices which support encryption but never see these fields (ie: server is not implementing this in an
 unstable capacity) should be fine, though encryption might not function properly for them. It is the
