@@ -201,13 +201,16 @@ relation type and target event type):
 GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?from=token][&to=token][&limit=amount]
 ```
 
+This is just non-normative example of what the aggregation for this
+relation types could look like, but its MSCs might end up with
+a different shape, take this with a grain of salt.
+
 ```json
 {
   "chunk": [
     {
       "type": "m.reaction",
       "key": "👍",
-      "origin_server_ts": 1562763768320,
       "count": 5,
     }
   ],
