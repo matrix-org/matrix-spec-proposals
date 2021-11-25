@@ -139,7 +139,7 @@ three thumbsup reaction annotations, one replace, and one reference.
 }
 ```
 
-#### Paginating relations
+### Querying relations
 
 A single event can have lots of associated relations, and we do not want to
 overload the client by including them all in a bundle. Instead, we provide two
@@ -147,6 +147,8 @@ new APIs in order to paginate over the relations, which behave in a similar
 way to `/messages`, except using `next_batch` and `prev_batch` names (in line
 with `/sync` API). Clients can start paginating either from the earliest or
 latest events using the `dir` param.
+
+#### Paginating relations
 
 The `/relations` API lets you iterate over all the **unbundled** relations
 associated with an event in standard topological order.  You can optionally
