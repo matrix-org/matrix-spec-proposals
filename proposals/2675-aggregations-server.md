@@ -107,6 +107,10 @@ before the list is truncated is determined freely by the server.
 For instance, the below example shows an event with five bundled relations:
 three thumbsup reaction annotations, one replace, and one reference.
 
+These are just non-normative examples of what the aggregation for these
+relation types could look like, but their MSCs might end up with
+a different shape, take these with a grain of salt.
+
 ```json
 {
     ...,
