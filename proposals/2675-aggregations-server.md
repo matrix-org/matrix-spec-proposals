@@ -83,13 +83,13 @@ Here's an example of what that can look like for some ficticious `rel_type`s:
 The following client-server APIs should bundle aggregations
 with events they return:
 
-  - `/rooms/{roomId}/messages`
-  - `/rooms/{roomId}/context`
-  - `/rooms/{roomId}/event/{eventId}`
-  - `/sync`, only for room sections in the response where `limited` field
+  - `GET /rooms/{roomId}/messages`
+  - `GET /rooms/{roomId}/context`
+  - `GET /rooms/{roomId}/event/{eventId}`
+  - `GET /sync`, only for room sections in the response where `limited` field
     is `true`; this amounts to all rooms in the response if 
     the `since` request parameter was not passed, also known as an initial sync.
-  - `/relations`, as proposed in this MSC.
+  - `GET /relations`, as proposed in this MSC.
 
 Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required
 to bundle aggregations.
