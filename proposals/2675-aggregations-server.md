@@ -79,7 +79,7 @@ Here's an example of what that can look like for some ficticious `rel_type`s:
 ```
 
 The following client-server APIs should bundle aggregations
-in the `unsigned` property of events they return:
+with events they return:
 
   - `/rooms/{roomId}/messages`
   - `/rooms/{roomId}/context`
