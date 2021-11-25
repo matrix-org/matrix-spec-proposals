@@ -1069,8 +1069,8 @@ JSON](/appendices#signing-json), using the server's signing key
 
 The signature is then copied back to the original event object.
 
-See [Persistent Data Unit schema](#Persistent Data Unit schema) for an
-example of a signed event.
+For an example of a signed event, see the [room version
+specification](/rooms).
 
 ### Validating hashes and signatures on received events
 
