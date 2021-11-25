@@ -268,6 +268,10 @@ A future MSC may define a method for encrypting certain parts of the
 
 ### Redactions
 
+Redacted relations should not be taken into consideration in
+bundled aggregations or aggregations returned from `/aggregations`,
+nor should they be returned from `/relations`.
+
 Trying to call `/relations` or `/aggregations` on a redacted message must return
 a 404.
 
