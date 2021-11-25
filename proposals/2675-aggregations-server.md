@@ -93,12 +93,14 @@ Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required
 to bundle aggregations.
 
 The bundled aggregations are grouped according to their `rel_type`.
+
 For relation types that aggregate to an array, future MSCs could opt to 
-paginate within each group using Matrix's defined pagination idiom of `count`,
-`limited` and `chunk` fields - respectively giving the total number of
-elements in the list, whether that list has been truncated, and an array of
-elements in the list. Only the first page is bundled, pagination of subsequent
-pages happens through the `/aggregations` API that is defined in this MSC.
+paginate within each group using Matrix's defined pagination idiom of
+`next_batch` and `chunk` - respectively giving a pagination token if there are
+more aggregations, and an array of elements in the list. Only the first page
+is bundled, pagination of subsequent pages happens through the `/aggregations`
+API that is defined in this MSC. The maximum amount of aggregations bundled
+before the list is truncated is determined freely by the server.
 
 For instance, the below example shows an event with five bundled relations:
 three thumbsup reaction annotations, one replace, and one reference.
@@ -116,9 +118,7 @@ three thumbsup reaction annotations, one replace, and one reference.
                       "origin_server_ts": 1562763768320,
                       "count": 3
                   }
-                ],
-                "limited": false,
-                "count": 1
+                ]
             },
             "m.reference": {
                 "chunk": [
@@ -127,8 +127,7 @@ three thumbsup reaction annotations, one replace, and one reference.
                         "event_id": "$some_event_id"
                     }
                 ],
-                "limited": false,
-                "count": 1
+                "next_batch": "abc123",
             },
             "m.replace": {
                 "event_id": "$edit_event_id",
@@ -154,7 +153,7 @@ associated with an event in standard topological order.  You can optionally
 filter by a given type of relation and event type:
 
 ```
-GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]
+GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&to=token][&limit=amount]
 ```
 
 ```json
@@ -173,6 +172,9 @@ GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
 
 The endpoint does not have any trailing slashes.
 
+The `from`, `to` and `limit` query parameters are used for pagination, and work
+just like described for the `/messages` endpoint.
+
   FIXME: we need to spell out that this API should return the original message
   when paginating over `m.replace` relations for a given message.  Synapse
   currently looks to include this as an `original_event` field alongside
@@ -189,7 +191,7 @@ To iterate over the aggregations for an event (optionally filtering by
 relation type and target event type):
 
 ```
-GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?filter=id]
+GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?from=token][&to=token][&limit=amount]
 ```
 
 ```json
@@ -208,6 +210,9 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
 ```
 
 The endpoint does not have any trailing slashes.
+
+The `from`, `to` and `limit` query parameters are used for pagination, and work
+just like described for the `/messages` endpoint.
 
 Trying to iterate over an relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
