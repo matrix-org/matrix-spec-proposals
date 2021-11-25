@@ -57,8 +57,10 @@ others might aggregate to a single object or any other value really.
 
 ##### Bundled aggregation
 
+Relations are first and foremost normal matrix events, and are returned by all
+endpoints that return events.
 Other than during non-gappy incremental syncs, events that have other events
-relate to it should bundle the aggregation of those related events
+relate to it should additionally bundle the aggregation of those related events
 in the `m.relations` property of their unsigned data.  These are called
 bundled aggregations, and by sending a summary of the relations,
 avoids us having to always send lots of individual unbundled relation events
