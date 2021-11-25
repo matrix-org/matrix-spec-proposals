@@ -258,6 +258,11 @@ Since the server has to be able to aggregate relation events, structural
 information about relations must be visible to the server, and so the
 `m.relates_to` field must be included in the plaintext.
 
+The `/relations` and `/aggregations` endpoint allow filtering by event type,
+which for encrypted rooms will be `m.room.encrypted`, rendering this filtering
+less useful for encrypted rooms. Aggregations that take the event type into
+account of the relation will suffer from the same limitation.
+
 A future MSC may define a method for encrypting certain parts of the
 `m.relates_to` field that may contain sensitive information.
 
