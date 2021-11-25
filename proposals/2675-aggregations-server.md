@@ -125,7 +125,6 @@ three thumbsup reaction annotations, one replace, and one reference.
             "m.reference": {
                 "chunk": [
                     {
-                        "type": "m.room.message",
                         "event_id": "$some_event_id"
                     }
                 ],
