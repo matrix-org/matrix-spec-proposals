@@ -375,19 +375,19 @@ them.
 
 #### Definitions
 
-Required Power Level
+**Required Power Level** \
 A given event type has an associated *required power level*. This is
 given by the current `m.room.power_levels` event. The event type is
 either listed explicitly in the `events` section or given by either
 `state_default` or `events_default` depending on if the event is a state
 event or not.
 
-Invite Level, Kick Level, Ban Level, Redact Level
+**Invite Level, Kick Level, Ban Level, Redact Level** \
 The levels given by the `invite`, `kick`, `ban`, and `redact` properties
 in the current `m.room.power_levels` state. Each defaults to 50 if
 unspecified.
 
-Target User
+**Target User** \
 For an `m.room.member` state event, the user given by the `state_key` of
 the event.
 
