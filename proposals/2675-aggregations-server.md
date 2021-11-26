@@ -37,16 +37,7 @@ events to relate to each other.  Together, these proposals replace
 
 ## Proposal
 
-### Receiving relations
-
-#### Unbundled relation events
-
-Relations are received during non-gappy incremental syncs (that is, syncs
-called with a `since` token, and that have `limited: false` in the portion of
-response for the given room) as normal discrete Matrix events.  These are
-called "unbundled relation events".
-
-#### Aggregation
+### Aggregations
 
 Relation events can be aggregated per `rel_type` by the server.
 The format of the aggregated value (hereafter called "aggregation")
@@ -56,15 +47,13 @@ Some `rel_type`s might additionally group the aggregations by the `key` property
 in the relation and aggregate to an array,
 others might aggregate to a single object or any other value really.
 
-##### Bundled aggregation
+#### Bundled aggregations
 
-Relations are first and foremost normal matrix events, and are returned by all
-endpoints that return events.
 Other than during non-gappy incremental syncs, events that have other events
-relate to it should additionally bundle the aggregation of those related events
+relate to it should bundle the aggregation of those related events
 in the `m.relations` property of their unsigned data.  These are called
 bundled aggregations, and by sending a summary of the relations,
-avoids us having to always send lots of individual unbundled relation events
+avoids us having to always send lots of individual relation events
 to the client.
 
 Here's an example of what that can look like for some ficticious `rel_type`s:
@@ -145,55 +134,10 @@ a different shape, take these with a grain of salt.
 }
 ```
 
-### Querying relations
-
-A single event can have lots of associated relations, and we do not want to
-overload the client by including them all in a bundle. Instead, we provide two
-new APIs in order to paginate over the relations, which behave in a similar
-way to `/messages`, except using `next_batch` and `prev_batch` names (in line
-with `/sync` API). Clients can start paginating either from the earliest or
-latest events using the `dir` param.
-
-#### Paginating relations
-
-The `/relations` API lets you iterate over all the **unbundled** relations
-associated with an event in standard topological order.  You can optionally
-filter by a given type of relation and event type:
-
-```
-GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&to=token][&limit=amount]
-```
-
-```json
-{
-  "chunk": [
-    {
-      "type": "m.reaction",
-      "sender": "...",
-      "content": { }
-    }
-  ],
-  "next_batch": "some_token",
-  "prev_batch": "some_token"
-}
-```
-
-The endpoint does not have any trailing slashes.
-
-The `from`, `to` and `limit` query parameters are used for pagination, and work
-just like described for the `/messages` endpoint.
-
-  FIXME: we need to spell out that this API should return the original message
-  when paginating over `m.replace` relations for a given message.  Synapse
-  currently looks to include this as an `original_event` field alongside
-  `chunk` on all relations, which feels very redundant when we only need it for
-  edits.  Either we specialcase it for edits, or we just have the client go
-  call /event to grab the contents of the original?
-
 #### Paginating aggregations
 
 The `/aggregations` API lets you iterate over aggregations for the relations
-of a given event, and the unbundled relations within them.
+of a given event, and the discrete relation events within them.
 
 To iterate over the aggregations for an event (optionally filtering by
 relation type and target event type):
@@ -229,8 +173,8 @@ Trying to iterate over a relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
 M_INVALID_REL_TYPE.
 
-To iterate over the unbundled relations within a specific bundled relation, you
-use the following API form, identifying the bundle based on its `key`
+To iterate over the discrete relation events within a specific bundled relation,
+you use the following API form, identifying the bundle based on its `key`
 (therefore this only applies to `m.annotation`, as it is the only current
 `rel_type` which groups relations via `key`).
 
@@ -259,6 +203,53 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 ```
 
 
+
+### Querying relations
+
+A single event can have lots of associated relations, and we do not want to
+overload the client by including them all bundled with the related-to event
+like with do for aggregations. Instead, we provide two
+new APIs in order to paginate over the relations, which behave in a similar
+way to `/messages`, except using `next_batch` and `prev_batch` names (in line
+with `/sync` API). Clients can start paginating either from the earliest or
+latest events using the `dir` param.
+
+#### Paginating relations
+
+The `/relations` API lets you iterate over all the discrete relation events
+associated with an event in standard topological order.  You can optionally
+filter by a given type of relation and event type:
+
+```
+GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&to=token][&limit=amount]
+```
+
+```json
+{
+  "chunk": [
+    {
+      "type": "m.reaction",
+      "sender": "...",
+      "content": { }
+    }
+  ],
+  "next_batch": "some_token",
+  "prev_batch": "some_token"
+}
+```
+
+The endpoint does not have any trailing slashes.
+
+The `from`, `to` and `limit` query parameters are used for pagination, and work
+just like described for the `/messages` endpoint.
+
+  FIXME: we need to spell out that this API should return the original message
+  when paginating over `m.replace` relations for a given message.  Synapse
+  currently looks to include this as an `original_event` field alongside
+  `chunk` on all relations, which feels very redundant when we only need it for
+  edits.  Either we specialcase it for edits, or we just have the client go
+  call /event to grab the contents of the original?
+
 ### End to end encryption
 
 Since the server has to be able to aggregate relation events, structural
@@ -284,13 +275,13 @@ a 404.
 
 ### Local echo
 
-As clients only receive unbundled events through /sync, they need to locally
-aggregate these unbundled events for their parent event, on top of any
-server-side aggregation that might have already happened, to get a complete
-picture of the aggregations for a given parent event, as a client
-might not be aware of all relations for an event. Local aggregation should
-thus also take the `m.relation` data in the `unsigned` of the parent event
-into account if it has been sent already. The aggregation algorithm is the
+As clients only receive discrete relation events through /sync,
+they need to locally aggregate these relation events for their parent event,
+on top of any server-side aggregation that might have already happened,
+to get a complete picture of the aggregations for a given parent event,
+as a client might not be aware of all relations for an event. Local aggregation
+should thus also take the `m.relation` data in the `unsigned` of the parent
+event into account if it has been sent already. The aggregation algorithm is the
 same as the one described here for the server.
 
 For the best possible user experience, clients should also include unsent
@@ -329,9 +320,9 @@ common case for rapidly fixing a typo in a msg which is still in flight!)
 
 How do you handle ignored users?
  * Information about relations sent from ignored users must never be sent to
-   the client, either in bundled or unbundled form.  This is to let you block
-   someone from harassing you with emoji reactions (or using edits as a
-   side-channel to harass you).
+   the client, either in aggregations or discrete relation events.
+   This is to let you block someone from harassing you with emoji reactions
+   (or using edits as a side-channel to harass you).
 
 What does it mean to call /context on a relation?
  * We should probably just return the root event for now, and then refine it in
