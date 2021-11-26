@@ -189,7 +189,11 @@ moderators de facto modifying the content of other user's messages (even if this
 could be mitigated by clients displaying who has modified a user's messages).
 
 ### Security considerations
-We do not think that this proposal could cause any security issue.
+#### Old clients
+
+Old clients that do not implement this MSC will continue displaying messages that
+should be hidden. We believe that it's an acceptable risk, as it does not expose
+data that is meant to be kept private.
 
 ### Unstable prefix
 
