@@ -134,7 +134,7 @@ a different shape, take these with a grain of salt.
 }
 ```
 
-#### Paginating aggregations
+### Querying aggregations
 
 The `/aggregations` API lets you iterate over aggregations for the relations
 of a given event, and the discrete relation events within them.
@@ -169,7 +169,7 @@ The endpoint does not have any trailing slashes.
 The `from`, `to` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
 
-Trying to iterate over a relation type which does not use an aggregation key
+Trying to iterate over an relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
 M_INVALID_REL_TYPE.
 
@@ -202,19 +202,15 @@ GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation
 }
 ```
 
-
-
 ### Querying relations
 
 A single event can have lots of associated relations, and we do not want to
 overload the client by including them all bundled with the related-to event
-like with do for aggregations. Instead, we provide two
-new APIs in order to paginate over the relations, which behave in a similar
-way to `/messages`, except using `next_batch` and `prev_batch` names (in line
-with `/sync` API). Clients can start paginating either from the earliest or
-latest events using the `dir` param.
-
-#### Paginating relations
+like we do for aggregations. Instead, we provide a new `/relations` API in
+order to paginate over the relations, which behaves in a similar way to
+`/messages`, except using `next_batch` and `prev_batch` names
+(in line with `/sync` API). Clients can start paginating either from the 
+earliest or latest events using the `dir` param.
 
 The `/relations` API lets you iterate over all the discrete relation events
 associated with an event in standard topological order.  You can optionally
