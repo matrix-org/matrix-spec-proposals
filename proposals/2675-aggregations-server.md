@@ -239,12 +239,10 @@ The endpoint does not have any trailing slashes.
 The `from`, `to` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
 
-  FIXME: we need to spell out that this API should return the original message
-  when paginating over `m.replace` relations for a given message.  Synapse
-  currently looks to include this as an `original_event` field alongside
-  `chunk` on all relations, which feels very redundant when we only need it for
-  edits.  Either we specialcase it for edits, or we just have the client go
-  call /event to grab the contents of the original?
+Note that [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676)
+adds the related-to event in `original_event` property of the response.
+This way the full history (e.g. also the first, original event) of the event
+is obtained without further requests. See that MSC for further details.
 
 ### End to end encryption
 
