@@ -209,10 +209,9 @@ overload the client by including them all bundled with the related-to event
 like we do for aggregations. Instead, we provide a new `/relations` API in
 order to paginate over the relations, which behaves in a similar way to
 `/messages`, except using `next_batch` and `prev_batch` names
-(in line with `/sync` API). Clients can start paginating either from the 
-earliest or latest events using the `dir` param.
+(in line with `/sync` API).
 
-The `/relations` API lets you iterate over all the discrete relation events
+The `/relations` API returns discrete relation events
 associated with an event in standard topological order.  You can optionally
 filter by a given type of relation and event type:
 
