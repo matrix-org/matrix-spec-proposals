@@ -300,11 +300,12 @@ referred to should be de-aggregated from the relations of the target of the
 relation.  Similar to a relation, when the sending of the redaction fails or
 is cancelled, the relation should be aggregated again.
 
-To support creating relations for pending events, clients will need a way for
-events to relate to one another before the `event_id` of the parent event is
-known. When the parent event receives its remote echo, the target event id
-(`m.relates_to`.`event_id`) of any relations in the send queue will need to be
-set the newly received `event_id`.
+Clients can locally relate pending events by their `transaction_id`.
+When the target event receives its `event_id` (either receives the remote echo,
+or receives the `event_id` from the `/send` response,
+whichever comes first), the target event id (`m.relates_to`.`event_id`) of
+any relations in the send queue will
+need to be set the newly received `event_id`.
 
 Particularly, please remember to let users edit unsent messages (as this is a
 common case for rapidly fixing a typo in a msg which is still in flight!)
