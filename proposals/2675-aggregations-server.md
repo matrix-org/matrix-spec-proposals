@@ -173,35 +173,6 @@ Trying to iterate over an relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
 M_INVALID_REL_TYPE.
 
-To iterate over the discrete relation events within a specific bundled relation,
-you use the following API form, identifying the bundle based on its `key`
-(therefore this only applies to `m.annotation`, as it is the only current
-`rel_type` which groups relations via `key`).
-
-```
-GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}/${relationType}/{eventType}/{key}
-```
-
-e.g.
-
-```
-GET /_matrix/client/r0/rooms/!asd:matrix.org/aggregations/$1cd23476/m.annotation/m.reaction/👍
-```
-
-```json
-{
-  "chunk": [
-    {
-      "type": "m.reaction",
-      "sender": "...",
-      "content": { }
-    },
-  ],
-  "next_batch": "some_token",
-  "prev_batch": "some_token"
-}
-```
-
 ### Querying relations
 
 A single event can have lots of associated relations, and we do not want to
