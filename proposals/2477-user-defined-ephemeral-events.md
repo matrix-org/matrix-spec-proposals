@@ -4,7 +4,7 @@ Matrix currently handles the transfer of data in the form of Persistent- as well
 Units, both of which follow the same general design in the way they're encoded and transferred over
 both the Client-Server and Server-Server API.
 
-Currently only users are only able to provide their own event types and data in the case of
+Currently, users are only able to provide their own event types and data in the case of
 persistent data, in the form of state events as well as messages / timeline events.  
 The sending of ephemeral data by clients - on the other hand - is currently limited to only typing
 notifications, event receipts, and presence updates. Which greatly limits the potential usefulness
