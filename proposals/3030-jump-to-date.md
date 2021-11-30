@@ -19,15 +19,31 @@ These types of use cases are not supported by the current Matrix API because it 
 ## Proposal
 
 
-Add new client API endpoint `GET /_matrix/client/r0/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]` which fetches the closest event to the given timestamp `ts` query parameter in the direction specified by the `dir` query parameter.
+Add new client API endpoint `GET /_matrix/client/r0/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]` which fetches the closest `event_id` to the given timestamp `ts` query parameter in the direction specified by the `dir` query parameter.
 
-In order to solve the problem where a remote federated homeserver does not have all of the history in a room and no suitably close event, we also add a server API endpoint `GET /_matrix/federation/v1/timestamp_to_event/{roomId}?ts=<timestamp>?dir=[f|b]` which other homeservers can use to ask about their closest event to the timestamp.
+In order to solve the problem where a remote federated homeserver does not have all of the history in a room and no suitably close event, we also add a server API endpoint `GET /_matrix/federation/v1/timestamp_to_event/{roomId}?ts=<timestamp>?dir=[f|b]` which other homeservers can use to ask about their closest `event_id` to the timestamp. This endpoint also returns `origin_server_ts` to make it easy to do a quick comparison to see if the remote `event_id` fetched is closer than the local one.
 
 The heuristics for deciding when to ask another homeserver for a closer event if your homeserver doesn't have something close, is left up to the homeserver implementation. Although the heuristics will probably be based on whether the closest event is a forward/backward extremity indicating it's next to a gap of events which are potentially closer.
 
+```
+GET /_matrix/client/unstable/org.matrix.msc3030/rooms/<roomID>/timestamp_to_event?ts=<timestamp>&dir=<direction>
+{
+    "event_id": ...
+}
+```
+
+Federation API endpoint:
+```
+GET /_matrix/federation/unstable/org.matrix.msc3030/timestamp_to_event/<roomID>?ts=<timestamp>&dir=<direction>
+{
+    "event_id": ...
+    "origin_server_ts": ...
+}
+```
+
 ---
 
-In order to paginate `/messages`, we needa pagination token which we can get using `GET /_matrix/client/r0/rooms/{roomId}/context/{eventId}?limi=0` for the `event_id` returned by `/timestamp_to_event`.
+In order to paginate `/messages`, we need a pagination token which we can get using `GET /_matrix/client/r0/rooms/{roomId}/context/{eventId}?limi=0` for the `event_id` returned by `/timestamp_to_event`.
 
 
 ## Potential issues
