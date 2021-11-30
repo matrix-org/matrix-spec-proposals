@@ -16,7 +16,7 @@ relationships and maintain a correct view.
 
 Instead, this proposal seeks to solve this problem by defining APIs to let the
 server calculate the aggregations on behalf of the client, and so bundle the
-related events with the original event where appropriate. It also proposes an
+aggregated data with the original event where appropriate. It also proposes an
 API to let clients paginate through all relations of an event.
 
 This proposal is one in a series of proposals that defines a mechanism for
