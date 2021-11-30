@@ -148,7 +148,7 @@ To iterate over the aggregations for an event (optionally filtering by
 relation type and target event type):
 
 ```
-GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?from=token][&to=token][&limit=amount]
+GET /_matrix/client/v1/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}][?from=token][&to=token][&limit=amount]
 ```
 
 This is just non-normative example of what the aggregation for this
@@ -194,7 +194,7 @@ see [limitations](#servers-might-not-be-aware-of-all-relations-of-an-event).  Yo
 filter by a given type of relation and event type:
 
 ```
-GET /_matrix/client/r0/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&to=token][&limit=amount]
+GET /_matrix/client/v1/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&to=token][&limit=amount]
 ```
 
 ```json
@@ -335,8 +335,13 @@ and paginated as per the normal Matrix pagination model.
 This was originally part of this MSC but left out to limit the scope
 to what is implemented at the time of writing.
 
-## No unstable prefix
+## Prefix
 
-Implementations of this MSC should not use any prefix,
-as this MSC tries to document relation support without a prefix already
-being used in the wider matrix ecosystem.
+While this MSC is not considered stable, the endpoints become:
+
+ - `GET /_matrix/client/unstable/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}]`
+ - `GET /_matrix/client/unstable/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]`
+
+None of the newly introduced identifiers should use a prefix though, as this MSC
+tries to document relation support already being used in
+the wider matrix ecosystem.
