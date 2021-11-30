@@ -147,7 +147,7 @@ GET /_matrix/client/r0/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{
 ```
 
 This is just non-normative example of what the aggregation for this
-relation types could look like, but its MSCs might end up with
+relation types could look like, and its MSCs might end up with
 a different shape, take this with a grain of salt.
 
 ```json
