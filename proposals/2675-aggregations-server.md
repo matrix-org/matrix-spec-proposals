@@ -293,12 +293,6 @@ common case for rapidly fixing a typo in a msg which is still in flight!)
    This is to let you block someone from harassing you with emoji reactions
    (or using edits as a side-channel to harass you).
 
-### What does it mean to call /context on a relation?
-
- * We should probably just return the root event for now, and then refine it in
-   future for threading?
- * XXX: what does synapse do here?
-
 ## Limitations
 
 ### Servers might not be aware of all relations of an event
