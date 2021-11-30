@@ -236,8 +236,9 @@ Redacted relations should not be taken into consideration in
 bundled aggregations or aggregations returned from `/aggregations`,
 nor should they be returned from `/relations`.
 
-Trying to call `/relations` or `/aggregations` on a redacted message must return
-a 404.
+Requesting `/relations` or `/aggregations` on a redacted event should
+still return any existing relation events, and aggregations respectively.
+This is in line with other APIs like `/context` and `/messages`.
 
 ### Local echo
 
