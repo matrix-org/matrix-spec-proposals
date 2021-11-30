@@ -13,7 +13,7 @@ message they respond to, etc.
 It is possible to treat relations as normal events and aggregate them
 clientside, but to do so comprehensively could be very resource intensive, as
 the client would need to spider all possible events in a room to find
-relationships and maintain an correct view.
+relationships and maintain a correct view.
 
 Instead, this proposal seeks to solve this problem by defining APIs to let the
 server calculate the aggregations on behalf of the client, and so bundle the
