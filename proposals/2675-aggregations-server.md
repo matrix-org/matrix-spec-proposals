@@ -93,6 +93,10 @@ is bundled, pagination of subsequent pages happens through the `/aggregations`
 API that is defined in this MSC. The maximum amount of aggregations bundled
 before the list is truncated is determined freely by the server.
 
+Note that the client *can* determine the page size when calling
+`/aggregations` through the `limit` request parameter, the offset is solely
+determined by the `next_batch` token.
+
 For instance, the below example shows an event with five bundled relations:
 one replace, one reference and three thumbsup reaction annotations,
 with more aggregated reactions available to paginate in
