@@ -326,3 +326,9 @@ and paginated as per the normal Matrix pagination model.
 
 This was originally part of this MSC but left out to limit the scope
 to what is implemented at the time of writing.
+
+## No unstable prefix
+
+Implementations of this MSC should not use any prefix,
+as this MSC tries to document relation support without a prefix already
+being used in the wider matrix ecosystem.
