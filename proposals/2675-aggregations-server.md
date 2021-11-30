@@ -137,7 +137,7 @@ a different shape, take these with a grain of salt.
 ### Querying aggregations
 
 The `/aggregations` API lets you iterate over aggregations for the relations
-of a given event, and the discrete relation events within them.
+of a given event.
 
 To iterate over the aggregations for an event (optionally filtering by
 relation type and target event type):
