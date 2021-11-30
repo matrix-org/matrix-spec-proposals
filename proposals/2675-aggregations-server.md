@@ -62,8 +62,8 @@ Here's an example of what that can look like for some ficticious `rel_type`s:
   "event_id": "abc",
   "unsigned": {
     "m.relations": {
-      "some_rel_type": { "some_prop": true }, // aggregation for some_rel_type
-      "other_rel_type": { "other_prop": false }, // aggregation for other_rel_type
+      "some_rel_type": { "some_aggregated_prop": true },
+      "other_rel_type": { "other_aggregated_prop": 5 },
     }
   }
 }
