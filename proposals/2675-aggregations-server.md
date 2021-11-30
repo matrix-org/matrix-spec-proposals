@@ -96,7 +96,7 @@ before the list is truncated is determined freely by the server.
 For instance, the below example shows an event with five bundled relations:
 one replace, one reference and three thumbsup reaction annotations,
 with more aggregated reactions available to paginate in
-through `/aggregations` as `next_batch` is present..
+through `/aggregations` as `next_batch` is present.
 
 These are just non-normative examples of what the aggregation for these
 relation types could look like, and their MSCs might end up with
