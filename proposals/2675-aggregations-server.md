@@ -242,7 +242,7 @@ This is in line with other APIs like `/context` and `/messages`.
 
 ### Local echo
 
-As clients only receive discrete relation events through /sync,
+As clients only receive discrete relation events through `/sync`,
 they need to locally aggregate these relation events for their parent event,
 on top of any server-side aggregation that might have already happened,
 to get a complete picture of the aggregations for a given parent event,
