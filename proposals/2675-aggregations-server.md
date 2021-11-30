@@ -171,7 +171,7 @@ just like described for the `/messages` endpoint.
 
 Trying to iterate over an relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
-M_INVALID_REL_TYPE.
+`M_INVALID_REL_TYPE`.
 
 ### Querying relations
 
