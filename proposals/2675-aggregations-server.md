@@ -7,8 +7,7 @@ Clients typically need to track the related events alongside the original
 event they relate to, in order to correctly display them.  For instance,
 reaction events need to be aggregated together by summing and be shown next to
 the event they react to; edits need to be aggregated together by replacing the
-original event and subsequent edits; replies need to be indented after the
-message they respond to, etc.
+original event and subsequent edits, etc.
 
 It is possible to treat relations as normal events and aggregate them
 clientside, but to do so comprehensively could be very resource intensive, as
