@@ -94,7 +94,8 @@ API that is defined in this MSC. The maximum amount of aggregations bundled
 before the list is truncated is determined freely by the server.
 
 For instance, the below example shows an event with five bundled relations:
-three thumbsup reaction annotations, one replace, and one reference.
+three thumbsup reaction annotations, one replace, and a truncated list
+of references, of which only one is bundled (because `next_batch` is present).
 
 These are just non-normative examples of what the aggregation for these
 relation types could look like, and their MSCs might end up with
