@@ -38,7 +38,7 @@ properties:
       by the local homeserver, and is only returned if the event is a state event,
       and the client has permission to see the previous content.
     x-changedInMatrixVersion:
-      this: |
+      1.2: |
         Previously, this field was specified at the top level of returned
         events rather than in `unsigned` (with the exception of the [`GET
         .../notifications`](/client-server-api/#get_matrixclientv3notifications)

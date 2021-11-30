@@ -91,7 +91,7 @@
         {{ range $ver, $details := index $property "x-changedInMatrixVersion" }}
             <br><br>
             <strong>
-                Changed in {{ if (eq $ver "this") }}this version{{ else }}`v{{ $ver }}`{{ end }}:
+                Changed in <code>v{{ $ver }}</code>:
             </strong>
             {{ $details | markdownify }}
         {{ end }}
