@@ -26,7 +26,7 @@ events to relate to each other.  Together, these proposals replace
 * [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) defines a
   standard shape for indicating events which relate to other events.
 * This proposal defines APIs to let the server calculate the aggregations on
-  behalf of the client, and so bundle the related events with the original
+  behalf of the client, and so bundle the aggregated data with the original
   event where appropriate.
 * [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) defines how
   users can edit messages using this mechanism.
