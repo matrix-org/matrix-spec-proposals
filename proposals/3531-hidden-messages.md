@@ -1,48 +1,51 @@
 
-# **MSCXXXX: Letting moderators hide messages pending review**
+# **MSC3531: Letting moderators hide messages pending review**
 
 Matrix supports **redacting** messages as a mechanism to remove unwanted
-content. At present, there is no manner of **undoing** these redactions.
+content. **Redacting** events, as defined in the Matrix spec, is a mechanism that
+entirely removes the content of an event. Users can redact their own events, and
+room moderators can redact unwanted events, including illegal content.
+At present, there is no manner of **undoing** these redactions.
 
-After attempting to come up with a mechanism to undo redactions, we came to the
-conclusion that this cannot be robustly and simply implemented at Matrix-level.
+Historically, redacting messages has been useful for two use cases:
+
+1. a user accidentally posting a password, credit card number or other confidential information,
+   in which case the information must be scrubbed as fast as possible from all places;
+2. a moderator removing spam, bullying, etc. from a malicious user / spam bot.
+
+Experience shows that redacting messages for case 2. is not always the best solution:
+
+1. moderators make mistakes and there is currently no way for them to fix these;
+2. in many cases, it may be desirable for a moderator to quickly hide a message
+   before having a conversation with other moderators to determine whether the
+   message should be let through (e.g. discussing whether the local room's CoC
+   should allow a possibly inflamatory political message - or a newbie moderator
+   waiting for experienced moderators to come online to ask them for clarifications
+   on borderline content);
+3. some bots automatically remove messages based on heuristics (e.g. users sending
+   too many messages or too many images) but may get it wrong, in which case the
+   moderator currently cannot fix the errors of these bots.
+
+In addition, proposals such as MSC3215, which aims to decentralize moderation,
+will very likely increase the number of moderators - and in particular, the
+number of moderators who may not be familiar with moderation tools, hence will
+make mistakes.
+
+For all these reasons, it would be very useful to have a mechanism that would
+let moderators undo their own redactions. Unfortunately, reversing a redaction
+is tricky, as we cover in the **Alternatives** section.
+
 Rather, we propose a spec to let moderators *hide messages pending review*. This
-spec can then be used by clients or bots such as Mjölnir to implement two phase
+mechanism is entirely client-based and will not prevent hidden messages
+from being distributed, only from being seen by non-moderator users. This spec
+can then be used by clients or bots such as Mjölnir to implement two phase
 redaction:
    1. a first phase during which messages are flagged for moderation (either by
       a bot or manually) and hidden from general consumption;
    1. a second phase during which moderators may either restore the message or
       `redact` it entirely.
 
-
 ## **Proposal**
-
-### **Introduction**
-
-**Redacting** events, as defined in the Matrix spec, is a mechanism that
-entirely removes the content of an event. Users can redact their own events, and
-room moderators can redact unwanted events, including illegal content.
-
-The Matrix spec does not offer a mechanism to **undo** a redaction. This means
-that if a user or moderator makes a mistake, there is no way to restore the
-original message. Tolerance for mistakes supports innovation, as well as
-reducing the risks of proposals such as MSC3215, which aims to decentralize
-moderation.
-
-Reversing a redaction is tricky, as we cover in the **Alternatives** section.
-However, if we allow moderators to flag a message as hidden, a moderator can
-easily restore the content of a message that has been flagged. In particular, if
-a moderator uses a bot such as Mjölnir, the bot may implement a room of
-"messages pending review by moderators", letting moderators review flagged
-messages leisurely while being certain that inappropriate messages are not
-visible by users on compliant clients.
-
-In this proposal, the bulk of the work of hiding is *performed by clients*.
-Messages marked as "hidden" are distributed to all clients by should be visible
-only to their author and moderators. This keeps the proposal minimal and simple
-to implement.
-
-### **Proposal**
 We introduce a new type of relation: `m.visibility`, with the following syntax:
 
 ```jsonc
@@ -53,54 +56,44 @@ We introduce a new type of relation: `m.visibility`, with the following syntax:
 }
 ```
 
-Only moderators may send events with relation `m.visibility`. This relation
-controls whether *clients* should display an event or hide it.
+Events with relation `m.visibility` are ignored if they are sent by users with
+powerlevel below `m.visibility`. This relation controls whether *clients* should
+display an event or hide it.
 
-#### Server behavior
+### Server behavior
 
-When a homeserver receives an event with `rel_type` `m.visibility` sent by user
-U in room R:
-   1. if the powerlevel of U in R is greater or equal to `m.visibility`
-       1. accept the event
-   1. otherwise
-       1. respond with error code M_FORBIDDEN
+No changes in server behavior.
 
-#### Client behavior
+### Client behavior
 
-   1. When a client receives an event with `rel_type` `m.visibility` and
-      visibility V sent by user U in room R and relating to an existing event E
-      in room R:
-       1. If the powerlevel of U in R is greater or equal to `m.visibility`
-          (note: we add this check to ensure that the proposal works to a large
-          extent even without support from the homeserver)
-           1. If V is "hidden", mark E as hidden
-               1. In every display of E, either by itself or in a reaction
-                   1. If the current user is the sender of E
-                       1. Label the display of E with a label such as `(pending
-                          moderation)`
+   1. When a client receives an event `event` with `rel_type` `m.visibility`
+      relating to an existing event `original_event` in room `room`:
+       1. If the powerlevel of `event.sender` in `room`` is greater or equal to `m.visibility`
+           1. If `event` specifies a visibility of "hidden", mark `original_event` as hidden
+               1. In every display of `original_event`, either by itself or in a reaction
+                   1. If the current user is the sender of `original_event`
+                       1. Label the display of `original_event` with a label such as `(pending moderation)`
                    1. Otherwise, if the current user has a powerlevel greater or
                       equal to `m.visibility`
-                       1. Display E as a spoiler.
-                       1. Label the display of E with a label such as `(pending
-                          moderation)`
+                       1. Display `original_event` as a spoiler.
+                       1. Label the display of `original_event` with a label such as `(pending moderation)`
                    1. Otherwise
-                       1. Instead of displaying E, display a message such as
-                          `Message is pending moderation`
-           1. Otherwise, if V is "visible", mark E as visible
-               1. Display E exactly as it would be displayed without this MSC
+                       1. Instead of displaying `original_event`, display a message such as `Message is pending moderation`
+           1. Otherwise, if `event` specifies a visibility of "visible", mark `original_event` as visible
+               1. Display `original_event` exactly as it would be displayed without this MSC
            1. Otherwise, ignore
        1. Otherwise, ignore
-   1. When a client prepares to display a message E with visibility "hidden",
-      whether by itself or in a reaction
-       1. (see 1.1.1.1.1. for details on how to display E)
+   1. When a client prepares to display a message `original_event` with visibility "hidden", whether by itself or in a reaction
+       1. (see 1.1.1.1.1. for details on how to display `original_event`)
+   1. If an event `event` with `rel_type` `m.visibility` and relating to an existing event `original_event` is redacted, update the display or `original_event` as per the latest event with `rel_type` `m.visibility` in this room relating to the same `original_event`.
 
 If several reactions race against each other to mark a message as visible or
-hidden, we consider the most recent one (by order of origin_server_ts) the
+hidden, we consider the most recent one (by order of `origin_server_ts`) the
 source of truth.
 
-#### Example use
+### Example use
 
-A moderation bot such as Mjölnir may implement two-phase redaction as follows:
+A moderation bot such as Mjölnir might implement two-phase redaction as follows:
    1. When a room protection rule or a moderator requires Mjölnir to redact a
       message E in room R
        1. Copy E to a "moderation pending" room as message E', with some UX to
@@ -116,16 +109,15 @@ A moderation bot such as Mjölnir may implement two-phase redaction as follows:
       marked neither PASS nor REJECT
        1. Behave as if E' had been marked REJECT
 
-### Potential issues
-#### Abuse by moderators
+## Potential issues
+### Abuse by moderators
 This proposal does not give substantial new powers to moderators, so we don't
 think that there is cause for concern here.
 
-#### Race conditions
-There may be race conditions between e.g. an edition (MSC2767) and marking a
-message visible/hidden. We do not think that this can cause any real issue.
+### Race conditions
+There may be race conditions between e.g. an edition (https://github.com/matrix-org/matrix-doc/pull/2676) and marking a message visible/hidden. We do not think that this can cause any real issue.
 
-#### Hidden channel
+### Hidden channel
 As messages are hidden but still distributed to all clients in the room, it is
 entirely possible to write a client/bot that ignores hiding and one could
 imagine using hidden messages to semi-covertly exchange messages in a room.
@@ -133,17 +125,28 @@ imagine using hidden messages to semi-covertly exchange messages in a room.
 As there are already countless ways to implement this, we don't foresee this to
 cause any problem.
 
-#### Liabilities
+### Liabilities
 
 It is possible that, in some countries, if moderators decide to mark content as
 hidden but fail to redact it, this could make the homeserver owner legally
 responsible for illegal content being exchanged through this covert channel.
 
-We believe that using a bot that expunges automatically hidden messages after a
+We believe that using a bot that automatically redacts hidden messages after a
 retention period would avoid such liabilities.
 
-### Alternatives
-#### A message to undo a redaction
+## Alternatives
+### Server behavior changes
+
+We could amend this proposal to have the server reject messages with relation
+`m.visibility` if these messages are sent by a user with a powerlevel below
+`m.visibility`. However, this would require changes to the flow of encryption
+to let the server read the relation between events, something that is less than
+ideal.
+
+We prefer requiring that clients ignore messages sent by users without a sufficient
+powerlevel.
+
+### A message to undo a redaction
 
 As the original objective of this proposal is to undo redactions, one could
 imagine a message `m.room.undo_redaction` with the following behavior:
@@ -159,26 +162,17 @@ imagine a message `m.room.undo_redaction` with the following behavior:
 
 This proposal would have the benefit of removing the hidden channel.
 
-However, servers typically purge redacted events after a while, both to save
-space and to comply with regulations. Unfortunately, if two servers receive a
-`m.room.undo_redaction` for the same event E, one of the servers may have purged
-E already. Both servers could make different choices (one server keeping E
-redacted, the other one making it unredacted). In turn, these choices would end
-up having different consequences if E subsequently receives a reaction. These
-consequences would cause divergence between the room views, which is not
-desirable.
+However, servers are intended to redact events immediately and permanently, though
+regulations for some areas of operation require the contents to be preserved for a
+short amount of time. In any case, it is not possible to determine
+how long a server is willing or able to keep event contents, so we can only assume
+it has not kept them at all. Any attempt to undo redaction would, at best, race
+against this retention duration, which may differ across homeservers in the same
+room, and might end up causing divergence between the room views.
 
-We could solve this by requiring that homeservers backup any redacted event, at
-least for some time, but this might contradict legal requirements in some
-countries, as well as the privacy preferences of individual administrators.
+Thus, undoing is not possible, in practice.
 
-Furthermore, this proposal opens different abuse vectors, through which a
-malicious moderator could undo a self-redaction by a user, e.g. after
-accidentally revealing private information.
-
-This could be mitigated by not allowing moderators to undo self redactions.
-
-#### Injecting content in redacted messages
+### Injecting content in redacted messages
 An alternative mechanism to undo redactions would be to let moderators un-redact
 a message by injecting new content in it. This would let clients or moderation
 bots such as Mjölnir implement undoing redactions by first backing up redacted
@@ -188,18 +182,19 @@ mechanism as it is more complicated and it opens abuse vectors by malicious
 moderators de facto modifying the content of other user's messages (even if this
 could be mitigated by clients displaying who has modified a user's messages).
 
-### Security considerations
-#### Old clients
+## Security considerations
+### Old clients
 
 Old clients that do not implement this MSC will continue displaying messages that
 should be hidden. We believe that it's an acceptable risk, as it does not expose
 data that is meant to be kept private.
 
-### Unstable prefix
+## Unstable prefix
 
 During the prototyping phase:
 
 - `rel_type` `m.visibility` should be prefixed into
-  `org.matrix.mscXXXX.visibility`;
+  `org.matrix.msc3531.visibility`;
 - field `visibility` should also be prefixed into
-  `org.matrix.mscXXXX.visibility`.
+  `org.matrix.msc3531.visibility`;
+- constants `visible` and `hidden` remain unchanged.

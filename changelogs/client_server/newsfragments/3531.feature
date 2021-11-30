@@ -1,0 +1,1 @@
+Introduce a new relationship `m.visibility` to let moderators hide/unhide messages pending moderation.
