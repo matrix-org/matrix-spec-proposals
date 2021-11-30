@@ -19,7 +19,7 @@ These types of use cases are not supported by the current Matrix API because it 
 ## Proposal
 
 
-Add new client API endpoint `GET /_matrix/client/r0/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]` which fetches the closest `event_id` to the given timestamp `ts` query parameter in the direction specified by the `dir` query parameter.
+Add new client API endpoint `GET /_matrix/client/r0/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]` which fetches the closest `event_id` to the given timestamp `ts` query parameter in the direction specified by the `dir` query parameter. This endpoint also returns `origin_server_ts` to make it easy to do a quick comparison to see if the `event_id` fetched is too far out of range to be useful for your use case.
 
 In order to solve the problem where a remote federated homeserver does not have all of the history in a room and no suitably close event, we also add a server API endpoint `GET /_matrix/federation/v1/timestamp_to_event/{roomId}?ts=<timestamp>?dir=[f|b]` which other homeservers can use to ask about their closest `event_id` to the timestamp. This endpoint also returns `origin_server_ts` to make it easy to do a quick comparison to see if the remote `event_id` fetched is closer than the local one.
 
@@ -29,6 +29,7 @@ The heuristics for deciding when to ask another homeserver for a closer event if
 GET /_matrix/client/unstable/org.matrix.msc3030/rooms/<roomID>/timestamp_to_event?ts=<timestamp>&dir=<direction>
 {
     "event_id": ...
+    "origin_server_ts": ...
 }
 ```
 
