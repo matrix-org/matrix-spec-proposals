@@ -72,7 +72,7 @@ No changes in server behavior.
 
    1. When a client receives an event `event` with `rel_type` `m.visibility`
       relating to an existing event `original_event` in room `room`:
-       1. If the powerlevel of `event.sender` in `room`` is greater or equal to `m.visibility`
+       1. If the powerlevel of `event.sender` in `room` is greater or equal to `m.visibility`
            1. If `event` specifies a visibility of "hidden", mark `original_event` as hidden
                1. In every display of `original_event`, either by itself or in a reaction
                    1. If the current user is the sender of `original_event`
@@ -102,19 +102,19 @@ source of truth.
 
 A moderation bot such as Mjölnir might implement two-phase redaction as follows:
    1. When a room protection rule or a moderator requires Mjölnir to redact a
-      message E in room R
-       1. Copy E to a "moderation pending" room as message E', with some UX to
-          decide whether E should be PASS or REJECT.
-       1. Mark E in R as hidden, using the current MSC.
-   1. When a moderator marks clone E' as PASS
-       1. Mark E in R as visible, using the current MSC.
-       1. Remove E' from the "moderation pending" room.
-   1. When a moderator marks clone E' as REJECT
-       1. Send a message `m.room.redaction` to R to fully redact message E.
-       1. Remove E' from the "moderation pending" room.
-   1. If, after <some retention duration, e.g. one week>, a clone E' has been
+      message `original_message` in `room`
+       1. Copy `original_message` to a "moderation pending" room as message `backup_message`, with some UX to
+          decide whether `backup_message` should be PASS or REJECT.
+       1. Mark `original_message` in `room` as hidden, using the current MSC.
+   1. When a moderator marks `backup_message` as PASS
+       1. Mark `original_message` in `room` as visible, using the current MSC.
+       1. Remove `backup_message` from the "moderation pending" room.
+   1. When a moderator marks clone `backup_message` as REJECT
+       1. Send a message `m.room.redaction` to `room` to fully redact message `original_message`.
+       1. Remove `backup_message` from the "moderation pending" room.
+   1. If, after <some retention duration, e.g. one week>, a clone `backup_message` has been
       marked neither PASS nor REJECT
-       1. Behave as if E' had been marked REJECT
+       1. Behave as if `backup_message` had been marked REJECT
 
 ## Potential issues
 ### Abuse by moderators
