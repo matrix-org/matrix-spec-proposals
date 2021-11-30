@@ -60,6 +60,10 @@ Events with relation `m.visibility` are ignored if they are sent by users with
 powerlevel below `m.visibility`. This relation controls whether *clients* should
 display an event or hide it.
 
+Additionally, an event with relation `m.visibility` may have a content field `reason`
+used to display a human-readable reason for which the original event is hidden
+(e.g. "Message pending moderation", "First time posters are moderated", etc.)
+
 ### Server behavior
 
 No changes in server behavior.
@@ -73,12 +77,15 @@ No changes in server behavior.
                1. In every display of `original_event`, either by itself or in a reaction
                    1. If the current user is the sender of `original_event`
                        1. Label the display of `original_event` with a label such as `(pending moderation)`
+                       1. If `event.content` contains a string field `reason`, this field may be used to display a reason for moderation.
                    1. Otherwise, if the current user has a powerlevel greater or
                       equal to `m.visibility`
                        1. Display `original_event` as a spoiler.
                        1. Label the display of `original_event` with a label such as `(pending moderation)`
+                       1. If `event.content` contains a string field `reason`, this field may be used to display a reason for moderation.
                    1. Otherwise
                        1. Instead of displaying `original_event`, display a message such as `Message is pending moderation`
+                       1. If `event.content` contains a string field `reason`, this field may be used to display a reason for moderation.
            1. Otherwise, if `event` specifies a visibility of "visible", mark `original_event` as visible
                1. Display `original_event` exactly as it would be displayed without this MSC
            1. Otherwise, ignore
@@ -197,4 +204,6 @@ During the prototyping phase:
   `org.matrix.msc3531.visibility`;
 - field `visibility` should also be prefixed into
   `org.matrix.msc3531.visibility`;
+- field `reason` should also be prefixed into
+  `org.matrix.msc3531.reason`;
 - constants `visible` and `hidden` remain unchanged.
