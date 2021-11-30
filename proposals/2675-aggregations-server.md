@@ -94,8 +94,9 @@ API that is defined in this MSC. The maximum amount of aggregations bundled
 before the list is truncated is determined freely by the server.
 
 For instance, the below example shows an event with five bundled relations:
-three thumbsup reaction annotations, one replace, and a truncated list
-of references, of which only one is bundled (because `next_batch` is present).
+one replace, one reference and three thumbsup reaction annotations,
+with more aggregated reactions available to paginate in
+through `/aggregations` as `next_batch` is present..
 
 These are just non-normative examples of what the aggregation for these
 relation types could look like, and their MSCs might end up with
@@ -106,6 +107,18 @@ a different shape, take these with a grain of salt.
     ...,
     "unsigned": {
         "m.relations": {
+            "m.replace": {
+                "event_id": "$edit_event_id",
+                "origin_server_ts": 1562763768320,
+                "sender": "@bruno1:localhost"
+            },
+            "m.reference": {
+                "chunk": [
+                    {
+                        "event_id": "$some_event_id"
+                    }
+                ],
+            },
             "m.annotation": {
                 "chunk": [
                   {
@@ -114,20 +127,8 @@ a different shape, take these with a grain of salt.
                       "origin_server_ts": 1562763768320,
                       "count": 3
                   }
+                  "next_batch": "abc123",
                 ]
-            },
-            "m.reference": {
-                "chunk": [
-                    {
-                        "event_id": "$some_event_id"
-                    }
-                ],
-                "next_batch": "abc123",
-            },
-            "m.replace": {
-                "event_id": "$edit_event_id",
-                "origin_server_ts": 1562763768320,
-                "sender": "@bruno1:localhost"
             }
         }
     }
