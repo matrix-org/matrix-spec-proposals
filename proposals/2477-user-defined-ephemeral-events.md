@@ -23,28 +23,29 @@ similar manner to the already existing support for users to send their own types
 Note though that this proposal does not include any support for sending user-defined ephemeral
 events which are not explicitly bound to rooms, like the global `m.presence` event.
 
+
 Examples of how this feature could be used are; as regular status updates to a user-requested
 long-lived task, which a bot might has started for a received event. Or pehaps as a GPS live-location
 feature, where participating client would regularly post their current location relative to a
 persistent geo-URI event. Perhaps for organizing meetups, or for viewing active tracking of the 
-locations of vehicles in an autonomous fleet - along with peristent messages posted at a lesser
+locations of vehicles in an autonomous fleet - maybe along with peristent messages posted at a lesser
 rate for a timeline generation.
 
 The example that will be used througout this proposal is an ephemeral data object that's tracking
 the current status of a user-requested 3D print, with some basic printer- and print-status
 information being sent every few seconds to a control room, including a reference to the event that
-the status is referring to - which the client could use to render a progress bar or other graphic
+the status is referring to - which the client could use to render a progress bar or some other graphic
 with.
 
 ### Addition of an ephemeral event sending endpoint to the Client-Server API
 
-The suggested addition to the CS API is the endpoint
-`PUT /_matrix/client/r0/rooms/{roomId}/ephemeral/{eventType}/{txnId}`, which would act in an almost
+The addition to the CS API is the endpoint
+`PUT /_matrix/client/v3/rooms/{roomId}/ephemeral/{eventType}/{txnId}`, which would act in an almost
 identical manner to the event sending endpoint that is already present.  
 An example of how an update might be posted using the new endpoint;
 
 ```
-PUT /_matrix/client/r0/rooms/%21636q39766251%3Aexample.com/ephemeral/com.example.3dprint/19914 HTTP/1.1
+PUT /_matrix/client/v3/rooms/%21636q39766251%3Aexample.com/ephemeral/com.example.3dprint/19914 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -121,15 +122,23 @@ As it would be possible for the user-defined events to be used to flood a room w
 traffic by malicious users - increasing the bandwidth usage for all connected servers, this proposal
 also suggests extending the power levels to handle ephemeral types as well.
 
-In any room version implementing this MSC, the auth rules to include in `m.room.power_levels` are;
+In any room version implementing this MSC, the auth rules concerning ephemeral events in the
+`m.room.power_levels` event are;
 
 - `ephemeral` (`{string: integer}`) - A mapping of EDU types to the power-level required to send them
 - `ephemeral_default` (`integer`) - The default power-level required to send any EDU not listed in
 the above mapping
 
 These new keys are to function in an identical manner to the already existing `events` and
-`events_default` keys, with the suggested default - and fallback - value for `ephemeral_default`
-being 50, while the suggested default - and fallback - values for `ephemeral` would be;
+`events_default` keys, with the assumed default value for `ephemeral_default` - if there is no
+`ephemeral_default` in the `m.room.power_levels` event - being 50, while the default values for
+`ephemeral` - if there is no `ephemeral` in the `m.room.power_levels` event - would consider all types
+to be `ephemeral_default`, or 0 if there is no `m.room.power_levels` event - which would then not allow
+any ephemeral events to be sent.
+
+It is therefore recommended for servers to include at least the following `ephemeral` configuration
+for all newly created rooms of any room version implementing this MSC, to allow for the sending of
+the default ephemeral events in Matrix;
 
 ```json
 {
@@ -138,26 +147,19 @@ being 50, while the suggested default - and fallback - values for `ephemeral` wo
 }
 ```
 
-These defaults are to ensure that all current Matrix EDUs continue to work as intended.
-
-**NB**;  
-To reduce the complexity of the change, this proposal suggests to - for the time being - only limit
-the user-defined types by these power levels changes. The default values for `m.*` specified here in
-`ephemeral` would then only be expected to be informational in purpose.
-
 ### Extension of the room-specific ephemeral data received in /sync responses
 
 Because the user-defined ephemeral events can't be aggregated and massaged by Synapse in a simple
-manner, this then suggests instead adding a few more fields to the room-specific ephemeral events as
-they are encoded in a sync response. The suggested additions are;
+manner, this MSC instead requires adding a few more fields to the room-specific ephemeral events as
+they are encoded in a sync response. The additions in question are;
 
 - `sender` (`string`) - The fully qualified ID of the user that sent the EDU
-- `origin_server_ts` (`integer`) - Timestamp in milliseconds on the originating homeserver when this
-event was sent
+- `origin_server_ts` (`integer`) - The timestamp in milliseconds on the originating homeserver when
+- this event was sent
 
-To reduce the risk of breaking existing clients, as well as reducing the scope of change required by
-this proposal, the suggestion is to allow the original `m.*` events to skip these keys where no value
-could be easily assigned to them. E.g. typing notices, read receipts.
+To reduce the scope of changes required by this proposal, the suggestion is to allow the original
+`m.*` events to skip these keys where no value could be easily assigned to them. E.g. typing notices,
+read receipts.
 
 ```json
 {
@@ -249,14 +251,29 @@ could be easily assigned to them. E.g. typing notices, read receipts.
 }
 ```
 
+### Delivery guarantees
+
+The current ephemeral event system in Matrix is built on a sort-of guaranteed delivery - albeit with
+mutation/consolidation - of the events. This might not be desirable with custom ephemeral events, as
+they could contain volumes of data that's not as easy to keep around for a guaranteed delivery.
+
+Therefore I suggest that servers are only required to provide best-effort delivery, with the exact
+method in how they propagate EDUs - and store them - left up to implementation.  
+(Perhaps keeping a max-size ring buffer per room - that will thus remove old data when necessary.
+Or maybe only storing per active sync token, per user, per device.)
+
+As the messages in question are ephemeral, I think the only guarantee that should be required is that
+all users that are online when the message is sent will receive it. Anything above that should be
+commended, but not required.
+
 ### Extension of the Server-Server spec
 
 As the server-server protocol is currently only designed for transferring the well-defined EDUs that
-exist as part of the Matrix communication protocol, this proposal suggests adding additional fields
-to the EDU schema in order to let them transmit the user-specified data untouched - while still
+exist as part of the Matrix communication protocol, this proposal requires some additional fields to
+be added the EDU schema in order to let them transmit the user-specified data untouched - while still
 adding source information that is important for the receiving clients.
 
-The suggested fields to add to the EDU schema are;
+The fields to add to the EDU schema are;
 
 - `room_id` (`string`) - The fully qualified ID of the room the event was sent in
 - `sender` (`string`) - The fully qualified ID of the user that sent the event
@@ -289,9 +306,10 @@ A user-defined ephemeral event might then look like this when federated;
 }
 ```
 
-To reduce the scope of change required by this proposal, the suggestion is to allow the original
+To reduce the scope of the changes required by this proposal, the suggestion is to allow the original
 `m.*` events to skip these keys where no value can be easily assigned to them. E.g. aggregated typing
 notices, receipt lists.
+
 
 ## Potential issues
 
