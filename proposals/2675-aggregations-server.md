@@ -182,8 +182,10 @@ order to paginate over the relations, which behaves in a similar way to
 `/messages`, except using `next_batch` and `prev_batch` names
 (in line with `/sync` API).
 
-The `/relations` API returns discrete relation events
-associated with an event in standard topological order.  You can optionally
+The `/relations` API returns the discrete relation events
+associated with an event that the server is aware of
+in standard topological order. Note that events may be missing,
+see [limitations](#servers-might-not-be-aware-of-all-relations-of-an-event).  You can optionally
 filter by a given type of relation and event type:
 
 ```
@@ -283,16 +285,29 @@ common case for rapidly fixing a typo in a msg which is still in flight!)
 
 ## Edge cases
 
-How do you handle ignored users?
+### How do you handle ignored users?
+
  * Information about relations sent from ignored users must never be sent to
    the client, either in aggregations or discrete relation events.
    This is to let you block someone from harassing you with emoji reactions
    (or using edits as a side-channel to harass you).
 
-What does it mean to call /context on a relation?
+### What does it mean to call /context on a relation?
+
  * We should probably just return the root event for now, and then refine it in
    future for threading?
  * XXX: what does synapse do here?
+
+## Limitations
+
+### Servers might not be aware of all relations of an event
+
+The response of `/relations` might be incomplete because the homeserver
+potentially doesn't have the full DAG of the room. The federation API doens't
+have an equivalent of the `/relations` API, so has no way but to fetch the
+full DAG over federation to assure itself that it is aware of all relations.
+
+[MSC2836](https://github.com/matrix-org/matrix-doc/blob/kegan/msc/threading/proposals/2836-threading.md#making-relationships) also makes mention of this issue.
 
 ## Future extensions
 
