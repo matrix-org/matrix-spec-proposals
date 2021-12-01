@@ -1443,7 +1443,8 @@ the HTTP connection for a short period of time waiting for new events,
 returning early if an event occurs. Only the `/sync` API (and the
 deprecated `/events` API) support long-polling in this way.
 
-The response for such an incremental sync can be visualised as:
+Continuing the example above, an incremental sync might report
+a single new event `E6`. The response can be visualised as:
 
 ```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]
