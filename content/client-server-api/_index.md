@@ -1425,7 +1425,7 @@ parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixcli
 messages.
 
 For example, a `/sync` request might return a range of four events
-`E2`, `E3`,`E4` and `E5` within a given room, omitting two prior events
+`E2`, `E3`, `E4` and `E5` within a given room, omitting two prior events
 `E0` and `E1`. This can be visualised as follows:
 
 ```
