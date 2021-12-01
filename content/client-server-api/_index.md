@@ -1483,7 +1483,9 @@ omitting `E7`. This forms a gap, which we can see in the visualisation:
 The limited response includes a state delta which describes how the state
 of the room changes over the gap. This delta explains how to build the state
 prior to returned timeline (i.e. at `E7`) from the state the client knows 
-(i.e. at `E6`).
+(i.e. at `E6`). To close the gap, the client should make a request to 
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
+with the query parameters `from=x-y-z` and `to=d-e-f`.
 
 {{% boxes/warning %}}
 Events are ordered in this API according to the arrival time of the
