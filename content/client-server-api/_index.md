@@ -1424,7 +1424,9 @@ for each room, a `prev_batch` field, which can be passed as a `start`
 parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API to retrieve earlier
 messages.
 
-You can visualise the range of events being returned as:
+For example, a `/sync` request might return a range of four events
+`E2`, `E3`, `E4` and `E5` within a given room, omitting two prior events
+`E0` and `E1`. This can be visualised as follows:
 
 ```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
@@ -1441,7 +1443,8 @@ the HTTP connection for a short period of time waiting for new events,
 returning early if an event occurs. Only the `/sync` API (and the
 deprecated `/events` API) support long-polling in this way.
 
-The response for such an incremental sync can be visualised as:
+Continuing the example above, an incremental sync might report
+a single new event `E6`. The response can be visualised as:
 
 ```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]
@@ -1458,16 +1461,31 @@ containing only the most recent message events. A state "delta" is also
 returned, summarising any state changes in the omitted part of the
 timeline. The client may therefore end up with "gaps" in its knowledge
 of the message timeline. The client can fill these gaps using the
-[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API. This situation looks like this:
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API.
+
+Continuing our example, suppose we make a third `/sync` request asking for
+events since the last sync, by passing the `next_batch` token `x-y-z` as 
+the `since` parameter. The server knows about four new events, `E7`, `E8`,
+`E9` and `E10`, but decides this is too many to report at once. Instead,
+the server sends a `limited` response containing `E8`, `E9` and `E10`but
+omitting `E7`. This forms a gap, which we can see in the visualisation:
 
 ```
-    | gap |
-    | <-> |
+                                            | gap |
+                                            | <-> |
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-          ^                        ^
-          |                        |
-     prev_batch: 'd-e-f'       next_batch: 'u-v-w'
+                                            ^     ^                  ^
+                                            |     |                  |
+                                 since: 'x-y-z'   |                  |                                                
+                                       prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
+
+The limited response includes a state delta which describes how the state
+of the room changes over the gap. This delta explains how to build the state
+prior to returned timeline (i.e. at `E7`) from the state the client knows 
+(i.e. at `E6`). To close the gap, the client should make a request to 
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
+with the query parameters `from=x-y-z` and `to=d-e-f`.
 
 {{% boxes/warning %}}
 Events are ordered in this API according to the arrival time of the
