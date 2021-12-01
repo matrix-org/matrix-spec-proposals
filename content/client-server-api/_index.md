@@ -1464,12 +1464,12 @@ of the message timeline. The client can fill these gaps using the
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API. This situation looks like this:
 
 ```
-    | gap |
-    | <-> |
+                                      | gap |
+                                      | <-> |
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-          ^                        ^
-          |                        |
-     prev_batch: 'd-e-f'       next_batch: 'u-v-w'
+                                            ^                        ^
+                                            |                        |
+                                       prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
 
 {{% boxes/warning %}}
