@@ -1424,7 +1424,9 @@ for each room, a `prev_batch` field, which can be passed as a `start`
 parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API to retrieve earlier
 messages.
 
-You can visualise the range of events being returned as:
+For example, a `/sync` request might return a range of four events
+`E2`, `E3`,`E4` and `E5` within a given room, omitting two prior events
+`E0` and `E1`. This can be visualised as follows:
 
 ```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
