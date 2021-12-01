@@ -28,6 +28,9 @@
 {{ if (index $event_data "x-addedInMatrixVersion") }}
   {{ partial "added-in" (dict "v" (index $event_data "x-addedInMatrixVersion")) }}
 {{ end }}
+{{ if (index $event_data "x-changedInMatrixVersion") }}
+  {{ partial "changed-in" (dict "changes_dict" (index $event_data "x-changedInMatrixVersion")) }}
+{{ end -}}
 
 {{ $event_data.description | markdownify }}
 
