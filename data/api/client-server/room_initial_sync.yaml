@@ -119,10 +119,7 @@ paths:
                       messages that preceded them leaving. This array
                       will consist of at most `limit` elements.
                     items:
-                      type: object
-                      title: RoomEvent
-                      allOf:
-                        - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                      "$ref": "definitions/serialised_event.yaml"
                 required: ["end", "chunk"]
               state:
                 type: array
@@ -132,10 +129,7 @@ paths:
                   user has left the room this will be the state of the
                   room when they left it.
                 items:
-                  title: StateEvent
-                  type: object
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+                  "$ref": "definitions/serialised_event.yaml"
               visibility:
                 type: string
                 enum: ["private", "public"]
