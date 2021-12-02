@@ -1440,18 +1440,6 @@ any given point in time:
 
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
-{{% boxes/warning %}}
-Event bodies are considered untrusted data. This means that any application using
-Matrix must validate that the event body is of the expected shape/schema
-before using the contents verbatim.
-
-**It is not safe to assume that an event body will have all the expected
-fields of the expected types.**
-
-See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
-detail on why this assumption is unsafe.
-{{% /boxes/warning %}}
-
 ### Types of room events
 
 Room events are split into two categories:
@@ -1493,6 +1481,18 @@ in [room version 1](/rooms/v1#event-format) and [room version
 However, it is unusual that a Matrix client would encounter this raw event
 format. Instead, homeservers are responsible for "serialising" events into the
 format shown below so that they can be easily parsed by clients.
+
+{{% boxes/warning %}}
+Event bodies are considered untrusted data. This means that any application using
+Matrix must validate that the event body is of the expected shape/schema
+before using the contents verbatim.
+
+**It is not safe to assume that an event body will have all the expected
+fields of the expected types.**
+
+See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
+detail on why this assumption is unsafe.
+{{% /boxes/warning %}}
 
 {{% definition path="api/client-server/definitions/serialised_event" %}}
 
