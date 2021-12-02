@@ -68,3 +68,8 @@ ranges (`2xx` = `200` to `299`) is valid for the schema.
 This property is added throughout the OpenAPI schemas to denote which version
 of the Matrix specification added the associated object (endpoint, parameter,
 property, etc).
+
+## Custom `x-changedInMatrixVersion` key
+
+A variation of the above: indicates changes to the associated parameter in
+particular Matrix specification versions.

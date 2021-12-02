@@ -82,7 +82,13 @@
  <tr>
   <td><code>{{ $property_name }}</code></td>
   <td><code>{{ $type }}</code></td>
-  <td>{{ if $required }}<strong>Required: </strong>{{end}}{{ $property.description | markdownify }}{{ if eq $type "enum"}}<p>One of: <code>{{ $property.enum }}</code>.</p>{{ end }}{{ if (index $property "x-addedInMatrixVersion") }}{{ partial "added-in" (dict "v" (index $property "x-addedInMatrixVersion")) }}{{ end }}</td>
+  <td>
+    {{ if $required }}<strong>Required: </strong>{{end -}}
+    {{ $property.description | markdownify -}}
+    {{ if eq $type "enum"}}<p>One of: <code>{{ $property.enum }}</code>.</p>{{ end -}}
+    {{ if (index $property "x-addedInMatrixVersion") }}{{ partial "added-in" (dict "v" (index $property "x-addedInMatrixVersion")) }}{{ end -}}
+    {{ if (index $property "x-changedInMatrixVersion") }}{{ partial "changed-in" (dict "changes_dict" (index $property "x-changedInMatrixVersion")) }}{{ end -}}
+  </td>
  </tr>
 
     {{ end }}

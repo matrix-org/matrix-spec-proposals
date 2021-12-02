@@ -42,6 +42,9 @@
 {{ if (index $operation_data "x-addedInMatrixVersion") }}
   {{ partial "added-in" (dict "v" (index $operation_data "x-addedInMatrixVersion")) }}
 {{ end }}
+{{ if (index $operation_data "x-changedInMatrixVersion") }}
+  {{ partial "changed-in" (dict "changes_dict" (index $operation_data "x-changedInMatrixVersion")) }}
+{{ end -}}
 
 <p>{{ $operation_data.description | markdownify }}</p>
 
