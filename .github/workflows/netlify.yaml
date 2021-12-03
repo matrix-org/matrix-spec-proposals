@@ -28,8 +28,8 @@ jobs:
         run: |
           head_branch='${{github.event.workflow_run.head_repository.owner.login}}:${{github.event.workflow_run.head_branch}}'
           echo "head branch: $head_branch"
-          pr_number=$(curl -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-               "https://api.github.com/repos/${{ github.repository }}/pulls?head=$head_branch" |
+          pulls_uri="https://api.github.com/repos/${{ github.repository }}/pulls?head=$(jq -Rr '@uri' <<<$head_branch)"
+          pr_number=$(curl -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' "$pulls_uri" |
                jq -r '.[] | .number')
           echo "PR number: $pr_number"
           echo "::set-output name=prnumber::$pr_number"
