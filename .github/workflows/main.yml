@@ -97,6 +97,20 @@ jobs:
 
       - name: "⚙️ hugo"
         run: hugo --baseURL "${{ steps.set-baseurl.outputs.baseURL }}" -d "spec"
+
+      # We manually copy the spec OpenAPI definition JSON to the website tree
+      # to make it available to the world in a canonical place:
+      # https://spec.matrix.org/latest/client-server-api/api.json
+      # Works for /unstable/ and /v1.1/ as well.
+      - name: "📥 Spec definition download"
+        uses: actions/download-artifact@v2
+        with:
+          name: styled-docs-artifact
+      - name: "📝 Copy the definition to the right location"
+        run: |
+          tar -xzf assets.tar.gz
+          cp assets/spec/client_server/api.json spec/client-server-api/
+
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
       - name: "📤 Artifact upload"
