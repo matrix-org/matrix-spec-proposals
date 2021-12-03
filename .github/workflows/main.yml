@@ -60,6 +60,7 @@ jobs:
   build-spec:
     name: "📖 Build the spec"
     runs-on: ubuntu-latest
+    needs: [build-openapi]
     steps:
       - name: "➕ Setup Node"
         uses: actions/setup-node@v2
