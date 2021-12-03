@@ -17,10 +17,10 @@ Quite a few clients and tools have a need preview a room:
 There are a few ways to request a room summary, but they only support some of
 the use cases. The spaces summary API
 ([MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)) only provides
-limited control over what rooms to summarize and only works for rooms in spaces.
-`{roomid}/initialSync` and `{roomid}/state/{event_type}` don't work over
-federation and are much heavier than necessary or need a lot of http calls for
-each room.
+limited control over what rooms to summarize and returns a lot more data than
+necessary.  `{roomid}/initialSync` and `{roomid}/state/{event_type}` don't work
+over federation and are much heavier than necessary or need a lot of http calls
+for each room.
 
 ## Proposal
 
