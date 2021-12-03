@@ -38,9 +38,11 @@ get a message from 3 years ago 😫
 Add new client API endpoint `GET
 /_matrix/client/v1/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]`
 which fetches the closest `event_id` to the given timestamp `ts` query parameter
-in the direction specified by the `dir` query parameter. This endpoint also
-returns `origin_server_ts` to make it easy to do a quick comparison to see if
-the `event_id` fetched is too far out of range to be useful for your use case.
+in the direction specified by the `dir` query parameter. The direction `dir`
+query parameter accepts `f` for forward-in-time from the timestamp and `b` for
+backward-in-time from the timestamp. This endpoint also returns
+`origin_server_ts` to make it easy to do a quick comparison to see if the
+`event_id` fetched is too far out of range to be useful for your use case.
 
 In order to solve the problem where a remote federated homeserver does not have
 all of the history in a room and no suitably close event, we also add a server
