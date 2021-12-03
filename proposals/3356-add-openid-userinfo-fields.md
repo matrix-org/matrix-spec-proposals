@@ -49,3 +49,15 @@ Content-Type: application/json
 
 { "userinfo_fields": [ "display_name", "room_powerlevels" ] }
 ```
+
+## Unstable prefix
+
+_While this proposal is not considered stable, implementations should use `org.matrix.msc3356.` as a prefix for all 
+introduced fields:_
+
+| Field name | Unstable field name |
+|-|-|
+| `name` | `org.matrix.msc3356.name` |
+| `avatar_url` | `org.matrix.msc3356.avatar_url` |
+| `room_powerlevels` | `org.matrix.msc3356.room_powerlevels` |
+| `userinfo_fields` | `org.matrix.msc3356.userinfo_fields` |
