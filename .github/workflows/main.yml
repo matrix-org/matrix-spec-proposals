@@ -105,7 +105,7 @@ jobs:
       - name: "📥 Spec definition download"
         uses: actions/download-artifact@v2
         with:
-          name: styled-docs-artifact
+          name: openapi-artifact
       - name: "📝 Copy the definition to the right location"
         run: |
           tar -xzf assets.tar.gz
