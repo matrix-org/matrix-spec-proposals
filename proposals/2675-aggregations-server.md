@@ -75,7 +75,7 @@ The following client-server APIs should bundle aggregations
 with events they return:
 
   - `GET /rooms/{roomId}/messages`
-  - `GET /rooms/{roomId}/context`
+  - `GET /rooms/{roomId}/context/{eventId}`
   - `GET /rooms/{roomId}/event/{eventId}`
   - `GET /sync`, only for room sections in the response where `limited` field
     is `true`; this amounts to all rooms in the response if 
