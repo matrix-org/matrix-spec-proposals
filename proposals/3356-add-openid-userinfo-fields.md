@@ -15,7 +15,7 @@ administrative access token per Synapse-homeserver.
 To enable third party applications for simple room-based access control, the OpenID user info returned by 
 `/_matrix/federation/v1/openid/userinfo` shall be extended by the following fields:
 
-1. `name` The user's current display name. This value may be used to enforce consistent user names between Matrix 
+1. `display_name` The user's current display name. This value may be used to enforce consistent user names between Matrix 
 and the third party application.
 
 2. `avatar_url` The user's avatar url _(optional)_.
@@ -26,7 +26,7 @@ held power level.
 ```json
 {
    "sub": "@johndoe:example.com",
-   "name": "John Doe",
+   "display_name": "John Doe",
    "avatar_url": "https://eu.ui-avatars.com/api/?name=John+Doe",
    "room_powerlevels": {
       "!zqoHDglfYXhEaDJxKy:example.com": 100,
@@ -57,7 +57,7 @@ introduced fields:_
 
 | Field name | Unstable field name |
 |-|-|
-| `name` | `org.matrix.msc3356.name` |
+| `display_name` | `org.matrix.msc3356.display_name` |
 | `avatar_url` | `org.matrix.msc3356.avatar_url` |
 | `room_powerlevels` | `org.matrix.msc3356.room_powerlevels` |
 | `userinfo_fields` | `org.matrix.msc3356.userinfo_fields` |
