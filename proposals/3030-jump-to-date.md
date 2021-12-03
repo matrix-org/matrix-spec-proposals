@@ -36,7 +36,7 @@ get a message from 3 years ago 😫
 
 
 Add new client API endpoint `GET
-/_matrix/client/r0/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]`
+/_matrix/client/v1/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]`
 which fetches the closest `event_id` to the given timestamp `ts` query parameter
 in the direction specified by the `dir` query parameter. This endpoint also
 returns `origin_server_ts` to make it easy to do a quick comparison to see if
@@ -58,7 +58,7 @@ closest event is a forward/backward extremity indicating it's next to a gap of
 events which are potentially closer.
 
 ```
-GET /_matrix/client/unstable/org.matrix.msc3030/rooms/<roomID>/timestamp_to_event?ts=<timestamp>&dir=<direction>
+GET /_matrix/client/v1/rooms/<roomID>/timestamp_to_event?ts=<timestamp>&dir=<direction>
 {
     "event_id": ...
     "origin_server_ts": ...
@@ -67,7 +67,7 @@ GET /_matrix/client/unstable/org.matrix.msc3030/rooms/<roomID>/timestamp_to_even
 
 Federation API endpoint:
 ```
-GET /_matrix/federation/unstable/org.matrix.msc3030/timestamp_to_event/<roomID>?ts=<timestamp>&dir=<direction>
+GET /_matrix/federation/v1/timestamp_to_event/<roomID>?ts=<timestamp>&dir=<direction>
 {
     "event_id": ...
     "origin_server_ts": ...
@@ -150,10 +150,20 @@ just a new way to sort through it all.
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+While this MSC is not considered stable, the endpoints are available at `/unstable/org.matrix.msc3030` instead of their `/v1` description from above.
+
+```
+GET /_matrix/client/unstable/org.matrix.msc3030/rooms/<roomID>/timestamp_to_event?ts=<timestamp>&dir=<direction>
+{
+    "event_id": ...
+    "origin_server_ts": ...
+}
+```
+
+```
+GET /_matrix/federation/unstable/org.matrix.msc3030/timestamp_to_event/<roomID>?ts=<timestamp>&dir=<direction>
+{
+    "event_id": ...
+    "origin_server_ts": ...
+}
+```
