@@ -98,6 +98,9 @@ If several reactions race against each other to mark a message as visible or
 hidden, we consider the most recent one (by order of `origin_server_ts`) the
 source of truth.
 
+For simplicity, if a user gains or loses the powerlevel `m.visibility`, this
+does **not** affect any of the `m.visibility` relations already sent by that user.
+
 ### Example use
 
 A moderation bot such as Mjölnir might implement two-phase redaction as follows:
@@ -188,6 +191,19 @@ redaction is canceled, reinjecting content. We decided not to pursue this
 mechanism as it is more complicated and it opens abuse vectors by malicious
 moderators de facto modifying the content of other user's messages (even if this
 could be mitigated by clients displaying who has modified a user's messages).
+
+### Letting users hide their own messages
+
+There would be use cases for users hiding their own messages, e.g. marking a
+task as complete. We believe that this complicates the present MSC, as it
+introduces edge cases that deserve their own discussion, e.g.:
+
+- can a moderator make a message hidden by a user visible?
+- how do we reinterpret a sequence of visibility change messages interleaving
+  self-hide, self-unhide, moderator-hide, moderator-unhide when one or more
+  of the messages in the sequence gets redacted?
+
+For these reasons, we prefer postponing such feature to a further MSC.
 
 ## Security considerations
 ### Old clients
