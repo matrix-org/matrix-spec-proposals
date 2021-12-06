@@ -5,7 +5,7 @@ it needs to know which of it's users are present in that room in order to reques
 `sender_localpart` user is joined to the room and so most requests do not require masquerading in order
 to read the event.
 
-It's desirable to sometimes have only ghost users in a room though, scuh as in the case of handling DMs.
+It's desirable to sometimes have only ghost users in a room though, such as in the case of handling DMs.
 In these cases, the service must know the membership of the room in advance to masquerade as the right user,
 in order to fetch the event. This requires the appservice to hold state about who is in the room, either caching
 locally or fetching via an endpoint like `/_matrix/client/r0/joined_members`.
