@@ -23,11 +23,11 @@ and the remaining messaging components. As of writing, those MSCs are:
 * [MSC3488 - Location data](https://github.com/matrix-org/matrix-doc/pull/3488)
 * [MSC3381 - Polls](https://github.com/matrix-org/matrix-doc/pull/3381)
 * [MSC3245 - Voice messages](https://github.com/matrix-org/matrix-doc/pull/3245)
-* [MSC0001 - Files](https://github.com/matrix-org/matrix-doc/pull/0001)
-* [MSC0002 - Images and Stickers](https://github.com/matrix-org/matrix-doc/pull/0002)
-* [MSC0003 - Videos](https://github.com/matrix-org/matrix-doc/pull/0003)
-* [MSC0004 - Audio (non-voice)](https://github.com/matrix-org/matrix-doc/pull/0004)
-* [MSC0005 - Translatable text](https://github.com/matrix-org/matrix-doc/pull/0005)
+* [MSC3246 - Audio (non-voice)](https://github.com/matrix-org/matrix-doc/pull/3246)
+* [MSC3551 - Files](https://github.com/matrix-org/matrix-doc/pull/3551)
+* [MSC3552 - Images and Stickers](https://github.com/matrix-org/matrix-doc/pull/3552)
+* [MSC3553 - Videos](https://github.com/matrix-org/matrix-doc/pull/3553)
+* [MSC3554 - Translatable text](https://github.com/matrix-org/matrix-doc/pull/3554)
 
 ## Proposal
 
