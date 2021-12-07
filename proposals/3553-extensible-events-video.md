@@ -1,8 +1,7 @@
 # MSC3553: Extensible Events - Videos
 
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) describes Extensible Events in detail,
-though deliberately does not include schemas for non-text messaging types. This MSC covers only images
-and stickers.
+though deliberately does not include schemas for non-text messaging types. This MSC covers only videos.
 
 *Rationale*: Splitting the MSCs down into individual parts makes it easier to implement and review in
 stages without blocking other pieces of the overall idea. For example, an issue with the way images
