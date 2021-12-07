@@ -1,4 +1,4 @@
-# MSC3553: Extensible Events - Translatable Messages
+# MSC3554: Extensible Events - Translatable Messages
 
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) describes Extensible Events in detail,
 though deliberately does not include schemas for non-text messaging types. This MSC covers only support
