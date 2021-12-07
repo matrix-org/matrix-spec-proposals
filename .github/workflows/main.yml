@@ -147,6 +147,17 @@ jobs:
         run: |
           echo -e '[params.version]\nstatus="historical"' > historical.toml
           hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+
+      # Copying the spec definition to the tree
+      - name: "📥 Spec definition download"
+        uses: actions/download-artifact@v2
+        with:
+          name: openapi-artifact
+      - name: "📝 Copy the definition to the right location"
+        run: |
+          tar -xzf assets.tar.gz
+          cp assets/spec/client_server/api.json spec/client-server-api/
+
       - name: "📦 Tarball creation"
         run: tar -czf spec-historical.tar.gz spec
       - name: "📤 Artifact upload"
