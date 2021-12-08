@@ -18,8 +18,8 @@ it, allowing the server to send the full event over push again, with this MSC an
 ## Proposal
 
 A new pusher data field, `algorithm`, is introduced for pushers of the kind `http`. It is an enum,
-represented as string. The currently allowed values are `m.plain` and `m.curve25519-aes-sha2`. Is the
-field absent, then an algorithm of `m.plain` is assumed. The algorithms are defined as following:
+represented as string. The currently allowed values are `m.plain` and `m.curve25519-aes-sha2`. If the
+field is absent, then an algorithm of `m.plain` is assumed. The algorithms are defined as following:
 
 ### `m.plain` algorithm
 
@@ -164,7 +164,12 @@ Resulting in the following final message being pushed out to the push gateway:
 
 It is currently implied that a homeserver could push the same notification out to multiple devices
 at once, by populating the `devices` array with more than one element. Due to the nature of cryptography,
-this won't be possible anymore.
+this won't be possible anymore. However, homeserver implementations such as synapse
+[1](https://github.com/matrix-org/synapse/blob/d6fb96e056f79de220d8d59429d89a61498e9af3/synapse/push/httppusher.py#L331-L338)
+[2](https://github.com/matrix-org/synapse/blob/d6fb96e056f79de220d8d59429d89a61498e9af3/synapse/push/httppusher.py#L357-L365)
+[3](https://github.com/matrix-org/synapse/blob/d6fb96e056f79de220d8d59429d89a61498e9af3/synapse/push/httppusher.py#L419-L426)
+even hard-code that `devices` array to only contain a single entry, making it unlikely for this flexibility
+having been used in the wild. 
 
 ~~It is still unclear how well this will work with iOS and its limitations, especially concerning badge-only
 updates if a message was read on another device.~~ --> This should work?
