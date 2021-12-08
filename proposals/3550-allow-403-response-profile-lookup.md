@@ -1,15 +1,9 @@
 #MSC3550: Add HTTP 403 to possible profile lookup responses
 
-#Background
-In the current spec, the only response codes listed for  [GET /_matrix/client/v3/profile/{userId}]
-(https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3profileuserid)
-
-# MSC 3550: Add HTTP 403 to possible profile lookup responses
-
 # Background
-In the current spec, the only response codes listed for  GET /_matrix/client/v3/profile/{userId}
+In the current spec, the only response codes listed for [GET /_matrix/client/v3/profile/{userId}](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3profileuserid)
 are `200` and `404`. However, some servers may not allow profile lookup over federation, and thus
-respond to GET /_matrix/client/v3/profile/{userId} with an HTTP 403.
+respond to [GET /_matrix/client/v3/profile/{userId}](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3profileuserid) with an HTTP 403.
 
 For example, Synapse can be configured to behave in this way by setting:
 
@@ -21,7 +15,7 @@ Thus, this behavior already exists in Synapse, and may cause issues for
 clients such as [vector-im/element-web#17269](https://github.com/vector-im/element-web/issues/17269).
 
 # Proposal
-The proposal is to allow HTTP 403 as an option for responding to  GET /_matrix/client/v3/profile/{userId}
+The proposal is to allow HTTP 403 as an option for responding to [GET /_matrix/client/v3/profile/{userId}](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3profileuserid)
 requests. Allowing HTTP 403 gives clients more specific information as to why a request has 
 failed, thus enabling more precise error handling.
 
