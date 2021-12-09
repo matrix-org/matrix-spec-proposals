@@ -401,7 +401,7 @@ The grammar is defined as follows:
  * Identifiers must start with one of the characters `[a-z]`, and be entirely
    composed of the characters `[a-z]`, `[0-9]`, `-`, `_` and `.`.
  * Identifiers starting with the characters `m.` are reserved for use by the
-   official Matrix spefification.
+   official Matrix specification.
  * Identifiers which are not described in the specification should follow the
    Java Package Naming Convention to namespace their identifier. This is typically
    a reverse DNS format, such as `com.example.identifier`.
