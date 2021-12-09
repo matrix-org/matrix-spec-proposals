@@ -61,7 +61,7 @@ jobs:
 
       - name: "📝 Edit PR Description"
         # v1.0.1
-        uses: velas/pr-description@3e19bf4239eecaf552a1c24ee730da2ba84b41cf
+        uses: Beakyn/gha-comment-pull-request@2167a7aee24f9e61ce76a23039f322e49a990409
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
