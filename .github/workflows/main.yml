@@ -60,6 +60,7 @@ jobs:
   build-spec:
     name: "📖 Build the spec"
     runs-on: ubuntu-latest
+    needs: [build-openapi]
     steps:
       - name: "➕ Setup Node"
         uses: actions/setup-node@v2
@@ -97,6 +98,20 @@ jobs:
 
       - name: "⚙️ hugo"
         run: hugo --baseURL "${{ steps.set-baseurl.outputs.baseURL }}" -d "spec"
+
+      # We manually copy the spec OpenAPI definition JSON to the website tree
+      # to make it available to the world in a canonical place:
+      # https://spec.matrix.org/latest/client-server-api/api.json
+      # Works for /unstable/ and /v1.1/ as well.
+      - name: "📥 Spec definition download"
+        uses: actions/download-artifact@v2
+        with:
+          name: openapi-artifact
+      - name: "📝 Copy the definition to the right location"
+        run: |
+          tar -xzf assets.tar.gz
+          cp assets/spec/client_server/api.json spec/client-server-api/
+
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
       - name: "📤 Artifact upload"
@@ -132,6 +147,17 @@ jobs:
         run: |
           echo -e '[params.version]\nstatus="historical"' > historical.toml
           hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
+
+      # Copying the spec definition to the tree
+      - name: "📥 Spec definition download"
+        uses: actions/download-artifact@v2
+        with:
+          name: openapi-artifact
+      - name: "📝 Copy the definition to the right location"
+        run: |
+          tar -xzf assets.tar.gz
+          cp assets/spec/client_server/api.json spec/client-server-api/
+
       - name: "📦 Tarball creation"
         run: tar -czf spec-historical.tar.gz spec
       - name: "📤 Artifact upload"
