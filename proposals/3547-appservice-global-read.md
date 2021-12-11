@@ -1,4 +1,4 @@
-# MSC3547: Allow appservice bot user to read any rooms the appserice is part of
+# MSC3547: Allow appservice bot user to read any rooms the appservice is part of
 
 Currently if an appservice wants to read information about a room (say, request an event via `/_matrix/client/r0/rooms/$room/event/$foo`),
 it needs to know which of it's users are present in that room in order to request it. In most cases, the
