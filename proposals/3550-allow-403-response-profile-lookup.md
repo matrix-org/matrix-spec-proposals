@@ -17,7 +17,8 @@ clients such as [vector-im/element-web#17269](https://github.com/vector-im/eleme
 # Proposal
 The proposal is to allow HTTP 403 as an option for responding to [GET /_matrix/client/v3/profile/{userId}](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3profileuserid)
 requests. Allowing HTTP 403 gives clients more specific information as to why a request has 
-failed, thus enabling more precise error handling.
+failed, thus enabling more precise error handling. For example, Synapse currently 
+returns the `M_FORBIDDEN` error code along with the HTTP 403 response.  
 
 # Potential Issues
 The change to the spec may conflict with other existing server implementations.
