@@ -250,10 +250,10 @@ information about relations must be visible to the server, and so the
 `m.relates_to` field must be included in the plaintext.
 
 When sending relation events whose [visibility is derived from the target event](#relation-visibility),
-clients should share the end-to-end encryption keys for the encrypted
-relation events with all devices that could see the target event, even
-if those relation events are encrypted with a different key than
-the target event, and even if the user for a device has left the room since.
+clients should ensure that the end-to-end encryption keys for the encrypted
+relation events is shared with all devices that could see the target event,
+even if those relation events are encrypted with a different key than
+the target event, and even if the receiving user has since left the room.
 
 A future MSC may define a method for encrypting certain parts of the
 `m.relates_to` field that may contain sensitive information.
