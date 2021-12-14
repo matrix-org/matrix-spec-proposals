@@ -223,11 +223,37 @@ adds the related-to event in `original_event` property of the response.
 This way the full history (e.g. also the first, original event) of the event
 is obtained without further requests. See that MSC for further details.
 
+### Relation visilibity
+
+The visibility rules (whether or not a user should receive a given event through
+the client-server API) for relations events are adjusted in the MSC.
+The visibility for relation events is dependent on the `rel_type`, with two options:
+ 
+  - Visibility is derived from the visibility of the target event (the event
+    referred to by the `event_id` in the relation); the relation should only be
+    visible if the relation target is visible. This option means that events
+    can still be visible to a user after they have left the room. This has implications
+    for [End-to-end encryption](#end-to-end-encryption).
+    [`m.replace`](https://github.com/matrix-org/matrix-doc/pull/2676) and [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) relation events have this visilibilty, see those respective MSCs.
+  - Visibility is the same as a non-relation event.
+    [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) relation events have this visilibilty, see the respective MSC.
+
+Visibility derived from the visibility of the target event is the default;
+if the MSC introducing the relation type doesn't specify any other visibility this is assumed.
+
+The change of visilibilty rules will require a new room version.
+
 ### End to end encryption
 
 Since the server has to be able to aggregate relation events, structural
 information about relations must be visible to the server, and so the
 `m.relates_to` field must be included in the plaintext.
+
+When sending relation events whose [visibility is derived from the target event](#relation-visibility),
+clients should share the end-to-end encryption keys for the encrypted
+relation events with all devices that could see the target event, even
+if those relation events are encrypted with a different key than
+the target event, and even if the user for a device has left the room since.
 
 A future MSC may define a method for encrypting certain parts of the
 `m.relates_to` field that may contain sensitive information.
