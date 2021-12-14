@@ -12,8 +12,8 @@ It can be useful to request the latest events in a room directly without calling
 
 The `from` field on the [`/_matrix/client/v3/rooms/{roomId}/messages`](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3roomsroomidmessages)
 becomes optional. If it is not provided, the homeserver shall return a list of
-messages from the start or end (per the value of the `dir` parameter) of the
-room history.
+messages from the first or last (per the value of the `dir` parameter) visible
+event in the room history for the requesting user.
 
 Note that Synapse already implements this, but it is not spec-compliant. It is
 known to be used by Element Android [^1], and there are other cases involving
