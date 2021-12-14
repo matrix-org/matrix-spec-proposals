@@ -1,7 +1,7 @@
 # MSC3567: Allow requesting events from the start/end of the room history
 
 It can be useful to request the latest events in a room directly without calling
-`/_matrix/client/v3/sync` first to fetch the room state. Some use-casse include:
+`/_matrix/client/v3/sync` first to fetch the room state. Some use-cases include:
 
 * Requesting events using a different filter after receiving a `/sync` response.
 * A client which does not need to fully sync an account, but wishes to inspect a
