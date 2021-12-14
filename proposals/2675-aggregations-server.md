@@ -176,7 +176,7 @@ The endpoint does not have any trailing slashes.
 The `from`, `to` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
 
-Trying to iterate over an relation type which does not use an aggregation key
+Trying to iterate over a relation type which does not use an aggregation key
 (i.e. `m.replace` and `m.reference`) should fail with 400 and error
 `M_INVALID_REL_TYPE`.
 
