@@ -1,4 +1,4 @@
-#MSC3550: Add HTTP 403 to possible profile lookup responses
+# MSC3550: Add HTTP 403 to possible profile lookup responses
 
 # Background
 In the current spec, the only response codes listed for [GET /_matrix/client/v3/profile/{userId}](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3profileuserid)
