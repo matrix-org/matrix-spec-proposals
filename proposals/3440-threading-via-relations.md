@@ -306,6 +306,7 @@ MSC has not been included in a spec release.
 
 ## Dependencies
 
-This MSC builds on [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) 
-and [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) (which at the 
+This MSC builds on [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674), 
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) and, 
+[MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567/files)  (which at the 
 time of writing have not yet been accepted into the spec).
