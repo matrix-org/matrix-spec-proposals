@@ -239,7 +239,7 @@ The visibility for relation events is dependent on the `rel_type`, with two opti
     event would be visible to a user, then the visibility of target event
     should not be considered and the relation event should be visible.
     This option means that events can still be visible to a user after
-    they have left the room, and has implications
+    the user left the room, and has implications
     for [End-to-end encryption](#end-to-end-encryption).
     [`m.replace`](https://github.com/matrix-org/matrix-doc/pull/2676) and [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) relation events have this visilibilty, see those respective MSCs.
   - Visibility is the same as a non-relation event.
