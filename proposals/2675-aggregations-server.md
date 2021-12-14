@@ -223,10 +223,10 @@ adds the related-to event in `original_event` property of the response.
 This way the full history (e.g. also the first, original event) of the event
 is obtained without further requests. See that MSC for further details.
 
-### Relation visilibity
+### Relation visibility
 
 The visibility rules (whether or not a user should receive a given event through
-the client-server API) for relations events are adjusted in the MSC.
+the client-server API) for relations events are adjusted in this MSC.
 The visibility for relation events is dependent on the `rel_type`, with two options:
  
   - Visibility is derived from the visibility of the target event (the event
