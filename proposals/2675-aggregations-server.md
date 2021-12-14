@@ -230,9 +230,16 @@ the client-server API) for relations events are adjusted in this MSC.
 The visibility for relation events is dependent on the `rel_type`, with two options:
  
   - Visibility is derived from the visibility of the target event (the event
-    referred to by the `event_id` in the relation); the relation should only be
-    visible if the relation target is visible. This option means that events
-    can still be visible to a user after they have left the room. This has implications
+    referred to by the `event_id` in the relation) under some circumstances:
+    the relation should be visible if the relation target event is visible to
+    a user but the relation event would not be visible according to regular
+    event history visibility rules (e.g. the user has since left in a room with
+    joined or invite room history visibility).
+    If according to regular event room history visibility rules, the relation
+    event would be visible to a user, then the visibility of target event
+    should not be considered and the relation event should be visible.
+    This option means that events can still be visible to a user after
+    they have left the room, and has implications
     for [End-to-end encryption](#end-to-end-encryption).
     [`m.replace`](https://github.com/matrix-org/matrix-doc/pull/2676) and [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) relation events have this visilibilty, see those respective MSCs.
   - Visibility is the same as a non-relation event.
@@ -313,6 +320,11 @@ Particularly, please remember to let users edit unsent messages (as this is a
 common case for rapidly fixing a typo in a msg which is still in flight!)
 
 ## Edge cases
+
+### Ignore relation events for which the target is not visible to us.
+
+Clients should ignore relation events for which the target event is
+not visible to them.
 
 ### How do you handle ignored users?
 
