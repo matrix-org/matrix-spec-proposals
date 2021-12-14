@@ -238,7 +238,7 @@ The visibility for relation events is dependent on the `rel_type`, with two opti
   - Visibility is the same as a non-relation event.
     [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) relation events have this visilibilty, see the respective MSC.
 
-Visibility derived from the visibility of the target event is the default;
+Visibility derived from the visibility of the target event is the default for relation events;
 if the MSC introducing the relation type doesn't specify any other visibility this is assumed.
 
 The change of visilibilty rules will require a new room version.
