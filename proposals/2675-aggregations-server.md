@@ -38,7 +38,7 @@ events to relate to each other.  Together, these proposals replace
 
 ### Aggregations
 
-Relation events can be aggregated per relation type (`rel_type`) by the server.
+Relation events can be aggregated per relation type by the server.
 The format of the aggregated value (hereafter called "aggregation")
 depends on the relation type.
 
@@ -90,7 +90,7 @@ to the client.
 
 Aggregations are never bundled into state events.
 
-Here's an example of what that can look like for some ficticious `rel_type`s:
+Here's an example of what that can look like for some ficticious relation types:
 
 ```json
 {
@@ -118,7 +118,7 @@ with events they return:
 Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required
 to bundle aggregations.
 
-The bundled aggregations are grouped according to their `rel_type`.
+The bundled aggregations are grouped according to their relation type.
 
 For relation types that aggregate to an array, future MSCs could opt to 
 paginate within each group using Matrix's defined pagination idiom of
