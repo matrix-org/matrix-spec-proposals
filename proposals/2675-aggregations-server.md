@@ -94,7 +94,7 @@ For relation types that aggregate to an array, future MSCs could opt to
 paginate within each group using Matrix's defined pagination idiom of
 `next_batch` and `chunk` - respectively giving a pagination token if there are
 more aggregations, and an array of elements in the list. Only the first page
-is bundled, pagination of subsequent pages happens through the `/aggregations`
+is bundled; pagination of subsequent pages happens through the `/aggregations`
 API that is defined in this MSC. The maximum amount of aggregations bundled
 before the list is truncated is determined freely by the server.
 
