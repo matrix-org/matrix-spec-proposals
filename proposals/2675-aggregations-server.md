@@ -46,6 +46,36 @@ Some relation types might group the aggregations by the `key` property
 in the relation and aggregate to an array,
 others might aggregate to a single object or any other value really.
 
+Here are some non-normative examples of what aggregations can look like:
+
+Example [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) aggregation:
+```
+{
+  "latest_event": {
+    "content": { ... },
+    ...
+  },
+  "count": 7,
+  "current_user_participated": true
+}
+```
+
+Example [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) aggregation:
+```
+[
+  {
+      "key": "👍",
+      "origin_server_ts": 1562763768320,
+      "count": 3
+  },
+  {
+      "key": "👎",
+      "origin_server_ts": 1562763768320,
+      "count": 2
+  }
+]
+```
+
 #### Bundled aggregations
 
 Other than during non-gappy incremental syncs, timeline events that have other
