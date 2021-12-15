@@ -263,10 +263,11 @@ A future MSC may define a method for encrypting certain parts of the
 `m.relates_to` field that may contain sensitive information.
 
 When sending relation events whose [visibility is derived from the target event](#relation-visibility),
-clients should ensure that the end-to-end encryption keys for the encrypted
-relation events is shared with all devices that could see the target event,
-even if those relation events are encrypted with a different key than
-the target event, and even if the receiving user has since left the room.
+clients should ensure that the end-to-end encryption key for the encrypted
+relation event is shared with all devices that could see the target event
+if those relation events are encrypted with a different key than
+the target event (e.g. after key rotation), even if the receiving user has
+since left the room.
 
 ### Redactions
 
