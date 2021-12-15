@@ -153,7 +153,7 @@ To iterate over the aggregations for an event (optionally filtering by
 relation type and relation event type):
 
 ```
-GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}/{rel_type}[/{event_type}][?from=token][&to=token][&limit=amount]
+GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}/{rel_type}[/{event_type}][?from=token][&limit=amount]
 ```
 
 ```json
@@ -166,7 +166,6 @@ GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}/{rel_type}[/{even
     }
   ],
   "next_batch": "some_token",
-  "prev_batch": "some_token"
 }
 ```
 
@@ -175,7 +174,7 @@ Again, this is a non-normative example of the aggregation for an
 
 The endpoint does not have any trailing slashes.
 
-The `from`, `to` and `limit` query parameters are used for pagination, and work
+The `from` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
 
 Trying to iterate over a relation type which does not use an aggregation key
@@ -198,7 +197,7 @@ see [limitations](#servers-might-not-be-aware-of-all-relations-of-an-event).  Yo
 filter by a given type of relation and event type:
 
 ```
-GET /_matrix/client/v1/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&to=token][&limit=amount]
+GET /_matrix/client/v1/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]][?from=token][&limit=amount]
 ```
 
 ```json
@@ -211,13 +210,12 @@ GET /_matrix/client/v1/rooms/{roomID}/relations/{eventID}[/{relationType}[/{even
     }
   ],
   "next_batch": "some_token",
-  "prev_batch": "some_token"
 }
 ```
 
 The endpoint does not have any trailing slashes.
 
-The `from`, `to` and `limit` query parameters are used for pagination, and work
+The `from` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
 
 Note that [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676)
