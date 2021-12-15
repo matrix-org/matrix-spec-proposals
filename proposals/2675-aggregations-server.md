@@ -226,33 +226,6 @@ adds the related-to event in `original_event` property of the response.
 This way the full history (e.g. also the first, original event) of the event
 is obtained without further requests. See that MSC for further details.
 
-### Relation visibility
-
-The visibility rules (whether or not a user should receive a given event through
-the client-server API) for relations events are adjusted in this MSC.
-The visibility for relation events is dependent on the `rel_type`, with two options:
- 
-  - Visibility is derived from the visibility of the target event (the event
-    referred to by the `event_id` in the relation) under some circumstances:
-    the relation should be visible if the relation target event is visible to
-    a user but the relation event would not be visible according to regular
-    event history visibility rules (e.g. the user has since left in a room with
-    joined or invite room history visibility).
-    If according to regular event room history visibility rules, the relation
-    event would be visible to a user, then the visibility of target event
-    should not be considered and the relation event should be visible.
-    This option means that events can still be visible to a user after
-    the user left the room, and has implications
-    for [End-to-end encryption](#end-to-end-encryption).
-    [`m.replace`](https://github.com/matrix-org/matrix-doc/pull/2676) and [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) relation events have this visilibilty, see those respective MSCs.
-  - Visibility is the same as a non-relation event.
-    [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) relation events have this visilibilty, see the respective MSC.
-
-Visibility derived from the visibility of the target event is the default for relation events;
-if the MSC introducing the relation type doesn't specify any other visibility this is assumed.
-
-The change of visilibilty rules will require a new room version.
-
 ### End to end encryption
 
 Since the server has to be able to aggregate relation events, structural
@@ -261,13 +234,6 @@ information about relations must be visible to the server, and so the
 
 A future MSC may define a method for encrypting certain parts of the
 `m.relates_to` field that may contain sensitive information.
-
-When sending relation events whose [visibility is derived from the target event](#relation-visibility),
-clients should ensure that the end-to-end encryption key for the encrypted
-relation event is shared with all devices that could see the target event
-if those relation events are encrypted with a different key than
-the target event (e.g. after key rotation), even if the receiving user has
-since left the room.
 
 ### Redactions
 
@@ -340,6 +306,16 @@ not visible to them.
    or a different reaction count) on an event.
 
 ## Limitations
+
+### Relations can be missed while not being in the room
+
+Relation events behave no different from other events in terms of room history visibility,
+which means that some relations might not be visible to a user while he is not a invited
+or has not joined the room. These events would thus also not be included in the aggregations.
+This can cause for example that a user sees an incomplete
+edit history or reaction count upon (re)joining a room.
+
+[MSC3570](https://github.com/matrix-org/matrix-doc/pull/3570) proposes to remove this limitation.
 
 ### Servers might not be aware of all relations of an event
 
