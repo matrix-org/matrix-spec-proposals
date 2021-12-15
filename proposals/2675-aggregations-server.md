@@ -109,7 +109,7 @@ through `/aggregations` as `next_batch` is present.
 
 These are just non-normative examples of what the aggregation for these
 relation types could look like, and their MSCs might end up with
-a different shape, take these with a grain of salt.
+a different shape, so take these with a grain of salt.
 
 ```json
 {
