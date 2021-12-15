@@ -169,3 +169,7 @@ GET /_matrix/federation/unstable/org.matrix.msc3030/timestamp_to_event/<roomID>?
     "origin_server_ts": ...
 }
 ```
+
+Servers will indicate support for the new endpoint via a non-empty value for feature flag
+`org.matrix.msc3030` in `unstable_features` in the response to `GET
+/_matrix/client/versions`.
