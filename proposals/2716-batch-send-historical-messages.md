@@ -634,6 +634,10 @@ via SS API.
 
 ## Unstable prefix
 
+Servers will indicate support for the new endpoint via a non-empty value for feature flag
+`org.matrix.msc2716` in `unstable_features` in the response to `GET
+/_matrix/client/versions`.
+
 **Endpoints:**
 
  - `POST /_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send`
