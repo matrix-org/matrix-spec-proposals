@@ -49,7 +49,7 @@ others might aggregate to a single object or any other value really.
 #### Bundled aggregations
 
 Other than during non-gappy incremental syncs, timeline events that have other
-events relate to it should bundle the aggregation of those related events
+events relate to them should include the aggregation of those related events
 in the `m.relations` property of their unsigned data.  These are called
 bundled aggregations, and by sending a summary of the relations,
 avoids us having to always send lots of individual relation events
