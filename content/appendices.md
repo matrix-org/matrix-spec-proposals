@@ -387,6 +387,38 @@ Some identifiers are specific to given room versions, please refer to
 the [room versions specification](/rooms) for more
 information.
 
+### Common Namespaced Identifier Grammar
+
+The specification defines some identifiers to use the *Common Namespaced
+Identifier Grammar*. This is a common grammar intended for non-user-visible
+identifiers, with a defined mechanism for implementations to create new
+identifiers.
+
+The grammar is defined as follows:
+
+ * An identifier must be at least one character and at most 255 characters
+   in length.
+ * Identifiers must start with one of the characters `[a-z]`, and be entirely
+   composed of the characters `[a-z]`, `[0-9]`, `-`, `_` and `.`.
+ * Identifiers starting with the characters `m.` are reserved for use by the
+   official Matrix specification.
+ * Identifiers which are not described in the specification should follow the
+   Java Package Naming Convention to namespace their identifier. This is typically
+   a reverse DNS format, such as `com.example.identifier`.
+
+{{% boxes/note %}}
+Identifiers can and do inherit grammar from this specification. For example, "this
+identifier uses the Common Namespaced Identifier Grammar, though without the namespacing
+requirements" - this means that `m.` is still reserved, but that implementations
+do not have to use the reverse DNS scheme to namespace their custom identifier.
+{{% /boxes/note %}}
+
+{{% boxes/rationale %}}
+ASCII characters do not have issues with homoglyphs or alternative encodings which
+might interfere with the identifier's purpose. Additionally, using lowercase
+characters prevents concerns about case sensitivity.
+{{% /boxes/rationale %}}
+
 ### Server Name
 
 A homeserver is uniquely identified by its server name. This value is
