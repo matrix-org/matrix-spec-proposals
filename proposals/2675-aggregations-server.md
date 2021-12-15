@@ -58,7 +58,7 @@ By sending a summary of the relations, bundling
 avoids us having to always send lots of individual relation events
 to the client.
 
-State events never bundle aggregations.
+Aggregations are never bundled into state events.
 
 Here's an example of what that can look like for some ficticious `rel_type`s:
 
