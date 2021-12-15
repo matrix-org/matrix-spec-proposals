@@ -40,7 +40,7 @@ events to relate to each other.  Together, these proposals replace
 
 Relation events can be aggregated per `rel_type` by the server.
 The format of the aggregated value (hereafter called "aggregation")
-in the bundle depends on the relation type.
+depends on the relation type.
 
 Some `rel_type`s might additionally group the aggregations by the `key` property
 in the relation and aggregate to an array,
