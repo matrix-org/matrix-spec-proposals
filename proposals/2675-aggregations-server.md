@@ -156,10 +156,6 @@ relation type and target event type):
 GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}[/{rel_type}[/{event_type}]][?from=token][&to=token][&limit=amount]
 ```
 
-This is just non-normative example of what the aggregation for this
-relation types could look like, and its MSCs might end up with
-a different shape, take this with a grain of salt.
-
 ```json
 {
   "chunk": [
@@ -173,6 +169,9 @@ a different shape, take this with a grain of salt.
   "prev_batch": "some_token"
 }
 ```
+
+Again, this is a non-normative example of the aggregation for an
+`m.annotation` relation type.
 
 The endpoint does not have any trailing slashes.
 
