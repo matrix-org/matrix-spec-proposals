@@ -310,12 +310,13 @@ not visible to them.
 ### Relations can be missed while not being in the room
 
 Relation events behave no different from other events in terms of room history visibility,
-which means that some relations might not be visible to a user while he is not a invited
-or has not joined the room. These events would thus also not be included in the aggregations.
-This can cause for example that a user sees an incomplete
-edit history or reaction count upon (re)joining a room.
+which means that some relations might not be visible to a user while they are not invited
+or has not joined the room. This can cause a user to see an incomplete edit history or reaction count
+based on discrete relation events upon (re)joining a room.
 
-[MSC3570](https://github.com/matrix-org/matrix-doc/pull/3570) proposes to remove this limitation.
+Ideally the server would not include these events in aggregations, as it would mean breaking
+the room history visibility rules, but this MSC defers addressing this limitation and
+specifying the exact server behaviour to [MSC3570](https://github.com/matrix-org/matrix-doc/pull/3570).
 
 ### Servers might not be aware of all relations of an event
 
