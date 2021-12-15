@@ -42,7 +42,7 @@ Relation events can be aggregated per relation type (`rel_type`) by the server.
 The format of the aggregated value (hereafter called "aggregation")
 depends on the relation type.
 
-Some `rel_type`s might additionally group the aggregations by the `key` property
+Some relation types might group the aggregations by the `key` property
 in the relation and aggregate to an array,
 others might aggregate to a single object or any other value really.
 
