@@ -38,7 +38,7 @@ events to relate to each other.  Together, these proposals replace
 
 ### Aggregations
 
-Relation events can be aggregated per `rel_type` by the server.
+Relation events can be aggregated per relation type (`rel_type`) by the server.
 The format of the aggregated value (hereafter called "aggregation")
 depends on the relation type.
 
