@@ -50,8 +50,11 @@ others might aggregate to a single object or any other value really.
 
 Other than during non-gappy incremental syncs, timeline events that have other
 events relate to them should include the aggregation of those related events
-in the `m.relations` property of their unsigned data.  These are called
-bundled aggregations, and by sending a summary of the relations,
+in the `m.relations` property of their unsigned data.  This process is
+referred to as "bundling", and the aggregated relations included via
+this mechanism are called "bundled aggregations".
+
+By sending a summary of the relations, bundling
 avoids us having to always send lots of individual relation events
 to the client.
 
