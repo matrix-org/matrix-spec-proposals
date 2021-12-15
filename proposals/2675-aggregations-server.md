@@ -150,7 +150,7 @@ The `/aggregations` API lets you iterate over aggregations for the relations
 of a given event.
 
 To iterate over the aggregations for an event (optionally filtering by
-relation type and target event type):
+relation type and relation event type):
 
 ```
 GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}/{rel_type}[/{event_type}][?from=token][&to=token][&limit=amount]
