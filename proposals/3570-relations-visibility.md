@@ -1,4 +1,4 @@
-# MSCXXX: Relation history visibility changes
+# MSC3570: Relation history visibility changes
 
 Edit as defined in [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) and reactions as defined in [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) only make sense in the context of their target event. To ensure that all
 users in the room share the same view (exception: relations sent by ignored users), this MSC proposes to change the
