@@ -90,20 +90,6 @@ to the client.
 
 Aggregations are never bundled into state events.
 
-Here's an example of what that can look like for some ficticious relation types:
-
-```json
-{
-  "event_id": "abc",
-  "unsigned": {
-    "m.relations": {
-      "some_rel_type": { "some_aggregated_prop": true },
-      "other_rel_type": { "other_aggregated_prop": 5 },
-    }
-  }
-}
-```
-
 The following client-server APIs should bundle aggregations
 with events they return:
 
@@ -119,58 +105,17 @@ Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required
 to bundle aggregations.
 
 The bundled aggregations are grouped according to their relation type.
-
-For relation types that aggregate to an array, future MSCs could opt to 
-paginate within each group using Matrix's defined pagination idiom of
-`next_batch` and `chunk` - respectively giving a pagination token if there are
-more aggregations, and an array of elements in the list. Only the first page
-is bundled; pagination of subsequent pages happens through the `/aggregations`
-API that is defined in this MSC. The maximum amount of aggregations bundled
-before the list is truncated is determined freely by the server.
-
-Note that the client *can* determine the page size when calling
-`/aggregations` through the `limit` request parameter, the offset is solely
-determined by the `next_batch` token.
-
-For instance, the below example shows an event with five bundled relations:
-one replace, one reference and three thumbsup reaction annotations,
-with more aggregated reactions available to paginate in
-through `/aggregations` as `next_batch` is present.
-
-These are just non-normative examples of what the aggregation for these
-relation types could look like, and their MSCs might end up with
-a different shape, so take these with a grain of salt.
+The format of `m.relations` (here with ficticious relation types) is as follows:
 
 ```json
 {
-    ...,
-    "unsigned": {
-        "m.relations": {
-            "m.replace": {
-                "event_id": "$edit_event_id",
-                "origin_server_ts": 1562763768320,
-                "sender": "@bruno1:localhost"
-            },
-            "m.reference": {
-                "chunk": [
-                    {
-                        "event_id": "$some_event_id"
-                    }
-                ],
-            },
-            "m.annotation": {
-                "chunk": [
-                  {
-                      "type": "m.reaction",
-                      "key": "👍",
-                      "origin_server_ts": 1562763768320,
-                      "count": 3
-                  }
-                  "next_batch": "abc123",
-                ]
-            }
-        }
+  "event_id": "abc",
+  "unsigned": {
+    "m.relations": {
+      "some_rel_type": { "some_aggregated_prop": true },
+      "other_rel_type": { "other_aggregated_prop": 5 },
     }
+  }
 }
 ```
 
@@ -183,44 +128,6 @@ supporting this MSC) the relation on top of any bundled aggregation the server
 might have sent along previously with the target event, to get an up to date
 view of the aggregations for the target event. The aggregation algorithm is the
 same as the one described here for the server.
-
-### Querying aggregations
-
-The `/aggregations` API lets you iterate over aggregations for the relations
-of a given event.
-
-To iterate over the aggregations for an event (optionally filtering by
-relation type and relation event type):
-
-```
-GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}/{rel_type}[/{event_type}][?from=token][&limit=amount]
-```
-
-```json
-{
-  "chunk": [
-    {
-      "type": "m.reaction",
-      "key": "👍",
-      "count": 5,
-    }
-  ],
-  "next_batch": "some_token",
-}
-```
-
-Again, this is a non-normative example of the aggregation for an
-`m.annotation` relation type.
-
-Note that endpoint does not have any trailing slashes: `GET /_matrix/client/v1/rooms/{roomID}/aggregations/$abc/m.reaction/`
-would return aggregations of relations with an *empty* `event_type`, which is nonsensical.
-
-The `from` and `limit` query parameters are used for pagination, and work
-just like described for the `/messages` endpoint.
-
-Trying to iterate over a relation type which does not use an aggregation key
-(eg. `m.replace` and `m.reference`) should fail with 400 and error
-`M_INVALID_REL_TYPE`.
 
 ### Querying relations
 
