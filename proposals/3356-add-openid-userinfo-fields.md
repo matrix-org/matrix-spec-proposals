@@ -20,8 +20,9 @@ and the third party application.
 
 2. `avatar_url` The user's avatar url _(optional)_.
 
-3. `room_powerlevels` A map between the id of the local rooms the user is joined to and the respective currently 
-held power level.
+3. `room_powerlevels` A map between the id of every local room the user is joined to and the content of the room's power 
+level state event (type `m.room.power_levels`). The map `user` must be filtered to contain only the subject's power level, 
+if it has been set explicitely.
 
 ```json
 {
@@ -29,8 +30,29 @@ held power level.
    "display_name": "John Doe",
    "avatar_url": "https://eu.ui-avatars.com/api/?name=John+Doe",
    "room_powerlevels": {
-      "!zqoHDglfYXhEaDJxKy:example.com": 100,
-      "!omkHaNDeHnPdcmHCcE:example.com": 50
+      "!zqoHDglfYXhEaDJxKy:example.com": {
+         "users": {
+            "@johndoe:example.com": 100
+         },
+         "users_default": 0,
+         "events": {
+            "m.room.name": 50,
+            "m.room.power_levels": 100,
+            "m.room.history_visibility": 100,
+            "m.room.canonical_alias": 50,
+            "m.room.avatar": 50,
+            "m.room.tombstone": 100,
+            "m.room.server_acl": 100,
+            "m.room.encryption": 100
+         }, 
+         "events_default": 0, 
+         "state_default": 50, 
+         "ban": 50, 
+         "kick": 50, 
+         "redact": 50, 
+         "invite": 0, 
+         "historical": 100
+      }
    }
 }
 ```
