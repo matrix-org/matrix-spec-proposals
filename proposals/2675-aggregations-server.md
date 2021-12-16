@@ -60,7 +60,8 @@ Example [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) aggrega
 }
 ```
 
-Example [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) aggregation:
+Example aggregation for [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) (which
+aggregates relations into a list of objects, grouped by `key`).
 ```
 [
   {
