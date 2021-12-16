@@ -140,7 +140,9 @@ overload the client by, for example, including them all bundled with the
 related-to event. Instead, we also provide a new `/relations` API in
 order to paginate over the relations, which behaves in a similar way to
 `/messages`, except using `next_batch` and `prev_batch` names
-(in line with `/sync` API).
+(in line with `/sync` API). Tokens from `/sync` or `/messages` can be
+passed to `/relations` to only get relating events from a section of
+the timeline.
 
 The `/relations` API returns the discrete relation events
 associated with an event that the server is aware of
@@ -150,7 +152,7 @@ You can filter by a given relation type and optionally the event type of the
 relating event:
 
 ```
-GET /_matrix/client/v1/rooms/{roomID}/relations/{event_id}/{rel_type}[/{event_type}][?from=token][&limit=amount]
+GET /_matrix/client/v1/rooms/{roomID}/relations/{event_id}/{rel_type}[/{event_type}][?from=token][&to=token][&limit=amount]
 ```
 
 ```json
@@ -162,6 +164,7 @@ GET /_matrix/client/v1/rooms/{roomID}/relations/{event_id}/{rel_type}[/{event_ty
       "content": { }
     }
   ],
+  "prev_batch": "some_token",
   "next_batch": "some_token",
 }
 ```
