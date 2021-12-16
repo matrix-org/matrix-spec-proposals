@@ -286,22 +286,22 @@ This is in line with other APIs like `/context` and `/messages`.
 ### Local echo
 
 For the best possible user experience, clients should also include unsent
-relations into the local aggregation. When adding a relation to the send
-queue, clients should locally aggregate it into the relations of the parent
-event, ideally regardless of the parent event having an `event_id` already or
-still being pending. If the client gives up on sending the relation for some
-reason, the relation should be de-aggregated from the relations of the parent
-event. If the client offers the user a possibility of manually retrying to
-send the relation, it should be re-aggregated when the user does so.
+relations into the client-side aggregation. When adding a relation to the send
+queue, clients should locally aggregate it into the relations of the target
+event, ideally regardless of the target event having an `event_id`
+already or still being pending. If the client gives up on sending the relation
+for some reason, the relation should be de-aggregated from the relations of
+the target event. If the client offers the user a possibility of manually
+retrying to send the relation, it should be re-aggregated when the user does so.
 
 De-aggregating a relation refers to rerunning the aggregation for a given
-parent event while not considering the de-aggregated event any more.
+target event while not considering the de-aggregated event any more.
 
 Upon receiving the remote echo for any relations, a client is likely to remove
 the pending event from the send queue. Here, it should also de-aggregate the
-pending event from the parent event's relations, and re-aggregate the received
-remote event from `/sync` to make sure the local aggregation happens with the
-same event data as on the server.
+pending event from the target event's relations, and re-aggregate the received
+remote event from `/sync` to make sure the client-side aggregation happens with
+the same event data as on the server.
 
 When adding a redaction for a relation to the send queue, the relation
 referred to should be de-aggregated from the relations of the target of the
