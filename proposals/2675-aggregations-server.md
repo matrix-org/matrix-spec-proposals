@@ -174,6 +174,16 @@ a different shape, so take these with a grain of salt.
 }
 ```
 
+### Client-side aggregation
+
+Bundled aggregations on an event give a snapshot of what relations were know
+at the time the event was received. When relations are received through `/sync`,
+clients should locally aggregate (as they might have done already before
+supporting this MSC) the relation on top of any bundled aggregation the server
+might have sent along previously with the target event, to get an up to date
+view of the aggregations for the target event. The aggregation algorithm is the
+same as the one described here for the server.
+
 ### Querying aggregations
 
 The `/aggregations` API lets you iterate over aggregations for the relations
@@ -274,15 +284,6 @@ still return any existing relation events, and aggregations respectively.
 This is in line with other APIs like `/context` and `/messages`.
 
 ### Local echo
-
-As clients only receive discrete relation events through `/sync`,
-they need to locally aggregate these relation events for their parent event,
-on top of any server-side aggregation that might have already happened,
-to get a complete picture of the aggregations for a given parent event,
-as a client might not be aware of all relations for an event. Local aggregation
-should thus also take the `m.relation` data in the `unsigned` of the parent
-event into account if it has been sent already. The aggregation algorithm is the
-same as the one described here for the server.
 
 For the best possible user experience, clients should also include unsent
 relations into the local aggregation. When adding a relation to the send
