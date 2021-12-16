@@ -88,7 +88,9 @@ By sending a summary of the relations, bundling
 avoids us having to always send lots of individual relation events
 to the client.
 
-Aggregations are never bundled into state events.
+Aggregations are never bundled into state events. This is a current
+implementation detail that could be revisited later,
+rather than a specific design decision.
 
 The following client-server APIs should bundle aggregations
 with events they return:
