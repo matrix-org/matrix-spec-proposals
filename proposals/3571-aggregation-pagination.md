@@ -1,4 +1,4 @@
-# MSC0000: Aggregation pagination
+# MSC3571: Aggregation pagination
 
 MSC 2675 introduced aggregating relations on the server. The goal of bundled aggregations is to be more bandwidth efficient. For relations that aggregate to an array with many entries, we might actually end up sending too much data still when bundling.
 
