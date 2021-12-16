@@ -288,7 +288,7 @@ This is in line with other APIs like `/context` and `/messages`.
 For the best possible user experience, clients should also include unsent
 relations into the client-side aggregation. When adding a relation to the send
 queue, clients should locally aggregate it into the relations of the target
-event, ideally regardless of the target event having an `event_id`
+event, ideally regardless of the target event having received an `event_id`
 already or still being pending. If the client gives up on sending the relation
 for some reason, the relation should be de-aggregated from the relations of
 the target event. If the client offers the user a possibility of manually
