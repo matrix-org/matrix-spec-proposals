@@ -202,8 +202,8 @@ GET /_matrix/client/v1/rooms/{room_id}/aggregations/{event_id}/{rel_type}[/{even
 Again, this is a non-normative example of the aggregation for an
 `m.annotation` relation type.
 
-Note that endpoint does not have any trailing slashes: `GET /_matrix/client/v1/rooms/{roomID}/aggregations/{eventID}/`
-would return aggregations of relations with an *empty* `rel_type`, which is nonsensical.
+Note that endpoint does not have any trailing slashes: `GET /_matrix/client/v1/rooms/{roomID}/aggregations/$abc/m.reaction/`
+would return aggregations of relations with an *empty* `event_type`, which is nonsensical.
 
 The `from` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
