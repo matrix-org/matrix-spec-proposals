@@ -134,8 +134,8 @@ same as the one described here for the server.
 ### Querying relations
 
 A single event can have lots of associated relations, and we do not want to
-overload the client by including them all bundled with the related-to event
-like we do for aggregations. Instead, we also provide a new `/relations` API in
+overload the client by, for example, including them all bundled with the
+related-to event. Instead, we also provide a new `/relations` API in
 order to paginate over the relations, which behaves in a similar way to
 `/messages`, except using `next_batch` and `prev_batch` names
 (in line with `/sync` API).
