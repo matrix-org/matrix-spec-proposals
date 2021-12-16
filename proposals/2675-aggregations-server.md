@@ -308,9 +308,9 @@ referred to should be de-aggregated from the relations of the target of the
 relation.  Similar to a relation, when the sending of the redaction fails or
 is cancelled, the relation should be aggregated again.
 
-Clients can locally relate pending events by their `transaction_id`.
-When the target event receives its `event_id` (either receives the remote echo,
-or receives the `event_id` from the `/send` response,
+One possible way clients can locally relate pending events is by their
+`transaction_id`. When the target event receives its `event_id` (either receives
+the remote echo, or receives the `event_id` from the `/send` response,
 whichever comes first), the target event id (`m.relates_to`.`event_id`) of
 any relations in the send queue will
 need to be set the newly received `event_id`.
