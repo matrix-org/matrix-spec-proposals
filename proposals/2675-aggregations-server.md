@@ -76,7 +76,7 @@ Example [`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) agg
 ]
 ```
 
-#### Bundled aggregations
+#### Bundling
 
 Other than during non-gappy incremental syncs, timeline events that have other
 events relate to them should include the aggregation of those related events
@@ -121,7 +121,7 @@ The format of `m.relations` (here with ficticious relation types) is as follows:
 }
 ```
 
-### Client-side aggregation
+#### Client-side aggregation
 
 Bundled aggregations on an event give a snapshot of what relations were know
 at the time the event was received. When relations are received through `/sync`,
@@ -135,7 +135,7 @@ same as the one described here for the server.
 
 A single event can have lots of associated relations, and we do not want to
 overload the client by including them all bundled with the related-to event
-like we do for aggregations. Instead, we provide a new `/relations` API in
+like we do for aggregations. Instead, we also provide a new `/relations` API in
 order to paginate over the relations, which behaves in a similar way to
 `/messages`, except using `next_batch` and `prev_batch` names
 (in line with `/sync` API).
