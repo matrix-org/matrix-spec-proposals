@@ -183,11 +183,10 @@ A future MSC may define a method for encrypting certain parts of the
 ### Redactions
 
 Redacted relations should not be taken into consideration in
-bundled aggregations or aggregations returned from `/aggregations`,
-nor should they be returned from `/relations`.
+bundled aggregations, nor should they be returned from `/relations`.
 
-Requesting `/relations` or `/aggregations` on a redacted event should
-still return any existing relation events, and aggregations respectively.
+Requesting `/relations` on a redacted event should
+still return any existing relation events.
 This is in line with other APIs like `/context` and `/messages`.
 
 ### Local echo
@@ -265,7 +264,7 @@ full DAG over federation to assure itself that it is aware of all relations.
 
 ### Event type based aggregation and filtering won't work well in encrypted rooms
 
-The `/relations` and `/aggregations` endpoint allow filtering by event type,
+The `/relations` endpoint allows filtering by event type,
 which for encrypted rooms will be `m.room.encrypted`, rendering this filtering
 less useful for encrypted rooms. Aggregations that take the event type into
 account of the relation will suffer from the same limitation.
@@ -298,7 +297,6 @@ to what is implemented at the time of writing.
 
 While this MSC is not considered stable, the endpoints become:
 
- - `GET /_matrix/client/unstable/rooms/{roomID}/aggregations/{eventID}[/{relationType}][/{eventType}]`
  - `GET /_matrix/client/unstable/rooms/{roomID}/relations/{eventID}[/{relationType}[/{eventType}]]`
 
 None of the newly introduced identifiers should use a prefix though, as this MSC
