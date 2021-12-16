@@ -48,7 +48,8 @@ others might aggregate to a single object or any other value really.
 
 Here are some non-normative examples of what aggregations can look like:
 
-Example [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) aggregation:
+Example aggregation for [`m.thread`](https://github.com/matrix-org/matrix-doc/pull/3440) (which
+aggregates all relations into a single object):
 ```
 {
   "latest_event": {
