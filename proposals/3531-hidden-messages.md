@@ -46,23 +46,28 @@ redaction:
       `redact` it entirely.
 
 ## **Proposal**
-We introduce a new type of relation: `m.visibility`, with the following syntax:
+We introduce a new type of event: `m.visibility`.
 
-```jsonc
-"m.relates_to": {
-    "rel_type": "m.visibility",
-    "event_id": "$event_id",
-    "visibility": "hidden"// or "visible"
-}
-```
-
-Events with relation `m.visibility` are ignored if they are sent by users with
-powerlevel below `m.visibility`. This relation controls whether *clients* should
+Events with type `m.visibility` are ignored by clients if they are invalid or sent by users with
+a powerlevel insufficient to send a *state event* `m.visibility`. This relation controls whether *clients* should
 display an event or hide it.
 
-Additionally, an event with relation `m.visibility` may have a content field `reason`
-used to display a human-readable reason for which the original event is hidden
-(e.g. "Message pending moderation", "First time posters are moderated", etc.)
+
+An event of `m.visibility` MUST with the following *content* fields:
+
+| Content Key    | Type    | Description |
+|----------------|---------|-------------|
+| `m.relates_to` | Visibility Relation | **Required** The payload for this event |
+
+Visibility relation
+
+| Content Key    | Type      | Description |
+|----------------|-----------|-------------|
+| `rel_type`     | `string`  | **Required** Must be `"m.reference"` |
+| `event_id`     | `eventId` | **Required** eventId of the event affected by this visibility change. Must be a past event in this room. |
+| `visible`      | `boolean` | **Required** If `true`, clients should show the affected event normally. If false, clients should mark the affected event as hidden pending review. |
+| `reason`       | `string`  | Optional. If `visible` is `false`, a reason that clients MAY display to indicate why the affected event is hidden pending review. |
+
 
 ### Server behavior
 
@@ -70,9 +75,10 @@ No changes in server behavior.
 
 ### Client behavior
 
-   1. When a client receives an event `event` with `rel_type` `m.visibility`
+   1. When a client receives an event `event` with type `m.visibility`
       relating to an existing event `original_event` in room `room`:
-       1. If the powerlevel of `event.sender` in `room` is greater or equal to `m.visibility`
+       1. If the `event` is well-formed and powerlevel of `event.sender` in `room` is greater or equal
+        to the powerlevel needed to sent **state event** `m.visibility`
            1. If `event` specifies a visibility of "hidden", mark `original_event` as hidden
                1. In every display of `original_event`, either by itself or in a reaction
                    1. If the current user is the sender of `original_event`
@@ -100,6 +106,7 @@ source of truth.
 
 For simplicity, if a user gains or loses the powerlevel `m.visibility`, this
 does **not** affect any of the `m.visibility` relations already sent by that user.
+This may, however, affect how hidden events are displayed to this specific user.
 
 ### Example use
 
@@ -142,12 +149,12 @@ hidden but fail to redact it, this could make the homeserver owner legally
 responsible for illegal content being exchanged through this covert channel.
 
 We believe that using a bot that automatically redacts hidden messages after a
-retention period would avoid such liabilities.
+retention period would help administrators avoid such liabilities.
 
 ## Alternatives
 ### Server behavior changes
 
-We could amend this proposal to have the server reject messages with relation
+We could amend this proposal to have the server reject messages with type
 `m.visibility` if these messages are sent by a user with a powerlevel below
 `m.visibility`. However, this would require changes to the flow of encryption
 to let the server read the relation between events, something that is less than
@@ -216,10 +223,6 @@ data that is meant to be kept private.
 
 During the prototyping phase:
 
-- `rel_type` `m.visibility` should be prefixed into
-  `org.matrix.msc3531.visibility`;
-- field `visibility` should also be prefixed into
-  `org.matrix.msc3531.visibility`;
-- field `reason` should also be prefixed into
-  `org.matrix.msc3531.reason`;
-- constants `visible` and `hidden` remain unchanged.
+- message type `m.visibility` should be prefixed into
+  `org.matrix.msc3531.visibility`.
+  
