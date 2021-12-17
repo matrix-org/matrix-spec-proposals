@@ -148,20 +148,25 @@ The `/relations` API returns the discrete relation events
 associated with an event that the server is aware of
 in standard topological order. Note that events may be missing,
 see [limitations](#servers-might-not-be-aware-of-all-relations-of-an-event).
-You can filter by a given relation type and optionally the event type of the
+You can optionally filter by a given relation type and the event type of the
 relating event:
 
 ```
-GET /_matrix/client/v1/rooms/{roomID}/relations/{event_id}/{rel_type}[/{event_type}][?from=token][&to=token][&limit=amount]
+GET /_matrix/client/v1/rooms/{roomID}/relations/{event_id}[/{rel_type}[/{event_type}]][?from=token][&to=token][&limit=amount]
 ```
 
-```json
+```
 {
   "chunk": [
     {
       "type": "m.reaction",
       "sender": "...",
-      "content": { }
+      "content": {
+        "m.relates_to": {
+          "rel_type": "m.annotation",
+          ...
+        }
+      }
     }
   ],
   "prev_batch": "some_token",
