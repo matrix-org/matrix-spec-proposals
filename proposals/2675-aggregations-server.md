@@ -234,11 +234,6 @@ common case for rapidly fixing a typo in a msg which is still in flight!)
 
 ## Edge cases
 
-### Ignore relation events for which the target is not visible to us.
-
-Clients can ignore relation events for which the target event is
-not visible to them.
-
 ### How do you handle ignored users?
 
  * Information about relations sent from ignored users must never be sent to
