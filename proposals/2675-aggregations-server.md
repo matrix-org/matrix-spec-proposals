@@ -269,8 +269,9 @@ full DAG over federation to assure itself that it is aware of all relations.
 
 The `/relations` endpoint allows filtering by event type,
 which for encrypted rooms will be `m.room.encrypted`, rendering this filtering
-less useful for encrypted rooms. Aggregations that take the event type into
-account of the relation will suffer from the same limitation.
+less useful for encrypted rooms.  Aggregation algorithms that take the type of
+the relating events they aggregate into account will suffer from the same
+limitation.
 
 ## Future extensions
 
