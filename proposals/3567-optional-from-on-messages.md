@@ -16,8 +16,18 @@ messages from the first or last (per the value of the `dir` parameter) visible
 event in the room history for the requesting user.
 
 Note that Synapse already implements this, but it is not spec-compliant. It is
-known to be used by Element Android [^1], and there are other cases involving
-threads [^2], which shows real-world usage that this would be valuable.
+known to be used by Element Android [^1] and Element Web, and there are other
+use-cases involving threads [^2], which shows real-world usage that this would
+be valuable.
+
+Ideally this would not be necessary and the `prev_batch` token received from
+calling `/sync` could be provided as the pagination token to `/messages`, but this
+will not work if you `/sync` with a filter that excludes a given class of event
+(such as threaded replies), and all the events taking place in a room are of that
+class. This will result in your `/sync` not returning an update for that room,
+which means that your most recent `prev_batch` token precedes all the excluded
+events. Trying to back-paginate from `prev_batch` using `/messages` will not
+result in seeing the excluded events.
 
 
 ## Potential issues
