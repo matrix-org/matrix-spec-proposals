@@ -11,14 +11,14 @@ already a good step towards preventing profiling on the push provider side, they
 can still build social graphs based on timing analysis.
 
 To further reduce the ability of profiling that the push providers continue to have,
-we propose that clients can configure a randomized delay when setting up the push
-provider, which is automatically added to pushes. This will not completely prevent
-profiling, but with enough traffic it will at least make it quite a bit harder and
-less accurate.
+we propose that clients can configure a randomized delay, called jitter, when setting
+up the push provider, which is automatically added to pushes. This will not completely
+prevent profiling, but with enough traffic it will at least make it quite a bit
+harder and less accurate.
 
 ## Proposal
 
-A new pusher data field, `random_delay`, is introduced for pushers of kind `http`.
+A new pusher data field, `jitter`, is introduced for pushers of kind `http`.
 This field is not to be added to the actual push payload being sent to push gateways.
 It is an integer and denotes the maximum random delay of each push frame being
 pushed out, in milliseconds. A value of `0` or absence of the field disables this
@@ -39,14 +39,14 @@ Content-Type: application/json
   "data": {
     "url": "https://push-gateway.location.here/_matrix/push/v1/notify",
     "format": "event_id_only",
-    "random_delay": 1500
+    "jitter": 1500
   },
   "append": false
 }
 ```
 
 Before sending out a push notification to the provided http endpoint the server
-must then create a random integer between 0 and the provided `random_delay`, and
+must then create a random integer between 0 and the provided `jitter`, and
 delay the push message by that many milliseconds.
 
 ### What this MSC does and does not address
@@ -88,11 +88,11 @@ than the calculated ones, larger ones are fine, though.
 
 ## Potential issues
 
-As push messages get randomly delayed before being pushed out to the end user, it
-could reduce the user experience. Since push notifications typically do not have
-to be extremely instant, but something like an up-to 15 seconds delay is usually
-fine, it should not impact the user experience too much. Additionally, as the
-app grows, the delay can be smaller and smaller.
+As push messages get a jitter before being pushed out to the end user, it could
+reduce the user experience. Since push notifications typically do not have to be
+extremely instant, but something like an up-to 15 seconds delay is usually fine,
+it should not impact the user experience too much. Additionally, as the app grows,
+the delay can be smaller and smaller.
 
 ## Security considerations
 
