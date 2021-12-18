@@ -1,6 +1,6 @@
 # Marking up resources
 
-This MSC proposes a way to annotate and discuss various resources (web pages, documents, videos, and other files) using Matrix. The general idea is to use [Spaces (MSC1772)](https://github.com/matrix-org/matrix-doc/pull/1772) to represent a general resource to be annotated, and then a combination of child rooms and [Threads (MSC3440)](https://github.com/matrix-org/matrix-doc/blob/gsouquet/threading-via-relations/proposals/3440-threading-via-relations.md) to represent annotations and discussion. This MSC specifies:
+This MSC proposes a way to annotate and discuss various resources (web pages, documents, videos, and other files) using Matrix. The general idea is to use [Spaces (MSC1772)](https://github.com/matrix-org/matrix-doc/pull/1772) to represent a general resource to be annotated, and then a combination of child rooms and [Extensible Events (MSC1767)](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1767/proposals/1767-extensible-events.md) to represent annotations and discussion. This MSC specifies:
 
 * Additional data in the `m.room.create` event to mark a space as describing  a resource to be annotated.
 * Additional (optional) data in the `m.room.child` and `m.room.parent` events to mark sections of the resource (pages, timestamps, etc.) that are being discussed by the child room. The specific format of the location data is resource-specific, and will be described in further MSCs.
