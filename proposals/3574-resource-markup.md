@@ -19,7 +19,7 @@ The `m.markup.resource` value MUST include either:
 
 Clients should recognize that a `url` subordinate to an `m.markup.resource` (including within an `m.file` value) may contain URI schemes other than `mxc`. It may contain `http(s)`, and may ultimately contain other schemes in the future. Clients handling `m.markup.resource` should be prepared to fail gracefully upon encountering an unrecognized scheme.
 
-An optional `md5_hash` key may be included. If present, this key should be populated by an md5 hash of the resource, for file-integrity checking.
+An optional `sha256_hash` key may be included. If present, this key should be populated by a sha256 hash of the resource, for file-integrity checking.
 
 ### Examples
 
