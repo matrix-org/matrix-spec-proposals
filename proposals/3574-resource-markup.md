@@ -151,7 +151,7 @@ None.
 
 | Proposed Final Identifier | Purpose                                                    | Development Identifier                    |
 | ------------------------- | ---------------------------------------------------------- | ----------------------------------------- |
-| `m.markup.location`       | key in `m.space.child`, `m.space.parent` and `m.annotation`| `com.open-tower.mscXXX.markup.location`   |
-| `m.markup.resource`       | key in `m.create`                                          | `com.open-tower.mscXXX.markup.resource`   |
-| `m.markup`                | extensible event schema                                    | `com.open-tower.mscXXX.markup`            |
-| `m.markup.parent`         | key in `m.annotation`                                      | `com.open-tower.mscXXX.markup.parent`     |
+| `m.markup.location`       | key in `m.space.child`, `m.space.parent` and `m.annotation`| `com.open-tower.msc3574.markup.location`   |
+| `m.markup.resource`       | key in `m.create`                                          | `com.open-tower.msc3574.markup.resource`   |
+| `m.markup`                | extensible event schema                                    | `com.open-tower.msc3574.markup`            |
+| `m.markup.parent`         | key in `m.annotation`                                      | `com.open-tower.msc3574.markup.parent`     |
