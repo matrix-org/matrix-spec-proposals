@@ -6,6 +6,8 @@ This MSC proposes a way to annotate and discuss various resources (web pages, do
 * Additional (optional) data in the `m.space.child` and `m.space.parent` events to mark sections of the resource (pages, timestamps, etc.) that are being discussed by the child room. The specific format of the location data is resource-specific, and will be described in further MSCs.
 * An annotation event that is used within child rooms. The specific data describing the annotation location is once again resource-specific, and will be described in further MSCs.
 
+Resources and markup can be displayed in specialized annotation-aware clients, and potentially in a widget or widget-like interface for widget-compatible clients, although the latter possibility remains speculative. The use of extensible events and standard space events should provide for a reasonable degree of compatibility with general-purpose matrix clients.
+
 # Proposal
 
 ## Additional data in `m.room.create`
@@ -142,6 +144,21 @@ However,
 ## Standalone `m.annotation.location` state events
 
 Rather than being represented by `m.space.child` events, annotations that open a conversation concerning a part of a resource could be introduced as a new kind of state event. This has the disadvange of not making relationships between a resource and conversations about its parts visible to clients which are space-aware but not annotation-aware.
+
+## Discussions as threads
+
+Discussions concerning a part of resource could be modeled as threads rooted in `m.markup` message events, using [Threading via `m.thread` relation (MSC3440)](https://github.com/matrix-org/matrix-doc/pull/3440). The current proposal is intended to be compatible with clients that model discussions this way, since those clients are free to build threads rooted in `m.markup` events and display these however they like. However, an alternative approach to marking up resources would be to *only* introduce `m.markup` events, and expect all clients to folow a thread-based model.
+
+Instead, the current proposal also provides the option of modeling discussions concerning a resouce as standalone rooms. There are a number of advantages to this choice. Discussions modeled as rooms inherit:
+
+* Unread counts and read-up-to-markers
+* Typing notifications
+* Fine-grained access controls (for e.g. a private discussions of a part of a resource)
+* Conversation threading (since MSC3440 doesn't allow nested threads)
+
+among other things.
+
+The main disadvantage to allowing both models seems to be the possibility of fragmentation and incompatibility between annotation-aware clients. In practice, this seems unlikely to be a major problem.
 
 # Security Considerations
 
