@@ -3,7 +3,7 @@
 This MSC proposes a way to annotate and discuss various resources (web pages, documents, videos, and other files) using Matrix. The general idea is to use [Spaces (MSC1772)](https://github.com/matrix-org/matrix-doc/pull/1772) to represent a general resource to be annotated, and then a combination of child rooms and [Extensible Events (MSC1767)](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1767/proposals/1767-extensible-events.md) to represent annotations and discussion. This MSC specifies:
 
 * Additional data in the `m.room.create` event to mark a space as describing  a resource to be annotated.
-* Additional (optional) data in the `m.room.child` and `m.room.parent` events to mark sections of the resource (pages, timestamps, etc.) that are being discussed by the child room. The specific format of the location data is resource-specific, and will be described in further MSCs.
+* Additional (optional) data in the `m.space.child` and `m.space.parent` events to mark sections of the resource (pages, timestamps, etc.) that are being discussed by the child room. The specific format of the location data is resource-specific, and will be described in further MSCs.
 * An annotation event that is used within child rooms. The specific data describing the annotation location is once again resource-specific, and will be described in further MSCs.
 
 # Proposal
@@ -43,7 +43,7 @@ An optional `sha256_hash` key may be included. If present, this key should be po
 ```
 
 
-## Additional data in `m.room.child` and `m.room.parent`
+## Additional data in `m.space.child` and `m.space.parent`
 
 Children of resources will be considered *conversations concerning* the resource. For purposes of discoverability,  may sometimes be helpful to attach additional data to the content of `m.space.child` and `m.space.parent` events, in order to indicate a specific part of the resource that the conversation is based upon. The location of the part of the resource that the conversation is based upon will be indicated by the value of an `m.markup.location` key within the contents of the `m.space.child` and/or `m.space.parent` event.
 
