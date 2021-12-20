@@ -30,6 +30,9 @@ The rules should be changed for the following endpoints:
 If a request is made (that does **NOT** include a `user_id` query parameter) by an application service,
 it should be granted if any users in it's `namespaces.user` registration match any users joined to the room.
 
+Additionally, `/_matrix/client/versions/` must include the flag `uk.half-shot.msc3547`, in `unstable_features`
+which notifies clients that this feature is in use. Once this feature is stabilised, clients should expect this
+feature to always be in effect.
 
 ## Potential issues
 
@@ -60,6 +63,7 @@ the membership in the target room, and masquerading as a user that has access.
 
 Not required, this proposal proposes to change the authorization rules of existing endpoints but does not change
 the overall behaviour.
+
 ## Dependencies
 
 No dependencies.
