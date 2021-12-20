@@ -42,14 +42,14 @@ privacy_policy = "https://matrix.org/legal/privacy-notice"
 [params.version]
 # must be one of "unstable", "current", "historical"
 # this is used to decide whether to show a banner pointing to the current release
-status = "unstable"
+status = "stable"
 # A URL pointing to the latest, stable release of the spec. To be shown in the unstable version warning banner.
 current_version_url = "https://spec.matrix.org/latest"
 # The following is used when status = "stable", and is displayed in various UI elements on a released version
 # of the spec. CI will set these values here automatically when a release git tag (i.e `v1.5`) is created.
-#major = "1"
-#minor = "1"
-#release_date = "November 09, 2021"
+major = "1"
+minor = "2"
+release_date = "December 20, 2021"
 
 # User interface configuration
 [params.ui]
