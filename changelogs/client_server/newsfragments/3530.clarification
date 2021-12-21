@@ -1,1 +1,1 @@
-Document that servers may respond with an HTTP 403 to GET /_matrix/client/v3/profile/{userId}.
+Add `403 M_FORBIDDEN` error code to `/profile/{userId}` as per [MSC3550](https://github.com/matrix-org/matrix-doc/pull/3550).
