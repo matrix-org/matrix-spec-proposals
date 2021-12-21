@@ -1,4 +1,4 @@
-# MSCxxxx: Remove m.room.message.feedback
+# MSC3582: Remove m.room.message.feedback
 
 The spec defines an
 [`m.room.message.feedback`](https://spec.matrix.org/unstable/client-server-api/#mroommessagefeedback)
