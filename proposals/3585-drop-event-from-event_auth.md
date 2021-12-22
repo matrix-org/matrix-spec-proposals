@@ -1,14 +1,13 @@
 # MSC3585: Allow the base event can be omitted from `/federation/v1/event_auth` response
 
-The
-[specification](https://spec.matrix.org/unstable/server-server-api/#get_matrixfederationv1event_authroomideventid)
-for `GET /_matrix/federation/v1/event_auth/{roomId}/{eventId}` does not
-explicitly say whether the event with the specified `eventId` should be
-included in the response.
+The [specification for `GET
+/_matrix/federation/v1/event_auth/{roomId}/{eventId}`](https://spec.matrix.org/unstable/server-server-api/#get_matrixfederationv1event_authroomideventid)
+does not explicitly say whether the event with the specified `eventId` should
+be included in the response.
 
 In cases of such ambiguity, we look to historical precedent, where we see that
 Synapse does return that event (see `include_given=True` in
-[`FederationHandler.on_event_auth`](https://github.com/matrix-org/synapse/blob/v1.49.2/synapse/handlers/federation.py#L423). It
+[`FederationHandler.on_event_auth`](https://github.com/matrix-org/synapse/blob/v1.49.2/synapse/handlers/federation.py#L423)). It
 has been that wasy since at least
 [synapse#2247](https://github.com/matrix-org/synapse/pull/2247), predating the
 inclusion of this endpoint in the spec.
