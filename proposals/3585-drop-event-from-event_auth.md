@@ -1,4 +1,4 @@
-# MSC3585: Allow the base event can be omitted from `/federation/v1/event_auth` response
+# MSC3585: Allow the base event to be omitted from `/federation/v1/event_auth` response
 
 The [specification for `GET
 /_matrix/federation/v1/event_auth/{roomId}/{eventId}`](https://spec.matrix.org/unstable/server-server-api/#get_matrixfederationv1event_authroomideventid)
