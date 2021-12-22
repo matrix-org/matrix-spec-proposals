@@ -194,7 +194,7 @@ only read state (e.g.: `/sync`, get account data, etc).
 
 `M_CANNOT_LEAVE_SERVER_NOTICE_ROOM`
 The user is unable to reject an invite to join the server notices room.
-See the [Server Notices](#server-notices) module for more information.
+See the [Server Notices](/events/#server-notices) module for more information.
 
 The client-server API typically uses `HTTP PUT` to submit requests with
 a client-generated transaction identifier. This means that these
@@ -1284,131 +1284,7 @@ any given point in time:
 
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
-{{% boxes/warning %}}
-The format of events can change depending on room version. Check the
-[room version specification](/rooms) for specific
-details on what to expect for event formats. Examples contained within
-the client-server specification are expected to be compatible with all
-specified room versions, however some differences may still apply.
-
-For this version of the specification, clients only need to worry about
-the event ID format being different depending on room version. Clients
-should not be parsing the event ID, and instead be treating it as an
-opaque string. No changes should be required to support the currently
-available room versions.
-{{% /boxes/warning %}}
-
-{{% boxes/warning %}}
-Event bodies are considered untrusted data. This means that any application using
-Matrix must validate that the event body is of the expected shape/schema
-before using the contents verbatim.
-
-**It is not safe to assume that an event body will have all the expected
-fields of the expected types.**
-
-See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
-detail on why this assumption is unsafe.
-{{% /boxes/warning %}}
-
-### Types of room events
-
-Room events are split into two categories:
-
-* **State events**: These are events which update the metadata state of the room (e.g. room
-topic, room membership etc). State is keyed by a tuple of event `type`
-and a `state_key`. State in the room with the same key-tuple will be
-overwritten.
-
-* **Message events**: These are events which describe transient "once-off" activity in a room:
-typically communication such as sending an instant message or setting up
-a VoIP call.
-
-This specification outlines several events, all with the event type
-prefix `m.`. (See [Room Events](#room-events) for the m. event
-specification.) However, applications may wish to add their own type of
-event, and this can be achieved using the REST API detailed in the
-following sections. If new events are added, the event `type` key SHOULD
-follow the Java package naming convention, e.g.
-`com.example.myapp.event`. This ensures event types are suitably
-namespaced for each application and reduces the risk of clashes.
-
-{{% boxes/note %}}
-Events are not limited to the types defined in this specification. New
-or custom event types can be created on a whim using the Java package
-naming convention. For example, a `com.example.game.score` event can be
-sent by clients and other clients would receive it through Matrix,
-assuming the client has access to the `com.example` namespace.
-{{% /boxes/note %}}
-
-Note that the structure of these events may be different than those in
-the server-server API.
-
-#### Event fields
-
-{{% event-fields event_type="event" %}}
-
-#### Room event fields
-
-{{% event-fields event_type="room_event" %}}
-
-#### State event fields
-
-In addition to the fields of a Room Event, State Events have the
-following field:
-
-| Key          | Type         | Description                                                                                                  |
-|--------------|--------------|--------------------------------------------------------------------------------------------------------------|
-| state_key    | string       | **Required.** A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an `@` are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.         |
-
-### Size limits
-
-The complete event MUST NOT be larger than 65536 bytes, when formatted
-as a [PDU for the Server-Server
-protocol](/server-server-api/#pdus), including any
-signatures, and encoded as [Canonical
-JSON](/appendices#canonical-json).
-
-There are additional restrictions on sizes per key:
-
--   `sender` MUST NOT exceed 255 bytes (including domain).
--   `room_id` MUST NOT exceed 255 bytes.
--   `state_key` MUST NOT exceed 255 bytes.
--   `type` MUST NOT exceed 255 bytes.
--   `event_id` MUST NOT exceed 255 bytes.
-
-Some event types have additional size restrictions which are specified
-in the description of the event. Additional keys have no limit other
-than that implied by the total 64 KiB limit on events.
-
-### Room Events
-
-{{% boxes/note %}}
-This section is a work in progress.
-{{% /boxes/note %}}
-
-This specification outlines several standard event types, all of which
-are prefixed with `m.`
-
-{{% event event="m.room.canonical_alias" %}}
-
-{{% event event="m.room.create" %}}
-
-{{% event event="m.room.join_rules" %}}
-
-{{% event event="m.room.member" %}}
-
-{{% event event="m.room.power_levels" %}}
-
-#### Historical events
-
-Some events within the `m.` namespace might appear in rooms, however
-they serve no significant meaning in this version of the specification.
-They are:
-
--   `m.room.aliases`
-
-Previous versions of the specification have more information on these
-events.
+The [events specification](/events) defines event formats and behaviour.
 
 ### Syncing
 
@@ -1629,7 +1505,8 @@ the topic to be removed from the room.
 
 #### Events
 
-{{% event event="m.room.redaction" %}}
+See the [events spec](/events/#mroomredaction) for the definition of the
+`m.room.redaction` event format.
 
 #### Client behaviour
 
@@ -1945,7 +1822,6 @@ that profile.
 |------------------------------------------------------------|-----------|----------|----------|----------|----------|
 | [Instant Messaging](#instant-messaging)                    | Required  | Required | Required | Required | Optional |
 | [Direct Messaging](#direct-messaging)                      | Required  | Required | Required | Required | Optional |
-| [Mentions](#user-room-and-group-mentions)                  | Required  | Required | Required | Optional | Optional |
 | [Presence](#presence)                                      | Required  | Required | Required | Required | Optional |
 | [Push Notifications](#push-notifications)                  | Optional  | Required | Optional | Optional | Optional |
 | [Receipts](#receipts)                                      | Required  | Required | Required | Required | Optional |
@@ -1955,7 +1831,6 @@ that profile.
 | [Ignoring Users](#ignoring-users)                          | Required  | Required | Required | Optional | Optional |
 | [Reporting Content](#reporting-content)                    | Optional  | Optional | Optional | Optional | Optional |
 | [Content Repository](#content-repository)                  | Required  | Required | Required | Optional | Optional |
-| [Managing History Visibility](#room-history-visibility)    | Required  | Required | Required | Required | Optional |
 | [Server Side Search](#server-side-search)                  | Optional  | Optional | Optional | Optional | Optional |
 | [Room Upgrades](#room-upgrades)                            | Required  | Required | Required | Required | Optional |
 | [Server Administration](#server-administration)            | Optional  | Optional | Optional | Optional | Optional |
@@ -1969,9 +1844,6 @@ that profile.
 | [Client Config](#client-config)                            | Optional  | Optional | Optional | Optional | Optional |
 | [SSO Login](#sso-client-loginauthentication)               | Optional  | Optional | Optional | Optional | Optional |
 | [OpenID](#openid)                                          | Optional  | Optional | Optional | Optional | Optional |
-| [Stickers](#sticker-messages)                              | Optional  | Optional | Optional | Optional | Optional |
-| [Server ACLs](#server-access-control-lists-acls-for-rooms) | Optional  | Optional | Optional | Optional | Optional |
-| [Server Notices](#server-notices)                          | Optional  | Optional | Optional | Optional | Optional |
 | [Moderation policies](#moderation-policy-lists)            | Optional  | Optional | Optional | Optional | Optional |
 
 *Please see each module for more details on what clients need to
