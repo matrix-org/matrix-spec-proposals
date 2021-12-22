@@ -28,7 +28,7 @@ say that `eventId` itself should not be returned.
 
 In theory this is a breaking change; although Synapse does not depend on
 `eventId` being returned, it is possible that this will cause problems on other
-implementations for some reason. However, as above, there is no reeason for a
+implementations for some reason. However, as above, there is no reason for a
 homeserver implementation to call `/event_auth` unless it already has a copy of
 the event, so this is judged to be a minor risk.
 
