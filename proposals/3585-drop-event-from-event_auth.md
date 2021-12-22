@@ -29,14 +29,19 @@ say that `eventId` itself should not be returned.
 In theory this is a breaking change; although Synapse does not depend on
 `eventId` being returned, it is possible that this will cause problems on other
 implementations for some reason. However, as above, there is no reeason for a
-homeserver implementation call `/event_auth` unless it already has a copy of
+homeserver implementation to call `/event_auth` unless it already has a copy of
 the event, so this is judged to be a minor risk.
+
+In addition, Conduit is known to elide the requested event already (see
+[server_server.rs](https://gitlab.com/famedly/conduit/-/blob/9b57c89df6861eef97b8615ff22433f26c43a377/src/server_server.rs#L2432))
+so the potential for incompatibility already exists.
 
 ## Alternatives
 
 Alternatives include:
 
- * stick with the status-quo: harmless but somewhat unsatisfactory.
+ * double-down on requiring `eventId` to be returned. This seems like a
+   retrograde step.
  * introduce a way in which implementations can opt-in to the omission of
    `eventId` (for example, via a query parameter, or with a new version of the
    `/event_auth` endpoint). This seems overengineered.
