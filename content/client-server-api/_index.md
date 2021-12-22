@@ -286,11 +286,9 @@ specify parameter values. The flow for this method is as follows:
     4.  Extract the `base_url` value from the `m.homeserver` property.
         This value is to be used as the base URL of the homeserver.
         1. If this value is not provided, then `FAIL_PROMPT`.
-        2. It is important to note that this value might include a trailing
-           `/`. Consumers should be prepared to handle both cases.
     5.  Validate the homeserver base URL:
-        1.  Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
-        2.  Clients SHOULD validate that the URL points to a valid
+        1. Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
+        2. Clients SHOULD validate that the URL points to a valid
             homeserver before accepting it by connecting to the
             [`/_matrix/client/versions`](/client-server-api/#get_matrixclientversions) endpoint, ensuring that it does
             not return an error, and parsing and validating that the
@@ -299,6 +297,8 @@ specify parameter values. The flow for this method is as follows:
             done as a simple check against configuration errors, in
             order to ensure that the discovered address points to a
             valid homeserver.
+        3. It is important to note that the `base_url` value might include
+           a trailing `/`. Consumers should be prepared to handle both cases.
     6.  If the `m.identity_server` property is present, extract the
         `base_url` value for use as the base URL of the identity server.
         Validation for this URL is done as in the step above, but using
