@@ -8,7 +8,7 @@ be included in the response.
 In cases of such ambiguity, we look to historical precedent, where we see that
 Synapse does return that event (see `include_given=True` in
 [`FederationHandler.on_event_auth`](https://github.com/matrix-org/synapse/blob/v1.49.2/synapse/handlers/federation.py#L423)). It
-has been that wasy since at least
+has been that way since at least
 [synapse#2247](https://github.com/matrix-org/synapse/pull/2247), predating the
 inclusion of this endpoint in the spec.
 
