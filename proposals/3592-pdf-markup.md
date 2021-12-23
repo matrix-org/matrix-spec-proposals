@@ -64,7 +64,7 @@ follows:
 
 ```
 m.markup.location: {
-    m.markup.pdf.text: {
+    m.markup.pdf.highlight: {
         rect: {left: ..., right: ..., top: ..., bottom: ...}
         contents: ...
         quadPoints: [...]
@@ -107,4 +107,7 @@ None.
 
 ## Unstable prefix
 
-TBD
+| Proposed Final Identifier | Purpose                                                    | Development Identifier                    |
+| ------------------------- | ---------------------------------------------------------- | ----------------------------------------- |
+| `m.markup.pdf.text`       | key in `m.markup.location`                                 | `com.open-tower.msc3592.markup.text`      |
+| `m.markup.pdf.highlight`  | key in `m.markup.location`                                 | `com.open-tower.msc3592.markup.highlight` |
