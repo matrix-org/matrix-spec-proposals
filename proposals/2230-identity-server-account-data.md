@@ -5,7 +5,7 @@ login time and then used for the lifetime of a login session. If users wish to
 specify a custom one, they must do so each time they log in on every client.
 Once they have chosen an Identity Server to advertise their 3PIDs on, it would
 be normal that they would wish to continue using this Identity Server for all
-Identity requests in their account accross all clients. This proposal aims to
+Identity requests in their account across all clients. This proposal aims to
 make this easier.
 
 ## Proposal
@@ -68,4 +68,4 @@ if they gained control of any of a user's logins.
 This makes the ID server an account setting which means it persists between
 logins. The intention would be to phase out clients ever asking for an ID
 Server URL at registration or login: this will be much easier for users to
-understand whilst still retaining the flexibilty for those who want it.
+understand whilst still retaining the flexibility for those who want it.

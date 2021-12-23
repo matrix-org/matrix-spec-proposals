@@ -95,7 +95,7 @@ of an object with the following fields:
 
    [Rationale: this grammar is based on the
    [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758), removing the
-   requirements for a namespaced heirarchy. In
+   requirements for a namespaced hierarchy. In
    [discussion](https://github.com/matrix-org/matrix-doc/pull/2858#discussion_r565506802),
    it was agreed that a separate registry was seen as important for a
    lightweight process by which implementations can agree on identifiers. The
@@ -137,7 +137,7 @@ For a reauthentication operation, the server implementation is free to choose
 any suitable IdP to authenticate the user. (Often, this will simply be
 the IdP that the user logged in with.)
 
-### Proposed initial identifiers for the `brand` indentifier
+### Proposed initial identifiers for the `brand` identifier
 
 The following identifiers are proposed for the initial content of the `brand`
 identifier registry. The descriptions are guidelines to help server

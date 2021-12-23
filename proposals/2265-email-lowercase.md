@@ -85,7 +85,7 @@ make e-mail addresses go through a full case folding before storing them.
 
 The need for case folding in services on the Internet doesn't seem to be very
 large currently (probably due to its young age), therefore there seem to be only
-a few third-party implementation librairies out there. However, both
+a few third-party implementation libraries out there. However, both
 [Go](https://godoc.org/golang.org/x/text/cases#Fold), [Python
 2](https://docs.python.org/2/library/stringprep.html#stringprep.map_table_b3)
 and [Python 3](https://docs.python.org/3/library/stdtypes.html#str.casefold)

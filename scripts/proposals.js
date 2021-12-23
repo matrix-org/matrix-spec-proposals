@@ -113,7 +113,7 @@ getIssues().then(processIssues);
 /**
  * Rather than just store the complete issue, we'll extract
  * only the pieces we need.
- * We'll also do some transformation of the issues, jsut because
+ * We'll also do some transformation of the issues, just because
  * it's easier to do in JS than in the template.
  */
 function getProposalFromIssue(issue) {

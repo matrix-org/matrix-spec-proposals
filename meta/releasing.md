@@ -6,7 +6,7 @@ machinery works.
 
 ## Prerequisites / preparation
 
-First, can we even release the spec? This stage is mostly preperation work needed
+First, can we even release the spec? This stage is mostly preparation work needed
 to ensure a consistent and reliable specification.
 
 1. Ensure `main` is committed with all the spec changes you expect to be there.

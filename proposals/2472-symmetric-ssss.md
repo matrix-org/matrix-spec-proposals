@@ -51,7 +51,7 @@ is able to store data.
   2. store the `iv` and `mac` in the `m.secret_storage.key.[key ID]`
      account-data.
 
-* The `passthrough` property specified in the "Enconding the recovery key for
+* The `passthrough` property specified in the "Encoding the recovery key for
   server-side storage via MSC1946" section of MSC1219 is removed.  The primary
   purpose of that property was to allow easy migration of pre-MSC1946 backups,
   so that users could reuse the backup recovery key as the Secret Storage key

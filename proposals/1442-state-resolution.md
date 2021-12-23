@@ -85,7 +85,7 @@ of end users, though not strictly essential. These include:
 *   Banning and changing power levels should "do the right thing", i.e. end
     users shouldn't have to take extra steps to make the state resolution
     produce the "right" results.
-*   Minimise occurences of "state resets". Servers will sometimes point to
+*   Minimise occurrences of "state resets". Servers will sometimes point to
     disparate parts of the room DAG (due to a variety of reasons), which ideally
     should not result in changes in the state.
 *   Be efficient; state resolution can happen a lot on some large rooms. Ideally
@@ -177,7 +177,7 @@ would include B.
 (This is also the root cause of the "Hotel California" issue, where left users
 get spontaneously rejoined to rooms. This happens when a user has a sequence of
 memberships changes of the form: leave (A), join (B) and then another leave (C).
-In the current algorithm a resoluton of A and C would pick A, and a resolution
+In the current algorithm a resolution of A and C would pick A, and a resolution
 of A and B would then pick B, i.e. the join. This means that a suitably forked
 graph can reset the state to B. This is fixed if when resolving A and C we also
 consider B, since its in the auth chain of C.)
@@ -334,7 +334,7 @@ unconflicted events, it is unclear exactly which combination is best (and least
 manipulatable by malicious servers).
 
 Care has to be taken if we want to ensure that old auth events that appear in
-the _auth chain difference_ can't supercede unconflicted state entries.
+the _auth chain difference_ can't supersede unconflicted state entries.
 
 Due to auth chain differences being added to the resolved states during
 _iterative auth checks_, we therefore need to re-apply the unconflicted state

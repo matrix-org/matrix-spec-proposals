@@ -33,7 +33,7 @@ Content-Type: application/json
   "address": "foo@example.com",
   "room_id": "!something:example.org",
   "sender": "@bob:example.com",
-  "room_alias": "#somewhere:exmaple.org",
+  "room_alias": "#somewhere:example.org",
   "room_avatar_url": "mxc://example.org/s0meM3dia",
   "room_join_rules": "public",
   "room_name": "The Bob Project",

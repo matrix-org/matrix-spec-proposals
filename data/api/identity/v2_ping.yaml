@@ -34,7 +34,7 @@ paths:
         To discover that an identity server is available at a specific URL,
         this endpoint can be queried and will return an empty object.
 
-        This is primarly used for auto-discovery and health check purposes
+        This is primarily used for auto-discovery and health check purposes
         by entities acting as a client for the identity server.
       operationId: pingV2
       responses:

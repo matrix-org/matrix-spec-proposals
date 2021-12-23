@@ -17,7 +17,7 @@ This MSC addresses
 
 Presence lists seem like a good fit for ['MSC1769: Extensible profiles as
 rooms'](https://github.com/matrix-org/matrix-doc/pull/1769) proposal, meaning
-that the current design will most likely be superceded.
+that the current design will most likely be superseded.
 
 Additionally, no major client has implemented the behaviour to date and the
 only server implementation of presence lists (Synapse) auto-accepts invites
@@ -51,5 +51,5 @@ there today.
 
 This is a common sense attempt to remove unused portions of the spec ahead of
 an r0 release. It does not suggest that the ability to subscribe to the
-presence of others is undesirable and assumes that this behvaiour will return
+presence of others is undesirable and assumes that this behaviour will return
 again in some form.

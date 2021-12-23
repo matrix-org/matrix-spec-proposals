@@ -51,7 +51,7 @@ To initiate a key verification process, Bob's device sends a `to_device` event
 to one of Alice's devices with the `type` set to `m.key.verification.start`.
 This may either be done in response to an `m.key.verification.request` message,
 or can be done independently.  If it is done in response to an
-`m.key.verification.request` messsage, it should use the same `transaction_id`
+`m.key.verification.request` message, it should use the same `transaction_id`
 as the `m.key.verification.request` message.  If Alice's device receives an
 `m.key.verification.start` message in response to an
 `m.key.verification.request` message, it should send an
@@ -97,7 +97,7 @@ Properties:
 - `from_device` (string): Required. The device ID of the device starting the
   verification process.
 - `transaction_id` (string): Required. An identifier for the verification
-  process.  If this message is sent in reponse to an
+  process.  If this message is sent in response to an
   `m.key.verification.request` event, then it must use the same
   `transaction_id` as the one given in the `m.key.verification.request`.
 - `next_method` (string): Optional. If the selected verification method only
@@ -139,7 +139,7 @@ Properties:
     device, an `m.key.verification.cancel` message with `code` set to
     `m.accepted` is sent to the other devices
 - `reason` (string): human-readable reason for cancelling.  This should only be
-  used if the recieving client does not understand the code given in the `code`
+  used if the receiving client does not understand the code given in the `code`
   property.
 
 Verification methods may define their own additional cancellation codes.

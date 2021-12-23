@@ -13,7 +13,7 @@ the inclusive range of `[-(2^53) + 1, (2^53) - 1]`, which matches the requiremen
 not explicit, but all floats are invalid.
 
 It is worth mentioning that there are common extensions to JSON which produce 
-invalid JSON according to the Matrix specification; some programming langauges
+invalid JSON according to the Matrix specification; some programming languages
 even support these by default. One common additional feature is handling
 "special" float values: `Infinity`, `-Infinity`, and `NaN`.
 

@@ -92,7 +92,7 @@ could store this information rather than calling `POST /login` at all. This does
 - Quite a few appservices which only support unencrypted messaging do not use/store the `device_id`/`access_token` from a register call.
   In the event that an appservice eventually gains the ability to support encryption, they would be unable to fetch a new `device_id`/
   `access_token` for any existing users (as `/register` would fail for an existing user).
-- If user tokens were lost or exposed, there is no way to programattically create new access tokens for these users.
+- If user tokens were lost or exposed, there is no way to programmatically create new access tokens for these users.
 - Finally, if a user was registered externally and the appservice would like to masquerade as it, it would be unable to fetch
   an access token for that user.
 
