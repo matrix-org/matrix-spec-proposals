@@ -32,7 +32,7 @@ If a user has less than 30 DM rooms, it should be fine that the client just pres
 ```json
 {
   "creation_content": {
-    "type": "msc3588.stories.stories_room"
+    "type": "msc3588.stories.stories-room"
   },
   "preset": "private_chat",
   "power_level_content_over": {
@@ -58,7 +58,7 @@ If a user has less than 30 DM rooms, it should be fine that the client just pres
 
 ```json
 {
-  "type": "msc3588.stories.block_list",
+  "type": "msc3588.stories.block-list",
   "content": {
     "users": [
       "@charley:example.com"
@@ -98,9 +98,9 @@ The GUI should make clear who can see the stories and should inform the user tha
 
 ## Unstable prefix
 
-`msc3588.stories.stories_room`
+`msc3588.stories.stories-room`
 
-`msc3588.stories.block_list`
+`msc3588.stories.block-list`
 
 ## Dependencies
 
