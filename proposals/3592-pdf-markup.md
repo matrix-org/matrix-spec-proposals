@@ -1,4 +1,4 @@
-# PDF annotation locations for markup
+# Markup locations for PDF documents
 
 [MSC3574](https://github.com/opentower/matrix-doc/blob/main/proposals/3574-resource-markup.md)
 proposes a mechanism for marking up resources (webpages, documents, videos, and
