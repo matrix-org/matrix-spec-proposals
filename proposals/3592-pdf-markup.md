@@ -81,7 +81,7 @@ each of which represents the vertices (in counterclockwise order) of an
 oriented quadrilateral region of the PDF page. Each quadrilateral is meant to
 encompass a word or group of contiguous words in the highlighted text.
 
-Optionally, the `m.markup.location` may also include a `textContent` value,
+Optionally, the `m.markup.pdf.highlight` may also include a `textContent` value,
 which should be a string containing the highlighted text. the `textContent`
 value is not part of the PDF standard, but is included as a convenience for
 clients.
