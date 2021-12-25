@@ -1,4 +1,4 @@
-# MSCXXXX: Safety Controls through a generic Administration API
+# MSC3593: Safety Controls through a generic Administration API
 
 ## Abstract
 
@@ -307,4 +307,4 @@ access to this API surface. (Note: This was already the case with synapse's Admi
 
 ## Unstable prefix
 
-This MSC has an unstable prefix of `org.matrix.mscXXXX` for any `vX` or `m.` instance.
+This MSC has an unstable prefix of `org.matrix.msc3593` for any `vX` or `m.` instance.
