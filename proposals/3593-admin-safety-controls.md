@@ -26,8 +26,8 @@ unspecced interfaces or integrations such as Synapse's custom API, or Conduit's 
 
 ## Proposal
 
-This is what this proposal wishes to fix; a generic interface through which clients could hail data
-and functionality from its own server.
+This is what this proposal wishes to fix; a generic interface through which users could request
+administrative data and functionality from its own server.
 
 A non-goal of this proposal, and this interface, is to exhaustively replicate or spec the entirety
 of Synapse's admin API. Instead, it wishes to give a foundation of properties to easily have future
