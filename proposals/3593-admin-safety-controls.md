@@ -27,7 +27,7 @@ unspecced interfaces or integrations such as Synapse's custom API, or Conduit's 
 ## Proposal
 
 This is what this proposal wishes to fix; a generic interface through which clients could hail data
-and functionality from it's own server.
+and functionality from its own server.
 
 A non-goal of this proposal, and this interface, is to exhaustively replicate or spec the entirety
 of Synapse's admin API. Instead, it wishes to give a foundation of properties to easily have future
@@ -125,7 +125,7 @@ Filters;
 Pagination;
   - `?amount`, Positive integer, the amount of results to return, default 100
   - `?offset`, Positive integer, the offset of the returned results, default 0
-  - `?rev`, bool, wether to reverse the sort, default `false`
+  - `?rev`, bool, Whether to reverse the sort, default `false`
 
 #### Listing all users
 
@@ -160,13 +160,13 @@ A few parameters exist;
   - `avatar_url`, Lexicographic sort by user profile avatar MXC URL
 
 Filter;
-  - `?deactivated`, bool, if wether to include deactivated users, defaults to `false`,
-  - `?appservice`, bool, if wether to include appservice users, defaults to `true`,
+  - `?deactivated`, bool, if Whether to include deactivated users, defaults to `false`,
+  - `?appservice`, bool, if Whether to include appservice users, defaults to `true`,
 
 Pagination;
   - `?amount`, Positive integer, the amount of results to return, default 100
   - `?offset`, Positive integer, the offset of the returned results, default 0
-  - `?rev`, bool, wether to reverse the sort, default `false`
+  - `?rev`, bool, Whether to reverse the sort, default `false`
 
 #### Banning a room ID
 
@@ -213,7 +213,7 @@ Deactivates the user, accepts a JSON body with the following;
 
 ```json5
 {
-    // Wether to delete additional profile information of this user, bool, mandatory
+    // Whether to delete additional profile information of this user, bool, mandatory
     "erase": true,
 }
 ```
