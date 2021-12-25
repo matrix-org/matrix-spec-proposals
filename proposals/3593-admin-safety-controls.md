@@ -202,7 +202,7 @@ can be ensured via a generic interface.
 
 #### Deactivating a user
 
-`POST /_matrix/client/v1/admin/user/{room_id}/deactivate`
+`POST /_matrix/client/v1/admin/user/{user_id}/deactivate`
 `Authentication: yes`
 `Capability: m.user.deactivate`
 
