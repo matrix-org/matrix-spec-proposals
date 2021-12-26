@@ -11,7 +11,9 @@ to upgrade to a different room version when needed.
 
 #### Events
 
-{{% event event="m.room.tombstone" %}}
+An `m.room.tombstone` is sent when a room is upgraded to indicate that the room
+has been upgraded, and to point to the new room. The `m.room.tombstone` event
+is defined in the [events spec](/events/#mroomtombstone)
 
 #### Client behaviour
 

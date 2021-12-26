@@ -32,7 +32,8 @@ rather than allowing all homeservers to enforce the rules on each other.
 
 #### Events
 
-{{% event event="m.room.guest_access" %}}
+Guest access to rooms is controlled by the [m.room.guest_access](/events/#mroomguest_access) state
+event.
 
 #### Client behaviour
 
