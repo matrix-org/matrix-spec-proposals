@@ -46,11 +46,31 @@ jobs:
     steps:
       - name: "📥 Source checkout"
         uses: actions/checkout@v2
+      # For PRs, set the baseURL to `/`.
+      # For releases, set the baseURL to `/$tag` (eg: `/v1.2`).
+      # Otherwise, set it to `/unstable`.
+      - name: "⚙️ Calculate baseURL"
+        id: set-baseurl
+        # Double brackets on the elif to avoid auto-escaping refs/tags/* because we need
+        # the asterisk matching behaviour, not the literal string.
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+              echo ::set-output name=baseURL::/
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              echo ::set-output name=baseURL::"/${GITHUB_REF/refs\/tags\//}"
+          else
+              echo ::set-output name=baseURL::/unstable
+          fi
+
       - name: "📦 Asset creation"
         run: |
+          mkdir -p assets
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
-          scripts/generate-matrix-org-assets
+          scripts/dump-swagger.py \
+            --base-url "${{ steps.set-baseurl.outputs.baseURL }}" \
+            -o assets/spec/client_server/api.json
+          tar -czf assets.tar.gz assets
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
