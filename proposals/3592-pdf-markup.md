@@ -4,7 +4,7 @@
 proposes a mechanism for marking up resources (webpages, documents, videos, and
 other files) using Matrix. The proposed mechanism requires an
 `m.markup.location` schema for representing the location of annotations within
-different kinds of resources.MSC3574 punts on what standard location types
+different kinds of resources. MSC3574 punts on what standard location types
 might be available, deferring that large family of questions to other MSCs.
 This MSC aims to provide two basic location types for marking up PDFs.
 
@@ -14,13 +14,13 @@ Markup locations for PDFs should approximately follow the format of embedded
 annotations provided in the PDF standard, for more straightforward integration
 with PDF rendering and editing libraries that clients may wish to make use of. 
 
-The PDF 1.4 standard includes 19 different kinds of annotations (see [p499
-here](https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf)).
+The PDF standard includes 19 different kinds of annotations (see [p499 here]
+(https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf)).
 This proposal provides events for two of these: *Text Annotations*, which
 represent "sticky notes" at a certain point in the text, and *Highlights*,
 which represent a certain range of text that should be highlighted.
 
-PDF 1.4 annotations all accept a very large set of different attributes. Of
+PDF annotations all accept a very large set of different attributes. Of
 these, only two are mandatory: `Subtype` and `Rect`, where `Subtype` gives the
 annotation type, and `Rect` gives the position of the annotation on the PDF
 page as a rectangle represented by an array of the form
@@ -35,6 +35,13 @@ This MSC does not propose to include any of the optional attributes. The
 object. So only `Rect`, and the attributes specific to each annotation type,
 need to be provided for.
 
+Within a PDF, an annotation occurs as part of the content stream associated 
+with a particular page, so the page doesn't need to be indicated within the
+annotation. Since this information is not automatically available Markup 
+locations will also require a *page index* field. The page index is a 
+non-negative integer, and is distinct from a *page label*, which is a string 
+(for example "iv" within the front-matter of a book).
+
 ### Text Annotations
 
 Text annotations will be represented within an `m.markup.location` as follows:
@@ -44,6 +51,7 @@ m.markup.location: {
     m.markup.pdf.text: {
         rect: {left: ..., right: ..., top: ..., bottom: ...}
         contents: ...
+        page_index: ...
     }
     ..
 }
@@ -66,14 +74,15 @@ follows:
 m.markup.location: {
     m.markup.pdf.highlight: {
         rect: {left: ..., right: ..., top: ..., bottom: ...}
-        contents: ...
-        quadPoints: [...]
+        contents: ...,
+        quad_points: [...],
+        page_index: ...
     }
     ..
 }
 ```
 
-The `contents` are as above. `quadPoints` is an array of arrays of the form:
+The `contents` are as above. `quad_points` is an array of arrays of the form:
 
     [x_1,y_1,x_2,y_2,x_3,y_3,x_4,y_4]
 
@@ -81,8 +90,8 @@ each of which represents the vertices (in counterclockwise order) of an
 oriented quadrilateral region of the PDF page. Each quadrilateral is meant to
 encompass a word or group of contiguous words in the highlighted text.
 
-Optionally, the `m.markup.pdf.highlight` may also include a `textContent` value,
-which should be a string containing the highlighted text. the `textContent`
+Optionally, the `m.markup.pdf.highlight` may also include a `text_content` value,
+which should be a string containing the highlighted text. the `text_content`
 value is not part of the PDF standard, but is included as a convenience for
 clients.
 
@@ -95,7 +104,7 @@ types that can most easily be implemented, rather than waiting until something
 truly comprehensive can be implemented.
 
 Rather than using userspace units, we could use some more fine-grained
-coordinate system, for example milli-units. The PDF 1.4 standard lets units
+coordinate system, for example milli-units. The PDF standard lets units
 take on "real number values" so precision greater than one unit is possible.
 But since we can't have float values in matrix events, we can't capture this
 greater precision on the present proposal. However, this would probably create
