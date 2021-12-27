@@ -29,9 +29,23 @@ That is no change to current http pushers, thus this MSC is backwards compatible
 ### `m.curve25519-aes-sha2` algorithm
 
 The `m.curve25519-aes-sha2` algorithm indicates that the push payloads are to be sent encrypted.
-For this, another pusher data field, `public_key`, is required. This key is an (optionally unpadded)
-base64-encoded curve25519 public key. This new field is not to be added to the actual push payload
-being sent to push gateways. As such, setting such a pusher could look as following (assuming
+For this, two new pusher data fields are added: `public_key` and `counts_only_type`. Both fields are
+to be omitted from the actual push payloads being sent to the push gateways.
+
+The field `public_key` is required. This key is an (optionally unpadded) base64-encoded curve25519
+public key. This new field is not to be added to the actual push payload being sent to push gateways.
+
+The field `counts_only_type` is an optional enum which denotes how push frames should handle counts-only
+push payloads, without any events attached to them (e.g. if the user reads a notification and thus the
+unread count decreases by one). The possible values are:
+
+ - `none` (default): The unread status is never included in the plaintext payload
+ - `boolean`: If the push frame only affects the counts a boolean (`is_counts_only`) denoting
+   this is included in the plaintext payload.
+ - `full`: If the push frame only affects the counts the full `counts` dict is included in the plaintext
+   payload.
+
+As such, setting such a pusher could look as following (assuming
 [MSC2782](https://github.com/matrix-org/matrix-doc/pull/2782) has been merged):
 
 ```
@@ -50,7 +64,8 @@ Content-Type: application/json
     "algorithm": "m.curve25519-aes-sha2",
     "url": "https://push-gateway.location.here/_matrix/push/v1/notify",
     "format": "full_event",
-    "public_key": "GkZgmbbxnYZfFtywxF4K7NUPqA50Kb7TEsyHeVWyHBI"
+    "public_key": "GkZgmbbxnYZfFtywxF4K7NUPqA50Kb7TEsyHeVWyHBI",
+    "counts_only_type": "full"
   },
   "append": false
 }
@@ -76,7 +91,10 @@ algorithm:
 This is the same algorithm used currently in the unstable spec for megolm backup, as such it is
 comptible with libolms PkEncryption / PkDecryption methods.
 
-### Example:
+Next, the `unread` or `is_counts_only` keys are optionally populated according to how the `counts_only_type`
+pusher data is set.
+
+### Example event notification:
 Suppose a normal http pusher would push out the following content:
 ```json
 {
@@ -160,6 +178,123 @@ Resulting in the following final message being pushed out to the push gateway:
 }
 ```
 
+### Example counts only:
+Suppose a normal http pusher would push out the following content:
+```json
+{
+  "notification": {
+    "prio": "high",
+    "counts": {
+      "unread": 2,
+      "missed_calls": 1
+    },
+    "devices": [
+      {
+        "app_id": "org.matrix.matrixConsole.ios",
+        "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+        "pushkey_ts": 12345678,
+        "data": {},
+        "tweaks": {
+          "sound": "bing"
+        }
+      }
+    ]
+  }
+}
+```
+
+The following object would have to be json-encoded to encrypt:
+
+```json
+{
+  "prio": "high",
+  "counts": {
+    "unread": 2,
+    "missed_calls": 1
+  }
+}
+```
+
+If `counts_only_type` is `none` the final message is:
+
+```json
+{
+  "notification": {
+    "ephemeral": "base64_of_ephemeral_public_key",
+    "ciphertext": "base64_of_ciphertext",
+    "mac": "base64_of_mac",
+    "devices": [
+      {
+        "app_id": "org.matrix.matrixConsole.ios",
+        "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+        "pushkey_ts": 12345678,
+        "data": {
+          "algorithm": "m.curve25519-aes-sha2"
+        },
+        "tweaks": {
+          "sound": "bing"
+        }
+      }
+    ]
+  }
+}
+```
+
+If `counts_only_type` is `boolean` the final message is:
+
+```json
+{
+  "notification": {
+    "ephemeral": "base64_of_ephemeral_public_key",
+    "ciphertext": "base64_of_ciphertext",
+    "mac": "base64_of_mac",
+    "is_counts_only": true,
+    "devices": [
+      {
+        "app_id": "org.matrix.matrixConsole.ios",
+        "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+        "pushkey_ts": 12345678,
+        "data": {
+          "algorithm": "m.curve25519-aes-sha2"
+        },
+        "tweaks": {
+          "sound": "bing"
+        }
+      }
+    ]
+  }
+}
+```
+
+If `counts_only_type` is `full` the final message is:
+
+```json
+{
+  "notification": {
+    "ephemeral": "base64_of_ephemeral_public_key",
+    "ciphertext": "base64_of_ciphertext",
+    "mac": "base64_of_mac",
+    "counts": {
+      "unread": 2,
+      "missed_calls": 1
+    },
+    "devices": [
+      {
+        "app_id": "org.matrix.matrixConsole.ios",
+        "pushkey": "V2h5IG9uIGVhcnRoIGRpZCB5b3UgZGVjb2RlIHRoaXM/",
+        "pushkey_ts": 12345678,
+        "data": {
+          "algorithm": "m.curve25519-aes-sha2"
+        },
+        "tweaks": {
+          "sound": "bing"
+        }
+      }
+    ]
+  }
+}
+```
+
 ## Potential issues
 
 It is currently implied that a homeserver could push the same notification out to multiple devices
@@ -169,13 +304,27 @@ this won't be possible anymore. However, homeserver implementations such as syna
 [2](https://github.com/matrix-org/synapse/blob/d6fb96e056f79de220d8d59429d89a61498e9af3/synapse/push/httppusher.py#L357-L365)
 [3](https://github.com/matrix-org/synapse/blob/d6fb96e056f79de220d8d59429d89a61498e9af3/synapse/push/httppusher.py#L419-L426)
 even hard-code that `devices` array to only contain a single entry, making it unlikely for this flexibility
-having been used in the wild. 
-
-~~It is still unclear how well this will work with iOS and its limitations, especially concerning badge-only
-updates if a message was read on another device.~~ --> This should work?
+having been used in the wild.
 
 If the gateway does additional processing, like marking call attempts differently, the relevant data
 musn't be encrypted. That means that clients which rely on that can't use this kind of pusher.
+
+### iOS
+
+Sadly iOS is pretty limiting concerning push notifications. While modifying the content of a push frame,
+and thus e2ee push notifications, is possible on iOS, these modified push frames *have* to result in
+a user-visible notification banner. This limitation becomes a problem when only the `counts` dictionary
+is updated, so e.g. when a message is being read. For this, the `counts_only_type` setting has been,
+so that the push gateway can do additional logic, based on if the notification frame is such a silent
+update.
+
+If the `counts_only_type` is set to `boolean` then the push gateway could send the encrypted push payload
+as an APNS background message to the device. This isn't that reliable, sadly, but might be good enough
+for an app.
+
+If the `counts_only_type` is set to `full` then the push gateway could send a badge-update notification
+to APNS directly. While this works for sure, that would also mean that the APNS servers get to read
+a real-time update of the exact unread count for each user.
 
 ## Alternatives
 
