@@ -14,11 +14,12 @@ Markup locations for PDFs should approximately follow the format of embedded
 annotations provided in the PDF standard, for more straightforward integration
 with PDF rendering and editing libraries that clients may wish to make use of. 
 
-The PDF standard includes 19 different kinds of annotations (see [p499 here]
-(https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf)).
-This proposal provides events for two of these: *Text Annotations*, which
-represent "sticky notes" at a certain point in the text, and *Highlights*,
-which represent a certain range of text that should be highlighted.
+The PDF standard includes many different kinds of annotations: 19 in PDF 1.4 
+(see [p499 here](https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/pdf_reference_archives/PDFReference.pdf)) 
+and 26 in PDF 1.7, (see [p390 here](https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf)).
+This proposal introduces events for two of these kinds of annotations: *Text 
+Annotations*, which represent "sticky notes" at a certain point in the text, 
+and *Highlights*,which represent a certain range of text that should be highlighted.
 
 PDF annotations all accept a very large set of different attributes. Of
 these, only two are mandatory: `Subtype` and `Rect`, where `Subtype` gives the
