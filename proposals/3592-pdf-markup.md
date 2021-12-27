@@ -36,11 +36,12 @@ object. So only `Rect`, and the attributes specific to each annotation type,
 need to be provided for.
 
 Within a PDF, an annotation occurs as part of the content stream associated 
-with a particular page, so the page doesn't need to be indicated within the
-annotation. Since this information is not automatically available Markup 
-locations will also require a *page index* field. The page index is a 
-non-negative integer, and is distinct from a *page label*, which is a string 
-(for example "iv" within the front-matter of a book).
+with a particular page, so the page number doesn't need to be represented as
+an attribute of the annotation. Since this information is not automatically 
+available in the Matrix context, `m.markup` locations for PDFs will also 
+require a *page index* field. The page index is a non-negative integer, and 
+is distinct from a *page label*, which is a string (for example "iv" within 
+the front matter of a book).
 
 ### Text Annotations
 
