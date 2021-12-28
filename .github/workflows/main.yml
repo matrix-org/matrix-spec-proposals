@@ -75,7 +75,7 @@ jobs:
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
           scripts/dump-swagger.py \
-            --base-url "${{ jobs.calculate-baseurl.outputs.baseURL }}" \
+            --base-url "${{ needs.calculate-baseurl.outputs.baseURL }}" \
             -o assets/spec/client_server/api.json
           tar -czf assets.tar.gz assets
       - name: "📤 Artifact upload"
@@ -107,7 +107,7 @@ jobs:
           npm i
           npm run get-proposals
       - name: "⚙️ hugo"
-        run: hugo --baseURL "${{ jobs.calculate-baseurl.outputs.baseURL }}" -d "spec"
+        run: hugo --baseURL "${{ needs.calculate-baseurl.outputs.baseURL }}" -d "spec"
 
       # We manually copy the spec OpenAPI definition JSON to the website tree
       # to make it available to the world in a canonical place:
