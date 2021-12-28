@@ -1,0 +1,76 @@
+{{/*
+
+  Resolves the `allOf` keyword (https://swagger.io/specification/v2/#composition-and-inheritance-polymorphism),
+  given a JSON schema object.
+
+  `allOf` is used to support a kind of inheritance for JSON schema objects.
+
+  An object can reference a "parent" object using `allOf`, and it then inherits
+  its parent's properties. If the same property is present in the child, then
+  we use the child's version (the child overrides the parent).
+
+  Of course the parent can itself inherit from *its* parent, so we recurse to
+  handle that.
+
+*/}}
+
+{{ $ret := . }}
+{{ $original := . }}
+
+{{ $required := .required }}
+{{ if not $required }}
+    {{ $required := slice }}
+{{ end }}
+
+{{ with $ret.allOf }}
+
+    {{ $all_of_values := dict }}
+
+    {{/*
+      allOf is always an array
+    */}}
+    {{ range . }}
+
+        {{ with .required }}
+            {{ $required = union $required . }}
+        {{ end }}
+
+        {{/*
+          With merge, values from the second argument override those from the first argument.
+          So this order will accumulate values from allOf items, allowing later ones to override earlier
+        */}}
+        {{ $all_of_values = merge $all_of_values . }}
+
+    {{ end }}
+
+    {{/*
+      Then apply allOf values to the original, but allow the original to override allOf.
+    */}}
+    {{ $ret = merge $all_of_values $ret }}
+
+    {{/*
+      Except that if allOf *itself* contains allOf, we do want to override the original for that field only.
+    */}}
+    {{ with $all_of_values.allOf }}
+        {{ $ret = merge $ret (dict "allOf" . ) }}
+    {{ end }}
+
+    {{ with $ret.required }}
+        {{ $required = union $required $ret.required }}
+    {{ end }}
+
+    {{ $ret = merge $ret (dict "required" $required) }}
+
+{{ end }}
+
+{{/*
+  Recurse while we are finding new allOf entries to resolve
+*/}}
+{{ if ne $ret.allOf $original.allOf }}
+
+    {{ $resolved := partial "json-schema/resolve-allof" $ret }}
+    {{ $ret = merge $ret $resolved }}
+
+{{ end }}
+
+{{ return $ret }}

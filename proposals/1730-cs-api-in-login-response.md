@@ -68,7 +68,7 @@ Alternative solutions might include:
 
 ### Have all users on one homeserver
 
-In many situtations, it might be more appropriate to have a single homeserver,
+In many situations, it might be more appropriate to have a single homeserver,
 so users' MXids would look like `@user:ac.cdl` instead of
 `@user:eng.ac.cdl`.
 

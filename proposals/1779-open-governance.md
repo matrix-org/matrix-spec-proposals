@@ -1,4 +1,11 @@
-# Proposal for Open Governance of Matrix.org 
+# Proposal for Open Governance of Matrix.org
+
+----
+
+**For updated information on the Foundation, please see https://matrix.org/foundation/**.
+This MSC exists for historical reference.
+
+----
 
 This whole document is the proposed constitution proposal for Matrix.org, and
 will form the basis of the first full Articles of Association (AoA) for [The
@@ -446,7 +453,7 @@ a high-level mission lock aligned with the above:
 
 The foundation was then converted into a Community Interest Company, formalising
 its non-profit status under the approval of the independent [Community Interest
-Companies Regulator](https://www.gov.uk/government/organisations/office-of-the-regulator-of-community-interest-companies), 
+Companies Regulator](https://www.gov.uk/government/organisations/office-of-the-regulator-of-community-interest-companies),
 which took effect Jan 2019.
 
 We are currently planning to release r0 of the Matrix Spec at the end of Jan 2019, and

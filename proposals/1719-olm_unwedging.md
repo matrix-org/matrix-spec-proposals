@@ -26,7 +26,7 @@ already created one for that given device in the past 1 hour.
 Clients may wish to take steps to mitigate the loss of the undecryptable
 messages.  For example, megolm sessions that were sent using the old session
 would have been lost, so the client can send
-[`m.room_key_request`](https://matrix.org/docs/spec/client_server/latest.html#m-room-key-request)
+[`m.room_key_request`](https://matrix.org/docs/spec/client_server/r0.6.1.html#m-room-key-request)
 messages to re-request any megolm sessions that it is unable to decrypt.
 
 The spec currently says, "If a client has multiple sessions established with
