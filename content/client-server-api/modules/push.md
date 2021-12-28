@@ -54,31 +54,31 @@ such as Apple's APNS or Google's GCM. This happens as follows:
 
 Definitions for terms used in this section are below:
 
-Push Provider  
+Push Provider
 A push provider is a service managed by the device vendor which can send
 notifications directly to the device. Google Cloud Messaging (GCM) and
 Apple Push Notification Service (APNS) are two examples of push
 providers.
 
-Push Gateway  
+Push Gateway
 A push gateway is a server that receives HTTP event notifications from
 homeservers and passes them on to a different protocol such as APNS for
 iOS devices or GCM for Android devices. Clients inform the homeserver
 which Push Gateway to send notifications to when it sets up a Pusher.
 
-Pusher  
+Pusher
 A pusher is a worker on the homeserver that manages the sending of HTTP
 notifications for a user. A user can have multiple pushers: one per
 device.
 
-Push Rule  
+Push Rule
 A push rule is a single rule that states under what *conditions* an
 event should be passed onto a push gateway and *how* the notification
 should be presented. These rules are stored on the user's homeserver.
 They are manually configured by the user, who can create and view them
 via the Client/Server API.
 
-Push Ruleset  
+Push Ruleset
 A push ruleset *scopes a set of rules according to some criteria*. For
 example, some rules may only be applied for messages from a particular
 sender, a particular room, or by default. The push ruleset contains the
@@ -123,25 +123,25 @@ the value of `kind`.
 
 The different `kind`s of rule, in the order that they are checked, are:
 
-Override Rules `override`  
+Override Rules `override`
 The highest priority rules are user-configured overrides.
 
-Content-specific Rules `content`  
+Content-specific Rules `content`
 These configure behaviour for (unencrypted) messages that match certain
 patterns. Content rules take one parameter: `pattern`, that gives the
 glob pattern to match against. This is treated in the same way as
 `pattern` for `event_match`.
 
-Room-specific Rules `room`  
+Room-specific Rules `room`
 These rules change the behaviour of all messages for a given room. The
 `rule_id` of a room rule is always the ID of the room that it affects.
 
-Sender-specific rules `sender`  
+Sender-specific rules `sender`
 These rules configure notification behaviour for messages from a
 specific Matrix user ID. The `rule_id` of Sender rules is always the
 Matrix user ID of the user whose messages they'd apply to.
 
-Underride rules `underride`  
+Underride rules `underride`
 These are identical to `override` rules, but have a lower priority than
 `content`, `room` and `sender` rules.
 
@@ -164,19 +164,19 @@ All rules have an associated list of `actions`. An action affects if and
 how a notification is delivered for a matching event. The following
 actions are defined:
 
-`notify`  
+`notify`
 This causes each matching event to generate a notification.
 
-`dont_notify`  
+`dont_notify`
 This prevents each matching event from generating a notification
 
-`coalesce`  
+`coalesce`
 This enables notifications for matching events but activates homeserver
 specific behaviour to intelligently coalesce multiple events into a
 single notification. Not all homeservers may support this. Those that do
 not support it should treat it as the `notify` action.
 
-`set_tweak`  
+`set_tweak`
 Sets an entry in the `tweaks` dictionary key that is sent in the
 notification request to the Push Gateway. This takes the form of a
 dictionary with a `set_tweak` key whose value is the name of the tweak
@@ -215,7 +215,7 @@ conditions must hold true for an event in order for the rule to match. A
 rule with no conditions always matches. The following conditions are
 defined:
 
-`event_match`  
+`event_match`
 This is a glob pattern match on a field of the event. Parameters:
 
 -   `key`: The dot-separated field of the event to match, e.g.
@@ -224,13 +224,13 @@ This is a glob pattern match on a field of the event. Parameters:
     special glob characters should be treated as having asterisks
     prepended and appended when testing the condition.
 
-`contains_display_name`  
+`contains_display_name`
 This matches unencrypted messages where `content.body` contains the
 owner's display name in that room. This is a separate rule because
 display names may change and as such it would be hard to maintain a rule
 that matched the user's display name. This condition has no parameters.
 
-`room_member_count`  
+`room_member_count`
 This matches the current number of members in the room. Parameters:
 
 -   `is`: A decimal integer optionally prefixed by one of, `==`, `<`,
@@ -238,7 +238,7 @@ This matches the current number of members in the room. Parameters:
     count is strictly less than the given number and so forth. If no
     prefix is present, this parameter defaults to `==`.
 
-`sender_notification_permission`  
+`sender_notification_permission`
 This takes into account the current power levels in the room, ensuring
 the sender of the event has high enough power to trigger the
 notification.
@@ -667,14 +667,14 @@ The content of the event is the current push rules for the user.
 To create a rule that suppresses notifications for the room with ID
 `!dj234r78wl45Gh4D:matrix.org`:
 
-    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
+    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/v3/pushrules/global/room/%21dj234r78wl45Gh4D%3Amatrix.org?access_token=123456" -d \
     '{
        "actions" : ["dont_notify"]
      }'
 
 To suppress notifications for the user `@spambot:matrix.org`:
 
-    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
+    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/v3/pushrules/global/sender/%40spambot%3Amatrix.org?access_token=123456" -d \
     '{
        "actions" : ["dont_notify"]
      }'
@@ -682,7 +682,7 @@ To suppress notifications for the user `@spambot:matrix.org`:
 To always notify for messages that contain the work 'cake' and set a
 specific sound (with a rule\_id of `SSByZWFsbHkgbGlrZSBjYWtl`):
 
-    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
+    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/v3/pushrules/global/content/SSByZWFsbHkgbGlrZSBjYWtl?access_token=123456" -d \
     '{
        "pattern": "cake",
        "actions" : ["notify", {"set_sound":"cakealarm.wav"}]
@@ -691,7 +691,7 @@ specific sound (with a rule\_id of `SSByZWFsbHkgbGlrZSBjYWtl`):
 To add a rule suppressing notifications for messages starting with
 'cake' but ending with 'lie', superseding the previous rule:
 
-    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
+    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/v3/pushrules/global/content/U3BvbmdlIGNha2UgaXMgYmVzdA?access_token=123456&before=SSByZWFsbHkgbGlrZSBjYWtl" -d \
     '{
        "pattern": "cake*lie",
        "actions" : ["notify"]
@@ -701,7 +701,7 @@ To add a custom sound for notifications messages containing the word
 'beer' in any rooms with 10 members or fewer (with greater importance
 than the room, sender and content rules):
 
-    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/%CLIENT_MAJOR_VERSION%/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
+    curl -X PUT -H "Content-Type: application/json" "https://example.com/_matrix/client/v3/pushrules/global/override/U2VlIHlvdSBpbiBUaGUgRHVrZQ?access_token=123456" -d \
     '{
        "conditions": [
          {"kind": "event_match", "key": "content.body", "pattern": "beer" },

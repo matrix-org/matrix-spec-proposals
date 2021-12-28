@@ -6,7 +6,7 @@ weight: 310
 ### Room Upgrades
 
 From time to time, a room may need to be upgraded to a different room
-version for a variety for reasons. This module defines a way for rooms
+version for a variety of reasons. This module defines a way for rooms
 to upgrade to a different room version when needed.
 
 #### Events

@@ -36,11 +36,12 @@
 {{ partial "render-api-changes" (dict "title" "Application Service API" "id" "application-service-api" "path" (path.Join $path "application_service")) }}
 {{ partial "render-api-changes" (dict "title" "Identity Service API" "id" "identity-service-api" "path" (path.Join $path "identity_service")) }}
 {{ partial "render-api-changes" (dict "title" "Push Gateway API" "id" "push-gateway-api" "path" (path.Join $path "push_gateway")) }}
+{{ partial "render-api-changes" (dict "title" "Room Versions" "id" "room-versions" "path" (path.Join $path "room_versions")) }}
 
 {{ define "partials/render-api-changes" }}
 <h3 id="{{.id}}">{{ .title }}</h3>
     {{ $api_path := .path }}
-    {{ $config_file := path.Join $api_path "pyproject.toml" }}
+    {{ $config_file := path.Join $api_path ".." "pyproject.toml" }}
     {{ $config := readFile $config_file | transform.Unmarshal }}
     {{ $news_path := path.Join $api_path "newsfragments" }}
     {{ partial "render-newsfragments"  (dict "config" $config "news_path" $news_path )}}
@@ -74,7 +75,7 @@
 {{ range $config.tool.towncrier.type }}
     {{ $changes_of_type := (index $types .directory) }}
     {{ if $changes_of_type }}
-<li><strong>{{.name}}</strong>
+<li>{{.name | safeHTML}}
 <p><ul>
         {{ range $changes_of_type }}
 <li><a href="https://github.com/matrix-org/matrix-doc/issues/{{.ticket}}"><strong>{{ .ticket }}: </strong></a>{{ .description | markdownify }}</li>

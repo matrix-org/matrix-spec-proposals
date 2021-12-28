@@ -20,7 +20,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 consumes:
   - application/json
 produces:
@@ -186,7 +186,7 @@ paths:
                   with type, state_key and content keys set.
 
                   Takes precedence over events set by `preset`, but gets
-                  overriden by `name` and `topic` keys.
+                  overridden by `name` and `topic` keys.
                 items:
                   type: object
                   title: StateEvent

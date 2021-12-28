@@ -15,7 +15,7 @@ room itself such as a room name and topic.
 
 {{% event event="m.room.message.feedback" %}}
 
-Usage of this event is discouraged for several reasons:  
+Usage of this event is discouraged for several reasons:
 -   The number of feedback events will grow very quickly with the number
     of users in the room. This event provides no way to "batch"
     feedback, unlike the [receipts module](#receipts).
@@ -34,7 +34,7 @@ Usage of this event is discouraged for several reasons:
 
 ##### m.room.message msgtypes
 
-Each [m.room.message](#m.room.message) MUST have a `msgtype` key which identifies the
+Each [m.room.message](#mroommessage) MUST have a `msgtype` key which identifies the
 type of message being sent. Each type has their own required and
 optional keys, as outlined below. If a client cannot display the given
 `msgtype` then it SHOULD display the fallback plain text `body` key
@@ -62,25 +62,25 @@ listed for the tags below. Where `data-mx-bg-color` and `data-mx-color`
 are listed, clients should translate the value (a 6-character hex color
 code) to the appropriate CSS/attributes for the tag.
 
-`font`  
+`font`
 `data-mx-bg-color`, `data-mx-color`, `color`
 
-`span`  
-`data-mx-bg-color`, `data-mx-color`, `data-mx-spoiler` (see 
+`span`
+`data-mx-bg-color`, `data-mx-color`, `data-mx-spoiler` (see
 [spoiler messages](#spoiler-messages))
 
-`a`  
+`a`
 `name`, `target`, `href` (provided the value is not relative and has a
 scheme matching one of: `https`, `http`, `ftp`, `mailto`, `magnet`)
 
-`img`  
+`img`
 `width`, `height`, `alt`, `title`, `src` (provided it is a [Matrix
 Content (MXC) URI](#matrix-content-mxc-uris))
 
-`ol`  
+`ol`
 `start`
 
-`code`  
+`code`
 `class` (only classes which start with `language-` for syntax
 highlighting)
 
@@ -261,15 +261,15 @@ number of possibilities for choosing a useful name. To ensure that rooms
 are named consistently across clients, clients SHOULD use the following
 algorithm to choose a name:
 
-1.  If the room has an [m.room.name](#m.room.name) state event with a non-empty
+1.  If the room has an [m.room.name](#mroomname) state event with a non-empty
     `name` field, use the name given by that field.
-2.  If the room has an [m.room.canonical\_alias](#m.room.canonical_alias) state event with a
+2.  If the room has an [m.room.canonical\_alias](#mroomcanonical_alias) state event with a
     valid `alias` field, use the alias given by that field as the name.
     Note that clients should avoid using `alt_aliases` when calculating
     the room name.
 3.  If none of the above conditions are met, a name should be composed
     based on the members of the room. Clients should consider
-    [m.room.member](#m.room.member) events for users other than the logged-in user, as
+    [m.room.member](#mroommember) events for users other than the logged-in user, as
     defined below.
     1.  If the number of `m.heroes` for the room are greater or equal to
         `m.joined_member_count + m.invited_member_count - 1`, then use
@@ -464,14 +464,16 @@ text should be `"sent a video."`. For `m.audio`, the text should be
 
 ##### Spoiler messages
 
-Parts of a message can be hidden visually from the user through use of spoilers. 
-This does not affect the server's representation of the event content - it 
-is simply a visual cue to the user that the message may reveal important 
+{{% added-in v="1.1" %}}
+
+Parts of a message can be hidden visually from the user through use of spoilers.
+This does not affect the server's representation of the event content - it
+is simply a visual cue to the user that the message may reveal important
 information about something, spoiling any relevant surprise.
 
-To send spoilers clients MUST use the `formatted_body` and therefore the 
+To send spoilers clients MUST use the `formatted_body` and therefore the
 `org.matrix.custom.html` format, described above. This makes spoilers valid on
-any `msgtype` which can support this format appropriately. 
+any `msgtype` which can support this format appropriately.
 
 Spoilers themselves are contained with `span` tags, with the reason (optionally)
 being in the `data-mx-spoiler` attribute. Spoilers without a reason must at least

@@ -19,7 +19,7 @@ host: localhost:8008
 schemes:
   - https
   - http
-basePath: /_matrix/client/%CLIENT_MAJOR_VERSION%
+basePath: /_matrix/client/v3
 consumes:
   - application/json
 produces:

@@ -9,7 +9,7 @@ the room in some situations:
 
 * If the room has `history_visibility: world_readable`, then anyone can inspect
   it (by calling `/state` on it).
-* Rooms in the [room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms)
+* Rooms in the [room directory](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-publicrooms)
   expose some of their state publicly.
 * [Invited users](https://matrix.org/docs/spec/server_server/r0.1.4#put-matrix-federation-v2-invite-roomid-eventid)
   and [knocking users](https://github.com/matrix-org/matrix-doc/pull/2403)
@@ -29,7 +29,7 @@ to include stripped state events which are useful for displaying the invite to a
 > the room. The recommended events to include are the join rules, canonical alias,
 > avatar, and name of the room.
 
-The invited user receives these [stripped state events](https://spec.matrix.org/unstable/client-server-api/#get_matrixclientr0sync)
+The invited user receives these [stripped state events](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-sync)
 as part of the `/sync` response:
 
 > The state of a room that the user has been invited to. These state events may
@@ -37,7 +37,7 @@ as part of the `/sync` response:
 > events do not replace any state that the client already has for the room, for
 > example if the client has archived the room.
 
-These are sent as part of the [`unsigned` content of the `m.room.member` event](https://spec.matrix.org/unstable/client-server-api/#mroommember)
+These are sent as part of the [`unsigned` content of the `m.room.member` event](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-member)
 containing the invite.
 
 [MSC2403: Add "knock" feature](https://github.com/matrix-org/matrix-doc/pull/2403)
@@ -141,7 +141,7 @@ This does not seem to weaken the security expectations of either join rule.
 ### Revisions to the room directory
 
 A future MSC could include additional information from the stripped state events
-in the [room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms).
+in the [room directory](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-publicrooms).
 The main missing piece seems to be the encryption information, but there may also
 be other pieces of information to include.
 
@@ -174,7 +174,7 @@ N/A
 ## Footnotes
 
 <a id="f1"/>[1]: No changes are proposed to
-[the definition of `history_visibility`](https://matrix.org/docs/spec/client_server/latest#room-history-visibility).
+[the definition of `history_visibility`](https://matrix.org/docs/spec/client_server/r0.6.1#room-history-visibility).
 The state of a room which is `world_readable` is available to anyone. This somewhat
 implies that the stripped state is also available to anyone, regardless of the join
 rules, but having a `world_readable`, `invite` room does not seem valuable. [↩](#a1)
@@ -190,6 +190,6 @@ from Synapse and generally seems useful for  a user to know before joining a roo
 [↩](#a4)
 
 <a id="f5"/>[5]: The room topic (`m.room.topic`) is included as part of the
-[room directory](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-publicrooms)
+[room directory](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-publicrooms)
 response for public rooms. It is also planned to be included as part of [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)
 in the spaces summary response. [↩](#a5)

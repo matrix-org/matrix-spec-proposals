@@ -8,7 +8,7 @@ which apply:
    that the client-server API currently ties the major version of its spec document version to the
    endpoint, thus making most endpoints under it `/r0/` (currently).
 3. Room versions which define a set of behaviour and algorithms on a per-room basis. These are well
-   defined in the spec and are not covered here: https://matrix.org/docs/spec/#room-versions
+   defined in the spec and are not covered here: https://spec.matrix.org/unstable/rooms/
 4. An overarching "Matrix" version, largely for marketing purposes. So far we've only cut Matrix 1.0
    back when we finalized the initial versions of the spec documents, but have not cut another one
    since.
@@ -168,7 +168,7 @@ instead of the inspired system proposed here. So, why shouldn't we use semantic 
 
 2. It has potential for causing very high major version numbers. Though largely an aesthetic concern,
    it can be hard to market Matrix v45 (or even Matrix v4) to potential ecosystem adopters due to
-   the apparant unstable-ness of the specification. Similarly, the major version is used for advertising
+   the apparent unstable-ness of the specification. Similarly, the major version is used for advertising
    purposes which could be confusing or overly noisy to say there's a major version every few
    releases. By instead staying in the 1.x series for a long period of time, the specification appears
    stable and easy to work with, attracting potential adopters and making that 2.0 release feel all

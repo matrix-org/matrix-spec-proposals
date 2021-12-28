@@ -117,33 +117,13 @@ properties:
     type: object
     title: UnsignedData
     description: |-
-      Additional data added by the origin server but not covered by the `signatures`. More
-      keys than those defined here may be used.
+      Additional data added by the origin server but not covered by the `signatures`.
     example: {"key": "value"}
     properties:
       age:
         type: integer
         description: The number of milliseconds that have passed since this message was sent.
         example: 4612
-      replaces_state:
-        type: string
-        description: The event ID of the state event this event replaces.
-        example: "$state_event:example.org"
-      prev_sender:
-        type: string
-        description: The sender of the replaced state event.
-        example: "@someone:example.org"
-      prev_content:
-        type: object
-        description: The content of the replaced state event.
-        example: {
-          "membership": "join",
-          "displayname": "Bob"
-        }
-      redacted_because:
-        type: string
-        description: A reason for why the event was redacted.
-        example: "Inappropriate content"
 required:
   - event_id
   - room_id

@@ -90,7 +90,7 @@ properties:
     description: |-
       POSIX timestamp when the list of valid keys should be refreshed. This field MUST
       be ignored in room versions 1, 2, 3, and 4. Keys used beyond this timestamp MUST
-      be considered invalid, depending on the [room version specification](/#room-versions).
+      be considered invalid, depending on the [room version specification](/rooms).
 
       Servers MUST use the lesser of this field and 7 days into the future when
       determining if a key is valid. This is to avoid a situation where an attacker

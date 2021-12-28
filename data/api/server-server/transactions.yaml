@@ -39,7 +39,7 @@ paths:
         transaction with a different `txnId` to the receiving server.
 
         Note that events have a different format depending on the room version - check
-        the [room version specification](/#room-versions) for precise event formats.
+        the [room version specification](/rooms) for precise event formats.
       operationId: sendTransaction
       security:
         - signedRequest: []

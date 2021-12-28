@@ -25,13 +25,13 @@ properties:
       The auth chain for the entire current room state prior to the join event.
 
       Note that events have a different format depending on the room version - check the
-      [room version specification](/#room-versions) for precise event formats.
+      [room version specification](/rooms) for precise event formats.
     items:
       type: object
       title: PDU
       description: |-
         The [PDUs](/server-server-api/#pdus) that make up the auth chain. The event format varies depending
-        on the room version - check the [room version specification](/#room-versions) for precise event formats.
+        on the room version - check the [room version specification](/rooms) for precise event formats.
       schema:
         type: object
         properties: []
@@ -42,14 +42,14 @@ properties:
     description: |-
       The resolved current room state prior to the join event.
 
-      The event format varies depending on the room version - check the [room version specification](/#room-versions)
+      The event format varies depending on the room version - check the [room version specification](/rooms)
       for precise event formats.
     items:
       type: object
       title: PDU
       description: |-
         The [PDUs](/server-server-api/#pdus) for the fully resolved state of the room. The event format varies depending
-        on the room version - check the [room version specification](/#room-versions) for precise event formats.
+        on the room version - check the [room version specification](/rooms) for precise event formats.
       schema:
         type: object
         properties: []

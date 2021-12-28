@@ -65,7 +65,7 @@ approach for servers whose TLS certificates fail validation.
 However, this fallback will be strictly time-limited, and Matrix S2S spec r0
 will not accept self-signed certificates, nor will it include the
 `tls_fingerprints` property of the
-[`/_matrix/key/v2`](https://matrix.org/docs/spec/server_server/unstable.html#retrieving-server-keys)
+[`/_matrix/key/v2`](https://github.com/matrix-org/matrix-doc/blob/6dab4b28f80f5beeb1d4f475ddc624cf9e7ad085/specification/server_server_api.rst#23retrieving-server-keys)
 endpoints. Synapse 1.0 will not accept self-signed certificates by default.
 
 The `matrix.org` team will proactively attempt to reach out to homeserver
@@ -97,7 +97,7 @@ intercepted by a MitM who can control the DNS response for the `SRV` record
 (perhaps via cache-poisoning or falsifying DNS responses).
 
 This will be in line with the current
-[requirements](https://matrix.org/docs/spec/server_server/unstable.html#resolving-server-names)
+[requirements](https://github.com/matrix-org/matrix-doc/blob/6dab4b28f80f5beeb1d4f475ddc624cf9e7ad085/specification/server_server_api.rst#21resolving-server-names)
 in the Federation API specification for the `Host`, and by implication, the TLS
 Server Name Indication <sup id="a2">[2](#f2)</sup>. It is also consistent with
 the recommendations of

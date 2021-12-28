@@ -24,7 +24,7 @@ whether a chat is 'direct' to an invitee.
 #### Client behaviour
 
 To start a direct chat with another user, the inviting user's client
-should set the `is_direct` flag to [`/createRoom`](/client-server-api/#post_matrixclientr0createroom). The client should do this
+should set the `is_direct` flag to [`/createRoom`](/client-server-api/#post_matrixclientv3createroom). The client should do this
 whenever the flow the user has followed is one where their intention is
 to speak directly with another person, as opposed to bringing that
 person in to a shared room. For example, clicking on 'Start Chat' beside
@@ -38,10 +38,10 @@ the flag altogether.
 
 Both the inviting client and the invitee's client should record the fact
 that the room is a direct chat by storing an `m.direct` event in the
-account data using [`/user/<user_id>/account_data/<type>`](/client-server-api/#put_matrixclientr0useruseridaccount_datatype).
+account data using [`/user/<user_id>/account_data/<type>`](/client-server-api/#put_matrixclientv3useruseridaccount_datatype).
 
 #### Server behaviour
 
-When the `is_direct` flag is given to [`/createRoom`](/client-server-api/#post_matrixclientr0createroom), the home server must set the
+When the `is_direct` flag is given to [`/createRoom`](/client-server-api/#post_matrixclientv3createroom), the home server must set the
 `is_direct` flag in the invite member event for any users invited in the
-[`/createRoom`](/client-server-api/#post_matrixclientr0createroom) call.
+[`/createRoom`](/client-server-api/#post_matrixclientv3createroom) call.

@@ -1,1 +1,0 @@
-Downgrade identity server discovery failures to `FAIL_PROMPT` as per [MSC2284](https://github.com/matrix-org/matrix-doc/pull/2284).

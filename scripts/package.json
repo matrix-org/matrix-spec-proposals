@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "nopt": "^3.0.2",
-    "swagger-parser": "^3.2.1"
+    "swagger-parser": "^10.0.3"
   }
 }

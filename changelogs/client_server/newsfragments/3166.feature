@@ -1,1 +1,0 @@
-Add `device_id` to `/account/whoami` response as per [MSC2033](https://github.com/matrix-org/matrix-doc/pull/2033).

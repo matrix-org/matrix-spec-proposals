@@ -113,10 +113,9 @@ room state can begin to drift, and the room can eventually become
 not form part of the room state": we have a risk that some servers will accept
 the event, and some will not.
 
-One approach to solving this is via [room
-versions](https://matrix.org/docs/spec/index#room-versions). By specifying that
-a change of rules only applies for a future room version, we can eliminate this
-potential disagreement.
+One approach to solving this is via [room versions](https://spec.matrix.org/unstable/rooms/).
+By specifying that a change of rules only applies for a future room version,
+we can eliminate this potential disagreement.
 
 The process of changing a room from one version to another is intrusive, not
 least because it requires that all servers in a room support the new room

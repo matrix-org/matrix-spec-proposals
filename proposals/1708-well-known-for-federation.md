@@ -17,7 +17,7 @@ with a `.well-known` lookup.
 ## Proposal
 
 For reference, the current [specification for resolving server
-names](https://matrix.org/docs/spec/server_server/unstable.html#resolving-server-names)
+names](https://github.com/matrix-org/matrix-doc/blob/6dab4b28f80f5beeb1d4f475ddc624cf9e7ad085/specification/server_server_api.rst#21resolving-server-names)
 is as follows:
 
 1. If the hostname is an IP literal, then that IP address should be used,
