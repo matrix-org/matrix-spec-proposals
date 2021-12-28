@@ -423,10 +423,9 @@ the following subset of the room state:
       `m.room.third_party_invite` event with `state_key` matching
       `content.third_party_invite.signed.token`, if any.
     - If `content.join_authorised_via_users_server` is present,
-      the `m.room.member` event with `state_key` matching
-      `content.join_authorised_via_users_server`. Due to the
-      auth rules for the event, the target membership event should
-      always be eligible for inclusion.
+      and the [room version supports restricted rooms](/rooms/#feature-matrix),
+      then the `m.room.member` event with `state_key` matching
+      `content.join_authorised_via_users_server`.
 
 #### Rejection
 
