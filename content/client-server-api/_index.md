@@ -1464,7 +1464,7 @@ of the message timeline. The client can fill these gaps using the
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API.
 
 Continuing our example, suppose we make a third `/sync` request asking for
-events since the last sync, by passing the `next_batch` token `x-y-z` as 
+events since the last sync, by passing the `next_batch` token `x-y-z` as
 the `since` parameter. The server knows about four new events, `E7`, `E8`,
 `E9` and `E10`, but decides this is too many to report at once. Instead,
 the server sends a `limited` response containing `E8`, `E9` and `E10`but
@@ -1476,14 +1476,14 @@ omitting `E7`. This forms a gap, which we can see in the visualisation:
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
                                             ^     ^                  ^
                                             |     |                  |
-                                 since: 'x-y-z'   |                  |                                                
+                                 since: 'x-y-z'   |                  |
                                        prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
 
 The limited response includes a state delta which describes how the state
 of the room changes over the gap. This delta explains how to build the state
-prior to returned timeline (i.e. at `E7`) from the state the client knows 
-(i.e. at `E6`). To close the gap, the client should make a request to 
+prior to returned timeline (i.e. at `E7`) from the state the client knows
+(i.e. at `E6`). To close the gap, the client should make a request to
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
 with the query parameters `from=x-y-z` and `to=d-e-f`.
 
@@ -1752,7 +1752,7 @@ in room versions [which support knocking](/rooms/#feature-matrix).
 This room can be joined if you were invited or if you are a member of another
 room listed in the join rules. If the server cannot verify membership for any
 of the listed rooms then you can only join with an invite. Note that this join
-rule is only available to rooms based upon [room version 8](/rooms/v8).
+rule is only available in room versions [which support it](/rooms/#feature-matrix).
 
 The allowable state transitions of membership are:
 

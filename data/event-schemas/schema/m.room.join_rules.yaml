@@ -8,10 +8,10 @@ description: |
     in order to join.
   * `knock` - a user can request an invite to the room. They can be allowed (invited)
     or denied (kicked/banned) access. Otherwise, users need to be invited in. Only
-    available in rooms based on [v7](/rooms/v7).
+    available in rooms [which support knocking](/rooms/#feature-matrix).
   * `restricted` - anyone able to satisfy at least one of the allow conditions is
     able to join the room without prior action. Otherwise, an invite is required.
-    Only available in rooms based on [v8](/rooms/v8).
+    Only available in rooms [which support the join rule](/rooms/#feature-matrix).
   * `private` - reserved without implementation. No significant meaning.
 properties:
   content:

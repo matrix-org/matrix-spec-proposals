@@ -740,7 +740,7 @@ to other servers participating in the room.
 
 Restricted rooms are described in detail in the
 [client-server API](/client-server-api/#restricted-rooms) and are available
-in room versions based on [v8](/rooms/v8).
+in room versions [which support restricted join rules](/rooms/#feature-matrix).
 
 A resident server processing a request to join a restricted room must
 ensure that the joining server satisfies at least one of the conditions

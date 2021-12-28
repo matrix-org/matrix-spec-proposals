@@ -117,6 +117,7 @@ paths:
                         example: "join"
                       join_authorised_via_users_server:
                         type: string
+                        x-addedInMatrixVersion: "1.2"
                         description: |-
                           Required if the room is [restricted](/client-server-api/#restricted-rooms)
                           and is joining through one of the conditions available. If the
@@ -282,6 +283,7 @@ paths:
                     example: "join"
                   join_authorised_via_users_server:
                     type: string
+                    x-addedInMatrixVersion: "1.2"
                     description: |-
                       Required if the room is [restricted](/client-server-api/#restricted-rooms)
                       and is joining through one of the conditions available. If the
