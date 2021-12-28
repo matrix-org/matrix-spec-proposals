@@ -1028,12 +1028,12 @@ namespace.
 
 {{% boxes/note %}}
 Appservices do not need to log in as individual users in all cases, as they
-can perform [Identity Assertion](../application-service-api#identity-assertion)
+can perform [Identity Assertion](/application-service-api#identity-assertion)
 using the appservice token. However, if the appservice needs a scoped token
 for a single user then they can use this API instead.
 {{% /boxes/note %}}
 
-This request must be authenticated by the [appservice `as_token`](../application-service-api#registration) 
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration) 
 (see [Client Authentication](#client-authentication) on how to provide the token).
 
 To use this login type, clients should submit a `/login` request as follows:
