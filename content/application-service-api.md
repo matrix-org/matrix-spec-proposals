@@ -338,7 +338,9 @@ user ID without a password.
 Similarly, logging in as users needs API changes in order to allow the AS to
 log in without needing the user's password. This is achieved by including the
 `as_token` on a `/login` request, along with a login type of
-`m.login.application_service`.
+`m.login.application_service`:
+
+{{% added-in v="1.2" %}}
 
     POST /_matrix/client/%CLIENT_MAJOR_VERSION%/login
     Authorization: Bearer YourApplicationServiceTokenHere
