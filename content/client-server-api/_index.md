@@ -1819,10 +1819,6 @@ join is happening over federation, the remote server will check the conditions
 before accepting the join. See the [Server-Server Spec](/server-server-api/#restricted-rooms)
 for more information.
 
-This
-validation is additionally done over federation when using a remote server
-to join the room.
-
 If the room is `restricted` but no valid conditions are presented then the
 room is effectively invite only. The user does not need to maintain the
 conditions in order to stay a member of the room: the conditions are only
