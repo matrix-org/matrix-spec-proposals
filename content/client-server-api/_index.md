@@ -1024,8 +1024,10 @@ is complete, the client will need to submit a `/login` request matching
 
 #### Appservice Login
 
+{{% added-in v="1.2" %}}
+
 An appservice can log in by providing a valid appservice token and a user within the appservice's
-namespace. 
+namespace.
 
 {{% boxes/note %}}
 Appservices do not need to log in as individual users in all cases, as they
@@ -1034,7 +1036,7 @@ using the appservice token. However, if the appservice needs a scoped token
 for a single user then they can use this API instead.
 {{% /boxes/note %}}
 
-This request must be authenticated by the [appservice `as_token`](/application-service-api#registration) 
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration)
 (see [Client Authentication](#client-authentication) on how to provide the token).
 
 To use this login type, clients should submit a `/login` request as follows:
@@ -1499,7 +1501,7 @@ of the message timeline. The client can fill these gaps using the
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API.
 
 Continuing our example, suppose we make a third `/sync` request asking for
-events since the last sync, by passing the `next_batch` token `x-y-z` as 
+events since the last sync, by passing the `next_batch` token `x-y-z` as
 the `since` parameter. The server knows about four new events, `E7`, `E8`,
 `E9` and `E10`, but decides this is too many to report at once. Instead,
 the server sends a `limited` response containing `E8`, `E9` and `E10`but
@@ -1511,14 +1513,14 @@ omitting `E7`. This forms a gap, which we can see in the visualisation:
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
                                             ^     ^                  ^
                                             |     |                  |
-                                 since: 'x-y-z'   |                  |                                                
+                                 since: 'x-y-z'   |                  |
                                        prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
 
 The limited response includes a state delta which describes how the state
 of the room changes over the gap. This delta explains how to build the state
-prior to returned timeline (i.e. at `E7`) from the state the client knows 
-(i.e. at `E6`). To close the gap, the client should make a request to 
+prior to returned timeline (i.e. at `E7`) from the state the client knows
+(i.e. at `E6`). To close the gap, the client should make a request to
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
 with the query parameters `from=x-y-z` and `to=d-e-f`.
 
