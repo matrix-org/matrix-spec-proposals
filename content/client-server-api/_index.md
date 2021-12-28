@@ -1812,13 +1812,14 @@ are accompanied by "allow conditions" as described in the
 If the user has an invite to the room then the restrictions will not affect
 them. They should be able to join by simply accepting the invite.
 
-Currently there is only one condition available: `m.room_membership`. This
-condition requires the user trying to join the room to be a *joined* member
-of another room (specifically, the `room_id` accompanying the condition).
-
 When joining without an invite, the server MUST verify that the requesting
 user meets at least one of the conditions. If no conditions can be verified
-or no conditions are satisfied, the user will not be able to join. This
+or no conditions are satisfied, the user will not be able to join. When the
+join is happening over federation, the remote server will check the conditions
+before accepting the join. See the [Server-Server Spec](/server-server-api/#restricted-rooms)
+for more information.
+
+This
 validation is additionally done over federation when using a remote server
 to join the room.
 
@@ -1826,6 +1827,27 @@ If the room is `restricted` but no valid conditions are presented then the
 room is effectively invite only. The user does not need to maintain the
 conditions in order to stay a member of the room: the conditions are only
 checked/evaluated during the join process.
+
+###### Conditions
+
+Currently there is only one condition available: `m.room_membership`. This
+condition requires the user trying to join the room to be a *joined* member
+of another room (specifically, the `room_id` accompanying the condition). For
+example, if `!restricted:example.org` wanted to allow joined members of
+`!other:example.org` to join, `!restricted:example.org` would have the following
+`content` for [`m.room.join_rules`](#mroomjoin_rules):
+
+```json
+{
+  "join_rule": "restricted",
+  "allow": [
+    {
+      "room_id": "!other:example.org",
+      "type": "m.room_membership"
+    }
+  ]
+}
+```
 
 #### Leaving rooms
 

@@ -148,6 +148,8 @@ paths:
             The error should be passed through to clients so that they
             may give better feedback to users.
 
+            New in `v1.2`, the following error conditions might happen:
+
             If the room is [restricted](/client-server-api/#restricted-rooms)
             and none of the conditions can be validated by the server then
             the `errcode` `M_UNABLE_TO_AUTHORISE_JOIN` must be used. This can
