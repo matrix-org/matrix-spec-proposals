@@ -1461,11 +1461,11 @@ user, and `recipient_keys` to the local ed25519 key.
 
 Clients must confirm that the `sender_key` and the `ed25519` field value
 under the `keys` property match the keys returned by [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery) for
-the given user, and must also verify the signature of the payload.
-Without this check, a client cannot be sure that the sender device owns
-the private part of the ed25519 key it claims to have in the Olm
-payload. This is crucial when the ed25519 key corresponds to a verified
-device.
+the given user, and must also verify the signature of the keys from the
+`/keys/query` response. Without this check, a client cannot be sure that
+the sender device owns the private part of the ed25519 key it claims to
+have in the Olm payload. This is crucial when the ed25519 key corresponds
+to a verified device.
 
 If a client has multiple sessions established with another device, it
 should use the session from which it last received and successfully
