@@ -53,9 +53,38 @@ def resolve_references(path, schema):
     else:
         return schema
 
+def prefix_absolute_path_references(text, base_url):
+    """Adds base_url to absolute-path references.
+
+    Markdown links in descriptions may be absolute-path references.
+    These won’t work when the spec is not hosted at the root, such as
+    https://spec.matrix.org/latest/
+    This turns all `[foo](/bar)` found in text into
+    `[foo](https://spec.matrix.org/latest/bar)`, with
+    base_url = 'https://spec.matrix.org/latest/'
+    """
+    return text.replace("](/", "]({}/".format(base_url))
+
+def edit_links(node, base_url):
+    """Finds description nodes and makes any links in them absolute."""
+    if isinstance(node, dict):
+        for key in node:
+            if isinstance(node[key], str):
+                node[key] = prefix_absolute_path_references(node[key], base_url)
+            else:
+                edit_links(node[key], base_url)
+    elif isinstance(node, list):
+        for item in node:
+            edit_links(item, base_url)
 
 parser = argparse.ArgumentParser(
     "dump-swagger.py - assemble the Swagger specs into a single JSON file"
+)
+parser.add_argument(
+    "--base-url", "-b",
+    default="https://spec.matrix.org/unstable/",
+    help="""The base URL to prepend to links in descriptions. Default:
+    %(default)s""",
 )
 parser.add_argument(
     "--client_release", "-c", metavar="LABEL",
@@ -77,6 +106,8 @@ major_version = release_label
 match = re.match("^(r\d+)(\.\d+)*$", major_version)
 if match:
     major_version = match.group(1)
+
+base_url = args.base_url.rstrip("/")
 
 logging.basicConfig()
 
@@ -129,6 +160,8 @@ for filename in os.listdir(cs_api_dir):
                     if path not in output["paths"]:
                         output["paths"][path] = {}
                     output["paths"][path][method] = spec
+
+edit_links(output, base_url)
 
 print("Generating %s" % output_file)
 

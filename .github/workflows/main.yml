@@ -38,19 +38,46 @@ jobs:
       - name: "🔎 Run validator"
         run: |
           /env/bin/python scripts/check-event-schema-examples.py
-        
+
+  calculate-baseurl:
+    name: "⚙️ Calculate baseURL for later jobs"
+    runs-on: ubuntu-latest
+    outputs:
+      baseURL: "${{ steps.set-baseurl.outputs.baseURL }}"
+    steps:
+      # For PRs, set the baseURL to `/`.
+      # For releases, set the baseURL to `/$tag` (eg: `/v1.2`).
+      # Otherwise, set it to `/unstable`.
+      - name: "⚙️ Calculate baseURL"
+        id: set-baseurl
+        # Double brackets on the elif to avoid auto-escaping refs/tags/* because we need
+        # the asterisk matching behaviour, not the literal string.
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+              echo ::set-output name=baseURL::/
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+              echo ::set-output name=baseURL::"/${GITHUB_REF/refs\/tags\//}"
+          else
+              echo ::set-output name=baseURL::/unstable
+          fi
+
   build-openapi:
     name: "🐍 Build OpenAPI definitions"
     runs-on: ubuntu-latest
     container: "python:3.9"
+    needs: [calculate-baseurl]
     steps:
       - name: "📥 Source checkout"
         uses: actions/checkout@v2
       - name: "📦 Asset creation"
         run: |
+          mkdir -p assets
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
-          scripts/generate-matrix-org-assets
+          scripts/dump-swagger.py \
+            --base-url "${{ needs.calculate-baseurl.outputs.baseURL }}" \
+            -o assets/spec/client_server/api.json
+          tar -czf assets.tar.gz assets
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
@@ -60,7 +87,7 @@ jobs:
   build-spec:
     name: "📖 Build the spec"
     runs-on: ubuntu-latest
-    needs: [build-openapi]
+    needs: [calculate-baseurl, build-openapi]
     steps:
       - name: "➕ Setup Node"
         uses: actions/setup-node@v2
@@ -79,25 +106,8 @@ jobs:
         run: |
           npm i
           npm run get-proposals
-
-      # For PRs, set the baseURL to `/`.
-      # For releases, set the baseURL to `/$tag` (eg: `/v1.2`).
-      # Otherwise, set it to `/unstable`.
-      - name: "⚙️ Calculate baseURL"
-        id: set-baseurl
-        # Double brackets on the elif to avoid auto-escaping refs/tags/* because we need
-        # the asterisk matching behaviour, not the literal string.
-        run: |
-          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
-              echo ::set-output name=baseURL::/
-          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-              echo ::set-output name=baseURL::"/${GITHUB_REF/refs\/tags\//}"
-          else
-              echo ::set-output name=baseURL::/unstable
-          fi
-
       - name: "⚙️ hugo"
-        run: hugo --baseURL "${{ steps.set-baseurl.outputs.baseURL }}" -d "spec"
+        run: hugo --baseURL "${{ needs.calculate-baseurl.outputs.baseURL }}" -d "spec"
 
       # We manually copy the spec OpenAPI definition JSON to the website tree
       # to make it available to the world in a canonical place:
