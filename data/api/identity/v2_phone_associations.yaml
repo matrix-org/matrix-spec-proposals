@@ -63,7 +63,7 @@ paths:
             $ref: "definitions/sid.yaml"
         400:
           description: |
-            An error ocurred. Some possible errors are:
+            An error occurred. Some possible errors are:
 
             - `M_INVALID_ADDRESS`: The phone number provided was invalid.
             - `M_SEND_ERROR`: The validation SMS could not be sent.

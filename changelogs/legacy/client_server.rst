@@ -497,7 +497,7 @@ This release includes the following changes since r0.0.1:
     ``GET /rooms/{roomId}/context/{eventId}``, as well as correcting the
     example for that API
   - Clarify the behaviour of the "Room History Visibility" module; in
-    particular, the behaviour of the ``shared`` history visibilty, and how
+    particular, the behaviour of the ``shared`` history visibility, and how
     events at visibility boundaries should be handled
   - Separate the "Room Previews" module from "Guest access"
   - Reword the description of the ``profile_tag`` property in

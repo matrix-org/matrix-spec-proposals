@@ -186,7 +186,7 @@ paths:
                   with type, state_key and content keys set.
 
                   Takes precedence over events set by `preset`, but gets
-                  overriden by `name` and `topic` keys.
+                  overridden by `name` and `topic` keys.
                 items:
                   type: object
                   title: StateEvent
