@@ -1022,6 +1022,41 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
+#### Appservice Login
+
+An appservice can log in by providing a valid appservice token and a user within the appservice's
+namespace. 
+
+{{% boxes/note %}}
+Appservices do not need to log in as individual users in all cases, as they
+can perform [Identity Assertion](/application-service-api#identity-assertion)
+using the appservice token. However, if the appservice needs a scoped token
+for a single user then they can use this API instead.
+{{% /boxes/note %}}
+
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration) 
+(see [Client Authentication](#client-authentication) on how to provide the token).
+
+To use this login type, clients should submit a `/login` request as follows:
+
+```json
+{
+  "type": "m.login.appservice",
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+}
+```
+
+If the access token is not valid, does not correspond to an appservice
+or the user has not previously been registered then the homeserver will
+respond with an errcode of `M_FORBIDDEN`.
+
+If the access token does correspond to an appservice, but the user id does
+not lie within its namespace then the homeserver will respond with an
+errcode of `M_EXCLUSIVE`.
+
 {{% http-api spec="client-server" api="login" %}}
 
 {{% http-api spec="client-server" api="logout" %}}
