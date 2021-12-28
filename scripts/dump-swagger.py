@@ -82,7 +82,7 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument(
     "--base-url", "-b",
-    default="https://spec.matrix.org/latest/",
+    default="https://spec.matrix.org/unstable/",
     help="""The base URL to prepend to links in descriptions. Default:
     %(default)s""",
 )
