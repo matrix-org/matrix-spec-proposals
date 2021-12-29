@@ -18,7 +18,7 @@
 # difficult because the schema would be at two different locations, with
 # different relative pathing.
 
-title: StrippedState
+title: StrippedStateEvent
 type: object
 description: |-
   A stripped down state event, with only the `type`, `state_key`,
