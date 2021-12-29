@@ -1402,7 +1402,7 @@ following field:
 ### Stripped state
 
 Stripped state events are simplified state events to help a potential
-joiner identify the room. These state events may only have the `sender`,
+joiner identify the room. These state events can only have the `sender`,
 `type`, `state_key` and `content` keys present.
 
 These stripped state events typically appear on invites, knocks, and in
