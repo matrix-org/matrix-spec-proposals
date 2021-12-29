@@ -64,6 +64,7 @@ for their own account maintenance:
 -   [GET /devices](#get_matrixclientv3devices)
 -   [GET /devices/{deviceId}](#get_matrixclientv3devicesdeviceid)
 -   [PUT /devices/{deviceId}](#put_matrixclientv3devicesdeviceid)
+-   {{% added-in v="1.2" %}} [GET /account/whoami](#get_matrixclientv3accountwhoami)
 
 The following API endpoints are allowed to be accessed by guest accounts
 for end-to-end encryption:
