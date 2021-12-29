@@ -75,7 +75,7 @@ jobs:
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
           scripts/dump-swagger.py \
-            --base-url "${{ needs.calculate-baseurl.outputs.baseURL }}" \
+            --base-url "https://spec.matrix.org/${{ needs.calculate-baseurl.outputs.baseURL }}" \
             -o assets/spec/client_server/api.json
           tar -czf assets.tar.gz assets
       - name: "📤 Artifact upload"
