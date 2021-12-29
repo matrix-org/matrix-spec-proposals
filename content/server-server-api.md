@@ -678,22 +678,49 @@ candidate may be used at each time. Thus, any join handshake can
 potentially involve anywhere from two to four homeservers, though most
 in practice will use just two.
 
-```
-    Client         Joining                Directory       Resident
-                   Server                 Server          Server
+<!--
+https://textart.io/sequence
 
-    join request -->
-                   |
-                   directory request ------->
-                   <---------- directory response
-                   |
-                   make_join request ----------------------->
-                   <------------------------------- make_join response
-                   |
-                   send_join request ----------------------->
-                   <------------------------------- send_join response
-                   |
-    <---------- join response
+object Client JoiningServer DirectoryServer ResidentServer
+Client->JoiningServer: join request
+JoiningServer->DirectoryServer: directory request
+DirectoryServer->JoiningServer: directory response
+JoiningServer->ResidentServer: make_join request
+ResidentServer->JoiningServer: make_join response
+JoiningServer->ResidentServer: send_join request
+ResidentServer->JoiningServer: send_join response
+JoiningServer->Client: join response
+-->
+
+```
++---------+          +---------------+            +-----------------+ +-----------------+
+| Client  |          | JoiningServer |            | DirectoryServer | | ResidentServer  |
++---------+          +---------------+            +-----------------+ +-----------------+
+     |                       |                             |                   |
+     | join request          |                             |                   |
+     |---------------------->|                             |                   |
+     |                       |                             |                   |
+     |                       | directory request           |                   |
+     |                       |---------------------------->|                   |
+     |                       |                             |                   |
+     |                       |          directory response |                   |
+     |                       |<----------------------------|                   |
+     |                       |                             |                   |
+     |                       | make_join request           |                   |
+     |                       |------------------------------------------------>|
+     |                       |                             |                   |
+     |                       |                             |make_join response |
+     |                       |<------------------------------------------------|
+     |                       |                             |                   |
+     |                       | send_join request           |                   |
+     |                       |------------------------------------------------>|
+     |                       |                             |                   |
+     |                       |                             |send_join response |
+     |                       |<------------------------------------------------|
+     |                       |                             |                   |
+     |         join response |                             |                   |
+     |<----------------------|                             |                   |
+     |                       |                             |                   |
 ```
 
 The first part of the handshake usually involves using the directory
