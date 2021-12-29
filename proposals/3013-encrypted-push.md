@@ -32,7 +32,7 @@ The `m.curve25519-aes-sha2` algorithm indicates that the push payloads are to be
 For this, two new pusher data fields are added: `public_key` and `counts_only_type`. Both fields are
 to be omitted from the actual push payloads being sent to the push gateways.
 
-The field `public_key` is required. This key is an (optionally unpadded) base64-encoded curve25519
+The field `public_key` is required. This key is an unpadded base64-encoded curve25519
 public key. This new field is not to be added to the actual push payload being sent to push gateways.
 
 The field `counts_only_type` is an optional enum which denotes how push frames should handle counts-only
