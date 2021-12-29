@@ -54,7 +54,12 @@ for sending events:
 
 -   [POST /rooms/:room\_id/join](#post_matrixclientv3roomsroomidjoin)
 -   [POST /rooms/:room\_id/leave](#post_matrixclientv3roomsroomidleave)
--   [PUT /rooms/:room\_id/send/m.room.message/:txn\_id](#put_matrixclientv3roomsroomidsendeventtypetxnid)
+-   [PUT /rooms/:room\_id/send/:event\_type/:txn\_id](#put_matrixclientv3roomsroomidsendeventtypetxnid)
+
+  - {{% changed-in v="1.2" %}} Guests can now send *any* event
+    type rather than just `m.room.message` events.
+
+-   {{% added-in v="1.2" %}} [PUT /rooms/:room\_id/state/:event\_type/:state\_key](#put_matrixclientv3roomsroomidstateeventtypestatekey)
 -   [PUT /sendToDevice/{eventType}/{txnId}](#put_matrixclientv3sendtodeviceeventtypetxnid)
 
 The following API endpoints are allowed to be accessed by guest accounts
@@ -90,3 +95,6 @@ properly enforce the permissions outlined in this section.
 
 Homeservers may want to enable protections such as captchas for guest
 registration to prevent spam, denial of service, and similar attacks.
+
+Homeservers may want to put stricter rate limits on guest accounts,
+particularly for sending state events.
