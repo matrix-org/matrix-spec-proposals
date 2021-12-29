@@ -113,3 +113,47 @@ look then as following:
     }
 }
 ```
+
+## Appendix A
+
+Two people, Alice and Bob, are talking with each other, both using the same push
+provider, and both randomly delaying their messages with
+![`$t_{jitter}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{t_{jitter}}).
+Let the delay of a specific push notification of Alice be
+![`$d_{A}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{d_{A}})
+and of Bob be
+![`$d_{B}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{d_{B}})
+where ![`$d_x \in [0, t_{jitter}]$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{d_x%20\in%20[0,%20t_{jitter}]}).
+
+This means that the resulting delay between the push messages of Alice and Bobs
+is ![`$\delta = \lvert d_A - d_B \rvert$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{\delta%20=%20\lvert%20d_A%20-%20d_B%20\rvert}).
+
+We want the average ![`$\delta$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{\delta})
+to be greater or equal than
+![`$\T_{push} = \frac{1}{f_{push}}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{\T_{push}%20=%20\frac{1}{f_{push}}}),
+the time between two push notifications that the push gateway sees.
+
+For this we define
+![`$P(t) = t_{jitter} - t$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{P%28t%29%20%3D%20t_%7Bjitter%7D%20-%20t}),
+which is an un-normalised probability distribution, giving the probability that two push messages at
+![`$t$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{t}) originated from
+the same event. This is derived from the definition of ![`$\delta$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{\delta}).
+
+This means that a time between two pushes at the push gateway of ![`$T_{push}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{T_{push}})
+defined as
+![`$\int_0^{T_{push}} P(t) dt = \int_{T_{push}}^{t_{jitter}} P(t) dt$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{%5Cint_0%5E%7BT_%7Bpush%7D%7D%20P%28t%29%20dt%20%3D%20%5Cint_%7BT_%7Bpush%7D%7D%5E%7Bt_%7Bjitter%7D%7D%20P%28t%29%20dt})
+is the threshold where it becomes statistically impossible for a jitter of
+![`$t_{jitter}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{t_{jitter}})
+to correlated two push messages with one another.
+
+Solving this equation gives
+![`$T_{push, 1} = \sqrt{2} t_{jitter}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{T_%7Bpush%2C%201%7D%20%3D%20%5Csqrt%7B2%7D%20t_%7Bjitter%7D})
+and ![`$t_{push, 2} = \frac{2 - \sqrt{2}}{2} t_{jitter}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{t_%7Bpush%2C%202%7D%20%3D%20%5Cfrac%7B2%20-%20%5Csqrt%7B2%7D%7D%7B2%7D%20t_%7Bjitter%7D}).
+As ![`$T_{push, 1} > t_{jitter}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{T_%7Bpush%2C%201%7D%20%3E%20t_%7Bjitter%7D})
+does not make sense in our case, we can eliminate
+![`$T_{push, 1}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{T_%7Bpush%2C%201%7D}),
+leaving us with ![`$T_{push, 2}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{T_%7Bpush%2C%202%7D}).
+
+Now we define ![`$a$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{a})
+as ![`$\frac{T_{push}}{a} = t_{jitter}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{%5Cfrac%7BT_%7Bpush%7D%7D%7Ba%7D%20%3D%20t_%7Bjitter%7D}),
+giving ![`$a = \frac{2 - \sqrt{2}}{2}$`](https://render.githubusercontent.com/render/math?math=\bgcolor{white}{a%20%3D%20%5Cfrac%7B2%20-%20%5Csqrt%7B2%7D%7D%7B2%7D}).
