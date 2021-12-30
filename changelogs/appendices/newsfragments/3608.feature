@@ -1,0 +1,1 @@
+Describe the `matrix:` URI scheme as per [MSC2312](https://github.com/matrix-org/matrix-doc/pull/2312).
