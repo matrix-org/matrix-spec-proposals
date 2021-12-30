@@ -12,6 +12,7 @@ cd changelogs
 rm -f rendered.*
 
 # Reversed order so that room versions ends up on the bottom
+towncrier --name "Appendices" --dir "./appendices" --config "./pyproject.toml" --yes
 towncrier --name "Room Versions" --dir "./room_versions" --config "./pyproject.toml" --yes
 towncrier --name "Push Gateway API" --dir "./push_gateway" --config "./pyproject.toml" --yes
 towncrier --name "Identity Service API" --dir "./identity_service" --config "./pyproject.toml" --yes

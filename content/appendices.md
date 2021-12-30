@@ -389,6 +389,8 @@ information.
 
 ### Common Namespaced Identifier Grammar
 
+{{% added-in v="1.2" %}}
+
 The specification defines some identifiers to use the *Common Namespaced
 Identifier Grammar*. This is a common grammar intended for non-user-visible
 identifiers, with a defined mechanism for implementations to create new
