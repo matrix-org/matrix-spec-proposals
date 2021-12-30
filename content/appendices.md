@@ -669,6 +669,8 @@ history (a permalink).
 
 ##### Matrix URI scheme
 
+{{% added-in v="1.2" %}}
+
 The Matrix URI scheme is defined as follows (`[]` enclose optional parts, `{}`
 enclose variables):
 ```
@@ -696,7 +698,7 @@ custom-item-value =
 
 Note that this format is deliberately following [RFC 3986](https://tools.ietf.org/html/rfc3986)
 to ensure maximum compatibility with existing tooling. The scheme name (`matrix`) is
-registered with the IANA [here](https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml).
+registered alongside other schemes by the IANA [here](https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml).
 
 Currently, the `authority` and `fragment` are unused by this specification,
 though are reserved for future use. Matrix does not have a central authority which
@@ -749,8 +751,8 @@ this specification are the following:
   server which might have information about the given user) while a more comprehensive
   way is being worked out, such as one proposed by [MSC3020](https://github.com/matrix-org/matrix-doc/pull/3020).
 
-<!-- TODO @TR: Link to "standard identifier format" when it exists -->
-Custom query parameters can be specified using the Standard Identifier Format and
+Custom query parameters can be specified using the
+[Common Namespaced Identifier format](#common-namespaced-identifier-grammar) and
 appropriately encoding their values. Specifically, "percent encoding" and encoding
 of the `&` are required. Where custom parameters conflict with specified ones,
 clients should prefer the specified parameters. Clients should strive to maintain
@@ -761,15 +763,14 @@ parameters should be proposed to be included in this specification.
 Examples of common URIs are:
 
 <!-- Author's note: These examples should be consistent with the matrix.to counterparts. -->
-* Room alias: `matrix:r/somewhere:example.org`
-* Room ID: `matrix:roomid/somewhere:example.org?via=elsewhere.ca`
-* Permalink by room: `matrix:r/somewhere:example.org/e/event:example.org`
-* Permalink by room ID: `matrix:roomid/somewhere:example.org/e/event:example.org?via=elsewhere.ca`
-* User: `matrix:u/alice:example.org?action=chat`
+* Link to `#somewhere:example.org`: `matrix:r/somewhere:example.org`
+* Link to `!somewhere:example.org`: `matrix:roomid/somewhere:example.org?via=elsewhere.ca`
+* Link to `$event` in `#somewhere:example.org`: `matrix:r/somewhere:example.org/e/event`
+* Link to `$event` in `!somewhere:example.org`: `matrix:roomid/somewhere:example.org/e/event?via=elsewhere.ca`
+* Link to chat with `@alice:example.org`: `matrix:u/alice:example.org?action=chat`
 
 A suggested client implementation algorithm is available in the
-[original MSC](https://github.com/matrix-org/matrix-doc/pull/2312/files#diff-f4ae31b823cdbeac105bd4b6526b3da8f6db03ae29847e1c7916b9ac51997fdfR363)
-(line 363).
+[original MSC](https://github.com/matrix-org/matrix-doc/blob/main/proposals/2312-matrix-uri.md#recommended-implementation).
 
 ##### matrix.to navigation
 
@@ -805,13 +806,12 @@ The components of the matrix.to URI (`<identifier>` and
 
 Examples of matrix.to URIs are:
 
--   Room alias: `https://matrix.to/#/%23somewhere%3Aexample.org`
--   Room: `https://matrix.to/#/!somewhere%3Aexample.org`
--   Permalink by room:
-    `https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org`
--   Permalink by room alias:
-    `https://matrix.to/#/%23somewhere:example.org/%24event%3Aexample.org`
--   User: `https://matrix.to/#/%40alice%3Aexample.org`
+<!-- Author's note: These examples should be consistent with the matrix scheme counterparts. -->
+* Link to `#somewhere:example.org`: `https://matrix.to/#/%23somewhere%3Aexample.org`
+* Link to `!somewhere:example.org`: `https://matrix.to/#/!somewhere%3Aexample.org?via=elsewhere.ca`
+* Link to `$event` in `#somewhere:example.org`: `https://matrix.to/#/%23somewhere:example.org/%24event%3Aexample.org`
+* Link to `$event` in `!somewhere:example.org`: `https://matrix.to/#/!somewhere%3Aexample.org/%24event%3Aexample.org?via=elsewhere.ca`
+* Link to `@alice:example.org`: `https://matrix.to/#/%40alice%3Aexample.org`
 
 {{% boxes/note %}}
 Historically, clients have not produced URIs which are fully encoded.
@@ -851,7 +851,7 @@ at least one server using `via` in the URI's query string. Multiple servers
 can be specified by including multuple `via` parameters.
 
 The values of `via` are intended to be passed along as the `server_name`
-parameters on the Client Server `/join` API.
+parameters on the [Client Server `/join/{roomIdOrAlias}` API](/client-server-api/#post_matrixclientv3joinroomidoralias).
 
 When generating room links and permalinks, the application should pick
 servers which have a high probability of being in the room in the
