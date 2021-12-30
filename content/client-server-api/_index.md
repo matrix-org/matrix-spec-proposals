@@ -1428,11 +1428,13 @@ possible:
 * [`m.room.canonical_alias`](#mroomcanonical_alias)
 * [`m.room.encryption`](#mroomencryption)
 
-{{% boxes/rationale %}}
-These state events represent basic aesthetic information about the room
-and give clients information about how to join the room, and what to
-expect once joined.
+{{% boxes/note %}}
+Clients should inspect the list of stripped state events and not assume any
+particular event is present. The server might include events not described
+here as well.
+{{% /boxes/note %}}
 
+{{% boxes/rationale %}}
 The name, avatar, topic, and aliases are presented as aesthetic information
 about the room, allowing users to make decisions about whether or not they
 want to join the room.
