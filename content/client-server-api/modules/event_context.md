@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 210
 ---
 
 ### Event Context

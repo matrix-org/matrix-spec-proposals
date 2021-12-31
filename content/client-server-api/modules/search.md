@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 150
 ---
 
 ### Server Side Search

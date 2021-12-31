@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 50
 ---
 
 ### Fully read markers

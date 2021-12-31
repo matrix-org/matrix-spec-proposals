@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 20
 ---
 
 ### Voice over IP
