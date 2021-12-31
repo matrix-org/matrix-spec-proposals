@@ -314,9 +314,9 @@ musn't be encrypted. That means that clients which rely on that can't use this k
 Sadly iOS is pretty limiting concerning push notifications. While modifying the content of a push frame,
 and thus e2ee push notifications, is possible on iOS, these modified push frames *have* to result in
 a user-visible notification banner. This limitation becomes a problem when only the `counts` dictionary
-is updated, so e.g. when a message is being read. For this, the `counts_only_type` setting has been,
-so that the push gateway can do additional logic, based on if the notification frame is such a silent
-update.
+is updated, so e.g. when a message is being read. For this, the `counts_only_type` setting has been
+to this proposal, so that the push gateway can do additional logic, based on if the notification frame
+is such a silent update.
 
 If the `counts_only_type` is set to `boolean` then the push gateway could send the encrypted push payload
 as an APNS background message to the device. This isn't that reliable, sadly, but might be good enough
