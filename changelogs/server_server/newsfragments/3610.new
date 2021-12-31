@@ -1,0 +1,1 @@
+Add the Space Hierarchy API (`GET /hierarchy/{roomId}`) as per [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946).
