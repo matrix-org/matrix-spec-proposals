@@ -161,7 +161,7 @@ relationship can be expressed in one of two ways:
     To avoid abuse where a room admin falsely claims that a room is part of a
     space that it should not be, clients could ignore such `m.space.parent`
     events unless either (a) there is a corresponding `m.space.child` event in
-    the claimed parent, or (b) the sender of the `m.space.child` event has a
+    the claimed parent, or (b) the sender of the `m.space.parent` event has a
     sufficient power-level to send such an `m.space.child` event in the
     parent. (It is not necessarily required that that user currently be a
     member of the parent room - only the `m.room.power_levels` event is

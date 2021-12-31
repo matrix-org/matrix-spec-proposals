@@ -88,7 +88,7 @@ Query Parameters:
   `/publicRooms` (see
   [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
   with the addition of:
-  * **`room_type`**: the value of the `m.type` field from the room's
+  * **`room_type`**: the value of the `type` field from the room's
     `m.room.create` event, if any.
   * **`children_state`**: The stripped state of the `m.space.child` events of
     the room per [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173).
@@ -115,6 +115,7 @@ GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/hierarchy?
 {
     "rooms": [
         {
+            // Fields from PublicRoomsChunk
             "room_id": "!ol19s:bleecker.street",
             "avatar_url": "mxc://bleecker.street/CHEDDARandBRIE",
             "guest_can_join": false,
@@ -122,7 +123,11 @@ GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/hierarchy?
             "num_joined_members": 37,
             "topic": "Tasty tasty cheese",
             "world_readable": true,
-            "join_rules": "public",
+            "join_rule": "public",
+            "canonical_alias": "#cheese:bleecker.street",
+            "aliases": ["#cheese:bleecker.street"],
+
+            // Added fields
             "room_type": "m.space",
             "children_state": [
                 {
@@ -203,13 +208,13 @@ easily known the room summary might have changed).
 Since the server-server API does not know the requesting user, the response should
 divulge information based on if any member of the requesting server could join
 the room. The requesting server is trusted to properly filter this information
-using the `world_readable`, `join_rules`, and `allowed_room_ids` fields from the
+using the `world_readable`, `join_rule`, and `allowed_room_ids` fields from the
 response.
 
 If the target server is not a member of some children rooms (so would have to send
 another request over federation to inspect them), no attempt is made to recurse
 into them. They are simply omitted from the `children` key of the response.
-(Although they will still appear in the `children_state`key of the `room`.)
+(Although they will still appear in the `children_state` key of the `room`.)
 
 Similarly, if a server-set limit on the size of the response is reached, additional
 rooms are not added to the response and can be queried individually.
@@ -245,10 +250,11 @@ For both the `room` and `children` fields the summary of the room/space includes
 the fields returned by `/publicRooms` (see [spec](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-publicrooms)),
 with the addition of:
 
-* **`room_type`**: the value of the `m.type` field from the room's `m.room.create`
+* **`room_type`**: the value of the `type` field from the room's `m.room.create`
   event, if any.
 * **`allowed_room_ids`**: A list of room IDs which give access to this room per
   [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a1">[1](#f1)</sup>
+* **`children_state`**: As per Client-Server API version.
 
 #### Example request:
 
@@ -273,7 +279,7 @@ of "default ordering of siblings in the room list" using the `order` key:
 > ascending numeric order of the `origin_server_ts` of their `m.room.create`
 > events, or ascending lexicographic order of their `room_id`s in case of equal
 > `origin_server_ts`. `order`s which are not strings, or do not consist solely
-> of ascii characters in the range `\x20` (space) to `\x7F` (~), or consist of
+> of ascii characters in the range `\x20` (space) to `\x7E` (~), or consist of
 > more than 50 characters, are forbidden and the field should be ignored if
 > received.
 

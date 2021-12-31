@@ -902,6 +902,13 @@ the server the room directory should be retrieved for.
 
 {{% http-api spec="server-server" api="public_rooms" %}}
 
+## Spaces
+
+To complement the [Client-Server API's Spaces module](/client-server-api/#spaces),
+homeservers need a way to query information about spaces from other servers.
+
+{{% http-api spec="server-server" api="space_hierarchy" %}}
+
 ## Typing Notifications
 
 When a server's users send typing notifications, those notifications
