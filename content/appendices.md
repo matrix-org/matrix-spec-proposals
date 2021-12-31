@@ -743,7 +743,7 @@ this specification are the following:
     form of Canonical DMs should reuse existing DMs instead of creating new ones
     if available. The client should prompt for confirmation prior to creating the
     DM, if the user isn't being redirected to an existing canonical DM.
-* `via` - Can be used to denote which servers (authorities) to attempt to resolve
+* `via` - Can be used to denote which servers (`authority` grammar) to attempt to resolve
   the resource through, or take `action` through. An example of using `via` for
   routing Room IDs is described [below](#routing), and is encouraged for use in
   Matrix URIs referring to a room ID. Matrix URIs can additionally use this `via`
