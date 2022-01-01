@@ -121,7 +121,7 @@ paths:
                   type:
                     - string
                     - object
-                      # XXX: We can't define an actual object here - see OTKs.
+                      # XXX: We can't define an actual object here - see one_time_keys.
                 example: {
                   "curve25519:AAAAAG": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8",
                   "signed_curve25519:AAAAGj": {
