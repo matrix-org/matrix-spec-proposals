@@ -41,7 +41,7 @@ paths:
         - in: query
           name: token
           type: string
-          example: "fBVFdqVE"
+          x-example: "fBVFdqVE"
           required: true
           description: The token to check validity of.
       responses:
