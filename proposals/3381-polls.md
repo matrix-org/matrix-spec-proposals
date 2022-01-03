@@ -55,10 +55,36 @@ A poll can be started by sending an `m.poll.start` room event, similar to the fo
 
 As mentioned above, this is already making use of Extensible Events: The fallback for clients which don't
 know how to render polls is to just post the message to the chat. Some of the properties also make use of
-extensible events within them, such as the `question` and the elements of `answers`: these are effectively
-`m.message` events (under the Extensible Events structure), which means they're required to have a plain
-text component to them. HTML is allowed, though clients are generally encouraged to rely on the plain text
-representation for an unbiased rendering. Meme value of HTML might be desirable to some clients, however.
+extensible events within them, such as the `question` and the elements of `answers`: these are essentially
+nested events themselves. For example, the following can represent the same `question`:
+
+```json
+{
+  "question": {
+    "m.text": "How are you?"
+  }
+}
+```
+```json5
+{
+  "question": {
+    // a plaintext format is always required
+    "m.text": "How are you?",
+    "m.html": "<b>How are you?</b>"
+  }
+}
+```
+```json5
+{
+  "question": {
+    "m.message": [
+      // a plaintext format is always required
+      {"body": "How are you?", "mimetype": "text/plain"},
+      {"body": "<b>How are you?</b>", "mimetype": "text/html"},
+    ]
+  }
+}
+```
 
 The `kind` refers to whether the poll's votes are disclosed while the poll is still open. `m.poll.undisclosed`
 means the results are revealed once the poll is closed. `m.poll.disclosed` is the opposite: the votes are
