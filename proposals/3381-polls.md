@@ -321,7 +321,7 @@ Clients should apply a large amount of validation to each field when interacting
 bodies are already declared as completely untrusted, though not all clients apply a layer of validation.
 In general, this MSC aims to try and show something of use to users so they can at least figure out
 what the sender intended, though clients are also welcome to just hide invalid events/responses (with
-the exception of spoiled votes: those are treated as "unvoting" or chosing nothing). Clients are
+the exception of spoiled votes: those are treated as "unvoting" or choosing nothing). Clients are
 encouraged to try and fall back to something sensible, even if just an error message saying the poll
 is invalid.
 
