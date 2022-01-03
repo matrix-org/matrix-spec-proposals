@@ -190,6 +190,42 @@ poll has closed, overriding any stale local state the client might have.
 For clarity: clients using [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) should use the
 time-based shape of the endpoint, not the event ID shape, in order to honour the poll rules.
 
+### Notifications
+
+In order to have polls behave similar to message events, the following underride push rules are defined:
+
+```json
+{
+  "rule_id": ".m.rule.polls_one_to_one",
+  "default": true,
+  "enabled": true,
+  "conditions": [
+    {"kind": "room_member_count", "is": "2"},
+    {"kind": "event_match", "key": "type", "pattern": "m.poll.start"}
+  ],
+  "actions": [
+    "notify",
+    {"set_tweak": "sound", "value": "default"}
+  ]
+}
+```
+
+```json
+{
+  "rule_id": ".m.rule.polls",
+  "default": true,
+  "enabled": true,
+  "conditions": [
+    {"kind": "event_match", "key": "type", "pattern": "m.poll.start"}
+  ],
+  "actions": [
+    "notify"
+  ]
+}
+```
+
+When clients modify the related `m.room.message` rules they should also modify these rules.
+
 ## Potential issues
 
 As mentioned, poll responses are sent to the room regardless of the kind of poll. For open polls this
