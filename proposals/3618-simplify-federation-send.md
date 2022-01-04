@@ -1,4 +1,4 @@
-# MSCXXXX: Simplify federation `/send` response
+# MSC3618: Simplify federation `/send` response
 
 ## Overview
 
