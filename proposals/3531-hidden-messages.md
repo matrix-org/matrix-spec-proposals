@@ -58,6 +58,8 @@ An event of `m.visibility` MUST with the following *content* fields:
 | Content Key    | Type    | Description |
 |----------------|---------|-------------|
 | `m.relates_to` | Visibility Relation | **Required** The payload for this event |
+| `visible`      | `boolean` | **Required** If `true`, clients should show the affected event normally. If false, clients should mark the affected event as hidden pending review. |
+| `reason`       | `string`  | Optional. If `visible` is `false`, a reason that clients MAY display to indicate why the affected event is hidden pending review. |
 
 Visibility relation
 
@@ -65,9 +67,6 @@ Visibility relation
 |----------------|-----------|-------------|
 | `rel_type`     | `string`  | **Required** Must be `"m.reference"` |
 | `event_id`     | `eventId` | **Required** eventId of the event affected by this visibility change. Must be a past event in this room. |
-| `visible`      | `boolean` | **Required** If `true`, clients should show the affected event normally. If false, clients should mark the affected event as hidden pending review. |
-| `reason`       | `string`  | Optional. If `visible` is `false`, a reason that clients MAY display to indicate why the affected event is hidden pending review. |
-
 
 ### Server behavior
 
