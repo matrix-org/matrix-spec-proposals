@@ -3,7 +3,7 @@
 [Join rules](https://spec.matrix.org/v1.1/client-server-api/#mroomjoin_rules) define what conditions
 a user must meet in order to, well, join a room. With the current setup it is impossible to have more
 than one rule active at a time, which makes it difficult to allow anyone from room X to join, but also
-join is their knock was accepted. The room would instead have to choose which condition it favoured.
+join if their knock was accepted. The room would instead have to choose which condition it favoured.
 
 This proposal aims to introduce the smallest possible baseline for a slightly improved join rules
 system, allowing for combinations of join rules to take effect. Alternative MSCs, like
