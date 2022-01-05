@@ -59,7 +59,6 @@ properties:
           example: "mxc://example.org/abc123"
         brand:
           type: string
-          # TODO @@TR: Actually link to "common identifier format" section when it exists.
           description: |-
             Optional UI hint for what kind of common SSO provider is being
             described in this IdP. Matrix maintains a registry of identifiers
@@ -71,7 +70,7 @@ properties:
             including those in the registry, though are expected to be able to
             present any IdP based off the `name`/`icon` to the user regardless.
 
-            Unregistered brands are permitted using the Standard Identifier Format,
+            Unregistered brands are permitted using the [Common Namespaced Identifier Grammar](/appendices/#common-namespaced-identifier-grammar),
             though excluding the namespace requirements. For example, `examplesso`
             is a valid brand which is not in the registry but still permitted.
             Servers should be mindful that clients might not support their unregistered

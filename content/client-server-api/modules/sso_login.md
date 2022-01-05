@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 220
 ---
 
 ### SSO client login/authentication

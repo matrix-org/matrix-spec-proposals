@@ -312,10 +312,11 @@ information.
 
 The homeserver needs to give the application service *full control* over
 its namespace, both for users and for room aliases. This means that the
-AS should be able to create/edit/delete any room alias in its namespace,
-as well as create/delete any user in its namespace. No additional API
+AS should be able to manage any users and room alias in its namespace. No additional API
 changes need to be made in order for control of room aliases to be
-granted to the AS. Creation of users needs API changes in order to:
+granted to the AS.
+
+Creation of users needs API changes in order to:
 
 -   Work around captchas.
 -   Have a 'passwordless' user.
@@ -334,8 +335,28 @@ user ID without a password.
       username: "_irc_example"
     }
 
+Similarly, logging in as users needs API changes in order to allow the AS to
+log in without needing the user's password. This is achieved by including the
+`as_token` on a `/login` request, along with a login type of
+`m.login.application_service`:
+
+{{% added-in v="1.2" %}}
+
+    POST /_matrix/client/%CLIENT_MAJOR_VERSION%/login
+    Authorization: Bearer YourApplicationServiceTokenHere
+
+    Content:
+    {
+      type: "m.login.application_service",
+      "identifier": {
+        "type": "m.id.user",
+        "user": "_irc_example"
+      }
+    }
+
 Application services which attempt to create users or aliases *outside*
-of their defined namespaces will receive an error code `M_EXCLUSIVE`.
+of their defined namespaces, or log in as users outside of their defined
+namespaces will receive an error code `M_EXCLUSIVE`.
 Similarly, normal users who attempt to create users or aliases *inside*
 an application service-defined namespace will receive the same
 `M_EXCLUSIVE` error code, but only if the application service has

@@ -66,6 +66,7 @@ paths:
                   `m.room.third_party_invite` event in the room, and perform
                   key validity checking if required by the event.
               reason:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent
@@ -152,6 +153,7 @@ paths:
                   that it matches a pending `m.room.third_party_invite` event in the
                   room, and perform key validity checking if required by the event.
               reason:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent

@@ -30,15 +30,61 @@ import yaml
 
 
 scripts_dir = os.path.dirname(os.path.abspath(__file__))
-templating_dir = os.path.join(scripts_dir, "templating")
 api_dir = os.path.join(os.path.dirname(scripts_dir), "data", "api")
 
-sys.path.insert(0, templating_dir)
+def resolve_references(path, schema):
+    if isinstance(schema, dict):
+        # do $ref first
+        if '$ref' in schema:
+            value = schema['$ref']
+            path = os.path.join(os.path.dirname(path), value)
+            with open(path, encoding="utf-8") as f:
+                ref = yaml.safe_load(f)
+            result = resolve_references(path, ref)
+            del schema['$ref']
+        else:
+            result = {}
 
-from matrix_templates import units
+        for key, value in schema.items():
+            result[key] = resolve_references(path, value)
+        return result
+    elif isinstance(schema, list):
+        return [resolve_references(path, value) for value in schema]
+    else:
+        return schema
+
+def prefix_absolute_path_references(text, base_url):
+    """Adds base_url to absolute-path references.
+
+    Markdown links in descriptions may be absolute-path references.
+    These won’t work when the spec is not hosted at the root, such as
+    https://spec.matrix.org/latest/
+    This turns all `[foo](/bar)` found in text into
+    `[foo](https://spec.matrix.org/latest/bar)`, with
+    base_url = 'https://spec.matrix.org/latest/'
+    """
+    return text.replace("](/", "]({}/".format(base_url))
+
+def edit_links(node, base_url):
+    """Finds description nodes and makes any links in them absolute."""
+    if isinstance(node, dict):
+        for key in node:
+            if isinstance(node[key], str):
+                node[key] = prefix_absolute_path_references(node[key], base_url)
+            else:
+                edit_links(node[key], base_url)
+    elif isinstance(node, list):
+        for item in node:
+            edit_links(item, base_url)
 
 parser = argparse.ArgumentParser(
     "dump-swagger.py - assemble the Swagger specs into a single JSON file"
+)
+parser.add_argument(
+    "--base-url", "-b",
+    default="https://spec.matrix.org/unstable/",
+    help="""The base URL to prepend to links in descriptions. Default:
+    %(default)s""",
 )
 parser.add_argument(
     "--client_release", "-c", metavar="LABEL",
@@ -60,6 +106,8 @@ major_version = release_label
 match = re.match("^(r\d+)(\.\d+)*$", major_version)
 if match:
     major_version = match.group(1)
+
+base_url = args.base_url.rstrip("/")
 
 logging.basicConfig()
 
@@ -93,7 +141,7 @@ output = {
 cs_api_dir = os.path.join(api_dir, 'client-server')
 with open(os.path.join(cs_api_dir, 'definitions',
                        'security.yaml')) as f:
-    output['securityDefinitions'] = yaml.load(f)
+    output['securityDefinitions'] = yaml.safe_load(f)
 
 for filename in os.listdir(cs_api_dir):
     if not filename.endswith(".yaml"):
@@ -102,16 +150,17 @@ for filename in os.listdir(cs_api_dir):
 
     print("Reading swagger API: %s" % filepath)
     with open(filepath, "r") as f:
-        api = yaml.load(f.read())
-        api = units.resolve_references(filepath, api)
+        api = yaml.safe_load(f.read())
+        api = resolve_references(filepath, api)
 
         basePath = api['basePath']
         for path, methods in api["paths"].items():
             for method, spec in methods.items():
-                if "tags" in spec.keys():
-                    if path not in output["paths"]:
-                        output["paths"][path] = {}
-                    output["paths"][path][method] = spec
+                if path not in output["paths"]:
+                    output["paths"][path] = {}
+                output["paths"][path][method] = spec
+
+edit_links(output, base_url)
 
 print("Generating %s" % output_file)
 

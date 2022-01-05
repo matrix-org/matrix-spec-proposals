@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 300
 ---
 
 ### User, room, and group mentions

@@ -37,6 +37,10 @@
 
 <hr/>
 
+{{ if (index $definition "x-addedInMatrixVersion") }}
+  {{ partial "added-in" (dict "v" (index $definition "x-addedInMatrixVersion")) }}
+{{ end }}
+
 {{ $definition.description | markdownify }}
 
 </summary>

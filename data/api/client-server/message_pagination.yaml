@@ -74,7 +74,7 @@ paths:
           description: |-
             The direction to return events from. If this is set to `f`, events
             will be returned in chronological order starting at `from`. If it
-            is set to `b`, events will be returned in *reverse* chronolgical
+            is set to `b`, events will be returned in *reverse* chronological
             order, again starting at `from`.
           required: true
           x-example: "b"

@@ -1,9 +1,10 @@
 ---
 type: module
-weight: 110
 ---
 
 ### Secrets
+
+{{% added-in v="1.1" %}}
 
 Clients may have secret information that they wish to be made available
 to other authorised clients, but that the server should not be able to
@@ -182,7 +183,7 @@ correctly entered the key, clients should:
 
 | Parameter   | Type   | Description                                                                                                                       |
 |-------------|--------|-----------------------------------------------------------------------------------------------------------------------------------|
-| name        | string | **Required.** The name of the key.                                                                                                |
+| name        | string | Optional. The name of the key.                                                                                                    |
 | algorithm   | string | **Required.** The encryption algorithm to be used for this key. Currently, only `m.secret_storage.v1.aes-hmac-sha2` is supported. |
 | passphrase  | object | See [deriving keys from passphrases](#deriving-keys-from-passphrases) section for a description of this property.                 |
 | iv          | string | The 16-byte initialization vector, encoded as base64.                                                                             |

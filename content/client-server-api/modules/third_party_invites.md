@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 140
 ---
 
 ### Third party invites

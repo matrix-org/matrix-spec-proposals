@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 100
 ---
 
 ### End-to-End Encryption
@@ -118,8 +117,12 @@ must include the public part of the device's Ed25519 key, and must be
 signed by that key, as described in [Signing
 JSON](/appendices/#signing-json).
 
-One-time keys are also uploaded to the homeserver using the
+One-time and fallback keys are also uploaded to the homeserver using the
 [`/keys/upload`](/client-server-api/#post_matrixclientv3keysupload) API.
+
+{{% added-in v="1.2" %}} Fallback keys are similar to one-time keys, but
+are not consumed once used. They are only used when the device has run out
+of one-time keys, and can be replaced by a new fallback key.
 
 Devices must store the private part of each key they upload. They can
 discard the private part of a one-time key when they receive a message
@@ -128,6 +131,24 @@ homeserver will never be used, so the device that generates the key will
 never know that it can discard the key. Therefore a device could end up
 trying to store too many private keys. A device that is trying to store
 too many private keys may discard keys starting with the oldest.
+
+{{% boxes/warning %}}
+Fallback keys are used to prevent one-time key exhaustion when devices
+are offline/unable to upload additional keys, though sessions started using
+fallback keys could be vulnerable to replay attacks.
+{{% /boxes/warning %}}
+
+{{% boxes/warning %}}
+Clients should not store the private half of fallback keys indefinitely
+to avoid situations where attackers can decrypt past messages sent using
+that fallback key.
+
+Instead, clients should keep the private keys for at most 2 fallback keys:
+the current, unused, fallback key and the key immediately preceding it.
+Once the client is reasonably certain it has received all messages that
+used the old fallback key, such as after an hour since the first message,
+it should remove that fallback key.
+{{% /boxes/warning %}}
 
 ##### Tracking the device list for a user
 
@@ -344,6 +365,11 @@ one-time key for that device. This is done by making a request to the
 A homeserver should rate-limit the number of one-time keys that a given
 user or remote server can claim. A homeserver should discard the public
 part of a one time key once it has given that key to another user.
+
+{{% added-in v="1.2" %}} If the device has run out of one-time keys which
+can be claimed, the homeserver will return the fallback key (if one was
+uploaded). Fallback keys are not deleted once used and should be replaced
+by the device when they are able to upload more one-time keys.
 
 #### Device verification
 
@@ -992,6 +1018,8 @@ user-signing keys.
 
 ##### QR codes
 
+{{% added-in v="1.1" %}}
+
 Verifying by QR codes provides a quick way to verify when one of the parties
 has a device capable of scanning a QR code. The QR code encodes both parties'
 master signing keys as well as a random shared secret that is used to allow
@@ -1459,11 +1487,11 @@ user, and `recipient_keys` to the local ed25519 key.
 
 Clients must confirm that the `sender_key` and the `ed25519` field value
 under the `keys` property match the keys returned by [`/keys/query`](/client-server-api/#post_matrixclientv3keysquery) for
-the given user, and must also verify the signature of the payload.
-Without this check, a client cannot be sure that the sender device owns
-the private part of the ed25519 key it claims to have in the Olm
-payload. This is crucial when the ed25519 key corresponds to a verified
-device.
+the given user, and must also verify the signature of the keys from the
+`/keys/query` response. Without this check, a client cannot be sure that
+the sender device owns the private part of the ed25519 key it claims to
+have in the Olm payload. This is crucial when the ed25519 key corresponds
+to a verified device.
 
 If a client has multiple sessions established with another device, it
 should use the session from which it last received and successfully
@@ -1602,10 +1630,23 @@ It also adds a `one_time_keys_count` property. Note the spelling
 difference with the `one_time_key_counts` property in the
 [`/keys/upload`](/client-server-api/#post_matrixclientv3keysupload) response.
 
-| Parameter                  | Type               | Description                                                                                                            |
-|----------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------|
-| device_lists               | DeviceLists        | Optional. Information on e2e device updates. Note: only present on an incremental sync.                                |
-| device_one_time_keys_count | {string: integer}  | Optional. For each key algorithm, the number of unclaimed one-time keys currently held on the server for this device.  |
+
+{{% added-in v="1.2" %}} Finally, a `device_unused_fallback_key_types` property
+is added to list the key algorithms where the device has a fallback key that
+*has not* been used in a [`/keys/claim`](/client-server-api/#post_matrixclientv3keysclaim)
+response. When a previously uploaded fallback key's algorithm is missing
+from this list, the device should upload a replacement key alongside any
+necessary one-time keys to avoid the fallback key's further usage. This
+property is required for inclusion, though previous versions of the
+specification did not have it. In addition to `/versions`, this can be
+a way to identify the server's support for fallback keys.
+
+
+| Parameter                        | Type               | Description                                                                                                            |
+|----------------------------------|--------------------|------------------------------------------------------------------------------------------------------------------------|
+| device_lists                     | DeviceLists        | Optional. Information on e2e device updates. Note: only present on an incremental sync.                                |
+| device_one_time_keys_count       | {string: integer}  | Optional. For each key algorithm, the number of unclaimed one-time keys currently held on the server for this device.  |
+| device_unused_fallback_key_types | [string]           | **Required.** The unused fallback key algorithms.                                                                      |
 
 `DeviceLists`
 

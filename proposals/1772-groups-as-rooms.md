@@ -1,6 +1,6 @@
 # Proposal for Matrix "spaces" (formerly known as "groups as rooms (take 2)")
 
-This MSC, and related proposals, supercede
+This MSC, and related proposals, supersede
 [MSC1215](https://github.com/matrix-org/matrix-doc/issues/1215).
 
 ## Background and objectives
@@ -345,7 +345,7 @@ None at present.
   using smaller spaces).
 
 * The requirement that `m.space.parent` links be ignored unless the sender has a
-  high PL in the parent room could lead to suprising effects where a parent
+  high PL in the parent room could lead to surprising effects where a parent
   link suddenly ceases to take effect because a user loses their PL in the
   parent room. This is mitigated in the general case by honouring the parent
   link when there is a corresponding `m.space.child` event, however it remains

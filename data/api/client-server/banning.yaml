@@ -60,6 +60,7 @@ paths:
                 type: string
                 description: The fully qualified user ID of the user being banned.
               reason:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: The reason the user has been banned. This will be supplied as the
                   `reason` on the target's updated [`m.room.member`](/client-server-api/#mroommember) event.
@@ -119,6 +120,7 @@ paths:
                 type: string
                 description: The fully qualified user ID of the user being unbanned.
               reason:
+                x-addedInMatrixVersion: "1.1"
                 type: string
                 description: |-
                   Optional reason to be included as the `reason` on the subsequent

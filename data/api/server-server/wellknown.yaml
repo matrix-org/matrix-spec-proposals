@@ -48,6 +48,6 @@ paths:
               "m.server":
                 type: string
                 description: |-
-                  The server name to delegate server-server communciations to, with optional
+                  The server name to delegate server-server communications to, with optional
                   port. The delegated server name uses the same grammar as
                   [server names in the appendices](/appendices/#server-name).

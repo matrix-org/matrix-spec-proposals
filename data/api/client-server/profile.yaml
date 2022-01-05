@@ -211,7 +211,24 @@ paths:
               displayname:
                 type: string
                 description: The user's display name if they have set one, otherwise not present.
+        403:
+          x-addedInMatrixVersion: "1.2"
+          description: The server is unwilling to disclose whether the user exists and/or has profile information.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "Profile lookup over federation is disabled on this homeserver"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
         404:
           description: There is no profile information for this user or this user does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_NOT_FOUND",
+              "error": "Profile not found"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
       tags:
         - User data

@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 30
 ---
 
 ### Typing Notifications

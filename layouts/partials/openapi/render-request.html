@@ -47,19 +47,13 @@
 <h3>Request body example</h3>
 
         {{ $example := partial "json-schema/resolve-example" $schema }}
-        {{ if $example }}
-            {{ $example_json := jsonify (dict "indent" "  ") $example }}
-            {{ $example_json = replace $example_json "\\u003c" "<" }}
-            {{ $example_json = replace $example_json "\\u003e" ">" | safeHTML }}
+        {{ $example_json := jsonify (dict "indent" "  ") $example }}
+        {{ $example_json = replace $example_json "\\u003c" "<" }}
+        {{ $example_json = replace $example_json "\\u003e" ">" | safeHTML }}
 
 ```json
 {{ $example_json }}
 ```
-
-        {{ else }}
-            {{ partial "alert" (dict "type" "warning" "omit_title" "true" "color" "warning" "content" "Specification error: Example invalid or not present") }}
-        {{ end }}
-
     {{ end }}
 
 {{ else }}

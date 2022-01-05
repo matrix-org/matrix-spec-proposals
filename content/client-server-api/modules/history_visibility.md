@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 120
 ---
 
 ### Room History Visibility

@@ -285,10 +285,10 @@ specify parameter values. The flow for this method is as follows:
         1.  If the content cannot be parsed, then `FAIL_PROMPT`.
     4.  Extract the `base_url` value from the `m.homeserver` property.
         This value is to be used as the base URL of the homeserver.
-        1.  If this value is not provided, then `FAIL_PROMPT`.
+        1. If this value is not provided, then `FAIL_PROMPT`.
     5.  Validate the homeserver base URL:
-        1.  Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
-        2.  Clients SHOULD validate that the URL points to a valid
+        1. Parse it as a URL. If it is not a URL, then `FAIL_ERROR`.
+        2. Clients SHOULD validate that the URL points to a valid
             homeserver before accepting it by connecting to the
             [`/_matrix/client/versions`](/client-server-api/#get_matrixclientversions) endpoint, ensuring that it does
             not return an error, and parsing and validating that the
@@ -297,6 +297,8 @@ specify parameter values. The flow for this method is as follows:
             done as a simple check against configuration errors, in
             order to ensure that the discovered address points to a
             valid homeserver.
+        3. It is important to note that the `base_url` value might include
+           a trailing `/`. Consumers should be prepared to handle both cases.
     6.  If the `m.identity_server` property is present, extract the
         `base_url` value for use as the base URL of the identity server.
         Validation for this URL is done as in the step above, but using
@@ -616,6 +618,7 @@ This specification defines the following auth types:
 -   `m.login.email.identity`
 -   `m.login.msisdn`
 -   `m.login.dummy`
+-   `m.login.registration_token`
 
 ##### Password-based
 
@@ -719,14 +722,12 @@ follows:
 ```json
 {
   "type": "m.login.email.identity",
-  "threepidCreds": [
-    {
-      "sid": "<identity server session id>",
-      "client_secret": "<identity server client secret>",
-      "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
-      "id_access_token": "<access token previously registered with the identity server>"
-    }
-  ],
+  "threepid_creds": {
+    "sid": "<identity server session id>",
+    "client_secret": "<identity server client secret>",
+    "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+    "id_access_token": "<access token previously registered with the identity server>"
+  },
   "session": "<session ID>"
 }
 ```
@@ -750,14 +751,12 @@ follows:
 ```json
 {
   "type": "m.login.msisdn",
-  "threepidCreds": [
-    {
-      "sid": "<identity server session id>",
-      "client_secret": "<identity server client secret>",
-      "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
-      "id_access_token": "<access token previously registered with the identity server>"
-    }
-  ],
+  "threepid_creds": {
+    "sid": "<identity server session id>",
+    "client_secret": "<identity server client secret>",
+    "id_server": "<url of identity server authed with, e.g. 'matrix.org:8090'>",
+    "id_access_token": "<access token previously registered with the identity server>"
+  },
   "session": "<session ID>"
 }
 ```
@@ -790,6 +789,49 @@ just the type and session, if provided:
   "session": "<session ID>"
 }
 ```
+
+##### Token-authenticated registration
+
+{{% added-in v="1.2" %}}
+
+| Type                          | Description                                                       |
+|-------------------------------|-------------------------------------------------------------------|
+| `m.login.registration_token`  | Registers an account with a pre-shared token for authentication   |
+
+{{% boxes/note %}}
+The `m.login.registration_token` authentication type is only valid on the
+[`/register`](#post_matrixclientv3register) endpoint.
+{{% /boxes/note %}}
+
+This authentication type provides homeservers the ability to allow registrations
+to a limited set of people instead of either offering completely open registrations
+or completely closed registration (where the homeserver administrators create
+and distribute accounts).
+
+The token required for this authentication type is shared out of band from
+Matrix and is an opaque string with maximum length of 64 characters in the
+range `[A-Za-z0-9._~-]`. The server can keep any number of tokens for any
+length of time/validity. Such cases might be a token limited to 100 uses or
+for the next 2 hours - after the tokens expire, they can no longer be used
+to create accounts.
+
+To use this authentication type, clients should submit an auth dict with just
+the type, token, and session:
+
+```json
+{
+  "type": "m.login.registration_token",
+  "token": "fBVFdqVE",
+  "session": "<session ID>"
+}
+```
+
+To determine if a token is valid before attempting to use it, the client can
+use the `/validity` API defined below. The API doesn't guarantee that a token
+will be valid when used, but does avoid cases where the user finds out late
+in the registration process that their token has expired.
+
+{{% http-api spec="client-server" api="registration_tokens" %}}
 
 #### Fallback
 
@@ -1024,6 +1066,43 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
+#### Appservice Login
+
+{{% added-in v="1.2" %}}
+
+An appservice can log in by providing a valid appservice token and a user within the appservice's
+namespace.
+
+{{% boxes/note %}}
+Appservices do not need to log in as individual users in all cases, as they
+can perform [Identity Assertion](/application-service-api#identity-assertion)
+using the appservice token. However, if the appservice needs a scoped token
+for a single user then they can use this API instead.
+{{% /boxes/note %}}
+
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration)
+(see [Client Authentication](#client-authentication) on how to provide the token).
+
+To use this login type, clients should submit a `/login` request as follows:
+
+```json
+{
+  "type": "m.login.appservice",
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+}
+```
+
+If the access token is not valid, does not correspond to an appservice
+or the user has not previously been registered then the homeserver will
+respond with an errcode of `M_FORBIDDEN`.
+
+If the access token does correspond to an appservice, but the user id does
+not lie within its namespace then the homeserver will respond with an
+errcode of `M_EXCLUSIVE`.
+
 {{% http-api spec="client-server" api="login" %}}
 
 {{% http-api spec="client-server" api="logout" %}}
@@ -1039,9 +1118,9 @@ This returns an HTML and JavaScript page which can perform the entire
 login process. The page will attempt to call the JavaScript function
 `window.onLogin` when login has been successfully completed.
 
-Non-credential parameters valid for the `/login` endpoint can be
-provided as query string parameters here. These are to be forwarded to
-the login endpoint during the login process. For example:
+{{% added-in v="1.1" %}} Non-credential parameters valid for the `/login`
+endpoint can be provided as query string parameters here. These are to be
+forwarded to the login endpoint during the login process. For example:
 
     GET /_matrix/static/client/login/?device_id=GHTYAJCE
 
@@ -1214,6 +1293,79 @@ using an `unstable` version.
 When this capability is not listed, clients should use `"1"` as the
 default and only stable `available` room version.
 
+### `m.set_displayname` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to change their own display name via profile endpoints. Cases for
+disabling might include users mapped from external identity/directory
+services, such as LDAP.
+
+Note that this is well paired with the `m.set_avatar_url` capability.
+
+When not listed, clients should assume the user is able to change their
+display name.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.set_displayname": {
+      "enabled": false
+    }
+  }
+}
+```
+
+### `m.set_avatar_url` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to change their own avatar via profile endpoints. Cases for
+disabling might include users mapped from external identity/directory
+services, such as LDAP.
+
+Note that this is well paired with the `m.set_displayname` capability.
+
+When not listed, clients should assume the user is able to change their
+avatar.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.set_avatar_url": {
+      "enabled": false
+    }
+  }
+}
+```
+
+### `m.3pid_changes` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to add, remove, or change 3PID associations on their account. Note
+that this only affects a user's ability to use the
+[Admin Contact Information](#adding-account-administrative-contact-information)
+API, not endpoints exposed by an Identity Service. Cases for disabling
+might include users mapped from external identity/directory  services,
+such as LDAP.
+
+When not listed, clients should assume the user is able to modify their 3PID
+associations.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.3pid_changes": {
+      "enabled": false
+    }
+  }
+}
+```
+
 ## Filtering
 
 Filters can be created on the server and can be passed as a parameter to
@@ -1358,13 +1510,11 @@ the server-server API.
 #### State event fields
 
 In addition to the fields of a Room Event, State Events have the
-following fields.
-
+following field:
 
 | Key          | Type         | Description                                                                                                  |
 |--------------|--------------|--------------------------------------------------------------------------------------------------------------|
 | state_key    | string       | **Required.** A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an `@` are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.         |
-| prev_content | EventContent | Optional. The previous `content` for this event. If there is no previous content, this key will be missing.  |
 
 ### Size limits
 
@@ -1428,7 +1578,9 @@ for each room, a `prev_batch` field, which can be passed as a `start`
 parameter to the [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API to retrieve earlier
 messages.
 
-You can visualise the range of events being returned as:
+For example, a `/sync` request might return a range of four events
+`E2`, `E3`, `E4` and `E5` within a given room, omitting two prior events
+`E0` and `E1`. This can be visualised as follows:
 
 ```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
@@ -1445,7 +1597,8 @@ the HTTP connection for a short period of time waiting for new events,
 returning early if an event occurs. Only the `/sync` API (and the
 deprecated `/events` API) support long-polling in this way.
 
-The response for such an incremental sync can be visualised as:
+Continuing the example above, an incremental sync might report
+a single new event `E6`. The response can be visualised as:
 
 ```
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]
@@ -1462,16 +1615,31 @@ containing only the most recent message events. A state "delta" is also
 returned, summarising any state changes in the omitted part of the
 timeline. The client may therefore end up with "gaps" in its knowledge
 of the message timeline. The client can fill these gaps using the
-[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API. This situation looks like this:
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API.
+
+Continuing our example, suppose we make a third `/sync` request asking for
+events since the last sync, by passing the `next_batch` token `x-y-z` as
+the `since` parameter. The server knows about four new events, `E7`, `E8`,
+`E9` and `E10`, but decides this is too many to report at once. Instead,
+the server sends a `limited` response containing `E8`, `E9` and `E10`but
+omitting `E7`. This forms a gap, which we can see in the visualisation:
 
 ```
-    | gap |
-    | <-> |
+                                            | gap |
+                                            | <-> |
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
-          ^                        ^
-          |                        |
-     prev_batch: 'd-e-f'       next_batch: 'u-v-w'
+                                            ^     ^                  ^
+                                            |     |                  |
+                                 since: 'x-y-z'   |                  |
+                                       prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
+
+The limited response includes a state delta which describes how the state
+of the room changes over the gap. This delta explains how to build the state
+prior to returned timeline (i.e. at `E7`) from the state the client knows
+(i.e. at `E6`). To close the gap, the client should make a request to
+[`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
+with the query parameters `from=x-y-z` and `to=d-e-f`.
 
 {{% boxes/warning %}}
 Events are ordered in this API according to the arrival time of the
@@ -1598,7 +1766,9 @@ content from the databases. Servers should include a copy of the
 when serving the redacted event to clients.
 
 The exact algorithm to apply against an event is defined in the [room
-version specification](/rooms).
+version specification](/rooms), as are the criteria homeservers should
+use when deciding whether to accept a redaction event from a remote
+homeserver.
 
 When a client receives an `m.room.redaction` event, it should change
 the affected event in the same way a server does.
@@ -1745,6 +1915,8 @@ The allowable state transitions of membership are:
 {{% http-api spec="client-server" api="joining" %}}
 
 ##### Knocking on rooms
+
+{{% added-in v="1.1" %}}
 
 <!--
 This section is here because it's most similar to being invited/joining a
@@ -2005,4 +2177,37 @@ operations and run in a resource constrained environment. Like embedded
 applications, they are not intended to be fully-fledged communication
 systems.
 
-{{% cs-modules %}}
+{{% cs-module name="instant_messaging" %}}
+{{% cs-module name="voip_events" %}}
+{{% cs-module name="typing_notifications" %}}
+{{% cs-module name="receipts" %}}
+{{% cs-module name="read_markers" %}}
+{{% cs-module name="presence" %}}
+{{% cs-module name="content_repo" %}}
+{{% cs-module name="send_to_device" %}}
+{{% cs-module name="device_management" %}}
+{{% cs-module name="end_to_end_encryption" %}}
+{{% cs-module name="secrets" %}}
+{{% cs-module name="history_visibility" %}}
+{{% cs-module name="push" %}}
+{{% cs-module name="third_party_invites" %}}
+{{% cs-module name="search" %}}
+{{% cs-module name="guest_access" %}}
+{{% cs-module name="room_previews" %}}
+{{% cs-module name="tags" %}}
+{{% cs-module name="account_data" %}}
+{{% cs-module name="admin" %}}
+{{% cs-module name="event_context" %}}
+{{% cs-module name="sso_login" %}}
+{{% cs-module name="dm" %}}
+{{% cs-module name="ignore_users" %}}
+{{% cs-module name="stickers" %}}
+{{% cs-module name="report_content" %}}
+{{% cs-module name="third_party_networks" %}}
+{{% cs-module name="openid" %}}
+{{% cs-module name="server_acls" %}}
+{{% cs-module name="mentions" %}}
+{{% cs-module name="room_upgrades" %}}
+{{% cs-module name="server_notices" %}}
+{{% cs-module name="moderation_policies" %}}
+{{% cs-module name="spaces" %}}

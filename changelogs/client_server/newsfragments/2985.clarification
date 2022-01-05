@@ -1,1 +1,0 @@
-Correct examples of `client_secret` request body parameters so that they do not include invalid characters.

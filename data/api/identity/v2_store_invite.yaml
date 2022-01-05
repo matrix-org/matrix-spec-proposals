@@ -88,7 +88,7 @@ paths:
                   The Matrix room alias for the room to which the user is
                   invited. This should be retrieved from the `m.room.canonical_alias`
                   state event.
-                example: "#somewhere:exmaple.org"
+                example: "#somewhere:example.org"
               room_avatar_url:
                 type: string
                 description: |-
@@ -150,7 +150,7 @@ paths:
               }
         400:
           description: |
-            An error has occured.
+            An error has occurred.
 
             If the 3pid is already bound to a Matrix user ID, the error code
             will be `M_THREEPID_IN_USE`.  If the medium is unsupported, the

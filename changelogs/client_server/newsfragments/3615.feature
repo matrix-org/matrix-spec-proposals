@@ -1,0 +1,1 @@
+Add support for fallback keys (optional keys used once one-time keys run out), as per [MSC2732](https://github.com/matrix-org/matrix-doc/pull/2732).

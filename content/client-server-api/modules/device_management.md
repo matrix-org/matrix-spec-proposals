@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 90
 ---
 
 ### Device Management

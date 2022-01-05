@@ -52,5 +52,5 @@ for user-visible strings.
 ### Rationale
 
  * Avoiding non-ascii characters sidesteps any issues with homoglyphs or
-   altenative encodings of the same characters.
+   alternative encodings of the same characters.
  * Avoiding upper-case character sidesteps any concerns over case-sensitivity.
