@@ -1633,14 +1633,14 @@ difference with the `one_time_key_counts` property in the
 
 
 {{% added-in v="1.2" %}} Finally, a `device_unused_fallback_key_types` property
-is added to list the key algorithms where the device has a fallback key that *has not* been used in a
-[`/keys/claim`](/client-server-api/#post_matrixclientv3keysclaim) response.
-When a previously uploaded fallback key's algorithm is missing from this
-list, the device should upload a replacement key alongside any necessary
-one-time keys to avoid the fallback key's further usage. This property
-is required for inclusion, though previous versions of the specification
-did not have it. In addition to `/versions`, this can be a way to identify
-the server's support for fallback keys.
+is added to list the key algorithms where the device has a fallback key that
+*has not* been used in a [`/keys/claim`](/client-server-api/#post_matrixclientv3keysclaim)
+response. When a previously uploaded fallback key's algorithm is missing
+from this list, the device should upload a replacement key alongside any
+necessary one-time keys to avoid the fallback key's further usage. This
+property is required for inclusion, though previous versions of the
+specification did not have it. In addition to `/versions`, this can be
+a way to identify the server's support for fallback keys.
 
 
 | Parameter                        | Type               | Description                                                                                                            |
