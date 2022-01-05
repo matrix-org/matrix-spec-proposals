@@ -46,16 +46,16 @@ per the spec:
 > The sending server must wait and retry for a 200 OK response before sending a
 > transaction with a different txnId to the receiving server.
 
-With this proposal, blocking becomes optional rather than required. Servers that do not
-want to durably persist transactions before processing them can continue to perform all
-work in-memory by continuing to block on `/send` as is done today. Additionally, a server
-that is receiving too many transactions from a given homeserver may wish to block for
-an arbitrary period of time for rate-limiting purposes, but this is not necessarily
-required.
+With this proposal, blocking becomes optional rather than required. Receiving servers that
+do not want to durably persist transactions before processing them can continue to perform
+all work in-memory by continuing to block on `/send` as is done today. Additionally, a
+receiving server that is receiving too many transactions from a remote homeserver may wish to
+block for an arbitrary period of time for rate-limiting purposes, but this is an implementation
+specific detail and not strictly required.
 
-Another benefit is that homeservers no longer need to parse the response body at
-all and can instead just determine whether the transaction was accepted successfully
-by the HTTP status code.
+Another benefit is that sending homeservers no longer need to parse the response body at
+all and can instead just determine whether the transaction was accepted successfully by
+observing the HTTP status code.
 
 ## Potential issues
 
