@@ -27,8 +27,7 @@ properties:
           `order` values with the wrong type, or otherwise invalid contents, are to be treated
           as though the `order` key was not provided.
 
-          Children without an `order` are sorted after children with an `order`, ordered by the
-          timestamp of their `m.room.create` event in ascending numeric order.
+          See [Ordering](/client-server-api/#ordering-1) for information on how the ordering works.
       suggested:
         type: boolean
         description: |-

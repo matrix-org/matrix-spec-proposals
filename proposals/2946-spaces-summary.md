@@ -254,7 +254,9 @@ with the addition of:
   event, if any.
 * **`allowed_room_ids`**: A list of room IDs which give access to this room per
   [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083).<sup id="a1">[1](#f1)</sup>
-* **`children_state`**: As per Client-Server API version.
+  Optional if would be empty.
+* **`children_state`**: As per Client-Server API version, though only on the `room`
+  and not `children`.
 
 #### Example request:
 
@@ -275,13 +277,14 @@ requesting server is not allowed to access the room.
 of "default ordering of siblings in the room list" using the `order` key:
 
 > Rooms are sorted based on a lexicographic ordering of the Unicode codepoints
-> of the characters in `order` values. Rooms with no `order` come last, in
-> ascending numeric order of the `origin_server_ts` of their `m.room.create`
-> events, or ascending lexicographic order of their `room_id`s in case of equal
-> `origin_server_ts`. `order`s which are not strings, or do not consist solely
-> of ascii characters in the range `\x20` (space) to `\x7E` (~), or consist of
-> more than 50 characters, are forbidden and the field should be ignored if
-> received.
+> of the characters in `order` values. Rooms with no `order` come last with no
+> effective `order`. When the `order` (or lack thereof) is the same, the rooms
+> are sorted in ascending numeric order of the `origin_server_ts` of their
+> `m.room.create` events, or ascending lexicographic order of their `room_id`s
+> in case of equal `origin_server_ts`.  `order`s which are not strings, or do
+> not consist solely of ascii characters in the range `\x20` (space) to `\x7E`
+> (`~`), or consist of more than 50 characters, are forbidden and the field
+> should be ignored if received.
 
 Unfortunately there are situations when a homeserver comes across a reference to
 a child room that is unknown to it and must decide the ordering. Without being
@@ -312,16 +315,8 @@ request a space summary for Room D, but this is undesirable:
 * If we expand the example above to many rooms than this becomes expensive to
   query a remote server simply for ordering.
 
-This proposes changing the ordering rules from MSC1772 to the following:
-
-> Rooms are sorted based on a lexicographic ordering of the Unicode codepoints
-> of the characters in `order` values. Rooms with no `order` come last, in
-> ascending numeric order of the `origin_server_ts` of their `m.space.child`
-> events, or ascending lexicographic order of their `room_id`s in case of equal
-> `origin_server_ts`. `order`s which are not strings, or do not consist solely
-> of ascii characters in the range `\x20` (space) to `\x7E` (~), or consist of
-> more than 50 characters, are forbidden and the field should be ignored if
-> received.
+This proposes changing the ordering rules from MSC1772 to consider the `m.space.child`
+event instead of the `m.room.create` event.
 
 This modifies the clause for calculating the order to use the `origin_server_ts`
 of the `m.space.child` event instead of the `m.room.create` event. This allows

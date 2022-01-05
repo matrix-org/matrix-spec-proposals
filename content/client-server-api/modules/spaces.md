@@ -114,8 +114,9 @@ lexicographically by Unicode code-points such that `\x20` (space) is sorted befo
 of their `m.space.child` event in ascending numeric order, placing them after the
 children with a valid `order` key in the resulting set.
 
-In cases where the `order` or timestamps are the same, the children are ordered
-lexicographically by their room IDs (state keys) in ascending order.
+In cases where the `order` values are the same, the children are ordered by their
+timestamps.  If the timestamps are the same, the children are ordered lexicographically
+by their room IDs (state keys) in ascending order.
 
 Noting the careful use of ASCII spaces here, the following demonstrates a set of space
 children being ordered appropriately:
@@ -249,6 +250,6 @@ additionally contain information about rooms the requesting user is already a me
 of, or that the server is aware of - the local data should be used instead of the remote
 server's data.
 
-Note that the response to this endpoint is contextual based on the user. Servers are
+Note that the response to the client endpoint is contextual based on the user. Servers are
 encouraged to cache the data for a period of time, though permission checks may need to
 be performed to ensure the response is accurate for that user.

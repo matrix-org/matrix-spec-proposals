@@ -141,7 +141,7 @@ paths:
                           type: string
                         description: |-
                           If the room is a [restricted room](#restricted-rooms), these are the room IDs which
-                          are specified by the join rules. Empty otherwise.
+                          are specified by the join rules. Empty or omitted otherwise.
                       children_state:
                         type: array
                         description: |-
@@ -179,33 +179,15 @@ paths:
                           type: string
                         description: |-
                           If the room is a [restricted room](#restricted-rooms), these are the room IDs which
-                          are specified by the join rules. Empty otherwise.
-                      children_state:
-                        type: array
-                        description: |-
-                          The [`m.space.child`](/client-server-api/#mspacechild) events of the space-room, represented
-                          as [Stripped State Events](/client-server-api/#stripped-state) with an added
-                          `origin_server_ts` key.
-
-                          If the room is not a space-room, this should be empty.
-                        items:
-                          allOf:
-                            - $ref: "../../event-schemas/schema/core-event-schema/stripped_state.yaml"
-                            - type: object
-                              properties:
-                                origin_server_ts:
-                                  type: number
-                                  format: int64
-                                  description: The `origin_server_ts` for the event.
-                              required: [origin_server_ts]
+                          are specified by the join rules. Empty or omitted otherwise.
                     required: [room_type, allowed_room_ids, children_state]
               inaccessible_children:
                 type: array
                 items:
                   type: string
                 description: |-
-                  The list of room IDs the responding server cannot provide details on. Rooms which the requesting
-                  server doesn't have a viable way to peek/join will be outright excluded from the response instead.
+                  The list of room IDs the requesting server doesn't have a viable way to peek/join. Rooms which
+                  the responding server cannot provide details on will be outright excluded from the response instead.
 
                   Assuming both the requesting and responding server are well behaved, the requesting server should
                   consider these room IDs as not accessible from anywhere. They should not be re-requested.
