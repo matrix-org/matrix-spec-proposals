@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 70
 ---
 
 ### Content repository
@@ -68,7 +67,7 @@ methods:
 -   640x480, scale
 -   800x600, scale
 
-In summary:  
+In summary:
 -   "scale" maintains the original aspect ratio of the image
 -   "crop" provides an image in the aspect ratio of the sizes given in
     the request

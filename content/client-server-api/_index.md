@@ -2177,4 +2177,37 @@ operations and run in a resource constrained environment. Like embedded
 applications, they are not intended to be fully-fledged communication
 systems.
 
-{{% cs-modules %}}
+{{% cs-module name="instant_messaging" %}}
+{{% cs-module name="voip_events" %}}
+{{% cs-module name="typing_notifications" %}}
+{{% cs-module name="receipts" %}}
+{{% cs-module name="read_markers" %}}
+{{% cs-module name="presence" %}}
+{{% cs-module name="content_repo" %}}
+{{% cs-module name="send_to_device" %}}
+{{% cs-module name="device_management" %}}
+{{% cs-module name="end_to_end_encryption" %}}
+{{% cs-module name="secrets" %}}
+{{% cs-module name="history_visibility" %}}
+{{% cs-module name="push" %}}
+{{% cs-module name="third_party_invites" %}}
+{{% cs-module name="search" %}}
+{{% cs-module name="guest_access" %}}
+{{% cs-module name="room_previews" %}}
+{{% cs-module name="tags" %}}
+{{% cs-module name="account_data" %}}
+{{% cs-module name="admin" %}}
+{{% cs-module name="event_context" %}}
+{{% cs-module name="sso_login" %}}
+{{% cs-module name="dm" %}}
+{{% cs-module name="ignore_users" %}}
+{{% cs-module name="stickers" %}}
+{{% cs-module name="report_content" %}}
+{{% cs-module name="third_party_networks" %}}
+{{% cs-module name="openid" %}}
+{{% cs-module name="server_acls" %}}
+{{% cs-module name="mentions" %}}
+{{% cs-module name="room_upgrades" %}}
+{{% cs-module name="server_notices" %}}
+{{% cs-module name="moderation_policies" %}}
+{{% cs-module name="spaces" %}}

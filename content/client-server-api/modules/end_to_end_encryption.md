@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 100
 ---
 
 ### End-to-End Encryption

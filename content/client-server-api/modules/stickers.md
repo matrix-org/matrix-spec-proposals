@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 250
 ---
 
 ### Sticker Messages

@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 330
 ---
 
 ### Moderation policy lists

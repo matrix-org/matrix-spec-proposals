@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 80
 ---
 
 ### Send-to-Device messaging

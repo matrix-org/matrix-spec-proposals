@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 320
 ---
 
 ### Server Notices
@@ -25,12 +24,12 @@ ignored by clients.
 
 The specified values for `server_notice_type` are:
 
-`m.server_notice.usage_limit_reached`  
+`m.server_notice.usage_limit_reached`
 The server has exceeded some limit which requires the server
 administrator to intervene. The `limit_type` describes the kind of limit
 reached. The specified values for `limit_type` are:
 
-`monthly_active_user`  
+`monthly_active_user`
 The server's number of active users in the last 30 days has exceeded the
 maximum. New connections are being refused by the server. What defines
 "active" is left as an implementation detail, however servers are

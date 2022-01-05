@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 180
 ---
 
 ### Room Tagging

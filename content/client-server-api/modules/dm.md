@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 230
 ---
 
 ### Direct Messaging
