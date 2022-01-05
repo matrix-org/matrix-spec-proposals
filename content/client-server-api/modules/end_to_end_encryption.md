@@ -121,9 +121,9 @@ JSON](/appendices/#signing-json).
 One-time and fallback keys are also uploaded to the homeserver using the
 [`/keys/upload`](/client-server-api/#post_matrixclientv3keysupload) API.
 
-{{% added-in v="1.2" %}} Fallback keys are simply one-time keys which get
-used when the device has run out of one-time keys. They are not consumed
-once used, but should be replaced when additional one-time keys are uploaded.
+{{% added-in v="1.2" %}} Fallback keys are similar to one-time keys, but
+are not consumed once used. They are only used when the device has run out
+of one-time keys, and can be replaced by a new fallback key.
 
 Devices must store the private part of each key they upload. They can
 discard the private part of a one-time key when they receive a message
