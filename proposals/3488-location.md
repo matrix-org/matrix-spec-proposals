@@ -154,3 +154,4 @@ All points from https://www.w3.org/TR/geolocation/#security apply.
  * `m.location` used as a event type and extensible event field name should be
 referred to as `org.matrix.msc3488.location` until this MSC lands.
  * `m.ts` should be referred to as `org.matrix.msc3488.ts` until this MSC lands.
+ * `m.asset` should be referred to as `org.matrix.msc3488.asset` until this MSC lands.
