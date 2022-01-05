@@ -1516,6 +1516,67 @@ following field:
 |--------------|--------------|--------------------------------------------------------------------------------------------------------------|
 | state_key    | string       | **Required.** A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an `@` are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.         |
 
+### Stripped state
+
+Stripped state events are simplified state events to help a potential
+joiner identify the room. These state events can only have the `sender`,
+`type`, `state_key` and `content` keys present.
+
+These stripped state events typically appear on invites, knocks, and in
+other places where a user *could* join the room under the conditions
+available (such as a [`restricted` room](#restricted-rooms)).
+
+Clients should only use stripped state events so long as they don't have
+access to the proper state of the room. Once the state of the room is
+available, all stripped state should be discarded. In cases where the
+client has an archived state of the room (such as after being kicked)
+and the client is receiving stripped state for the room, such as from an
+invite or knock, then the stripped state should take precedence until
+fresh state can be acquired from a join.
+
+The following state events should be represented as stripped state when
+possible:
+
+* [`m.room.create`](#mroomcreate)
+* [`m.room.name`](#mroomname)
+* [`m.room.avatar`](#mroomavatar)
+* [`m.room.topic`](#mroomtopic)
+* [`m.room.join_rules`](#mroomjoin_rules)
+* [`m.room.canonical_alias`](#mroomcanonical_alias)
+* [`m.room.encryption`](#mroomencryption)
+
+{{% boxes/note %}}
+Clients should inspect the list of stripped state events and not assume any
+particular event is present. The server might include events not described
+here as well.
+{{% /boxes/note %}}
+
+{{% boxes/rationale %}}
+The name, avatar, topic, and aliases are presented as aesthetic information
+about the room, allowing users to make decisions about whether or not they
+want to join the room.
+
+The join rules are given to help the client determine *why* it is able to
+potentially join. For example, annotating the room decoration with iconography
+consistent with the respective join rule for the room.
+
+The create event can help identify what kind of room is being joined, as it
+may be a Space or other kind of room. The client might choose to render the
+invite in a different area of the application as a result.
+
+Similar to join rules, the encryption information is given to help clients
+decorate the room with appropriate iconography or messaging.
+{{% /boxes/rationale %}}
+
+{{% boxes/warning %}}
+Although stripped state is usually generated and provided by the server, it
+is still possible to be incorrect on the receiving end. The stripped state
+events are not signed and could theoretically be modified, or outdated due to
+updates not being sent.
+{{% /boxes/warning %}}
+
+{{% event-fields event_type="stripped_state" %}}
+
 ### Size limits
 
 The complete event MUST NOT be larger than 65536 bytes, when formatted
