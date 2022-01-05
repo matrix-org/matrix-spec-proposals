@@ -178,7 +178,6 @@ paths:
             application/json: {
               "chunk": [
                 {
-                  "aliases": ["#murrays:cheese.bar"],
                   "avatar_url": "mxc://bleecker.street/CHEDDARandBRIE",
                   "guest_can_join": false,
                   "name": "CHEESE",

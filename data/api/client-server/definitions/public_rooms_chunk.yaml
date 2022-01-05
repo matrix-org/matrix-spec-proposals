@@ -15,12 +15,6 @@
 type: object
 title: "PublicRoomsChunk"
 properties:
-  aliases:
-    type: array
-    description: Aliases of the room. May be empty.
-    items:
-      type: string
-    example: ["#general:example.org"]
   canonical_alias:
     type: string
     description: The canonical alias of the room, if any.
