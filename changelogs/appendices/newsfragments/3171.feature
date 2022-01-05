@@ -1,0 +1,1 @@
+Describe "Common Namespaced Identifier Grammar" as per [MSC2758](https://github.com/matrix-org/matrix-doc/pull/2758).
