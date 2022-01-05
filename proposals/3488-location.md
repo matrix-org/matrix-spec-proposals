@@ -22,8 +22,9 @@ let the user view events containing `m.location` on a map.
 This is intended to eventually replace the `m.location` msgtype (although this
 MSC doesn't obsolete it)
 
-The `m.location` object must contain a `uri` field with a standard RFC5870
-`geo:` URI.  It may also contain an optional `description` field, giving a
+The `m.location` object must contain a `uri` field with a standard RFC5870 `geo:` URI.
+
+It may also contain an optional `description` field, giving a
 free-form label that should be used to label this location on a map. This is
 not to be confused with fallback text representations of the event, which are
 given by `m.text` or `m.html` as per MSC1767.  The description field is also
@@ -33,15 +34,24 @@ extensible event types when available.
 
 XXX: should description be localised?
 
+`m.location` can also contain an optional `zoom_level` field to specify the 
+displayed area size on client mapping libraries.
+Possible values range from 0 to 20 based on the definitions from 
+[OpenStreetMap here](https://wiki.openstreetmap.org/wiki/Zoom_levels) and it
+would be the client's reponsibility to map them to values a particular library
+uses, if different. The client is also free to completely ignore it and decide
+the zoom level through other means.
+
 ```json
         "m.location": {
             "uri": "geo:51.5008,0.1247;u=35",
             "description": "Our destination",
+            "zoom_level": 15,
         },
 ```
 
-If sharing the location of an object, one would add another subtype (e.g. a
-hypothetical `m.asset` type) to give the object a type and ID.
+In order to differentiate between user tracking and other objects we also
+introduce another subtype called `m.asset` to give the object a type and ID.
 
 If sharing time-sensitive data, one would add another subtype (e.g. a
 hypothetical `m.ts` type) to spell out the exact time that the data in the
@@ -59,6 +69,9 @@ Example for sharing a static location:
         "m.location": {
             "uri": "geo:51.5008,0.1247;u=35",
             "description": "Matthew's whereabouts",
+        },
+        "m.asset": {
+            "type": "user" // the type of asset being tracked
         },
         "m.ts": 1636829458432,
         "m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021"
@@ -86,6 +99,9 @@ favour the contents of the MSC3488 fields over the legacy `geo_uri` field.
         "m.location": {
             "uri": "geo:51.5008,0.1247;u=35",
             "description": "Matthew's whereabouts",
+        },
+        "m.asset": {
+            "type": "user" // the type of asset being tracked
         },
         "m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021",
         "m.ts": 1636829458432,
