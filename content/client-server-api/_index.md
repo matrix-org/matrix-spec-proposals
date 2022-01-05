@@ -618,6 +618,7 @@ This specification defines the following auth types:
 -   `m.login.email.identity`
 -   `m.login.msisdn`
 -   `m.login.dummy`
+-   `m.login.registration_token`
 
 ##### Password-based
 
@@ -788,6 +789,49 @@ just the type and session, if provided:
   "session": "<session ID>"
 }
 ```
+
+##### Token-authenticated registration
+
+{{% added-in v="1.2" %}}
+
+| Type                          | Description                                                       |
+|-------------------------------|-------------------------------------------------------------------|
+| `m.login.registration_token`  | Registers an account with a pre-shared token for authentication   |
+
+{{% boxes/note %}}
+The `m.login.registration_token` authentication type is only valid on the
+[`/register`](#post_matrixclientv3register) endpoint.
+{{% /boxes/note %}}
+
+This authentication type provides homeservers the ability to allow registrations
+to a limited set of people instead of either offering completely open registrations
+or completely closed registration (where the homeserver administrators create
+and distribute accounts).
+
+The token required for this authentication type is shared out of band from
+Matrix and is an opaque string with maximum length of 64 characters in the
+range `[A-Za-z0-9._~-]`. The server can keep any number of tokens for any
+length of time/validity. Such cases might be a token limited to 100 uses or
+for the next 2 hours - after the tokens expire, they can no longer be used
+to create accounts.
+
+To use this authentication type, clients should submit an auth dict with just
+the type, token, and session:
+
+```json
+{
+  "type": "m.login.registration_token",
+  "token": "fBVFdqVE",
+  "session": "<session ID>"
+}
+```
+
+To determine if a token is valid before attempting to use it, the client can
+use the `/validity` API defined below. The API doesn't guarantee that a token
+will be valid when used, but does avoid cases where the user finds out late
+in the registration process that their token has expired.
+
+{{% http-api spec="client-server" api="registration_tokens" %}}
 
 #### Fallback
 
