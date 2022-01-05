@@ -34,7 +34,7 @@ paths:
         valid at the time of request. This is a point-in-time check where the
         token might still expire by the time it is used.
 
-        Servers should be sure to rate limit this endpoint to avoid dictionary
+        Servers should be sure to rate limit this endpoint to avoid brute force
         attacks.
       operationId: registrationTokenValidity
       parameters:
