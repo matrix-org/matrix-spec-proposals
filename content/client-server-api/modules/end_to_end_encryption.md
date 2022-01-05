@@ -135,8 +135,8 @@ too many private keys may discard keys starting with the oldest.
 
 {{% boxes/warning %}}
 Fallback keys are used to prevent one-time key exhaustion when devices
-are offline/unable to upload additional keys, though can also be used
-to initiate replay attacks.
+are offline/unable to upload additional keys, though sessions started using
+fallback keys could be vulnerable to replay attacks.
 {{% /boxes/warning %}}
 
 {{% boxes/warning %}}
@@ -147,7 +147,7 @@ that fallback key.
 Instead, clients should keep the private keys for at most 2 fallback keys:
 the current, unused, fallback key and the key immediately preceding it.
 Once the client is reasonably certain it has received all messages that
-used the old fallback key, such as after an hour since the last message,
+used the old fallback key, such as after an hour since the first message,
 it should remove that fallback key.
 {{% /boxes/warning %}}
 
@@ -1633,7 +1633,7 @@ difference with the `one_time_key_counts` property in the
 
 
 {{% added-in v="1.2" %}} Finally, a `device_unused_fallback_key_types` property
-is added to list the key algorithms which *have not* been used in a
+is added to list the key algorithms where the device has a fallback key that *has not* been used in a
 [`/keys/claim`](/client-server-api/#post_matrixclientv3keysclaim) response.
 When a previously uploaded fallback key's algorithm is missing from this
 list, the device should upload a replacement key alongside any necessary
