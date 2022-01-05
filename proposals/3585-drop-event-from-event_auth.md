@@ -19,8 +19,8 @@ of its auth events. Indeed, Synapse includes code to ignore that event where it
 is returned: https://github.com/matrix-org/synapse/blob/v1.49.2/synapse/handlers/federation_event.py#L1710-L1711.
 
 Additional background: Conduit does *not* return `eventId` (see
-[server_server.rs](https://gitlab.com/famedly/conduit/-/blob/9b57c89df6861eef97b8615ff22433f26c43a377/src/server_server.rs#L2432). Dendrite's
-implementation of this endpoint is [some way
+[server_server.rs](https://gitlab.com/famedly/conduit/-/blob/9b57c89df6861eef97b8615ff22433f26c43a377/src/server_server.rs#L2432)). 
+Dendrite's implementation of this endpoint is [some way
 off-spec](https://github.com/matrix-org/dendrite/issues/2084) but is also
 believed to elide the requested event.
 
