@@ -131,6 +131,22 @@ encoded JSON is presented unencoded and formatted for legibility:
 }
 ```
 
+### Server capabilities
+
+Threads might have sporadic support across servers, to simplify feature 
+detections for clients, a homeserver must return a capability entry for threads.
+
+```json
+{
+  "capabilities": {
+    ...
+    "m.thread": {
+      "enabled": true
+    }
+  }
+}
+```
+
 ### Limitations
 
 #### Read receipts
