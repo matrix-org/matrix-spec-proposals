@@ -71,18 +71,17 @@ jobs:
         uses: actions/checkout@v2
       - name: "📦 Asset creation"
         run: |
-          mkdir -p assets
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
           scripts/dump-swagger.py \
             --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
-            -o assets/spec/client_server/api.json
-          tar -czf assets.tar.gz assets
+            -o spec/client-server-api/api.json
+          tar -czf openapi.tar.gz spec
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
           name: openapi-artifact
-          path: assets.tar.gz
+          path: openapi.tar.gz
 
   build-spec:
     name: "📖 Build the spec"
@@ -119,8 +118,7 @@ jobs:
           name: openapi-artifact
       - name: "📝 Copy the definition to the right location"
         run: |
-          tar -xzf assets.tar.gz
-          cp assets/spec/client_server/api.json spec/client-server-api/
+          tar -xzf openapi.tar.gz
 
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
@@ -166,8 +164,7 @@ jobs:
           name: openapi-artifact
       - name: "📝 Copy the definition to the right location"
         run: |
-          tar -xzf assets.tar.gz
-          cp assets/spec/client_server/api.json spec/client-server-api/
+          tar -xzf openapi.tar.gz
 
       - name: "📦 Tarball creation"
         run: tar -czf spec-historical.tar.gz spec
