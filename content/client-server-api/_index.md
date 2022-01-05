@@ -1293,6 +1293,79 @@ using an `unstable` version.
 When this capability is not listed, clients should use `"1"` as the
 default and only stable `available` room version.
 
+### `m.set_displayname` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to change their own display name via profile endpoints. Cases for
+disabling might include users mapped from external identity/directory
+services, such as LDAP.
+
+Note that this is well paired with the `m.set_avatar_url` capability.
+
+When not listed, clients should assume the user is able to change their
+display name.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.set_displayname": {
+      "enabled": false
+    }
+  }
+}
+```
+
+### `m.set_avatar_url` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to change their own avatar via profile endpoints. Cases for
+disabling might include users mapped from external identity/directory
+services, such as LDAP.
+
+Note that this is well paired with the `m.set_displayname` capability.
+
+When not listed, clients should assume the user is able to change their
+avatar.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.set_avatar_url": {
+      "enabled": false
+    }
+  }
+}
+```
+
+### `m.3pid_changes` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to add, remove, or change 3PID associations on their account. Note
+that this only affects a user's ability to use the
+[Admin Contact Information](#adding-account-administrative-contact-information)
+API, not endpoints exposed by an Identity Service. Cases for disabling
+might include users mapped from external identity/directory  services,
+such as LDAP.
+
+When not listed, clients should assume the user is able to modify their 3PID
+associations.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.3pid_changes": {
+      "enabled": false
+    }
+  }
+}
+```
+
 ## Filtering
 
 Filters can be created on the server and can be passed as a parameter to
