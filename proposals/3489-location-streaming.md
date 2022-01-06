@@ -29,9 +29,9 @@ metadata being duplicated as location data is shared.
 
 An example `m.beacon_info.*` event is:
 
-```json
+```json5
 {
-    "type": "m.beacon_info.identifier",
+    "type": "m.beacon_info.@matthew:matrix.org",
     "state_key": "@matthew:matrix.org",
     "content": {
         "m.beacon_info": {
@@ -66,7 +66,7 @@ information - e.g. every 30 seconds.
 
 An example `m.beacon` event is:
 
-```json
+```json5
 {
     "type": "m.beacon",
     "sender": "@matthew:matrix.org",
@@ -101,6 +101,12 @@ that had multiple downsides:
 * State resolution thrasing on every location update. By storing a state event for every location datapoint, 
 we put significant load on servers' state management implementations.  Current implementations
 may not handle this well.
+
+Another option would be using ephemeral data units to broadcast location updates but they
+do come with downsides of their own:
+* they are not persisted and cannot provide historical data
+* there's no per-room API for them
+* they are not end to end encrypted 
 
 Alternatively, we could behave like MSC3401 and announce users' beacons in
 `m.beacon_info.*` (similar to MSC3401's `m.call`), and then send location
@@ -139,7 +145,7 @@ unencrypted or persisted. The same security considerations apply as for
 ## Unstable prefix
 
  * `m.beacon_info.*` should be referred to as `org.matrix.msc3489.beacon_info.*` until this MSC lands.
- * `m.beacon.*` should be referred to as `org.matrix.msc3489.beacon.*` until this MSC lands.
+ * `m.beacon` should be referred to as `org.matrix.msc3489.beacon` until this MSC lands.
  * `m.location` should be referred to as `org.matrix.msc3488.location.*` until MSC3488 lands.
  * `m.ts` should be referred to as `org.matrix.msc3488.ts.*` until MSC3488 lands.
  * `m.asset` should be referred to as `org.matrix.msc3488.asset.*` until MSC3488 lands.
