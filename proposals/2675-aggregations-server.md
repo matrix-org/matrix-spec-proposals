@@ -125,7 +125,7 @@ The format of `m.relations` (here with ficticious relation types) is as follows:
 
 #### Client-side aggregation
 
-Bundled aggregations on an event give a snapshot of what relations were know
+Bundled aggregations on an event give a snapshot of what relations were known
 at the time the event was received. When relations are received through `/sync`,
 clients should locally aggregate (as they might have done already before
 supporting this MSC) the relation on top of any bundled aggregation the server
