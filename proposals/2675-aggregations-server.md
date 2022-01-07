@@ -174,7 +174,8 @@ GET /_matrix/client/v1/rooms/{roomID}/relations/{event_id}[/{rel_type}[/{event_t
 }
 ```
 
-The endpoint does not have any trailing slashes.
+The endpoint does not have any trailing slashes. It requires authentication
+and is not rate-limited.
 
 The `from` and `limit` query parameters are used for pagination, and work
 just like described for the `/messages` endpoint.
