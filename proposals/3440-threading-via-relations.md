@@ -266,7 +266,7 @@ an NNTP or IMAP or Reddit style threaded UI)
 
 Advantages to "Threads as rooms" include:
  * May be simpler for client implementations.
- * Restricting events visiblity as the room creator
+ * Restricting events visibility as the room creator
  * Ability to create read-only threads
 
 Disadvantages include:
