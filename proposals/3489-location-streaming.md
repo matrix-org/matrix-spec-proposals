@@ -40,7 +40,7 @@ An example `m.beacon_info.*` event is:
         },
         "m.ts": 1436829458432, // creation timestamp of the beacon on the client
         "m.asset": {
-            "type": "user" // {user, asset} - the type of beacon being tracked
+            "type": "m.self" // the type of asset being tracked as per MSC3488
         }
     }
 }
