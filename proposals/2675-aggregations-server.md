@@ -244,7 +244,7 @@ common case for rapidly fixing a typo in a msg which is still in flight!)
  * Information about relations sent from ignored users must never be sent to
    the client, either in aggregations or discrete relation events.
    This is to let you block someone from harassing you with emoji reactions
-   (or using edits as a side-channel to harass you). Therefor, it is possible
+   (or using edits as a side-channel to harass you). Therefore, it is possible
    that different users will see different aggregations (a different last edit,
    or a different reaction count) on an event.
 
