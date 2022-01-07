@@ -268,7 +268,7 @@ potentially doesn't have the full DAG of the room. The federation API doens't
 have an equivalent of the `/relations` API, so has no way but to fetch the
 full DAG over federation to assure itself that it is aware of all relations.
 
-[MSC2836](https://github.com/matrix-org/matrix-doc/blob/kegan/msc/threading/proposals/2836-threading.md#making-relationships) also makes mention of this issue.
+[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836) provided a proposal for following relationships over federation in the "Querying relationships over federation" section via a `/_matrix/federation/v1/event_relationships` API
 
 ### Event type based aggregation and filtering won't work well in encrypted rooms
 
