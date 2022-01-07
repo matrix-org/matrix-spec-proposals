@@ -254,7 +254,7 @@ common case for rapidly fixing a typo in a msg which is still in flight!)
 
 Relation events behave no different from other events in terms of room history visibility,
 which means that some relations might not be visible to a user while they are not invited
-or has not joined the room. This can cause a user to see an incomplete edit history or reaction count
+or have not joined the room. This can cause a user to see an incomplete edit history or reaction count
 based on discrete relation events upon (re)joining a room.
 
 Ideally the server would not include these events in aggregations, as it would mean breaking
