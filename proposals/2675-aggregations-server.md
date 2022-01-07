@@ -43,7 +43,7 @@ The format of the aggregated value (hereafter called "aggregation")
 depends on the relation type.
 
 Some relation types might group the aggregations by the `key` property
-in the relation and aggregate to an array,
+in the relation and aggregate to an array, while
 others might aggregate to a single object or any other value really.
 
 Here are some non-normative examples of what aggregations can look like:
