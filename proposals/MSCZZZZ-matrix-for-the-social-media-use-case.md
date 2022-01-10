@@ -1,0 +1,419 @@
+# MSCZZZZ: Matrix for the social media use case
+
+Matrix is currently mainly used for chats, however, recent projects
+have shown that it is possible to use it for social media.
+
+This proposal is to formally specify this usage and ensure
+a compatibility between the different projects.
+
+While writing this specification, the following principles should
+be respected:
+
+* **simplicity in mind:** the solution should be the simplest one
+
+* **not confusing:** The end user shouldn't know the theoretical usage
+of the room. i.e. A user which isn't using the social media app
+shouldn't be able to 'spam' the main room.
+
+* re-use as much as possible the matrix specifications.
+
+We will restrict ourselves to the creation of the specific rooms.
+The discovery of the user rooms using profile as room is the topic of
+[another MSC](https://nextcloud.carnot.cc/index.php/s/EHQKzJi78oX7GPE).
+
+## The idea
+
+While Matrix could be used for almost anything, we will
+restrict ourselves on the following use cases.
+
+* **'Reqular'** social media (Twitter style, Facebook : Circles, MinesTRIX)
+* **'Art'** social media (Matrix Art)
+
+## The proposal
+
+
+To cover those use case, we will separate our proposal in two part.
+
+* the room types: The container which will store the events
+* special events types: dedicated to the social media use cased
+which will be filtered depending on the client type/UI.
+(displaying a feed or a grid of pictures...).
+
+It is up to the client to filter the room event's and display only
+the one which are relevant on the client goal.
+
+### Room
+
+We propose three room types.
+
+* m.social.feed
+* m.social.group
+* m.social.event
+
+Those three rooms will act as a container for events of different
+types, which will be displayed only on a specific client.
+
+The type is used to set the general purpose of the room.
+
+#### Social media : 'Regular' or 'feed'
+
+```
+m.social.feed
+```
+
+**Usage:**
+
+Used by a user to share content with his friends or the world.
+
+* Owned by a single user
+* Writing in this room could be owner only or any member. Up to the user.
+* Room visibility : public / private. Up to the user.
+* A user could have multiple of them
+
+**UI considerations :**
+
+* Should make clear that this room is owned by a specific user.
+* UI type is up to the client (feed, pictures waterfall ...)
+
+#### Social media : Groups
+
+```
+m.social.group
+```
+
+**Usage:**
+
+* For group discussion
+
+Group is just a regular profile room `m.social.feed` but with a
+slightly different UI as there is no single owner of the room.
+
+#### Social media : Events (TODO)
+
+This type is only an idea yet and should be defined more clearly.
+
+May be the topic of another MSC.
+
+```
+m.social.event
+```
+
+This room type could be reserved for the event use case. i.e. for a
+single event, invite people and let each user say if he will be present.
+
+Idea:
+
+What should be defined for the event
+* name : [regular event] : room name 
+* main picture : [regular event] : room avatar
+* topic : [regular event] : room topic
+* event location
+* event time start
+* event time end
+* add a way to say if we will come (maybe use regular polls) 
+
+regular events : the actual event is already defined in matrix,
+no need to reimplement.
+
+### Room content
+
+Require
+
+* [MSC1767 - Extensible event types & fallback in Matrix (v2)](https://github.com/matrix-org/matrix-doc/pull/1767)
+
+We propose two events type to categorize the content of the event.
+
+**Why ?**
+
+As the room is displayed alongside the user' regular chats rooms we need
+to make it clear to the user that it's a specific room.
+Thus we need to avoid that a user end up "spamming" his room thinking
+the room is a regular chat room.
+
+The solution is to separate the regular messaging from the social 
+media posts. Thus, defining special events different from the regular
+messaging events.
+
+It will still be possible to send room message. But those should not
+be displayed on the user wall / in the group.
+
+**Types:**
+
+* m.social.post
+* m.social.pictures
+
+
+**WARNING: ** Regular chat messages should be displayed on the user wall / in the group.
+
+**Why defining a specific m.social.pictures event ?**
+
+When sending events, we want to be sure that the other users will be
+be able to see our posts. Thus it might be problematic with image
+only social media if we send a post with only text and then want to
+display it in a images only social media or is not able to render
+a fraction of the post (like a post with text, video, image).
+This becomes problematic when the user start making reference
+to previously sended post.
+
+Defining separate types help making sure the app displaying them
+is able to support all the content of this specific event type.
+
+#### Base event
+
+The structure of the event should just be extensible events.
+
+#### Social: Post
+```
+m.social.post
+```
+
+A type for general content.
+
+Could be text, pictures, video ...
+
+**TODO:**
+
+Define what base events the clients supporting those event
+should be able to display.
+
+like:
+
+* m.text
+* m.image
+* m.video
+* m.file
+
+**Example:**
+```json
+{
+  "type": "m.social.post", 
+  "content": {
+    "msgtype": "m.text",
+    "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...</p><a href='...'>Read full post</a>",
+    "m.social.post": [
+      {
+        "msgtype": "m.text",
+        "body": "The first part of full text of story, located before image.",
+      },
+      {
+        "msgtype": "m.image",
+        "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg",
+        "body": "Image 1.jpg",
+        "info": {
+          "mimetype": "image/jpg",
+          "size": 1153501,
+          "w": 963,
+          "h": 734,
+        }
+      },
+      {
+        "msgtype": "m.text",
+        "body": "The ending text of full story after image.",
+      }
+    ]
+  }
+}
+```
+
+#### Social: Image
+
+Base : [MSC3552 - Extensible Events - Images and Stickers](https://github.com/matrix-org/matrix-doc/blob/travis/msc/extev/images/proposals/3552-extensible-events-images.md)
+
+```
+m.social.image
+```
+
+Events adapted to client like Matrix Art to build pictures only
+social media.
+
+UI could be a grid or a list view of pictures.
+
+**Required content:**
+
+The list of arguments that should be part of event["content"]
+
+// TODO
+
+like :
+
+* m.image
+
+**Example:**
+
+```json
+{
+  "type": "m.social.image",
+  "content": {
+      "m.caption": [
+          {
+              "m.text": "Tramline in Berlin"
+          },
+          {
+              "body": "Tramline in Berlin",
+              "mimetype": "text/html"
+          }
+      ],
+      "m.file": {
+          "mimetype": "image/jpeg",
+          "name": "_MG_0641.jpg",
+          "size": 10158773,
+          "url": "mxc://"
+      },
+      "m.image": {
+          "height": 3456,
+          "width": 5184
+      },
+      "m.text": "Tramline Berlin",
+      "m.thumbnail": [
+          {
+              "height": 533,
+              "mimetype": "image/jpeg",
+              "size": 215496,
+              "url": "mxc://nordgedanken.dev/",
+              "width": 800
+          }
+      ],
+  },   
+}
+```
+
+#### Linking posts/pictures to the regular chat
+
+One may want to advertise the room that he posted a specific content
+(only visible in a social media client) that may be of interest to user
+and provide a link to it).
+
+A [solution adapted from the one proposed by @MurzNN](https://github.com/matrix-org/matrix-doc/pull/1767#issuecomment-787431678)
+is to define event like this one
+
+```json
+{
+  "type": "m.room.message", // will be m.text in the future. According to extensible events
+  "content": {
+    "msgtype": "m.text",
+    "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...</p><a href='...'>Read full post</a>",
+    "m.social.post": [
+      {
+        "msgtype": "m.text",
+        "body": "The first part of full text of story, located before image.",
+      },
+      {
+        "msgtype": "m.image",
+        "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg",
+        "body": "Image 1.jpg",
+        "info": {
+          "mimetype": "image/jpg",
+          "size": 1153501,
+          "w": 963,
+          "h": 734,
+        }
+      },
+      {
+        "msgtype": "m.text",
+        "body": "The ending text of full story after image.",
+      }
+    ]
+  }
+}
+```
+
+On regular chat client like element, it should render as a simple link.
+
+Another solution is to just send two events, one m.post.post or m.social.image
+and a summary in the form of a room message.
+
+##### Todo
+
+Some client may not be web pages, thus a `href=""` may not make sense.
+A text fall back, `Open in xxx to see the whole post` could make sense.
+
+#### Idea
+
+We could add a `tags` entry in the event content. The content of those
+tags could be 'hashtags'.
+
+This will be useful for art social media. But we could also see an
+implementation in regular social media.
+
+
+### Reactions
+
+* Emoji reaction will use the regular event.
+* However, post comment will be threads.
+
+For rooms where only the user can write, it could be interesting to
+allow other users to have a comment only permission.
+See [MSC3394 -  new auth rule that only allows someone to post a message in relation to another message](https://github.com/frandavid100/matrix-doc/blob/threaded-replies/proposals/3394-new-auth-rule-that-only-allows-someone-to-post-a-message-in-relation-to-another-message.md)
+for such a proposal.
+
+
+## Aternative
+
+There has been some discussion about whether we should restrict the
+room to a specific type of content (i.e. the type of the room define
+the UI and how the content should be treated). Here is some consideration about the alternative proposal.
+
+## Advantage of this approach (the main one)
+
+* flexibility
+
+If one day we use another client which could display video only
+feed, then we could reuse this room and start posting other events
+type to this room.
+
+It will help as we have all our followers in the same room.
+
+### Disadvantages of this approach
+
+
+#### Complexity / room size
+
+This approach comes with a higher complexity.
+
+* filter algorithm more complex because we need to take into account
+the multiple events type.
+* higher room size (the ratio event displayed / event in the room will
+be higher). May lead to slower client.
+
+We need to take into account that there might be content which just
+can't be displayed by the social media app that we are using.
+
+The app should warn the user about this.
+
+#### Moderation
+
+* if we let the user post content in a room it may be more complex
+to moderate the room as the user could write event using an event
+type that we don't use. Means longer time before removing those events.
+
+### Alternative proposal
+
+Instead of filtering the room events according to their types,
+we could filter the room directly according to his type.
+Thus defining how the room UI.
+
+We could define
+
+* m.social.feed : for regular social media
+* m.social.image : for image social media
+
+This solution solve the main disadvantages of the previous solution
+but lacks the flexiblity.
+
+## Privacy
+
+The permissions of the rooms should be easily editable by the user.
+
+Special attention should be accorded to those events,
+
+```
+m.room.join_rules
+m.room.encryption
+m.room.power_levels
+```
+
+* It must be clear to the user if the actual room is private or not.
+* It must be clear to the user if the actual room is end-to-end encrypted.
+* The user should be able to restrict the users able to write in his room.
+
+* The user should be that all the followers can see each others.
