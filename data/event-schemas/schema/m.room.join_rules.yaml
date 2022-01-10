@@ -26,6 +26,7 @@ properties:
           - restricted
         type: string
       allow:
+        x-addedInMatrixVersion: "1.2"
         description: |-
           For `restricted` rooms, the conditions the user will be tested against. The
           user needs only to satisfy one of the conditions to join the `restricted`
