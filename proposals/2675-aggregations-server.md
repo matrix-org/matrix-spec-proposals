@@ -109,15 +109,26 @@ Deprecated APIs like `/initialSync` and `/events/{eventId}` are *not* required
 to bundle aggregations.
 
 The bundled aggregations are grouped according to their relation type.
-The format of `m.relations` (here with ficticious relation types) is as follows:
+The format of `m.relations` (here with *non-normative* examples of
+the [`m.replace`](https://github.com/matrix-org/matrix-doc/pull/2676) and
+[`m.annotation`](https://github.com/matrix-org/matrix-doc/pull/2677) relation
+types) is as follows:
 
 ```json
 {
   "event_id": "abc",
   "unsigned": {
     "m.relations": {
-      "some_rel_type": { "some_aggregated_prop": true },
-      "other_rel_type": { "other_aggregated_prop": 5 },
+      "m.annotation": {
+        "key": "👍",
+        "origin_server_ts": 1562763768320,
+        "count": 3
+      },
+      "m.replace": {
+        "event_id": "$edit_event_id",
+        "origin_server_ts": 1562763768320,
+        "sender": "@alice:localhost"
+      },
     }
   }
 }
