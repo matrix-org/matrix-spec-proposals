@@ -246,9 +246,6 @@ whichever comes first), the target event id (`m.relates_to`.`event_id`) of
 any relations in the send queue will
 need to be set the newly received `event_id`.
 
-Particularly, please remember to let users edit unsent messages (as this is a
-common case for rapidly fixing a typo in a msg which is still in flight!)
-
 ## Edge cases
 
 ### How do you handle ignored users?
