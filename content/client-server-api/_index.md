@@ -1748,11 +1748,11 @@ This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
 in room versions [which support knocking](/rooms/#feature-matrix).
 
-`restricted`
+{{% added-in v="1.2" %}} `restricted`
 This room can be joined if you were invited or if you are a member of another
 room listed in the join rules. If the server cannot verify membership for any
-of the listed rooms then you can only join with an invite. Note that this join
-rule is only available in room versions [which support it](/rooms/#feature-matrix).
+of the listed rooms then you can only join with an invite. Note that this rule
+is only expected to work in room versions [which support it](/rooms/#feature-matrix).
 
 The allowable state transitions of membership are:
 
@@ -1805,6 +1805,8 @@ server chose to auto-accept.
 
 ##### Restricted rooms
 
+{{% added-in v="1.2" %}}
+
 Restricted rooms are rooms with a `join_rule` of `restricted`. These rooms
 are accompanied by "allow conditions" as described in the
 [`m.room.join_rules`](#mroomjoin_rules) state event.
@@ -1820,9 +1822,10 @@ before accepting the join. See the [Server-Server Spec](/server-server-api/#rest
 for more information.
 
 If the room is `restricted` but no valid conditions are presented then the
-room is effectively invite only. The user does not need to maintain the
-conditions in order to stay a member of the room: the conditions are only
-checked/evaluated during the join process.
+room is effectively invite only.
+
+The user does not need to maintain the conditions in order to stay a member
+of the room: the conditions are only checked/evaluated during the join process.
 
 ###### Conditions
 
