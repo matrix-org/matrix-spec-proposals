@@ -99,5 +99,8 @@ For this reason (and others, above) it is not advised for end-user clients to se
 There are also obvious privacy concerns about establishing media sessions before a call is answered
 if not done so carefully. Advice for handling this is given in the proposal section.
 
+In the best case, this only allows a callee to send media to a callee without the caller's client UI
+saying that the call is answered. This could still be somewhat surprising to an unsuspecting caller.
+
 ## Dependencies
 Depends on [MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746).
