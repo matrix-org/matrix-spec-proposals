@@ -51,7 +51,9 @@ Children of resources will be considered *conversations concerning* the resource
 
 Different mimetypes will require different notions of "location". A need for new notions of location may become evident over time. For example PDFs begin with a need to specify highlighted regions and then at a later date, pindrop locations. One location might also reasonably be presented in two or more different ways. For example, in a PDF, a location might be presented both as coordinates designating a region of a page, and as a tag or set of tags with offsets for use with a screen reader. In an audio file, a location might be presented both as a pair of bounding timestamps and as a pair of offsets within the text of embedded lyrics.
 
-Hence, the `m.markup.location` value MUST be an object, whose keys are different kinds of locations occupied by a single annotation, with the names of those locations either formalized in the matrix spec or namespaced using Java conventions. <!-- Some proposed location types are... ADD RELATED MSCS HERE -->
+Hence, the `m.markup.location` value MUST be an object, whose keys are different kinds of locations occupied by a single annotation, with the names of those locations either formalized in the matrix spec or namespaced using Java conventions. Some proposed location types are described in:
+
+- [MSC3592: Markup locations for PDF documents)[https://github.com/matrix-org/matrix-doc/pull/3592]
 
 ### Examples
 
@@ -160,7 +162,28 @@ among other things.
 
 The main disadvantage to allowing both models seems to be the possibility of fragmentation and incompatibility between annotation-aware clients. In practice, this seems unlikely to be a major problem.
 
-# Security Considerations
+## The Web Annotation Data Model
+
+The [Web Annotation Working group](https://www.w3.org/annotation/) at the W3C has published a detailed set of recommendations for interoperable and shared web annotation. These include both [a data model](https://www.w3.org/TR/annotation-model/) and [a protocol](https://www.w3.org/TR/annotation-protocol/) for annotation servers. The fundamental idea of the annotation model is to view an annotation as a connection between zero or more "body" resources, annotating one or more "target" resources.
+
+<img width="353" alt="intro_model" src="https://user-images.githubusercontent.com/6383381/148815059-b2f6350b-37aa-4926-95d7-4dd34f699492.png">
+
+Targets are identified using a combination of an internationalized URI, and a set of [selectors](https://www.w3.org/TR/annotation-model/#selectors) (e.g. XPaths or CSS selectors) to pick out a part of the resource designated by the URI. Bodies can be identified in the same way, or embedded as formatted or unformatted text within the annotation.
+
+Matrix could adopt a markup spec based on this set of recommendations, and focus on annotations that link targets, potentially specified via `mxc://` or `matrix://` uris, to bodies, potentially presented as `matrix://` or `mxc://` uris. Annotations could be sent in timelines as extensible events, and in resource spaces meant to collect sets of annotations - roughly corresponding to the w3c's concept of [annotation collections and pages](https://www.w3.org/TR/annotation-model/#collections). Downstream, it's conceivable that annotation servers speaking the w3c annotation protocol with a matrix backend could be implemented as app services.
+
+Some advantages of this proposal are:
+
+1. In principle, using a w3c spec should support greater interoperability with other annotation systems, as well as better exportability, archivability, machine-readability...
+2. The w3c spec is detailed and includes features (a notion of annotation state, accessibilty attribution, rendering advice...) that go considerably beyond what this MSC proposes, and whose inclusion into the matrix spec proper might feel like bloat.
+3. The w3c spec is broad enough to support the functionality provided by this MSC, but also supports some other functionality (i.e. annotations with embedded bodies, annotations linking to standalone content in or out of matrix).
+
+Some disadvantages are:
+
+1. In practice, near-term prospects for interoperability might be limited. There are not many [implementations](https://w3c.github.io/test-results/annotation-model/all.html) in the wild. Even, for example, Hypothes.is supports only part of the w3c data model, and [apparently only in an (undocumented?) read-only capacity](https://github.com/hypothesis/h/blob/28c2c5bdf5d85f12307ed56f90995ad1c1f214ac/h/routes.py#L122). If desired, bridging might be better accomplished by using APIs for individual annotation services directly, rather than by routing through an incompletely supported data model.
+2. The w3c spec's selectors for PDF annotation are somewhat limited, and more generally the set of selectors built into the spec are not likely to cover all use cases. The w3c spec does incorporate [an extension mechanism](https://www.w3.org/TR/annotation-vocab/#extensions), via JSON-LD contexts. Perhaps the matrix spec for document markup would want to eventually incorporate a well-documented JSON-LD context for any extended selector types that become important.
+
+# Security Considerations - 
 
 None.
 
