@@ -88,6 +88,9 @@ may be more of an issue in the Matrix protocol. The reasons for this are:
  * This does not rule out an approach more like the Application Server method in the future, if necessary.
  * It is a very natural fit for the existing WebRTC `pranswer` semantics.
 
+An alternative would be a proposal negotiating separate media sessions for each early media session and
+the 'real' media session by the callee making a separate offer to the caller using different events types.
+
 ## Security considerations
 
 Any client sending a `pranswer` should obviously bear in mind that this will reveal the device is online.
