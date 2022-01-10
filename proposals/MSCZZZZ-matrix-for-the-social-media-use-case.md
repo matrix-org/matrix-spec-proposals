@@ -143,7 +143,7 @@ be displayed on the user wall / in the group.
 * m.social.pictures
 
 
-**WARNING: ** Regular chat messages should be displayed on the user wall / in the group.
+**WARNING:** Regular chat messages should be displayed on the user wall / in the group.
 
 **Why defining a specific m.social.pictures event ?**
 
