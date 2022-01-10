@@ -182,7 +182,7 @@ Some advantages of this proposal are:
 
 Some disadvantages are:
 
-1. In practice, near-term prospects for interoperability might be limited. There are not many [implementations](https://w3c.github.io/test-results/annotation-model/all.html) in the wild. Even, for example, Hypothes.is supports only part of the w3c data model, and [apparently only in an (undocumented?) read-only capacity](https://github.com/hypothesis/h/blob/28c2c5bdf5d85f12307ed56f90995ad1c1f214ac/h/routes.py#L122). If desired, bridging might be better accomplished by using APIs for individual annotation services directly, rather than by routing through an incompletely supported data model.
+1. In practice, near-term prospects for interoperability might be limited. There are not many [implementations](https://w3c.github.io/test-results/annotation-model/all.html) in the wild. Even, for example, Hypothes.is supports only part of the w3c data model, and [apparently only in an undocumented read-only capacity](https://github.com/hypothesis/h/blob/28c2c5bdf5d85f12307ed56f90995ad1c1f214ac/h/routes.py#L122). If desired, bridging might be better accomplished by using APIs for individual annotation services directly, rather than by routing through an incompletely supported data model.
 2. The w3c spec's selectors for PDF annotation are somewhat limited, and more generally the set of selectors built into the spec are not likely to cover all use cases. The w3c spec does incorporate [an extension mechanism](https://www.w3.org/TR/annotation-vocab/#extensions), via JSON-LD contexts. Perhaps the matrix spec for document markup would want to eventually incorporate a well-documented JSON-LD context for any extended selector types that become important.
 
 # Security Considerations - 
