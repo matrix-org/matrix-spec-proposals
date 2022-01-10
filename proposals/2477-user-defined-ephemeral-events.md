@@ -23,7 +23,6 @@ similar manner to the already existing support for users to send their own types
 Note though that this proposal does not include any support for sending user-defined ephemeral
 events which are not explicitly bound to rooms, like the global `m.presence` event.
 
-
 Examples of how this feature could be used are; as regular status updates to a user-requested
 long-lived task, which a bot might has started for a received event. Or pehaps as a GPS live-location
 feature, where participating client would regularly post their current location relative to a
@@ -161,7 +160,7 @@ To reduce the scope of changes required by this proposal, the suggestion is to a
 `m.*` events to skip these keys where no value could be easily assigned to them. E.g. typing notices,
 read receipts.
 
-```json
+```jsonc
 {
   "next_batch": "...",
   // ...
