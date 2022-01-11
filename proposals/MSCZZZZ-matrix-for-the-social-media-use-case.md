@@ -70,6 +70,15 @@ Used by a user to share content with his friends or the world.
 * Room visibility : public / private. Up to the user.
 * A user could have multiple of them
 
+Small note about encryption:
+
+Clients should notify the user that encryption shouldn't be enabled on 'big room'. (1)
+On a side note, end-to-end encrypted rooms with a very large number of 'followers'
+don't make a lot of change. 
+
+TODO (1) : Define what large room means and what is the recommanded maximum number of
+participants in a E2EE room.
+
 **UI considerations :**
 
 * Should make clear that this room is owned by a specific user.
