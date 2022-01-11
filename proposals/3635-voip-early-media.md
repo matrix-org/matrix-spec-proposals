@@ -13,7 +13,7 @@ channel to be established earlier in the lifetime of the call.
 This method of exchanging ealry media is known as the Gateway Model. However,
 [RFC3960](https://datatracker.ietf.org/doc/html/rfc3960) details how this is, "seriously
 limited in the presence of forking", leading to media clipping. Since Matrix is fundamentally
-multi-device and multi-user, these issues may be even more prevelant.
+multi-device and multi-user, these issues may be even more prevalent.
 
 Furthermore, [RFC3959](https://datatracker.ietf.org/doc/html/rfc3959) explains that application
 servers may not be able to produce an answer for the UAS due to end-to-end encryption. Since all
@@ -40,7 +40,7 @@ by allowing an `m.call.negotiate` event to be sent by the callee before `m.call.
 field MUST be set to `pranswer`. The caller should ignore `m.call.negotiate` events of any other
 type before the `m.call.answer`. Clients using WebRTC compatible APIs should imply be able to
 pass this SDP object into `setRemoteDescription` as-is. In fact, if clients do not explicitly
-discard `m.call.negotiate` before an `m.call.answer`, they may already inadvertantly support this
+discard `m.call.negotiate` before an `m.call.answer`, they may already inadvertently support this
 MSC.
 
 The the same call is later answered with an `m.call.answer` event, the caller's client passes the
