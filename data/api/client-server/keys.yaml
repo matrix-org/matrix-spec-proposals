@@ -149,7 +149,7 @@ paths:
                   For each key algorithm, the number of unclaimed one-time keys
                   of that type currently held on the server for this device.
                   If an algorithm is not listed, the count for that algorithm
-                  to be zero.
+                  is to be assumed zero.
                 example:
                   curve25519: 10
                   signed_curve25519: 20
