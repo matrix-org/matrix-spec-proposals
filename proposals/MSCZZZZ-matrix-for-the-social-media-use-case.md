@@ -158,6 +158,8 @@ to previously sended post.
 Defining separate types help making sure the app displaying them
 is able to support all the content of this specific event type.
 
+See the later point for regular room message fallback. 
+
 #### Base event
 
 The structure of the event should just be extensible events.
@@ -244,6 +246,7 @@ like :
 {
   "type": "m.social.image",
   "content": {
+    "m.social.image": [
       "m.caption": [
           {
               "m.text": "Tramline in Berlin"
@@ -260,19 +263,20 @@ like :
           "url": "mxc://"
       },
       "m.image": {
-          "height": 3456,
-          "width": 5184
+        "height": 3456,
+        "width": 5184
       },
       "m.text": "Tramline Berlin",
       "m.thumbnail": [
-          {
-              "height": 533,
-              "mimetype": "image/jpeg",
-              "size": 215496,
-              "url": "mxc://nordgedanken.dev/",
-              "width": 800
-          }
+        {
+            "height": 533,
+            "mimetype": "image/jpeg",
+            "size": 215496,
+            "url": "mxc://nordgedanken.dev/",
+            "width": 800
+        }
       ],
+    ]
   },   
 }
 ```
