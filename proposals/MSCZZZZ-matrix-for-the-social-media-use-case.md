@@ -384,6 +384,12 @@ can't be displayed by the social media app that we are using.
 
 The app should warn the user about this.
 
+// TODO : See how the room size impact the time to join.
+The discussion may need to take into account the time it takes to join one large room
+with many states vs many small ones. (Is it preferable to have many small rooms
+that are auto joined or one big room with multiple 'feeds' (different event types)
+in it.)
+
 #### Moderation
 
 * if we let the user post content in a room it may be more complex
