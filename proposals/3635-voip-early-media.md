@@ -1,7 +1,7 @@
 # MSC3635: Early Media for VoIP
 
 In PSTN and SIP calls, media can be sent between callee and caller before the callee has accepted
-the call. This allows for things like ringing tones and announcements.
+the call. This allows for things like ringback tones and announcements.
 
 ## Context
 Early Media is already a well-established concept in SIP. Traditionally, it relies on the
@@ -37,11 +37,11 @@ However, it adds significant complexity and the gateway model is still widely us
 
 This MSC proposes to allow early media in a manner similar to the gateway model above. We do this
 by allowing an `m.call.negotiate` event to be sent by the callee before `m.call.answer`. The `type`
-field MUST be set to `pranswer`. The caller should ignore `m.call.negotiate` events before
-of any other type before the `m.call.answer`. Clients using WebRTC compatible APIs should imply
-be able to pass this SDP object into `setRemoteDescription` as-is. In fact, if clients do not
-explicitly discard `m.call.negotiate` before an `m.call.answer`, they may already inadvertantly
-support this MSC.
+field MUST be set to `pranswer`. The caller should ignore `m.call.negotiate` events of any other
+type before the `m.call.answer`. Clients using WebRTC compatible APIs should imply be able to
+pass this SDP object into `setRemoteDescription` as-is. In fact, if clients do not explicitly
+discard `m.call.negotiate` before an `m.call.answer`, they may already inadvertantly support this
+MSC.
 
 The the same call is later answered with an `m.call.answer` event, the caller's client passes the
 answer SDP to the WebRTC API just as before: it may do so since the previous SDP was of type
