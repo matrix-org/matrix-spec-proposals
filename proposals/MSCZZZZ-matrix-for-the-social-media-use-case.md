@@ -9,9 +9,9 @@ a compatibility between the different projects.
 While writing this specification, the following principles should
 be respected:
 
-* **simplicity in mind:** the solution should be the simplest one
+* **Simplicity in mind:** the solution should be the simplest one
 
-* **not confusing:** The end user shouldn't know the theoretical usage
+* **Not confusing:** The end user shouldn't know the theoretical usage
 of the room. i.e. A user which isn't using the social media app
 shouldn't be able to 'spam' the main room.
 
@@ -26,7 +26,7 @@ The discovery of the user rooms using profile as room is the topic of
 While Matrix could be used for almost anything, we will
 restrict ourselves on the following use cases.
 
-* **'Reqular'** social media (Twitter style, Facebook : Circles, MinesTRIX)
+* **'Regular'** social media (Twitter style, Facebook : Circles, MinesTRIX)
 * **'Art'** social media (Matrix Art)
 
 ## The proposal
@@ -76,7 +76,7 @@ Clients should notify the user that encryption shouldn't be enabled on 'big room
 On a side note, end-to-end encrypted rooms with a very large number of 'followers'
 don't make a lot of change. 
 
-TODO (1) : Define what large room means and what is the recommanded maximum number of
+TODO (1) : Define what large room means and what is the recommended maximum number of
 participants in a E2EE room.
 
 **UI considerations :**
@@ -101,7 +101,7 @@ slightly different UI as there is no single owner of the room.
 
 This type is only an idea yet and should be defined more clearly.
 
-May be the topic of another MSC.
+Maybe the topic of another MSC.
 
 ```
 m.social.event
@@ -121,7 +121,7 @@ What should be defined for the event
 * event time end
 * add a way to say if we will come (maybe use regular polls) 
 
-regular events : the actual event is already defined in matrix,
+Regular events : the actual event is already defined in matrix,
 no need to reimplement.
 
 ### Room content
@@ -157,14 +157,14 @@ be displayed on the user wall / in the group.
 **Why defining a specific m.social.pictures event ?**
 
 When sending events, we want to be sure that the other users will be
-be able to see our posts. Thus it might be problematic with image
+be able to see our posts. Thus, it might be problematic with image
 only social media if we send a post with only text and then want to
-display it in a images only social media or is not able to render
+display it in a image only social media or is not able to render
 a fraction of the post (like a post with text, video, image).
 This becomes problematic when the user start making reference
-to previously sended post.
+to previously sent post.
 
-Defining separate types help making sure the app displaying them
+Defining separate types helps make sure the app displaying them
 is able to support all the content of this specific event type.
 
 See the later point for regular room message fallback. 
@@ -184,7 +184,7 @@ Could be text, pictures, video ...
 
 **TODO:**
 
-Define what base events the clients supporting those event
+Define what base events the clients supporting those events
 should be able to display.
 
 like:
@@ -297,7 +297,7 @@ One may want to advertise the room that he posted a specific content
 and provide a link to it).
 
 A [solution adapted from the one proposed by @MurzNN](https://github.com/matrix-org/matrix-doc/pull/1767#issuecomment-787431678)
-is to define event like this one
+is to define events like this one
 
 ```json
 {
@@ -330,7 +330,7 @@ is to define event like this one
 }
 ```
 
-On regular chat client like element, it should render as a simple link.
+On a regular chat client like element, it should render as a simple link.
 
 Another solution is to just send two events, one m.post.post or m.social.image
 and a summary in the form of a room message.
@@ -360,7 +360,7 @@ See [MSC3394 -  new auth rule that only allows someone to post a message in rela
 for such a proposal.
 
 
-## Aternative
+## Alternative
 
 There has been some discussion about whether we should restrict the
 room to a specific type of content (i.e. the type of the room define
@@ -417,7 +417,7 @@ We could define
 * m.social.image : for image social media
 
 This solution solve the main disadvantages of the previous solution
-but lacks the flexiblity.
+but lacks the flexibility.
 
 ## Privacy
 
