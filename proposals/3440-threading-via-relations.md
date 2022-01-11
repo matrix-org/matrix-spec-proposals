@@ -209,6 +209,9 @@ A `m.thread` event can only reference events that do not have a `rel_type`
 Given the above list of events, only `ev1` would be a valid target for an `m.thread`
 relation event.
 
+
+
+#### 
 ### Client considerations
 
 #### Display "m.thread" as "m.in_reply_to"
