@@ -46,11 +46,13 @@ I.e. in places which include bundled relations (per
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), the thread root 
 would include additional information in the `unsigned` field:
 
-```json
+```jsonc
 {
   "latest_event": {
-    "content": { ... },
-    ...
+    "content": {
+      // ...
+    },
+    // ...
   },
   "count": 7,
   "current_user_participated": true
@@ -123,10 +125,12 @@ GET /_matrix/client/unstable/rooms/!room_id:domain/messages?filter=...
 The filter string would include the new fields, above. In this example, the URL 
 encoded JSON is presented unencoded and formatted for legibility:
 
-```json
+```jsonc
 {
   "types": ["m.room.message"],
-  "relation_senders": [...],
+  "relation_senders": [
+    // ...
+  ],
   "relation_types": ["m.thread"]
 }
 ```
@@ -136,10 +140,10 @@ encoded JSON is presented unencoded and formatted for legibility:
 Threads might have sporadic support across servers, to simplify feature 
 detections for clients, a homeserver must return a capability entry for threads.
 
-```json
+```jsonc
 {
   "capabilities": {
-    ...
+    // ...
     "m.thread": {
       "enabled": true
     }
@@ -173,15 +177,15 @@ Nested threading is out of scope for this proposal and would be the subject of
 a different MSC.
 A `m.thread` event can only reference events that do not have a `rel_type`
 
-```
+```jsonc
 [
   {
     "event_id": "ev1",
-    ...
+    // ...
   },
   {
     "event_id": "ev2",
-    ...
+    // ...
     "m.relates_to": {
       "rel_type": "m.thread",
       "event_id": "ev1",
@@ -192,7 +196,7 @@ A `m.thread` event can only reference events that do not have a `rel_type`
   },
   {
     "event_id": "ev3",
-    ...
+    // ...
     "m.relates_to": {
       "rel_type": "m.annotation",
       "event_id": "ev1",
@@ -235,9 +239,9 @@ event in the thread context when clicked.
 When replying to the following event, a client that does not support thread should 
 copy in `rel_type` and `event_id` properties in their reply mixin.
 
-```
+```jsonc
 {
-  ...
+  // ...
   "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "ev1"
