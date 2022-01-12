@@ -128,19 +128,19 @@ children being ordered appropriately:
 [
     {
         "type": "m.space.child",
-        "state_key": "!a:example.org",
-        "origin_server_ts": 1640141000000,
+        "state_key": "!b:example.org",
+        "origin_server_ts": 1640341000000,
         "content": {
-            "order": "aaaa",
+            "order": " ",
             "via": ["example.org"]
         }
     },
     {
         "type": "m.space.child",
-        "state_key": "!b:example.org",
-        "origin_server_ts": 1640341000000,
+        "state_key": "!a:example.org",
+        "origin_server_ts": 1640141000000,
         "content": {
-            "order": " ",
+            "order": "aaaa",
             "via": ["example.org"]
         }
     },
@@ -155,16 +155,16 @@ children being ordered appropriately:
     },
     {
         "type": "m.space.child",
-        "state_key": "!d:example.org",
-        "origin_server_ts": 1640741000000,
+        "state_key": "!e:example.org",
+        "origin_server_ts": 1640641000000,
         "content": {
             "via": ["example.org"]
         }
     },
     {
         "type": "m.space.child",
-        "state_key": "!e:example.org",
-        "origin_server_ts": 1640641000000,
+        "state_key": "!d:example.org",
+        "origin_server_ts": 1640741000000,
         "content": {
             "via": ["example.org"]
         }
@@ -172,13 +172,11 @@ children being ordered appropriately:
 ]
 ```
 
-The above would result in the following order:
-
-1. `!b:example.org` first because `\x20` is before `aaaa` lexically.
-2. `!a:example.org` next because `aaaa` is before `first` lexically.
-3. `!c:example.org` next because `first` is the last `order` value.
-4. `!e:example.org` next because the event timestamp is smallest.
-5. `!d:example.org` last because the event timestamp is largest.
+1. `!b:example.org` is first because `\x20` is before `aaaa` lexically.
+2. `!a:example.org` is next because `aaaa` is before `first` lexically.
+3. `!c:example.org` is next because `first` is the last `order` value.
+4. `!e:example.org` is next because the event timestamp is smallest.
+5. `!d:example.org` is last because the event timestamp is largest.
 
 ##### `m.space.parent` relationships
 
