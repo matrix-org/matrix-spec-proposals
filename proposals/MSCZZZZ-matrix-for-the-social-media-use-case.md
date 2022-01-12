@@ -28,7 +28,7 @@ the one which are relevant on the client goal.
 
 ### Room
 
-We propose three room types.
+We propose two room types.
 
 * m.social.feed
 * m.social.group
@@ -107,9 +107,6 @@ be displayed on the user wall / in the group.
 
 * m.social.post
 * m.social.pictures
-
-
-**WARNING:** Regular chat messages should be displayed on the user wall / in the group.
 
 **Why defining a specific m.social.pictures event ?**
 
