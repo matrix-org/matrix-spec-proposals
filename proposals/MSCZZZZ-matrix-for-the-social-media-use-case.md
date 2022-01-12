@@ -97,7 +97,7 @@ We propose two events type to categorize the content of the event.
 
 As the room is displayed alongside the user' regular chats rooms we need
 to make it clear to the user that it's a specific room.
-Thus we need to avoid that a user end up "spamming" his room thinking
+Thus, we need to avoid that a user end up "spamming" his room thinking
 the room is a regular chat room.
 
 The solution is to separate the regular messaging from the social 
@@ -117,7 +117,7 @@ be displayed on the user wall / in the group.
 
 **Why defining a specific m.social.pictures event ?**
 
-When sending events, we want to be sure that the other users will be
+When sending events, we want to be sure that the other users will
 be able to see our posts. Thus, it might be problematic with image
 only social media if we send a post with only text and then want to
 display it in a image only social media or is not able to render
@@ -125,9 +125,9 @@ a fraction of the post (like a post with text, video, image).
 This becomes problematic when the user start making reference
 to previously sent post.
 
-**=> We define separate types to make sure the app displaying them
+> We define separate types to make sure the app displaying them
 is able to support all the content of this specific event type and
-make sure image only and regular feeds don't mix.**
+make sure image only and regular feeds don't mix.
 
 See the later point for regular room message fallback. 
 
