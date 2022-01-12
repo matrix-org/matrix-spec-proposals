@@ -22,8 +22,9 @@ let the user view events containing `m.location` on a map.
 This is intended to eventually replace the `m.location` msgtype (although this
 MSC doesn't obsolete it)
 
-The `m.location` object must contain a `uri` field with a standard RFC5870
-`geo:` URI.  It may also contain an optional `description` field, giving a
+The `m.location` object must contain a `uri` field with a standard RFC5870 `geo:` URI.
+
+It may also contain an optional `description` field, giving a
 free-form label that should be used to label this location on a map. This is
 not to be confused with fallback text representations of the event, which are
 given by `m.text` or `m.html` as per MSC1767.  The description field is also
@@ -33,15 +34,40 @@ extensible event types when available.
 
 XXX: should description be localised?
 
-```json
+`m.location` can also contain an optional `zoom_level` field to specify the 
+displayed area size on client mapping libraries.
+Possible values range from 0 to 20 based on the definitions from 
+[OpenStreetMap here](https://wiki.openstreetmap.org/wiki/Zoom_levels) and it
+would be the client's reponsibility to map them to values a particular library
+uses, if different. The client is also free to completely ignore it and decide
+the zoom level through other means.
+
+```json5
         "m.location": {
             "uri": "geo:51.5008,0.1247;u=35",
             "description": "Our destination",
+            "zoom_level": 15,
         },
 ```
 
-If sharing the location of an object, one would add another subtype (e.g. a
-hypothetical `m.asset` type) to give the object a type and ID.
+In order to differentiate between user tracking and other objects we also
+introduce a new subtype called `m.asset` to give the object a type and ID.
+
+`m.asset` defines a generic asset that can be used for location tracking 
+but also in other places like inventories, geofencing, checkins/checkouts etc.
+It should contain a mandatory namespaced `type` key defining what particular 
+asset is being referred to. 
+For the purposes of user location tracking `m.self` should be used in order to
+avoid duplicating the mxid.
+
+If `m.asset` is missing from the location's content the client should render it 
+as `m.self` as that will be the most common use case. 
+Otherwise, if it's not missing but the type is invalid or unkown the client 
+should attempt to render it as a generic location. 
+Clients should be able to distinguish between `m.self` and explicit assets for
+this feature to be correctly implemented as interpreting everything as `m.self`
+is unwanted.
+
 
 If sharing time-sensitive data, one would add another subtype (e.g. a
 hypothetical `m.ts` type) to spell out the exact time that the data in the
@@ -52,13 +78,16 @@ static location, suitable for "drop a pin on a map" style use cases.
 
 Example for sharing a static location:
 
-```json
+```json5
 {
     "type": "m.location",
     "content": {
         "m.location": {
             "uri": "geo:51.5008,0.1247;u=35",
             "description": "Matthew's whereabouts",
+        },
+        "m.asset": {
+            "type": "m.self" // the type of asset being tracked
         },
         "m.ts": 1636829458432,
         "m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021"
@@ -76,7 +105,7 @@ in the `m.location` extensible event type from this MSC into the old-style
 relevant data.  If both fields are present, clients that speak MSC3488 should
 favour the contents of the MSC3488 fields over the legacy `geo_uri` field.
 
-```json
+```json5
 {
     "type": "m.room.message",
     "content": {
@@ -86,6 +115,9 @@ favour the contents of the MSC3488 fields over the legacy `geo_uri` field.
         "m.location": {
             "uri": "geo:51.5008,0.1247;u=35",
             "description": "Matthew's whereabouts",
+        },
+        "m.asset": {
+            "type": "m.self" // the type of asset being tracked
         },
         "m.text": "Matthew was at geo:51.5008,0.1247;u=35 as of Sat Nov 13 18:50:58 2021",
         "m.ts": 1636829458432,
@@ -108,7 +140,7 @@ support the concept of uncertainty, and is designed more for sharing map
 annotations than location sharing. It would look something like this if we
 used it:
 
-```json
+```json5
         "m.geo": {
             "type": "Point", 
             "coordinates": [30.0, 10.0]
@@ -138,3 +170,4 @@ All points from https://www.w3.org/TR/geolocation/#security apply.
  * `m.location` used as a event type and extensible event field name should be
 referred to as `org.matrix.msc3488.location` until this MSC lands.
  * `m.ts` should be referred to as `org.matrix.msc3488.ts` until this MSC lands.
+ * `m.asset` should be referred to as `org.matrix.msc3488.asset` until this MSC lands.
