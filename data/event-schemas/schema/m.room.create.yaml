@@ -19,6 +19,7 @@ properties:
           Optional [room type](#types) to denote a room's intended function outside of traditional conversation.
 
           Unspecified room types are possible using [Namespaced Identifiers](/appendices/#common-namespaced-identifier-grammar).
+        type: string
       predecessor:
         description: A reference to the room this room replaces, if the previous room was upgraded.
         type: object
