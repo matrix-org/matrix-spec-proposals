@@ -6,10 +6,6 @@ have shown that it is possible to use it for social media.
 This proposal is to formally specify this usage and ensure
 a compatibility between the different projects.
 
-We will restrict ourselves to the creation of the specific rooms.
-The discovery of other user rooms using profile as room is the topic of
-[another MSC](https://nextcloud.carnot.cc/index.php/s/EHQKzJi78oX7GPE).
-
 ## The idea
 
 This MSC tries to cover those following social media cases:
