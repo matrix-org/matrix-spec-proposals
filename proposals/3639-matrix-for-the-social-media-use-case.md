@@ -1,4 +1,4 @@
-# MSCZZZZ: Matrix for the social media use case
+# MSC3639: Matrix for the social media use case
 
 Matrix is currently mainly used for chats, however, recent projects
 have shown that it is possible to use it for social media.
@@ -414,8 +414,8 @@ The following mapping will be used for identifiers in this MSC during developmen
 
 Proposed final identifier | Purpose | Development identifier
 ------------------------------- | ------- | ----
-`m.social.feed` | 'wall' room | `org.matrix.mscZZZZ.social.feed`
-`m.social.group` | group room | `org.matrix.mscZZZZ.social.group`
-`m.social.post` | post event | `org.matrix.mscZZZZ.social.post`
-`m.social.image` | image event | `org.matrix.mscZZZZ.social.image`
-`m.social.tags` | tags property of `m.social.post` or `m.social.image` event | `org.matrix.mscZZZZ.social.tag`
+`m.social.feed` | 'wall' room | `org.matrix.msc3639.social.feed`
+`m.social.group` | group room | `org.matrix.msc3639.social.group`
+`m.social.post` | post event | `org.matrix.msc3639.social.post`
+`m.social.image` | image event | `org.matrix.msc3639.social.image`
+`m.social.tags` | tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`
