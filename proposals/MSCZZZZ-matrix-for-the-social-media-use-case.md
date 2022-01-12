@@ -335,7 +335,7 @@ There has been some discussion about whether we should restrict the
 room to a specific type of content (i.e. the type of the room define
 the UI and how the content should be treated). Here is some consideration about the alternative proposal.
 
-## Advantage of this approach (the main one)
+### Advantage of this approach (the main one)
 
 * flexibility
 
