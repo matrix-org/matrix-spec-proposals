@@ -18,13 +18,13 @@ This MSC tries to cover those following social media cases:
 
 To cover those use case, we will separate our proposal in two part.
 
-* the room types: The container which will store the events
+* the room types: the container which will store the events
 * special events types: dedicated to the social media use cased
 which will be filtered depending on the client type/UI.
 (displaying a feed or a grid of pictures...).
 
 It is up to the client to filter the room event's and display only
-the one which are relevant on the client goal.
+the one which are relevant on the client purpose.
 
 ### Room
 
