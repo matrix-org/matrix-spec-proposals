@@ -200,6 +200,9 @@ like:
 }
 ```
 
+Using an array for `m.social.post` will help define the order in which
+content should be displayed.
+
 #### Social: Image
 
 Base : [MSC3552 - Extensible Events - Images and Stickers](https://github.com/matrix-org/matrix-doc/blob/travis/msc/extev/images/proposals/3552-extensible-events-images.md)
