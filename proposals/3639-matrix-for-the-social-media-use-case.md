@@ -30,6 +30,8 @@ the one which are relevant on the client purpose.
 
 We propose two room types.
 
+[Types according to MSC1772 - Matrix spaces](https://github.com/matrix-org/matrix-doc/pull/1772).
+
 * m.social.feed
 * m.social.group
 
