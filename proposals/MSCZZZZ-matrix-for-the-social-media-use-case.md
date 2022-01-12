@@ -405,3 +405,17 @@ m.room.power_levels
 * The user should be able to restrict the users able to write in his room.
 
 * The user should be that all the followers can see each others.
+
+
+## Unstable prefix
+
+The following mapping will be used for identifiers in this MSC during development:
+
+
+Proposed final identifier | Purpose | Development identifier
+------------------------------- | ------- | ----
+`m.social.feed` | 'wall' room | `org.matrix.mscZZZZ.social.feed`
+`m.social.group` | group room | `org.matrix.mscZZZZ.social.group`
+`m.social.post` | post event | `org.matrix.mscZZZZ.social.post`
+`m.social.image` | image event | `org.matrix.mscZZZZ.social.image`
+`m.social.tags` | tags property of `m.social.post` or `m.social.image` event | `org.matrix.mscZZZZ.social.tag`
