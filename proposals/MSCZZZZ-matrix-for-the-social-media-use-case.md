@@ -137,8 +137,9 @@ a fraction of the post (like a post with text, video, image).
 This becomes problematic when the user start making reference
 to previously sent post.
 
-Defining separate types helps make sure the app displaying them
-is able to support all the content of this specific event type.
+**=> We define separate types to make sure the app displaying them
+is able to support all the content of this specific event type and
+make sure image only and regular feeds don't mix.**
 
 See the later point for regular room message fallback. 
 
@@ -267,7 +268,9 @@ like :
 
 One may want to advertise the room that he posted a specific content
 (only visible in a social media client) that may be of interest to user
-and provide a link to it).
+and provide a link to it.
+
+This should be up to the user. The client could display a 'advertise in the chat room' button.
 
 A [solution adapted from the one proposed by @MurzNN](https://github.com/matrix-org/matrix-doc/pull/1767#issuecomment-787431678)
 is to define events like this one
@@ -277,7 +280,8 @@ is to define events like this one
   "type": "m.room.message", // will be m.text in the future. According to extensible events
   "content": {
     "msgtype": "m.text",
-    "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...</p><a href='...'>Read full post</a>",
+    "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...
+      </p><a href='...'>Read the full post in your favorite social matrix client</a>",
     "m.social.post": [
       {
         "msgtype": "m.text",
@@ -313,15 +317,6 @@ and a summary in the form of a room message.
 Some client may not be web pages, thus a `href=""` may not make sense.
 A text fall back, `Open in xxx to see the whole post` could make sense.
 
-#### Idea
-
-We could add a `tags` entry in the event content. The content of those
-tags could be 'hashtags'.
-
-This will be useful for art social media. But we could also see an
-implementation in regular social media.
-
-
 ### Reactions
 
 * Emoji reaction will use the regular event.
@@ -332,6 +327,23 @@ allow other users to have a comment only permission.
 See [MSC3394 -  new auth rule that only allows someone to post a message in relation to another message](https://github.com/frandavid100/matrix-doc/blob/threaded-replies/proposals/3394-new-auth-rule-that-only-allows-someone-to-post-a-message-in-relation-to-another-message.md)
 for such a proposal.
 
+### Tagging
+
+We could add a `tags` entry in the event content. The content of those
+tags could be 'hashtags'.
+
+This will be useful for art social media. But we could also see an
+implementation in regular social media like to tag other person.
+
+```json
+{
+  "m.social.post": [/* the post content */],
+  "m.social.tag": [
+    "@mxid",
+    "my chair"
+  ]
+}
+```
 
 ## Alternative
 
