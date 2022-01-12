@@ -54,7 +54,7 @@ In order to differentiate between user tracking and other objects we also
 introduce a new subtype called `m.asset` to give the object a type and ID.
 
 `m.asset` defines a generic asset that can be used for location tracking 
-but also in other places like inventories, geofencing, check-ing-checkout etc.
+but also in other places like inventories, geofencing, checkins/checkouts etc.
 It should contain a mandatory namespaced `type` key defining what particular 
 asset is being referred to. 
 For the purposes of user location tracking `m.self` should be used in order to
