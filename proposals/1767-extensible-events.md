@@ -134,11 +134,15 @@ the best match. Determining the best match is intentionally left as an implement
 clients might wish to use a modified version of the following sequence:
 
 1. All known primary event types not listed in this list.
-2. `m.video`
-3. `m.audio` / `m.voice`
-4. `m.image`
-5. `m.file`
-6. `m.location`
+  * Some events, like [polls](https://github.com/matrix-org/matrix-doc/pull/3381), might not make sense to
+    fall back to. Clients should only use primary types which make sense for their specific application,
+    which might typically be just the ones listed below.
+2. `m.video` (from [MSC])
+3. `m.audio` / `m.voice` (from [MSC3246](https://github.com/matrix-org/matrix-doc/pull/3246)
+   and [MSC3245](https://github.com/matrix-org/matrix-doc/pull/3245))
+4. `m.image` (from [MSC3552](https://github.com/matrix-org/matrix-doc/pull/3552))
+5. `m.file` (from [MSC3551](https://github.com/matrix-org/matrix-doc/pull/3551))
+6. `m.location` (from [MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488))
 9. `m.message` (implying `m.text` and `m.html` too)
 10. Fail to render due to unrepresentable event
 
@@ -146,9 +150,30 @@ Note that this additionally allows clients to fall back gracefully on some event
 to implement specifically, but still want to support, such as stickers which are effectively images with
 largely optional additional rendering requirements.
 
-To aid clients in their rendering capabilities, all primary event types in the specification include the
-relevant types in `content` to fall back as gracefully as possible. Text is generally considered the
-minimum for a client to implement.
+All primary event types in the specification include their fallback representations as part of the schema.
+This schema forms the minimum a client must emit for that event type, hwoever clients are welcome to
+include additional types if they feel it is relevant. For example, a hypothetical IoT event added to the
+spec might be as follows:
+
+```json5
+{
+    "type": "m.temperature",
+    "content": {
+        "m.temperature": {
+            "celsius": 27
+        },
+        "m.text": "it is 27 degrees"
+    }
+    // irrelevant fields excluded
+}
+```
+
+In this example, the `m.temperature` event in `content` must be accompanied by an `m.message` fallback of
+some kind, which can include a shortcut of `m.text` per this proposal.
+
+Though required by the event schema, clients should not explicitly rely on other clients sending all of the
+appropriate event types in `content`. If they are aware of what `m.temperature` is (for example), they will
+not need the `m.message` components - clients which are unaware simply won't render the event, however.
 
 In the case an event needs to fallback to `m.emote` or `m.notice`, the appropriate type can be included
 in the event content as such:
@@ -170,7 +195,7 @@ overnight, so this proposal includes a time-constrained transition period to enc
 implementations to update their support for this schema before the ecosystem starts to move forward with
 sending the newly-proposed primary event types.
 
-Upon being included in a released version of the specification, the following happens:
+Upon being included in a **released** version of the specification, the following happens:
 * `m.room.message` is deprecated **but still used**.
 * Clients include the fallback support described below in their outgoing events.
 * Clients prefer the new format in events which include it.
@@ -202,12 +227,29 @@ As a fallback, a client simply smashes `m.room.message` together with the releva
     }
 }
 ```
+or
+```json5
+{
+    "type": "m.room.message",
+    "content": {
+        "msgtype": "m.text",
+        "body": "Hello World",
+        "format": "org.matrix.custom.html",
+        "formatted_body": "<b>Hello</b> World",
+        "m.message": [
+            {"mimetype": "text/plain", "body": "Hello world"},
+            {"mimetype": "text/html", "body": "<b>Hello world</b>"}
+        ]
+    }
+}
+```
 
 A client can infer the intended primary type from the `msgtype` and otherwise engage their fallback process
 to try and render unknown `msgtype`s.
 
 Note that this fallback only applies in cases where the `m.room.message` `msgtype` was converted to a dedicated
 primary event: new features, or events which don't have a `msgtype`, should send their primary event type instead.
+Such an example is [Polls](https://github.com/matrix-org/matrix-doc/pull/3381).
 
 ### State events
 
@@ -230,7 +272,7 @@ with text fallback:
         "m.text": "The temperature is 37C",
         "m.html": "The temperature is <font color='#f00'>37C</font>",
         "net.arasphere.temperature": {
-            "temperature": 37.0
+            "temperature": 37
         }
     }
 }
@@ -243,7 +285,8 @@ It's a bit ugly to not know whether a given key will take a string, object or ar
 It's a bit arbitrary as to which fields are allowed lists of fallbacks (eg image thumbnails).
 
 It's a bit ugly that you have to look over the keys of contents to see what types
-are present, but better than duplicating this into an explicit `types` list (on balance).
+are present, but better than duplicating this into an explicit `types` list within the
+event content (on balance).
 
 We're skipping over defining rules for which fallback combinations to display
 (i.e. "display hints") for now; these can be added in a future MSC if needed.
@@ -253,6 +296,9 @@ Placing event types at the top level of `content` is a bit unfortunate, particul
 when mixing in `m.room.message` compatibility, though mixes nicely thanks to namespacing.
 Potentially conflicting cases in the wild would be namespaced fields, which would get
 translated as unknown event types, and thus skipped by the rendering machinery.
+
+This proposal additionally does not consider how other functionality like Replies, Edits,
+Push Notifications, etc work. These are explicitly deferred to future MSCs.
 
 ## Security considerations
 
@@ -273,11 +319,10 @@ when other users point out (quite quickly) that the event is appearing funky to 
 
 While this MSC is not considered stable by the specification, implementations *must* use
 `org.matrix.msc1767` as a prefix to denote the unstable functionality. For example, sending
-an `m.text` event would mean sending an `org.matrix.msc1767.text` event instead.
-
+an `m.message` event would mean sending an `org.matrix.msc1767.message` event instead.
 
 Implementations wishing to trial the migration ahead of this MSC's inclusion in the spec would
-use the unstable prefix mentioned above. An fallen back `m.room.message` example event becomes:
+use the unstable prefix mentioned above. A fallen back `m.room.message` example event becomes:
 
 ```json5
 {
