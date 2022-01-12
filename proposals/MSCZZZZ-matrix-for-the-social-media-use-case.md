@@ -6,25 +6,13 @@ have shown that it is possible to use it for social media.
 This proposal is to formally specify this usage and ensure
 a compatibility between the different projects.
 
-While writing this specification, the following principles should
-be respected:
-
-* **Simplicity in mind:** the solution should be the simplest one
-
-* **Not confusing:** The end user shouldn't know the theoretical usage
-of the room. i.e. A user which isn't using the social media app
-shouldn't be able to 'spam' the main room.
-
-* re-use as much as possible the matrix specifications.
-
 We will restrict ourselves to the creation of the specific rooms.
-The discovery of the user rooms using profile as room is the topic of
+The discovery of other user rooms using profile as room is the topic of
 [another MSC](https://nextcloud.carnot.cc/index.php/s/EHQKzJi78oX7GPE).
 
 ## The idea
 
-While Matrix could be used for almost anything, we will
-restrict ourselves on the following use cases.
+This MSC tries to cover those following social media cases:
 
 * **'Regular'** social media (Twitter style, Facebook : Circles, MinesTRIX)
 * **'Art'** social media (Matrix Art)
