@@ -53,7 +53,7 @@ Different mimetypes will require different notions of "location". A need for new
 
 Hence, the `m.markup.location` value MUST be an object, whose keys are different kinds of locations occupied by a single annotation, with the names of those locations either formalized in the matrix spec or namespaced using Java conventions. Some proposed location types are described in:
 
-- [MSC3592: Markup locations for PDF documents)[https://github.com/matrix-org/matrix-doc/pull/3592]
+- [MSC3592: Markup locations for PDF documents](https://github.com/matrix-org/matrix-doc/pull/3592)
 
 ### Examples
 
