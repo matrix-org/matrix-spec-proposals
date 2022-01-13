@@ -137,7 +137,7 @@ clients might wish to use a modified version of the following sequence:
   * Some events, like [polls](https://github.com/matrix-org/matrix-doc/pull/3381), might not make sense to
     fall back to. Clients should only use primary types which make sense for their specific application,
     which might typically be just the ones listed below.
-2. `m.video` (from [MSC])
+2. `m.video` (from [MSC3553](https://github.com/matrix-org/matrix-doc/pull/3553))
 3. `m.audio` / `m.voice` (from [MSC3246](https://github.com/matrix-org/matrix-doc/pull/3246)
    and [MSC3245](https://github.com/matrix-org/matrix-doc/pull/3245))
 4. `m.image` (from [MSC3552](https://github.com/matrix-org/matrix-doc/pull/3552))
