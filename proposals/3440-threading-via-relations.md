@@ -66,15 +66,15 @@ would include additional information in the `unsigned` field:
 
 #### Quote replies in a thread 
 
-No recommendation to modifying quote replies is made, this would still be handled 
-via the `m.in_reply_to` field of `m.relates_to`. Thus you could quote a reply in a thread:
+Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`. However clients should fill in the new `render_in` field with `m.thread` in order to display that in a thread context.
 
 ```json
 "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "$thread_root",
     "m.in_reply_to": {
-        "event_id": "$event_target"
+        "event_id": "$event_target",
+        "render_in": ["m.thread"]
     }
 }
 ```
@@ -82,6 +82,22 @@ via the `m.in_reply_to` field of `m.relates_to`. Thus you could quote a reply in
 It is possible that an `m.in_reply_to` event targets an event that is outside the
 related thread. Clients should always do their upmost to display the quote-reply
 and upon clicking it the event should be displayed and highlighted in its original context.
+
+### Backwards compatibility
+
+In order to provide a readable event history for everyone, thread-ready clients
+should attach a `m.in_reply_to` mixin to the event source. It should always reference the latest event in the thread unless a user is explicitely replying to another event.
+The quote reply fallback should be hidden in a thread context unless it contains the new `render_in` field as described in the previous section.
+
+```jsonc
+"m.relates_to": {
+    "rel_type": "m.thread",
+    "event_id": "ev1",
+    "m.in_reply_to": {
+        "event_id": "last_event_id_in_thread",
+    }
+  }
+```
 
 ### Fetch all replies to a thread
 
@@ -134,6 +150,9 @@ encoded JSON is presented unencoded and formatted for legibility:
   "relation_types": ["m.thread"]
 }
 ```
+
+
+
 
 ### Server capabilities
 
@@ -190,7 +209,8 @@ A `m.thread` event can only reference events that do not have a `rel_type`
       "rel_type": "m.thread",
       "event_id": "ev1",
       "m.in_reply_to": {
-          "event_id": "ev1"
+          "event_id": "ev1",
+          "render_in": ["m.thread"],
       }
     }
   },
@@ -213,19 +233,6 @@ relation event.
 
 #### 
 ### Client considerations
-
-#### Display "m.thread" as "m.in_reply_to"
-
-Clients that don't support threads will render threaded messages in the room's 
-timeline at the point at which they were sent. This does risk a confusing experience 
-for those on such clients, but options to mitigate this are limited.
-
-Having older clients treat threaded messages as replies would give a better 
-experience, but adding reply metadata in addition to thread metadata would mean 
-replies could not then be used in threads and would be significant extra metadata.
-
-Clients that wish to offer basic thread support can display threads as replies to 
-the thread root message. See matrix-org/matrix-react-sdk#7109 for an example.
 
 #### Sending `m.thread` before fully implementing threads
 
