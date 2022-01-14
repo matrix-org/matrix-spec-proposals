@@ -203,9 +203,8 @@ language selection for their client, which may be personal information.
 ### Using the unmodified fallback in clients and bridges
 
 The above issues are minor, if reply fallbacks would sufficiend value to
-clients. However at least the Qt html renderer breaks on `<mx-reply>` tags, so
-you need to strip them anyway to render replies.  Bridges usually try to bridge
-to native replies, so they need to strip the reply fallback
+clients.  Bridges usually try to bridge to native replies, so they need to
+strip the reply fallback
 (https://github.com/matrix-org/matrix-doc/issues/1541). Even the IRC bridge
 seems to send a custom fallback, because the default fallback is not that
 welcome to the IRC crowd.
