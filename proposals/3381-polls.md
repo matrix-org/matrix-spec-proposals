@@ -93,9 +93,10 @@ naming convention are supported. Unknown values are to be treated as `m.poll.und
 compatibility with theoretical values. More specific detail as to the difference between two polls come up
 later in this MSC.
 
-`answers` must be an array with at least 1 option and no more than 20. Lengths outside this range are invalid
-and must not be rendered by clients. Most polls are expected to have 2-8 options. The answer `id` is an
-arbitrary string used within the poll events. Clients should not attempt to parse or understand the `id`.
+`answers` must be an array with at least 1 option and are truncated to 20 options. Polls with fewer than 1
+option should not rendered, and only the first 20 options are considered for rendering. Most polls are
+expected to have 2-8 options. The answer `id` is an arbitrary string used within the poll events. Clients
+should not attempt to parse or understand the `id`.
 
 `max_selections` is optional and denotes the maximum number of responses a user is able to select. Users
 can select fewer options, but not more. This defaults to `1`. Cannot be less than 1.
