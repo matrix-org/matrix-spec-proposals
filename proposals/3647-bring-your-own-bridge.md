@@ -1,4 +1,4 @@
-# MSCXXXX: Bring Your Own Bridge - Decentralizing Bridges
+# MSC3647: Bring Your Own Bridge - Decentralizing Bridges
 
 # Background
 
