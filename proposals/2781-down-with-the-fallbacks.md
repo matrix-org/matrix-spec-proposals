@@ -44,13 +44,13 @@ the correct context. Replies would also be somewhat easier to implement and
 worst case, a client could very easily implement a little "this is a reply"
 marker to at least mark replies visually.
 
-Same applies to edits. If 2 very similar messages appear after one another,
+~~Same applies to edits. If 2 very similar messages appear after one another,
 someone new to online messaging would assume, this is a correction to the
 previous message. That may even be more obvious to them than if the message was
 prefixed with a `*`, since that has been confusing to users in the past. Since
 edits would now look exactly like a normal message, they would also be
 considerably easier to implement, since you just need to replace the former
-message now, similar to a redaction, and not merge `content` and `new_content`.
+message now, similar to a redaction, and not merge `content` and `new_content`.~~
 
 ## Alternatives
 
