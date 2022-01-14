@@ -1,4 +1,4 @@
-# MSC3643: Extensible Events: Edits and replies
+# MSC3644: Extensible Events: Edits and replies
 
 [Extensible Events (MSC1767)](https://github.com/matrix-org/matrix-doc/pull/1767) are a new way of
 representing renderable events in clients, with a focus on providing fallbacks for rendering unknown
