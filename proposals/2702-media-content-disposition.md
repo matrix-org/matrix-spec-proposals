@@ -42,6 +42,6 @@ None known.
 
 ## Unstable prefix
 
-While this MSC is not included in a spec release, implementations should use `org.matrix.msc2702` as a
+While this MSC is not considered stable, implementations should use `org.matrix.msc2702` as a
 prefix. For example, `?org.matrix.msc2702.asAttachment=true`. As this is backwards compatible otherwise,
 no special endpoint is required.
