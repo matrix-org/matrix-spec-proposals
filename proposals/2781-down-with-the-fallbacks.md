@@ -22,7 +22,7 @@ would also be able to implement edits and replies more easily, as they can
 sidestep a lot of pitfalls. This should improve the look and feel of replies in
 Matrix across all clients in the long term.
 
-An extended motivation is provided at [the end of this document](user-content-appendix-b-issues-with-the-current-fallbacks).
+An extended motivation is provided at [the end of this document](#user-content-appendix-b-issues-with-the-current-fallbacks).
 
 There are similar benefit for not adding a fallback to edits. This proposal
 focuses on replies for simplicity, but encourages
