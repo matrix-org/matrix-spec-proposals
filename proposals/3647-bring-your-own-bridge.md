@@ -64,6 +64,25 @@ old VB to the new one.
 technical specification will follow once a consensus is formed on how to proceed or solve above
 problems.*
 
+# Enabled features
+
+## Decentralized Bridging
+
+The first and primary usecase this proposal wishes to enable is, of course, the ability to "go
+anywhere and bridge magically". That is to say; a user can join any room, and the VB will
+automatically verify itself to the HB, enabling it to seamlessly double-puppet once/if the user
+joins the other end of the bridge with its own user.
+
+## Appservice-less bridges
+
+With this proposal, a usecase where bridges become based on the regular CS API (as opposed to the
+appservice API) can become a possibility, as bridges today are expected to maintain everything about
+the room they're bridging to, including ghost users.
+
+Thus, a user may only "have" a bridge to maintain a consistent identity across platforms. The
+removal of the need for the AS API could move these bridges to remote spots, such as user-hosted
+raspberry PIs, operating itself as a "normal" matrix user.
+
 # Potential Issues
 
 ## Bridge Downtime
