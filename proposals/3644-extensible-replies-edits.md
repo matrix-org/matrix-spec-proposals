@@ -163,7 +163,7 @@ risk allowing clients to change event types for generally improved event shape.
 
 Changing event types is potentially dangerous. Aside from the key verification framework, which is
 planned to be looked at by a future MSC, the author is not aware of any likely conflicts that could
-ocurr. All other event-based systems appear to be "fine" with being removed/replaced by completely
+occur. All other event-based systems appear to be "fine" with being removed/replaced by completely
 different event types, and the consequences for doing so are clear. For example, a poll being replaced
 with a plain message means the poll results are lost.
 
