@@ -298,9 +298,10 @@ paths:
       responses:
         200:
           description: The update succeeded.
+          examples:
+            application/json: {}
           schema:
             type: object
-            properties: {}
         400:
           description: |-
             A parameter was incorrect.  For example, the `algorithm` does not
