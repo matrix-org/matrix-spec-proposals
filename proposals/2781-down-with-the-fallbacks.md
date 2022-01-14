@@ -24,7 +24,7 @@ Matrix across all clients in the long term.
 
 An extended motivation is provided at [the end of this document](#user-content-appendix-b-issues-with-the-current-fallbacks).
 
-There are similar benefit for not adding a fallback to edits. This proposal
+There are similar benefits to not adding a fallback to edits. This proposal
 focuses on replies for simplicity, but encourages
 [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) to drop the edit
 fallback or remove it [when moving to extensible
