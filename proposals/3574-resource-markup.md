@@ -162,8 +162,6 @@ among other things.
 
 The main disadvantage to allowing both models seems to be the possibility of fragmentation and incompatibility between annotation-aware clients. In practice, this seems unlikely to be a major problem.
 
-# Security Considerations
-
 ## The Web Annotation Data Model
 
 The [Web Annotation Working group](https://www.w3.org/annotation/) at the W3C has published a detailed set of recommendations for interoperable and shared web annotation. These include both [a data model](https://www.w3.org/TR/annotation-model/) and [a protocol](https://www.w3.org/TR/annotation-protocol/) for annotation servers. The fundamental idea of the annotation model is to view an annotation as a connection between zero or more "body" resources, annotating one or more "target" resources.
