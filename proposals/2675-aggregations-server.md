@@ -101,7 +101,7 @@ with events they return:
   - `GET /rooms/{roomId}/context/{eventId}`
   - `GET /rooms/{roomId}/event/{eventId}`
   - `GET /sync`, only for room sections in the response where `limited` field
-    is `true`; this amounts to all rooms in the response if 
+    is `true`; this amounts to all rooms in the response if
     the `since` request parameter was not passed, also known as an initial sync.
   - `GET /relations`, as proposed in this MSC.
 
@@ -271,7 +271,7 @@ specifying the exact server behaviour to [MSC3570](https://github.com/matrix-org
 ### Servers might not be aware of all relations of an event
 
 The response of `/relations` might be incomplete because the homeserver
-potentially doesn't have the full DAG of the room. The federation API doens't
+potentially doesn't have the full DAG of the room. The federation API doesn't
 have an equivalent of the `/relations` API, so has no way but to fetch the
 full DAG over federation to assure itself that it is aware of all relations.
 
