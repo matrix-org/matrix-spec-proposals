@@ -1854,6 +1854,27 @@ the topic to be removed from the room.
 
 ## Rooms
 
+### Types
+
+{{% added-in v="1.2" %}}
+
+Optionally, rooms can have types to denote their intended function. A room
+without a type does not necessarily mean it has a specific default function,
+though commonly these rooms will be for conversational purposes.
+
+Room types are best applied when a client might need to differentiate between
+two different rooms, such as conversation-holding and data-holding. If a room
+has a type, it is specified in the `type` key of an [`m.room.create`](#mroomcreate)
+event. To specify a room's type, provide it as part of `creation_content` on
+the create room request.
+
+In this specification the following room types are specified:
+
+* [`m.space`](#spaces)
+
+Unspecified room types are permitted through the use of
+[Namespaced Identifiers](/appendices/#common-namespaced-identifier-grammar).
+
 ### Creation
 
 The homeserver will create an `m.room.create` event when a room is
@@ -2190,6 +2211,7 @@ that profile.
 | [Server ACLs](#server-access-control-lists-acls-for-rooms) | Optional  | Optional | Optional | Optional | Optional |
 | [Server Notices](#server-notices)                          | Optional  | Optional | Optional | Optional | Optional |
 | [Moderation policies](#moderation-policy-lists)            | Optional  | Optional | Optional | Optional | Optional |
+| [Spaces](#spaces)                                          | Optional  | Optional | Optional | Optional | Optional |
 
 *Please see each module for more details on what clients need to
 implement.*

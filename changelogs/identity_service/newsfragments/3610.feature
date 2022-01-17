@@ -1,0 +1,1 @@
+Add the `room_type` to stored invites as per [MSC3288](https://github.com/matrix-org/matrix-doc/pull/3288).

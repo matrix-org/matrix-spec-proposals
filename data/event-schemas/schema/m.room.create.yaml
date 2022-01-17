@@ -14,6 +14,12 @@ properties:
       room_version:
         description: The version of the room. Defaults to `"1"` if the key does not exist.
         type: string
+      type:
+        description: |-
+          Optional [room type](#types) to denote a room's intended function outside of traditional conversation.
+
+          Unspecified room types are possible using [Namespaced Identifiers](/appendices/#common-namespaced-identifier-grammar).
+        type: string
       predecessor:
         description: A reference to the room this room replaces, if the previous room was upgraded.
         type: object
