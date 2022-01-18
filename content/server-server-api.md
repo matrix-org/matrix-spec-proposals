@@ -721,8 +721,8 @@ The joining server is expected to add or replace the `origin`,
 `origin_server_ts`, and `event_id` on the templated event received by
 the resident server. This event is then signed by the joining server.
 
-To complete the join handshake, the joining server must now submit this
-new event to a resident homeserver, by using the `PUT /send_join`
+To complete the join handshake, the joining server submits this new event
+to the resident server it used for `GET /make_join`, using the `PUT /send_join`
 endpoint.
 
 The resident homeserver then adds its signature to this event and
