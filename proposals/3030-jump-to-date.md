@@ -79,7 +79,7 @@ GET /_matrix/federation/v1/timestamp_to_event/<roomID>?ts=<timestamp>&dir=<direc
 ---
 
 In order to paginate `/messages`, we need a pagination token which we can get
-using `GET /_matrix/client/r0/rooms/{roomId}/context/{eventId}?limi=0` for the
+using `GET /_matrix/client/r0/rooms/{roomId}/context/{eventId}?limit=0` for the
 `event_id` returned by `/timestamp_to_event`.
 
 
@@ -101,7 +101,7 @@ Add the `?around=<timestamp>` query parameter to the `GET
 response at the message with `origin_server_ts` closest to the provided `around`
 timestamp. The direction is determined by the existing `?dir` query parameter.
 
-Use topoligical ordering, just as Element would use if you follow a permalink.
+Use topological ordering, just as Element would use if you follow a permalink.
 
 ### Filter by date in `RoomEventFilter`
 
