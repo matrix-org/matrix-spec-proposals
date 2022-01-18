@@ -90,6 +90,10 @@ The quote reply fallback should be hidden in a thread context unless it contains
   }
 ```
 
+In the context of threads clients will omit the fallback for rich replies to allow
+events of any `msgtype` to be sent in a thread.
+Events that can accomodate the fallback for rich replies should include it.
+
 ### Fetch all replies to a thread
 
 To fetch an entire thread, the `/relations` API can be used as defined in 
