@@ -38,7 +38,7 @@ However, it adds significant complexity and the gateway model is still widely us
 This MSC proposes to allow early media in a manner similar to the gateway model above. We do this
 by allowing an `m.call.negotiate` event to be sent by the callee before `m.call.answer`. The `type`
 field MUST be set to `pranswer`. The caller should ignore `m.call.negotiate` events of any other
-type before the `m.call.answer`. Clients using WebRTC compatible APIs should imply be able to
+type before the `m.call.answer`. Clients using WebRTC compatible APIs should simply be able to
 pass this SDP object into `setRemoteDescription` as-is. In fact, if clients do not explicitly
 discard `m.call.negotiate` before an `m.call.answer`, they may already inadvertently support this
 MSC.
