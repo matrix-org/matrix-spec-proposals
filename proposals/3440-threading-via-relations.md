@@ -77,7 +77,7 @@ and when clicked, the event should be displayed and highlighted in its original 
 
 A thread will be displayed as a chain of replies on clients unaware of threads.
 
-Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. It should always reference the latest event in the thread unless a user is explicitely replying to another event.
+Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. It should always reference the latest event in the thread unless a user is explicitly replying to another event.
 The quote reply fallback should be hidden in a thread context unless it contains the new `render_in` field as described in the previous section.
 
 ```jsonc
