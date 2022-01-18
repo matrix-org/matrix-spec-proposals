@@ -36,9 +36,10 @@ Alternatively, consider flipping the column/row organization to be features
 up top and versions on the left.
 -->
 
-| Feature \ Version | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-|-------------------|---|---|---|---|---|---|---|
-| **Knocking**      | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✔ |
+| Feature \ Version | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|-------------------|---|---|---|---|---|---|---|---|---|
+| **Knocking**      | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✔ | ✔ | ✔ |
+| **Restricted join rules** | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✔ | ✔ |
 
 ## Complete list of room versions
 
@@ -68,6 +69,10 @@ The available room versions are:
 -   [Version 6](/rooms/v6) - **Stable**. Alters several
     authorization rules for events.
 -   [Version 7](/rooms/v7) - **Stable**. Introduces knocking.
+-   [Version 8](/rooms/v8) - **Stable**. Adds a join rule to allow members
+    of another room to join without invite.
+-   [Version 9](/rooms/v9) - **Stable**. Builds on v8 to fix issues when
+    redacting some membership events.
 
 ## Room version grammar
 
