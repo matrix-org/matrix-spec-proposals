@@ -2,12 +2,12 @@
 
 ## Problem
 
-Threading is a great way to create alternative timelines to group messages related 
+Threading allows users to branch out a new conversation from the main timeline of a room.
 to each other. This is particularly useful in high traffic rooms where multiple 
 conversations can happen in parallel or when a single discussion might stretch 
 over a very long period of time.
 
-The main goal when implementing threads is to create conversations that are easier 
+The main goal of implementing threads is to facilitate conversations that are easier 
 to follow and smoother to read.
 
 There have been several experiments in threading for Matrix...
@@ -40,7 +40,7 @@ A big advantage of relations over quote replies is that they can be server-side
 aggregated. It means that a client is not bound to download the entire history of 
 a room to have a comprehensive list of events being part of a thread.
 
-When a thread head is aggregated (as in MSC2675), returns a summary of the thread: 
+When a thread head is aggregated (as in MSC2675), it returns a summary of the thread: 
 the latest message, a list of participants and the total count of messages. 
 I.e. in places which include bundled relations (per 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), the thread root 
@@ -80,8 +80,8 @@ Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
 ```
 
 It is possible that an `m.in_reply_to` event targets an event that is outside the
-related thread. Clients should always do their upmost to display the quote-reply
-and upon clicking it the event should be displayed and highlighted in its original context.
+related thread. Clients should always do their utmost to display the quote-reply
+and when clicked, the event should be displayed and highlighted in its original context.
 
 ### Backwards compatibility
 
@@ -121,12 +121,11 @@ incremental syncs), for instance: initial sync, gappy incremental sync,
 
 ### Fetch all threads in a room
 
-To fetch all threads in a room it is proposed to use the 
+To fetch all threads in a room, use the
 [`/messages`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-messages) 
 API and expand the room event filtering to include relations. The `RoomEventFilter` 
-will take additional parameters:
 
-* `relation_types`: A list of relation types which must be exist pointing to the event
+* `relation_types`: A list of relation types which must exist pointing to the event
   being filtered. If this list is absent then no filtering is done on relation types.
 * `relation_senders`: A list of senders of relations which must exist pointing to
   the event being filtered. If this list is absent then no filtering is done on relation types.
@@ -138,7 +137,7 @@ user has participated in (or not participated in).
 GET /_matrix/client/unstable/rooms/!room_id:domain/messages?filter=...
 ```
 
-The filter string would include the new fields, above. In this example, the URL 
+The filter string includes the new fields, above. In this example, the URL 
 encoded JSON is presented unencoded and formatted for legibility:
 
 ```jsonc
@@ -177,8 +176,8 @@ detections for clients, a homeserver must return a capability entry for threads.
 Read receipts and read markers assume a single chronological timeline. Threading 
 changes that assumption making the current API not very practical.
 
-Clients can synthetize read receipts but it is possible that some notifications get 
-lost upon a fresh start where the clients have to start off the `m.read` 
+Clients can synthesize read receipts but it is possible that some notifications get 
+lost on a fresh start where the clients have to start off the `m.read` 
 information received from the homeserver.
 
 Synchronising the synthesized notification count across devices will present its 
