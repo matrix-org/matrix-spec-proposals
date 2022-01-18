@@ -8,24 +8,49 @@ version 9. This proposal aims to make v9 the default room version.
 The specification adopts v9 as the suggested default room version, making no changes to the stability
 of any room versions. As of writing, v6 is currently the suggested room version.
 
-Room version 9 does not currently have a published specification, though the details are recorded at
-https://github.com/matrix-org/matrix-doc/pull/3387
+Room version 9 is currently published here: https://spec.matrix.org/unstable/rooms/v9/
+
+<!-- TODO: TravisR[v1.2] - Update link to stable once available -->
 
 ## Potential issues
 
 Servers will be encouraged to update their config/internal defaults to use v9 instead of v6. This
 is considered a good problem to have.
 
-Prominent server implementations besides Synapse have partial or no support for v9. Namely, Conduit
-is lacking support and Dendrite appears to have most of an implementation but is not complete. For
-these projects, and other servers in the wild, it is encouraged that implementation progresses to
-support v9 fully.
-
 Note that servers are not required to honour the default room version due to it being a suggestion
 in the specification, however they might fall behind as other servers set their defaults accordingly.
 
 Some server implementations, like Synapse, support configurable default room versions: servers which
 have set this flag will not necessarily be affected by this change.
+
+As of writing (Jan 18, 2022), some prominent server implementations are only just getting support for
+the room version. Namely, Dendrite released a version with support about 2 months ago and Conduit is
+blocked behind a Ruma release with the changes otherwise landing also about 2 months ago.
+
+Though both Dendrite and Conduit (meaning Ruma) have not had the same amount of time as Synapse to
+reach maturity on v9-capable versions, both the Dendrite and Conduit communities appear to update to
+newer versions much more quickly. This implies, without statistics to back it up, that nearly all
+Dendrite servers out there will have upgraded and that a similar percentage of Conduit servers will
+upgrade once available.
+
+No major issues appear to be reported to Synapse, Dendrite, or Ruma with respect to v9, indicating to
+the author that the implementation is at least sane if a bit difficult to incorporate.
+
+For completeness, some links:
+
+**Dendrite**:
+
+* Tracking issue: https://github.com/matrix-org/dendrite/issues/2010
+* Library support: https://github.com/matrix-org/gomatrixserverlib/pull/279
+* Release: https://github.com/matrix-org/dendrite/commit/b4a007ecceafd2b93fee2e775b0a61283d4a3844
+* Testing: https://github.com/matrix-org/complement/pull/220
+
+**Conduit**:
+
+* Tracking issue: https://gitlab.com/famedly/conduit/-/issues/161
+* Library support: https://github.com/ruma/ruma/pull/771
+* Release: N/A
+* Testing: N/A
 
 ## Alternatives
 
