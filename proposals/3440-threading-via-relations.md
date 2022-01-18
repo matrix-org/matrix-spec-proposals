@@ -9,24 +9,14 @@ over a very long period of time.
 
 The main goal of implementing threads is to facilitate conversations that are easier 
 to follow and smoother to read.
-
-There have been several experiments in threading for Matrix...
-
- - [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326): 
- Label based filtering
- - [MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836): 
- Threading by serverside traversal of relationships
- - "Threads as rooms"
- - Building threads off `m.in_reply_to`
-
-Meanwhile, threading is very clearly a core requirement for any modern messaging 
+Threading is very clearly a core requirement for any modern messaging 
 solution, and Matrix uptake is suffering due to the lack of progress.
 
 ## Proposal
 
 ### Event format
 
-A new relation would be used to express that an event belongs to a thread.
+A new relation type m.thread expresses that an event belongs to a thread.
 
 ```json
 "m.relates_to": {
@@ -85,8 +75,9 @@ and when clicked, the event should be displayed and highlighted in its original 
 
 ### Backwards compatibility
 
-In order to provide a readable event history for everyone, thread-ready clients
-should attach a `m.in_reply_to` mixin to the event source. It should always reference the latest event in the thread unless a user is explicitely replying to another event.
+A thread will be displayed as a chain of replies on clients unaware of threads.
+
+Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. It should always reference the latest event in the thread unless a user is explicitely replying to another event.
 The quote reply fallback should be hidden in a thread context unless it contains the new `render_in` field as described in the previous section.
 
 ```jsonc
@@ -109,11 +100,6 @@ GET /_matrix/client/unstable/rooms/!room_id:domain/relations/$thread_root/m.thre
 ```
 
 Where `$thread_root` is the event ID of the root message in the thread.
-
-In order to properly display a thread it is necessary to retrieve the relations 
-to threaded events, e.g. the reactions to the threaded events. This proposes 
-clarifying [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) that 
-the `/relations` API includes bundled relations. This follows what MSC2675 already describes:
 
 > Any API which receives events should bundle relations (apart from non-gappy 
 incremental syncs), for instance: initial sync, gappy incremental sync, 
@@ -180,16 +166,11 @@ Clients can synthesize read receipts but it is possible that some notifications 
 lost on a fresh start where the clients have to start off the `m.read` 
 information received from the homeserver.
 
-Synchronising the synthesized notification count across devices will present its 
-own challenges and is probably undesirable at this stage. The preferred route 
-would be to create another MSC to make read receipts support multiple timelines 
-in a single room.
+Synchronising the synthesized notification count across devices is out of scope and deferred to a later MSC.
 
 #### Single-layer event aggration
 
-Bundling only includes relations a single-layer deep. This MSC is not looking to
-solve nested threading but is rather focusing on bringing mechanisms to allow
-threading in chat applications
+This MSC does not include support for nested threads.
 
 Nested threading is out of scope for this proposal and would be the subject of
 a different MSC.
@@ -278,7 +259,7 @@ an NNTP or IMAP or Reddit style threaded UI)
 "Threads as rooms" is the idea that each thread could just get its own Matrix room..
 
 Advantages to "Threads as rooms" include:
- * May be simpler for client implementations.
+ * May be simpler for client implementations
  * Restricting events visibility as the room creator
  * Ability to create read-only threads
 
