@@ -74,7 +74,6 @@ paths:
                 "join_rule": "public",
                 "room_type": "m.space",
                 "num_joined_members": 42,
-                "aliases": ["#general:example.org"],
                 "canonical_alias": "#general:example.org",
                 "allowed_room_ids": [],
                 "children_state": [
@@ -103,7 +102,6 @@ paths:
                   "join_rule": "restricted",
                   "room_type": "m.space",
                   "num_joined_members": 42,
-                  "aliases": ["#general:example.org"],
                   "canonical_alias": "#general:example.org",
                   "allowed_room_ids": [
                     "!upstream:example.org"

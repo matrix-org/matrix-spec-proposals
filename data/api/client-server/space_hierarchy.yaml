@@ -100,7 +100,6 @@ paths:
                   "join_rule": "public",
                   "room_type": "m.space",
                   "num_joined_members": 42,
-                  "aliases": ["#general:example.org"],
                   "canonical_alias": "#general:example.org",
                   "children_state": [
                     {

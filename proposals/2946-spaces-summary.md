@@ -125,7 +125,6 @@ GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/hierarchy?
             "world_readable": true,
             "join_rule": "public",
             "canonical_alias": "#cheese:bleecker.street",
-            "aliases": ["#cheese:bleecker.street"],
 
             // Added fields
             "room_type": "m.space",
