@@ -160,25 +160,27 @@ paths:
                               required: [origin_server_ts]
                     required: [room_type, allowed_room_ids, children_state]
               children:
+                type: array
                 description: |-
                   A summary of the space's children. Rooms which the requesting server cannot peek/join will
                   be excluded.
-                allOf:
-                  - $ref: "../client-server/definitions/public_rooms_chunk.yaml"
-                  - type: object
-                    properties:
-                      room_type:
-                        type: string
-                        description: |-
-                          The `type` of room (from [`m.room.create`](/client-server-api/#mroomcreate)), if any.
-                      allowed_room_ids:
-                        type: array
-                        items:
+                items:
+                  allOf:
+                    - $ref: "../client-server/definitions/public_rooms_chunk.yaml"
+                    - type: object
+                      properties:
+                        room_type:
                           type: string
-                        description: |-
-                          If the room is a [restricted room](#restricted-rooms), these are the room IDs which
-                          are specified by the join rules. Empty or omitted otherwise.
-                    required: [room_type, allowed_room_ids, children_state]
+                          description: |-
+                            The `type` of room (from [`m.room.create`](/client-server-api/#mroomcreate)), if any.
+                        allowed_room_ids:
+                          type: array
+                          items:
+                            type: string
+                          description: |-
+                            If the room is a [restricted room](#restricted-rooms), these are the room IDs which
+                            are specified by the join rules. Empty or omitted otherwise.
+                      required: [room_type, allowed_room_ids, children_state]
               inaccessible_children:
                 type: array
                 items:
