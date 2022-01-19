@@ -193,13 +193,13 @@ html anyway and that new features are blocked, because of fallbacks.
 ### Format is unreliable
 
 While the spec says how a fallback "should" look, there are variations in use
-which further complicates stripping the fallback.  Some variations include
-localizing the fallback, missing suggested links or tags, using the body in
-replies to files or images or using the display name instead of the matrix id.
+which further complicates stripping the fallback or are common mistakes, when
+emitting the fallback. Some variations include localizing the fallback,
+missing suggested links or tags, using the body in replies to files or images
+or using the display name instead of the matrix id.
 
-Basically a client can't rely on the fallback being present currently or it
-following any kind of shape or form and stripping is done on a best effort
-basis, especially for the fallback in `body`.
+As a result the experience in clients relying on the fallback or stripping the
+fallback varies depending on the sending client.
 
 ### Replies leak history
 
@@ -208,8 +208,9 @@ leak data to users, that joined this room at a later point, but shouldn't be
 able to see the event because of visibility rules or encryption. While this
 isn't a big issue, there is still an issue about it: https://github.com/matrix-org/matrix-doc/issues/1654
 
-Replies are also sometimes localized. In those cases they leak the users
-language selection for their client, which may be personal information.
+Historically clients have also sometimes localized the fallbacks. In those cases
+they leak the users language selection for their client, which may be personal
+information.
 
 ### Using the unmodified fallback in clients and bridges
 
