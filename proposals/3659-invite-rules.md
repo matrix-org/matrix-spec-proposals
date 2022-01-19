@@ -1,6 +1,6 @@
 # MSC3659 - Invite Rules
 
-This MSC proposes the creation of an optional account state which allows users to control how invites directed at them
+This MSC proposes the creation of an optional account data state which allows users to control how invites directed at them
 are processed by their homeserver.
 
 *Homeservers may choose to ignore an Invitee's invite rules *if* the Inviter is a homeserver admin.*
@@ -54,7 +54,7 @@ In order to prevent homeservers from interpriting `m.invite_rule` states differe
        1. `"all"`: Break from the `m.invite_rules` check and continue.
        2. `"has-shared-room"`: Get all Rooms Invitee is in, and check if the Inviter has a `"join"` membership state.
           If the Inviter does not have at least one shared room, Reject the invite request.
-       3. `"has-direct-room"`: Check if the Invitee's account state `"m.direct"` exists.
+       3. `"has-direct-room"`: Check if the Invitee's account data state `"m.direct"` exists.
           - If true, test if the content of `"m.direct"` contains a key which is the Inviter's MXID.
             - If `True`, test if the Invitee has a `"join"` membership state in any rooms defined in the key's value. If no matches are found, reject the invite request.
             - If `False`, reject the invite request.
