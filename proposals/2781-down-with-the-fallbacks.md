@@ -1,14 +1,13 @@
 # MSC2781: Remove reply fallbacks from the specification
 
-Currently replies require clients to send and parse a fallback representation of
-the replied to message. Something similar is planned for edits. While at least
-in theory fallbacks should make it simpler to start supporting replies in a new
-client, they actually introduce a lot of complexity and implementation issues
-and block a few valuable features. This MSC proposes to deprecate and eventually
-remove those fallbacks. It was an alternative to
-[MSC2589](https://github.com/matrix-org/matrix-doc/pull/2589), which chose a
-different representation of the reply fallback, but was ultimately closed in
-favor of this proposal.
+Currently replies require clients to send and parse a fallback representation
+of the replied to message. While at least in theory fallbacks should make it
+simpler to start supporting replies in a new client, they actually introduce a
+lot of complexity and implementation issues and block a few valuable features.
+This MSC proposes to deprecate and eventually remove those fallbacks. It was an
+alternative to [MSC2589](https://github.com/matrix-org/matrix-doc/pull/2589),
+which chose a different representation of the reply fallback, but was
+ultimately closed in favor of this proposal.
 
 ## Proposal
 
@@ -165,8 +164,12 @@ Common mistakes include:
 - Not dealing with mismatched `<mx-reply>` tags, which can look like you were
     impersonating someone.
 
-Stripping the fallback from body is even more complicated, since there is no way
-to distinguish a quote from a reply reliably.
+For the `body` extra attention needs to be paid to only strip lines starting
+with `>` until the first empty line. Implementations either only stripped the
+first line, stripped all lines starting with `>` until the first non empty line,
+that does not start with `>` or stripped only the `formatted_body`. While those
+are implementation bugs, they can't happen if you don't need to strip a
+fallback.
 
 ### Creating a new fallback
 
@@ -186,23 +189,6 @@ This means you can't reply using only a `body` and you can't reply with an
 image, since those don't have a `formatted_body` property currently. This means
 a text only client, that doesn't want to display html, still needs to support
 html anyway and that new features are blocked, because of fallbacks.
-
-This is also an issue with edits, where the combination of edit fallback and
-reply fallback is somewhat interesting: You need to send a fallback, since the
-event is still a reply,
-[but you can't send a reply relation](https://github.com/matrix-org/matrix-doc/pull/2676/files#diff-1761bdadd1caacb2503d2b2e6c572fc628c7321b0beab8d502ac249c15b2826aR113),
-since this is an edit. Currently this is solved by not sending a reply fallback
-in edits, so clients can't rely on a reply fallback in all cases.
-
-We currently can see 2 behaviours in practice:
-
-Client A supports rich reply rendering, Client B does not.
-
-- A sends an edit. This according to MSC2676 does not include a reply fallback.
-    A properly sees the edit still as a reply. B does not.
-- B sends an edit but includes a reply fallback in the body. It can still see
-    that the message is a reply. A needs to strip the invalid reply fallback, or
-    it will see the reply content twice.
 
 ### Format is unreliable
 
@@ -234,7 +220,8 @@ strip the reply fallback
 seems to send a custom fallback, because the default fallback is not that
 welcome to the IRC crowd, although the use cases for simple, text only bridges
 is often touted as a good usecase for the fallback (sometimes even explicitly
-mentioning bridging to IRC).
+mentioning bridging to IRC). As a result there are very few bridges, that
+benefit from the fallback being present.
 
 Some clients do choose not to implement rich reply rendering, but the experience
 tends to not be ideal, especially in cases where you reply to an image and now
@@ -246,7 +233,10 @@ ecosystem.
 ### Fallback increase integration work with new features
 
 - [Edits explicitly mention](https://github.com/matrix-org/matrix-doc/pull/2676)
-    that a reply fallback should not be sent in the `m.new_content`.
+    that a reply fallback should not be sent in the `m.new_content`. This causes
+    issues for clients relying on the fallback, because they won't show replies
+    once a message has been edited (see Element Android as a current example)
+    and similar edge cases.
 - [Extensible events](https://github.com/matrix-org/matrix-doc/pull/1767)
     require an update to the specification for fallbacks (because there is no
     `body` or `formatted_body` anymore after the transition period).
