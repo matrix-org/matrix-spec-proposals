@@ -1,0 +1,1 @@
+Distinguish between "raw" event format as exchanged by the Federation API, and the "serialised" event formats as used in the client-server and AS APIs.
