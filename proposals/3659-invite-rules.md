@@ -1,11 +1,11 @@
-# MSC3653 - Invite Rules
+# MSC3659 - Invite Rules
 
 This MSC proposes the creation of an optional account state which allows users to control how invites directed at them
 are processed by their homeserver.
 
 *Homeservers may choose to ignore an Invitee's invite rules *if* the Inviter is a homeserver admin.*
 
-While this MSC is in development, implementations of this MSC should use the state type `org.matrix.msc3653.invite_rules`
+While this MSC is in development, implementations of this MSC should use the state type `org.matrix.msc3659.invite_rules`
 
 ### Glossery
 - Inviter: The matrix user which has created the invite request.
