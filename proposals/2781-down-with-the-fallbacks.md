@@ -5,30 +5,31 @@ the replied to message. Something similar is planned for edits. While at least
 in theory fallbacks should make it simpler to start supporting replies in a new
 client, they actually introduce a lot of complexity and implementation issues
 and block a few valuable features. This MSC proposes to deprecate and eventually
-remove those fallbacks. It is an alternative to
-[MSC2589](https://github.com/matrix-org/matrix-doc/pull/2589), which intends to
-double down on fallbacks.
+remove those fallbacks. It was an alternative to
+[MSC2589](https://github.com/matrix-org/matrix-doc/pull/2589), which chose a
+different representation of the reply fallback, but was ultimately closed in
+favor of this proposal.
 
 ## Proposal
 
-Remove the rich reply fallback from the specification. Clients should stop
-sending them and should consider treating `<mx-reply>` parts as either something
-to be unconditionally stripped or as something to be escaped as invalid html.
-Clients may send replies without a formatted_body now using arbitrary message
-events (not state events).
+Remove the [rich reply fallback from the
+specification](https://spec.matrix.org/v1.1/client-server-api/#fallbacks-for-rich-replies).
+Clients should stop sending them and should consider treating `<mx-reply>` parts
+as either something to be unconditionally stripped or as something to be escaped
+as invalid html. Clients may send replies without a formatted_body now using
+arbitrary message events (not state events), which is currently still disallowed
+by the
+[specification](https://spec.matrix.org/v1.1/client-server-api/#rich-replies).
 
 As a result of this, you would be able to reply with an image.  New clients
 would also be able to implement edits and replies more easily, as they can
-sidestep a lot of pitfalls. This should improve the look and feel of replies in
-Matrix across all clients in the long term.
+sidestep a lot of pitfalls.
+
+Given clients have had enough time to implement replies completely, the
+overall look & feel of replies should be unchanged or even improved by this
+proposal.
 
 An extended motivation is provided at [the end of this document](#user-content-appendix-b-issues-with-the-current-fallbacks).
-
-There are similar benefits to not adding a fallback to edits. This proposal
-focuses on replies for simplicity, but encourages
-[MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) to drop the edit
-fallback or remove it [when moving to extensible
-events](https://github.com/matrix-org/matrix-doc/pull/3644).
 
 ## Potential issues
 
@@ -42,15 +43,19 @@ confusing messages to users as well. I'd argue though that in most cases, the
 reply is close enough to the replied to message, that you would be able to guess
 the correct context. Replies would also be somewhat easier to implement and
 worst case, a client could very easily implement a little "this is a reply"
-marker to at least mark replies visually.
+marker to at least mark replies visually. Not having a reply fallback might also
+prompt some clients to implement support for rich replies sooner. Users will now
+complain about no context. Previously there was some context for replies to text
+messages, which made it easy to accept the solution as good enough. However the
+experience with replies to images was not acceptable. Motivating clients to
+implement rich replies is a good thing in the long run and will improve the
+Matrix experience overall.
 
-~~Same applies to edits. If 2 very similar messages appear after one another,
-someone new to online messaging would assume, this is a correction to the
-previous message. That may even be more obvious to them than if the message was
-prefixed with a `*`, since that has been confusing to users in the past. Since
-edits would now look exactly like a normal message, they would also be
-considerably easier to implement, since you just need to replace the former
-message now, similar to a redaction, and not merge `content` and `new_content`.~~
+You might not get notifications anymore for replies to your messages. This was
+a feature of the reply fallback, because it included the username, but users had
+no control over it. A follow-up MSC will propose a push rule for related events,
+which will allow users control over getting notified by replies (and other
+relations) or not.
 
 ## Alternatives
 
@@ -62,21 +67,26 @@ One could also just stick with the current fallbacks and make all clients pay
 the cost for a small number of clients actually benefitting from them.
 
 Lastly one could introduce an alternative relation type for replies without
-fallback and deprecate the current relation type (since it does not fit the new
-format for relations anyway). We could specify, that the server is supposed to
-send the replied_to event in unsigned to the client, so that clients just need
-to stitch those two events together, but don't need to fetch the replied_to
-event from the server. It would make replies slightly harder to implement for
-clients, but it would be simpler than what this MSC proposes.
+fallback and deprecate the current relation type (since it does not fit the
+[new format for relations](https://github.com/matrix-org/matrix-doc/pull/2674)
+anyway). We could specify, that the server is supposed to send the replied_to
+event in unsigned to the client, so that clients just need to stitch those two
+events together, but don't need to fetch the replied_to event from the server.
+It would make replies slightly harder to implement for clients, but it would be
+simpler than what this MSC proposes.
 
 ## Security considerations
 
 Removing the fallback from the spec may lead to issues, when clients experience
 the fallback in old events. This should not add any security issues the
 client didn't already have from interpreting untrusted html, though. In all
-other cases this should **reduce** security issues.
+other cases this should **reduce** security issues (see
+https://github.com/vector-im/element-web/releases/tag/v1.7.3 or the appendix for
+examples).
 
-## Appendix A: Clients not supporting rich replies
+## Appendix A: Support for rich replies in different clients
+
+### Clients without rendering support for rich replies
 
 Of the 23 clients listed in the [matrix client matrix](https://matrix.org/clients-matrix)
 16 are listed as not supporting replies:
@@ -118,6 +128,20 @@ Changes from 1.5 years ago:
 - Lots of other new clients!
 
 
+### Testresults without fallback
+
+So far I haven't found a client that completely breaks without the fallback.
+All clients that support rendering rich replies don't break, when there is no
+fallback according to my tests (at least Nheko, Element/Web, FluffyChat and
+NeoChat were tested and some events without fallback are in #nheko:nheko.im and
+I haven't heard of any breakage). Those clients just show the reply as normal
+and otherwise seem to work completely fine as well. Element Android and Element
+iOS just don't show what message was replied to. Other clients haven't been
+tested by the author, but since the `content` of an event is untrusted, a client
+should not break if there is no reply fallback. Otherwise this would be a
+trivial abuse vector.
+
+
 ## Appendix B: Issues with the current fallbacks
 
 This section was moved to the back of this MSC, because it is fairly long and
@@ -127,7 +151,8 @@ with fallbacks in their client and its interactions with the ecosystem.
 ### Stripping the fallback
 
 To reply to a reply, a client needs to strip the existing fallback of the first
-reply. Otherwise replies will just infinitely nest replies. [While the spec doesn't necessarily require that](https://github.com/matrix-org/matrix-doc/issues/1541),
+reply. Otherwise replies will just infinitely nest replies.
+[While the spec doesn't necessarily require stripping the fallback in replies to replies (only for rendering)](https://spec.matrix.org/v1.1/client-server-api/#fallback-for-mtext-mnotice-and-unrecognised-message-types),
 not doing so risks running into the event size limit, but more importantly, it
 just leads to a bad experience for clients actually relying on the fallback.
 
@@ -164,9 +189,10 @@ html anyway and that new features are blocked, because of fallbacks.
 
 This is also an issue with edits, where the combination of edit fallback and
 reply fallback is somewhat interesting: You need to send a fallback, since the
-event is still a reply, but you can't send a reply relation, since this is an
-edit. Currently this is solved by not sending a reply fallback in edits, so
-clients can't rely on a reply fallback in all cases.
+event is still a reply,
+[but you can't send a reply relation](https://github.com/matrix-org/matrix-doc/pull/2676/files#diff-1761bdadd1caacb2503d2b2e6c572fc628c7321b0beab8d502ac249c15b2826aR113),
+since this is an edit. Currently this is solved by not sending a reply fallback
+in edits, so clients can't rely on a reply fallback in all cases.
 
 We currently can see 2 behaviours in practice:
 
@@ -180,12 +206,10 @@ Client A supports rich reply rendering, Client B does not.
 
 ### Format is unreliable
 
-Further complicating the stripping and creation portion of fallbacks is, that
-they are somewhat badly specified. While the fallback and html use are required,
-the spec only says how a fallback "should" look, not how it "must" look. In
-practice there are various variations of the fallback floating around, where the
-tame ones are just localized, but others are just straight up missing suggested
-links or tags.
+While the spec says how a fallback "should" look, there are variations in use
+which further complicates stripping the fallback.  Some variations include
+localizing the fallback, missing suggested links or tags, using the body in
+replies to files or images or using the display name instead of the matrix id.
 
 Basically a client can't rely on the fallback being present currently or it
 following any kind of shape or form and stripping is done on a best effort
@@ -203,12 +227,14 @@ language selection for their client, which may be personal information.
 
 ### Using the unmodified fallback in clients and bridges
 
-The above issues are minor, if reply fallbacks would sufficiend value to
+The above issues are minor, if reply fallbacks added sufficient value to
 clients.  Bridges usually try to bridge to native replies, so they need to
 strip the reply fallback
 (https://github.com/matrix-org/matrix-doc/issues/1541). Even the IRC bridge
 seems to send a custom fallback, because the default fallback is not that
-welcome to the IRC crowd.
+welcome to the IRC crowd, although the use cases for simple, text only bridges
+is often touted as a good usecase for the fallback (sometimes even explicitly
+mentioning bridging to IRC).
 
 Some clients do choose not to implement rich reply rendering, but the experience
 tends to not be ideal, especially in cases where you reply to an image and now
@@ -221,9 +247,11 @@ ecosystem.
 
 - [Edits explicitly mention](https://github.com/matrix-org/matrix-doc/pull/2676)
     that a reply fallback should not be sent in the `m.new_content`.
-- [Extensible events](https://github.com/matrix-org/matrix-doc/pull/1767) would
-    need to specify how the fallback should look like. [Alternatively they could
-    also drop it](https://github.com/matrix-org/matrix-doc/pull/3644).
+- [Extensible events](https://github.com/matrix-org/matrix-doc/pull/1767)
+    require an update to the specification for fallbacks (because there is no
+    `body` or `formatted_body` anymore after the transition period).
+    [The current proposal](https://github.com/matrix-org/matrix-doc/pull/3644)
+    also intends to just drop the fallbacks in extensible events.
 
 ### Localization
 
@@ -234,7 +262,10 @@ to guess, which language was used in a short message. One could also use the
 client's language, but that leaks the user's localization settings, which can be a
 privacy concern and the other party may not speak that language. Alternatively a
 client can just send english fallbacks, but that significantly worsens the
-experience for casual users in non-english speaking countries.
+experience for casual users in non-english speaking countries. The specification
+currently requires them to not be translated (although some clients don't follow
+that), but not sending a fallback at all completely sidesteps the need for the
+spec to specify that and clients relying on an english only fallback.
 
 ## Unstable prefix
 
