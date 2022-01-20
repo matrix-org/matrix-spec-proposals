@@ -94,7 +94,7 @@ In the context of threads clients will omit the fallback for rich replies to all
 events of any `msgtype` to be sent in a thread.
 Events that can accomodate the fallback for rich replies should include it.
 
-### Fetch all replies to a thread
+### Fetch all relations to a thread root
 
 To fetch an entire thread, the `/relations` API can be used as defined in 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)
