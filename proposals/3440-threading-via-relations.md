@@ -26,10 +26,6 @@ A new relation type m.thread expresses that an event belongs to a thread.
 ```
 Where $thread_root is the event ID of the root message in the thread.
 
-A big advantage of relations over quote replies is that they can be server-side 
-aggregated. It means that a client is not bound to download the entire history of 
-a room to have a comprehensive list of events being part of a thread.
-
 When a thread head is aggregated (as in MSC2675), it returns a summary of the thread: 
 the latest message, a list of participants and the total count of messages. 
 I.e. in places which include bundled relations (per 
@@ -302,6 +298,10 @@ using the key field from [MSC2677](https://github.com/matrix-org/matrix-doc/pull
 as the thread ID), but it is clearer to define a new relation type. It is unclear 
 what impact this would have on [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267), 
 but that is unimplemented by clients.
+
+A big advantage of relations over quote replies is that they can be server-side 
+aggregated. It means that a client is not bound to download the entire history of 
+a room to have a comprehensive list of events being part of a thread.
 
 ## Security considerations
 
