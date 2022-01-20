@@ -1,4 +1,4 @@
-# MSC0000: Allow Widgets to share user MxIds to the client
+# MSC3662: Allow Widgets to share user MxIds to the client
 
 [Widgets](https://github.com/matrix-org/matrix-doc/pull/2764) offer the ability to expand
 the functionality of clients by calling widget APIs to invoke actions on the client.
