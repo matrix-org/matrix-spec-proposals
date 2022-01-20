@@ -52,7 +52,9 @@ would include additional information in the `unsigned` field:
 
 #### Quote replies in a thread 
 
-Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`. However clients should fill in the new `render_in` field with `m.thread` in order to display that in a thread context.
+Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
+However clients should fill in the new `render_in` field with `m.thread` in order 
+to display that in a thread context.
 
 ```json
 "m.relates_to": {
@@ -68,6 +70,10 @@ Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
 It is possible that an `m.in_reply_to` event targets an event that is outside the
 related thread. Clients should always do their utmost to display the quote-reply
 and when clicked, the event should be displayed and highlighted in its original context.
+
+A quote reply without `rel_type: m.thread` targetting a thread relation must be 
+rendered in the main timeline. This will allow users to advertise threaded messages
+in the room.
 
 ### Backwards compatibility
 
