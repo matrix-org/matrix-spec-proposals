@@ -165,9 +165,17 @@ very real risk of real-world abuse from location data.
 
 All points from https://www.w3.org/TR/geolocation/#security apply.
 
+## Well-known configuration
+
+Homeservers should be allowed to define a custom tile server to use. For that 
+we introduce a new key in `.well-known` called `m.tile_server` which should 
+contain an URL to the desired map style `json`.
+Clients should read values from there and reconfigure accordingly.
+
 ## Unstable prefix
 
  * `m.location` used as a event type and extensible event field name should be
 referred to as `org.matrix.msc3488.location` until this MSC lands.
  * `m.ts` should be referred to as `org.matrix.msc3488.ts` until this MSC lands.
  * `m.asset` should be referred to as `org.matrix.msc3488.asset` until this MSC lands.
+ * `m.tile_server` should be referred to as `org.matrix.msc3488.tile_server` until this MSC lands.
