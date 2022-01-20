@@ -38,7 +38,7 @@ XXX: should description be localised?
 displayed area size on client mapping libraries.
 Possible values range from 0 to 20 based on the definitions from 
 [OpenStreetMap here](https://wiki.openstreetmap.org/wiki/Zoom_levels) and it
-would be the client's reponsibility to map them to values a particular library
+would be the client's responsibility to map them to values a particular library
 uses, if different. The client is also free to completely ignore it and decide
 the zoom level through other means.
 
@@ -62,7 +62,7 @@ avoid duplicating the mxid.
 
 If `m.asset` is missing from the location's content the client should render it 
 as `m.self` as that will be the most common use case. 
-Otherwise, if it's not missing but the type is invalid or unkown the client 
+Otherwise, if it's not missing but the type is invalid or unknown the client 
 should attempt to render it as a generic location. 
 Clients should be able to distinguish between `m.self` and explicit assets for
 this feature to be correctly implemented as interpreting everything as `m.self`
@@ -165,9 +165,17 @@ very real risk of real-world abuse from location data.
 
 All points from https://www.w3.org/TR/geolocation/#security apply.
 
+## Well-known configuration
+
+Homeservers should be allowed to define a custom tile server to use. For that 
+we introduce a new key in `.well-known` called `m.tile_server` which should 
+contain an URL to the desired map style `json`.
+Clients should read values from there and reconfigure accordingly.
+
 ## Unstable prefix
 
  * `m.location` used as a event type and extensible event field name should be
 referred to as `org.matrix.msc3488.location` until this MSC lands.
  * `m.ts` should be referred to as `org.matrix.msc3488.ts` until this MSC lands.
  * `m.asset` should be referred to as `org.matrix.msc3488.asset` until this MSC lands.
+ * `m.tile_server` should be referred to as `org.matrix.msc3488.tile_server` until this MSC lands.
