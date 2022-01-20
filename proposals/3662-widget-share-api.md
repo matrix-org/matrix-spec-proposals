@@ -9,7 +9,8 @@ This is useful for bridge situations where the bridge would like to offer a widg
 searching for users across the remote network, which can then invoke invites or room creation
 on the remote side.
 
-For sharing eventIds or rooms, this is somewhat covered by [MSC2931](https://github.com/matrix-org/matrix-doc/pull/2931/files)
+For navigating to rooms/events, this is somewhat covered by [MSC2931](https://github.com/matrix-org/matrix-doc/pull/2931/files). While that
+MSC covers navigating to matrix.to, it does not convey the intended action.
 
 ## Proposal
 
