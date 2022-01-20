@@ -38,7 +38,7 @@ XXX: should description be localised?
 displayed area size on client mapping libraries.
 Possible values range from 0 to 20 based on the definitions from 
 [OpenStreetMap here](https://wiki.openstreetmap.org/wiki/Zoom_levels) and it
-would be the client's reponsibility to map them to values a particular library
+would be the client's responsibility to map them to values a particular library
 uses, if different. The client is also free to completely ignore it and decide
 the zoom level through other means.
 
@@ -62,7 +62,7 @@ avoid duplicating the mxid.
 
 If `m.asset` is missing from the location's content the client should render it 
 as `m.self` as that will be the most common use case. 
-Otherwise, if it's not missing but the type is invalid or unkown the client 
+Otherwise, if it's not missing but the type is invalid or unknown the client 
 should attempt to render it as a generic location. 
 Clients should be able to distinguish between `m.self` and explicit assets for
 this feature to be correctly implemented as interpreting everything as `m.self`
