@@ -53,7 +53,7 @@ would include additional information in the `unsigned` field:
 #### Quote replies in a thread 
 
 Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
-However clients should fill in the new `render_in` field with `m.thread` in order 
+However clients should fill in the new `render_in` field with `m.thread` in order
 to display that in a thread context.
 
 ```json
@@ -71,7 +71,7 @@ It is possible that an `m.in_reply_to` event targets an event that is outside th
 related thread. Clients should always do their utmost to display the quote-reply
 and when clicked, the event should be displayed and highlighted in its original context.
 
-A quote reply without `rel_type: m.thread` targetting a thread relation must be 
+A quote reply without `rel_type: m.thread` targetting a thread relation must be
 rendered in the main timeline. This will allow users to advertise threaded messages
 in the room.
 
@@ -94,7 +94,7 @@ The quote reply fallback should be hidden in a thread context unless it contains
 
 In the context of threads clients will omit the fallback for rich replies to allow
 events of any `msgtype` to be sent in a thread.
-Events that can accomodate the fallback for rich replies should include it.
+Events that can accommodate the fallback for rich replies should include it.
 
 ### Fetch all relations to a thread root
 
