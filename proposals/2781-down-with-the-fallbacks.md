@@ -59,7 +59,7 @@ relations) or not.
 ## Alternatives
 
 [MSC2589](https://github.com/matrix-org/matrix-doc/pull/2589): This adds the
-reply text as an addional key. While this solves the parsing issues, it
+reply text as an additional key. While this solves the parsing issues, it
 doesn't address the other issues with fallbacks.
 
 One could also just stick with the current fallbacks and make all clients pay
@@ -88,7 +88,7 @@ examples).
 ### Clients without rendering support for rich replies
 
 Of the 23 clients listed in the [matrix client matrix](https://matrix.org/clients-matrix)
-16 are listed as not supporting replies:
+16 are listed as not supporting replies (updated January 2022):
 
 - Element Android: Relies on the reply fallback.
 - Element iOS: [Does not support rich replies](https://github.com/vector-im/element-ios/issues/3517)
@@ -112,12 +112,13 @@ client doesn't support it because of the fallback (Quaternion). 3 of the command
 line clients probably won't support replies, since they don't support formatted
 messages and replies require html support for at least sending.
 
-Only one client implemented rich replies in the last 1.5 years. Other clients
-are either new in my list or didn't change their reply rendering. I would
-appreciate to hear, why those client developers decided not to support rich
-reply rendering and if dropping the reply fallback would be an issue for them.
+Only one client implemented rich replies in the last 1.5 years after the
+original list was done in October 2020. Other clients are either new in my list
+or didn't change their reply rendering. I would appreciate to hear, why those
+client developers decided not to support rich reply rendering and if dropping
+the reply fallback would be an issue for them.
 
-Changes from 1.5 years ago:
+Changes from 1.5 years ago as of January 2022:
 
 - Fractal: [Seems to support replies now!](https://gitlab.gnome.org/GNOME/fractal/-/merge_requests/941)
 - Commune: Seems to support rich reply rendering and style them very nicely.
