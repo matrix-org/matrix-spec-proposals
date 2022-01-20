@@ -71,7 +71,7 @@ It is possible that an `m.in_reply_to` event targets an event that is outside th
 related thread. Clients should always do their utmost to display the quote-reply
 and when clicked, the event should be displayed and highlighted in its original context.
 
-A quote reply without `rel_type: m.thread` targetting a thread relation must be
+A quote reply without `rel_type: m.thread` targeting a thread relation must be
 rendered in the main timeline. This will allow users to advertise threaded messages
 in the room.
 
