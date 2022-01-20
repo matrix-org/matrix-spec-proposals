@@ -62,7 +62,7 @@ In order to prevent homeservers from interpriting `m.invite_rule` states differe
        4. `"none"`: Reject the invite request.
 
 #### Invite Rejection
-If an invite is to be rejected, the homeserver *should* respond with M_FORBIDDEN error code, and the error message: "This user is not permitted to send invites to this server/user"
+If an invite is to be rejected, the homeserver *should* respond with M_FORBIDDEN, and the error message: "This user is not permitted to send invites to this server/user"
 
 #### Example:
 ```js
@@ -95,7 +95,7 @@ If an invite is to be rejected, the homeserver *should* respond with M_FORBIDDEN
 ```
 
 ## Alternatives
-Currently, there is no way outside of homeserver-wide restrictions (mjolnir, anti-spam plugins), for users to control who can send them invites. While users can ignore single users to prevent them from sending them invites, this does nothing since a malicious user simply create another matrix account.
+Currently, there is no way outside of homeserver-wide restrictions (mjolnir, anti-spam plugins), for users to control who can send them invites. While users can ignore single users to prevent them from sending them invites, this does little since a malicious user simply create another matrix account.
 
 ## Potential Issues
 There is a potential denial of service for the `has-shared-room` and `has-direct-room` invite rules, as they require searching through all rooms a user is in, which could be a lot. This heavily depends on the homeserver's internals of course.
