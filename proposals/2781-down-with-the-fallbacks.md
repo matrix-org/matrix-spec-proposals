@@ -50,7 +50,7 @@ experience with replies to images was not acceptable. Motivating clients to
 implement rich replies is a good thing in the long run and will improve the
 Matrix experience overall.
 
-You might not get notifications anymore for replies to your messages. This was
+You might not get notifications any more for replies to your messages. This was
 a feature of the reply fallback, because it included the username, but users had
 no control over it. A follow-up MSC will propose a push rule for related events,
 which will allow users control over getting notified by replies (and other
@@ -127,7 +127,7 @@ Changes from 1.5 years ago:
 - Lots of other new clients!
 
 
-### Testresults without fallback
+### Results of testing replies without fallback
 
 So far I haven't found a client that completely breaks without the fallback.
 All clients that support rendering rich replies don't break, when there is no
@@ -231,7 +231,7 @@ the user needs to guess, what image was being replied to.
 As a result the fallbacks provide value to only a subset of the Matrix
 ecosystem.
 
-### Fallback increase integration work with new features
+### Fallbacks increase integration work with new features
 
 - [Edits explicitly mention](https://github.com/matrix-org/matrix-doc/pull/2676)
     that a reply fallback should not be sent in the `m.new_content`. This causes
