@@ -1,4 +1,4 @@
-# MSCXXXX: Enforce integer power levels
+# MSC3667: Enforce integer power levels
 
 The spec defines power levels in `m.room.power_levels` events as integers, but due to legacy
 behaviour in Synapse, string power levels are also accepted and parsed. The string parsing itself
@@ -37,4 +37,4 @@ more but is a significantly bigger task.
 
 ## Unstable prefix
 
-We will attempt an implementation in Dendrite using the `org.matrix.mscxxxx` room version identifier.
+We will attempt an implementation in Dendrite using the `org.matrix.msc3667` room version identifier.
