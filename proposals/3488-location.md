@@ -43,11 +43,11 @@ uses, if different. The client is also free to completely ignore it and decide
 the zoom level through other means.
 
 ```json5
-        "m.location": {
-            "uri": "geo:51.5008,0.1247;u=35",
-            "description": "Our destination",
-            "zoom_level": 15,
-        },
+"m.location": {
+    "uri": "geo:51.5008,0.1247;u=35",
+    "description": "Our destination",
+    "zoom_level": 15,
+}
 ```
 
 In order to differentiate between user tracking and other objects we also
@@ -141,10 +141,10 @@ annotations than location sharing. It would look something like this if we
 used it:
 
 ```json5
-        "m.geo": {
-            "type": "Point", 
-            "coordinates": [30.0, 10.0]
-        }
+"m.geo": {
+    "type": "Point", 
+    "coordinates": [30.0, 10.0]
+}
 ```
 
 Another design choice is to represent static shared locations as a normal room
@@ -169,8 +169,26 @@ All points from https://www.w3.org/TR/geolocation/#security apply.
 
 Homeservers should be allowed to define a custom tile server to use. For that 
 we introduce a new key in `.well-known` called `m.tile_server` which should 
-contain an URL to the desired map style `json`.
-Clients should read values from there and reconfigure accordingly.
+contain a `map_style_url` pointing to the desired map style `json`.
+
+Clients should read the `.well-known` and reconfigure accordingly, with values
+coming from it taking precedence over base configuration.
+
+```json5
+{
+    "m.tile_server": { 
+        "map_style_url": "https://www.example.com/style.json"
+    },
+    
+    
+    "m.homeserver": {
+        "base_url": "https://matrix-client.matrix.org"
+    },
+    "m.identity_server": {
+        "base_url": "https://vector.im"
+    }
+}
+```
 
 ## Unstable prefix
 
