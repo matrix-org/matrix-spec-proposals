@@ -79,8 +79,11 @@ in the room.
 
 A thread will be displayed as a chain of replies on clients unaware of threads.
 
-Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. It should always reference the latest event in the thread unless a user is explicitly replying to another event.
-The quote reply fallback should be hidden in a thread context unless it contains the new `render_in` field as described in the previous section.
+Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. 
+It should always reference the latest event in the thread unless a user is 
+explicitly replying to another event.
+The quote reply fallback should be hidden in a thread context unless it contains 
+the new `render_in` field as described in the previous section.
 
 ```jsonc
 "m.relates_to": {
@@ -92,9 +95,10 @@ The quote reply fallback should be hidden in a thread context unless it contains
   }
 ```
 
-In the context of threads clients will omit the fallback for rich replies to allow
-events of any `msgtype` to be sent in a thread.
-Events that can accommodate the fallback for rich replies should include it.
+Historically replies have been limited to text messages due to the legacy fallback
+prepended to `formatted_body`. This MSC is dependant on 
+[MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781) which strips that 
+requirement unlock use of any event type in this context.
 
 ### Fetch all relations to a thread root
 
@@ -327,6 +331,7 @@ MSC has not been included in a spec release.
 ## Dependencies
 
 This MSC builds on [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674), 
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) and, 
-[MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567/files)  (which at the 
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675), 
+[MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567) and,
+[MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781) and, (which at the 
 time of writing have not yet been accepted into the spec).
