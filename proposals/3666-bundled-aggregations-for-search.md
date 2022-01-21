@@ -1,4 +1,4 @@
-# MSC0000: Bundled aggregations for server side search
+# MSC3666: Bundled aggregations for server side search
 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines a way for
 homeservers to include events related to a requested event via "bundled aggregations".
