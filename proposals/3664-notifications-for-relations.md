@@ -138,6 +138,11 @@ writing this MSC to decrease dependencies.
     this MSC proposes the minimum amount of conditions to support push rules for
     most relations, although allowing `rel_type` on `contains_display_name` and
     `event_match` could be a good alternative.
+- Beeper has a
+    [similar feature in their synapse](https://gitlab.com/beeper/synapse/-/commit/44a1728b6b021f97900c89e0c00f7d1a23ce0d43),
+    but it does not allow you to filter by relation type and also differs
+    otherwise from the usual naming of push rule condition.
+
 
 ## Security considerations
 
