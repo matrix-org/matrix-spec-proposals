@@ -43,11 +43,11 @@ uses, if different. The client is also free to completely ignore it and decide
 the zoom level through other means.
 
 ```json5
-        "m.location": {
-            "uri": "geo:51.5008,0.1247;u=35",
-            "description": "Our destination",
-            "zoom_level": 15,
-        },
+"m.location": {
+    "uri": "geo:51.5008,0.1247;u=35",
+    "description": "Our destination",
+    "zoom_level": 15,
+}
 ```
 
 In order to differentiate between user tracking and other objects we also
@@ -141,10 +141,10 @@ annotations than location sharing. It would look something like this if we
 used it:
 
 ```json5
-        "m.geo": {
-            "type": "Point", 
-            "coordinates": [30.0, 10.0]
-        }
+"m.geo": {
+    "type": "Point", 
+    "coordinates": [30.0, 10.0]
+}
 ```
 
 Another design choice is to represent static shared locations as a normal room
