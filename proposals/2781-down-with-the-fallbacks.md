@@ -52,9 +52,10 @@ Matrix experience overall.
 
 You might not get notifications any more for replies to your messages. This was
 a feature of the reply fallback, because it included the username, but users had
-no control over it. A follow-up MSC will propose a push rule for related events,
-which will allow users control over getting notified by replies (and other
-relations) or not.
+no control over it. Notifications can be added back by an MSC like
+[MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664) or a similar
+proposal and give the user more control over the notifications while also being
+an explicit solution.
 
 ## Alternatives
 
