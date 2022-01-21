@@ -169,8 +169,26 @@ All points from https://www.w3.org/TR/geolocation/#security apply.
 
 Homeservers should be allowed to define a custom tile server to use. For that 
 we introduce a new key in `.well-known` called `m.tile_server` which should 
-contain an URL to the desired map style `json`.
-Clients should read values from there and reconfigure accordingly.
+contain a `map_style_url` pointing to the desired map style `json`.
+
+Clients should read the `.well-known` and reconfigure accordingly, with values
+coming from it taking precedence over base configuration.
+
+```json5
+{
+    "m.tile_server": { 
+        "map_style_url": "https://www.example.com/style.json"
+    },
+    
+    
+    "m.homeserver": {
+        "base_url": "https://matrix-client.matrix.org"
+    },
+    "m.identity_server": {
+        "base_url": "https://vector.im"
+    }
+}
+```
 
 ## Unstable prefix
 
