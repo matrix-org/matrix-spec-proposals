@@ -21,8 +21,8 @@ An invite rules state contains one required key, and two optional keys.
   - `"invite_rule": "has-shared-room"`: Only allow invites where the Inviter shares at least one room with the Invitee.
   - `"invite_rule": "has-direct-room"`: Only allow invites where the Inviter shares at least one direct room with the Invitee.
   - `"invite_rule": "none"`: Prevent any invites from being sent to the Invitee.
-- `"allow"`: An Array of RuleItems where if any are true, an invite request will not be blocked.
-- `"deny"`: An Array of RuleItems where if any are true, an invite request will be blocked.
+- `"allow"`: An Array of RuleItems where if any are True, an invite request will not be blocked.
+- `"deny"`: An Array of RuleItems where if any are True, an invite request will be blocked.
 
 #### `RuleItem`
 A RuleItem defines a Rule that can test against an invite request. This primarily exists for structural consistency with the room state `m.join_rules`.
@@ -31,15 +31,15 @@ It also serves to allow `m.invite_rules` to be easily extended in the future, su
 - `"type"`: Required String-Enum, must be one of the defined types below.
 
 ##### `m.user`
-Validates as true if the Inviter MXID is equal to the defined `"user_id"`
+Validates as True if the Inviter MXID is equal to the defined `"user_id"`
 - `"user_id"`: Required String, a valid MXID.
 
 ##### `m.shared_room`
-Validates as true if the Inviter and Invitee are in the defined `"room_id"`.
+Validates as True if the Inviter and Invitee are in the defined `"room_id"`.
 - `"room_id"`: Required String, a valid room id.
 
 ##### `m.target_room`
-Validates as true if the room which the Invitee is being invited to has the same room id as the defined `"room_id"`.
+Validates as True if the room which the Invitee is being invited to has the same room id as the defined `"room_id"`.
 - `"room_id"`: Required String, a valid room id.
 
 #### Evaluation
@@ -55,10 +55,10 @@ In order to prevent homeservers from interpriting `m.invite_rule` states differe
        2. `"has-shared-room"`: Get all Rooms Invitee is in, and check if the Inviter has a `"join"` membership state.
           If the Inviter does not have at least one shared room, Reject the invite request.
        3. `"has-direct-room"`: Check if the Invitee's account data state `"m.direct"` exists.
-          - If true, test if the content of `"m.direct"` contains a key which is the Inviter's MXID.
-            - If `True`, test if the Invitee has a `"join"` membership state in any rooms defined in the key's value. If no matches are found, reject the invite request.
-            - If `False`, reject the invite request.
-          - If false, reject the invite request.
+          - If True, test if the content of `"m.direct"` contains a key which is the Inviter's MXID.
+            - If True, test if the Invitee has a `"join"` membership state in any rooms defined in the key's value. If no matches are found, reject the invite request.
+            - If False, reject the invite request.
+          - If False, reject the invite request.
        4. `"none"`: Reject the invite request.
 
 #### Invite Rejection
