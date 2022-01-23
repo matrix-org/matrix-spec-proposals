@@ -17,7 +17,7 @@ properties:
   content:
     properties:
       name:
-        description: The name of the room. This MUST NOT exceed 255 bytes.
+        description: The name of the room.
         type: string
     required:
       - name
