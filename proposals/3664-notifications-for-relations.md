@@ -45,19 +45,15 @@ messages.
 - `key` (optional): The dot-separated field of the event to match, e.g. `content.body`
     or `sender`. If it is not present, the condition should match all events,
     that have a relation of type `rel_type`.
-- `pattern` (optional): The glob-style pattern to match against. Patterns with
-    no special glob characters should be treated as having asterisks prepended
-    and appended when testing the condition. If this is not present, it should
-    match everything if the specific key is present.
+- `pattern` (optional): The glob-style pattern to match against.
 
 `key` and `pattern` have exactly the same meaning as in `event_match`
-conditions, the wording is taken from the current spec. The wording of that is
-currently debated in https://github.com/matrix-org/matrix-doc/issues/2637 and
-this MSC just follows whatever the spec does for `event_match`.
+conditions. See https://github.com/matrix-org/matrix-doc/issues/2637 for a
+clarification of their behaviour.
 
 `key` and `pattern` are optional to allow you to enable or suppress all
-notifications for a specific event type. For example one could suppress
-notifications for all events in
+notifications for a specific relation type. For example one could suppress
+notifications for all events with a realation from
 [threads](https://github.com/matrix-org/matrix-doc/pull/3440) and all
 [edits](https://github.com/matrix-org/matrix-doc/pull/2676) with the following
 two conditions:
@@ -76,11 +72,11 @@ two conditions:
 }
 ```
 
-Without a `key` the push rule can be evaluated without fetching the related to
-event. If only `key` is present, `pattern` should be assumed to be `*`, which
-allows you to match for a field being present regardless of its value. If only
-`pattern` is present, servers should return an error when setting the rule.
-Clients should ignore the `pattern` field if there is no `key` field.
+Without a `key` and `pattern` the push rule can be evaluated without fetching
+the related to event. If one of those two fields is missing, a server should
+prevent those rules from being added with the appropriate error code. (A client
+wouldn't have a choice but to ignore those keys if the server failed to prevent
+the rule from being added.)
 
 A client can check for the `related_event_match` condition being supported by
 testing for an existing `.m.rule.reply` in the default rules.
