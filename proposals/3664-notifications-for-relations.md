@@ -79,7 +79,7 @@ two conditions:
 Without a `key` the push rule can be evaluated without fetching the related to
 event. If only `key` is present, `pattern` should be assumed to be `*`, which
 allows you to match for a field being present regardless of its value. If only
-`value` is present, servers should return an error when setting the rule.
+`pattern` is present, servers should return an error when setting the rule.
 Clients should ignore the `pattern` field if there is no `key` field.
 
 ### A push rule for replies
