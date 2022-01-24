@@ -886,11 +886,11 @@ key, then Alice's device can trust Bob's master key, and she can sign it
 with her user-signing key.
 
 Users upload their cross-signing keys to the server using [POST
-/\_matrix/client/r0/keys/device\_signing/upload](/client-server-api/#post_matrixclientv3keysdevice_signingupload). When Alice uploads
+/\_matrix/client/v3/keys/device\_signing/upload](/client-server-api/#post_matrixclientv3keysdevice_signingupload). When Alice uploads
 new cross-signing keys, her user ID will appear in the `changed`
 property of the `device_lists` field of the `/sync` of response of all
 users who share an encrypted room with her. When Bob sees Alice's user
-ID in his `/sync`, he will call [POST /\_matrix/client/r0/keys/query](/client-server-api/#post_matrixclientv3keysquery)
+ID in his `/sync`, he will call [POST /\_matrix/client/v3/keys/query](/client-server-api/#post_matrixclientv3keysquery)
 to retrieve Alice's device and cross-signing keys.
 
 If Alice has a device and wishes to send an encrypted message to Bob,
@@ -1194,17 +1194,17 @@ However, as the session keys are stored on the server encrypted, it
 requires users to enter a decryption key to decrypt the session keys.
 
 To create a backup, a client will call [POST
-/\_matrix/client/r0/room\_keys/version](#post_matrixclientv3room_keysversion) and define how the keys are to
+/\_matrix/client/v3/room\_keys/version](#post_matrixclientv3room_keysversion) and define how the keys are to
 be encrypted through the backup's `auth_data`; other clients can
 discover the backup by calling [GET
-/\_matrix/client/r0/room\_keys/version](#get_matrixclientv3room_keysversion). Keys are encrypted according
+/\_matrix/client/v3/room\_keys/version](#get_matrixclientv3room_keysversion). Keys are encrypted according
 to the backup's `auth_data` and added to the backup by calling [PUT
-/\_matrix/client/r0/room\_keys/keys](#put_matrixclientv3room_keyskeys) or one of its variants, and can
-be retrieved by calling [GET /\_matrix/client/r0/room\_keys/keys](#get_matrixclientv3room_keyskeys) or
+/\_matrix/client/v3/room\_keys/keys](#put_matrixclientv3room_keyskeys) or one of its variants, and can
+be retrieved by calling [GET /\_matrix/client/v3/room\_keys/keys](#get_matrixclientv3room_keyskeys) or
 one of its variants. Keys can only be written to the most recently
 created version of the backup. Backups can also be deleted using [DELETE
-/\_matrix/client/r0/room\_keys/version/{version}](#delete_matrixclientv3room_keysversionversion), or individual keys
-can be deleted using [DELETE /\_matrix/client/r0/room\_keys/keys](#delete_matrixclientv3room_keyskeys) or
+/\_matrix/client/v3/room\_keys/version/{version}](#delete_matrixclientv3room_keysversionversion), or individual keys
+can be deleted using [DELETE /\_matrix/client/v3/room\_keys/keys](#delete_matrixclientv3room_keyskeys) or
 one of its variants.
 
 Clients must only store keys in backups after they have ensured that the
