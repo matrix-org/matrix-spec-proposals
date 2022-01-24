@@ -50,9 +50,9 @@ would include additional information in the `unsigned` field:
 * `current_user_participated`: A flag set to `true` if the current logged in user
   has participated in the thread
 
-#### Quote replies in a thread 
+#### Rich replies in a thread 
 
-Quote replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
+Rich replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
 However clients should fill in the new `render_in` field with `m.thread` in order
 to display that in a thread context.
 
@@ -68,10 +68,10 @@ to display that in a thread context.
 ```
 
 It is possible that an `m.in_reply_to` event targets an event that is outside the
-related thread. Clients should always do their utmost to display the quote-reply
+related thread. Clients should always do their utmost to display the rich reply
 and when clicked, the event should be displayed and highlighted in its original context.
 
-A quote reply without `rel_type: m.thread` targeting a thread relation must be
+A rich reply without `rel_type: m.thread` targeting a thread relation must be
 rendered in the main timeline. This will allow users to advertise threaded messages
 in the room.
 
@@ -82,7 +82,7 @@ A thread will be displayed as a chain of replies on clients unaware of threads.
 Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. 
 It should always reference the latest event in the thread unless a user is 
 explicitly replying to another event.
-The quote reply fallback should be hidden in a thread context unless it contains 
+The rich reply fallback should be hidden in a thread context unless it contains 
 the new `render_in` field as described in the previous section.
 
 ```jsonc
@@ -233,7 +233,7 @@ This is done so that clients that support threads can render the event in the mo
 relevant context.
 
 If a client does not include that relation type to the outgoing event, it will be 
-rendered in the room timeline with a quote reply that should open and highlight the 
+rendered in the room timeline with a rich reply that should open and highlight the 
 event in the thread context when clicked.
 
 When replying to the following event, a client that does not support thread should 
@@ -309,7 +309,7 @@ as the thread ID), but it is clearer to define a new relation type. It is unclea
 what impact this would have on [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267), 
 but that is unimplemented by clients.
 
-A big advantage of relations over quote replies is that they can be server-side 
+A big advantage of relations over rich replies is that they can be server-side 
 aggregated. It means that a client is not bound to download the entire history of 
 a room to have a comprehensive list of events being part of a thread.
 
