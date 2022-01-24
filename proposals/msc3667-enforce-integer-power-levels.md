@@ -37,4 +37,6 @@ more but is a significantly bigger task.
 
 ## Unstable prefix
 
-We will attempt an implementation in Dendrite using the `org.matrix.msc3667` room version identifier.
+An implementation exists in Dendrite using the `org.matrix.msc3667` room version identifier. The
+experimental room version is based on room version 7, with the additional requirement that power
+levels must be integers or the power level content will fail to unmarshal altogether.
