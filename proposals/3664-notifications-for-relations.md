@@ -82,6 +82,9 @@ allows you to match for a field being present regardless of its value. If only
 `pattern` is present, servers should return an error when setting the rule.
 Clients should ignore the `pattern` field if there is no `key` field.
 
+A client can check for the `related_event_match` condition being supported by
+testing for an existing `.m.rule.reply` in the default rules.
+
 ### A push rule for replies
 
 To enable notifications for replies without relying on the reply fallback, but
