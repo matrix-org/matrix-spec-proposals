@@ -50,6 +50,11 @@ messages.
     and appended when testing the condition. If this is not present, it should
     match everything if the specific key is present.
 
+`key` and `pattern` have exactly the same meaning as in `event_match`
+conditions, the wording is taken from the current spec. The wording of that is
+currently debated in https://github.com/matrix-org/matrix-doc/issues/2637 and
+this MSC just follows whatever the spec does for `event_match`.
+
 `key` and `pattern` are optional to allow you to enable or suppress all
 notifications for a specific event type. For example one could suppress
 notifications for all events in
@@ -72,7 +77,10 @@ two conditions:
 ```
 
 Without a `key` the push rule can be evaluated without fetching the related to
-event.
+event. If only `key` is present, `pattern` should be assumed to be `*`, which
+allows you to match for a field being present regardless of its value. If only
+`value` is present, servers should return an error when setting the rule.
+Clients should ignore the `pattern` field if there is no `key` field.
 
 ### A push rule for replies
 
@@ -89,7 +97,7 @@ which contained your display name or matrix ID. The rule should look like this:
     "enabled": true,
     "conditions": [
         {
-            "kind": "related_event_match"
+            "kind": "related_event_match",
             "rel_type": "m.in_reply_to",
             "key": "sender",
             "pattern": "[the user's Matrix ID]"
@@ -108,24 +116,104 @@ which contained your display name or matrix ID. The rule should look like this:
 }
 ```
 
-This should be an underride rule, since it can't be a content rule. It ensures
-you get notified for replies to all events you sent. The actions are the same as
-for `.m.rule.contains_display_name` and `.m.rule.contains_user_name`.
+This should be an override rule, since it can't be a content rule and should
+not be overriden when setting a room to mentions only. It should be places just
+before `.m.rule.contains_display_name` in the list. tThis ensures you get
+notified for replies to all events you sent. The actions are the same as for
+`.m.rule.contains_display_name` and `.m.rule.contains_user_name`.
 
 No other rules are proposed as no other relations are in the specification as of
 writing this MSC to decrease dependencies.
 
 ## Potential issues
 
-- Most push rules for relations will need a lookup into a second event. This
-    causes additional implementation complexity and can potentially be
-    expensive. Looking up one event shouldn't be that heavy, but it is overhead,
-    that wasn't there before and it needs to be evaluated for every event, so it
-    clearly is somewhat performance sensitive.
-- If the related to event is not present on the homeserver, evaluating the
-    push rule may be delayed or fail completely. For most rules this should not
-    be an issue. You can assume the event was not sent by a user on your server
-    if the event is not present on your server.
+Most push rules for relations will need a lookup into a second event. This
+causes additional implementation complexity and can potentially be expensive.
+Looking up one event shouldn't be that heavy, but it is overhead, that wasn't
+there before and it needs to be evaluated for every event, so it clearly is
+somewhat performance sensitive.
+
+If the related to event is not present on the homeserver, evaluating the push
+rule may be delayed or fail completely. For most rules this should not be an
+issue. You can assume the event was not sent by a user on your server if the
+event is not present on your server.  In general clients and servers should do
+their best to evaluate the condition. If they fail to do so (possibly because
+they can't look up the event asynchronously) in a timely manner, the condition
+may be ignored/evaluated to false. This should affect only a subset of events,
+because in general relations happen to events in close proximity. There is a
+risk of missing notifications for replies to very old messages and similar
+relations.
+
+
+[threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
+[as a fallback](https://github.com/matrix-org/matrix-doc/pull/3440/files#diff-113727ce0257b4dc0ad6f1087b6402f2cfcb6ff93272757b947bf1ce444056aeR82).
+This would cause a notification with the new `.m.rule.reply` rule. To prevent
+that the threads MSC could add rules like this to suppress notifications for
+threads without the `render_in` attribute:
+
+```json5
+{
+    "rule_id": ".m.rule.suppress_reply_notify_in_threads",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "related_event_match",
+            "rel_type": "m.in_reply_to"
+        },
+        {
+            "kind": "related_event_match",
+            "rel_type": "m.thread"
+        }
+    ],
+    "actions": [
+        "notify"
+    ]
+},
+{
+    "rule_id": ".m.rule.reply_in_thread",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "related_event_match",
+            "rel_type": "m.in_reply_to",
+            "key": "sender",
+            "pattern": "[the user's Matrix ID]"
+        },
+        {
+            "kind": "related_event_match",
+            "rel_type": "m.thread"
+        },
+        {
+            "kind": "event_match",
+            "key": "m.relates_to.m.in_reply_to.render_in",
+            "pattern": "m.thread"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        },
+        {
+            "set_tweak": "highlight"
+        }
+    ]
+}
+```
+
+This would be significantly easier if there were ways to match for fields NOT
+being present and if a pattern can match a field in an array is not clearly
+defined in the specification at the moment: https://github.com/matrix-org/matrix-doc/issues/3082
+
+That will need a solution, but there are multiple ways to solve this and it
+probably does not need to happen on this MSC? The easiest solution would be to
+be able to just invert a pattern. Then you could just suppress notifications for
+events without `render_in` or the threading MSC could inverts its event format
+to make it easier to match with pushrules (i.e. `dont_render_in` or
+`fallback_relation`).
 
 ## Alternatives
 
