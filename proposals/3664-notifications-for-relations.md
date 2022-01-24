@@ -117,8 +117,8 @@ which contained your display name or matrix ID. The rule should look like this:
 ```
 
 This should be an override rule, since it can't be a content rule and should
-not be overridden when setting a room to mentions only. It should be places just
-before `.m.rule.contains_display_name` in the list. tThis ensures you get
+not be overridden when setting a room to mentions only. It should be placed just
+before `.m.rule.contains_display_name` in the list. This ensures you get
 notified for replies to all events you sent. The actions are the same as for
 `.m.rule.contains_display_name` and `.m.rule.contains_user_name`.
 
