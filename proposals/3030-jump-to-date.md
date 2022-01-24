@@ -63,6 +63,9 @@ implementation. Although the heuristics will probably be based on whether the
 closest event is a forward/backward extremity indicating it's next to a gap of
 events which are potentially closer.
 
+These endpoints are authenticated and should be rate-limited like similar client
+and federation endpoints to prevent resource exhaustion abuse.
+
 ```
 GET /_matrix/client/v1/rooms/<roomID>/timestamp_to_event?ts=<timestamp>&dir=<direction>
 {
