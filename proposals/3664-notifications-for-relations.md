@@ -144,7 +144,7 @@ risk of missing notifications for replies to very old messages and similar
 relations.
 
 
-[threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
+[Threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
 [as a fallback](https://github.com/matrix-org/matrix-doc/pull/3440/files#diff-113727ce0257b4dc0ad6f1087b6402f2cfcb6ff93272757b947bf1ce444056aeR82).
 This would cause a notification with the new `.m.rule.reply` rule. To prevent
 that the threads MSC could add rules like this to suppress notifications for
