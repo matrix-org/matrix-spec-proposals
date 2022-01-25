@@ -1,4 +1,4 @@
-# MSC3489 - m.beacon: Sharing streams of location data
+# MSC3489 - m.beacon: Sharing streams of location data with history
 
 ## Problem
 
@@ -8,7 +8,11 @@ doesn't currently provide a way of doing this.
 
 Therefore, we'd like to provide a way for users to efficiently advertise the
 time-limited real-time location of themselves or arbitrary assets to other
-users in a room.
+users in a room - while by default preserving the history of the location
+data in the room by storing it as relational timeline events.
+
+For purely ephemeral location sharing, see
+[MSC3672](https://github.com/matrix-org/matrix-doc/pull/3672)
 
 ## Proposal
 
@@ -106,7 +110,8 @@ Another option would be using ephemeral data units to broadcast location updates
 do come with downsides of their own:
 * they are not persisted and cannot provide historical data
 * there's no per-room API for them
-* they are not end to end encrypted 
+* they are not end to end encrypted
+However, a privacy-preserving "never store these" approach is still desirable, hence [MSC3672](https://github.com/matrix-org/matrix-doc/pull/3672)
 
 Alternatively, we could behave like MSC3401 and announce users' beacons in
 `m.beacon_info.*` (similar to MSC3401's `m.call`), and then send location
