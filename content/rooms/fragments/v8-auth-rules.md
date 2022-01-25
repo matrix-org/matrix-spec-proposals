@@ -1,39 +1,6 @@
 ---
-title: Room Version 7
-type: docs
-weight: 60
+toc_hide: true
 ---
-
-This room version builds on [version 6](/rooms/v6) to introduce knocking
-as a possible join rule and membership state.
-
-## Client considerations
-
-This is the first room version to support knocking completely. As such,
-users will not be able to knock on rooms which are not based off v7.
-
-Though unchanged in this room version, clients which implement the
-redaction algorithm locally should refer to the [redactions](#redactions)
-section below for a full overview.
-
-## Server implementation components
-
-{{% boxes/warning %}}
-The information contained in this section is strictly for server
-implementors. Applications which use the Client-Server API are generally
-unaffected by the intricacies contained here. The section above
-regarding client considerations is the resource that Client-Server API
-use cases should reference.
-{{% /boxes/warning %}}
-
-Room version 7 adds new authorization rules for events to support knocking.
-[Room version 6](/rooms/v6) has details of other authorization rule changes,
-as do the versions v6 is based upon.
-
-### Authorization rules
-
-{{% added-in this=true %}} For checks perfomed upon `m.room.member` events, a
-new point for `membership=knock` is added.
 
 Events must be signed by the server denoted by the `sender` key.
 
@@ -77,16 +44,26 @@ The rules are as follows:
     reject.
 4.  If type is `m.room.member`:
     1.  If no `state_key` key or `membership` key in `content`, reject.
-    2.  If `membership` is `join`:
+    2.  If `content` has a `join_authorised_via_users_server`
+        key:
+        1.  If the event is not validly signed by the user ID denoted
+            by the key, reject.
+    3.  If `membership` is `join`:
         1.  If the only previous event is an `m.room.create` and the
             `state_key` is the creator, allow.
         2.  If the `sender` does not match `state_key`, reject.
         3.  If the `sender` is banned, reject.
         4.  If the `join_rule` is `invite` then allow if membership
             state is `invite` or `join`.
-        5.  If the `join_rule` is `public`, allow.
-        6.  Otherwise, reject.
-    3.  If `membership` is `invite`:
+        5.  If the `join_rule` is `restricted`:
+            1.  If membership state is `join` or `invite`, allow.
+            2.  If the `join_authorised_via_users_server` key in `content`
+                is not a user with sufficient permission to invite other
+                users, reject.
+            3.  Otherwise, allow.
+        6.  If the `join_rule` is `public`, allow.
+        7.  Otherwise, reject.
+    4.  If `membership` is `invite`:
         1.  If `content` has `third_party_invite` key:
             1.  If *target user* is banned, reject.
             2.  If `content.third_party_invite` does not have a `signed`
@@ -112,7 +89,7 @@ The rules are as follows:
         4.  If the `sender`'s power level is greater than or equal to
             the *invite level*, allow.
         5.  Otherwise, reject.
-    4.  If `membership` is `leave`:
+    5.  If `membership` is `leave`:
         1.  If the `sender` matches `state_key`, allow if and only if
             that user's current membership state is `invite` or `join`.
         2.  If the `sender`'s current membership state is not `join`,
@@ -124,20 +101,20 @@ The rules are as follows:
             the *kick level*, and the *target user*'s power level is
             less than the `sender`'s power level, allow.
         5.  Otherwise, reject.
-    5.  If `membership` is `ban`:
+    6.  If `membership` is `ban`:
         1.  If the `sender`'s current membership state is not `join`,
             reject.
         2.  If the `sender`'s power level is greater than or equal to
             the *ban level*, and the *target user*'s power level is less
             than the `sender`'s power level, allow.
         3.  Otherwise, reject.
-    6. If `membership` is `knock`:
+    7. If `membership` is `knock`:
         1.  If the `join_rule` is anything other than `knock`, reject.
         2.  If `sender` does not match `state_key`, reject.
         3.  If the `sender`'s current membership is not `ban`, `invite`,
             or `join`, allow.
         4.  Otherwise, reject.
-    7.  Otherwise, the membership is unknown. Reject.
+    8.  Otherwise, the membership is unknown. Reject.
 5.  If the `sender`'s current membership state is not `join`, reject.
 6.  If type is `m.room.third_party_invite`:
     1.  Allow if and only if `sender`'s current power level is greater
@@ -182,36 +159,3 @@ Some consequences of these rules:
     to both the kick *and* ban levels, *and* greater than the target
     user's power level.
 {{% /boxes/note %}}
-
-## Unchanged from v6
-
-The following sections have not been modified since v6, but are included for
-completeness.
-
-### State resolution
-
-{{% rver-fragment name="v2-state-res" %}}
-
-### Event IDs
-
-{{% rver-fragment name="v4-event-ids" %}}
-
-### Event format
-
-{{% rver-fragment name="v4-event-format" %}}
-
-### Handling redactions
-
-{{% rver-fragment name="v3-handling-redactions" %}}
-
-### Canonical JSON
-
-{{% rver-fragment name="v6-canonical-json" %}}
-
-### Signing key validity period
-
-{{% rver-fragment name="v5-signing-requirements" %}}
-
-### Redactions
-
-{{% rver-fragment name="v6-redactions" %}}

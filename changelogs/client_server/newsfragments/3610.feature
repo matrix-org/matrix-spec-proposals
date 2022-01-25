@@ -1,0 +1,1 @@
+Add Spaces and room types as per [MSC1772](https://github.com/matrix-org/matrix-doc/pull/1772) and [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946).

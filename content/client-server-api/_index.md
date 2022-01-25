@@ -1854,6 +1854,27 @@ the topic to be removed from the room.
 
 ## Rooms
 
+### Types
+
+{{% added-in v="1.2" %}}
+
+Optionally, rooms can have types to denote their intended function. A room
+without a type does not necessarily mean it has a specific default function,
+though commonly these rooms will be for conversational purposes.
+
+Room types are best applied when a client might need to differentiate between
+two different rooms, such as conversation-holding and data-holding. If a room
+has a type, it is specified in the `type` key of an [`m.room.create`](#mroomcreate)
+event. To specify a room's type, provide it as part of `creation_content` on
+the create room request.
+
+In this specification the following room types are specified:
+
+* [`m.space`](#spaces)
+
+Unspecified room types are permitted through the use of
+[Namespaced Identifiers](/appendices/#common-namespaced-identifier-grammar).
+
 ### Creation
 
 The homeserver will create an `m.room.create` event when a room is
@@ -1963,6 +1984,12 @@ This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
 in room versions [which support knocking](/rooms/#feature-matrix).
 
+{{% added-in v="1.2" %}} `restricted`
+This room can be joined if you were invited or if you are a member of another
+room listed in the join rules. If the server cannot verify membership for any
+of the listed rooms then you can only join with an invite. Note that this rule
+is only expected to work in room versions [which support it](/rooms/#feature-matrix).
+
 The allowable state transitions of membership are:
 
 ![membership-flow-diagram](/diagrams/membership.png)
@@ -2011,6 +2038,51 @@ to the client to handle. Clients can expect to see the join event if the
 server chose to auto-accept.
 
 {{% http-api spec="client-server" api="knocking" %}}
+
+##### Restricted rooms
+
+{{% added-in v="1.2" %}}
+
+Restricted rooms are rooms with a `join_rule` of `restricted`. These rooms
+are accompanied by "allow conditions" as described in the
+[`m.room.join_rules`](#mroomjoin_rules) state event.
+
+If the user has an invite to the room then the restrictions will not affect
+them. They should be able to join by simply accepting the invite.
+
+When joining without an invite, the server MUST verify that the requesting
+user meets at least one of the conditions. If no conditions can be verified
+or no conditions are satisfied, the user will not be able to join. When the
+join is happening over federation, the remote server will check the conditions
+before accepting the join. See the [Server-Server Spec](/server-server-api/#restricted-rooms)
+for more information.
+
+If the room is `restricted` but no valid conditions are presented then the
+room is effectively invite only.
+
+The user does not need to maintain the conditions in order to stay a member
+of the room: the conditions are only checked/evaluated during the join process.
+
+###### Conditions
+
+Currently there is only one condition available: `m.room_membership`. This
+condition requires the user trying to join the room to be a *joined* member
+of another room (specifically, the `room_id` accompanying the condition). For
+example, if `!restricted:example.org` wanted to allow joined members of
+`!other:example.org` to join, `!restricted:example.org` would have the following
+`content` for [`m.room.join_rules`](#mroomjoin_rules):
+
+```json
+{
+  "join_rule": "restricted",
+  "allow": [
+    {
+      "room_id": "!other:example.org",
+      "type": "m.room_membership"
+    }
+  ]
+}
+```
 
 #### Leaving rooms
 
@@ -2190,6 +2262,7 @@ that profile.
 | [Server ACLs](#server-access-control-lists-acls-for-rooms) | Optional  | Optional | Optional | Optional | Optional |
 | [Server Notices](#server-notices)                          | Optional  | Optional | Optional | Optional | Optional |
 | [Moderation policies](#moderation-policy-lists)            | Optional  | Optional | Optional | Optional | Optional |
+| [Spaces](#spaces)                                          | Optional  | Optional | Optional | Optional | Optional |
 
 *Please see each module for more details on what clients need to
 implement.*
