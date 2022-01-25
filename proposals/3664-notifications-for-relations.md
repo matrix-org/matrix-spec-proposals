@@ -53,7 +53,7 @@ clarification of their behaviour.
 
 `key` and `pattern` are optional to allow you to enable or suppress all
 notifications for a specific relation type. For example one could suppress
-notifications for all events with a realation from
+notifications for all events with a relation from
 [threads](https://github.com/matrix-org/matrix-doc/pull/3440) and all
 [edits](https://github.com/matrix-org/matrix-doc/pull/2676) with the following
 two conditions:
