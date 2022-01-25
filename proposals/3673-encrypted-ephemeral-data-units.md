@@ -14,7 +14,7 @@ in which that becomes a problem.
 ## Proposal
 
 This MSC proposes a generic mechanism for end to end encrypted ephemeral data 
-units, building on top of MSC2476](https://github.com/ananace/matrix-doc/blob/user-defined-edus/proposals/2477-user-defined-ephemeral-events.md)
+units, building on top of [MSC2476](https://github.com/ananace/matrix-doc/blob/user-defined-edus/proposals/2477-user-defined-ephemeral-events.md)
 
 We would like to wrap them inside the standard encryption envelope:
 
