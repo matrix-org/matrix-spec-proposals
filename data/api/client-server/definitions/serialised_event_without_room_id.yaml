@@ -1,4 +1,4 @@
-# Copyright 2016-2021 The Matrix.org Foundation C.I.C.
+# Copyright 2022 The Matrix.org Foundation C.I.C.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ properties:
   event_id:
     description: The globally unique identifier for this event.
     type: string
-    example: '$143273582443PhrSn'
+    example: '$26RqwJMLw-yds1GAH_QxjHRC1Da9oasK0e5VLnck_45'
   type:
     description: The type of the event.
     type: string
@@ -36,7 +36,8 @@ properties:
   state_key:
     description: |-
       Present if, and only if, this event is a *state* event. The key making
-      this piece of state unique in the room.
+      this piece of state unique in the room. Note that it is often an empty
+      string.
     type: string
     example: '@user:example.org'
   sender:
