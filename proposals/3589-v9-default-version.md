@@ -1,7 +1,8 @@
 # MSC3589: Room version 9 as a default
 
 Enough time has passed to allow the public federation to upgrade their servers to support room
-version 9. This proposal aims to make v9 the default room version.
+version 9, though with some caveats (see "potential issues"). This proposal aims to make v9 the
+default room version.
 
 ## Proposal
 
@@ -23,9 +24,9 @@ in the specification, however they might fall behind as other servers set their 
 Some server implementations, like Synapse, support configurable default room versions: servers which
 have set this flag will not necessarily be affected by this change.
 
-As of writing (Jan 18, 2022), some prominent server implementations are only just getting support for
+As of writing (Jan 26, 2022), some prominent server implementations are only just getting support for
 the room version. Namely, Dendrite released a version with support about 2 months ago and Conduit is
-blocked behind a Ruma release with the changes otherwise landing also about 2 months ago.
+working on including Ruma's changes which landed also about 2 months ago.
 
 Though both Dendrite and Conduit (meaning Ruma) have not had the same amount of time as Synapse to
 reach maturity on v9-capable versions, both the Dendrite and Conduit communities appear to update to
@@ -33,8 +34,10 @@ newer versions much more quickly. This implies, without statistics to back it up
 Dendrite servers out there will have upgraded and that a similar percentage of Conduit servers will
 upgrade once available.
 
-No major issues appear to be reported to Synapse, Dendrite, or Ruma with respect to v9, indicating to
-the author that the implementation is at least sane if a bit difficult to incorporate.
+No major issues appear to be reported to Synapse or Dendrite with respect to v9, however Conduit
+has [reported](https://gitlab.com/famedly/conduit/-/merge_requests/257#note_814327701) that the auth
+rules for v9 might not be perfect. All of this indicates to the author that the implementation is at
+least sane and accomplishable, even if a bit difficult to incorporate.
 
 For completeness, some links:
 
