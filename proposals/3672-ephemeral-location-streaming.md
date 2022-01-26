@@ -71,25 +71,8 @@ original `m.beacon_info`'s `live` property should be set to `false`.
 
 ## Encryption
 
-E2E encryption for EDUs isn't currently defined but as we're dealing with 
-privacy sensitive data we propose to wrap them inside the standard encryption
-envelope:
-
-```json5
-{
-    "algorithm": "m.megolm.v1.aes-sha2",
-    "sender_key": "<sender_curve25519_key>",
-    "device_id": "<sender_device_id>",
-    "session_id": "<outbound_group_session_id>",
-    "ciphertext": "<encrypted_payload_base_64>"
-}
-```
-
-in which the `ciphertext` will contain the `m.beacon` payload defined above and
-which will be sent to `rooms/{roomId}/ephemeral/m.room.encrypted/{txnId}`
-
-The Megolm keys required to decrypt this EDU should be shared over Olm just like
-regular encrypted timeline events.
+End to end encryption for ephemeral data units isn't currently available but a 
+mechanism for achieving that is defined separately in [MSC3673](https://github.com/matrix-org/matrix-doc/pull/3673)
 
 ## Alternatives
 
