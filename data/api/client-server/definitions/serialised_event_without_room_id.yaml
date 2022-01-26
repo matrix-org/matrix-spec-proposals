@@ -50,7 +50,7 @@ properties:
       when this event was sent.
     type: integer
     format: int64
-    example: 1432735824653
+    example: 1632489532305
   content:
     description: |-
       The body of this event, as created by the client which sent it.
@@ -69,10 +69,25 @@ properties:
           if the local time on at least one of the two servers is out of sync, which can
           cause the age to either be negative or greater than it actually is.
         type: integer
+        format: int64
+        example: 1567437
       redacted_because:
         description: The event that redacted this event, if any.
         type: object
         title: SerialisedEventWithoutRoomID
+        example: {
+          "type": "m.room.redaction",
+          "sender": "@moderator:example.org",
+          "content": {
+            "reason": "spam"
+          },
+          "redacts": "$26RqwJMLw-yds1GAH_QxjHRC1Da9oasK0e5VLnck_45",
+          "event_id": "$Nhl3rsgHMjk-DjMJANawr9HHAhLg4GcoTYrSiYYGqEE",
+          "origin_server_ts": 1632491098485,
+          "unsigned": {
+            "age": 1257,
+          }
+        }
       transaction_id:
         description: |
           The client-supplied transaction ID, for example, provided via
