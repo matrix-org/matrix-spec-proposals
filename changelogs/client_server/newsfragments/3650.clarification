@@ -1,1 +1,1 @@
-Make empty 200 responses for puts consistent
+Correct the schema for the responses  for various API endpoints.
