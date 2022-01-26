@@ -54,7 +54,7 @@ additional work from landing threads in
 Replying to a message with an attachment won't trigger a notification, but
 this is no worse than the behaviour today.
 
-The assertion is that adding threads to Matrix is (much) higher priority and
+We believe that adding threads to Matrix is (much) higher priority and
 value for Matrix than cleaning up edge cases around reply fallbacks, and
 given the two can be decoupled, they should be.  The importance of threads is
 based on the fact that we're seeing Matrix repeatedly fail to be selected as
