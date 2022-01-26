@@ -2,7 +2,7 @@
 
 ## Problem
 
-With the introduction of [MSC2476](https://github.com/ananace/matrix-doc/blob/user-defined-edus/proposals/2477-user-defined-ephemeral-events.md)
+With the introduction of [MSC2477](https://github.com/matrix-org/matrix-doc/pull/2477)
 we now have the ability to send and receive custom, user-defined ephemeral data 
 units. This is a great mechanism for transferring short-lived data, applicable in
 a variety of situations where persistence is not desired.
@@ -14,7 +14,7 @@ in which that becomes a problem.
 ## Proposal
 
 This MSC proposes a generic mechanism for end to end encrypted ephemeral data 
-units, building on top of [MSC2476](https://github.com/ananace/matrix-doc/blob/user-defined-edus/proposals/2477-user-defined-ephemeral-events.md)
+units, building on top of [MSC2477](https://github.com/matrix-org/matrix-doc/pull/2477)
 
 We would like to wrap them inside the standard encryption envelope:
 
