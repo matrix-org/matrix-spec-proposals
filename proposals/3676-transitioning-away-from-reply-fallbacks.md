@@ -43,8 +43,10 @@ make reply fallbacks best effort.  Specifically:
  * In practice only `m.room.message` events with msgtype `m.text` or similar
    (`m.emote`, `m.notice`) would be able to express reply fallbacks (using the
    `m.body`, `format` and `formatted_body` fields).
- * Thread events using replies as a fallback representation for threads would
-   not include a textual reply fallback at all.
+ * Thread events using replies as a fallback representation for threads should
+   not include a textual reply fallback at all (and so avoid threaded messages
+   triggering notifications).  The same would apply for any other usage which uses
+   replies as a fallback.
 
 This means that we can still use reply fallbacks for notification purposes
 until that is properly fixed by [MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781)
@@ -69,6 +71,10 @@ support that ([MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781),
 MSC handles thread+fallback notification interaction).  However, as per
 above, this feels lower priority than the importance of adding threads to
 Matrix, which would be unblocked rapidly by this MSC.
+
+We could not use `m.in_reply_to` as a fallback for clients which don't
+understand `m.thread`, but this would result in an unnecessarily
+terrible fallback for older/transitional/WIP/simple clients.
 
 ## Security 
 
