@@ -56,21 +56,18 @@ additional work from landing threads in
 Replying to a message with an attachment won't trigger a notification, but
 this is no worse than the behaviour today.
 
-We believe that adding threads to Matrix is (much) higher priority and
-value for Matrix than cleaning up edge cases around reply fallbacks, and
-given the two can be decoupled, they should be.  The importance of threads is
-based on the fact that we're seeing Matrix repeatedly fail to be selected as
-a collaboration technology thanks to other alternatives supporting
-Slack-style threads.
-
 ## Alternatives
 
 We could remove fallbacks entirely and do all the subsequent work needed to
 support that ([MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781),
 [MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664) and whatever
-MSC handles thread+fallback notification interaction).  However, as per
-above, this feels lower priority than the importance of adding threads to
-Matrix, which would be unblocked rapidly by this MSC.
+MSC handles thread+fallback notification interaction).  However,
+we believe that adding threads to Matrix is (much) higher priority and
+value for Matrix than cleaning up edge cases around reply fallbacks, and
+given the two can be decoupled, they should be.  The importance of threads is
+based on the fact that we're seeing Matrix repeatedly fail to be selected as
+a collaboration technology thanks to other alternatives supporting
+Slack-style threads.
 
 We could not use `m.in_reply_to` as a fallback for clients which don't
 understand `m.thread`, but this would result in an unnecessarily
