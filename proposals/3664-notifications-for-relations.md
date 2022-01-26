@@ -147,72 +147,10 @@ relations.
 [Threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
 [as a fallback](https://github.com/matrix-org/matrix-doc/pull/3440/files#diff-113727ce0257b4dc0ad6f1087b6402f2cfcb6ff93272757b947bf1ce444056aeR82).
 This would cause a notification with the new `.m.rule.reply` rule. To prevent
-that the threads MSC could add rules like this to suppress notifications for
-threads without the `render_in` attribute:
-
-```json5
-{
-    "rule_id": ".m.rule.suppress_reply_notify_in_threads",
-    "default": true,
-    "enabled": true,
-    "conditions": [
-        {
-            "kind": "related_event_match",
-            "rel_type": "m.in_reply_to"
-        },
-        {
-            "kind": "related_event_match",
-            "rel_type": "m.thread"
-        }
-    ],
-    "actions": [
-        "notify"
-    ]
-},
-{
-    "rule_id": ".m.rule.reply_in_thread",
-    "default": true,
-    "enabled": true,
-    "conditions": [
-        {
-            "kind": "related_event_match",
-            "rel_type": "m.in_reply_to",
-            "key": "sender",
-            "pattern": "[the user's Matrix ID]"
-        },
-        {
-            "kind": "related_event_match",
-            "rel_type": "m.thread"
-        },
-        {
-            "kind": "event_match",
-            "key": "m.relates_to.m.in_reply_to.render_in",
-            "pattern": "m.thread"
-        }
-    ],
-    "actions": [
-        "notify",
-        {
-            "set_tweak": "sound",
-            "value": "default"
-        },
-        {
-            "set_tweak": "highlight"
-        }
-    ]
-}
-```
-
-This would be significantly easier if there were ways to match for fields NOT
-being present and if a pattern can match a field in an array is not clearly
-defined in the specification at the moment: https://github.com/matrix-org/matrix-doc/issues/3082
-
-That will need a solution, but there are multiple ways to solve this and it
-probably does not need to happen on this MSC? The easiest solution would be to
-be able to just invert a pattern. Then you could just suppress notifications for
-events without `render_in` or the threading MSC could inverts its event format
-to make it easier to match with pushrules (i.e. `dont_render_in` or
-`fallback_relation`).
+that another MSC should add a or modify the existing push rules to not apply to
+threads, when they are not a reply. This MSC does not spell out a solution for
+that, because the author lacks familiarity with the design goals of the
+threading proposals.
 
 ## Alternatives
 
