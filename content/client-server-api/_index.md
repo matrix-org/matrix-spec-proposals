@@ -1474,7 +1474,7 @@ assuming the client has access to the `com.example` namespace.
 
 The "raw" format of a room event, which is used internally by homeservers
 and between homeservers via the Server-Server API, depends on the ["room
-version"](/rooms) in use by the room. See, for example, the defintions
+version"](/rooms) in use by the room. See, for example, the definitions
 in [room version 1](/rooms/v1#event-format) and [room version
 3](/rooms/v3#event-format).
 

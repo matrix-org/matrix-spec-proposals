@@ -15,7 +15,7 @@
 title: SerialisedEventWithoutRoomID
 description: |-
   The format used to serialise events when they are returned from
-  API endpoints such as `/sync`, where the room_id is implied elsewhere
+  API endpoints such as `/sync`, where the `room_id` is implied elsewhere
   in the response.
 type: object
 required:
