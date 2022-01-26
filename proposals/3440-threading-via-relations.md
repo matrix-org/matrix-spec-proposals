@@ -97,8 +97,8 @@ the new `render_in` field as described in the previous section.
 
 Historically replies have been limited to text messages due to the legacy fallback
 prepended to `formatted_body`. This MSC is dependant on 
-[MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781) which strips that 
-requirement unlock use of any event type in this context.
+[MSC3676](https://github.com/matrix-org/matrix-doc/pull/3676) which strips that 
+requirement to unlock use of any event type in this context.
 
 ### Fetch all relations to a thread root
 
@@ -333,5 +333,5 @@ MSC has not been included in a spec release.
 This MSC builds on [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674), 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675), 
 [MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567) and,
-[MSC2781](https://github.com/matrix-org/matrix-doc/pull/2781) and, (which at the 
+[MSC3676](https://github.com/matrix-org/matrix-doc/pull/3676) (which at the 
 time of writing have not yet been accepted into the spec).
