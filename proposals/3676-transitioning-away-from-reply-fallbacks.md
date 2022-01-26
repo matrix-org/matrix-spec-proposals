@@ -41,7 +41,7 @@ make reply fallbacks best effort.  Specifically:
 
  * `m.in_reply_to` is relaxed to apply to any event type
  * In practice only `m.room.message` events with msgtype `m.text` or similar
-   (`m.emote`, `m.notice`) would be able to express reply fallbacks(using the
+   (`m.emote`, `m.notice`) would be able to express reply fallbacks (using the
    `m.body`, `format` and `formatted_body` fields).
  * Thread events using replies as a fallback representation for threads would
    not include a textual reply fallback at all.
