@@ -14,80 +14,114 @@ are processed by their homeserver.
 
 ### `m.invite_rules`
 
-An invite rules state contains one required key, and two optional keys.
-- `"invite_rule"`: A required String-Enum which has four values
-  - `"invite_rule": "all"`: Identical behaviour to the `m.invite_rules` state not existing, no special processing is performed
-    for the Invitee.
-  - `"invite_rule": "has-shared-room"`: Only allow invites where the Inviter shares at least one room with the Invitee.
-  - `"invite_rule": "has-direct-room"`: Only allow invites where the Inviter shares at least one direct room with the Invitee.
-  - `"invite_rule": "none"`: Prevent any invites from being sent to the Invitee.
-- `"allow"`: An Array of RuleItems where if any are True, an invite request will not be blocked.
-- `"deny"`: An Array of RuleItems where if any are True, an invite request will be blocked.
+An invite rules state contains one required key.
+- `"rules"`: An Array of `RuleItem`s. The Array should contain no more than 127 entries.
+
+*Homeservers may wish to implement a smaller maximum, if so that maximum should be no smaller than 8*
+
+*Homeservers may also wish to exceed the defined maximum, doing so is allowed, but at their own peril.*
+
+#### `RuleItemAction`
+A String-Enum that defines an action that the ruleset evaluator is to perform.
+
+* `"allow"`: Allow the invite request, breaks from ruleset evaluation.
+* `"deny"`: Reject the invite request.
+* `"continue"`: Do not take any action and continue ruleset evaluation.
+
+*Ruleset evaluation is performed before an invite request is acknowledged by the homeserver, invite rejection here refers to rejecting the invite request in the form of returning a HTTP error to the Inviter's homeserver. Not to reject an invite request which has already been acknowledged (visible to the Invitee) by the homeserver.*
 
 #### `RuleItem`
-A RuleItem defines a Rule that can test against an invite request. This primarily exists for structural consistency with the room state `m.join_rules`.
-It also serves to allow `m.invite_rules` to be easily extended in the future, such as to introduce an `m.ruleset` type that would accept Mjolnir ruleset rooms.
+A RuleItem defines a Rule that can test against an invite request.
 
 - `"type"`: Required String-Enum, must be one of the defined types below.
+- `"pass":` A required `RuleItemAction` that will be performed if the rule evaluates as True
+- `"fail":` A required `RuleItemAction` that will be performed if the rule evaluates as False
 
 ##### `m.user`
 Validates as True if the Inviter MXID is equal to the defined `"user_id"`
-- `"user_id"`: Required String, a valid MXID.
+- `"user_id"`: Required String, a valid user id.
 
 ##### `m.shared_room`
 Validates as True if the Inviter and Invitee are in the defined `"room_id"`.
 - `"room_id"`: Required String, a valid room id.
 
 ##### `m.target_room`
-Validates as True if the room which the Invitee is being invited to has the same room id as the defined `"room_id"`.
-- `"room_id"`: Required String, a valid room id.
+Validation depends on the keys defined. Either `"room_id"` or `"room_type"` must be defined.
+- `"room_id"`: Optional String, a valid room id. Rule evaluates as True if the target room id is equal to the defined `room_id`.
+- `"room_type"`: Optional String-Enum.
+  - `"room_type": "is-direct-room"`: Rule evaluates as True if the Invitee's membership state in the target room has `"is_direct"` set to True.
+  - `"room_type": "is-space"`: Rule evaluates as True if the target room's `m.room.create` `type` is `"m.space"`
+  - `"room_type": "is-room"`: Rule evaluates as True if the target room is not a direct room or a space.
+
+##### `m.invite_rule`
+Evaluation is dependant on the defined `"rule"`.
+* `"rule"`: An `InviteRule`.
+
+#### `InviteRule`
+A String-Enum.
+
+* `"any"`: Always evaluates as True.
+* `"has-shared-room"`: Evaluates as True if the Inviter shares at least one room with the Invitee.
+* `"has-direct-room"`: Evaluates as True if the Inviter has an active room defined in the Invitee's `m.direct` account data state. *Active is defined as "if both the Invitee and Inviter are present".*
+* `"none"`: Always evaluates as False.
 
 #### Evaluation
 
-In order to prevent homeservers from interpriting `m.invite_rule` states differently, an evaluation order is defined here:
+* The Inviter attempts to create an invite request to the Invitee:
+  * If the `"m.invite_rules"` account data state exists, then:
+    * If `"rules"` is defined, then for each `RuleItem`:
+      * Evaluate the `RuleItem` and save either the `"pass"` or `"fail"` `RuleItemAction` depending on the result.
+      * If the `RuleItemAction` is:
+        * `"allow"`, then: Break from the invite rules loop.
+        * `"deny"`, then: Respond with `M_FORBIDDEN`.
+        * `"continue"`, then: Continue for each.
 
-- An Inviter attempts to create an invite request to the Invitee.
-  - If `"m.invite_rules"` exists as an account state:
-    - If `"allow"` exists, evaluate the defined Rulesets. If one evaluates as True, break from the `"m.invite_rules"` check.
-    - If `"deny"` exists, evaluate the defined Rulesets. If one evaluates as True, reject the invite request.
-    - If `"type"` within content of `"m.invite_rules"` is:
-       1. `"all"`: Break from the `m.invite_rules` check and continue.
-       2. `"has-shared-room"`: Get all Rooms Invitee is in, and check if the Inviter has a `"join"` membership state.
-          If the Inviter does not have at least one shared room, Reject the invite request.
-       3. `"has-direct-room"`: Check if the Invitee's account data state `"m.direct"` exists.
-          - If True, test if the content of `"m.direct"` contains a key which is the Inviter's MXID.
-            - If True, test if the Invitee has a `"join"` membership state in any rooms defined in the key's value. If no matches are found, reject the invite request.
-            - If False, reject the invite request.
-          - If False, reject the invite request.
-       4. `"none"`: Reject the invite request.
+*If the rules loop is iterated through without any action taken, it is treated as `"allow"`.*
+
+Implementations may wish to utilise result caching where applicable to improve performance. Such as for rules that may require comparing the joined rooms of each user.
+
+*Such cache would be storing the resulting `Boolean` returned during `RuleItem` evaluation, **not** the `RuleItemAction` which is picked from the defined `"pass"` or `"fail"` keys.*
 
 #### Invite Rejection
 If an invite is to be rejected, the homeserver *should* respond with M_FORBIDDEN, and the error message: "This user is not permitted to send invites to this server/user"
 
-#### Example:
+#### Example
+The following example will allow any invites from `@bob:example.com` or members of `!a:example.com`, deny any invites from `@alice:example.com`, and allow direct invites from any user who shares at least one room with the Invitee.
+
 ```js
 {
     "type": "m.invite_rules",
     "content": {
-        "invite_rule": "has-direct-room",
-        "allow": [
+        "rules": [
             {
                 "type": "m.user",
-                "user_id": "@bob:example.com"
+                "user_id": "@bob:example.com",
+                "pass": "allow",
+                "fail": "continue"
+            },
+            {
+                "type": "m.user",
+                "user_id": "@alice:example.com",
+                "pass": "deny",
+                "fail": "continue"
             },
             {
                 "type": "m.shared_room",
-                "room_id": "!a:example.com"
-            }
-        ],
-        "deny": [
+                "room_id": "!a:example.com",
+                "pass": "allow",
+                "fail": "continue"
+            },
             {
-                "type": "m.user",
-                "user_id": "@alice:example.com"
+                "type": "m.invite_rule",
+                "rule": "has-shared-room",
+                "pass": "continue",
+                "fail": "deny"
             },
             {
                 "type": "m.target_room",
-                "room_id": "!b:example.com"
+                "room_type": "is-direct-room",
+                "pass": "allow",
+                "fail": "deny"
             }
         ]
     }
@@ -100,8 +134,9 @@ Currently, there is no way outside of homeserver-wide restrictions (mjolnir, ant
 ## Potential Issues
 There is a potential denial of service for the `has-shared-room` and `has-direct-room` invite rules, as they require searching through all rooms a user is in, which could be a lot. This heavily depends on the homeserver's internals of course.
 
-Additionally, as no limit for the `"allow"` and `"deny"` rulesets is specified, an Invitee could make hundreads of rules to attempt to
-slow the homeserver down. For homeservers where this may be a concern, a sensible limit should be configurable by the homeserver admin.
+The `"rules"` Array's defined maximum may not be suitable for resource-strained, or particularly large homeservers. Homeservers should make the maximum rules configurable for the homeserver admin.
+
+As homeservers may set a custom rule limit, clients currently have no reliable way of knowing that limit. Some way of signalling the limit to the client should be looked into
 
 ## Unstable prefix
 While this MSC is in development, implementations of this MSC should use the state type `org.matrix.msc3659.invite_rules`
