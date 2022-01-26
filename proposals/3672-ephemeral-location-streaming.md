@@ -82,6 +82,10 @@ room. However it would be useful to support plain HTTP like the rest of Matrix
 and requiring a WebRTC stack is prohibitively complicated for simple clients 
 (e.g. basic IOT devices reporting spatial telemetry).
 
+Another alternative is to use to-device events but that comes with disadvantages
+of its own as they're 1:1, single message per transaction and not intended for 
+conversational data.
+
 ## Unstable prefix
 
  * `m.beacon_info.*` should be referred to as `org.matrix.msc3489.beacon_info.*` until this MSC lands.
