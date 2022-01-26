@@ -2,7 +2,7 @@
 
 ## Problem
 
-[MSC3489](https://github.com/matrix-org/matrix-doc/blob/matthew/location-streaming/proposals/3489-location-streaming.md) 
+[MSC3489](https://github.com/matrix-org/matrix-doc/pull/3489) 
 focuses on streaming persistent location data for applications that require
 historical knowledge. 
 
@@ -12,7 +12,7 @@ which privacy is a concern, like user locations.
 ## Proposal
 
 This MSC adds the ability to publish short-lived location beacons through the 
-the use of custom Ephemeral Data Units (EDUs) by building on top of [MSC2476](https://github.com/ananace/matrix-doc/blob/user-defined-edus/proposals/2477-user-defined-ephemeral-events.md).
+the use of custom Ephemeral Data Units (EDUs) by building on top of [MSC2477](https://github.com/matrix-org/matrix-doc/pull/2477).
 
 In order to do so we will start by introducing a new boolean property on 
 `m.beacon_info` called `live` which will mark the start of an user's 
@@ -45,7 +45,7 @@ all available location EDUs or just the ones referencing a particular
 
 Subsequently clients will start sending beacon data EDUs to the new 
 `rooms/{roomId}/ephemeral/{eventType}/{txnId}` endpoint where `eventType` equals 
-`m.beacon` with the same location payload as defined in [MSC3489](https://github.com/matrix-org/matrix-doc/blob/matthew/location-streaming/proposals/3489-location-streaming.md).
+`m.beacon` with the same location payload as defined in [MSC3489](https://github.com/matrix-org/matrix-doc/pull/3489).
 
 
 ```json5
@@ -93,10 +93,11 @@ regular encrypted timeline events.
 
 ## Alternatives
 
-Alternatively, we could negotiate a WebRTC data channel using [MSC3401](https://github.com/matrix-org/matrix-doc/blob/matthew/group-voip/proposals/3401-group-voip.md) and stream low-latency geospatial data over the 
-participating devices in the room. However it would be useful to support plain 
-HTTP like the rest of Matrix and requiring a WebRTC stack is prohibitively 
-complicated for simple clients (e.g. basic IOT devices reporting spatial telemetry).
+Alternatively, we could negotiate a WebRTC data channel using [MSC3401](https://github.com/matrix-org/matrix-doc/pull/3401) 
+and stream low-latency geospatial data over the participating devices in the 
+room. However it would be useful to support plain HTTP like the rest of Matrix 
+and requiring a WebRTC stack is prohibitively complicated for simple clients 
+(e.g. basic IOT devices reporting spatial telemetry).
 
 ## Unstable prefix
 
