@@ -1,4 +1,4 @@
-# MSCxxxx: Transitioning away from reply fallbacks.
+# MSC3676: Transitioning away from reply fallbacks.
 
 ## Problem
 
