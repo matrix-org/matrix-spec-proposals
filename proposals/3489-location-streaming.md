@@ -11,13 +11,24 @@ time-limited real-time location of themselves or arbitrary assets to other
 users in a room - while by default preserving the history of the location
 data in the room by storing it as relational timeline events.
 
+The rationale for persisting location data is to support the use cases of:
+
+* Publishing things like Strava-style exercise data
+* Bridging to things like ADS-B sources for sharing plane flight path data.
+* Logistics use cases where you want to track where your fleet of vehicles/ships 
+has been, or the packages within them
+* Supporting scenarios where you're trying to rendezvous with someone/something 
+which will be aided by seeing their historical whereabouts (e.g. search-and-rescue 
+operations; enhanced Find-my-iPhone style use cases).
+
 For purely ephemeral location sharing, see
 [MSC3672](https://github.com/matrix-org/matrix-doc/pull/3672)
 
 ## Proposal
 
 This MSC adds the ability to publish real-time location beacons to Matrix by
-building on MSC3488 (m.location: Extending events with location data).
+building on [MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488) 
+(m.location: Extending events with location data).
 
 We introduce two types of events to describe beacons: the first, a state event, contains
 the metadata about the beacons advertised by a given user: `m.beacon_info.*`.
