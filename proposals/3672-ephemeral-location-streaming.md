@@ -6,17 +6,30 @@
 focuses on streaming persistent location data for applications that require
 historical knowledge. 
 
-We also need the ability to share this data in a non-persistent way for cases in 
-which privacy is a concern, like user locations.
+While that's perfect for situations in which long term storage of the data is a 
+non-issue and implied (e.g. flight paths, strava style exercises, fleet 
+tracking), there are also cases in doing so is undersirable for either privacy 
+or performance reasons.
+
+Sharing user live location updates is one of the cases in which privacy is 
+paramount and where we need the ability to share data in a safe and 
+non-persistent fashion.
 
 ## Proposal
 
 This MSC adds the ability to publish short-lived location beacons through the 
 the use of custom Ephemeral Data Units (EDUs) by building on top of [MSC2477](https://github.com/matrix-org/matrix-doc/pull/2477).
 
-In order to do so we will start by introducing a new boolean property on 
-`m.beacon_info` called `live` which will mark the start of an user's 
-intent to share ephemeral location information.
+Ephemeral data units (EDUs) are Matrix's default mechanism for broadcasting 
+short-lived data to a group of users and with the advent of user-defined ones 
+they perfectly fit live location sharing. 
+They are intended to be non-persistent, not take part in a room's history and 
+are currently used for typing notifications, event receipts, and presence 
+updates. As an extra precaution they can also be encrypted as defined in [MSC3673](https://github.com/matrix-org/matrix-doc/pull/3673).
+
+We will start by introducing a new boolean property on `m.beacon_info` called 
+`live` which will mark the start of an user's intent to share ephemeral location 
+information.
 
 ```json5
 {
