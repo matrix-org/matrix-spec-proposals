@@ -16,13 +16,11 @@ removing them entirely.  However, this triggers a relatively large cascade of
 additional dependent work:
  * Some users rely on their mxid existing in fallbacks to notified when
    someone replies to their messages.  So we'd need to create and implement
-   new push rules to recreate this feature ([MSC3664]
-   (https://github.com/matrix-org/matrix-doc/pull/3664)).
+   new push rules to recreate this feature ([MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664)).
  * The push rules are even more complicated than expected for this, because
    they also would need to stop replies which are used as fallback for
-   threads (as per [MSC3440]
-   (https://github.com/matrix-org/matrix-doc/pull/3440)) from firing
-   notifications.
+   threads (as per [MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440))
+   from firing notifications.
  * In the absence of fallbacks, in order to render replies simple clients will
    now have to parse `m.in_reply_to` objects and fish around for the missing
    events (or ask the server to bundle the replies, which is not yet a
