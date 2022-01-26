@@ -143,7 +143,6 @@ because in general relations happen to events in close proximity. There is a
 risk of missing notifications for replies to very old messages and similar
 relations.
 
-
 [Threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
 [as a fallback](https://github.com/matrix-org/matrix-doc/pull/3440/files#diff-113727ce0257b4dc0ad6f1087b6402f2cfcb6ff93272757b947bf1ce444056aeR82).
 This would cause a notification with the new `.m.rule.reply` rule. To prevent
@@ -151,6 +150,18 @@ that another MSC should add a or modify the existing push rules to not apply to
 threads, when they are not a reply. This MSC does not spell out a solution for
 that, because the author lacks familiarity with the design goals of the
 threading proposals.
+
+Adding a new rule, that causes notifications, forces users to change their
+notification settings again. In this case, if the user disabled pings for
+mentions, they will need to disable the rule manually again, if they did so to
+disable replies. In the transition period clients might not have a UI to do so.
+This is a risk with all push rule changes and since it allows for a much better
+control over what notifies you, the trandeoff should be acceptable. Many users
+disable mention based pings, because they
+[can be error prone](https://github.com/matrix-org/matrix-doc/pull/3517), but
+they may not actually had the intention to also disable notifications for
+replies, which should only trigger for actual replies to your messages. So for a
+significant chunk of people disabling mentions this should be an improvement.
 
 ## Alternatives
 
