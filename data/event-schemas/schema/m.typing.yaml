@@ -23,9 +23,6 @@
             "type": "string",
             "enum": ["m.typing"]
         },
-        "room_id": {
-            "type": "string"
-        }
     },
     "required": ["type", "room_id", "content"]
 }
