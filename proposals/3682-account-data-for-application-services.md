@@ -1,4 +1,4 @@
-# MSCXXXX: Sending Account Data to Application Services
+# MSC3682: Sending Account Data to Application Services
 
 Application services logically represent many clients, but currently don't receive
 updates for the Account Data of their users through `/transactions` like clients
@@ -80,7 +80,7 @@ polling `/sync` for each of its users.
 ## Unstable prefix
 
 Until such time as this MSC Proposal may become one with the specification, the unstable-prefixed form
-`org.matrix.mscXXXX.account_data` must be used in lieu of `account_data`.
+`org.matrix.msc3682.account_data` must be used in lieu of `account_data`.
 
 ## Dependencies
 
