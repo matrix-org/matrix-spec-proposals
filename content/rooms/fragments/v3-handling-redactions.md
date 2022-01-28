@@ -5,7 +5,7 @@ toc_hide: true
 {{% added-in this=true %}} In room versions 1 and 2, redactions were
 explicitly part of the [authorization rules](/rooms/v1/#authorization-rules)
 under Rule 11. As of room version 3, these conditions no longer exist as
-represented by the above rules.
+represented by [this version's authorization rules](#authorization-rules).
 
 While redactions are always accepted by the authorization rules for
 events, they should not be sent to clients until both the redaction
