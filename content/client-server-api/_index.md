@@ -454,7 +454,7 @@ given. It also contains other keys dependent on the auth type being
 attempted. For example, if the client is attempting to complete auth
 type `example.type.foo`, it might submit something like this:
 
-    POST /_matrix/client/r0/endpoint HTTP/1.1
+    POST /_matrix/client/v3/endpoint HTTP/1.1
     Content-Type: application/json
 
 ```json
