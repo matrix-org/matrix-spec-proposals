@@ -79,7 +79,7 @@ A post in a story room can then just be a normal `m.room.message` event of any m
 
 ## Potential issues
 
-All posts in a story should disappear after 24 hours. In the future it might be easy to implement this using "Self destructive messages" <https://github.com/matrix-org/matrix-doc/pull/2228> but at the moment the only way we can do this, is to manage this on both sides:
+All posts in a story should disappear after 24 hours. In the future it might be easy to implement this using "Self destructive messages" <https://github.com/matrix-org/matrix-doc/pull/2228> but at the moment the only ways we can do this are using both, `m.room.retention` and managing this on both sides:
 
 * Sending clients should be configured to automatically redact all messages in stories rooms, which are older than 24 hours
 * Receiving clients should ignore messages in stories rooms, which are older than 24 hours
