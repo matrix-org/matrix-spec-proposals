@@ -85,7 +85,8 @@ paths:
           description:
             The message was successfully sent.
           examples:
-            application/json: {
-              }
+            application/json: {}
+          schema:
+            type: object
       tags:
         - Send-to-Device messaging
