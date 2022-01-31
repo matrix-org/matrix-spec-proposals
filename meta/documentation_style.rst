@@ -19,7 +19,8 @@ nested titles (h6, or 6 `#` characters) and instead re-evaluate the document str
 Correct capitalisation for long section names
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Headings should be in sentence case, as represented by this document.
+Headings should be in `sentence case <https://apastyle.apa.org/style-grammar-guidelines/capitalization/sentence-case>`,
+as represented by this document.
 
 TODOs
 -----
@@ -82,7 +83,7 @@ current version is `v1.1` then annotate your changes with `v1.2`.
 "Added/changed in" tags can be documented as the following:
 
 * `{{% added-in v="1.2" %}}` or `{{% changed-in v="1.2" %}}` within Markdown documents.
-* `x-addedInMatrixVersion: "1.2"` and `x-changedInMatrixVersion: "1.2"` within OpenAPI.
+* `x-addedInMatrixVersion` and `x-changedInMatrixVersion` within OpenAPI.
 
 In rare cases, `this=true` can be used on the Markdown syntax to adjust the wording.
 This is most commonly used in room version specifications.
@@ -140,8 +141,9 @@ the naturally complex "Server implementation components" later on. This section 
 
 * Clearly describe any and all changes which affect users of the Client-Server API.
 * Clearly make reference to the redaction rules. A copy/paste example of this is in
-  Room Version 2: "Clients which implement the redaction algorithm locally should
-  refer to the [redactions] section below for a full overview of the algorithm."
+  Room Version 3: "Though unchanged in this room version, clients which implement the
+  redaction algorithm locally should refer to the [redactions] section below for a full
+  overview."
 
 The next section must then be "Server implementation components". This section must:
 
