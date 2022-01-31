@@ -132,7 +132,7 @@ These rules do not affect MSCs.
 
 The introduction must cover:
 
-* The version the new room version builds off of, if any.
+* The version the new room version builds on, if any.
 * A brief (one or two line) description of what the room version is expected to
   consist of. For example, "..., adding new redaction rules to cover memberships".
 
