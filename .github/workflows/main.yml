@@ -76,6 +76,7 @@ jobs:
           # The output path matches the final deployment path at spec.matrix.org
           scripts/dump-swagger.py \
             --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
+            --api client-server \
             -o spec/client-server-api/api.json
           tar -czf openapi.tar.gz spec
       - name: "📤 Artifact upload"

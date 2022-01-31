@@ -87,10 +87,23 @@ parser.add_argument(
     %(default)s""",
 )
 parser.add_argument(
-    "--client_release", "-c", metavar="LABEL",
+    "--spec-release", "-r", metavar="LABEL",
     default="unstable",
-    help="""The client-server release version to generate for. Default:
+    help="""The spec release version to generate for. Default:
     %(default)s""",
+)
+available_apis = {
+        "client-server": "Matrix Client-Server API",
+        "server-server": "Matrix Server-Server API",
+        "application-service": "Matrix Application Service API",
+        "identity": "Matrix Identity Service API",
+        "push-gateway": "Matrix Push Gateway API",
+        }
+parser.add_argument(
+    "--api",
+    default="client-server",
+    choices=available_apis,
+    help="""The API to generate for. Default: %(default)s""",
 )
 parser.add_argument(
     "-o", "--output",
@@ -100,7 +113,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 output_file = os.path.abspath(args.output)
-release_label = args.client_release
+release_label = args.spec_release
+selected_api = args.api
 
 major_version = release_label
 match = re.match("^(r\d+)(\.\d+)*$", major_version)
@@ -130,7 +144,7 @@ output = {
     }],
     "schemes": ["https"],
     "info": {
-        "title": "Matrix Client-Server API",
+        "title": available_apis[selected_api],
         "version": release_label,
     },
     "securityDefinitions": {},
@@ -138,15 +152,15 @@ output = {
     "swagger": "2.0",
 }
 
-cs_api_dir = os.path.join(api_dir, 'client-server')
-with open(os.path.join(cs_api_dir, 'definitions',
+selected_api_dir = os.path.join(api_dir, selected_api)
+with open(os.path.join(selected_api_dir, 'definitions',
                        'security.yaml')) as f:
     output['securityDefinitions'] = yaml.safe_load(f)
 
-for filename in os.listdir(cs_api_dir):
+for filename in os.listdir(selected_api_dir):
     if not filename.endswith(".yaml"):
         continue
-    filepath = os.path.join(cs_api_dir, filename)
+    filepath = os.path.join(selected_api_dir, filename)
 
     print("Reading swagger API: %s" % filepath)
     with open(filepath, "r") as f:
