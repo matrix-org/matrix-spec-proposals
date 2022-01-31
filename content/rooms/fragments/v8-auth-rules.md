@@ -113,6 +113,7 @@ The rules are as follows:
         2.  If `sender` does not match `state_key`, reject.
         3.  If the `sender`'s current membership is not `ban`, `invite`,
             or `join`, allow.
+        4.  Otherwise, reject.
     8.  Otherwise, the membership is unknown. Reject.
 5.  If the `sender`'s current membership state is not `join`, reject.
 6.  If type is `m.room.third_party_invite`:

@@ -244,7 +244,7 @@ re-enter their password, but for homeservers which delegate to an SSO
 server, this means redirecting to the authentication server during
 user-interactive auth.
 
-The implemementation of this is based on the [Fallback](#fallback) mechanism for
+The implementation of this is based on the [Fallback](#fallback) mechanism for
 user-interactive auth.
 
 #### Client behaviour

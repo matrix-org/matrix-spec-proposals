@@ -48,7 +48,7 @@ paths:
         200:
           description: The protocol was found and metadata returned.
           schema:
-            $ref: definitions/protocol_metadata.yaml
+            $ref: definitions/protocol.yaml
         401:
           description: |-
             The homeserver has not supplied credentials to the application service.

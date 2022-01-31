@@ -155,6 +155,7 @@ for filename in os.listdir(cs_api_dir):
 
         basePath = api['basePath']
         for path, methods in api["paths"].items():
+            path = basePath + path
             for method, spec in methods.items():
                 if path not in output["paths"]:
                     output["paths"][path] = {}

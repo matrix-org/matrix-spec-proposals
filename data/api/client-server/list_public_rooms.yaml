@@ -104,6 +104,8 @@ paths:
           description: The visibility was updated, or no change was needed.
           examples:
             application/json: {}
+          schema:
+            type: object
         404:
           description: The room is not known to the server
           examples:
