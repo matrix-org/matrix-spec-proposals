@@ -58,7 +58,7 @@ paths:
               "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
             }
           schema:
-            "$ref": "definitions/serialised_event.yaml"
+            "$ref": "definitions/client_event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
           examples:
@@ -164,7 +164,7 @@ paths:
               has left the room then this will be the state of the room
               when they left as a list of events.
             items:
-              $ref: "definitions/serialised_event.yaml"
+              $ref: "definitions/client_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a
@@ -247,7 +247,7 @@ paths:
               chunk:
                 type: array
                 items:
-                  $ref: "definitions/serialised_event.yaml"
+                  $ref: "definitions/client_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a

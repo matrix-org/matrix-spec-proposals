@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-title: SerialisedEventWithoutRoomID
+title: ClientEventWithoutRoomID
 description: |-
-  The format used to serialise events when they are returned from
+  The format used for events when they are returned from
   API endpoints such as `/sync`, where the `room_id` is implied elsewhere
   in the response.
 type: object
@@ -74,7 +74,7 @@ properties:
       redacted_because:
         description: The event that redacted this event, if any.
         type: object
-        title: SerialisedEventWithoutRoomID
+        title: ClientEventWithoutRoomID
         example: {
           "type": "m.room.redaction",
           "sender": "@moderator:example.org",

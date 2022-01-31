@@ -1472,14 +1472,14 @@ assuming the client has access to the `com.example` namespace.
 
 ### Room event format
 
-The "raw" format of a room event, which is used internally by homeservers
+The "federation" format of a room event, which is used internally by homeservers
 and between homeservers via the Server-Server API, depends on the ["room
 version"](/rooms) in use by the room. See, for example, the definitions
 in [room version 1](/rooms/v1#event-format) and [room version
 3](/rooms/v3#event-format).
 
-However, it is unusual that a Matrix client would encounter this raw event
-format. Instead, homeservers are responsible for "serialising" events into the
+However, it is unusual that a Matrix client would encounter this event
+format. Instead, homeservers are responsible for converting events into the
 format shown below so that they can be easily parsed by clients.
 
 {{% boxes/warning %}}
@@ -1494,7 +1494,7 @@ See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
 detail on why this assumption is unsafe.
 {{% /boxes/warning %}}
 
-{{% definition path="api/client-server/definitions/serialised_event" %}}
+{{% definition path="api/client-server/definitions/client_event" %}}
 
 ### Stripped state
 
@@ -1560,7 +1560,7 @@ updates not being sent.
 ### Size limits
 
 The complete event MUST NOT be larger than 65536 bytes, when formatted
-with the [raw event format](#room-event-format), including any
+with the [federation event format](#room-event-format), including any
 signatures, and encoded as [Canonical
 JSON](/appendices#canonical-json).
 

@@ -15,7 +15,7 @@ properties:
   events:
     description: List of events.
     items:
-      $ref: serialised_event_without_room_id.yaml
+      $ref: client_event_without_room_id.yaml
     type: array
 type: object
 title: StateEventBatch

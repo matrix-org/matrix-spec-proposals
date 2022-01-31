@@ -29,7 +29,7 @@ properties:
     description: List of events.
     type: array
     items:
-      $ref: "serialised_event_without_room_id.yaml"
+      $ref: "client_event_without_room_id.yaml"
 type: object
 title: TimelineBatch
 required:

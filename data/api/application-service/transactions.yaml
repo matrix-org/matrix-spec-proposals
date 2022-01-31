@@ -65,7 +65,7 @@ paths:
                 description: |-
                   A list of events, formatted as per the Client-Server API.
                 items:
-                  $ref: "../client-server/definitions/serialised_event.yaml"
+                  $ref: "../client-server/definitions/client_event.yaml"
             required: ["events"]
       responses:
         200:

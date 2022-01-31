@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-title: SerialisedEvent
+title: ClientEvent
 description: |-
-  The format used to serialise events when they are returned from a homeserver to a client
+  The format used for events when they are returned from a homeserver to a client
   via the Client-Server API, or sent to an Application Service via the Application Services API.
 type: object
 allOf:
-  - $ref: "serialised_event_without_room_id.yaml"
+  - $ref: "client_event_without_room_id.yaml"
   - properties:
       room_id:
         description: The ID of the room associated with this event.
@@ -28,7 +28,7 @@ allOf:
       unsigned:
         properties:
             redacted_because:
-              title: SerialisedEvent
+              title: ClientEvent
               example: {
                 "type": "m.room.redaction",
                 "sender": "@moderator:example.org",
