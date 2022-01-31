@@ -153,9 +153,12 @@ output = {
 }
 
 selected_api_dir = os.path.join(api_dir, selected_api)
-with open(os.path.join(selected_api_dir, 'definitions',
-                       'security.yaml')) as f:
-    output['securityDefinitions'] = yaml.safe_load(f)
+try:
+    with open(os.path.join(selected_api_dir, 'definitions',
+                           'security.yaml')) as f:
+        output['securityDefinitions'] = yaml.safe_load(f)
+except FileNotFoundError:
+    print("No security definitions available for this API")
 
 for filename in os.listdir(selected_api_dir):
     if not filename.endswith(".yaml"):
