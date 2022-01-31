@@ -28,6 +28,7 @@ jobs:
         run: |
           node validator.js -s "../data/api/application-service"
           node validator.js -s "../data/api/client-server"
+          node validator.js -s "../data/api/push-gateway"
 
   check-examples:
     name: "🔎 Check Event schema examples"
@@ -83,6 +84,10 @@ jobs:
             --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
             --api client-server \
             -o spec/client-server-api/api.json
+          scripts/dump-swagger.py \
+            --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
+            --api push-gateway \
+            -o spec/push-gateway-api/api.json
           tar -czf openapi.tar.gz spec
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
