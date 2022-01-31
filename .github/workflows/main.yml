@@ -26,6 +26,7 @@ jobs:
       - name: "🔎 Run validator"
         working-directory: "./scripts"
         run: |
+          node validator.js -s "../data/api/application-service"
           node validator.js -s "../data/api/client-server"
 
   check-examples:
@@ -74,6 +75,10 @@ jobs:
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
           # The output path matches the final deployment path at spec.matrix.org
+          scripts/dump-swagger.py \
+            --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
+            --api application-service \
+            -o spec/application-service-api/api.json
           scripts/dump-swagger.py \
             --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
             --api client-server \
