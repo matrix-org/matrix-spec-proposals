@@ -17,9 +17,13 @@ vhosting and have multiple `server_name`s pointing to the same `Host`.
 ## Proposal
 
 In addition to the currently present `origin`, `key` and `sig` fields, the
-`Authorization` header of the scheme `X-Matrix` used in the Matrix S2S API
-should also include a `destination` field, which contains the `server_name` of
-the Matrix Homeserver that the request is being sent to.
+`Authorization` header of the scheme `X-Matrix` used in the Matrix S2S API MUST
+also include a `destination` field, which contains the `server_name` of the
+Matrix Homeserver that the request is being sent to.
+
+A Matrix Homeserver receiving a request over the S2S API SHOULD gracefully
+handle requests that do not include the `destination` field in the
+`Authorization` header for backwards compatibility.
 
 ## Potential issues
 
@@ -29,7 +33,11 @@ the authenticity of the requests. This would be fatal, as it would mean that
 federation would stop working. Luckily, from an initial assessment, it seems
 that all major implementations work here, the parsing implementations in
 Synapse, Dendrite, Conduit, Sydent and SyTest looks like it'd gracefully handle
-this addition without any trouble.
+this addition without any trouble. The other way around is also a concern: Newer
+implementation might be confronted with federating with an old implementation,
+which does not send the `destination` in it's auth headers. This is explicitly
+mentioned in the proposal though, advocating for graceful handling of these
+situations if possible.
 
 ## Alternatives
 
