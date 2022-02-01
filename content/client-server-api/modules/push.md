@@ -211,10 +211,19 @@ other keys as their parameters, e.g.
 
 `override` and `underride` rules MAY have a list of 'conditions'. All
 conditions must hold true for an event in order for the rule to match. A
-rule with no conditions always matches. The following conditions are
-defined:
+rule with no conditions always matches.
 
-`event_match`
+Unrecognised conditions MUST NOT match any events, effectively making
+the push rule disabled.
+
+`room`, `sender` and `content` rules do not have conditions in the same
+way, but instead have predefined conditions. In the cases of `room` and
+`sender` rules, the `rule_id` of the rule determines its behaviour.
+
+The following conditions are defined:
+
+**`event_match`**
+
 This is a glob pattern match on a field of the event. Parameters:
 
 -   `key`: The dot-separated path of the property of the event to match, e.g.
@@ -232,9 +241,11 @@ Within `pattern`:
   * The character `*` matches zero or more characters.
   * `?` matches exactly one character.
 
-If the property specified by `key` is completely absent from the event, then
-the condition will not match, even if `pattern` is `*`.
+If the property specified by `key` is completely absent from the event, or does
+not have a string value, then the condition will not match, even if `pattern`
+is `*`.
 
+{{% boxes/note %}}
 For example, if `key` is `content.membership`, and `pattern` is `jo?*`, then
 the following event will match:
 
@@ -253,20 +264,23 @@ the following event will match:
 
 Other `membership` values which will match are:
 
- * `JOIN`
- * `joinnn`
- * `join ` (note trailing space)
- * `joy` (`*` may match zero characters)
+ * `"JOIN"`
+ * `"joinnn"`
+ * `"join "` (note trailing space)
+ * `"joy"` (`*` may match zero characters)
 
 The following `membership` values will NOT match:
- * ` join` (note leading space)
- * `jo` (`?` must match a character)
+ * `" join"` (note leading space)
+ * `"jo"` (`?` must match a character)
+ * `null` (not a string)
+{{% /boxes/note %}}
 
 As a special case, if `key` is `content.body`, then `pattern` must instead
 match any substring of the value of the property which starts and ends at a
 word boundary. A word boundary is defined as the start or end of the value, or
 any character not in the sets `[A-Z]`, `[a-z]`, `[0-9]` or `_`.
 
+{{% boxes/note %}}
 For example, if `key` is `content.body` and `pattern` is `ex*ple`, the
 following event will match:
 
@@ -284,18 +298,22 @@ following event will match:
 
 Other `body` values which will match are:
 
- * `exple` (the pattern can match at the start and end of the body.)
- * `An exciting triple-whammy` (the pattern can span multiple words, and `-`
+ * `"exple"` (the pattern can match at the start and end of the body.)
+ * `"An exciting triple-whammy"` (the pattern can span multiple words, and `-`
    acts as a word separator.)
+{{% /boxes/note %}}
 
 
-`contains_display_name`
+
+**`contains_display_name`**
+
 This matches unencrypted messages where `content.body` contains the
 owner's display name in that room. This is a separate rule because
 display names may change and as such it would be hard to maintain a rule
 that matched the user's display name. This condition has no parameters.
 
-`room_member_count`
+**`room_member_count`**
+
 This matches the current number of members in the room. Parameters:
 
 -   `is`: A decimal integer optionally prefixed by one of, `==`, `<`,
@@ -303,7 +321,8 @@ This matches the current number of members in the room. Parameters:
     count is strictly less than the given number and so forth. If no
     prefix is present, this parameter defaults to `==`.
 
-`sender_notification_permission`
+**`sender_notification_permission`**
+
 This takes into account the current power levels in the room, ensuring
 the sender of the event has high enough power to trigger the
 notification.
@@ -316,13 +335,6 @@ Parameters:
     the defaults are and how to interpret the event. The `key` is used
     to look up the power level required to send a notification type from
     the `notifications` object in the power level event content.
-
-Unrecognised conditions MUST NOT match any events, effectively making
-the push rule disabled.
-
-`room`, `sender` and `content` rules do not have conditions in the same
-way, but instead have predefined conditions. In the cases of `room` and
-`sender` rules, the `rule_id` of the rule determines its behaviour.
 
 ##### Predefined Rules
 
