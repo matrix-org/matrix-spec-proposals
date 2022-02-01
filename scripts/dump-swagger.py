@@ -37,11 +37,18 @@ def resolve_references(path, schema):
         # do $ref first
         if '$ref' in schema:
             value = schema['$ref']
+            previous_path = path
             path = os.path.join(os.path.dirname(path), value)
-            with open(path, encoding="utf-8") as f:
-                ref = yaml.safe_load(f)
-            result = resolve_references(path, ref)
-            del schema['$ref']
+            try:
+                with open(path, encoding="utf-8") as f:
+                    ref = yaml.safe_load(f)
+                result = resolve_references(path, ref)
+                del schema['$ref']
+                path = previous_path
+            except FileNotFoundError:
+                print("Resolving {}".format(schema))
+                print("File not found: {}".format(path))
+                result = {}
         else:
             result = {}
 
