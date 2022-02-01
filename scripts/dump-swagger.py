@@ -93,12 +93,12 @@ parser.add_argument(
     %(default)s""",
 )
 available_apis = {
-        "client-server": "Matrix Client-Server API",
-        "server-server": "Matrix Server-Server API",
-        "application-service": "Matrix Application Service API",
-        "identity": "Matrix Identity Service API",
-        "push-gateway": "Matrix Push Gateway API",
-        }
+    "client-server": "Matrix Client-Server API",
+    "server-server": "Matrix Server-Server API",
+    "application-service": "Matrix Application Service API",
+    "identity": "Matrix Identity Service API",
+    "push-gateway": "Matrix Push Gateway API",
+}
 parser.add_argument(
     "--api",
     default="client-server",
@@ -133,15 +133,17 @@ output = {
     # The servers value will be picked up by RapiDoc to provide a way
     # to switch API servers. Useful when one wants to test compliance
     # of their server with the API.
-    "servers": [{
-        "url": "https://{homeserver_address}/",
-        "variables": {
-            "homeserver_address": {
-                "default": "matrix-client.matrix.org",
-                "description": "The base URL for your homeserver",
-            }
+    "servers": [
+        {
+            "url": "https://{homeserver_address}/",
+            "variables": {
+                "homeserver_address": {
+                    "default": "matrix-client.matrix.org",
+                    "description": "The base URL for your homeserver",
+                }
+            },
         }
-    }],
+    ],
     "schemes": ["https"],
     "info": {
         "title": available_apis[selected_api],
@@ -154,8 +156,7 @@ output = {
 
 selected_api_dir = os.path.join(api_dir, selected_api)
 try:
-    with open(os.path.join(selected_api_dir, 'definitions',
-                           'security.yaml')) as f:
+    with open(os.path.join(selected_api_dir, 'definitions', 'security.yaml')) as f:
         output['securityDefinitions'] = yaml.safe_load(f)
 except FileNotFoundError:
     print("No security definitions available for this API")
