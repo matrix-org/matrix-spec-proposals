@@ -405,7 +405,7 @@ string is allowed:
 
 - a single Base10 integer, no float values or decimal points, optionally with leading zeroes;
 - optionally with leading or trailing whitespace characters;
-- optionally prefixed with a single `-` or `+` character before the integer but after padding.
+- optionally prefixed with a single `-` or `+` character before the integer but after leading whitespace padding.
 
 This behaviour is preserved strictly for backward compatibility only. A
 homeserver should take reasonable precautions to prevent users from
