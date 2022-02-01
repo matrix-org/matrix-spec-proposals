@@ -69,7 +69,7 @@ paths:
                     The [PDUs](/server-server-api/#pdus) contained in the auth chain. The event format
                     varies depending on the room version - check the [room version specification](/rooms)
                     for precise event formats.
-                  properties: []
+                  properties: {}
                   example:
                     $ref: "examples/minimal_pdu.json"
               pdus:
@@ -85,7 +85,7 @@ paths:
                     The [PDUs](/server-server-api/#pdus) for the fully resolved state of the room. The event format
                     varies depending on the room version - check the [room version specification](/rooms)
                     for precise event formats.
-                  properties: []
+                  properties: {}
                   example:
                     $ref: "examples/minimal_pdu.json"
             required: ['auth_chain', 'pdus']

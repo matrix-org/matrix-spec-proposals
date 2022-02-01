@@ -34,7 +34,7 @@ properties:
         on the room version - check the [room version specification](/rooms) for precise event formats.
       schema:
         type: object
-        properties: []
+        properties: {}
       example:
         $ref: "../examples/minimal_pdu.json"
   state:
@@ -52,7 +52,7 @@ properties:
         on the room version - check the [room version specification](/rooms) for precise event formats.
       schema:
         type: object
-        properties: []
+        properties: {}
       example:
         $ref: "../examples/minimal_pdu.json"
   event:

@@ -64,7 +64,7 @@ paths:
                 items:
                   type: object
                   title: PDU
-                  properties: []
+                  properties: {}
                   example:
                     $ref: "examples/minimal_pdu.json"
             required: ['auth_chain']
