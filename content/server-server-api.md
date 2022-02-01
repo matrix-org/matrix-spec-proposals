@@ -375,21 +375,42 @@ them.
 
 #### Definitions
 
-Required Power Level
+##### Required Power Level
+
 A given event type has an associated *required power level*. This is
 given by the current `m.room.power_levels` event. The event type is
 either listed explicitly in the `events` section or given by either
 `state_default` or `events_default` depending on if the event is a state
 event or not.
 
-Invite Level, Kick Level, Ban Level, Redact Level
+##### Invite Level, Kick Level, Ban Level, Redact Level
+
 The levels given by the `invite`, `kick`, `ban`, and `redact` properties
 in the current `m.room.power_levels` state. Each defaults to 50 if
 unspecified.
 
-Target User
+##### Target User
+
 For an `m.room.member` state event, the user given by the `state_key` of
 the event.
+
+##### Historical String Power Levels
+
+Power level events in room versions up to and including room version 9
+can be optionally represented in string format, in order to maintain
+compatibility with pre-1.0 implementations without breaking existing rooms.
+A homeserver must be prepared to deal with this by parsing the power level
+from the string. In these cases, the following formatting of the power level
+string is allowed:
+
+- a single Base10 integer — no float values or decimal points;
+- optionally with leading or trailing whitespace characters;
+- optionally prefixed with a single `-` or `+` character.
+
+This behaviour is preserved strictly for backward compatibility only. A
+homeserver should take reasonable precautions to prevent users from
+uploading new power level events with string values and must never
+populate the default power levels in a room as string values.
 
 #### Authorization rules
 
