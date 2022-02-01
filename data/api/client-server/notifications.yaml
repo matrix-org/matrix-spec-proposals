@@ -112,8 +112,7 @@ paths:
                       type: object
                       title: Event
                       description: The Event object for the event that triggered the notification.
-                      allOf:
-                        - $ref: ../../event-schemas/schema/core-event-schema/sync_room_event.yaml
+                      "$ref": "definitions/client_event_without_room_id.yaml"
                     profile_tag:
                       type: string
                       description: The profile tag of the rule that matched this event.

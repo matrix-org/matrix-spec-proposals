@@ -204,7 +204,7 @@ paths:
                               type: object
                               title: Event
                               description: The event that matched.
-                              "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                              "$ref": "definitions/client_event.yaml"
                             context:
                               type: object
                               title: Event Context
@@ -247,7 +247,7 @@ paths:
                                   items:
                                     title: Event
                                     type: object
-                                    "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                                    "$ref": "definitions/client_event.yaml"
                                 events_after:
                                   type: array
                                   title: Events After
@@ -255,7 +255,7 @@ paths:
                                   items:
                                     title: Event
                                     type: object
-                                    "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                                    "$ref": "definitions/client_event.yaml"
                       state:
                         type: object
                         title: Current state
@@ -271,7 +271,7 @@ paths:
                           title: Room State
                           items:
                             type: object
-                            "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+                            "$ref": "definitions/client_event.yaml"
                       groups:
                         type: object
                         title: Groups
