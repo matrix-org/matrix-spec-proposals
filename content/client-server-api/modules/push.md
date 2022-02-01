@@ -217,11 +217,77 @@ defined:
 `event_match`
 This is a glob pattern match on a field of the event. Parameters:
 
--   `key`: The dot-separated field of the event to match, e.g.
-    `content.body`
--   `pattern`: The glob-style pattern to match against. Patterns with no
-    special glob characters should be treated as having asterisks
-    prepended and appended when testing the condition.
+-   `key`: The dot-separated path of the property of the event to match, e.g.
+    `content.body`.
+
+-   `pattern`: The glob-style pattern to match against.
+
+The match is performed case-insensitively, and must match the entire value of
+the event field given by `key` (though see below regarding `content.body`). The
+exact meaning of "case insensitive" is defined by the implementation of the
+homeserver.
+
+Within `pattern`:
+
+  * The character `*` matches zero or more characters.
+  * `?` matches exactly one character.
+
+If the property specified by `key` is completely absent from the event, then
+the condition will not match, even if `pattern` is `*`.
+
+For example, if `key` is `content.membership`, and `pattern` is `jo?*`, then
+the following event will match:
+
+```json
+{
+  "content": {
+    "membership": "join",
+  },
+  "event_id": "$143273582443PhrSn:example.org",
+  "room_id": "!636q39766251:example.com",
+  "sender": "@example:example.org",
+  "state_key": "@alice:example.org",
+  "type": "m.room.member"
+}
+```
+
+Other `membership` values which will match are:
+
+ * `JOIN`
+ * `joinnn`
+ * `join ` (note trailing space)
+ * `joy` (`*` may match zero characters)
+
+The following `membership` values will NOT match:
+ * ` join` (note leading space)
+ * `jo` (`?` must match a character)
+
+As a special case, if `key` is `content.body`, then `pattern` must instead
+match any substring of the value of the property which starts and ends at a
+word boundary. A word boundary is defined as the start or end of the value, or
+any character not in the sets `[A-Z]`, `[a-z]`, `[0-9]` or `_`.
+
+For example, if `key` is `content.body` and `pattern` is `ex*ple`, the
+following event will match:
+
+```json
+{
+  "content": {
+    "body": "An example event.",
+  },
+  "event_id": "$143273976499sgjks:example.org",
+  "room_id": "!636q39766251:example.com",
+  "sender": "@example:example.org",
+  "type": "m.room.message"
+}
+```
+
+Other `body` values which will match are:
+
+ * `exple` (the pattern can match at the start and end of the body.)
+ * `An exciting triple-whammy` (the pattern can span multiple words, and `-`
+   acts as a word separator.)
+
 
 `contains_display_name`
 This matches unencrypted messages where `content.body` contains the
