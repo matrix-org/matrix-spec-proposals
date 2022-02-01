@@ -92,28 +92,25 @@ paths:
                   A list of room events that happened just before the
                   requested event, in reverse-chronological order.
                 items:
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                  $ref: "definitions/client_event.yaml"
               event:
                 description: |-
                   Details of the requested event.
                 allOf:
-                  - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                  - $ref: "definitions/client_event.yaml"
               events_after:
                 type: array
                 description: |-
                   A list of room events that happened just after the
                   requested event, in chronological order.
                 items:
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                  $ref: "definitions/client_event.yaml"
               state:
                 type: array
                 description: |-
                   The state of the room at the last event returned.
                 items:
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+                  $ref: "definitions/client_event.yaml"
           examples:
             application/json: {
               "end": "t29-57_2_0_2",

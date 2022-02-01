@@ -58,8 +58,7 @@ paths:
               "$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"
             }
           schema:
-            allOf:
-              - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+            "$ref": "definitions/client_event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
           examples:
@@ -165,10 +164,7 @@ paths:
               has left the room then this will be the state of the room
               when they left as a list of events.
             items:
-              title: StateEvent
-              type: object
-              allOf:
-                - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+              $ref: "definitions/client_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a
@@ -251,10 +247,7 @@ paths:
               chunk:
                 type: array
                 items:
-                  title: MemberEvent
-                  type: object
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/m.room.member.yaml"
+                  $ref: "definitions/client_event.yaml"
         403:
           description: >
             You aren't a member of the room and weren't previously a

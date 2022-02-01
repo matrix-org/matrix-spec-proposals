@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-allOf:
-- $ref: room_event_batch.yaml
 properties:
   limited:
     description: True if the number of events returned was limited by the `limit`
@@ -27,5 +25,12 @@ properties:
       If no earlier events are available, this property may be omitted from
       the response.
     type: string
+  events:
+    description: List of events.
+    type: array
+    items:
+      $ref: "client_event_without_room_id.yaml"
 type: object
 title: TimelineBatch
+required:
+  - events

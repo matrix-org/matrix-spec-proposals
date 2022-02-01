@@ -1440,32 +1440,6 @@ any given point in time:
 
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
-{{% boxes/warning %}}
-The format of events can change depending on room version. Check the
-[room version specification](/rooms) for specific
-details on what to expect for event formats. Examples contained within
-the client-server specification are expected to be compatible with all
-specified room versions, however some differences may still apply.
-
-For this version of the specification, clients only need to worry about
-the event ID format being different depending on room version. Clients
-should not be parsing the event ID, and instead be treating it as an
-opaque string. No changes should be required to support the currently
-available room versions.
-{{% /boxes/warning %}}
-
-{{% boxes/warning %}}
-Event bodies are considered untrusted data. This means that any application using
-Matrix must validate that the event body is of the expected shape/schema
-before using the contents verbatim.
-
-**It is not safe to assume that an event body will have all the expected
-fields of the expected types.**
-
-See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
-detail on why this assumption is unsafe.
-{{% /boxes/warning %}}
-
 ### Types of room events
 
 Room events are split into two categories:
@@ -1496,25 +1470,31 @@ sent by clients and other clients would receive it through Matrix,
 assuming the client has access to the `com.example` namespace.
 {{% /boxes/note %}}
 
-Note that the structure of these events may be different than those in
-the server-server API.
+### Room event format
 
-#### Event fields
+The "federation" format of a room event, which is used internally by homeservers
+and between homeservers via the Server-Server API, depends on the ["room
+version"](/rooms) in use by the room. See, for example, the definitions
+in [room version 1](/rooms/v1#event-format) and [room version
+3](/rooms/v3#event-format).
 
-{{% event-fields event_type="event" %}}
+However, it is unusual that a Matrix client would encounter this event
+format. Instead, homeservers are responsible for converting events into the
+format shown below so that they can be easily parsed by clients.
 
-#### Room event fields
+{{% boxes/warning %}}
+Event bodies are considered untrusted data. This means that any application using
+Matrix must validate that the event body is of the expected shape/schema
+before using the contents verbatim.
 
-{{% event-fields event_type="room_event" %}}
+**It is not safe to assume that an event body will have all the expected
+fields of the expected types.**
 
-#### State event fields
+See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
+detail on why this assumption is unsafe.
+{{% /boxes/warning %}}
 
-In addition to the fields of a Room Event, State Events have the
-following field:
-
-| Key          | Type         | Description                                                                                                  |
-|--------------|--------------|--------------------------------------------------------------------------------------------------------------|
-| state_key    | string       | **Required.** A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an `@` are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.         |
+{{% definition path="api/client-server/definitions/client_event" %}}
 
 ### Stripped state
 
@@ -1580,8 +1560,7 @@ updates not being sent.
 ### Size limits
 
 The complete event MUST NOT be larger than 65536 bytes, when formatted
-as a [PDU for the Server-Server
-protocol](/server-server-api/#pdus), including any
+with the [federation event format](#room-event-format), including any
 signatures, and encoded as [Canonical
 JSON](/appendices#canonical-json).
 
