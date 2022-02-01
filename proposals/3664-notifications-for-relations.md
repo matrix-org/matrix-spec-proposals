@@ -3,8 +3,8 @@
 Relations are very powerful and are becoming a platform to build new features
 like replies, edits, reactions, threads, polls and much more on.
 
-On the other hand there is currently no way to control, what you are getting
-notified for. Some people want to get notified, when someone replies to their
+On the other hand there is currently no way to control what you are getting
+notified for. Some people want to get notified when someone replies to their
 message. Some want to get notified for reactions to their message. Some people
 explicitly do not want that. You might want to be able to mute a thread and you
 may want to get notified for poll responeses or not. Some people like getting
@@ -128,7 +128,7 @@ writing this MSC to decrease dependencies.
 
 Most push rules for relations will need a lookup into a second event. This
 causes additional implementation complexity and can potentially be expensive.
-Looking up one event shouldn't be that heavy, but it is overhead, that wasn't
+Looking up one event shouldn't be that heavy, but it is overhead that wasn't
 there before and it needs to be evaluated for every event, so it clearly is
 somewhat performance sensitive.
 
@@ -151,15 +151,16 @@ threads, when they are not a reply. This MSC does not spell out a solution for
 that, because the author lacks familiarity with the design goals of the
 threading proposals.
 
-Adding a new rule, that causes notifications, forces users to change their
-notification settings again. In this case, if the user disabled pings for
-mentions, they will need to disable the rule manually again, if they did so to
-disable replies. In the transition period clients might not have a UI to do so.
+Adding a new rule that causes notifications, forces users to change their
+notification settings again. In this case, a user who disabled notifications
+for mentions (or set them to silent) may be surprised to suddenly start
+receiving noisy notifications for replies. Worse, in the transition period,
+clients might not have a UI to disable the new notifications.
 This is a risk with all push rule changes and since it allows for a much better
-control over what notifies you, the trandeoff should be acceptable. Many users
+control over what notifies you, the tradeoff should be acceptable. Many users
 disable mention based pings, because they
 [can be error prone](https://github.com/matrix-org/matrix-doc/pull/3517), but
-they may not actually had the intention to also disable notifications for
+they may not actually have intended to also disable notifications for
 replies, which should only trigger for actual replies to your messages. So for a
 significant chunk of people disabling mentions this should be an improvement.
 
