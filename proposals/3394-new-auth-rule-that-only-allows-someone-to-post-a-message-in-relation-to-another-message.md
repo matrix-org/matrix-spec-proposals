@@ -13,6 +13,11 @@ can't be done today because, by definition, this kind of room prevents any type 
 
 ## Proposal
 
+In the context of this proposal, and based on [MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440),
+a "message inside a thread" is defined as an `m.room.message` event containing an `m.relates_to` field
+with a relation type of `m.thread` and a "top-level message" is defined as an `m.room.message` event
+NOT containing such a field.
+
 I propose a new auth rule that only allows room members to post a message if it's
 in relation to another message.
 
