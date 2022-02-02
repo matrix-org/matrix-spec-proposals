@@ -1,1 +1,0 @@
-Distinguish between "federation" event format as exchanged by the Federation API, and the "client" event formats as used in the client-server and AS APIs.

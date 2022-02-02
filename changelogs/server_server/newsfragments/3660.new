@@ -1,1 +1,0 @@
-Add the Space Hierarchy API (`GET /_matrix/federation/v1/hierarchy/{roomId}`) as per [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946).

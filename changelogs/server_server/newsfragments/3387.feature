@@ -1,1 +1,0 @@
-Add support for `restricted` rooms as per [MSC3083](https://github.com/matrix-org/matrix-doc/pull/3083), [MSC3289](https://github.com/matrix-org/matrix-doc/pull/3289), and [MSC3375](https://github.com/matrix-org/matrix-doc/pull/3375).

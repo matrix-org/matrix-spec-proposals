@@ -1,1 +1,0 @@
-Add `/_matrix/client/v1/register/m.login.registration_token/validity` as per [MSC3231](https://github.com/matrix-org/matrix-doc/pull/3231).
