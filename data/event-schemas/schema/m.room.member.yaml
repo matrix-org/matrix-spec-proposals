@@ -19,8 +19,8 @@ description: |-
   The `third_party_invite` property will be set if this invite is an `invite` event and is the successor of an `m.room.third_party_invite` event, and absent otherwise.
 
   This event may also include an `invite_room_state` key inside the event's `unsigned` data.
-  If present, this contains an array of `StrippedState` Events. These events provide information
-  on a subset of state events such as the room name.
+  If present, this contains an array of [stripped state events](/client-server-api/#stripped-state)
+  to assist the receiver in identifying the room.
 
   The user for which a membership applies is represented by the `state_key`. Under some conditions,
   the `sender` and `state_key` may not match - this may be interpreted as the `sender` affecting
@@ -63,6 +63,18 @@ properties:
       is_direct:
         description: Flag indicating if the room containing this event was created with the intention of being a direct chat. See [Direct Messaging](/client-server-api/#direct-messaging).
         type: boolean
+      join_authorised_via_users_server:
+        x-addedInMatrixVersion: "1.2"
+        type: string
+        description: |-
+          Usually found on `join` events, this field is used to denote which homeserver (through representation of a user with sufficient power level)
+          authorised the user's join. More information about this field can be found in the [Restricted Rooms Specification](#restricted-rooms).
+
+          Client and server implementations should be aware of the [signing implications](/rooms/v8/#authorization-rules) of including this
+          field in further events: in particular, the event must be signed by the server which
+          owns the user ID in the field. When copying the membership event's `content` 
+          (for profile updates and similar) it is therefore encouraged to exclude this
+          field in the copy, as otherwise the event might fail event authorization.
       reason:
         x-addedInMatrixVersion: "1.1"
         type: string
@@ -136,7 +148,7 @@ properties:
               state for `m.room.avatar`, `m.room.canonical_alias`, `m.room.join_rules`, and `m.room.name`
               SHOULD be included.
             items:
-              $ref: "stripped_state.yaml"
+              $ref: "core-event-schema/stripped_state.yaml"
             type: array
           knock_room_state:
             description: |-
@@ -145,7 +157,7 @@ properties:
               the state for `m.room.avatar`, `m.room.canonical_alias`, `m.room.join_rules`, `m.room.name`,
               and `m.room.encryption` SHOULD be included.
             items:
-              $ref: "stripped_state.yaml"
+              $ref: "core-event-schema/stripped_state.yaml"
             type: array
 title: The current membership state of a user in the room.
 type: object

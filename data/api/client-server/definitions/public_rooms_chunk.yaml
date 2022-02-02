@@ -1,0 +1,64 @@
+# Copyright 2021 The Matrix.org Foundation C.I.C.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+type: object
+title: "PublicRoomsChunk"
+properties:
+  canonical_alias:
+    type: string
+    description: The canonical alias of the room, if any.
+    example: "#general:example.org"
+  name:
+    type: string
+    description: The name of the room, if any.
+    example: "General Chat"
+  num_joined_members:
+    type: integer
+    description: The number of members joined to the room.
+    example: 42
+  room_id:
+    type: string
+    description: The ID of the room.
+    example: "!abcdefg:example.org"
+  topic:
+    type: string
+    description: The topic of the room, if any.
+    example: "All things general"
+  world_readable:
+    type: boolean
+    description: Whether the room may be viewed by guest users without joining.
+    example: false
+  guest_can_join:
+    type: boolean
+    description: |-
+      Whether guest users may join the room and participate in it.
+      If they can, they will be subject to ordinary power level
+      rules like any other user.
+    example: true
+  avatar_url:
+    type: string
+    format: uri
+    description: The URL for the room's avatar, if one is set.
+    example: "mxc://example.org/abcdef"
+  join_rule:
+    type: string
+    description: |-
+      The room's join rule. When not present, the room is assumed to
+      be `public`.
+    example: "public"
+required:
+  - room_id
+  - num_joined_members
+  - world_readable
+  - guest_can_join

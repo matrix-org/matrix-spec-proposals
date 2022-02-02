@@ -1,0 +1,1 @@
+Clarify that `GET /_matrix/federation/v1/event_auth/{roomId}/{eventId}` does *not* return the auth chain for the full state of the room.

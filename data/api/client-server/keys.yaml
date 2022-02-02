@@ -100,6 +100,40 @@ paths:
                     }
                   }
                 }
+              fallback_keys:
+                type: object
+                x-addedInMatrixVersion: "1.2"
+                description: |-
+                  The public key which should be used if the device's one-time keys
+                  are exhausted. The fallback key is not deleted once used, but should
+                  be replaced when additional one-time keys are being uploaded. The
+                  server will notify the client of the fallback key being used through
+                  `/sync`.
+
+                  There can only be at most one key per algorithm uploaded, and the server
+                  will only persist one key per algorithm.
+
+                  When uploading a signed key, an additional `fallback: true` key should
+                  be included to denote that the key is a fallback key.
+
+                  May be absent if a new fallback key is not required.
+                additionalProperties:
+                  type:
+                    - string
+                    - object
+                      # XXX: We can't define an actual object here - see one_time_keys.
+                example: {
+                  "curve25519:AAAAAG": "/qyvZvwjiTxGdGU0RCguDCLeR+nmsb3FfNG3/Ve4vU8",
+                  "signed_curve25519:AAAAGj": {
+                    "key": "zKbLg+NrIjpnagy+pIY6uPL4ZwEG2v+8F9lmgsnlZzs",
+                    "fallback": true,
+                    "signatures": {
+                      "@alice:example.com": {
+                        "ed25519:JLAFKJWSCS": "FLWxXqGbwrb8SM3Y795eB6OA8bwBcoMZFXBqnTn58AYWZSqiD45tlBVcDa2L7RwdKXebW/VzDlnfVJ+9jok1Bw"
+                      }
+                    }
+                  }
+                }
       responses:
         200:
           description:
@@ -114,6 +148,8 @@ paths:
                 description: |-
                   For each key algorithm, the number of unclaimed one-time keys
                   of that type currently held on the server for this device.
+                  If an algorithm is not listed, the count for that algorithm
+                  is to be assumed zero.
                 example:
                   curve25519: 10
                   signed_curve25519: 20
@@ -378,6 +414,9 @@ paths:
 
                   See the [key algorithms](/client-server-api/#key-algorithms) section for information
                   on the Key Object format.
+
+                  If necessary, the claimed key might be a fallback key. Fallback
+                  keys are re-used by the server until replaced by the device.
                 additionalProperties:
                   type: object
                   additionalProperties:

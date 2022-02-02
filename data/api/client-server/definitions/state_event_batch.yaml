@@ -15,15 +15,7 @@ properties:
   events:
     description: List of events.
     items:
-      allOf:
-      - $ref: ../../../event-schemas/schema/core-event-schema/sync_state_event.yaml
-      type: object
-      required:
-      - event_id
-      #- room_id - Not in /sync
-      - sender
-      - origin_server_ts
-      - state_key
+      $ref: client_event_without_room_id.yaml
     type: array
 type: object
 title: StateEventBatch

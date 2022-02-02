@@ -71,18 +71,18 @@ jobs:
         uses: actions/checkout@v2
       - name: "📦 Asset creation"
         run: |
-          mkdir -p assets
           python3 -m venv env && . env/bin/activate
           pip install -r scripts/requirements.txt
+          # The output path matches the final deployment path at spec.matrix.org
           scripts/dump-swagger.py \
             --base-url "https://spec.matrix.org${{ needs.calculate-baseurl.outputs.baseURL }}" \
-            -o assets/spec/client_server/api.json
-          tar -czf assets.tar.gz assets
+            -o spec/client-server-api/api.json
+          tar -czf openapi.tar.gz spec
       - name: "📤 Artifact upload"
         uses: actions/upload-artifact@v2
         with:
           name: openapi-artifact
-          path: assets.tar.gz
+          path: openapi.tar.gz
 
   build-spec:
     name: "📖 Build the spec"
@@ -109,7 +109,7 @@ jobs:
       - name: "⚙️ hugo"
         run: hugo --baseURL "${{ needs.calculate-baseurl.outputs.baseURL }}" -d "spec"
 
-      # We manually copy the spec OpenAPI definition JSON to the website tree
+      # We manually unpack the spec OpenAPI definition JSON to the website tree
       # to make it available to the world in a canonical place:
       # https://spec.matrix.org/latest/client-server-api/api.json
       # Works for /unstable/ and /v1.1/ as well.
@@ -117,10 +117,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: openapi-artifact
-      - name: "📝 Copy the definition to the right location"
+      - name: "📝 Unpack the OpenAPI definitions in the right location"
         run: |
-          tar -xzf assets.tar.gz
-          cp assets/spec/client_server/api.json spec/client-server-api/
+          tar -xzf openapi.tar.gz
 
       - name: "📦 Tarball creation"
         run: tar -czf spec.tar.gz spec
@@ -159,15 +158,13 @@ jobs:
           echo -e '[params.version]\nstatus="historical"' > historical.toml
           hugo --config config.toml,historical.toml --baseURL "/${GITHUB_REF/refs\/tags\//}" -d "spec"
 
-      # Copying the spec definition to the tree
       - name: "📥 Spec definition download"
         uses: actions/download-artifact@v2
         with:
           name: openapi-artifact
-      - name: "📝 Copy the definition to the right location"
+      - name: "📝 Unpack the OpenAPI definitions in the right location"
         run: |
-          tar -xzf assets.tar.gz
-          cp assets/spec/client_server/api.json spec/client-server-api/
+          tar -xzf openapi.tar.gz
 
       - name: "📦 Tarball creation"
         run: tar -czf spec-historical.tar.gz spec

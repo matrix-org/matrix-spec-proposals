@@ -122,8 +122,9 @@ relationship can be expressed in one of two ways:
     The `order` key is a string which is used to provide a default ordering of
     siblings in the room list. (Rooms are sorted based on a lexicographic
     ordering of the Unicode codepoints of the characters in `order` values.
-    Rooms with no `order` come last, in ascending numeric order of the
-    `origin_server_ts` of their `m.room.create` events, or ascending
+    Rooms with no `order` come last with no effective `order`. When the `order`
+    (or lack thereof) is the same, the rooms are sorted in ascending numeric
+    order of the `origin_server_ts` of their `m.room.create` events, or ascending
     lexicographic order of their `room_id`s in case of equal
     `origin_server_ts`.  `order`s which are not strings, or do not consist
     solely of ascii characters in the range `\x20` (space) to `\x7E` (`~`), or
@@ -161,7 +162,7 @@ relationship can be expressed in one of two ways:
     To avoid abuse where a room admin falsely claims that a room is part of a
     space that it should not be, clients could ignore such `m.space.parent`
     events unless either (a) there is a corresponding `m.space.child` event in
-    the claimed parent, or (b) the sender of the `m.space.child` event has a
+    the claimed parent, or (b) the sender of the `m.space.parent` event has a
     sufficient power-level to send such an `m.space.child` event in the
     parent. (It is not necessarily required that that user currently be a
     member of the parent room - only the `m.room.power_levels` event is

@@ -1,0 +1,1 @@
+Add token-authenticated registration support as per [MSC3231](https://github.com/matrix-org/matrix-doc/pull/3231).

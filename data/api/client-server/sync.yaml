@@ -264,23 +264,13 @@ paths:
                           title: InviteState
                           type: object
                           description: |-
-                            The state of a room that the user has been invited
-                            to. These state events may only have the `sender`,
-                            `type`, `state_key` and `content` keys
-                            present. These events do not replace any state that
-                            the client already has for the room, for example if
-                            the client has archived the room. Instead the
-                            client should keep two separate copies of the
-                            state: the one from the `invite_state` and one
-                            from the archived `state`. If the client joins
-                            the room then the current state will be given as a
-                            delta against the archived `state` not the
-                            `invite_state`.
+                            The [stripped state](#stripped-state) of a room that the user has been invited
+                            to.
                           properties:
                             events:
-                              description: The StrippedState events that form the invite state.
+                              description: The [stripped state events](#stripped-state) that form the invite state.
                               items:
-                                $ref: "../../event-schemas/schema/stripped_state.yaml"
+                                $ref: "../../event-schemas/schema/core-event-schema/stripped_state.yaml"
                               type: array
                   knock:
                     title: Knocked rooms
@@ -295,14 +285,12 @@ paths:
                           title: KnockState
                           type: object
                           description: |-
-                            The state of a room that the user has knocked upon. The state
-                            events contained here have the same restrictions as `InviteState`
-                            above.
+                            The [stripped state](#stripped-state) of a room that the user has knocked upon.
                           properties:
                             events:
-                              description: The StrippedState events that form the knock state.
+                              description: The [stripped state events](#stripped-state) that form the knock state.
                               items:
-                                $ref: "../../event-schemas/schema/stripped_state.yaml"
+                                $ref: "../../event-schemas/schema/core-event-schema/stripped_state.yaml"
                               type: array
                   leave:
                     title: Left rooms
