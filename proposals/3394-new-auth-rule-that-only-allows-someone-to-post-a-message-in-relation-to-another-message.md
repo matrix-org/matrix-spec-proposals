@@ -56,6 +56,4 @@ case I would welcome suggestions on how to improve it.
 
 It would also be possible to achieve the same result with threads-as-rooms; this would
 also allow for greater flexibility (e.g. allowing regular users to comment some posts,
-but not others) but it would also probably be more expensive.MSC3393: new auth rule that
-only allows someone to post a message in relation to another messageMSC3393: new auth rule
-that only allows someone to post a message in relation to another message.
+but not others) but it would also probably be more expensive.
