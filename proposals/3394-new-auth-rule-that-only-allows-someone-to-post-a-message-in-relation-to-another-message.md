@@ -18,7 +18,7 @@ a "message inside a thread" is defined as an `m.room.message` event containing a
 with a relation type of `m.thread` and a "top-level message" is defined as an `m.room.message` event
 NOT containing such a field.
 
-I propose a new auth rule that only allows room members to post a message if it's
+I propose a new auth rule that only allows room members to post a message if it is
 in relation to another message.
 
 This will mean that regular users can't post top-level messages, but they can start threads
@@ -35,7 +35,7 @@ could probably look like this:
 
 1. If type is m.room.message:
   1. If the user's power level is higher than the power level for m.room.message events, allow.
-  2. Otherwise, check the new power level I want to introduce. If it's is higher than the user's power level, reject.
+  2. Otherwise, check the new power level I want to introduce. If it is is higher than the user's power level, reject.
   3. Otherwise, if the event doesn't have a relation, reject.
   4. Otherwise, allow.
 
