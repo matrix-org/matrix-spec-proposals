@@ -1,0 +1,1 @@
+Fix auth rules to allow membership of `knock` -> `leave` in v7, v8, and v9.

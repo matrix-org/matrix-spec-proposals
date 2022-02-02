@@ -91,7 +91,8 @@ The rules are as follows:
         5.  Otherwise, reject.
     5.  If `membership` is `leave`:
         1.  If the `sender` matches `state_key`, allow if and only if
-            that user's current membership state is `invite` or `join`.
+            that user's current membership state is `invite`, `join`,
+            or `knock`.
         2.  If the `sender`'s current membership state is not `join`,
             reject.
         3.  If the *target user*'s current membership state is `ban`,
