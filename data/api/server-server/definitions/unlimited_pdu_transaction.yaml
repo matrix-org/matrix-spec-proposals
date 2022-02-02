@@ -27,7 +27,7 @@ properties:
       description: |-
         The [PDUs](/server-server-api/#pdus) contained in the transaction. The event format varies depending
         on the room version - check the [room version specification](/rooms) for precise event formats.
-      properties: []
+      properties: {}
       example:
         $ref: "../examples/minimal_pdu.json"
 required: ['origin', 'origin_server_ts', 'pdus']

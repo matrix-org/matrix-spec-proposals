@@ -69,7 +69,7 @@ paths:
                       $ref: "definitions/edu.yaml"
           example: {
             "$ref": "examples/transaction.json",
-            "edus": [{"$ref": "edu.json"}] # Relative to the examples directory
+            "edus": [{"$ref": "examples/edu.json"}]
           }
       responses:
         200:
