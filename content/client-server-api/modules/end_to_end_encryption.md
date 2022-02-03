@@ -1171,7 +1171,7 @@ originally sent the key request to; a device that receives a
 `request` message with the same `request_id` and `requesting_device_id`.
 
 If a device does not wish to share keys with that device, it can
-indicate this by sending an [m.room\_key.withheld](#mroom_key.withheld) to-device message,
+indicate this by sending an [m.room\_key.withheld](#mroom_keywithheld) to-device message,
 as described in [Reporting that decryption keys are
 withheld](#reporting-that-decryption-keys-are-withheld).
 
