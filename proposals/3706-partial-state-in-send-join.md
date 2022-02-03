@@ -11,7 +11,7 @@ the
 API, and must be validated and stored.
 
 [MSC2775](https://github.com/matrix-org/matrix-doc/pull/2775) makes a number of
-suggestions for ways that this can be improved. This MSC focusses on a specific
+suggestions for ways that this can be improved. This MSC focuses on a specific
 aspect of those suggestions by proposing specific changes to the `/send_join`
 API.
 
@@ -76,6 +76,14 @@ larger topic of incremental synchronisation of state has several concerns;
 these will be discussed in other MSCs such as MSC2775.
 
 ## Unstable prefix
+
+The following mapping will be used for identifiers in this MSC during
+development:
+
+Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`partial_state` | query parameter, response field | `org.matrix.msc3706.partial_state`
+`servers_in_room` | response field | `org.matrix.msc3706.servers_in_room`
 
 
 ## Dependencies
