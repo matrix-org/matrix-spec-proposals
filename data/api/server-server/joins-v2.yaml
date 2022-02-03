@@ -184,7 +184,7 @@ paths:
             }
         200:
           description: |-
-            The full state for the room, having accepted the join event.
+            The join event has been accepted into the room.
           schema:
             $ref: "./definitions/send_join_response.yaml"
           examples:
