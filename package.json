@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/matrix-org/matrix-doc#readme",
   "devDependencies": {
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^10.4.2",
     "node-fetch": "^2.6.7",
-    "postcss-cli": "^7.1.2"
+    "postcss-cli": "^8.2.13"
   }
 }
