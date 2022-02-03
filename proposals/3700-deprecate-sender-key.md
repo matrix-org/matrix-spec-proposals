@@ -28,9 +28,9 @@ compatibility. At a future time the fields will stop being included.
 Clients must store and lookup sessions based purely on the session ID.
 
 When updating an existing session key, clients must ensure:
-1. that the updated session data comes from a trusted source, e.g.
-either the session data has a) a valid signature, or b) comes from the user’s
-session key backup; and
+1. that the updated session data comes from a trusted source, e.g. either the
+   session data has a) a valid signature, or b) comes from the user’s session
+   key backup; and
 2. that the new session key has a lower message index than the existing session
    key.
 
