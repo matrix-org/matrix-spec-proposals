@@ -24,17 +24,17 @@ following changes.
 
 ### New query parametter
 
-`partial_state` is added as a new query parameter This can take the values
+`partial_state` is added as a new query parameter. This can take the values
 `true` or `false`; other values should be rejected with an HTTP 400 error.
 
 Calling servers use this parameter to indicate support for partial state in
 `send_join`. If it is not set to `true`, receiving servers continue to behave
 as they do today.
 
-Receiving servers are not obliged to implement partial state; they are also
-free to support it for some rooms and not others.
-
 ### Changes to the response
+
+Receiving servers are not obliged to implement partial state: they are also
+free to support it for some rooms and not others.
 
 The following changes are made to the response:
 
