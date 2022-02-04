@@ -20,9 +20,11 @@ API.
 [`PUT
 /_matrix/federation/v2/send_join/{roomId}/{eventId}/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
 is extended to support "partial state" in its responses. This involves the
-following changes:
+following changes.
 
-First, we add a query-parameter, `partial_state`. This can take the values
+### New query parametter
+
+`partial_state` is added as a new query parameter This can take the values
 `true` or `false`; other values should be rejected with an HTTP 400 error.
 
 Calling servers use this parameter to indicate support for partial state in
@@ -31,6 +33,8 @@ as they do today.
 
 Receiving servers are not obliged to implement partial state; they are also
 free to support it for some rooms and not others.
+
+### Changes to the response
 
 The following changes are made to the response:
 
@@ -48,11 +52,22 @@ The following changes are made to the response:
  * `auth_chain`: The spec currently defines this as "The auth chain for the
    entire current room state". We instead rephrase this as:
 
-   All events in the auth chain for the returned join event, as well as
-   those in the auth chains for any events returned in `state`.
+   > All events in the auth chain for the returned join event, as well as
+   > those in the auth chains for any events returned in `state`.
 
    (Note that in the case that full state is being returned, the two
    definitions are equivalent.)
+
+ * If the `partial_state` query parameter was set, we make a further
+   optimisation to `auth_chain`:
+
+   > Any events returned within `state` can be omitted from `auth_chain`.
+
+   For example: the `m.room.create` event is part of the room state, so
+   must be included in `state`. However, it also forms part of the auth chain
+   for all of the returned events, so in the current spec, must *also* be
+   included in `auth_chain`. However, this is redundant, so we should omit it
+   for calling servers which opt into that via the `partial_state` query param.
 
  * `servers_in_room`: A new field of type `[string]`, listing the servers
    active in the room (ie, those with joined members) before the join.
