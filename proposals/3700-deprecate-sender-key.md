@@ -25,6 +25,11 @@ deprecated. Clients must ignore those fields when processing events, but should
 still include the fields when generating events to maintain backwards
 compatibility. At a future time the fields will stop being included.
 
+Similarly, the `sender_key` field in `m.room_key_request` to-device messages is
+deprecated. Clients must ignore the field when processing the request, but
+should still include it when generating *if* there is a `sender_key` field in
+the event we're requesting keys for.
+
 Clients must store and lookup sessions based purely on the session ID.
 
 When updating an existing session key, clients must ensure:
