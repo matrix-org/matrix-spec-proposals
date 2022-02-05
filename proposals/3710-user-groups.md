@@ -52,6 +52,23 @@ Furthermore, the template should not be required to be followed. However it is s
 maintain some sense of consistency between proposals.
 
 
+This document proposes the addition of user groups to Matrix. The proposed purpouse of groups is to
+allow for the refrencing of multiple users at once. Groups would be defined by the server administrator,
+possibly synced from an external authencation source. Possible uses are a group ping (for instance,
+pinging everyone in the marketing group in a product devlopment room for instance), or a group icon
+(for instance, it might show at the end of a users displayname), grouping users in a userlist, or 
+assignimg power levels in bulk. This could also be used to assign server roles (another idea I have) to
+multiple users.
+
+I see this feature being used on a buisnesses or a projects matrix server. A buisness might make a group
+for each location, department, team, and/or subdivision. A large project server like KDE's or Archlinux's
+might have a group for devlopers, contributers, collaberators, or for each project/subproject. Fosdem
+might have groups for each stand. I do not see this feature beimg used on public servers like matrix.org
+as much. However, a default group for server administrators could exist, which admins are automaticlly
+added, that users can use to essily identify or contact server admins.
+
+Groups should be based off of the existing user type, but with a different identifier.
+
 ## Potential issues
 
 *Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
