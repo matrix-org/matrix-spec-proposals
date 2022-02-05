@@ -18,6 +18,12 @@ There can never be enough templates in the world, and MSCs shouldn't be any diff
 of detail expected of proposals can be unclear - this is what this example proposal (which doubles
 as a template itself) aims to resolve.
 
+## Introduction
+
+Currently, Matrix does not seem to have any way to create groups of users for any purpouse, weither
+that for assigning power levels in a room, or to set restrictions on what users can do on the server.
+Because of that, I feel that matrix is not ready for ise in buisnesses, and I feel that it is something
+that is missing and should be added as it can serve other uses.
 
 ## Proposal
 
@@ -52,9 +58,11 @@ Furthermore, the template should not be required to be followed. However it is s
 maintain some sense of consistency between proposals.
 
 
+
 This document proposes the addition of user groups to Matrix. The proposed purpouse of groups is to
 allow for the refrencing of multiple users at once. Groups would be defined by the server administrator,
-possibly synced from an external authencation source. Possible uses are a group ping (for instance,
+possibly synced from an external authencation source, however there should be an option for groups to be
+created by users that can be enabled in the homeserver config. Possible uses are a group ping (for instance,
 pinging everyone in the marketing group in a product devlopment room for instance), or a group icon
 (for instance, it might show at the end of a users displayname), grouping users in a userlist, or 
 assignimg power levels in bulk. This could also be used to assign server roles (another idea I have) to
@@ -67,8 +75,11 @@ might have groups for each stand. I do not see this feature beimg used on public
 as much. However, a default group for server administrators could exist, which admins are automaticlly
 added, that users can use to essily identify or contact server admins.
 
-Groups should be based off of the existing user type, but with a different identifier.
-
+Groups should be based off of the existing user type, but with a different type identifier. I think that
+the existing identifier prefix `@` will work for groups as well. Groups will be similar to users in that
+they can be invited to groups, in which all group members will be subsequently invited. Groups can also
+be pinged, in which case all group members in that room will be pinged.
+ 
 ## Potential issues
 
 *Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
