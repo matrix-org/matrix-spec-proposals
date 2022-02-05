@@ -1087,7 +1087,7 @@ To use this login type, clients should submit a `/login` request as follows:
 
 ```json
 {
-  "type": "m.login.appservice",
+  "type": "m.login.application_service",
   "identifier": {
     "type": "m.id.user",
     "user": "<user_id or user localpart>"
