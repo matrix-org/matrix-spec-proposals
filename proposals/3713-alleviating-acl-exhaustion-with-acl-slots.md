@@ -130,7 +130,7 @@ Revision 2 is also now historical.
 Revision 2 used `support.feline.msc3713.rev2.room.server_acl` as the event type and 
 `support.feline.msc3713.rev1.room.server_acl.slot.X` as the State key.
 
-Due to the assumption that no implementations ever existed for revision 1 no support is needed for it.
+Due to the assumption that no implementations ever existed for revision 1 and revision 2 no support is needed for it.
 
 ## Dependencies
 
