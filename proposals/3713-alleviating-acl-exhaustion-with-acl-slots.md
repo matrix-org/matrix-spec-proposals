@@ -9,7 +9,7 @@ feline.support perspective of certain matrix.org rooms reported hundreds of ACL 
 ACL capacity starting to be a future concern.
 
 What does this MSC do to address these concerns about a potential ACL exhaustion situation happening in
-a room. Well simple it creates the ACL Slots system. This system is intended as a measure that is
+a room? Well simple it creates the ACL Slots system. This system is intended as a measure that is
 acceptable even if it becomes a long term fix. This MSC will not address the flaws of the ACL system
 it will only aim to alleviate this singular problem. A future MSC is perfectly welcome to fix any flaws
 in the ACL system that it identifies. 
