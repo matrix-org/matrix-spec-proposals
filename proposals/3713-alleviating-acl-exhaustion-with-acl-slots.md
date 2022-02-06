@@ -1,4 +1,4 @@
-# MSC0000: Alleviating ACL exhaustion with ACL Slots
+# MSC3713: Alleviating ACL exhaustion with ACL Slots
 
 ## Introduction
 
@@ -120,11 +120,8 @@ todays ACL system.
 
 ## Unstable prefix
 
-Unstable implementations should use the event type of `support.feline.mscXXXX.rev1.room.server_acl` and
-`support.feline.mscXXXX.rev1.room.server_acl.slot.X` state keys. 
-
-Please note that the unstable prefixes should not be used before this MSC gets edited to include the 
-MSC number and this note is removed at the same time.
+Unstable implementations should use the event type of `support.feline.msc3713.rev1.room.server_acl` and
+`support.feline.msc3713.rev1.room.server_acl.slot.X` state keys. 
 
 ## Dependencies
 
