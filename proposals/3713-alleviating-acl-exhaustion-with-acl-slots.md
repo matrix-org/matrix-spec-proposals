@@ -14,7 +14,7 @@ acceptable even if it becomes a long term fix. This MSC will not address the fla
 it will only aim to alleviate this singular problem. A future MSC is perfectly welcome to fix any flaws
 in the ACL system that it identifies. 
 
-This system works by sending `m.room.server_acl` events with the state key of `acl_slot.X`
+This system works by sending `m.room.server_acl` events with the state key of `X`
 X represents the slot number used by a given ACL event. The exact number of slots is tied to the
 room version in use and this MSC suggests that a future room version augments the auth rules to make it 
 illegal to send a ACL with a key that is outside of the allowed slot range for the room version. 
@@ -27,7 +27,7 @@ will just ignore any event that is outside the accepted range.
 ## Proposal
 
 As stated in the introduction this system works by sending a modified variant of the `m.room.server_acl`
-event. This modified version has only a single change. We put the state key to `acl_slot.X`
+event. This modified version has only a single change. We put the state key to `X`
 the X is the decimal value for the ACL in question inside of the range of 0 - Room Version MAX Value.
 
 For existing room versions at the time of writing this MSC aka Room Versions 1-9 a max value of 512 ACL
@@ -39,14 +39,14 @@ enough as to not be completely unreasonable in size.
 The process for applying would be the same as today but you combine all the ACL slots contents that are 
 in the same field so all the contents of all the `"allow"` field gets combine and the same goes for
 `"deny"` the `"allow_ip_literals"` attribute is only defined inside of the `m.room.server_acl` event with
-a state key `acl.slot.0`.
+a state key `0`.
 
 For backward compatibility under this MSC the `m.room.server_acl` state event with a blank key would still
 be useable as a fall back. Homeservers that implement this MSC should upon detecting any `m.room.server_acl`
 with a slot state key not apply the contents of the `m.room.server_acl` with a blank key if a 
-`m.room.server_acl` with a key of `acl_slot.0` exists. 
+`m.room.server_acl` with a key of `0` exists. 
 
-The ACL event with the key of `acl_slot.0` is special due to that its recommended that its 
+The ACL event with the key of `0` is special due to that its recommended that its 
 always a clone of the non slot `m.room.server_acl` event as to maintain an ACL list that is backwards 
 compatible even if the list is incomplete when in this mode. 
 
@@ -67,7 +67,7 @@ Example event for Slot 0
   "origin_server_ts": 1432735824653,
   "room_id": "!example_room:example.org",
   "sender": "@example:example.org",
-  "state_key": "acl_slot.0",
+  "state_key": "0",
   "type": "m.room.server_acl",
   "unsigned": {
     "age": 1234
@@ -90,7 +90,7 @@ Example Event for Slot 1
   "origin_server_ts": 1432735824653,
   "room_id": "!example_room:example.org",
   "sender": "@example:example.org",
-  "state_key": "acl_slot.1",
+  "state_key": "1",
   "type": "m.room.server_acl",
   "unsigned": {
     "age": 1234
@@ -120,12 +120,15 @@ todays ACL system.
 
 ## Unstable prefix
 
-Unstable implementations should use the event type of `support.feline.msc3713.rev2.room.server_acl` and
-`support.feline.msc3713.rev2.acl_slot.X` state keys. 
+Unstable implementations should use the event type of `support.feline.msc3713.rev3.room.server_acl`
 
 The first revision of this MSC had implementations use the state key of 
 `support.feline.msc3713.rev1.room.server_acl.slot.X` and 
 `support.feline.msc3713.rev1.room.server_acl` as the event type.
+
+Revision 2 is also now historical.
+Revision 2 used `support.feline.msc3713.rev2.room.server_acl` as the event type and 
+`support.feline.msc3713.rev1.room.server_acl.slot.X` as the State key.
 
 Due to the assumption that no implementations ever existed for revision 1 no support is needed for it.
 
