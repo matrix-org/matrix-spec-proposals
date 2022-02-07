@@ -202,7 +202,7 @@ Insert from your most recent batch of history -> oldest history.**
 #### What does the batch send endpoint do behind the scenes?
 
 This section explains the homeserver magic that happens when someone uses the
-`batch_send` endpoint. If you're just trying to understand how the "insertion",
+`/batch_send` endpoint. If you're just trying to understand how the "insertion",
 "batch", "marker" events work, you might want to just skip down to the room DAG
 breakdown which incrementally explains how everything fits together.
 
@@ -308,9 +308,9 @@ navigate the DAG.
  - We use `m.room.batch` events to indicate which `m.room.insertion` event it
    connects to by its `m.next_batch_id` field.
 
-![](https://user-images.githubusercontent.com/558581/137203204-fc630b1e-9ceb-41bb-b074-52a60514cd44.png)
+![](https://user-images.githubusercontent.com/558581/152883498-7acf0750-5742-47b3-8644-008f24f9396f.png)
 
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBCIC0tLS0tLS0tLS0tLS0tLS0tLS0tPiBBXG4gICAgZW5kXG4gICAgXG4gICAgc3ViZ3JhcGggYmF0Y2gwXG4gICAgICAgIGJhdGNoMC1iYXRjaFtbXCJiYXRjaFwiXV0gLS0-IGJhdGNoMC0yKChcIjJcIikpIC0tPiBiYXRjaDAtMSgoMSkpIC0tPiBiYXRjaDAtMCgoMCkpIC0tPiBiYXRjaDAtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcblxuICAgIHN1YmdyYXBoIGJhdGNoMVxuICAgICAgICBiYXRjaDEtYmF0Y2hbW1wiYmF0Y2hcIl1dIC0tPiBiYXRjaDEtMigoXCIyXCIpKSAtLT4gYmF0Y2gxLTEoKDEpKSAtLT4gYmF0Y2gxLTAoKDApKSAtLT4gYmF0Y2gxLWluc2VydGlvblsvaW5zZXJ0aW9uXFxdXG4gICAgZW5kXG4gICAgXG4gICAgc3ViZ3JhcGggYmF0Y2gyXG4gICAgICAgIGJhdGNoMi1iYXRjaFtbXCJiYXRjaFwiXV0gLS0-IGJhdGNoMi0yKChcIjJcIikpIC0tPiBiYXRjaDItMSgoMSkpIC0tPiBiYXRjaDItMCgoMCkpIC0tPiBiYXRjaDItaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcblxuXG4gICAgYmF0Y2gwLWluc2VydGlvbiAtLT4gZmFrZVByZXZFdmVudDB7e2Zha2VfcHJldl9ldmVudH19XG4gICAgYmF0Y2gxLWluc2VydGlvbiAtLT4gZmFrZVByZXZFdmVudDF7e2Zha2VfcHJldl9ldmVudH19XG4gICAgYmF0Y2gyLWluc2VydGlvbiAtLT4gZmFrZVByZXZFdmVudDJ7e2Zha2VfcHJldl9ldmVudH19XG5cbiAgICBcbiAgICBiYXRjaDAtaW5zZXJ0aW9uQmFzZVsvaW5zZXJ0aW9uXFxdIC0tLS0tLS0tLS0tLS0tLT4gQVxuICAgIGJhdGNoMC1iYXRjaCAtLi0-IGJhdGNoMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF1cbiAgICBiYXRjaDEtYmF0Y2ggLS4tPiBiYXRjaDAtaW5zZXJ0aW9uXG4gICAgYmF0Y2gyLWJhdGNoIC0uLT4gYmF0Y2gxLWluc2VydGlvblxuIiwibWVybWFpZCI6IntcbiAgXCJ0aGVtZVwiOiBcImRlZmF1bHRcIlxufSIsInVwZGF0ZUVkaXRvciI6ZmFsc2UsImF1dG9TeW5jIjp0cnVlLCJ1cGRhdGVEaWFncmFtIjpmYWxzZX0)
+[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#pako:eNqNk92KwjAQhV8lBIQKdTW5WejCwsruE7h3xovYjDaYJpKkuiK--6atP7WtYi7a6eTM4Us6c8SpEYATvFJmn2bcejT9ZRqF5Yrl2vJthpTcQZ0q1xSNetYn-qoloEUdtEyW3KfZ5GZTf4-q13zOcBUwvFig0uy8S6OIYcrwcNjMkigi95lJFE3uM1I7sF4aPR9fQ8YWDcY-PtLiI0_5SC8f6fCRDh95ge_RHdIWI33KSHsZaYeRdhjpy3dYP9sXP-UO7gvRo55p9gIavfX8xa5Zo5I8q2zoaEdHmrrLcQYDxJVc6xy0D72vNw7dmVxLyvPcpORanfMNIJ9B22asw6g5JPVOOrlU55ly_qAaUoKqXamkPyQok0KAjlOjjE285dptuQ2qj7q2tJ1V9eQ9GFmzgdFeCp8ldPsXr6RSiTYa4nqrij9wjHOwOZciTP2x9GE4wObAcBJCASteKM8w06cgLbaCe_gR0huLkxVXDmLMC29mB53igFTARfQteWjT_Kw6_QOAPVu0)
 
 <details>
 <summary>mermaid graph syntax</summary>
@@ -333,16 +333,18 @@ flowchart BT
         batch2-batch[["batch"]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
     end
 
-
-    batch0-insertion --> fakePrevEvent0{{fake_prev_event}}
-    batch1-insertion --> fakePrevEvent1{{fake_prev_event}}
-    batch2-insertion --> fakePrevEvent2{{fake_prev_event}}
-
     
     batch0-insertionBase[/insertion\] ---------------> A
     batch0-batch -.-> batch0-insertionBase[/insertion\]
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
+
+
+    %% alignment links 
+    batch2-insertion --- alignment1
+    %% make the alignment links/nodes invisible
+    style alignment1 visibility: hidden,color:transparent;
+    linkStyle 17 stroke-width:2px,fill:none,stroke:none;
 ```
 
 </details>
@@ -458,9 +460,10 @@ The structure of the "marker" event looks like:
 }
 ```
 
-![](https://user-images.githubusercontent.com/558581/137203021-d5f5dcfe-3e47-4ee2-9041-232c13090218.png)
+![](https://user-images.githubusercontent.com/558581/152883769-cfd1bd30-3c18-47a3-8631-3d51af540d1d.png)
 
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBtYXJrZXIxPlwibWFya2VyXCJdIC0tLS0-IEIgLS0tLS0tLS0tLS0tLS0tLS0-IEFcbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDBcbiAgICAgICAgYmF0Y2gwLWJhdGNoW1tcImJhdGNoXCJdXSAtLT4gYmF0Y2gwLTIoKFwiMlwiKSkgLS0-IGJhdGNoMC0xKCgxKSkgLS0-IGJhdGNoMC0wKCgwKSkgLS0-IGJhdGNoMC1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgc3ViZ3JhcGggYmF0Y2gxXG4gICAgICAgIGJhdGNoMS1iYXRjaFtbXCJiYXRjaFwiXV0gLS0-IGJhdGNoMS0yKChcIjJcIikpIC0tPiBiYXRjaDEtMSgoMSkpIC0tPiBiYXRjaDEtMCgoMCkpIC0tPiBiYXRjaDEtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDJcbiAgICAgICAgYmF0Y2gyLWJhdGNoW1tcImJhdGNoXCJdXSAtLT4gYmF0Y2gyLTIoKFwiMlwiKSkgLS0-IGJhdGNoMi0xKCgxKSkgLS0-IGJhdGNoMi0wKCgwKSkgLS0-IGJhdGNoMi1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG5cbiAgICBiYXRjaDAtaW5zZXJ0aW9uIC0tPiBmYWtlUHJldkV2ZW50MHt7ZmFrZV9wcmV2X2V2ZW50fX1cbiAgICBiYXRjaDEtaW5zZXJ0aW9uIC0tPiBmYWtlUHJldkV2ZW50MXt7ZmFrZV9wcmV2X2V2ZW50fX1cbiAgICBiYXRjaDItaW5zZXJ0aW9uIC0tPiBmYWtlUHJldkV2ZW50Mnt7ZmFrZV9wcmV2X2V2ZW50fX1cblxuICAgIFxuICAgIG1hcmtlcjEgLS4tPiBiYXRjaDAtaW5zZXJ0aW9uQmFzZVxuICAgIGJhdGNoMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF0gLS0tLS0tLS0tLS0tLS0tPiBBXG4gICAgYmF0Y2gwLWJhdGNoIC0uLT4gYmF0Y2gwLWluc2VydGlvbkJhc2VbL2luc2VydGlvblxcXVxuICAgIGJhdGNoMS1iYXRjaCAtLi0-IGJhdGNoMC1pbnNlcnRpb25cbiAgICBiYXRjaDItYmF0Y2ggLS4tPiBiYXRjaDEtaW5zZXJ0aW9uXG4iLCJtZXJtYWlkIjoie1xuICBcInRoZW1lXCI6IFwiZGVmYXVsdFwiXG59IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
+
+[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#pako:eNqNlN9vwiAQx_8VQmJSk7oJb6uJycz2F2xv4gOW05JSMEDnjPF_H2390dpqdg_t9fje8QGOHnFqBOAEb5TZpxm3Hi2-mUbBXLneWr7LkJI_0IQqK7jNwZI5w43H8ApNgs3Ron53bI7em0zQonHuaq-5T7PprXrzPalfyyXDtROmqOaYX0ZpFDFMGR6P21ESRaQbmUbRtBuR2oH10ujl69VlbNViHOIjd3zkKR8Z5CM9PtLjI__ge7SH9I6RPmWkg4y0x0h7jPTfe9g8z-2CJi8Dp7Dg7txZQyPd-uhRa7Vb5vE0Q7DtwxzObOloT0fausuqRyPEldzqArQPN0fnDnWKXFOq9dyk5Jpd8ByQz-C-zKsOF9UhqX-kk2t13jfnD6olJagelUr6Q4IyKQToODXK2MRbrt2O26CaNblV2a86n7yFQtbkMNlL4bOE7n7jjVQq0UZD3AzV_gzHuABbcCnCP-NY1WE4wBbAcBJcARteKs8w06cgLXeCe_gU0huLkw1XDmLMS2--DjrFAamEi-hD8tDNxVl1-gNT2W_l)
 
 <details>
 <summary>mermaid graph syntax</summary>
@@ -483,17 +486,19 @@ flowchart BT
         batch2-batch[["batch"]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
     end
 
-
-    batch0-insertion --> fakePrevEvent0{{fake_prev_event}}
-    batch1-insertion --> fakePrevEvent1{{fake_prev_event}}
-    batch2-insertion --> fakePrevEvent2{{fake_prev_event}}
-
     
     marker1 -.-> batch0-insertionBase
     batch0-insertionBase[/insertion\] ---------------> A
     batch0-batch -.-> batch0-insertionBase[/insertion\]
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
+
+
+    %% alignment links 
+    batch2-insertion --- alignment1
+    %% make the alignment links/nodes invisible
+    style alignment1 visibility: hidden,color:transparent;
+    linkStyle 19 stroke-width:2px,fill:none,stroke:none;
 ```
 
 </details>
@@ -506,20 +511,19 @@ In order to show the display name and avatar for the historical messages,
 the state provided by `state_events_at_start` needs to resolve when one of
 the historical messages is fetched.
 
-It's probably most semantic to have the state float outside of the normal DAG
-in a chain by referencing a fake `prev_event`. Then the insertion event
-reference the last piece in the floating state chain.
+It's probably most semantic to have the historical state float outside of the
+normal DAG in a chain by specifying no `prev_events` (empty `prev_events=[]`)
+for the first one. Then the insertion event can reference the last piece in the
+floating state chain.
 
-In Synapse, the fake `prev_event` causes it to look like an "outlier" because
-the homeserver can't fully fetch and resolve the state at the point. As a
-result, the state will not be resolved into the current state of the room,
-and it won't be visible in the chat history. This allows us to insert multiple
-batches without having a bunch of `@mxid joined the room` noise between each
-batch.
+In Synapse, historical state is marked as an `outlier`. As a result, the state
+will not be resolved into the current state of the room, and it won't be visible
+in the chat history. This allows us to insert multiple batches without having a
+bunch of `@mxid joined the room` noise between each batch.
 
-![](https://user-images.githubusercontent.com/558581/137247868-b7d5b996-02ac-49f8-bbfa-1417ddc60bae.png)
+![](https://user-images.githubusercontent.com/558581/152884091-b4fe23e2-e019-4d05-af24-bbfb4f656b05.png)
 
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBtYXJrZXIxPlwibWFya2VyXCJdIC0tLS0-IEIgLS0tLS0tLS0tLS0tLS0tLS0-IEFcbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDBcbiAgICAgICAgYmF0Y2gwLWJhdGNoW1tcImJhdGNoXCJdXSAtLT4gYmF0Y2gwLTIoKFwiMlwiKSkgLS0-IGJhdGNoMC0xKCgxKSkgLS0-IGJhdGNoMC0wKCgwKSkgLS0-IGJhdGNoMC1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG4gICAgc3ViZ3JhcGggYmF0Y2gxXG4gICAgICAgIGJhdGNoMS1iYXRjaFtbXCJiYXRjaFwiXV0gLS0-IGJhdGNoMS0yKChcIjJcIikpIC0tPiBiYXRjaDEtMSgoMSkpIC0tPiBiYXRjaDEtMCgoMCkpIC0tPiBiYXRjaDEtaW5zZXJ0aW9uWy9pbnNlcnRpb25cXF1cbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDJcbiAgICAgICAgYmF0Y2gyLWJhdGNoW1tcImJhdGNoXCJdXSAtLT4gYmF0Y2gyLTIoKFwiMlwiKSkgLS0-IGJhdGNoMi0xKCgxKSkgLS0-IGJhdGNoMi0wKCgwKSkgLS0-IGJhdGNoMi1pbnNlcnRpb25bL2luc2VydGlvblxcXVxuICAgIGVuZFxuXG5cbiAgICBiYXRjaDAtaW5zZXJ0aW9uIC0tPiBtZW1iZXJCb2IwKFtcIm0ucm9vbS5tZW1iZXIgKGJvYilcIl0pIC0tPiBtZW1iZXJBbGljZTAoW1wibS5yb29tLm1lbWJlciAoYWxpY2UpXCJdKSAtLT4gZmFrZVByZXZFdmVudDB7e2Zha2VfcHJldl9ldmVudH19XG4gICAgYmF0Y2gxLWluc2VydGlvbiAtLT4gbWVtYmVyQm9iMShbXCJtLnJvb20ubWVtYmVyIChib2IpXCJdKSAtLT4gbWVtYmVyQWxpY2UxKFtcIm0ucm9vbS5tZW1iZXIgKGFsaWNlKVwiXSkgLS0-IGZha2VQcmV2RXZlbnQxe3tmYWtlX3ByZXZfZXZlbnR9fVxuICAgIGJhdGNoMi1pbnNlcnRpb24gLS0-IG1lbWJlckJvYjIoW1wibS5yb29tLm1lbWJlciAoYm9iKVwiXSkgLS0-IG1lbWJlckFsaWNlMihbXCJtLnJvb20ubWVtYmVyIChhbGljZSlcIl0pIC0tPiBmYWtlUHJldkV2ZW50Mnt7ZmFrZV9wcmV2X2V2ZW50fX1cblxuICAgIG1hcmtlcjEgLS4tPiBiYXRjaDAtaW5zZXJ0aW9uQmFzZVxuICAgIGJhdGNoMC1pbnNlcnRpb25CYXNlWy9pbnNlcnRpb25cXF0gLS0tLS0tLS0tLS0tLS0tPiBBXG4gICAgYmF0Y2gwLWJhdGNoIC0uLT4gYmF0Y2gwLWluc2VydGlvbkJhc2VbL2luc2VydGlvblxcXVxuICAgIGJhdGNoMS1iYXRjaCAtLi0-IGJhdGNoMC1pbnNlcnRpb25cbiAgICBiYXRjaDItYmF0Y2ggLS4tPiBiYXRjaDEtaW5zZXJ0aW9uXG4iLCJtZXJtYWlkIjoie1xuICBcInRoZW1lXCI6IFwiZGVmYXVsdFwiXG59IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
+[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#pako:eNqVlE1ugzAQha9izcqRkhR7yQIpUXuCdhdnYWBSUDGOjGlVRbl7DU5aftNkNh6Pn_0-DRpOkOgUIYRDob-STBpLtm-iJC6qOn438piRIv9EX2pCSfOBhkUCfCZgT1YuIrJt115EZONvYpn6ZPB2LG2SBX-v-_2qXXY7AW3iLBqP6HrKKRXABSwW3SqjlPUrAaVBv5KXFRqb63L39JsKse8wTvGxAR-7yccm-diIj4342B18cz3kA0Z-k5FPMvIRIx8x8rt66DfDppPV2j2jUMVotjoOqINTa6O1WvsiobGOFw7VG_ripsgTnNLK5qBVd-zYrB17wI7da8dn7fgDdvwfO294mTzvM-ztVlY43fXmpP-pyNyUdqdv3mbqu3fnYvpmr2lDHevqYAkKjZJ56v5Lp-aeAJuhQgGhS1M8yLqwAkR5dtL6mEqLL2lutYHwIIsKlyBrq1-_ywRCa2q8ip5z6SZGXVTnH4twitQ)
 
 <details>
 <summary>mermaid graph syntax</summary>
@@ -543,9 +547,9 @@ flowchart BT
     end
 
 
-    batch0-insertion --> memberBob0(["m.room.member (bob)"]) --> memberAlice0(["m.room.member (alice)"]) --> fakePrevEvent0{{fake_prev_event}}
-    batch1-insertion --> memberBob1(["m.room.member (bob)"]) --> memberAlice1(["m.room.member (alice)"]) --> fakePrevEvent1{{fake_prev_event}}
-    batch2-insertion --> memberBob2(["m.room.member (bob)"]) --> memberAlice2(["m.room.member (alice)"]) --> fakePrevEvent2{{fake_prev_event}}
+    batch0-insertion -.-> memberBob0(["m.room.member (bob)"]) --> memberAlice0(["m.room.member (alice)"])
+    batch1-insertion -.-> memberBob1(["m.room.member (bob)"]) --> memberAlice1(["m.room.member (alice)"])
+    batch2-insertion -.-> memberBob2(["m.room.member (bob)"]) --> memberAlice2(["m.room.member (alice)"])
 
     marker1 -.-> batch0-insertionBase
     batch0-insertionBase[/insertion\] ---------------> A
