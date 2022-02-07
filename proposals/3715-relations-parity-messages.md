@@ -1,4 +1,4 @@
-# MSC3715: `/relations` partiy with `/messages`
+# MSC3715: `/relations` parity with `/messages`
 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) introduced the
 `/relations` API as an endpoint to paginate over the relations of an event. It
