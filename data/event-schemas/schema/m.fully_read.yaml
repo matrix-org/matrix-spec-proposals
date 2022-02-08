@@ -19,11 +19,7 @@
         "type": {
             "type": "string",
             "enum": ["m.fully_read"]
-        },
-        "room_id": {
-            "type": "string",
-            "description": "The room ID the read marker applies to."
         }
     },
-    "required": ["type", "room_id", "content"]
+    "required": ["type", "content"]
 }
