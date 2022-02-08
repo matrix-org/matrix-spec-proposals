@@ -39,7 +39,10 @@ be implemented for `/relations`. It is unclear if this parameter is useful here.
 
 ## Alternatives
 
-None.
+The endpoint could be replaced with the `/event_relationships` API proposed in
+[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836). That API would
+add significant complexity over the current `/relations` API (e.g. arbitrary
+of relations) and is not necessary to simply iterate events in the reverse ordering.
 
 
 ## Security considerations
