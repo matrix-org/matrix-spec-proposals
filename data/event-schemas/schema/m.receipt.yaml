@@ -42,10 +42,7 @@
         "type": {
             "type": "string",
             "enum": ["m.receipt"]
-        },
-        "room_id": {
-            "type": "string"
         }
     },
-    "required": ["room_id", "type", "content"]
+    "required": ["type", "content"]
 }
