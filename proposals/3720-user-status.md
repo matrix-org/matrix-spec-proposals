@@ -1,4 +1,4 @@
-# MSCXXXX: User status endpoint
+# MSC3720: User status endpoint
 
 Matrix clients sometimes need a way to display additional information about a
 user. For example, when interacting with a Matrix user, it might be useful for
@@ -95,9 +95,9 @@ this document:
 
 | Stable path                                | Unstable path                                                       |
 |--------------------------------------------|---------------------------------------------------------------------|
-| `/_matrix/client/v1/user/status`           | `/_matrix/client/unstable/org.matrix.mscXXXX/user/status`           |
-| `/_matrix/federation/v1/query/user_status` | `/_matrix/federation/unstable/org.matrix.mscXXXX/query/user_status` |
+| `/_matrix/client/v1/user/status`           | `/_matrix/client/unstable/org.matrix.msc3720/user/status`           |
+| `/_matrix/federation/v1/query/user_status` | `/_matrix/federation/unstable/org.matrix.msc3720/query/user_status` |
 
 Additionally, implementations should use the unstable identifier
-`org.matrix.mscXXXX.user_status` instead of `m.user_status` for the client-side
+`org.matrix.msc3720.user_status` instead of `m.user_status` for the client-side
 capability.
