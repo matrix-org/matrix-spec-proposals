@@ -24,11 +24,11 @@ Note though that this proposal does not include any support for sending user-def
 events which are not explicitly bound to rooms, like the global `m.presence` event.
 
 Examples of how this feature could be used are; as regular status updates to a user-requested
-long-lived task, which a bot might has started for a received event. Or pehaps as a GPS live-location
-feature, where participating client would regularly post their current location relative to a
+long-lived task, which a bot might have started for a received event. Or perhaps as a GPS live-location
+feature, where participating clients would regularly post their current location relative to a
 persistent geo-URI event. Perhaps for organizing meetups, or for viewing active tracking of the 
 locations of vehicles in an autonomous fleet - maybe along with peristent messages posted at a lesser
-rate for a timeline generation.
+rate for timeline generation.
 
 The example that will be used througout this proposal is an ephemeral data object that's tracking
 the current status of a user-requested 3D print, with some basic printer- and print-status
@@ -39,12 +39,13 @@ with.
 ### Addition of an ephemeral event sending endpoint to the Client-Server API
 
 The addition to the CS API is the endpoint
-`PUT /_matrix/client/v3/rooms/{roomId}/ephemeral/{eventType}/{txnId}`, which would act in an almost
-identical manner to the event sending endpoint that is already present.  
-An example of how an update might be posted using the new endpoint;
+`PUT /_matrix/client/v1/rooms/{roomId}/ephemeral/{eventType}/{txnId}`, which would act in an almost
+identical manner to the [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`][PUT Room Event]
+endpoint that is already present.  
+An example of how an update might be posted using the new endpoint is provided as;
 
 ```
-PUT /_matrix/client/v3/rooms/%21636q39766251%3Aexample.com/ephemeral/com.example.3dprint/19914 HTTP/1.1
+PUT /_matrix/client/v1/rooms/%21636q39766251%3Aexample.com/ephemeral/com.example.3dprint/19914 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -122,22 +123,21 @@ traffic by malicious users - increasing the bandwidth usage for all connected se
 also suggests extending the power levels to handle ephemeral types as well.
 
 In any room version implementing this MSC, the auth rules concerning ephemeral events in the
-`m.room.power_levels` event are;
+`m.room.power_levels` state event are;
 
 - `ephemeral` (`{string: integer}`) - A mapping of EDU types to the power-level required to send them
 - `ephemeral_default` (`integer`) - The default power-level required to send any EDU not listed in
 the above mapping
 
-These new keys are to function in an identical manner to the already existing `events` and
-`events_default` keys, with the assumed default value for `ephemeral_default` - if there is no
-`ephemeral_default` in the `m.room.power_levels` event - being 50, while the default values for
-`ephemeral` - if there is no `ephemeral` in the `m.room.power_levels` event - would consider all types
-to be `ephemeral_default`, or 0 if there is no `m.room.power_levels` event - which would then not allow
-any ephemeral events to be sent.
+These new keys are expected to function in an identical manner to the already existing `events` and
+`events_default` keys in the `m.room.power_levels` state event.  
+The fallback value for `ephemeral_default` - if missing - should be 50, while the fallback value for
+the `ephemeral` dictionary should be `{}` - or an empty mapping. Which would imply that _any_ ephemeral
+event type should require a power level of at least `ephemeral_default` (or 50) to send.
 
-It is therefore recommended for servers to include at least the following `ephemeral` configuration
-for all newly created rooms of any room version implementing this MSC, to allow for the sending of
-the default ephemeral events in Matrix;
+With this change it is therefore recommended for servers to include at least the following `ephemeral`
+configuration for all newly created rooms - of any room version implementing this MSC, to allow for
+clients continued sending of the default ephemeral events in Matrix;
 
 ```json
 {
@@ -146,19 +146,63 @@ the default ephemeral events in Matrix;
 }
 ```
 
+An example of what a full `m.room.power_levels` object could look like with this MSC;
+
+```json
+{
+  "type": "m.room.power_levels",
+  "sender": "@alice:example.com",
+  "content": {
+    "users": {
+      "@alice:example.com": 100
+    },
+    "users_default": 0,
+    "events": {
+      "m.room.name": 50,
+      "m.room.power_levels": 100,
+      "m.room.history_visibility": 100,
+      "m.room.canonical_alias": 50,
+      "m.room.avatar": 50,
+      "m.room.tombstone": 100,
+      "m.room.server_acl": 100,
+      "m.room.encryption": 100
+    },
+    "events_default": 0,
+    "ephemeral": {
+      "m.receipt": 0,
+      "m.typing": 0
+    },
+    "ephemeral_default": 50,
+    "state_default": 50,
+    "ban": 50,
+    "kick": 50,
+    "redact": 50,
+    "invite": 0
+  },
+  "state_key": "",
+  "origin_server_ts": 1627993163991,
+  "unsigned": {
+    "age": 10418356643
+  },
+  "event_id": "$za6Ba5Rosa6pahn8the7phairei3eiM3aithoh4aev0moh4siephec6laeraiyaF",
+  "room_id": "!lioc7Ree1eekea4u:example.com"
+}
+
+```
+
 ### Extension of the room-specific ephemeral data received in /sync responses
 
-Because the user-defined ephemeral events can't be aggregated and massaged by Synapse in a simple
+Because the user-defined ephemeral events can't be aggregated and massaged by the homeserver in a simple
 manner, this MSC instead requires adding a few more fields to the room-specific ephemeral events as
 they are encoded in a sync response. The additions in question are;
 
 - `sender` (`string`) - The fully qualified ID of the user that sent the EDU
 - `origin_server_ts` (`integer`) - The timestamp in milliseconds on the originating homeserver when
-- this event was sent
+this event was sent
 
-To reduce the scope of changes required by this proposal, the suggestion is to allow the original
-`m.*` events to skip these keys where no value could be easily assigned to them. E.g. typing notices,
-read receipts.
+To reduce the scope of changes required by this proposal, it is suggested to allow the original `m.*`
+events to skip these keys where no value could be easily assigned to them. E.g. typing notices, read
+receipts.
 
 ```jsonc
 {
@@ -177,7 +221,6 @@ read receipts.
               },
               "type": "com.example.3dprint_request",
               "event_id": "$4CvDieFIFAzSYaykmBObZ2iUhSa5XNEUnC-GQfLl2yc",
-              "room_id": "!636q39766251:example.com",
               "sender": "@alice:matrix.org",
               "origin_server_ts": 1432735824653,
               "unsigned": {
@@ -206,8 +249,7 @@ read receipts.
               "unsigned": {
                 "age": 4324
               },
-              "event_id": "$E2RPcyuMUiXyDkQ02ASEbFxcJ4wFNrt5JVgov0wrqWo",
-              "room_id": ""
+              "event_id": "$E2RPcyuMUiXyDkQ02ASEbFxcJ4wFNrt5JVgov0wrqWo"
             }
           ]
         },
@@ -220,8 +262,7 @@ read receipts.
                   "@bob:example.com"
                 ]
               },
-              "type": "m.typing",
-              "room_id": "!636q39766251:example.com"
+              "type": "m.typing"
             },
             {
               "content": {
@@ -238,7 +279,6 @@ read receipts.
                 }
               },
               "type": "com.example.3dprint",
-              "room_id": "!636q39766251:example.com",
               "sender": "@printbot:example.com",
               "origin_server_ts": 1432735830211
             }
@@ -269,8 +309,8 @@ commended, but not required.
 
 As the server-server protocol is currently only designed for transferring the well-defined EDUs that
 exist as part of the Matrix communication protocol, this proposal requires some additional fields to
-be added the EDU schema in order to let them transmit the user-specified data untouched - while still
-adding source information that is important for the receiving clients.
+be added to the EDU schema in order to let them transmit the user-specified data untouched - while
+still adding source information that is important for the receiving clients.
 
 The fields to add to the EDU schema are;
 
@@ -319,7 +359,7 @@ difficult - if even necessary - for clients or servers to be modified to support
 
 Additionally, as ephemeral data is never encoded into room state there's not as many tools for
 admins to handle abuse that occur through the use of the feature.  
-The proposals suggested changes to power levels - and limitation of what event types can be sent -
+The proposal's suggested changes to power levels - and limitation of what event types can be sent -
 should mitigate the potential of abuse from the feature though, as long as admins don't allow any
 user-defined ephemeral types to be sent by regular users.
 
@@ -385,6 +425,7 @@ the regular Matrix types as well, which would remove the need for optional field
 return impact the federation between servers, if they're built to only handle the exact requirements
 of the spec.
 
+[PUT Room Event]: https://spec.matrix.org/v1.2/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid
 [MSC1763]: https://github.com/matrix-org/matrix-doc/pull/1763
 [MSC2228]: https://github.com/matrix-org/matrix-doc/pull/2228
 [MSC2409]: https://github.com/matrix-org/matrix-doc/pull/2409
