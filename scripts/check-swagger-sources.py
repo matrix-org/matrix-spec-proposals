@@ -89,7 +89,7 @@ def check_response(filepath, request, code, response):
 
 def check_swagger_file(filepath):
     with open(filepath) as f:
-        swagger = yaml.load(f)
+        swagger = yaml.safe_load(f)
 
     for path, path_api in swagger.get('paths', {}).items():
 
@@ -162,7 +162,7 @@ def load_file(path):
         else:
             # We have to assume it's YAML because some of the YAML examples
             # do not have file extensions.
-            return yaml.load(f)
+            return yaml.safe_load(f)
 
 
 if __name__ == '__main__':
