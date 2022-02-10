@@ -259,11 +259,11 @@ Content-Type: application/json
 {
   "flows": [
     {
-      "type": "m.login.bs-speke.ecc"
+      "type": "m.login.bsspeke.ecc"
     }
   ],
   "params": {
-      "m.login.bs-speke.ecc": {
+      "m.login.bsspeke.ecc": {
           "curve": "curve25519",
           "hash": "blake2b",
       }
@@ -272,7 +272,7 @@ Content-Type: application/json
 }
 ```
 
-The required parameters for `m.login.bs-speke.ecc` define something sort of
+The required parameters for `m.login.bsspeke.ecc` define something sort of
 like a cipher suite, a collection of cryptographic primitives to be used to
 instantiate the BS-SPEKE algorithm for this login stage.
 
@@ -324,7 +324,7 @@ containing the user ID and the blinded curve point `blind`.
 ```json
 {
     "auth": {
-        "type": "m.login.bs-speke.ecc",
+        "type": "m.login.bsspeke.ecc",
         "identifier": {
             "type": "m.id.user",
             "user": "<user id or user localpart>"
@@ -365,11 +365,11 @@ The server sends its public key `B` and the blinded salt
   "completed": [],
   "flows": [
     {
-      "stages": ["m.login.bs-speke.ecc"]
+      "stages": ["m.login.bsspeke.ecc"]
     }
   ],
   "params": {
-      "m.login.bs-speke.ecc": {
+      "m.login.bsspeke.ecc": {
           "curve": "curve25519",
           "hash": "blake2b",
           "phf_params": {
@@ -450,7 +450,7 @@ The third request contains `A` and `client_verifier`:
 ```json
 {
     "auth": {
-        "type": "m.login.bs-speke.ecc",
+        "type": "m.login.bsspeke.ecc",
         "identifier": {
             "type": "m.id.user",
             "user": "<user id or user localpart>"
@@ -491,14 +491,14 @@ Content-Type: application/json
 
 ```json
 {
-  "completed": ["m.login.bs-speke.ecc"],
+  "completed": ["m.login.bsspeke.ecc"],
   "flows": [
     {
-      "stages": ["m.login.bs-speke.ecc"]
+      "stages": ["m.login.bsspeke.ecc"]
     }
   ],
   "params": {
-      "m.login.bs-speke.ecc": {
+      "m.login.bsspeke.ecc": {
           "curve": "curve25519",
           "hash": "blake2b",
           "phf_params": {
