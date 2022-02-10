@@ -79,6 +79,9 @@ and it offers a number of advantages over earlier PAKE protocols, including:
   namely the Noise-KN key exchange and an efficient oblivious pseudorandom
   function (OPRF).
 
+For more details, please see the [Appendix](#appendix-technical-background)
+at the end of this document.
+
 
 ## Registration
 
