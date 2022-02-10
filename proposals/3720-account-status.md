@@ -79,7 +79,7 @@ Below is how this endpoint behaves in case of errors:
 This endpoint behaves in an identical way to the client-side endpoint described
 above.
 
-### `m.user_status` capability
+### `m.account_status` capability
 
 Some server administrators might not want to disclose too much information about
 their users. To support this use case, homeservers must expose a
