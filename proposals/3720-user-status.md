@@ -15,7 +15,7 @@ specification), the inviter might be warned that the user might not exist.
 Two new endpoints are added to the specification, one to the client-server API
 and one to the server-server API.
 
-### `GET /_matrix/client/v1/user/status`
+### `GET /_matrix/client/v1/user_status`
 
 This endpoint requires authentication via an access token.
 
@@ -28,22 +28,37 @@ format:
 
 ```json
 {
-    "@user1:example.com": {
-        "exists": true,
-        "deactivated": false
+    "user_statuses": {
+        "@user1:example.com": {
+            "exists": true,
+            "deactivated": false
+        },
+        "@user2:example.com": {
+            "exists": false
+        },
     },
-    "@user2:example.com": {
-        "exists": false
-    }
+    "failures": [
+        "@user3:example.com",
+        "@user4:otherexample.com"
+    ]
 }
 ```
 
-Each top-level key in the response maps to one of the `user_id` parameter(s)
-in the request. For each user:
+The `user_statuses` object in the response lists all statuses that could
+successfully be retrieved. Each key in this object maps to one of the `user_id`
+parameter(s) in the request. For each user:
 
 * `exists` is a boolean that indicates whether the user exists.
 * `deactivated` is a boolean that indicates whether the user has been
   deactivated. Omitted if `exists` is `false`.
+
+The `failures` object in the response lists all users for which no status could
+be retrieved for any reason (e.g. federation issues, missing federation
+endpoint, missing user in the remote server's response, etc).
+
+The combination of the lists of user IDs from `user_statuses` and `failures`
+must match the full list of user IDs provided in the request via `user_id`
+parameters.
 
 If one or more user(s) is not local to the homeserver this request is performed
 on, the homeserver must attempt to retrieve user status using the federation
@@ -71,13 +86,10 @@ client-side endpoint described above.
 
 ## Potential issues
 
-It is not clear how to show users whose status could not be retrieved because of
-federation issue, a missing or blocked federation endpoint, or an incomplete
-response from the remote homeserver, in the client-side endpoint's response. I
-have considered omitting them from the response entirely, or adding an
-additional `success` boolean to each user's status to indicate whether status
-for this user could be retrieved, but I am not entirely satisfied with either
-solution. I am open to suggestions on this point.
+I'm not fully sure this is the right name for this feature as it can easily be
+confused with status messages. An alternative name from previous work around
+this feature was "user info", but I thought it might be a bit vague. I'm open to
+suggestions on this point.
 
 ## Security considerations
 
