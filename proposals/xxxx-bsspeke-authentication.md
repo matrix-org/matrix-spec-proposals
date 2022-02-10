@@ -88,7 +88,9 @@ and the requested username in the JSON body.
 
 ```
 POST /_matrix/client/v3/register&kind=user
+```
 
+```json
 {
     "username": "alice"
 }
@@ -102,7 +104,9 @@ A server that supports BS-SPEKE login will reply with a login flow that contains
 ```
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
+```
 
+```json
 {
   "flows": [
     {
@@ -165,7 +169,9 @@ POST /_matrix/client/v3/register&kind=user
 ```
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
+```
 
+```json
 {
   "flows": [
     {
@@ -189,7 +195,9 @@ Content-Type: application/json
 
 ```
 POST /_matrix/client/v3/register&kind=user
+```
 
+```json
 {
     "username": "alice",
     "auth_type": "m.login.bsspeke.ecc",
@@ -214,7 +222,9 @@ POST /_matrix/client/v3/register&kind=user
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {
   "access_token": "abc123",
   "device_id": "GHTYAJCE",
@@ -528,7 +538,9 @@ for BS-SPEKE by setting the `auth_type` parameter to `m.login.bsspeke.ecc`.
 
 ```
 POST /_matrix/client/v3/account/password
+```
 
+```json
 {
     "auth_type": "m.login.bsspeke.ecc",
     ...
@@ -544,7 +556,9 @@ above for [/register](#registration).
 ```
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
+```
 
+```json
 {
   "flows": [
     {
@@ -591,7 +605,9 @@ for the user, and responds with the blind salt.
 ```
 HTTP/1.1 401 Unauthorized
 Content-Type: application/json
+```
 
+```json
 {
   "flows": [
     {
@@ -626,7 +642,9 @@ device than the one used to change the password.
 
 ```
 POST /_matrix/client/v3/account/password
+```
 
+```json
 {
     "auth_type": "m.login.bsspeke.ecc",
     "auth": {
@@ -655,7 +673,9 @@ HTTP `200 OK` with no content.
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
+```
 
+```json
 {}
 ```
 
