@@ -2,7 +2,7 @@
 
 ## Problem
 
-Threading allows users to branch out a new conversation from the main timeline of a room.
+Threading allows users to branch out a new conversation from the main timeline of a room
 to each other. This is particularly useful in high traffic rooms where multiple 
 conversations can happen in parallel or when a single discussion might stretch 
 over a very long period of time.
