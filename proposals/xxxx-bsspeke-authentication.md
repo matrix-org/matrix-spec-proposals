@@ -981,7 +981,7 @@ points on the elliptic curve.
    `P` and `V`, provided to him when Alice originally set
    her current password.
    For details on how this works in Matrix, see [Registration](#registration)
-   and [Change Password](#change-password) below.
+   and [Changing Passwords](#changing-passwords).
 
    At this point, Alice also generates her ephemeral keypair
    `a` and `A`.
