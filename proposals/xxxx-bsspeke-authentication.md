@@ -44,7 +44,8 @@ This MSC proposes a new authentication login flow based on the PAKE protocol
 [BS-SPEKE](https://tobtu.com/blog/2021/10/srp-is-now-deprecated/).
 
 The sections below describe the proposed use of BS-SPEKE in the Matrix
-client-server API endpoints for registration, login, and password changing.
+client-server API endpoints for [registration](#registration),
+[login](#login), and for changing the user's [password](#changing-passwords).
 
 **Acknowledgement**: This MSC builds on work in a previous proposal,
 [MSC3262](https://github.com/matrix-org/matrix-doc/pull/3262),
@@ -523,7 +524,7 @@ user as logged in and return success.
 
 Otherwise return failure.
 
-## Changing the User's Password and/or Upgrading to Cryptographic Login
+## Changing Passwords
 
 The process for changing an existing BS-SPEKE user's password looks
 very much the same as the process outlined above for creating a new
