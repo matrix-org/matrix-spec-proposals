@@ -77,7 +77,11 @@ Below is how this endpoint behaves in case of errors:
 ### `GET /_matrix/federation/v1/query/account_status`
 
 This endpoint behaves in an identical way to the client-side endpoint described
-above.
+above, with the additional following error case:
+
+* If one or more of the `user_id` parameter(s) does not match a local account,
+  the endpoint responds with a 400 status code and a `M_INVALID_PARAM` error
+  code.
 
 ### `m.account_status` capability
 
