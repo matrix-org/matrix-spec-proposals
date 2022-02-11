@@ -1,4 +1,4 @@
-# MSCXXXX: Federation Versions
+# MSC3723: Federation Versions
 
 This MSC aims to add a `/versions` endpoint to federation, similar to `/client/versions`.
 
@@ -73,4 +73,4 @@ this time.
 
 For the time in this proposal, this endpoint should be mounted on;
 
-`/_matrix/federation/unstable/org.matrix.mscXXXX/versions`
+`/_matrix/federation/unstable/org.matrix.msc3723/versions`
