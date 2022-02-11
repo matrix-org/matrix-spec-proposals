@@ -6,8 +6,7 @@ It is well known that joining large rooms over federation can be very slow (see,
 for example, [synapse#1211](https://github.com/matrix-org/synapse/issues/1211)).
 
 Much of the reason for this is the large number of events which are returned by
-the
-[`/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
+the [`/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
 API, and must be validated and stored.
 
 [MSC2775](https://github.com/matrix-org/matrix-doc/pull/2775) makes a number of
@@ -17,12 +16,11 @@ API.
 
 ## Proposal
 
-[`PUT
-/_matrix/federation/v2/send_join/{roomId}/{eventId}/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
+[`PUT /_matrix/federation/v2/send_join/{roomId}/{eventId}/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
 is extended to support "partial state" in its responses. This involves the
 following changes.
 
-### New query parametter
+### New query parameter
 
 `partial_state` is added as a new query parameter. This can take the values
 `true` or `false`; other values should be rejected with an HTTP 400 error.
