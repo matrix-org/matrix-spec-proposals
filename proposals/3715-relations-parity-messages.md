@@ -51,4 +51,4 @@ None.
 
 ## Unstable prefix
 
-None, assuming that this lands in the same Matrix specification version as MSC2675.
+Before standardization, `org.matrix.msc3715.dir` should be used in place of `dir`.
