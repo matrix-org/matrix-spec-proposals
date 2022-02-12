@@ -21,6 +21,9 @@ This proposal aims to add a similar API to the federation side;
 Which returns a JSON object, which will contain at least one key, `versions`, with an array of
 supported matrix versions, in the same format as `/client/versions`.
 
+This JSON object can also include a `unstable_features` object, with a mapping of feature names to
+booleans, in a manner similar to `/client/versions`.
+
 ## Rationale
 
 Today, there exists no server-server versioning, this has historically not been a problem, as
