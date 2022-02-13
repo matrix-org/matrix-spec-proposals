@@ -1,6 +1,6 @@
 # MSC0000: Template for new MSCs
 
-*Note: Text written in italics represents notes about the section or proposal process. This document
+<!-- *Note: Text written in italics represents notes about the section or proposal process. This document
 serves as an example of what a proposal could look like (in this case, a proposal to have a template)
 and should be used where possible.*
 
@@ -16,7 +16,7 @@ does this proposal improve Matrix?" - the answer could reveal a small impact, an
 
 There can never be enough templates in the world, and MSCs shouldn't be any different. The level
 of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
+as a template itself) aims to resolve. -->
 
 ## Introduction
 
@@ -27,7 +27,7 @@ that is missing and should be added as it can serve other uses.
 
 ## Proposal
 
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
+<!-- *Here is where you'll reinforce your position from the introduction in more detail, as well as cover
 the technical points of your proposal. Including rationale for your proposed solution and detailing
 why parts are important helps reviewers understand the problem at hand. Not including enough detail
 can result in people guessing, leading to confusing arguments in the comments section. The example
@@ -55,7 +55,7 @@ The template should have the following sections:
   future and any potential risks in the proposal.
 
 Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
+maintain some sense of consistency between proposals. -->
 
 
 
@@ -82,7 +82,7 @@ be pinged, in which case all group members in that room will be pinged.
  
 ## Potential issues
 
-*Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
+<¡-- *Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
 and they should be documented here. There should be some explanation for why the disadvantage is
 acceptable, however - just like in this example.*
 
@@ -92,12 +92,12 @@ however more detail should be included. A template that actually proposes someth
 because it not only gives an opportunity to show what a basic proposal looks like, it also means that
 explanations for each section can be described. Spending the time to work out the content of the template
 is beneficial and not considered a significant problem because it will lead to a document that everyone
-can follow.
+can follow. -->
 
 
 ## Alternatives
 
-*This is where alternative solutions could be listed. There's almost always another way to do things
+<!-- *This is where alternative solutions could be listed. There's almost always another way to do things
 and this section gives you the opportunity to highlight why those ways are not as desirable. The
 argument made in this example is that all of the text provided by the template could be integrated
 into the proposals introduction, although with some risk of losing clarity.*
@@ -108,31 +108,31 @@ descriptive as possible, although having even more detail in the proposals intro
 some confusion or lack of understanding. Not to mention if the document is too large then potential
 authors could be scared off as the process suddenly looks a lot more complicated than it is. For those
 reasons, this proposal does not consider integrating the template in the proposals introduction a good
-idea.
+idea. -->
 
 
 ## Security considerations
 
-*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
+<!-- *Some proposals may have some security aspect to them that was addressed in the proposed solution. This
 section is a great place to outline some of the security-sensitive components of your proposal, such as
 why a particular approach was (or wasn't) taken. The example here is a bit of a stretch and unlikely to
 actually be worthwhile of including in a proposal, but it is generally a good idea to list these kinds
 of concerns where possible.*
 
 By having a template available, people would know what the desired detail for a proposal is. This is not
-considered a risk because it is important that people understand the proposal process from start to end.
+considered a risk because it is important that people understand the proposal process from start to end. -->
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
+<!-- *If a proposal is implemented before it is included in the spec, then implementers must ensure that the
 implementation is compatible with the final version that lands in the spec. This generally means that
 experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
 For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
 should be used to document things such as what endpoints and names are being used while the feature is
 in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+migration steps are needed to switch to newer versions of the proposal.* -->
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
+<!-- This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
+into the spec). -->
