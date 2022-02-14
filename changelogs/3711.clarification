@@ -1,1 +1,1 @@
-Clarify that `m.login.application_service` should be used for appservice logins, rather than `m.login.appservice`.
+Fix incorrectly referenced `m.login.appservice` login identifier, instead using `m.login.application_service`.
