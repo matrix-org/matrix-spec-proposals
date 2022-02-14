@@ -1,0 +1,1 @@
+Clarify that `m.login.application_service` should be used for appservice logins, rather than `m.login.appservice`
