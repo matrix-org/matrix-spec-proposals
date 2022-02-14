@@ -117,9 +117,10 @@ incremental syncs), for instance: initial sync, gappy incremental sync,
 
 ### Fetch all threads in a room
 
-To fetch all threads in a room, use the
+To fetch all threads in a room, the
 [`/messages`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-messages) 
-API and expand the room event filtering to include relations. The `RoomEventFilter` 
+API is used with newly added filtering options. It is proposed to expand the room
+event filtering to include filtering events by their related events:
 
 * `relation_types`: A list of relation types which must exist pointing to the event
   being filtered. If this list is absent then no filtering is done on relation types.
@@ -146,8 +147,17 @@ encoded JSON is presented unencoded and formatted for legibility:
 }
 ```
 
+Note that the newly added filtering parameters return events based on information
+in related events. Consider the following events in a room:
 
+* `A`: a `m.room.message` event sent by `alice`
+* `B`: a `m.room.message` event sent by `bob` which relates to `A` with type `m.thread`
 
+Using a filter of `"relation_types": ["m.thread"]` would return event `A` as it
+has another event which relates to it via `m.thread`.
+
+Similary, using a filter of `"relation_senders": ["bob"]` would return event `A`
+as it has another event which relates to it sent by `bob`.
 
 ### Server capabilities
 
