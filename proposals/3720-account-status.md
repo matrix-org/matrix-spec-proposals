@@ -79,9 +79,9 @@ Below is how this endpoint behaves in case of errors:
 This endpoint behaves in an identical way to the client-side endpoint described
 above, with the additional following error case:
 
-* If one or more of the `user_id` parameter(s) does not match a local account,
-  the endpoint responds with a 400 status code and a `M_INVALID_PARAM` error
-  code.
+* If one or more of the `user_id` parameter(s) does not match an account that
+  belong to the homeserver receiving the request, the endpoint responds with a
+  400 status code and a `M_INVALID_PARAM` error code.
 
 ### `m.account_status` capability
 
