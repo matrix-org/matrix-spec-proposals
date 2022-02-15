@@ -156,7 +156,7 @@ in related events. Consider the following events in a room:
 Using a filter of `"relation_types": ["m.thread"]` would return event `A` as it
 has another event which relates to it via `m.thread`.
 
-Similary, using a filter of `"relation_senders": ["bob"]` would return event `A`
+Similarly, using a filter of `"relation_senders": ["bob"]` would return event `A`
 as it has another event which relates to it sent by `bob`.
 
 ### Server capabilities
