@@ -1,4 +1,4 @@
-# MSCxxxx: Safer Password-based Authentication with BS-SPEKE
+# MSC3726: Safer Password-based Authentication with BS-SPEKE
 
 In Matrix's `m.login.password` authentication mechanism, the client
 sends their password to the server, using TLS to protect against
