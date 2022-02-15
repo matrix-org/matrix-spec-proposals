@@ -246,32 +246,29 @@ not have a string value, then the condition will not match, even if `pattern`
 is `*`.
 
 {{% boxes/note %}}
-For example, if `key` is `content.membership`, and `pattern` is `jo?*`, then
+For example, if `key` is `content.topic`, and `pattern` is `lunc?*`, then
 the following event will match:
 
 ```json
 {
   "content": {
-    "membership": "join",
+    "topic": "Lunch plans",
   },
   "event_id": "$143273582443PhrSn:example.org",
   "room_id": "!636q39766251:example.com",
   "sender": "@example:example.org",
-  "state_key": "@alice:example.org",
-  "type": "m.room.member"
+  "state_key": "",
+  "type": "m.room.topic"
 }
 ```
 
-Other `membership` values which will match are:
+Other `topic` values which will match are:
 
- * `"JOIN"`
- * `"joinnn"`
- * `"join "` (note trailing space)
- * `"joy"` (`*` may match zero characters)
+ * `"LUNCH"` (case-insensitive; `*` may match zero characters)
 
 The following `membership` values will NOT match:
- * `" join"` (note leading space)
- * `"jo"` (`?` must match a character)
+ * `" lunch"` (note leading space)
+ * `"lunc"` (`?` must match a character)
  * `null` (not a string)
 {{% /boxes/note %}}
 
@@ -304,6 +301,14 @@ Other `body` values which will match are:
 {{% /boxes/note %}}
 
 
+{{% boxes/warning %}}
+Note that there is no implicit condition for `state_key`. In other words, push
+rules which should match only state events must include an explicit condition
+for `state_key`.
+
+For an example of this, see the default rule
+[`.m.rule.tombstone`](#mruletombstone) below.
+{{% /boxes/warning %}}
 
 **`contains_display_name`**
 
@@ -481,7 +486,7 @@ Definition:
 }
 ```
 
-**`.m.rule.tombstone`**
+**<a name="mruletombstone"></a>`.m.rule.tombstone`**
 
 Matches any state event whose type is `m.room.tombstone`. This is
 intended to notify users of a room when it is upgraded, similar to what
