@@ -9,9 +9,7 @@ default room version.
 The specification adopts v9 as the suggested default room version, making no changes to the stability
 of any room versions. As of writing, v6 is currently the suggested room version.
 
-Room version 9 is currently published here: https://spec.matrix.org/unstable/rooms/v9/
-
-<!-- TODO: TravisR[v1.2] - Update link to stable once available -->
+Room version 9 is currently published here: https://spec.matrix.org/v1.2/rooms/v9/
 
 ## Potential issues
 
