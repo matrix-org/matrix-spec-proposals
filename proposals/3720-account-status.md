@@ -95,8 +95,8 @@ account status via the client-side endpoint described above.
 Should a server administrator not want to disclose information about their users
 through the federation endpoint described above, they should use a reverse proxy
 or similar tool to prevent access to the endpoint. On top of this, homeserver
-implementations may implement measures to only respond with an empty JSON object
-`{}` in this case.
+implementations may implement measures to respond with a 403 status code and a
+`M_FORBIDDEN` error code in this case.
 
 ## Unstable prefixes
 
