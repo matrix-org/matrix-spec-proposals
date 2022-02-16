@@ -286,23 +286,22 @@ is to define events like this one
       </p><a href='...'>Read the full post in your favorite social matrix client</a>",
     "m.social.post": [
       {
-        "msgtype": "m.text",
-        "body": "The first part of full text of story, located before image.",
+        "m.text": "The first part of full text of story, located before image.",
       },
       {
-        "msgtype": "m.image",
-        "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg",
-        "body": "Image 1.jpg",
-        "info": {
-          "mimetype": "image/jpg",
-          "size": 1153501,
-          "w": 963,
-          "h": 734,
-        }
+         "m.file": {
+            "mimetype": "image/jpeg",
+            "name": "_MG_0641.jpg",
+            "size": 10158773,
+            "url": "mxc://"
+        },
+        "m.image": {
+          "height": 3456,
+          "width": 5184
+        },
       },
       {
-        "msgtype": "m.text",
-        "body": "The ending text of full story after image.",
+        "m.text": "The ending text of full story after image.",
       }
     ]
   }
