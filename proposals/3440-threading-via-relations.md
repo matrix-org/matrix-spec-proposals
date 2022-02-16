@@ -256,7 +256,11 @@ copy in `rel_type` and `event_id` properties in their reply mixin.
   // ...
   "m.relates_to": {
     "rel_type": "m.thread",
-    "event_id": "ev1"
+    "event_id": "ev1",
+    "m.in_reply_to": {
+      "event_id": "$event_target",
+      "render_in": ["m.thread"]
+    }
   }
 }
 ```
