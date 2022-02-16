@@ -229,9 +229,17 @@ A `m.thread` event can only reference events that do not have a `rel_type`
 Given the above list of events, only `ev1` would be a valid target for an `m.thread`
 relation event.
 
+Invalid thread relations should be rejected with an HTTP `400` status code and a 
+`M_UNKNOWN` error code.
+Events received through federations should be always be accepted without checking
+the validity of the relations as it would break the extensibility of this proposal
+in a future MSC.
 
+This means that events with invalid thread relations can make their way into the
+network, either due by malicious activity or buggy implementation. If a client
+receives such events, they should hide them as soon as it can determine for certain
+that the associated event is not a valid target.
 
-#### 
 ### Client considerations
 
 #### Sending `m.thread` before fully implementing threads
