@@ -250,14 +250,6 @@ the DAG. We're going to build from this in the next sections.
  - Each batch of messages is older-in-time than the last (`batch1` is
    older-in-time than `batch0`, etc)
 
-
-![](https://user-images.githubusercontent.com/558581/137199056-f7e17437-0c98-4a06-9af1-eec8f026229c.png)
-
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#eyJjb2RlIjoiZmxvd2NoYXJ0IEJUXG4gICAgc3ViZ3JhcGggbGl2ZVxuICAgICAgICBCIC0tLS0tLS0tLS0tLS0-IEFcbiAgICBlbmRcbiAgICBcbiAgICBzdWJncmFwaCBiYXRjaDBcbiAgICAgICAgYmF0Y2gwLTIoKFwiMlwiKSkgLS0-IGJhdGNoMC0xKCgxKSkgLS0-IGJhdGNoMC0wKCgwKSlcbiAgICBlbmRcblxuICAgIHN1YmdyYXBoIGJhdGNoMVxuICAgICAgICBiYXRjaDEtMigoXCIyXCIpKSAtLT4gYmF0Y2gxLTEoKDEpKSAtLT4gYmF0Y2gxLTAoKDApKVxuICAgIGVuZFxuICAgIFxuICAgIHN1YmdyYXBoIGJhdGNoMlxuICAgICAgICBiYXRjaDItMigoXCIyXCIpKSAtLT4gYmF0Y2gyLTEoKDEpKSAtLT4gYmF0Y2gyLTAoKDApKVxuICAgIGVuZFxuXG4gICAgXG4gICAgYmF0Y2gwLTAgLS0tLS0tLT4gQVxuICAgIGJhdGNoMS0wIC0tPiBBXG4gICAgYmF0Y2gyLTAgLS0-IEFcbiAgICBcbiAgICAlJSBhbGlnbm1lbnQgbGlua3MgXG4gICAgYmF0Y2gwLTAgLS0tIGJhdGNoMS0yXG4gICAgYmF0Y2gxLTAgLS0tIGJhdGNoMi0yXG4gICAgJSUgbWFrZSB0aGUgbGlua3MgaW52aXNpYmxlIFxuICAgIGxpbmtTdHlsZSAxMCBzdHJva2Utd2lkdGg6MnB4LGZpbGw6bm9uZSxzdHJva2U6bm9uZTtcbiAgICBsaW5rU3R5bGUgMTEgc3Ryb2tlLXdpZHRoOjJweCxmaWxsOm5vbmUsc3Ryb2tlOm5vbmU7IiwibWVybWFpZCI6IntcbiAgXCJ0aGVtZVwiOiBcImRlZmF1bHRcIlxufSIsInVwZGF0ZUVkaXRvciI6ZmFsc2UsImF1dG9TeW5jIjp0cnVlLCJ1cGRhdGVEaWFncmFtIjpmYWxzZX0)
-
-<details>
-<summary>mermaid graph syntax</summary>
-
 ```mermaid
 flowchart BT
     subgraph live
@@ -289,8 +281,6 @@ flowchart BT
     linkStyle 11 stroke-width:2px,fill:none,stroke:none;
 ```
 
-</details>
-
 
 
 #### Adding "insertion" and "batch" events
@@ -307,13 +297,6 @@ navigate the DAG.
    the batch from there after a "marker" event points to it.
  - We use `m.room.batch` events to indicate which `m.room.insertion` event it
    connects to by its `m.next_batch_id` field.
-
-![](https://user-images.githubusercontent.com/558581/152883498-7acf0750-5742-47b3-8644-008f24f9396f.png)
-
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#pako:eNqNk92KwjAQhV8lBIQKdTW5WejCwsruE7h3xovYjDaYJpKkuiK--6atP7WtYi7a6eTM4Us6c8SpEYATvFJmn2bcejT9ZRqF5Yrl2vJthpTcQZ0q1xSNetYn-qoloEUdtEyW3KfZ5GZTf4-q13zOcBUwvFig0uy8S6OIYcrwcNjMkigi95lJFE3uM1I7sF4aPR9fQ8YWDcY-PtLiI0_5SC8f6fCRDh95ge_RHdIWI33KSHsZaYeRdhjpy3dYP9sXP-UO7gvRo55p9gIavfX8xa5Zo5I8q2zoaEdHmrrLcQYDxJVc6xy0D72vNw7dmVxLyvPcpORanfMNIJ9B22asw6g5JPVOOrlU55ly_qAaUoKqXamkPyQok0KAjlOjjE285dptuQ2qj7q2tJ1V9eQ9GFmzgdFeCp8ldPsXr6RSiTYa4nqrij9wjHOwOZciTP2x9GE4wObAcBJCASteKM8w06cgLbaCe_gR0huLkxVXDmLMC29mB53igFTARfQteWjT_Kw6_QOAPVu0)
-
-<details>
-<summary>mermaid graph syntax</summary>
 
 ```mermaid
 flowchart BT
@@ -346,8 +329,6 @@ flowchart BT
     style alignment1 visibility: hidden,color:transparent;
     linkStyle 17 stroke-width:2px,fill:none,stroke:none;
 ```
-
-</details>
 
 
 The structure of the insertion event looks like:
@@ -460,14 +441,6 @@ The structure of the "marker" event looks like:
 }
 ```
 
-![](https://user-images.githubusercontent.com/558581/152883769-cfd1bd30-3c18-47a3-8631-3d51af540d1d.png)
-
-
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#pako:eNqNlN9vwiAQx_8VQmJSk7oJb6uJycz2F2xv4gOW05JSMEDnjPF_H2390dpqdg_t9fje8QGOHnFqBOAEb5TZpxm3Hi2-mUbBXLneWr7LkJI_0IQqK7jNwZI5w43H8ApNgs3Ron53bI7em0zQonHuaq-5T7PprXrzPalfyyXDtROmqOaYX0ZpFDFMGR6P21ESRaQbmUbRtBuR2oH10ujl69VlbNViHOIjd3zkKR8Z5CM9PtLjI__ge7SH9I6RPmWkg4y0x0h7jPTfe9g8z-2CJi8Dp7Dg7txZQyPd-uhRa7Vb5vE0Q7DtwxzObOloT0fausuqRyPEldzqArQPN0fnDnWKXFOq9dyk5Jpd8ByQz-C-zKsOF9UhqX-kk2t13jfnD6olJagelUr6Q4IyKQToODXK2MRbrt2O26CaNblV2a86n7yFQtbkMNlL4bOE7n7jjVQq0UZD3AzV_gzHuABbcCnCP-NY1WE4wBbAcBJcARteKs8w06cgLXeCe_gU0huLkw1XDmLMS2--DjrFAamEi-hD8tDNxVl1-gNT2W_l)
-
-<details>
-<summary>mermaid graph syntax</summary>
-
 ```mermaid
 flowchart BT
     subgraph live
@@ -501,8 +474,6 @@ flowchart BT
     linkStyle 19 stroke-width:2px,fill:none,stroke:none;
 ```
 
-</details>
-
 
 
 #### Add in the historical state
@@ -520,13 +491,6 @@ In Synapse, historical state is marked as an `outlier`. As a result, the state
 will not be resolved into the current state of the room, and it won't be visible
 in the chat history. This allows us to insert multiple batches without having a
 bunch of `@mxid joined the room` noise between each batch.
-
-![](https://user-images.githubusercontent.com/558581/152884091-b4fe23e2-e019-4d05-af24-bbfb4f656b05.png)
-
-[Mermaid live editor playground link](https://mermaid-js.github.io/mermaid-live-editor/edit/#pako:eNqVlE1ugzAQha9izcqRkhR7yQIpUXuCdhdnYWBSUDGOjGlVRbl7DU5aftNkNh6Pn_0-DRpOkOgUIYRDob-STBpLtm-iJC6qOn438piRIv9EX2pCSfOBhkUCfCZgT1YuIrJt115EZONvYpn6ZPB2LG2SBX-v-_2qXXY7AW3iLBqP6HrKKRXABSwW3SqjlPUrAaVBv5KXFRqb63L39JsKse8wTvGxAR-7yccm-diIj4342B18cz3kA0Z-k5FPMvIRIx8x8rt66DfDppPV2j2jUMVotjoOqINTa6O1WvsiobGOFw7VG_ripsgTnNLK5qBVd-zYrB17wI7da8dn7fgDdvwfO294mTzvM-ztVlY43fXmpP-pyNyUdqdv3mbqu3fnYvpmr2lDHevqYAkKjZJ56v5Lp-aeAJuhQgGhS1M8yLqwAkR5dtL6mEqLL2lutYHwIIsKlyBrq1-_ywRCa2q8ip5z6SZGXVTnH4twitQ)
-
-<details>
-<summary>mermaid graph syntax</summary>
 
 ```mermaid
 flowchart BT
@@ -557,8 +521,6 @@ flowchart BT
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
 ```
-
-</details>
 
 
 
