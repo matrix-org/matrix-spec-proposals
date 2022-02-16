@@ -432,7 +432,7 @@ The following mapping will be used for identifiers in this MSC during developmen
 | Proposed final identifier | Purpose                                                    | Development identifier              |
 | ------------------------- | ---------------------------------------------------------- | ----------------------------------- |
 | `m.social.profile`        | Profile room                                               | `org.matrix.msc3639.social.profile` |
-| `m.social.group`          | group room                                                 | `org.matrix.msc3639.social.group`   |
-| `m.social.post`           | post event                                                 | `org.matrix.msc3639.social.post`    |
-| `m.social.image`          | image event                                                | `org.matrix.msc3639.social.image`   |
-| `m.social.tags`           | tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`     |
+| `m.social.group`          | Group room                                                 | `org.matrix.msc3639.social.group`   |
+| `m.social.post`           | Post event                                                 | `org.matrix.msc3639.social.post`    |
+| `m.social.image`          | Image event                                                | `org.matrix.msc3639.social.image`   |
+| `m.social.tags`           | Tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`     |
