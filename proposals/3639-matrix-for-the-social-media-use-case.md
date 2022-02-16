@@ -158,23 +158,23 @@ like:
     "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...</p><a href='...'>Read full post</a>",
     "m.social.post": [
       {
-        "msgtype": "m.text",
-        "body": "The first part of full text of story, located before image.",
+        "m.text": "The first part of full text of story, located before image.",
       },
+
       {
-        "msgtype": "m.image",
-        "url": "mxc://example.com/KUAQOesGECkQTgdtedkftISg",
-        "body": "Image 1.jpg",
-        "info": {
-          "mimetype": "image/jpg",
-          "size": 1153501,
-          "w": 963,
-          "h": 734,
-        }
-      },
+          "m.file": {
+            "mimetype": "image/jpeg",
+            "name": "_MG_0641.jpg",
+            "size": 10158773,
+            "url": "mxc://"
+        },
+        "m.image": {
+          "height": 3456,
+          "width": 5184
+        },
+      }
       {
-        "msgtype": "m.text",
-        "body": "The ending text of full story after image.",
+        "m.text": "The ending text of full story after image.",
       }
     ]
   }
@@ -230,35 +230,37 @@ like :
   "type": "m.social.image",
   "content": {
     "m.social.image": [
-      "m.caption": [
-          {
-              "m.text": "Tramline in Berlin"
-          },
-          {
-              "body": "Tramline in Berlin",
-              "mimetype": "text/html"
-          }
-      ],
-      "m.file": {
-          "mimetype": "image/jpeg",
-          "name": "_MG_0641.jpg",
-          "size": 10158773,
-          "url": "mxc://"
-      },
-      "m.image": {
-        "height": 3456,
-        "width": 5184
-      },
-      "m.text": "Tramline Berlin",
-      "m.thumbnail": [
-        {
-            "height": 533,
+      {
+        "m.caption": [
+            {
+                "m.text": "Tramline in Berlin"
+            },
+            {
+                "body": "Tramline in Berlin",
+                "mimetype": "text/html"
+            }
+        ],
+        "m.file": {
             "mimetype": "image/jpeg",
-            "size": 215496,
-            "url": "mxc://nordgedanken.dev/",
-            "width": 800
-        }
-      ],
+            "name": "_MG_0641.jpg",
+            "size": 10158773,
+            "url": "mxc://"
+        },
+        "m.image": {
+          "height": 3456,
+          "width": 5184
+        },
+        "m.text": "Tramline Berlin",
+        "m.thumbnail": [
+          {
+              "height": 533,
+              "mimetype": "image/jpeg",
+              "size": 215496,
+              "url": "mxc://nordgedanken.dev/",
+              "width": 800
+          }
+        ]
+      }
     ]
   },   
 }
