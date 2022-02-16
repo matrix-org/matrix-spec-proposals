@@ -4,7 +4,7 @@ Matrix is currently mainly used for chats, however, recent projects
 have shown that it is possible to use it for social media.
 
 This proposal is to formally specify this usage and ensure
-a compatibility between the different projects.
+a compatibility between the different social media projects.
 
 ## The idea
 
@@ -18,8 +18,8 @@ This MSC tries to cover those following social media cases:
 
 To cover those use case, we will separate our proposal in two part.
 
-* the room types: the container which will store the events
-* special events types: dedicated to the social media use cased
+* **Room types**: the container which will store the events.
+* **Special events types**: dedicated to the social media use cased
 which will be filtered depending on the client type/UI.
 (displaying a feed or a grid of pictures...).
 
@@ -28,46 +28,59 @@ the one which are relevant on the client purpose.
 
 ### Room
 
-We propose two room types.
+Social media generally allow the user to have a profile where he can
+post content visible to all his followers. Others allow also creating
+groups which allow the same things without being owned by a specific
+user. This is the two functions that we want to add.
 
-[Types according to MSC1772 - Matrix spaces](https://github.com/matrix-org/matrix-doc/pull/1772).
+Therefore, we propose two room types. Types are defined according to 
+[MSC1772 - Matrix spaces](https://github.com/matrix-org/matrix-doc/pull/1772).
 
-* m.social.feed
-* m.social.group
+* `m.social.profile`
+* `m.social.group`
 
 Those two rooms will act as a container for events of different
-types, which will be displayed only on a specific client.
+types, which will be displayed only on a specific client. The type is used to set the general purpose of the room.
 
-The type is used to set the general purpose of the room.
-
-#### Social media : 'Regular' or 'feed'
+#### Social media : The user profile
 
 ```
-m.social.feed
+m.social.profile
 ```
 
 **Usage:**
 
 Used by a user to share content with his friends or the world.
 
-* Owned by a single user
-* Writing in this room could be owner only or any member. Up to the user.
+* Owned by a single user.
+* The user can choose who can write on his profile.
 * Room visibility : public / private. Up to the user.
-* A user could have multiple of them
+* The user can have multiple profile (private / public ...)
 
-Small note about encryption:
+This MSC remains voluntarily open as user may want to configure the room as he wishes.
 
-Clients should notify the user that encryption shouldn't be enabled on 'big room'. (1)
-On a side note, end-to-end encrypted rooms with a very large number of 'followers'
-don't make a lot of change. 
+*Small note about encryption:*
 
-TODO (1) : Define what large room means and what is the recommended maximum number of
-participants in a E2EE room.
+Clients should notify the user that encryption shouldn't be enabled
+on 'big / public room'. On a side note, enabling end-to-end encrypted
+rooms with a very large number of participants don't have a lot of sence. 
 
 **UI considerations :**
 
 * Should make clear that this room is owned by a specific user.
-* UI type is up to the client (feed, pictures waterfall ...)
+* UI type is up to the client (feed (list view), pictures waterfall (grid) ...)
+
+##### Room visibility
+
+Most users will want to have a private profile. However, the question
+is now how can other user follow our profile ? It is always possible to
+invite them in the room but in the world of social media, this is kind
+of weird. This will be like sending a follow proposal.
+
+This could be solved with knocking. The question being how do we discover the room ?
+
+* room alias could be an answer (TODO: is it possible to get the room type ?)
+* An other way could be to use a kind of profile as space. i.e. a place where a user can publicly advertise room that are related to him. This idea could be the topic of a following MSC.
 
 #### Social media : Groups
 
@@ -93,7 +106,7 @@ We propose two events type to categorize the content of the event.
 
 **Why ?**
 
-As the room is displayed alongside the user' regular chats rooms we need
+As the room is displayed alongside the user's regular chats rooms we need
 to make it clear to the user that it's a specific room.
 Thus, we need to avoid that a user end up "spamming" his room thinking
 the room is a regular chat room.
@@ -107,24 +120,9 @@ be displayed on the user wall / in the group.
 
 **Types:**
 
-* m.social.post
-* m.social.pictures
+* `m.social.post`
+* `m.social.pictures`
 
-**Why defining a specific m.social.pictures event ?**
-
-When sending events, we want to be sure that the other users will
-be able to see our posts. Thus, it might be problematic with image
-only social media if we send a post with only text and then want to
-display it in a image only social media or is not able to render
-a fraction of the post (like a post with text, video, image).
-This becomes problematic when the user start making reference
-to previously sent post.
-
-> We define separate types to make sure the app displaying them
-is able to support all the content of this specific event type and
-make sure image only and regular feeds don't mix.
-
-See the later point for regular room message fallback. 
 
 #### Base event
 
@@ -198,6 +196,22 @@ Events adapted to client like Matrix Art to build pictures only
 social media.
 
 UI could be a grid or a list view of pictures.
+
+**Why defining a specific m.social.pictures event ?**
+
+When sending events, we want to be sure that the other users will
+be able to see our posts. Thus, it might be problematic with image
+only social media if we send a post with only text and then want to
+display it in a image only social media or is not able to render
+a fraction of the post (like a post with text, video, image).
+This becomes problematic when the user start making reference
+to previously sent post.
+
+> We define separate types to make sure the app displaying them
+is able to support all the content of this specific event type and
+make sure image only and regular feeds don't mix.
+
+See the later point for regular room message fallback. 
 
 **Required content:**
 
@@ -414,10 +428,10 @@ m.room.power_levels
 The following mapping will be used for identifiers in this MSC during development:
 
 
-Proposed final identifier | Purpose | Development identifier
-------------------------------- | ------- | ----
-`m.social.feed` | 'wall' room | `org.matrix.msc3639.social.feed`
-`m.social.group` | group room | `org.matrix.msc3639.social.group`
-`m.social.post` | post event | `org.matrix.msc3639.social.post`
-`m.social.image` | image event | `org.matrix.msc3639.social.image`
-`m.social.tags` | tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`
+| Proposed final identifier | Purpose                                                    | Development identifier              |
+| ------------------------- | ---------------------------------------------------------- | ----------------------------------- |
+| `m.social.profile`        | Profile room                                               | `org.matrix.msc3639.social.profile` |
+| `m.social.group`          | group room                                                 | `org.matrix.msc3639.social.group`   |
+| `m.social.post`           | post event                                                 | `org.matrix.msc3639.social.post`    |
+| `m.social.image`          | image event                                                | `org.matrix.msc3639.social.image`   |
+| `m.social.tags`           | tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`     |
