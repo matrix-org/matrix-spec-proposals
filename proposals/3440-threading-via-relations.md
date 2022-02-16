@@ -242,9 +242,11 @@ event body if a user is replying to an event that has an `m.thread` relation typ
 This is done so that clients that support threads can render the event in the most 
 relevant context.
 
-If a client does not include that relation type to the outgoing event, it will be 
-rendered in the room timeline with a rich reply that should open and highlight the 
-event in the thread context when clicked.
+If a client does not include that relation type to the outgoing event, it should
+be treated as not being part of the thread.  For example, if a client has a
+separate area for displaying threads, clients can render the event in the main
+room timeline as a rich reply that will open and highlight the event in the
+thread context when clicked.
 
 When replying to the following event, a client that does not support thread should 
 copy in `rel_type` and `event_id` properties in their reply mixin.
