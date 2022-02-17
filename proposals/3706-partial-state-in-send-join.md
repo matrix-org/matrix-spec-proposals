@@ -73,6 +73,8 @@ The following changes are made to the response:
    This is to be used by the joining server to send outgoing federation
    transactions while it synchronises the full state.
 
+   This field is **required** if the `partial_state` response field is true; it
+   is otherwise optional.
 
 ## Potential issues
 
