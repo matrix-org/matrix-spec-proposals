@@ -16,13 +16,23 @@ specification), the inviter might be warned that the user might not exist.
 Two new endpoints are added to the specification, one to the client-server API
 and one to the server-server API.
 
-### `GET /_matrix/client/v1/account_status`
+### `POST /_matrix/client/v1/account_status`
 
 This endpoint requires authentication via an access token.
 
-This endpoint takes a `user_id` query parameter indicating which user account(s)
-to look up the status of. This parameter may appear multiple times in the
-request if the client wishes to look up the statuses of multiple users at once.
+The body of this endpoint includes a `user_ids` field which is an array listing
+all of the users account(s) to look up the status of:
+
+```json
+{
+    "user_ids": [
+        "@user1:example.com",
+        "@user2:example.com",
+        "@user3:example.com",
+        "@user4:otherexample.com"
+    ]
+}
+```
 
 If no error arises, the endpoint responds with a body using the following
 format:
@@ -46,8 +56,8 @@ format:
 ```
 
 The `account_statuses` object in the response lists all statuses that could
-successfully be retrieved. Each key in this object maps to one of the `user_id`
-parameter(s) in the request. For each account:
+successfully be retrieved. Each key in this object maps to one of the user IDs
+listed in the request. For each account:
 
 * `exists` is a boolean that indicates whether an account exists with this user
   ID.
@@ -59,8 +69,7 @@ could be retrieved for any reason (e.g. federation issues, missing federation
 endpoint, missing user in the remote server's response, etc).
 
 The combination of the lists of user IDs from `user_statuses` and `failures`
-must match the full list of user IDs provided in the request via `user_id`
-parameters.
+must match the full list of user IDs provided in the request.
 
 If one or more account(s) is not local to the homeserver this request is
 performed on, the homeserver must attempt to retrieve account status using the
@@ -68,19 +77,19 @@ federation endpoint described below.
 
 Below is how this endpoint behaves in case of errors:
 
-* If no `user_id` parameter is provided, the endpoint responds with a 400 status
+* If no `user_ids` field is provided, the endpoint responds with a 400 status
   code and a `M_MISSING_PARAM` error code.
-* If one or more of the `user_id` parameter(s) provided cannot be parsed as a
-  valid Matrix user ID, the endpoint responds with a 400 status code and a
-  `M_INVALID_PARAM` error code.
+* If one or more of the user ID(s) provided cannot be parsed as a valid Matrix
+  user ID, the endpoint responds with a 400 status code and a `M_INVALID_PARAM`
+  error code.
 
-### `GET /_matrix/federation/v1/query/account_status`
+### `POST /_matrix/federation/v1/account_status`
 
 This endpoint behaves in an identical way to the client-side endpoint described
 above, with the additional following error case:
 
-* If one or more of the `user_id` parameter(s) does not match an account that
-  belong to the homeserver receiving the request, the endpoint responds with a
+* If one or more of the user ID(s) provided does not match an account that
+  belongs to the homeserver receiving the request, the endpoint responds with a
   400 status code and a `M_INVALID_PARAM` error code.
 
 ### `m.account_status` capability
@@ -89,6 +98,13 @@ Some server administrators might not want to disclose too much information about
 their users. To support this use case, homeservers must expose a
 `m.account_status` capability to tell clients whether they support retrieving
 account status via the client-side endpoint described above.
+
+
+## Alternatives
+
+A previous version of this proposal used `GET` requests instead of `POST`.
+However, while `GET` is semantically more correct here, the methods have been
+changed to `POST` so user IDs don't leak into reverse proxy logs.
 
 ## Security considerations
 
@@ -104,10 +120,10 @@ Until this proposal is stabilised in a new version of the Matrix specification,
 implementations should use the following paths for the endpoints described in
 this document:
 
-| Stable path                                   | Unstable path                                                          |
-|-----------------------------------------------|------------------------------------------------------------------------|
-| `/_matrix/client/v1/account_status`           | `/_matrix/client/unstable/org.matrix.msc3720/account_status`           |
-| `/_matrix/federation/v1/query/account_status` | `/_matrix/federation/unstable/org.matrix.msc3720/query/account_status` |
+| Stable path                             | Unstable path                                                    |
+|-----------------------------------------|------------------------------------------------------------------|
+| `/_matrix/client/v1/account_status`     | `/_matrix/client/unstable/org.matrix.msc3720/account_status`     |
+| `/_matrix/federation/v1/account_status` | `/_matrix/federation/unstable/org.matrix.msc3720/account_status` |
 
 Additionally, implementations should use the unstable identifier
 `org.matrix.msc3720.account_status` instead of `m.account_status` for the
