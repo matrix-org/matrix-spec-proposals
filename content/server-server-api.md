@@ -237,7 +237,7 @@ Step 1 sign JSON:
     "uri": "/target",
     "origin": "origin.hs.example.com",
     "destination": "destination.hs.example.com",
-    "content": <request body>,
+    "content": <JSON-parsed request body>,
     "signatures": {
         "origin.hs.example.com": {
             "ed25519:key1": "ABCDEF..."
@@ -274,6 +274,7 @@ def authorization_headers(origin_name, origin_signing_key,
     }
 
     if content is not None:
+        # Assuming content is already parsed as JSON
         request_json["content"] = content
 
     signed_json = sign_json(request_json, origin_name, origin_signing_key)
