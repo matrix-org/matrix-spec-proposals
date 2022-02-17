@@ -5,7 +5,12 @@ on:
       - main
     tags:
       - v*
+    # don't bother with this workflow if only proposals are changed
+    paths-ignore:
+      - proposals
   pull_request:
+    paths-ignore:
+      - proposals
   workflow_dispatch:
 
 jobs:
