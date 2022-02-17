@@ -26,7 +26,7 @@ A new relation type m.thread expresses that an event belongs to a thread.
 ```
 Where $thread_root is the event ID of the root message in the thread.
 
-When a thread head is aggregated (as in MSC2675), it returns a summary of the thread: 
+When a thread root is aggregated (as in MSC2675), it returns a summary of the thread: 
 the latest message, a list of participants and the total count of messages. 
 I.e. in places which include bundled relations (per 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), the thread root 
