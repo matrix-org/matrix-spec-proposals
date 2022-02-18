@@ -70,7 +70,7 @@ may very well choose `restricted` or even `private`.
 Whenever the server (or client) is checking against the join rules it would now check the `join_rules`
 array if present. If not present, and only when not present, the `join_rule` string is checked instead.
 
-The specifics for how a `resticted` join rule (and its `allow` partner key) are handled are below.
+The specifics for how a `restricted` join rule (and its `allow` partner key) are handled are below.
 
 For clarity, the server could implement a check similar to:
 
@@ -180,6 +180,13 @@ this proposal doesn't have an interest in patching bad decisions. An example wou
 
 This could be condensed into a singular `restricted` rule, but the room admin is legal in splitting
 the rule out.
+
+This proposal also does not attempt to fix how the room directory, space hierarchy, etc all work
+to return a single `join_rule`. Given the `join_rule` key is maintained in the event content, and
+that the field should be set to a semantically relevant value, it is assumed that servers can/should
+continue using the single `join_rule` key instead of needing to populate the `PublicRoomsChunk` with
+the array of possible join rules. When servers are calculating stats and such on the room, they should
+also be okay to continue using the single field (unless it is otherwise easier to check the array).
 
 Finally, this proposal favours backwards compatibility to its own detriment. This is intentional to
 give clients (and other areas of the protocol/ecosystem) time to consider what their project might
