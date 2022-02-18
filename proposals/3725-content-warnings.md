@@ -43,7 +43,7 @@ Content warnings are represented by a new event content type
 }
 ```
 
-The `type` field is required, and represents the general, machine-readable
+The `type` field is optional, and represents the general, machine-readable
 reason for the content warning. The following types are provided:
 
 - `m.spoiler` for spoilers
@@ -51,7 +51,7 @@ reason for the content warning. The following types are provided:
 - `m.graphic` for graphic or disturbing content
 - `m.medical` for e.g. epilepsy warnings
 
-The `description` field is optional, and represents a more specific,
+The `description` field is also optional, and represents a more specific,
 human-readable description of the content warning.
 
 ## Potential issues
