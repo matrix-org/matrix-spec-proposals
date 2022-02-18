@@ -1,1 +1,0 @@
-Remove a number of fields which were incorrectly shown to form part of the `unsigned` data of a Federation PDU.

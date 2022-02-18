@@ -454,7 +454,7 @@ given. It also contains other keys dependent on the auth type being
 attempted. For example, if the client is attempting to complete auth
 type `example.type.foo`, it might submit something like this:
 
-    POST /_matrix/client/r0/endpoint HTTP/1.1
+    POST /_matrix/client/v3/endpoint HTTP/1.1
     Content-Type: application/json
 
 ```json
@@ -618,6 +618,7 @@ This specification defines the following auth types:
 -   `m.login.email.identity`
 -   `m.login.msisdn`
 -   `m.login.dummy`
+-   `m.login.registration_token`
 
 ##### Password-based
 
@@ -788,6 +789,49 @@ just the type and session, if provided:
   "session": "<session ID>"
 }
 ```
+
+##### Token-authenticated registration
+
+{{% added-in v="1.2" %}}
+
+| Type                          | Description                                                       |
+|-------------------------------|-------------------------------------------------------------------|
+| `m.login.registration_token`  | Registers an account with a pre-shared token for authentication   |
+
+{{% boxes/note %}}
+The `m.login.registration_token` authentication type is only valid on the
+[`/register`](#post_matrixclientv3register) endpoint.
+{{% /boxes/note %}}
+
+This authentication type provides homeservers the ability to allow registrations
+to a limited set of people instead of either offering completely open registrations
+or completely closed registration (where the homeserver administrators create
+and distribute accounts).
+
+The token required for this authentication type is shared out of band from
+Matrix and is an opaque string with maximum length of 64 characters in the
+range `[A-Za-z0-9._~-]`. The server can keep any number of tokens for any
+length of time/validity. Such cases might be a token limited to 100 uses or
+for the next 2 hours - after the tokens expire, they can no longer be used
+to create accounts.
+
+To use this authentication type, clients should submit an auth dict with just
+the type, token, and session:
+
+```json
+{
+  "type": "m.login.registration_token",
+  "token": "fBVFdqVE",
+  "session": "<session ID>"
+}
+```
+
+To determine if a token is valid before attempting to use it, the client can
+use the `/validity` API defined below. The API doesn't guarantee that a token
+will be valid when used, but does avoid cases where the user finds out late
+in the registration process that their token has expired.
+
+{{% http-api spec="client-server" api="registration_tokens" %}}
 
 #### Fallback
 
@@ -1022,6 +1066,43 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
+#### Appservice Login
+
+{{% added-in v="1.2" %}}
+
+An appservice can log in by providing a valid appservice token and a user within the appservice's
+namespace.
+
+{{% boxes/note %}}
+Appservices do not need to log in as individual users in all cases, as they
+can perform [Identity Assertion](/application-service-api#identity-assertion)
+using the appservice token. However, if the appservice needs a scoped token
+for a single user then they can use this API instead.
+{{% /boxes/note %}}
+
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration)
+(see [Client Authentication](#client-authentication) on how to provide the token).
+
+To use this login type, clients should submit a `/login` request as follows:
+
+```json
+{
+  "type": "m.login.application_service",
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+}
+```
+
+If the access token is not valid, does not correspond to an appservice
+or the user has not previously been registered then the homeserver will
+respond with an errcode of `M_FORBIDDEN`.
+
+If the access token does correspond to an appservice, but the user id does
+not lie within its namespace then the homeserver will respond with an
+errcode of `M_EXCLUSIVE`.
+
 {{% http-api spec="client-server" api="login" %}}
 
 {{% http-api spec="client-server" api="logout" %}}
@@ -1212,6 +1293,79 @@ using an `unstable` version.
 When this capability is not listed, clients should use `"1"` as the
 default and only stable `available` room version.
 
+### `m.set_displayname` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to change their own display name via profile endpoints. Cases for
+disabling might include users mapped from external identity/directory
+services, such as LDAP.
+
+Note that this is well paired with the `m.set_avatar_url` capability.
+
+When not listed, clients should assume the user is able to change their
+display name.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.set_displayname": {
+      "enabled": false
+    }
+  }
+}
+```
+
+### `m.set_avatar_url` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to change their own avatar via profile endpoints. Cases for
+disabling might include users mapped from external identity/directory
+services, such as LDAP.
+
+Note that this is well paired with the `m.set_displayname` capability.
+
+When not listed, clients should assume the user is able to change their
+avatar.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.set_avatar_url": {
+      "enabled": false
+    }
+  }
+}
+```
+
+### `m.3pid_changes` capability
+
+This capability has a single flag, `enabled`, to denote whether the user
+is able to add, remove, or change 3PID associations on their account. Note
+that this only affects a user's ability to use the
+[Admin Contact Information](#adding-account-administrative-contact-information)
+API, not endpoints exposed by an Identity Service. Cases for disabling
+might include users mapped from external identity/directory  services,
+such as LDAP.
+
+When not listed, clients should assume the user is able to modify their 3PID
+associations.
+
+An example of the capability API's response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.3pid_changes": {
+      "enabled": false
+    }
+  }
+}
+```
+
 ## Filtering
 
 Filters can be created on the server and can be passed as a parameter to
@@ -1286,32 +1440,6 @@ any given point in time:
 
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]
 
-{{% boxes/warning %}}
-The format of events can change depending on room version. Check the
-[room version specification](/rooms) for specific
-details on what to expect for event formats. Examples contained within
-the client-server specification are expected to be compatible with all
-specified room versions, however some differences may still apply.
-
-For this version of the specification, clients only need to worry about
-the event ID format being different depending on room version. Clients
-should not be parsing the event ID, and instead be treating it as an
-opaque string. No changes should be required to support the currently
-available room versions.
-{{% /boxes/warning %}}
-
-{{% boxes/warning %}}
-Event bodies are considered untrusted data. This means that any application using
-Matrix must validate that the event body is of the expected shape/schema
-before using the contents verbatim.
-
-**It is not safe to assume that an event body will have all the expected
-fields of the expected types.**
-
-See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
-detail on why this assumption is unsafe.
-{{% /boxes/warning %}}
-
 ### Types of room events
 
 Room events are split into two categories:
@@ -1342,31 +1470,97 @@ sent by clients and other clients would receive it through Matrix,
 assuming the client has access to the `com.example` namespace.
 {{% /boxes/note %}}
 
-Note that the structure of these events may be different than those in
-the server-server API.
+### Room event format
 
-#### Event fields
+The "federation" format of a room event, which is used internally by homeservers
+and between homeservers via the Server-Server API, depends on the ["room
+version"](/rooms) in use by the room. See, for example, the definitions
+in [room version 1](/rooms/v1#event-format) and [room version
+3](/rooms/v3#event-format).
 
-{{% event-fields event_type="event" %}}
+However, it is unusual that a Matrix client would encounter this event
+format. Instead, homeservers are responsible for converting events into the
+format shown below so that they can be easily parsed by clients.
 
-#### Room event fields
+{{% boxes/warning %}}
+Event bodies are considered untrusted data. This means that any application using
+Matrix must validate that the event body is of the expected shape/schema
+before using the contents verbatim.
 
-{{% event-fields event_type="room_event" %}}
+**It is not safe to assume that an event body will have all the expected
+fields of the expected types.**
 
-#### State event fields
+See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
+detail on why this assumption is unsafe.
+{{% /boxes/warning %}}
 
-In addition to the fields of a Room Event, State Events have the
-following field:
+{{% definition path="api/client-server/definitions/client_event" %}}
 
-| Key          | Type         | Description                                                                                                  |
-|--------------|--------------|--------------------------------------------------------------------------------------------------------------|
-| state_key    | string       | **Required.** A unique key which defines the overwriting semantics for this piece of room state. This value is often a zero-length string. The presence of this key makes this event a State Event. State keys starting with an `@` are reserved for referencing user IDs, such as room members. With the exception of a few events, state events set with a given user's ID as the state key MUST only be set by that user.         |
+### Stripped state
+
+Stripped state events are simplified state events to help a potential
+joiner identify the room. These state events can only have the `sender`,
+`type`, `state_key` and `content` keys present.
+
+These stripped state events typically appear on invites, knocks, and in
+other places where a user *could* join the room under the conditions
+available (such as a [`restricted` room](#restricted-rooms)).
+
+Clients should only use stripped state events so long as they don't have
+access to the proper state of the room. Once the state of the room is
+available, all stripped state should be discarded. In cases where the
+client has an archived state of the room (such as after being kicked)
+and the client is receiving stripped state for the room, such as from an
+invite or knock, then the stripped state should take precedence until
+fresh state can be acquired from a join.
+
+The following state events should be represented as stripped state when
+possible:
+
+* [`m.room.create`](#mroomcreate)
+* [`m.room.name`](#mroomname)
+* [`m.room.avatar`](#mroomavatar)
+* [`m.room.topic`](#mroomtopic)
+* [`m.room.join_rules`](#mroomjoin_rules)
+* [`m.room.canonical_alias`](#mroomcanonical_alias)
+* [`m.room.encryption`](#mroomencryption)
+
+{{% boxes/note %}}
+Clients should inspect the list of stripped state events and not assume any
+particular event is present. The server might include events not described
+here as well.
+{{% /boxes/note %}}
+
+{{% boxes/rationale %}}
+The name, avatar, topic, and aliases are presented as aesthetic information
+about the room, allowing users to make decisions about whether or not they
+want to join the room.
+
+The join rules are given to help the client determine *why* it is able to
+potentially join. For example, annotating the room decoration with iconography
+consistent with the respective join rule for the room.
+
+The create event can help identify what kind of room is being joined, as it
+may be a Space or other kind of room. The client might choose to render the
+invite in a different area of the application as a result.
+
+Similar to join rules, the encryption information is given to help clients
+decorate the room with appropriate iconography or messaging.
+{{% /boxes/rationale %}}
+
+{{% boxes/warning %}}
+Although stripped state is usually generated and provided by the server, it
+is still possible to be incorrect on the receiving end. The stripped state
+events are not signed and could theoretically be modified, or outdated due to
+updates not being sent.
+{{% /boxes/warning %}}
+
+{{% event-fields event_type="stripped_state" %}}
 
 ### Size limits
 
 The complete event MUST NOT be larger than 65536 bytes, when formatted
-as a [PDU for the Server-Server
-protocol](/server-server-api/#pdus), including any
+with the [federation event format](#room-event-format), including any
 signatures, and encoded as [Canonical
 JSON](/appendices#canonical-json).
 
@@ -1464,7 +1658,7 @@ of the message timeline. The client can fill these gaps using the
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages) API.
 
 Continuing our example, suppose we make a third `/sync` request asking for
-events since the last sync, by passing the `next_batch` token `x-y-z` as 
+events since the last sync, by passing the `next_batch` token `x-y-z` as
 the `since` parameter. The server knows about four new events, `E7`, `E8`,
 `E9` and `E10`, but decides this is too many to report at once. Instead,
 the server sends a `limited` response containing `E8`, `E9` and `E10`but
@@ -1476,14 +1670,14 @@ omitting `E7`. This forms a gap, which we can see in the visualisation:
     [E0]->[E1]->[E2]->[E3]->[E4]->[E5]->[E6]->[E7]->[E8]->[E9]->[E10]
                                             ^     ^                  ^
                                             |     |                  |
-                                 since: 'x-y-z'   |                  |                                                
+                                 since: 'x-y-z'   |                  |
                                        prev_batch: 'd-e-f'       next_batch: 'u-v-w'
 ```
 
 The limited response includes a state delta which describes how the state
 of the room changes over the gap. This delta explains how to build the state
-prior to returned timeline (i.e. at `E7`) from the state the client knows 
-(i.e. at `E6`). To close the gap, the client should make a request to 
+prior to returned timeline (i.e. at `E7`) from the state the client knows
+(i.e. at `E6`). To close the gap, the client should make a request to
 [`/rooms/<room_id>/messages`](/client-server-api/#get_matrixclientv3roomsroomidmessages)
 with the query parameters `from=x-y-z` and `to=d-e-f`.
 
@@ -1639,6 +1833,27 @@ the topic to be removed from the room.
 
 ## Rooms
 
+### Types
+
+{{% added-in v="1.2" %}}
+
+Optionally, rooms can have types to denote their intended function. A room
+without a type does not necessarily mean it has a specific default function,
+though commonly these rooms will be for conversational purposes.
+
+Room types are best applied when a client might need to differentiate between
+two different rooms, such as conversation-holding and data-holding. If a room
+has a type, it is specified in the `type` key of an [`m.room.create`](#mroomcreate)
+event. To specify a room's type, provide it as part of `creation_content` on
+the create room request.
+
+In this specification the following room types are specified:
+
+* [`m.space`](#spaces)
+
+Unspecified room types are permitted through the use of
+[Namespaced Identifiers](/appendices/#common-namespaced-identifier-grammar).
+
 ### Creation
 
 The homeserver will create an `m.room.create` event when a room is
@@ -1748,6 +1963,12 @@ This room can only be joined if you were invited, and allows anyone to
 request an invite to the room. Note that this join rule is only available
 in room versions [which support knocking](/rooms/#feature-matrix).
 
+{{% added-in v="1.2" %}} `restricted`
+This room can be joined if you were invited or if you are a member of another
+room listed in the join rules. If the server cannot verify membership for any
+of the listed rooms then you can only join with an invite. Note that this rule
+is only expected to work in room versions [which support it](/rooms/#feature-matrix).
+
 The allowable state transitions of membership are:
 
 ![membership-flow-diagram](/diagrams/membership.png)
@@ -1796,6 +2017,51 @@ to the client to handle. Clients can expect to see the join event if the
 server chose to auto-accept.
 
 {{% http-api spec="client-server" api="knocking" %}}
+
+##### Restricted rooms
+
+{{% added-in v="1.2" %}}
+
+Restricted rooms are rooms with a `join_rule` of `restricted`. These rooms
+are accompanied by "allow conditions" as described in the
+[`m.room.join_rules`](#mroomjoin_rules) state event.
+
+If the user has an invite to the room then the restrictions will not affect
+them. They should be able to join by simply accepting the invite.
+
+When joining without an invite, the server MUST verify that the requesting
+user meets at least one of the conditions. If no conditions can be verified
+or no conditions are satisfied, the user will not be able to join. When the
+join is happening over federation, the remote server will check the conditions
+before accepting the join. See the [Server-Server Spec](/server-server-api/#restricted-rooms)
+for more information.
+
+If the room is `restricted` but no valid conditions are presented then the
+room is effectively invite only.
+
+The user does not need to maintain the conditions in order to stay a member
+of the room: the conditions are only checked/evaluated during the join process.
+
+###### Conditions
+
+Currently there is only one condition available: `m.room_membership`. This
+condition requires the user trying to join the room to be a *joined* member
+of another room (specifically, the `room_id` accompanying the condition). For
+example, if `!restricted:example.org` wanted to allow joined members of
+`!other:example.org` to join, `!restricted:example.org` would have the following
+`content` for [`m.room.join_rules`](#mroomjoin_rules):
+
+```json
+{
+  "join_rule": "restricted",
+  "allow": [
+    {
+      "room_id": "!other:example.org",
+      "type": "m.room_membership"
+    }
+  ]
+}
+```
 
 #### Leaving rooms
 
@@ -1975,6 +2241,7 @@ that profile.
 | [Server ACLs](#server-access-control-lists-acls-for-rooms) | Optional  | Optional | Optional | Optional | Optional |
 | [Server Notices](#server-notices)                          | Optional  | Optional | Optional | Optional | Optional |
 | [Moderation policies](#moderation-policy-lists)            | Optional  | Optional | Optional | Optional | Optional |
+| [Spaces](#spaces)                                          | Optional  | Optional | Optional | Optional | Optional |
 
 *Please see each module for more details on what clients need to
 implement.*
@@ -2023,4 +2290,37 @@ operations and run in a resource constrained environment. Like embedded
 applications, they are not intended to be fully-fledged communication
 systems.
 
-{{% cs-modules %}}
+{{% cs-module name="instant_messaging" %}}
+{{% cs-module name="voip_events" %}}
+{{% cs-module name="typing_notifications" %}}
+{{% cs-module name="receipts" %}}
+{{% cs-module name="read_markers" %}}
+{{% cs-module name="presence" %}}
+{{% cs-module name="content_repo" %}}
+{{% cs-module name="send_to_device" %}}
+{{% cs-module name="device_management" %}}
+{{% cs-module name="end_to_end_encryption" %}}
+{{% cs-module name="secrets" %}}
+{{% cs-module name="history_visibility" %}}
+{{% cs-module name="push" %}}
+{{% cs-module name="third_party_invites" %}}
+{{% cs-module name="search" %}}
+{{% cs-module name="guest_access" %}}
+{{% cs-module name="room_previews" %}}
+{{% cs-module name="tags" %}}
+{{% cs-module name="account_data" %}}
+{{% cs-module name="admin" %}}
+{{% cs-module name="event_context" %}}
+{{% cs-module name="sso_login" %}}
+{{% cs-module name="dm" %}}
+{{% cs-module name="ignore_users" %}}
+{{% cs-module name="stickers" %}}
+{{% cs-module name="report_content" %}}
+{{% cs-module name="third_party_networks" %}}
+{{% cs-module name="openid" %}}
+{{% cs-module name="server_acls" %}}
+{{% cs-module name="mentions" %}}
+{{% cs-module name="room_upgrades" %}}
+{{% cs-module name="server_notices" %}}
+{{% cs-module name="moderation_policies" %}}
+{{% cs-module name="spaces" %}}

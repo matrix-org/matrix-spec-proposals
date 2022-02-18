@@ -34,7 +34,7 @@ properties:
         on the room version - check the [room version specification](/rooms) for precise event formats.
       schema:
         type: object
-        properties: []
+        properties: {}
       example:
         $ref: "../examples/minimal_pdu.json"
   state:
@@ -52,7 +52,17 @@ properties:
         on the room version - check the [room version specification](/rooms) for precise event formats.
       schema:
         type: object
-        properties: []
+        properties: {}
       example:
         $ref: "../examples/minimal_pdu.json"
+  event:
+    type: object
+    title: SignedMembershipEvent
+    x-addedInMatrixVersion: "1.2"
+    description: |-
+      Required if the room version [supports restricted join rules](/rooms/#feature-matrix). The signed
+      copy of the membership event sent to other servers by the resident server, including the resident
+      server's signature.
+    example:
+      $ref: "../examples/minimal_pdu.json"
 required: ["auth_chain", "state", "origin"]

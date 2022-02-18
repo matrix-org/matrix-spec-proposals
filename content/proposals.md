@@ -10,7 +10,7 @@ Specification, please take note of the following guidelines.
 Most changes to the Specification require a formal proposal. Bug fixes,
 typos, and clarifications to existing behaviour do not need proposals -
 see the [contributing
-guide](https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst)
+guide](https://github.com/matrix-org/matrix-doc/blob/main/CONTRIBUTING.rst)
 for more information on what does and does not need a proposal.
 
 The proposal process involves some technical writing, having it reviewed
@@ -76,7 +76,7 @@ values in their proposed changes to the Matrix protocol:
 -   Proof rather than conjecture
 
 Please [see
-MSC1779](https://github.com/matrix-org/matrix-doc/blob/master/proposals/1779-open-governance.md)
+MSC1779](https://github.com/matrix-org/matrix-doc/blob/main/proposals/1779-open-governance.md)
 for full details of the project's Guiding Principles.
 
 ## Technical notes
@@ -180,7 +180,7 @@ is as follows:
         intention is to iterate as quickly as possible to get to a good
         design.
     -   However, a [template with suggested
-        headers](https://github.com/matrix-org/matrix-doc/blob/master/proposals/0000-proposal-template.md)
+        headers](https://github.com/matrix-org/matrix-doc/blob/main/proposals/0000-proposal-template.md)
         is available to get you started if necessary.
     -   Take care in creating your proposal. Specify your intended
         changes, and give reasoning to back them up. Changes without
@@ -199,7 +199,7 @@ is as follows:
         context for the proposal.
     -   Additionally, please be sure to sign off your proposal PR as per
         the guidelines listed on
-        [CONTRIBUTING.rst](https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst).
+        [CONTRIBUTING.rst](https://github.com/matrix-org/matrix-doc/blob/main/CONTRIBUTING.rst).
 -   Gather feedback as widely as possible.
     -   The aim is to get maximum consensus towards an optimal solution.
         Sometimes trade-offs are required to meet this goal. Decisions
@@ -265,7 +265,7 @@ is as follows:
     doesn't assume old information that wasn't merged into the spec.
     -   Similar to the proposal PR, please sign off the spec PR as per
         the guidelines on
-        [CONTRIBUTING.rst](https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst).
+        [CONTRIBUTING.rst](https://github.com/matrix-org/matrix-doc/blob/main/CONTRIBUTING.rst).
 -   Your PR will then be reviewed and hopefully merged on the grounds it
     is implemented sufficiently. If so, then give yourself a pat on the
     back knowing you've contributed to the Matrix protocol for the

@@ -1,0 +1,12 @@
+{
+  "$ref": "m.room.member.yaml",
+  "content": {
+    "membership": "join",
+    "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",
+    "displayname": "Alice Margatroid",
+    "join_authorised_via_users_server": "@bob:other.example.org"
+  },
+  "unsigned": {
+    "age": 1234
+  }
+}

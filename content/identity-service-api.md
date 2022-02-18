@@ -319,7 +319,7 @@ tables to mine the addresses. Similarly, clients which support the
 `none` algorithm should consider at least warning the user of the risks
 in sending identifiers in plain text to the identity server.
 
-Addresses are still potentially reversable using a calculated rainbow
+Addresses are still potentially reversible using a calculated rainbow
 table given some identifiers, such as phone numbers, common email
 address domains, and leaked addresses are easily calculated. For
 example, phone numbers can have roughly 12 digits to them, making them

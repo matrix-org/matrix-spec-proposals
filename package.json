@@ -18,10 +18,10 @@
     "url": "https://github.com/matrix-org/matrix-doc"
   },
   "homepage": "https://github.com/matrix-org/matrix-doc#readme",
-  "dependencies": {},
   "devDependencies": {
-    "autoprefixer": "^9.8.6",
-    "node-fetch": "^2.6.1",
-    "postcss-cli": "^7.1.2"
+    "autoprefixer": "^10.4.2",
+    "node-fetch": "^2.6.7",
+    "postcss-cli": "^9.1.0",
+    "postcss": "^8.4.6"
   }
 }

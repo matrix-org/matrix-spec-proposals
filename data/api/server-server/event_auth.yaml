@@ -57,18 +57,14 @@ paths:
               auth_chain:
                 type: array
                 description: |-
-                  The full set of authorization events that make up the state of
-                  the room, and their authorization events, recursively. Note that
-                  events have a different format depending on the room version -
-                  check the [room version specification](/rooms) for precise event formats.
+                  The [PDUs](/server-server-api/#pdus) forming the auth chain
+                  of the given event. The event format varies depending on the
+                  room version - check the [room version specification](/rooms)
+                  for precise event formats.
                 items:
                   type: object
                   title: PDU
-                  description: |-
-                    The [PDUs](/server-server-api/#pdus) contained in the auth chain. The event format
-                    varies depending on the room version - check the [room version specification](/rooms)
-                    for precise event formats.
-                  properties: []
+                  properties: {}
                   example:
                     $ref: "examples/minimal_pdu.json"
             required: ['auth_chain']

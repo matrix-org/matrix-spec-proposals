@@ -12,10 +12,6 @@ theme = ["docsy"]
 
 disableKinds = ["taxonomy", "taxonomyTerm"]
 
-# Change the default for assets, because the old Python toolchain uses "assets" for build output.
-# When the old toolchain is retired we can switch back to the default here.
-assetDir = "assets-hugo"
-
 [languages]
 [languages.en]
 title = "Matrix Specification"
@@ -48,8 +44,8 @@ current_version_url = "https://spec.matrix.org/latest"
 # The following is used when status = "stable", and is displayed in various UI elements on a released version
 # of the spec. CI will set these values here automatically when a release git tag (i.e `v1.5`) is created.
 #major = "1"
-#minor = "1"
-#release_date = "November 09, 2021"
+#minor = "2"
+#release_date = "February 02, 2022"
 
 # User interface configuration
 [params.ui]

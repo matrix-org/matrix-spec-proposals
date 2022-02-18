@@ -11,19 +11,37 @@
 
 {{ $this_object := partial "json-schema/resolve-allof" . }}
 
-{{ if eq $this_object.type "object" }}
+{{ $example := $this_object.example }}
 
-    {{ if not $this_object.example }}
-        {{ $this_object := merge (dict "example" dict ) $this_object }}
+{{ if eq $this_object.type "object" }}
+    {{ if not $example }}
+        {{ $example = dict }}
     {{ end }}
 
     {{ range $key, $property := $this_object.properties}}
         {{ $this_property_example := partial "json-schema/resolve-example" $property }}
         {{ if $this_property_example }}
-            {{ $this_object = merge (dict "example" (dict $key $this_property_example)) $this_object }}
+            {{ $example = merge (dict $key $this_property_example) $example }}
+        {{ end }}
+    {{ end }}
+
+{{ else if eq $this_object.type "array" }}
+
+    {{ if not $example }}
+        {{/* the "items" within an array can either be an object (where we have a
+             list of items which match the schema), or a list (for tuple
+             validation, where each item has a different schema).
+
+             TODO: support tuple validation here.
+        */}}
+        {{ if reflect.IsMap $this_object.items }}
+            {{ $items_example := partial "json-schema/resolve-example" $this_object.items }}
+            {{ $example = slice $items_example }}
+        {{ else }}
+            {{ $example = slice }}
         {{ end }}
     {{ end }}
 
 {{ end }}
 
-{{ return $this_object.example }}
+{{ return $example }}

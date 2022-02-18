@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 310
 ---
 
 ### Room Upgrades

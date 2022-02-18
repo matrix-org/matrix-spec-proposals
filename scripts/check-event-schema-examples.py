@@ -55,7 +55,7 @@ def load_file(path):
         else:
             # We have to assume it's YAML because some of the YAML examples
             # do not have file extensions.
-            return yaml.load(f)
+            return yaml.safe_load(f)
 
 
 def resolve_references(path, schema):
@@ -84,7 +84,7 @@ def check_example_file(examplepath, schemapath):
         example = resolve_references(examplepath, json.load(f))
 
     with open(schemapath) as f:
-        schema = yaml.load(f)
+        schema = yaml.safe_load(f)
 
     fileurl = "file://" + os.path.abspath(schemapath)
     schema["id"] = fileurl

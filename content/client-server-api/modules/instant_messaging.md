@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 10
 ---
 
 ### Instant Messaging
@@ -34,7 +33,7 @@ Usage of this event is discouraged for several reasons:
 
 ##### m.room.message msgtypes
 
-Each [m.room.message](#m.room.message) MUST have a `msgtype` key which identifies the
+Each [m.room.message](#mroommessage) MUST have a `msgtype` key which identifies the
 type of message being sent. Each type has their own required and
 optional keys, as outlined below. If a client cannot display the given
 `msgtype` then it SHOULD display the fallback plain text `body` key
@@ -261,15 +260,15 @@ number of possibilities for choosing a useful name. To ensure that rooms
 are named consistently across clients, clients SHOULD use the following
 algorithm to choose a name:
 
-1.  If the room has an [m.room.name](#m.room.name) state event with a non-empty
+1.  If the room has an [m.room.name](#mroomname) state event with a non-empty
     `name` field, use the name given by that field.
-2.  If the room has an [m.room.canonical\_alias](#m.room.canonical_alias) state event with a
+2.  If the room has an [m.room.canonical\_alias](#mroomcanonical_alias) state event with a
     valid `alias` field, use the alias given by that field as the name.
     Note that clients should avoid using `alt_aliases` when calculating
     the room name.
 3.  If none of the above conditions are met, a name should be composed
     based on the members of the room. Clients should consider
-    [m.room.member](#m.room.member) events for users other than the logged-in user, as
+    [m.room.member](#mroommember) events for users other than the logged-in user, as
     defined below.
     1.  If the number of `m.heroes` for the room are greater or equal to
         `m.joined_member_count + m.invited_member_count - 1`, then use

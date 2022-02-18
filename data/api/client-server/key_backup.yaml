@@ -172,7 +172,7 @@ paths:
           description: |-
             The backup version to get, as returned in the `version` parameter
             of the response in
-            [`POST /_matrix/client/r0/room_keys/version`](/client-server/#post_matrixclientv3room_keysversion)
+            [`POST /_matrix/client/v3/room_keys/version`](/client-server-api/#post_matrixclientv3room_keysversion)
             or this endpoint.
           required: true
           x-example: "1"
@@ -254,8 +254,8 @@ paths:
           description: |-
             The backup version to update, as returned in the `version`
             parameter in the response of
-            [`POST /_matrix/client/r0/room_keys/version`](/client-server-api/#post_matrixclientv3room_keysversion)
-            or [`GET /_matrix/client/r0/room_keys/version/{version}`](/client-server-api/#get_matrixclientv3room_keysversionversion).
+            [`POST /_matrix/client/v3/room_keys/version`](/client-server-api/#post_matrixclientv3room_keysversion)
+            or [`GET /_matrix/client/v3/room_keys/version/{version}`](/client-server-api/#get_matrixclientv3room_keysversionversion).
           required: true
           x-example: "1"
         - in: body
@@ -298,9 +298,10 @@ paths:
       responses:
         200:
           description: The update succeeded.
+          examples:
+            application/json: {}
           schema:
             type: object
-            properties: {}
         400:
           description: |-
             A parameter was incorrect.  For example, the `algorithm` does not
@@ -343,8 +344,8 @@ paths:
           description: |-
             The backup version to delete, as returned in the `version`
             parameter in the response of
-            [`POST /_matrix/client/r0/room_keys/version`](/client-server-api/#post_matrixclientv3room_keysversion)
-            or [`GET /_matrix/client/r0/room_keys/version/{version}`](/client-server-api/#get_matrixclientv3room_keysversionversion).
+            [`POST /_matrix/client/v3/room_keys/version`](/client-server-api/#post_matrixclientv3room_keysversion)
+            or [`GET /_matrix/client/v3/room_keys/version/{version}`](/client-server-api/#get_matrixclientv3room_keysversionversion).
           required: true
           x-example: "1"
       responses:

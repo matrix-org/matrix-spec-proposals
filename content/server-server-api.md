@@ -237,7 +237,7 @@ Step 1 sign JSON:
     "uri": "/target",
     "origin": "origin.hs.example.com",
     "destination": "destination.hs.example.com",
-    "content": <request body>,
+    "content": <JSON-parsed request body>,
     "signatures": {
         "origin.hs.example.com": {
             "ed25519:key1": "ABCDEF..."
@@ -274,6 +274,7 @@ def authorization_headers(origin_name, origin_signing_key,
     }
 
     if content is not None:
+        # Assuming content is already parsed as JSON
         request_json["content"] = content
 
     signed_json = sign_json(request_json, origin_name, origin_signing_key)
@@ -375,19 +376,19 @@ them.
 
 #### Definitions
 
-Required Power Level
+**Required Power Level** \
 A given event type has an associated *required power level*. This is
 given by the current `m.room.power_levels` event. The event type is
 either listed explicitly in the `events` section or given by either
 `state_default` or `events_default` depending on if the event is a state
 event or not.
 
-Invite Level, Kick Level, Ban Level, Redact Level
+**Invite Level, Kick Level, Ban Level, Redact Level** \
 The levels given by the `invite`, `kick`, `ban`, and `redact` properties
 in the current `m.room.power_levels` state. Each defaults to 50 if
 unspecified.
 
-Target User
+**Target User** \
 For an `m.room.member` state event, the user given by the `state_key` of
 the event.
 
@@ -407,21 +408,25 @@ the sender permission to send the event. The `auth_events` for the
 `m.room.create` event in a room is empty; for other events, it should be
 the following subset of the room state:
 
--   The `m.room.create` event.
+- The `m.room.create` event.
 
--   The current `m.room.power_levels` event, if any.
+- The current `m.room.power_levels` event, if any.
 
--   The sender's current `m.room.member` event, if any.
+- The sender's current `m.room.member` event, if any.
 
--   If type is `m.room.member`:
+- If type is `m.room.member`:
 
-    -   The target's current `m.room.member` event, if any.
-    -   If `membership` is `join` or `invite`, the current
-        `m.room.join_rules` event, if any.
-    -   If membership is `invite` and `content` contains a
-        `third_party_invite` property, the current
-        `m.room.third_party_invite` event with `state_key` matching
-        `content.third_party_invite.signed.token`, if any.
+    - The target's current `m.room.member` event, if any.
+    - If `membership` is `join` or `invite`, the current
+      `m.room.join_rules` event, if any.
+    - If membership is `invite` and `content` contains a
+      `third_party_invite` property, the current
+      `m.room.third_party_invite` event with `state_key` matching
+      `content.third_party_invite.signed.token`, if any.
+    - If `content.join_authorised_via_users_server` is present,
+      and the [room version supports restricted rooms](/rooms/#feature-matrix),
+      then the `m.room.member` event with `state_key` matching
+      `content.join_authorised_via_users_server`.
 
 #### Rejection
 
@@ -678,22 +683,49 @@ candidate may be used at each time. Thus, any join handshake can
 potentially involve anywhere from two to four homeservers, though most
 in practice will use just two.
 
-```
-    Client         Joining                Directory       Resident
-                   Server                 Server          Server
+<!--
+https://textart.io/sequence
 
-    join request -->
-                   |
-                   directory request ------->
-                   <---------- directory response
-                   |
-                   make_join request ----------------------->
-                   <------------------------------- make_join response
-                   |
-                   send_join request ----------------------->
-                   <------------------------------- send_join response
-                   |
-    <---------- join response
+object Client JoiningServer DirectoryServer ResidentServer
+Client->JoiningServer: join request
+JoiningServer->DirectoryServer: directory request
+DirectoryServer->JoiningServer: directory response
+JoiningServer->ResidentServer: make_join request
+ResidentServer->JoiningServer: make_join response
+JoiningServer->ResidentServer: send_join request
+ResidentServer->JoiningServer: send_join response
+JoiningServer->Client: join response
+-->
+
+```
++---------+          +---------------+            +-----------------+ +-----------------+
+| Client  |          | JoiningServer |            | DirectoryServer | | ResidentServer  |
++---------+          +---------------+            +-----------------+ +-----------------+
+     |                       |                             |                   |
+     | join request          |                             |                   |
+     |---------------------->|                             |                   |
+     |                       |                             |                   |
+     |                       | directory request           |                   |
+     |                       |---------------------------->|                   |
+     |                       |                             |                   |
+     |                       |          directory response |                   |
+     |                       |<----------------------------|                   |
+     |                       |                             |                   |
+     |                       | make_join request           |                   |
+     |                       |------------------------------------------------>|
+     |                       |                             |                   |
+     |                       |                             |make_join response |
+     |                       |<------------------------------------------------|
+     |                       |                             |                   |
+     |                       | send_join request           |                   |
+     |                       |------------------------------------------------>|
+     |                       |                             |                   |
+     |                       |                             |send_join response |
+     |                       |<------------------------------------------------|
+     |                       |                             |                   |
+     |         join response |                             |                   |
+     |<----------------------|                             |                   |
+     |                       |                             |                   |
 ```
 
 The first part of the handshake usually involves using the directory
@@ -717,18 +749,46 @@ The joining server is expected to add or replace the `origin`,
 `origin_server_ts`, and `event_id` on the templated event received by
 the resident server. This event is then signed by the joining server.
 
-To complete the join handshake, the joining server must now submit this
-new event to a resident homeserver, by using the `PUT /send_join`
+To complete the join handshake, the joining server submits this new event
+to the resident server it used for `GET /make_join`, using the `PUT /send_join`
 endpoint.
 
-The resident homeserver then accepts this event into the room's event
-graph, and responds to the joining server with the full set of state for
-the newly-joined room. The resident server must also send the event to
-other servers participating in the room.
+The resident homeserver then adds its signature to this event and
+accepts it into the room's event graph. The joining server receives
+the full set of state for the newly-joined room as well as the freshly
+signed membership event. The resident server must also send the event
+to other servers participating in the room.
 
 {{% http-api spec="server-server" api="joins-v1" %}}
 
 {{% http-api spec="server-server" api="joins-v2" %}}
+
+### Restricted rooms
+
+Restricted rooms are described in detail in the
+[client-server API](/client-server-api/#restricted-rooms) and are available
+in room versions [which support restricted join rules](/rooms/#feature-matrix).
+
+A resident server processing a request to join a restricted room must
+ensure that the joining server satisfies at least one of the conditions
+specified by `m.room.join_rules`. If no conditions are available, or none
+match the required schema, then the joining server is considered to have
+failed all conditions.
+
+The resident server uses a 400 `M_UNABLE_TO_AUTHORISE_JOIN` error on
+`/make_join` and `/send_join` to denote that the resident server is unable
+to validate any of the conditions, usually because the resident server
+does not have state information about rooms required by the conditions.
+
+The resident server uses a 400 `M_UNABLE_TO_GRANT_JOIN` error on `/make_join`
+and `/send_join` to denote that the joining server should try a different
+server. This is typically because the resident server can see that the
+joining user satisfies one of the conditions, though the resident server
+would be unable to meet the auth rules governing `join_authorised_via_users_server`
+on the resulting `m.room.member` event.
+
+If the joining server fails all conditions then a 403 `M_FORBIDDEN` error
+is used by the resident server.
 
 ## Knocking upon a room
 
@@ -874,6 +934,13 @@ This can be done by making a request to the `/publicRooms` endpoint for
 the server the room directory should be retrieved for.
 
 {{% http-api spec="server-server" api="public_rooms" %}}
+
+## Spaces
+
+To complement the [Client-Server API's Spaces module](/client-server-api/#spaces),
+homeservers need a way to query information about spaces from other servers.
+
+{{% http-api spec="server-server" api="space_hierarchy" %}}
 
 ## Typing Notifications
 
@@ -1069,8 +1136,8 @@ JSON](/appendices#signing-json), using the server's signing key
 
 The signature is then copied back to the original event object.
 
-See [Persistent Data Unit schema](#Persistent Data Unit schema) for an
-example of a signed event.
+For an example of a signed event, see the [room version
+specification](/rooms).
 
 ### Validating hashes and signatures on received events
 

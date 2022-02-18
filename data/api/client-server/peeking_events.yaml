@@ -102,7 +102,7 @@ paths:
                   type: object
                   title: Event
                   allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                    - "$ref": "definitions/client_event.yaml"
         400:
           description: "Bad pagination `from` parameter."
       tags:

@@ -133,10 +133,10 @@ we already have.  So, we'll show inconsistent data until we backfill the gap.
    time, so by the time your server comes back there won't be any more reactions
    pulling the missing ones in.
  * Could we also ask the server, after a gap, to provide all the relations which
-   happened during the gap to events whose root preceeded the gap.
+   happened during the gap to events whose root preceded the gap.
    * "Give me all relations which happened between this set of
      forward-extremities when I lost sync, and the point i've rejoined the DAG,
-     for events which preceeded the gap"?
+     for events which preceded the gap"?
    * Would be hard to auth all the relations which this api coughed up.
      * We could auth them based only the auth events of the relation, except we
        lose the context of the nearby DAG which we'd have if it was a normal

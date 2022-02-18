@@ -47,7 +47,9 @@ paths:
         The service records persistently all of the above information.
 
         It also generates an email containing all of this data, sent to the
-        `address` parameter, notifying them of the invitation.
+        `address` parameter, notifying them of the invitation. The email should
+        reference the `inviter_name`, `room_name`, `room_avatar`, and `room_type`
+        (if present) from the request here.
 
         Also, the generated ephemeral public key will be listed as valid on
         requests to `/_matrix/identity/v2/pubkey/ephemeral/isvalid`.
@@ -88,7 +90,7 @@ paths:
                   The Matrix room alias for the room to which the user is
                   invited. This should be retrieved from the `m.room.canonical_alias`
                   state event.
-                example: "#somewhere:exmaple.org"
+                example: "#somewhere:example.org"
               room_avatar_url:
                 type: string
                 description: |-
@@ -115,6 +117,12 @@ paths:
                 type: string
                 description: The Content URI for the avatar of the user ID initiating the invite.
                 example: "mxc://example.org/an0th3rM3dia"
+              room_type:
+                type: string
+                description: |-
+                  The `type` from the `m.room.create` event's `content`. If the create event doesn't
+                  have a specified `type`, this field is not included.
+                example: "m.space"
             required: ["medium", "address", "room_id", "sender"]
       responses:
         200:
@@ -150,7 +158,7 @@ paths:
               }
         400:
           description: |
-            An error has occured.
+            An error has occurred.
 
             If the 3pid is already bound to a Matrix user ID, the error code
             will be `M_THREEPID_IN_USE`.  If the medium is unsupported, the

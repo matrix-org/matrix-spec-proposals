@@ -1,0 +1,32 @@
+---
+allOf:
+  - $ref: core-event-schema/state_event.yaml
+description: Defines the relationship of a room to a parent space-room.
+properties:
+  content:
+    properties:
+      via:
+        type: array
+        description: |-
+          A list of servers to try and join through. See also: [Routing](/appendices/#routing).
+
+          When not present or invalid, the room is not considered to be part of the parent space.
+        items:
+          type: string
+      canonical:
+        type: boolean
+        description: |-
+          Optional (default `false`) flag to denote this parent is the primary parent for the room.
+
+          When multiple `canonical` parents are found, the lowest parent when ordering by room ID
+          lexicographically by Unicode code-points should be used.
+    type: object
+  state_key:
+    description: The parent room ID.
+    type: string
+  type:
+    enum:
+      - m.space.parent
+    type: string
+title: Room space parent
+type: object

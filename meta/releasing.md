@@ -6,7 +6,7 @@ machinery works.
 
 ## Prerequisites / preparation
 
-First, can we even release the spec? This stage is mostly preperation work needed
+First, can we even release the spec? This stage is mostly preparation work needed
 to ensure a consistent and reliable specification.
 
 1. Ensure `main` is committed with all the spec changes you expect to be there.
@@ -41,7 +41,7 @@ release.
 5. Push the release branch and the tag.
 6. GitHub Actions will run its build steps. Wait until these are successful. If fixes
    need to be made to repair the pipeline or spec build, delete and re-tag the release.
-7. Check out `main`.
+7. Check out and fast-forward `main` to the release branch.
 8. Generate the changelog. This is done *after* the tagging to ensure the rendered
    changelog makes sense.
    1. Activate your python virtual environment.

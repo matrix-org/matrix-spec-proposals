@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 270
 ---
 
 ### Third Party Networks

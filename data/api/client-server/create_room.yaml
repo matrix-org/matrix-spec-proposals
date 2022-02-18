@@ -174,9 +174,9 @@ paths:
                 type: object
                 description: |-
                   Extra keys, such as `m.federate`, to be added to the content
-                  of the [`m.room.create`](/client-server-api/#mroomcreate) event. The server will clobber the following
+                  of the [`m.room.create`](/client-server-api/#mroomcreate) event. The server will overwrite the following
                   keys: `creator`, `room_version`. Future versions of the specification
-                  may allow the server to clobber other keys.
+                  may allow the server to overwrite other keys.
               initial_state:
                 type: array
                 description: |-
@@ -186,7 +186,7 @@ paths:
                   with type, state_key and content keys set.
 
                   Takes precedence over events set by `preset`, but gets
-                  overriden by `name` and `topic` keys.
+                  overridden by `name` and `topic` keys.
                 items:
                   type: object
                   title: StateEvent

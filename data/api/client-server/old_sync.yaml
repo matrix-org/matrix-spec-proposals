@@ -84,10 +84,7 @@ paths:
                 type: array
                 description: "An array of events."
                 items:
-                  type: object
-                  title: Event
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                  $ref: "definitions/client_event.yaml"
         400:
           description: "Bad pagination `from` parameter."
       tags:
@@ -206,10 +203,7 @@ paths:
                 type: array
                 description: A list of presence events.
                 items:
-                  type: object
-                  title: Event
-                  allOf:
-                    - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+                  $ref: "definitions/client_event.yaml"
               rooms:
                 type: array
                 items:
@@ -227,8 +221,7 @@ paths:
                         type: object
                         title: "InviteEvent"
                         description: "The invite event if `membership` is `invite`"
-                        allOf:
-                          - "$ref": "../../event-schemas/schema/m.room.member.yaml"
+                        $ref: "definitions/client_event.yaml"
                     messages:
                       type: object
                       title: PaginationChunk
@@ -257,13 +250,10 @@ paths:
                             If the user is a member of the room this will be a
                             list of the most recent messages for this room. If
                             the user has left the room this will be the
-                            messages that preceeded them leaving. This array
+                            messages that preceded them leaving. This array
                             will consist of at most `limit` elements.
                           items:
-                            type: object
-                            title: RoomEvent
-                            allOf:
-                              - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
+                            $ref: "definitions/client_event.yaml"
                       required: ["end", "chunk"]
                     state:
                       type: array
@@ -273,10 +263,7 @@ paths:
                         user has left the room this will be the state of the
                         room when they left it.
                       items:
-                        title: StateEvent
-                        type: object
-                        allOf:
-                          - "$ref": "../../event-schemas/schema/core-event-schema/state_event.yaml"
+                        $ref: "definitions/client_event.yaml"
                     visibility:
                       type: string
                       enum: ["private", "public"]
@@ -289,10 +276,7 @@ paths:
                         The private data that this user has attached to
                         this room.
                       items:
-                        title: Event
-                        type: object
-                        allOf:
-                          - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+                        $ref: "definitions/client_event.yaml"
                   required: ["room_id", "membership"]
               account_data:
                 type: array
@@ -336,8 +320,7 @@ paths:
           examples:
             application/json: {"$ref": "../../event-schemas/examples/m.room.message$m.text.yaml"}
           schema:
-            allOf:
-              - "$ref": "../../event-schemas/schema/core-event-schema/event.yaml"
+            $ref: "definitions/client_event.yaml"
         404:
           description: The event was not found or you do not have permission to read this event.
       tags:
