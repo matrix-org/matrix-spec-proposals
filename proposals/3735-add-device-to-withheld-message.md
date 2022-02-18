@@ -1,4 +1,4 @@
-# MSCxxxx: Add device information to m.room_key.withheld message
+# MSC3735: Add device information to m.room_key.withheld message
 
 [MSC2399](https://github.com/matrix-org/matrix-doc/pull/2399) introduced a
 message that could be used to inform message recipients about the reason that a
@@ -40,7 +40,7 @@ None
 ## Unstable prefix
 
 Until this proposal is accepted, the field used should be called
-`org.matrix.mscxxxx.from_device`.
+`org.matrix.msc3735.from_device`.
 
 ## Dependencies
 
