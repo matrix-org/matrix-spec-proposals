@@ -67,13 +67,10 @@ the most semantically relevant join rule for the room - it does not need to be l
 but should best represent the room's access control. The sample chose `knock`, but a different scenario
 may very well choose `restricted` or even `private`.
 
-If the `join_rule` is `restricted`, the `allow` array must also be present at the same level. This
-is for backwards compatibility.
-
 Whenever the server (or client) is checking against the join rules it would now check the `join_rules`
 array if present. If not present, and only when not present, the `join_rule` string is checked instead.
-For a `restricted` join rule, the `allow` list must always be next to the `join_rule` string (eg: don't
-have `join_rule: knock, allow: [...]` - the list would be ignored).
+
+The specifics for how a `resticted` join rule (and its `allow` partner key) are handled are below.
 
 For clarity, the server could implement a check similar to:
 
@@ -104,6 +101,44 @@ As implied, if the `join_rules` array is not an array then the server falls back
 
 Finally, the `join_rules` key is to be protected from redaction. This has a drawback of not being
 able to easily remove abuse within the objects, however is simpler on the redaction algorithm itself.
+
+### Restricted join rule handling specifics
+
+To mirror the existing condition where a `join_rule` of `restricted` has an `allow` key at the same
+level, all instances within the new event structure must have the same condition:
+
+```json5
+{
+  "type": "m.room.join_rules",
+  "state_key": "",
+  "content": {
+    "join_rule": "restricted",
+
+    // Required because the `join_rule` is `restricted`. No change from previous spec on the matter.
+    // Note that if the sender decided that `join_rule` was best represented as some other condition
+    // then they might not need to supply an `allow` key at this specific level.
+    "allow": ["!room:example.org"],
+
+    "join_rules": [
+      {
+        "join_rule": "restricted",
+
+        // Also required for the same reasons as the backwards-compatible version up above.
+        "allow": ["!room:example.org"]
+      },
+      {
+        // Some other join rule that isn't `restricted` - doesn't require/use an `allow` key.
+        "join_rule": "..."
+      }
+    ]
+  }
+}
+```
+
+When `join_rules` is present, even if of the wrong type (ie: not an array), the upper level of
+`allow` is *not* checked when `join_rule` is `restricted`. This is to honour the behaviour described
+earlier where the presence of `join_rules` makes the value of `join_rule` irrelevant, thus making
+the `allow` partner key also irrelevant.
 
 ## Potential issues
 
