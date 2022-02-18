@@ -65,6 +65,13 @@ paths:
                   is associated with the access token (such as in the case
                   of application services) then this field can be omitted.
                   Otherwise this is required.
+              is_guest:
+                x-addedInMatrixVersion: "1.2"
+                type: boolean
+                description: |-
+                  When `true`, the user is a [Guest User](#guest-access). When
+                  not present or `false`, the user is presumed to be a non-guest
+                  user.
         401:
           description:
             The token is not recognised

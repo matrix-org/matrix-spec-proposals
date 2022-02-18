@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 170
 ---
 
 ### Room Previews

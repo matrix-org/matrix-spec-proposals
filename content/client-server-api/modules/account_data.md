@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 190
 ---
 
 ### Client Config

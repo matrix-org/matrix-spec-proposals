@@ -1,1 +1,0 @@
-The `prev_content` field is now returned inside the `unsigned` property of events, rather than at the top level, as per [MSC3442](https://github.com/matrix-org/matrix-doc/pull/3442).

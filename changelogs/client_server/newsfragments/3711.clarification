@@ -1,0 +1,1 @@
+Fix incorrectly referenced `m.login.appservice` login identifier, instead using `m.login.application_service`.

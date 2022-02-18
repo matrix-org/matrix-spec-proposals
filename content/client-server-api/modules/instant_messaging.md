@@ -1,6 +1,5 @@
 ---
 type: module
-weight: 10
 ---
 
 ### Instant Messaging

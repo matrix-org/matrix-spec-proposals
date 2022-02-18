@@ -67,6 +67,10 @@ paths:
         200:
           description:
             The account_data was successfully added.
+          examples:
+            application/json: {}
+          schema:
+            type: object
       tags:
         - User data
     get:
@@ -151,6 +155,10 @@ paths:
         200:
           description:
             The account_data was successfully added.
+          examples:
+            application/json: {}
+          schema:
+            type: object
       tags:
         - User data
     get:

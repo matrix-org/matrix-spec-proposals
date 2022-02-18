@@ -95,6 +95,7 @@ paths:
 
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.
+            - The room is restricted and the user failed to satisfy any of the conditions.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}
@@ -182,6 +183,7 @@ paths:
 
             - The room is invite-only and the user was not invited.
             - The user has been banned from the room.
+            - The room is restricted and the user failed to satisfy any of the conditions.
           examples:
             application/json: {
               "errcode": "M_FORBIDDEN", "error": "You are not invited to this room."}

@@ -35,9 +35,7 @@ properties:
     type: string
     description: |-
       Required for `event_match` conditions. The glob-style pattern to
-      match against. Patterns with no special glob characters should be
-      treated as having asterisks prepended and appended when testing the
-      condition.
+      match against.
   is:
     type: string
     description: |-

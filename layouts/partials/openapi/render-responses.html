@@ -35,63 +35,65 @@
 
 </table>
 
-{{ range  $code, $response := $responses }}
-
+{{ range $code, $response := $responses }}
     {{ if $response.schema }}
+
+<h3>{{$code}} response</h3>
 
         {{ $schema := partial "json-schema/resolve-refs" (dict "schema" $response.schema "path" $path) }}
         {{ $schema := partial "json-schema/resolve-allof" $schema }}
 
-        {{ if or $schema.properties (eq $schema.type "array") }}
-<h3>{{ $code}} response</h3>
-
-            {{/*
-              All this is to work out how to express the content of the response
-              in the case where it is an array.
-            */}}
-            {{ if eq $schema.type "array" }}
-                {{ $type_of := "" }}
-                {{ if reflect.IsSlice $schema.items }}
-                    {{ $types := slice }}
-                    {{ range $schema.items }}
-                        {{ if .title }}
-                            {{ $types = $types | append .title}}
-                        {{ else }}
-                            {{ $types = $types | append .type }}
-                        {{ end }}
+        {{/*
+          All this is to work out how to express the content of the response
+          in the case where it is an array.
+        */}}
+        {{ if eq $schema.type "array" }}
+            {{ $type_of := "" }}
+            {{ if reflect.IsSlice $schema.items }}
+                {{ $types := slice }}
+                {{ range $schema.items }}
+                    {{ if .title }}
+                        {{ $types = $types | append .title}}
+                    {{ else }}
+                        {{ $types = $types | append .type }}
                     {{ end }}
-                    {{ $type_of = delimit $types ", "}}
-                {{ else }}
-                    {{ $type_of = $schema.items.title }}
                 {{ end }}
+                {{ $type_of = delimit $types ", "}}
+            {{ else }}
+                {{ $type_of = $schema.items.title }}
+            {{ end }}
 <p>Array of <code>{{ $type_of }}</code>.</p>
-            {{ end }}
+        {{ end }}
 
-            {{ $additional_types := partial "json-schema/resolve-additional-types" $schema }}
-            {{ $additional_types = uniq $additional_types }}
-            {{ range $additional_types }}
-                {{ partial "openapi/render-object-table" (dict "caption" .title "properties" .properties "required" .required) }}
-            {{ end }}
 
+        {{/*
+          render object tables for any objects referenced in the
+          response. (This will be a no-op for response types which aren't
+          objects or arrays.)
+        */}}
+        {{ $additional_types := partial "json-schema/resolve-additional-types" $schema }}
+        {{ $additional_types = uniq $additional_types }}
+        {{ range $additional_types }}
+            {{ partial "openapi/render-object-table" (dict "caption" .title "properties" .properties "required" .required) }}
+        {{ end }}
+
+        {{/*
+           render an example. currently this is only supported for arrays and objects.
+        */}}
+        {{ if or (eq $schema.type "object") (eq $schema.type "array") }}
             {{ $example := partial "json-schema/resolve-example" $schema }}
             {{ if $response.examples }}
                 {{ $example = partial "json-schema/resolve-refs" (dict "schema" $response.examples "path" $path) }}
                 {{ $example = index $example "application/json" }}
             {{ end }}
 
-            {{ if $example }}
-                {{ $example_json := jsonify (dict "indent" "  ") $example }}
-                {{ $example_json = replace $example_json "\\u003c" "<" }}
-                {{ $example_json = replace $example_json "\\u003e" ">" | safeHTML }}
+            {{ $example_json := jsonify (dict "indent" "  ") $example }}
+            {{ $example_json = replace $example_json "\\u003c" "<" }}
+            {{ $example_json = replace $example_json "\\u003e" ">" | safeHTML }}
 
 ```json
 {{ $example_json }}
 ```
-
-            {{ else }}
-                {{ partial "alert" (dict "type" "warning" "omit_title" "true" "color" "warning" "content" "Specification error: Example invalid or not present") }}
-            {{ end }}
-
         {{ end }}
     {{ end }}
 {{ end }}

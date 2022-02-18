@@ -1,0 +1,193 @@
+# Copyright 2021 The Matrix.org Foundation C.I.C.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+swagger: '2.0'
+info:
+  title: "Matrix Client-Server Space Hierarchy API"
+  version: "1.0.0"
+host: localhost:8008
+schemes:
+  - https
+  - http
+basePath: /_matrix/client/v1
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  $ref: definitions/security.yaml
+paths:
+  "/rooms/{roomId}/hierarchy":
+    get:
+      x-addedInMatrixVersion: "1.2"
+      summary: Retrieve a portion of a space tree.
+      description: |-
+        Paginates over the space tree in a depth-first manner to locate child rooms of a given space.
+
+        Where a child room is unknown to the local server, federation is used to fill in the details.
+        The servers listed in the `via` array should be contacted to attempt to fill in missing rooms.
+
+        Only [`m.space.child`](#mspacechild) state events of the room are considered. Invalid child
+        rooms and parent events are not covered by this endpoint.
+      operationId: getSpaceHierarchy
+      security:
+        - accessToken: []
+      parameters:
+        - in: path
+          type: string
+          name: roomId
+          description: The room ID of the space to get a hierarchy for.
+          required: true
+          x-example: "!space:example.org"
+        - in: query
+          type: boolean
+          name: suggested_only
+          description: |-
+            Optional (default `false`) flag to indicate whether or not the server should only consider
+            suggested rooms. Suggested rooms are annotated in their [`m.space.child`](#mspacechild) event
+            contents.
+          x-example: true
+        - in: query
+          type: number
+          name: limit
+          description: |-
+            Optional limit for the maximum number of rooms to include per response. Must be an integer
+            greater than zero.
+
+            Servers should apply a default value, and impose a maximum value to avoid resource exhaustion.
+          x-example: 20
+        - in: query
+          type: number
+          name: max_depth
+          description: |-
+            Optional limit for how far to go into the space. Must be a non-negative integer.
+
+            When reached, no further child rooms will be returned.
+
+            Servers should apply a default value, and impose a maximum value to avoid resource exhaustion.
+          x-example: 5
+        - in: query
+          type: string
+          name: from
+          description: |-
+            A pagination token from a previous result. If specified, `max_depth` and `suggested_only` cannot
+            be changed from the first request.
+          x-example: "next_batch_token"
+      responses:
+        200:
+          description: |-
+            A portion of the space tree, starting at the provided room ID.
+          examples:
+            application/json: {
+              "rooms": [
+                {
+                  "room_id": "!space:example.org",
+                  "avatar_url": "mxc://example.org/abcdef",
+                  "guest_can_join": false,
+                  "name": "The First Space",
+                  "topic": "No other spaces were created first, ever",
+                  "world_readable": true,
+                  "join_rule": "public",
+                  "room_type": "m.space",
+                  "num_joined_members": 42,
+                  "canonical_alias": "#general:example.org",
+                  "children_state": [
+                    {
+                      "type": "m.space.child",
+                      "state_key": "!a:example.org",
+                      "content": {
+                        "via": ["example.org"]
+                      },
+                      "sender": "@alice:example.org",
+                      "origin_server_ts": 1629413349153
+                    }
+                  ]
+                }
+              ],
+              "next_batch": "next_batch_token"
+            }
+          schema:
+            type: object
+            properties:
+              rooms:
+                type: array
+                description: |-
+                  The rooms for the current page, with the current filters.
+                items:
+                  allOf:
+                    - $ref: "definitions/public_rooms_chunk.yaml"
+                    - type: object
+                      properties:
+                        room_type:
+                          type: string
+                          description: |-
+                            The `type` of room (from [`m.room.create`](/client-server-api/#mroomcreate)), if any.
+                        children_state:
+                          type: array
+                          description: |-
+                            The [`m.space.child`](#mspacechild) events of the space-room, represented
+                            as [Stripped State Events](#stripped-state) with an added `origin_server_ts` key.
+
+                            If the room is not a space-room, this should be empty.
+                          items:
+                            allOf:
+                              - $ref: "../../event-schemas/schema/core-event-schema/stripped_state.yaml"
+                              - type: object
+                                properties:
+                                  origin_server_ts:
+                                    type: number
+                                    format: int64
+                                    description: The `origin_server_ts` for the event.
+                                required: [origin_server_ts]
+                      required: [room_type, children_state]
+              next_batch:
+                type: string
+                description: |-
+                  A token to supply to `from` to keep paginating the responses. Not present when there are
+                  no further results.
+            required: [rooms]
+        403:
+          description: |-
+            The user cannot view or peek on the room. A meaningful `errcode`
+            and description error text will be returned. Example reasons for rejection are:
+
+            - The room is not set up for peeking.
+            - The user has been banned from the room.
+            - The room does not exist.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You are not allowed to view this room."
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        400:
+          description: |-
+            The request was invalid in some way. A meaningful `errcode`
+            and description error text will be returned. Example reasons for rejection are:
+
+            - The `from` token is unknown to the server.
+            - `suggested_only` or `max_depth` changed during pagination.
+          examples:
+            application/json: {
+              "errcode": "M_INVALID_PARAM",
+              "error": "suggested_only and max_depth cannot change on paginated requests"
+            }
+          schema:
+            "$ref": "definitions/errors/error.yaml"
+        429:
+          description: This request was rate-limited.
+          schema:
+            "$ref": "definitions/errors/rate_limited.yaml"
+      tags:
+        - Spaces

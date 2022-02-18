@@ -103,6 +103,23 @@ paths:
                     type: string
                     description: The value `join`.
                     example: "join"
+                  join_authorised_via_users_server:
+                    type: string
+                    x-addedInMatrixVersion: "1.2"
+                    description: |-
+                      Required if the room is [restricted](/client-server-api/#restricted-rooms)
+                      and is joining through one of the conditions available. If the
+                      user is responding to an invite, this is not required.
+
+                      An arbitrary user ID belonging to the resident server in
+                      the room being joined that is able to issue invites to other
+                      users. This is used in later validation of the auth rules for
+                      the `m.room.member` event.
+
+                      The resident server which owns the provided user ID must have a
+                      valid signature on the event. If the resident server is receiving
+                      the `/send_join` request, the signature must be added before sending
+                      or persisting the event to other servers.
                 required: ['membership']
             required:
               - state_key
@@ -119,18 +136,61 @@ paths:
             "origin_server_ts": 1549041175876,
             "sender": "@someone:example.org",
             "content": {
-                "membership": "join"
+                "membership": "join",
+                "join_authorised_via_users_server": "@anyone:resident.example.org"
             }
           }
       responses:
+        400:
+          description: |-
+            The request is invalid in some way.
+
+            The error should be passed through to clients so that they
+            may give better feedback to users.
+
+            New in `v1.2`, the following error conditions might happen:
+
+            If the room is [restricted](/client-server-api/#restricted-rooms)
+            and none of the conditions can be validated by the server then
+            the `errcode` `M_UNABLE_TO_AUTHORISE_JOIN` must be used. This can
+            happen if the server does not know about any of the rooms listed
+            as conditions, for example.
+
+            `M_UNABLE_TO_GRANT_JOIN` is returned to denote that a different
+            server should be attempted for the join. This is typically because
+            the resident server can see that the joining user satisfies one or
+            more conditions, such as in the case of
+            [restricted rooms](/client-server-api/#restricted-rooms), but the
+            resident server would be unable to meet the auth rules governing
+            `join_authorised_via_users_server` on the resulting `m.room.member`
+            event.
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          examples:
+            application/json: {
+              "errcode": "M_UNABLE_TO_GRANT_JOIN",
+              "error": "This server cannot send invites to you."
+            }
+        403:
+          schema:
+            $ref: "../client-server/definitions/errors/error.yaml"
+          description: |-
+            The room that the joining server is attempting to join does not permit the user
+            to join.
+          examples:
+            application/json: {
+              "errcode": "M_FORBIDDEN",
+              "error": "You are not invited to this room",
+            }
         200:
           description: |-
-            The full state for the room, having accepted the join event.
+            The join event has been accepted into the room.
           schema:
             $ref: "./definitions/send_join_response.yaml"
           examples:
             application/json: {
               "origin": "matrix.org",
               "auth_chain": [{"$ref": "examples/minimal_pdu.json"}],
-              "state": [{"$ref": "examples/minimal_pdu.json"}]
+              "state": [{"$ref": "examples/minimal_pdu.json"}],
+              "event": {"$ref": "examples/pdu_v4_join_membership.json"}
             }
