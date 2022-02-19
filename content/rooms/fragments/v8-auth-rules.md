@@ -53,8 +53,8 @@ The rules are as follows:
             `state_key` is the creator, allow.
         2.  If the `sender` does not match `state_key`, reject.
         3.  If the `sender` is banned, reject.
-        4.  If the `join_rule` is `invite` then allow if membership
-            state is `invite` or `join`.
+        4.  If the `join_rule` is `invite` or `knock` then allow if
+            membership state is `invite` or `join`.
         5.  If the `join_rule` is `restricted`:
             1.  If membership state is `join` or `invite`, allow.
             2.  If the `join_authorised_via_users_server` key in `content`
