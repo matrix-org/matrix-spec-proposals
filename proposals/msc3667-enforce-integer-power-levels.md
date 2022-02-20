@@ -20,7 +20,7 @@ accurately, so we should not try to do so.
 ## Proposal
 
 In a future room version, we should enforce the letter of the spec and only allow power levels
-as integers and reject events which try to define them as any other type. This removes all of the
+as integers within the range defined by canonical JSON and reject events which try to define them as any other type. This removes all of the
 associated headaches with string parsing.
 
 ## Potential issues
