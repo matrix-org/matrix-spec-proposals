@@ -99,7 +99,6 @@ their users. To support this use case, homeservers must expose a
 `m.account_status` capability to tell clients whether they support retrieving
 account status via the client-side endpoint described above.
 
-
 ## Alternatives
 
 A previous version of this proposal used `GET` requests instead of `POST`.
@@ -108,11 +107,22 @@ changed to `POST` so user IDs don't leak into reverse proxy logs.
 
 ## Security considerations
 
+### Allowing servers to refuse to share account statuses
+
 Should a server administrator not want to disclose information about their users
 through the federation endpoint described above, they should use a reverse proxy
 or similar tool to prevent access to the endpoint. On top of this, homeserver
 implementations may implement measures to respond with a 403 status code and a
 `M_FORBIDDEN` error code in this case.
+
+### Overwriting the statuses of another server's account
+
+When processing the response from a request to the federation endpoint described
+in this proposal, homeservers implementations must verify that every account the
+remote homeserver has provided a status for belongs to the remote homeserver.
+For any account for which this isn't the case, the status provided by the remote
+homeserver must be ignored. This is to prevent mischievous homeservers from
+trying to overwrite the status of accounts that don't belong to them.
 
 ## Unstable prefixes
 
