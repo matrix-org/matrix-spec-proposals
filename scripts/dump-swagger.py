@@ -168,6 +168,7 @@ try:
 except FileNotFoundError:
     print("No security definitions available for this API")
 
+untagged = 0
 for filename in os.listdir(selected_api_dir):
     if not filename.endswith(".yaml"):
         continue
@@ -185,6 +186,11 @@ for filename in os.listdir(selected_api_dir):
                 if path not in output["paths"]:
                     output["paths"][path] = {}
                 output["paths"][path][method] = spec
+                if "tags" not in spec.keys():
+                    print("Warning: {} {} is not tagged ({}).".format(method.upper(), path, filename))
+                    untagged +=1
+if untagged != 0:
+    print("{} untagged operations, you may want to look into fixing that.".format(untagged))
 
 edit_links(output, base_url)
 
