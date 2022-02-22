@@ -16,7 +16,8 @@ solution, and Matrix uptake is suffering due to the lack of progress.
 
 ### Event format
 
-A new relation type m.thread expresses that an event belongs to a thread.
+A new relation type (see [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674))
+`m.thread` expresses that an event belongs to a thread.
 
 ```json
 "m.relates_to": {
