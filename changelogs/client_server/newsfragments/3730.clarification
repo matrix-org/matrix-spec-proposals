@@ -1,1 +1,1 @@
-Fix membership state transitions to denote that `knock->invite` and `external->leave` are valid transitions.
+Fix membership state transitions to denote that `invite->knock` and `external->leave` are valid transitions.
