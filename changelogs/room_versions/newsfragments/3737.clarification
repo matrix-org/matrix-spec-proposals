@@ -1,0 +1,1 @@
+Fix join membership auth rules when `join_rule` is `knock`.
