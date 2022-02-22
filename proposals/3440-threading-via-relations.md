@@ -81,7 +81,7 @@ in the room.
 A thread will be displayed as a chain of replies on clients unaware of threads.
 
 To ensure forward-compatiblity on systems that do not support threads, clients
-are advised to attach the `m.thread` relation to replies that are target an event
+are advised to attach the `m.thread` relation to replies that target an event
 containing a `m.thread` relation.
 
 Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. 
