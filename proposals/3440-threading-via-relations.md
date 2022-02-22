@@ -80,7 +80,7 @@ in the room.
 A thread will be displayed as a chain of replies on clients unaware of threads.
 
 Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. 
-It should always reference the latest event in the thread unless a user is 
+It should always reference the latest message-like event in the thread unless a user is 
 explicitly replying to another event.
 The rich reply fallback should be hidden in a thread context unless it contains 
 the new `render_in` field as described in the previous section.
