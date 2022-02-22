@@ -84,7 +84,7 @@ To ensure forward-compatiblity on systems that do not support threads, clients
 are advised to attach the `m.thread` relation to replies that target an event
 containing a `m.thread` relation.
 
-Thread-ready clients should attach a `m.in_reply_to` mixin to the event source. 
+Thread-ready clients should always include an `m.in_reply_to` property when sending a threaded event.
 It should always reference the latest message-like event in the thread unless a user is 
 explicitly replying to another event.
 The rich reply fallback should be hidden in a thread context unless it contains 
