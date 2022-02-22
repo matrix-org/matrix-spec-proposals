@@ -136,7 +136,7 @@ This can also be combined with the `sender` field to search for threads which a
 user has participated in (or not participated in).
 
 ```
-GET /_matrix/client/unstable/rooms/!room_id:domain/messages?filter=...
+GET /_matrix/client/v3/rooms/!room_id:domain/messages?filter=...
 ```
 
 The filter string includes the new fields, above. In this example, the URL 
