@@ -246,6 +246,11 @@ network, either due by malicious activity or buggy implementation. If a client
 receives such events, they should hide them as soon as they can determine for certain
 that the associated event is not a valid target.
 
+Servers should not filter out invalid `m.thread` relations from the results when
+serving endpoints that deal with message relations. Clients that call those 
+endpoints should be aware that they may return events with invalid relations, 
+and deal with them appropriately.
+
 ### Client considerations
 
 #### Sending `m.thread` before fully implementing threads
