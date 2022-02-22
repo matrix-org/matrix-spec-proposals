@@ -193,7 +193,7 @@ information received from the homeserver.
 
 Synchronising the synthesized notification count across devices is out of scope and deferred to a later MSC.
 
-#### Single-layer event aggration
+#### Single-layer event aggregation
 
 This MSC does not include support for nested threads.
 
