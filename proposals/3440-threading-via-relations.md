@@ -284,9 +284,7 @@ copy in `rel_type` and `event_id` properties in their reply mixin.
 
 ## Alternatives
 
-[MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836), "Threading as rooms", and 
-building on `m.in_reply_to` are the main alternatives here. The first two are 
-non-overlapping with this MSC.
+"Threading as rooms", building on `m.in_reply_to`, and [MSC2836](https://github.com/matrix-org/matrix-doc/pull/2836) are the main alternatives here.
 
 It is also worth noting that relations in this MSC could be expressed using the 
 scalable relation format described in [MSC3051](https://github.com/matrix-org/matrix-doc/pull/3051).
@@ -315,6 +313,21 @@ Disadvantages include:
  * Bridging to non-threaded chat systems is trickier as you may have to splice 
  together rooms
 
+### Threads via m.in_reply_to
+
+The rationale for using a new relation type instead of building on `m.in_reply_to` 
+is to re-use the event relationship APIs provided by 
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The MSC3267 definition 
+of `m.reference` relationships could be updated to mention threads (perhaps by 
+using the key field from [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) 
+as the thread ID), but it is clearer to define a new relation type. It is unclear 
+what impact this would have on [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267), 
+but that is unimplemented by clients.
+
+A big advantage of relations over rich replies is that they can be server-side 
+aggregated. It means that a client is not bound to download the entire history of 
+a room to have a comprehensive list of events being part of a thread.
+
 ### Threads via serverside traversal of relationships MSC2836
 
 Advantages include:
@@ -330,21 +343,6 @@ Disadvantages include:
  and depth (unlimited chain of replies) which complicates UI design when you just 
  want "simple" threading.
  * Does not consider use cases like editing or reactions
-
-### Threads via m.in_reply_to
-
-The rationale for using a new relation type instead of building on `m.in_reply_to` 
-is to re-use the event relationship APIs provided by 
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The MSC3267 definition 
-of `m.reference` relationships could be updated to mention threads (perhaps by 
-using the key field from [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677) 
-as the thread ID), but it is clearer to define a new relation type. It is unclear 
-what impact this would have on [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267), 
-but that is unimplemented by clients.
-
-A big advantage of relations over rich replies is that they can be server-side 
-aggregated. It means that a client is not bound to download the entire history of 
-a room to have a comprehensive list of events being part of a thread.
 
 ## Security considerations
 
