@@ -356,6 +356,7 @@ Clients and servers should use list of unstable prefixes listed below while this
 MSC has not been included in a spec release.
 
   * `io.element.thread` should be used in place of `m.thread` as relation type
+  * `io.element.thread` should be used in place of `m.thread` as a capability entry
   * `io.element.relation_senders` should be used in place of `relation_senders` 
   in the `RoomEventFilter`
   * `io.element.relation_types` should be used in place of `relation_types` 
