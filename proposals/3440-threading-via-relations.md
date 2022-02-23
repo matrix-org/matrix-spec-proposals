@@ -80,7 +80,7 @@ in the room.
 
 A thread will be displayed as a chain of replies on clients unaware of threads.
 
-To ensure forward-compatiblity on systems that do not support threads, clients
+To ensure forward-compatibility on systems that do not support threads, clients
 are advised to attach the `m.thread` relation to replies that target an event
 containing a `m.thread` relation.
 
@@ -234,23 +234,24 @@ A `m.thread` event can only reference events that do not have a `rel_type`
 Given the above list of events, only `ev1` would be a valid target for an `m.thread`
 relation event.
 
-Invalid thread relations should be rejected with an HTTP `400` status code and a 
+Servers should reject attempts to send events with invalid thread relations via the
+Client-Server API with an HTTP `400` status code and a 
 `M_UNKNOWN` error code.
-Events received through federations should be always be accepted without checking
+Events received over federation should always be accepted without checking
 the validity of the relations as it would break the extensibility of this proposal
 in a future MSC.
 
 This means that events with invalid thread relations can make their way into the
 network, either due by malicious activity or buggy implementation. If a client
-receives such events, they should hide them as soon as it can determine for certain
+receives such events, they should hide them as soon as they can determine for certain
 that the associated event is not a valid target.
 
 ### Client considerations
 
 #### Sending `m.thread` before fully implementing threads
 
-Clients that do not support threads yet should include a `m.thread` relation to the 
-event body if a user is replying to an event that has an `m.thread` relation type
+Clients that do not support threads yet should include a `m.thread` relation in the 
+event body if a user is replying to an event that has an `m.thread` relation type.
 
 This is done so that clients that support threads can render the event in the most 
 relevant context.
