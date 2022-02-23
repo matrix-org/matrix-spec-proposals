@@ -5,6 +5,7 @@ This MSC proposes a way to annotate and discuss various resources (web pages, do
 * Additional data in the `m.room.create` event to mark a space as describing  a resource to be annotated.
 * Additional (optional) data in the `m.space.child` and `m.space.parent` events to mark sections of the resource (pages, timestamps, etc.) that are being discussed by the child room. The specific format of the location data is resource-specific, and will be described in further MSCs.
 * An annotation event that is used within child rooms. The specific data describing the annotation location is once again resource-specific, and will be described in further MSCs.
+* A general scheme for serializing annotations in a way compatible with the [w3c web annotation data model](https://www.w3.org/TR/annotation-model/)
 
 Resources and markup can be displayed in specialized annotation-aware clients, and potentially in a widget or widget-like interface for widget-compatible clients, although the latter possibility remains speculative. The use of extensible events and standard space events should provide for a reasonable degree of compatibility with general-purpose matrix clients.
 
@@ -44,12 +45,11 @@ An optional `sha256_hash` key may be included. If present, this key should be po
 }
 ```
 
-
 ## Additional data in `m.space.child` and `m.space.parent`
 
-Children of resources will be considered *conversations concerning* the resource. For purposes of discoverability,  may sometimes be helpful to attach additional data to the content of `m.space.child` and `m.space.parent` events, in order to indicate a specific part of the resource that the conversation is based upon. The location of the part of the resource that the conversation is based upon will be indicated by the value of an `m.markup.location` key within the contents of the `m.space.child` and/or `m.space.parent` event.
+Children of resources will be considered *conversations concerning* the resource. For purposes of discoverability,  may sometimes be helpful to attach additional data to the content of `m.space.child` and `m.space.parent` events, in order to indicate a specific part of the resource that the conversation concerns. The location of the part of the resource that the conversation is based upon will be indicated by the value of an `m.markup.location` key within the contents of the `m.space.child` and/or `m.space.parent` event.
 
-Different mimetypes will require different notions of "location". A need for new notions of location may become evident over time. For example PDFs begin with a need to specify highlighted regions and then at a later date, pindrop locations. One location might also reasonably be presented in two or more different ways. For example, in a PDF, a location might be presented both as coordinates designating a region of a page, and as a tag or set of tags with offsets for use with a screen reader. In an audio file, a location might be presented both as a pair of bounding timestamps and as a pair of offsets within the text of embedded lyrics.
+Different Media Types will require different notions of "location". A need for new notions of location may become evident over time. For example PDFs begin with a need to specify highlighted regions and then at a later date, pindrop locations. One location might also reasonably be presented in two or more different ways. For example, in a PDF, a location might be presented both as coordinates designating a region of a page, and as a tag or set of tags with offsets for use with a screen reader. In an audio file, a location might be presented both as a pair of bounding timestamps and as a pair of offsets within the text of embedded lyrics.
 
 Hence, the `m.markup.location` value MUST be an object, whose keys are different kinds of locations occupied by a single annotation, with the names of those locations either formalized in the matrix spec or namespaced using Java conventions. Some proposed location types are described in:
 
@@ -122,6 +122,55 @@ An annotation message event will treat `m.markup` as an extensible event schema 
 }
 ```
 
+## Web Annotation Data Model serialization
+
+The [Web Annotation Working group](https://www.w3.org/annotation/) at the W3C has published a detailed set of recommendations for interoperable and shared web annotation. These include both [a data model](https://www.w3.org/TR/annotation-model/) and [a protocol](https://www.w3.org/TR/annotation-protocol/) for annotation servers. The fundamental idea of the annotation model is to view an annotation as a connection between zero or more "body" resources, annotating one or more "target" resources.
+
+<img width="353" alt="intro_model" src="https://user-images.githubusercontent.com/6383381/148815059-b2f6350b-37aa-4926-95d7-4dd34f699492.png">
+
+Targets are identified using a combination of an internationalized URI, and a set of [selectors](https://www.w3.org/TR/annotation-model/#selectors) (e.g. XPaths or CSS selectors) to pick out a part of the resource designated by the URI. Bodies can be identified in the same way, or embedded as formatted or unformatted text within the annotation.
+
+The web annotation data model is an open standard for ensuring interoperability between web annotation systems. It is partly implemented by [Hypothes.is](https://web.hypothes.is), and has the backing of [a coalition of publishers and research institutions](https://hypothes.is/annotating-all-knowledge/). It's desirable, from the point of view of the Matrix foundation's guiding principles (e.g. interoperability rather than fragmentation, openness rather than proprietary lock-in) that we ensure compatibility with this standard. Adhering to the standard may also open the way for bridging with other compliant annotation systems in the future.
+
+`m.space.child` and `m.space.parent` annotations can be serialized to the web annotation data model according to the following minimal scheme:
+
+``` 
+{
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "id": "matrix:EVENT",
+    "type": "Annotation",
+    "body": "matrix:ANNOTATION",
+    "target": {
+        "type": "SpecificResource",
+        "source": "matrix:RESOURCE",
+        "selector": SELECTORS
+    }
+}
+```
+
+Here, `matrix:EVENT` is a matrix URI indicating the `m.space.child` or `m.space.parent` event being serialized, `matrix:ANNOTATION` is a matrix uri for the child room serving as an annotation, `matrix:RESOURCE` is a uri for the parent room serving as a resource. This corresponds, on the w3c model, to a simple annotation with one target (the resource) and one body (the annotation room).
+
+SELECTORS stands for zero or more [selectors](https://www.w3.org/TR/annotation-model/#selectors) in the sense of the w3c model. These can be, for example, XPaths, CSS selectors, or offsets within a file. The specific selectors used should be determined by the locations present in the annotation event. MSCs introducing location types should specify how, or whether, these location types can be put into correspondence with w3c selectors.
+
+It may be desirable to also indicate an `http` url at which the file attached to the resource can be located (as derived from the `m.markup.resource` field of the resource's creation event). This can be done by replacing the `target` field above with
+
+``` 
+    "target": [{
+        "type": "SpecificResource",
+        "source": "matrix:RESOURCE",
+        "selector": SELECTORS
+    },
+    {
+        "type": "SpecificResource",
+        "source": "https://ADDRESS",
+        "selector": SELECTORS
+    }]
+```
+
+It may be desirable, from the point of view of particular implementations of w3c model serialization, to include other fields in the w3c model serialization - for example, an [embedded textual body](https://www.w3.org/TR/annotation-model/#embedded-textual-body) based on the body of the first message in the annotation room might be necessary for bridging, a [state object](https://www.w3.org/TR/annotation-model/#states) indicating the time of creation might be important for archival purposes, and an indication of [the rendering software](https://www.w3.org/TR/annotation-model/#rendering-software) used to view the annotation might be helpful for interoperability. Attaching additional data like this is allowed and left to choice at the level of implementations.
+
+Annotation messages can be serialized to the w3c model much as above, but with the `body` field omitted - the w3c model permits annotations with empty bodies.
+
 # Potential Issues
 
 There's no notion of "ownership" for state events---anyone who can send `m.space.parent` events can overwrite `m.space.parent` events sent by others. So anyone who can create a conversation concerning a certain resource can also remove conversations created by others. Clients can partly mitigate this by at least discouraging accidental deletions and encouraging courtesy. A more robust mitigation might be to introduce subspaces of resources, within which less-trusted users could still create conversations concerning a given resource. However, this seems undesirably complicated for an initial implementation. If it turns out to be necessary in practice, it could be added in a future MSC.
@@ -164,13 +213,7 @@ The main disadvantage to allowing both models seems to be the possibility of fra
 
 ## The Web Annotation Data Model
 
-The [Web Annotation Working group](https://www.w3.org/annotation/) at the W3C has published a detailed set of recommendations for interoperable and shared web annotation. These include both [a data model](https://www.w3.org/TR/annotation-model/) and [a protocol](https://www.w3.org/TR/annotation-protocol/) for annotation servers. The fundamental idea of the annotation model is to view an annotation as a connection between zero or more "body" resources, annotating one or more "target" resources.
-
-<img width="353" alt="intro_model" src="https://user-images.githubusercontent.com/6383381/148815059-b2f6350b-37aa-4926-95d7-4dd34f699492.png">
-
-Targets are identified using a combination of an internationalized URI, and a set of [selectors](https://www.w3.org/TR/annotation-model/#selectors) (e.g. XPaths or CSS selectors) to pick out a part of the resource designated by the URI. Bodies can be identified in the same way, or embedded as formatted or unformatted text within the annotation.
-
-Matrix could adopt a markup spec based on this set of recommendations, and focus on annotations that link targets, potentially specified via `mxc://` or `matrix://` uris, to bodies, potentially presented as `matrix://` or `mxc://` uris. Annotations could be sent in timelines as extensible events, and in resource spaces meant to collect sets of annotations - roughly corresponding to the w3c's concept of [annotation collections and pages](https://www.w3.org/TR/annotation-model/#collections). Downstream, it's conceivable that annotation servers speaking the w3c annotation protocol with a matrix backend could be implemented as app services.
+Matrix could adopt a markup spec that strictly follows the w3c data model, for example by requiring that annotation events include a valid serialized w3c annotation as their contents (or as an option in an extensible event).
 
 Some advantages of this proposal are:
 
@@ -180,7 +223,7 @@ Some advantages of this proposal are:
 
 Some disadvantages are:
 
-1. In practice, near-term prospects for interoperability might be limited. There are not many [implementations](https://w3c.github.io/test-results/annotation-model/all.html) in the wild. Even, for example, Hypothes.is supports only part of the w3c data model, and [apparently only in an undocumented read-only capacity](https://github.com/hypothesis/h/blob/28c2c5bdf5d85f12307ed56f90995ad1c1f214ac/h/routes.py#L122). If desired, bridging might be better accomplished by using APIs for individual annotation services directly, rather than by routing through an incompletely supported data model.
+1. In practice, near-term prospects for interoperability might be limited. There are not many [implementations](https://w3c.github.io/test-results/annotation-model/all.html) in the wild. Even, for example, Hypothes.is supports only part of the w3c data model, and [apparently only in an undocumented read-only capacity](https://github.com/hypothesis/h/blob/28c2c5bdf5d85f12307ed56f90995ad1c1f214ac/h/routes.py#L122). If desired, bridging might be better accomplished by using APIs for individual annotation services directly, together with the minimal serialization proposed above, rather than by routing through an incompletely supported data model.
 2. The w3c spec's selectors for PDF annotation are somewhat limited, and more generally the set of selectors built into the spec are not likely to cover all use cases. The w3c spec does incorporate [an extension mechanism](https://www.w3.org/TR/annotation-vocab/#extensions), via JSON-LD contexts. Perhaps the matrix spec for document markup would want to eventually incorporate a well-documented JSON-LD context for any extended selector types that become important.
 3. The w3c spec is sufficiently expansive that it overlaps to some extent with existing Matrix functionality. For example, you could have an annotation targeting a matrix event, whose "purpose" (a field allowed by the w3c spec) is "reply" (a value listed in the spec). Care would need to be taken not to create confusing duplications like this.
 
