@@ -255,11 +255,9 @@ and deal with them appropriately.
 
 #### Sending `m.thread` before fully implementing threads
 
-Clients that do not support threads yet should include a `m.thread` relation in the 
-event body if a user is replying to an event that has an `m.thread` relation type.
-
-This is done so that clients that support threads can render the event in the most 
-relevant context.
+Clients that do not support threads yet should copy the `m.thread` relation of the
+associated event when sending a reply. This is done so that clients that support 
+threads can render the event in the most relevant context.
 
 If a client does not include that relation type to the outgoing event, it should
 be treated as not being part of the thread.  For example, if a client has a
