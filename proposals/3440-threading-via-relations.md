@@ -127,10 +127,13 @@ To fetch all threads in a room, the
 API is used with newly added filtering options. It is proposed to expand the room
 event filtering to include filtering events by their related events:
 
-* `relation_types`: A list of relation types which must exist pointing to the event
-  being filtered. If this list is absent then no filtering is done on relation types.
-* `relation_senders`: A list of senders of relations which must exist pointing to
-  the event being filtered. If this list is absent then no filtering is done on relation types.
+
+* `relation_types`: A list of relation types to include. An event `A` is included 
+in the filter only if there exists another event `B` which relates to `A` with a 
+`rel_type` which is defined in the list
+* `relation_senders`: A list of senders to include. An event `A` is included in 
+the filter only if there exists another event `B` which relates to `A` with a 
+`sender` which is defined in the list
 
 This can also be combined with the `sender` field to search for threads which a 
 user has participated in (or not participated in).
