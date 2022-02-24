@@ -258,9 +258,10 @@ and deal with them appropriately.
 
 #### Sending `m.thread` before fully implementing threads
 
-Clients that do not support threads yet should copy the `m.thread` relation of the
-associated event when sending a reply. This is done so that clients that support 
-threads can render the event in the most relevant context.
+Clients that do not support threads yet should behave as followed when replying. 
+It should set the `m.in_reply_to` part as usual, and then add on 
+`"rel_type": "m.thread"` and `"event_id": "$thread_root"`, copying `$thread_root`
+from the replied-to event.
 
 If a client does not include that relation type in the outgoing event, it should
 be treated as not being part of the thread.  For example, if a client has a
