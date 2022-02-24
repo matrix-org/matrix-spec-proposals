@@ -38,7 +38,7 @@ It is seen as being more narrowly applicable (only to the Server-Server API),
 while also being more complicated to implement.
 
 A new error code was chosen since the `M_UNRECOGNISED` error code has more specific
-definitions in the Identity Servier API:
+definitions in the Identity Server API:
 
 > The request contained an unrecognised value, such as an unknown token or medium.
 
