@@ -188,6 +188,33 @@ DELETE /account/authenticator/m.login.webauthn/abcdwxyz
 ```
 
 
+### Changes to `POST /login`
+
+For `/login`, the top-level elements `type` and `password` in the JSON
+body are replaced by an `authenticators` object containing authentication
+data for one or more auth types.
+
+For example, with `m.login.password`:
+
+```
+POST /login
+```
+
+```json
+{
+  "identifier": {
+    "type": "m.id.user",
+    "user": "cheeky_monkey"
+  },
+  "initial_device_display_name": "Jungle Phone",
+  "authenticators": {
+    "m.login.password": {
+      "password": "ilovebananas"
+    }
+  }
+}
+```
+
 
 ## Potential issues
 
