@@ -766,7 +766,8 @@ Proposed final identifier       | Purpose    | Development identifier
 
 This MSC builds on [MSC2835: Add UIA to the /login endpoint](https://github.com/matrix-org/matrix-doc/pull/2835).
 
-
+Some of the basic changes to the CS API, for support for more flexible authentication
+mechanisms in general, were moved out of this proposal and into [MSC3744](https://github.com/matrix-org/matrix-doc/pull/3744).
 
 ## Appendix: Technical Background
 
