@@ -128,10 +128,10 @@ API is used with newly added filtering options. It is proposed to expand the roo
 event filtering to include filtering events by their relating events:
 
 
-* `relation_types`: A list of relation types to include. An event `A` is included 
+* `related_by_rel_types`: A list of relation types to include. An event `A` is included 
 in the filter only if there exists another event `B` which relates to `A` with a 
 `rel_type` which is defined in the list
-* `relation_senders`: A list of senders to include. An event `A` is included in 
+* `related_by_senders`: A list of senders to include. An event `A` is included in 
 the filter only if there exists another event `B` which relates to `A`, and
 which has a `sender` which is in the list.
 
@@ -148,10 +148,10 @@ encoded JSON is presented unencoded and formatted for legibility:
 ```jsonc
 {
   "types": ["m.room.message"],
-  "relation_senders": [
+  "related_by_senders": [
     // ...
   ],
-  "relation_types": ["m.thread"]
+  "related_by_rel_types": ["m.thread"]
 }
 ```
 
@@ -161,10 +161,10 @@ in related events. Consider the following events in a room:
 * `A`: a `m.room.message` event sent by `alice`
 * `B`: a `m.room.message` event sent by `bob` which relates to `A` with type `m.thread`
 
-Using a filter of `"relation_types": ["m.thread"]` would return event `A` as it
+Using a filter of `"related_by_rel_types": ["m.thread"]` would return event `A` as it
 has another event which relates to it via `m.thread`.
 
-Similarly, using a filter of `"relation_senders": ["bob"]` would return event `A`
+Similarly, using a filter of `"related_by_senders": ["bob"]` would return event `A`
 as it has another event which relates to it sent by `bob`.
 
 ### Server capabilities
@@ -359,9 +359,9 @@ MSC has not been included in a spec release.
 
   * `io.element.thread` should be used in place of `m.thread` as relation type
   * `io.element.thread` should be used in place of `m.thread` as a capability entry
-  * `io.element.relation_senders` should be used in place of `relation_senders` 
+  * `io.element.relation_senders` should be used in place of `related_by_senders` 
   in the `RoomEventFilter`
-  * `io.element.relation_types` should be used in place of `relation_types` 
+  * `io.element.relation_types` should be used in place of `related_by_rel_types` 
   in the `RoomEventFilter`
 
 ## Dependencies
