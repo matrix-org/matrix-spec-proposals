@@ -68,7 +68,7 @@ To register a user with only BS-SPEKE authentication, the JSON body might be:
   "authenticators": {
     "m.login.bsspeke.ecc": {
       "P": "<user's base64-encoded curve25519 base point>",
-      "V": "<user's long-term curve25519 public key>",
+      "V": "<user's base64-encoded long-term curve25519 public key>",
       "phf_params": {
         "name": "argon2i",
         "blocks": 100000,
@@ -139,7 +139,7 @@ Setting up a user to log in with BS-SPEKE might look like this:
 {
     "m.login.bsspeke.ecc": {
         "P": "<user's base64-encoded curve25519 base point>",
-        "V": "<user's long-term curve25519 public key>",
+        "V": "<user's base64-encoded long-term curve25519 public key>",
         "phf_params": {
             "name": "argon2i",
             "blocks": 100000,
@@ -159,7 +159,7 @@ of their setup ceremony.
 Servers that wish to support these protocols then MUST include those
 UIA stages in the UIA flows for this endpoint.
 
-### New `DELETE /account/authenticator/<auth_type>` endpoint
+### New `DELETE /account/authenticator/<auth_type>/<authenticator_id>` endpoint
 
 To un-register an authenticator, the client calls
 
@@ -236,21 +236,21 @@ third parties.
   If the user sets the same password for both authentication mechanisms,
   then much of the security benefit of the cryptographic login is lost.
 
-  Clients should not automatically register both types of authenticators
-  from a single password, and they should take some care to detect when
-  a user chooses to set the same password for both types of auth.
+  * Clients should not automatically register both types of authenticators
+    from a single password, and they should take some care to detect when
+    a user chooses to set the same password for both types of auth.
 
-  Note that this is not *always* bad.
-  For example, if the user started with the legacy `m.login.password` auth,
-  then it is probably better to allow them to upgrade to a more secure
-  auth scheme, even if they don't make the optimal choice of also setting
-  a new password when they upgrade.
+  * Note that this is not *always* bad.
+    For example, if the user started with the legacy `m.login.password` auth,
+    then it is probably better to allow them to upgrade to a more secure
+    auth scheme, even if they don't make the optimal choice of also setting
+    a new password when they upgrade.
 
-  On the other hand, if a user is already set up for cryptographic login,
-  and they attempt to set up `m.login.password` using the same password,
-  then the client should do its best to alert them of the risk.
-  Perhaps the downgrade functionality should be hidden behind some sort
-  of "advanced options", and/or disabled by default.
+  * On the other hand, if a user is already set up for cryptographic login,
+    and they attempt to set up `m.login.password` using the same password,
+    then the client should do its best to alert them of the risk.
+    Perhaps the downgrade functionality should be hidden behind some sort
+    of "advanced options", and/or disabled by default.
   
 
 
