@@ -125,15 +125,15 @@ incremental syncs), for instance: initial sync, gappy incremental sync,
 To fetch all threads in a room, the
 [`/messages`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-messages) 
 API is used with newly added filtering options. It is proposed to expand the room
-event filtering to include filtering events by their related events:
+event filtering to include filtering events by their relating events:
 
 
 * `relation_types`: A list of relation types to include. An event `A` is included 
 in the filter only if there exists another event `B` which relates to `A` with a 
 `rel_type` which is defined in the list
 * `relation_senders`: A list of senders to include. An event `A` is included in 
-the filter only if there exists another event `B` which relates to `A` with a 
-`sender` which is defined in the list
+the filter only if there exists another event `B` which relates to `A`, and
+which has a `sender` which is in the list.
 
 This can also be combined with the `sender` field to search for threads which a 
 user has participated in (or not participated in).
@@ -246,10 +246,10 @@ in a future MSC.
 
 This means that events with invalid thread relations can make their way into the
 network, either due by malicious activity or buggy implementation. If a client
-receives such events, they should hide them as soon as they can determine for certain
+receives such events, it should hide them as soon as it can determine for certain
 that the associated event is not a valid target.
 
-Servers should not filter out invalid `m.thread` relations from the results when
+Servers are expected to not filter out invalid `m.thread` relations from the results when
 serving endpoints that deal with message relations. Clients that call those 
 endpoints should be aware that they may return events with invalid relations, 
 and deal with them appropriately.
@@ -262,7 +262,7 @@ Clients that do not support threads yet should copy the `m.thread` relation of t
 associated event when sending a reply. This is done so that clients that support 
 threads can render the event in the most relevant context.
 
-If a client does not include that relation type to the outgoing event, it should
+If a client does not include that relation type in the outgoing event, it should
 be treated as not being part of the thread.  For example, if a client has a
 separate area for displaying threads, clients can render the event in the main
 room timeline as a rich reply that will open and highlight the event in the
