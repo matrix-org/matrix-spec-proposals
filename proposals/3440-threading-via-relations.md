@@ -46,7 +46,8 @@ would include additional information in the `unsigned` field:
 }
 ```
 
-* `latest_event`: A reference to the last `m.thread` relation part of the thread
+* `latest_event`: The most recent event which relates to this event, with 
+  `rel_type` of `m.thread`.
 * `count`: An integer counting the number of `m.thread` events
 * `current_user_participated`: A flag set to `true` if the current logged in user
   has participated in the thread
