@@ -168,15 +168,15 @@ as it has another event which relates to it sent by `bob`.
 ### Server capabilities
 
 Threads might have sporadic support across servers, to simplify feature 
-detections for clients, a homeserver must return a capability entry for threads.
+detections for clients, a homeserver must advertise unstable support for threads.
+As part of the `/versions` API
+
 
 ```jsonc
 {
-  "capabilities": {
+  "unstable_features": {
+    "org.matrix.msc3440": true,
     // ...
-    "m.thread": {
-      "enabled": true
-    }
   }
 }
 ```
