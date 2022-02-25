@@ -122,11 +122,9 @@ incremental syncs), for instance: initial sync, gappy incremental sync,
 
 ### Fetch all threads in a room
 
-To fetch all threads in a room, the
-[`/messages`](https://matrix.org/docs/spec/client_server/latest#get-matrix-client-r0-rooms-roomid-messages) 
-API is used with newly added filtering options. It is proposed to expand the room
-event filtering to include filtering events by their relating events:
-
+[Event filters](https://spec.matrix.org/v1.2/client-server-api/#filtering) (as 
+used by endpoints including `/messages`, `/sync` and `/context`) are extended 
+with new options to allow filtering events by their relating events:
 
 * `related_by_rel_types`: A list of relation types to include. An event `A` is included 
 in the filter only if there exists another event `B` which relates to `A` with a 
