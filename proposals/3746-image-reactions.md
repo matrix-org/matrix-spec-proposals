@@ -1,110 +1,77 @@
-# MSC0000: Template for new MSCs
+# MSC3746: Render Images in Reactions
 
-*Note: Text written in italics represents notes about the section or proposal process. This document
-serves as an example of what a proposal could look like (in this case, a proposal to have a template)
-and should be used where possible.*
+Many messaging services such as Slack and Discord allow for custom images for reacts, rather than only standard emoji. Currently Element will only show the plain text of the reaction key.  In order to achieve parity with other messaging services and satisfy customer needs, we must implement a way to have reactions which can be any image, rather than one of the unicode emojis.
 
-*In this first section, be sure to cover your problem and a broad overview of the solution. Covering
-related details, such as the expected impact, can also be a good idea. The example in this document
-says that we're missing a template and that things are confusing and goes on to say the solution is
-a template. There's no major expected impact in this proposal, so it doesn't list one. If your proposal
-was more invasive (such as proposing a change to how servers discover each other) then that would be
-a good thing to list here.*
-
-*If you're having troubles coming up with a description, a good question to ask is "how
-does this proposal improve Matrix?" - the answer could reveal a small impact, and that is okay.*
-
-There can never be enough templates in the world, and MSCs shouldn't be any different. The level
-of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
-
+This proposal is concerned only with providing an event format which can describe image reactions.  Any way for users to compose and send these reactions such as pickers and image packs is out of scope.
 
 ## Proposal
 
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
-the technical points of your proposal. Including rationale for your proposed solution and detailing
-why parts are important helps reviewers understand the problem at hand. Not including enough detail
-can result in people guessing, leading to confusing arguments in the comments section. The example
-here covers why templates are important again, giving a stronger argument as to why we should have
-a template. Afterwards, it goes on to cover the specifics of what the template could look like.*
+Currently, reactions are implemented as room events which have a relationship with the event they are reacting to.  Identical reactions by different users are grouped together by the reaction key, and the reaction key (text/emoji) is displayed under the related message.
 
-Having a default template that everyone can use is important. Without a template, proposals would be
-all over the place and the minimum amount of detail may be left out. Introducing a template to the
-proposal process helps ensure that some amount of consistency is present across multiple proposals,
-even if each author decides to abandon the template.
+An example of a reaction, which displays 😀
+```json
+{
+  "type": "m.reaction",
+  "sender": "@testme:localhost:8008",
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.annotation",
+      "event_id": "$hPRRsFL03pNRE2tnmzzqyP6OXofz-bbsrQbRWJDA4p0",
+      "key": "😀"
+    }
+  },
+  "origin_server_ts": 1645830754708,
+  "unsigned": {
+    "age": 28,
+    "transaction_id": "m1645830754585.0"
+  },
+  "event_id": "$8dZO0nnIoz-uWyDfevNcaGcg5p6e7oK7CoKOwe-aWTM",
+  "room_id": "!uLFjhtpHuebWoCiyvz:localhost:8008"
+}
+```
 
-The default template should be a markdown document because the MSC process requires authors to write
-a proposal in markdown. Using other formats wouldn't make much sense because that would prevent authors
-from copy/pasting the template.
+In order to describe a reaction with an image, we simply include an mxc url and optionally [ImageInfo](https://github.com/matrix-org/matrix-doc/blob/f8b83b7fb1194ab48ee3461185c4764ebbfecc68/data/event-schemas/schema/core-event-schema/msgtype_infos/image_info.yaml) in the event content
 
-The template should have the following sections:
+content of an image reaction:
+```json
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.annotation",
+      "event_id": "$hPRRsFL03pNRE2tnmzzqyP6OXofz-bbsrQbRWJDA4p0",
+      "key": "😀"
+    },
+    "url": "mxc://matrix.org/VOczFYqjdGaUKNwkKsTjDwUa",
+    "info": {
+      "w": 256,
+      "h": 256,
+      "size": 214537,
+      "mimetype": "image/png",
+      "thumbnail_url": "mxc://matrix.org/VOczFYqjdGaUKNwkKsTjDwUa",
+      "thumbnail_info": {
+        "w": 256,
+        "h": 256,
+        "size": 214537,
+        "mimetype": "image/png"
+      }
+    }
+  }
+```
 
-* **Introduction** - This should cover the primary problem and broad description of the solution.
-* **Proposal** - The gory details of the proposal.
-* **Potential issues** - This is where problems with the proposal would be listed, such as changes
-  that are not backwards compatible.
-* **Alternatives** - This section lists alternative solutions to the same
-  problem which have been considered and dismsissed.
-* **Security considerations** - Discussion of what steps were taken to avoid security issues in the
-  future and any potential risks in the proposal.
+### Server side aggregation
+Server side aggregation will remain unchanged, where only the keys and counts of those keys are aggregated.  In the case where the client is unable to use client-side aggregation and must display reactions based on the server-side aggregation, then it will fallback to displaying only the key for reactions.
 
-Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
+Element web and desktop do not make use of server-side aggregation for reactions, so they are currently unaffected by this.
 
+### Fallback
+Older clients will simply display the reaction emoji or plaintext.  If an older client also clicks the reaction, it will send a reaction event without the image content.  Other clients must check all aggregated events to find which ones include the image.  If all newer clients unreact, then the image will be lost and the reaction will revert to plaintext/emoji.
 
 ## Potential issues
 
-*Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
-and they should be documented here. There should be some explanation for why the disadvantage is
-acceptable, however - just like in this example.*
+It's possible that different users will send reactions with different images under the same reaction key, either due to malicious action or collisions.  Reaction senders must take this into account and use a key that will not collide with previously existing reactions.
 
-Someone is going to have to spend the time to figure out what the template should actually have in it.
-It could be a document with just a few headers or a supplementary document to the process explanation,
-however more detail should be included. A template that actually proposes something should be considered
-because it not only gives an opportunity to show what a basic proposal looks like, it also means that
-explanations for each section can be described. Spending the time to work out the content of the template
-is beneficial and not considered a significant problem because it will lead to a document that everyone
-can follow.
-
+This would remove the chance of mismatches between key and image, but would not give an experience to older clients.
 
 ## Alternatives
 
-*This is where alternative solutions could be listed. There's almost always another way to do things
-and this section gives you the opportunity to highlight why those ways are not as desirable. The
-argument made in this example is that all of the text provided by the template could be integrated
-into the proposals introduction, although with some risk of losing clarity.*
+Instead of including the image information in the event content, we could include everything necessary in the relation key.  For example the key could be an mxc url, json, markdown, or reference to an external data source (such as an image set-as-room).
 
-Instead of adding a template to the repository, the assistance it provides could be integrated into
-the proposal process itself. There is an argument to be had that the proposal process should be as
-descriptive as possible, although having even more detail in the proposals introduction could lead to
-some confusion or lack of understanding. Not to mention if the document is too large then potential
-authors could be scared off as the process suddenly looks a lot more complicated than it is. For those
-reasons, this proposal does not consider integrating the template in the proposals introduction a good
-idea.
-
-
-## Security considerations
-
-*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
-section is a great place to outline some of the security-sensitive components of your proposal, such as
-why a particular approach was (or wasn't) taken. The example here is a bit of a stretch and unlikely to
-actually be worthwhile of including in a proposal, but it is generally a good idea to list these kinds
-of concerns where possible.*
-
-By having a template available, people would know what the desired detail for a proposal is. This is not
-considered a risk because it is important that people understand the proposal process from start to end.
-
-## Unstable prefix
-
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
-
-## Dependencies
-
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
