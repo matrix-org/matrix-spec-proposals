@@ -18,6 +18,10 @@ to be used alongside the traditional `m.login.password`.
 
 ## Proposal
 
+### No change to `POST /login`
+The `/login` API endpoint already supports authentication types beyond just
+`m.login.password`.
+
 ### Changes to `POST /register`
 
 Instead of sending the user's password as a top-level element of the JSON body,
@@ -85,8 +89,6 @@ by the server.
 The proposed approach is to add a new `GET` method for `/register`, similar
 to what is already done for `/login`.
 The server responds with a list of the supported authentication types.
-
-`GET /register`
 
 ```json
 {
@@ -188,32 +190,7 @@ DELETE /account/authenticator/m.login.webauthn/abcdwxyz
 ```
 
 
-### Changes to `POST /login`
 
-For `/login`, the top-level elements `type` and `password` in the JSON
-body are replaced by an `authenticators` object containing authentication
-data for one or more auth types.
-
-For example, with `m.login.password`:
-
-```
-POST /login
-```
-
-```json
-{
-  "identifier": {
-    "type": "m.id.user",
-    "user": "cheeky_monkey"
-  },
-  "initial_device_display_name": "Jungle Phone",
-  "authenticators": {
-    "m.login.password": {
-      "password": "ilovebananas"
-    }
-  }
-}
-```
 
 
 ## Potential issues
