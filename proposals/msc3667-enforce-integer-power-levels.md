@@ -15,7 +15,7 @@ function, which has all sorts of associated behaviours:
 > well as int('010', 8).
 
 All of this behaviour is exceptionally difficult for non-Python implementations to reproduce
-accurately, so we should not try to do so. 
+accurately. 
 
 ## Proposal
 
