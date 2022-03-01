@@ -1,8 +1,0 @@
-{
-  "content": {
-    "action": "request_cancellation",
-    "requesting_device_id": "RJYKSTBOIE",
-    "request_id": "1495474790150.19"
-  },
-  "type": "m.room_key_request"
-}
