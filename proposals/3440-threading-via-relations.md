@@ -35,14 +35,19 @@ would include additional information in the `unsigned` field:
 
 ```jsonc
 {
-  "latest_event": {
-    "content": {
-      // ...
-    },
-    // ...
-  },
-  "count": 7,
-  "current_user_participated": true
+  "event_id": "$root_event",
+  "unsigned": {
+    "m.relations": {
+      "m.thread": {
+        "latest_event": {
+          "event_id": "$thread_event",
+          // ...
+        },
+        "count": 7,
+        "current_user_participated": true
+      }
+    }
+  }
 }
 ```
 
