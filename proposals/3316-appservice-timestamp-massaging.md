@@ -46,4 +46,6 @@ application services are trusted server components, so allowing appservices
 to override timestamps does not create any new security considerations.
 
 ## Unstable prefix
-Not applicable, feature is already used in production without an unstable prefix.
+`org.matrix.msc3316.ts` may be used as the query parameter. However, the `ts`
+parameter is already used in production for the `/send` endpoint, which means
+the unstable prefix should only be used for the `/state` endpoint.
