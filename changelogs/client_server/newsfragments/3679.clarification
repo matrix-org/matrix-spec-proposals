@@ -1,0 +1,1 @@
+Remove erroneous `room_id` field from examples of `m.read`, `m.typing` in `/sync` and `m.fully_read` in room account data.
