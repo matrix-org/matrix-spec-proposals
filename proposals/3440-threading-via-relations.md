@@ -257,6 +257,11 @@ and deal with them appropriately.
 
 #### Sending `m.thread` before fully implementing threads
 
+There will be clients that will not or can't support threads. Whether this is a
+deliberate choice or because the system bridges to a platform that does not support
+threads, there are a number of steps developer of those systems can take to ensure
+continuity of conversation in the ecosystem.
+
 Clients that do not offer a threading UI should behave as follows when replying, for
 best interaction with those that do.
 They should set the `m.in_reply_to` part as usual, and then add on 
