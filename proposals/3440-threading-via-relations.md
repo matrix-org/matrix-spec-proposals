@@ -169,9 +169,8 @@ as it has another event which relates to it sent by `bob`.
 ### Server capabilities
 
 Threads might have sporadic support across servers, to simplify feature 
-detections for clients, a homeserver must advertise unstable support for threads.
-As part of the `/versions` API
-
+detections for clients, a homeserver must advertise unstable support for threads
+as part of the `/versions` API:
 
 ```jsonc
 {
@@ -257,18 +256,19 @@ and deal with them appropriately.
 
 #### Sending `m.thread` before fully implementing threads
 
-Clients that do not support threads yet should behave as followed when replying. 
-It should set the `m.in_reply_to` part as usual, and then add on 
+Clients that do not offer a threading UI should behave as follows when replying, for
+best interaction with those that do.
+They should set the `m.in_reply_to` part as usual, and then add on 
 `"rel_type": "m.thread"` and `"event_id": "$thread_root"`, copying `$thread_root`
 from the replied-to event.
 
-If a client does not include that relation type in the outgoing event, it should
+If the `m.thread` relation type is not present in an incoming event, it should
 be treated as not being part of the thread.  For example, if a client has a
 separate area for displaying threads, clients can render the event in the main
 room timeline as a rich reply that will open and highlight the event in the
 thread context when clicked.
 
-When replying to the following event, a client that does not support thread should 
+When replying to the following event, a client that does not support threads should 
 copy in `rel_type` and `event_id` properties in their reply mixin.
 
 ```jsonc
