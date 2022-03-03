@@ -1,62 +1,80 @@
 # MSC2285: Hidden read receipts
 
-Currently users must send read receipts in order to affect their notification counts, which
-alerts to other people that the user has read their message. For primarily privacy reasons,
-it may be desirable to users to not advertise to others that they've read a message.
+Currently users must send read receipts in order to affect their notification
+counts, which alerts other people that the user has read their message. For
+primarily privacy reasons, it may be desirable to users to not advertise to
+others that they've read a message.
 
 ## Proposal
 
-When sending a `m.read` receipt, a `m.hidden: true` flag can be included (optional) to tell
-the server to not send it to anyone else. This allows the user to affect their notification
-counts without advertising that they've read the message. `m.hidden` defaults to `false`.
+This MSC proposes adding a new `receiptType` of `m.read.private`. This
+`receiptType` is used when the user wants to affect their notification count but
+doesn't want other users to see their read receipt.
 
-For example:
-```
-POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read/$123
-{
-    "m.hidden": true
-}
+To move the user's private read receipt to `$123` the client can make a POST
+request such as this.
+
+```HTTP
+POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read.private/$123
+{}
 ```
 
-The same applies to read markers (which allow you to update your read receipt):
-```
+To also move the user's `m.fully_read` marker and `m.read` receipt the client
+can make a POST request such as this.
+
+```HTTP
 POST /_matrix/client/r0/rooms/!a:example.org/read_markers
 {
     "m.fully_read": "$123",
     "m.read": "$123",
-    "m.hidden": true
+    "m.read.private": "$123",
 }
 ```
 
-Note that fully read markers are not sent to other users and are local to the user sending them.
-Therefore, no changes are required or implied by `m.hidden` for `m.fully_read` - just `m.read`.
+It is assumed that if only an `m.read` receipt is received, the `m.read.private`
+should also be moved.
 
-Servers processing read receipts MUST NOT send hidden receipts to any other user than the sender.
-Servers MUST NOT send hidden receipts over federation to any server.
+The `m.read` is now optional as sometimes we only want to send `m.read.private`.
 
-## Tradeoffs
-
-Clients which support read receipts would end up rendering the user's receipt as jumping down
-when they send a message. This is no different from how IRC and similarly bridged users are
-perceived today.
+Servers MUST NOT send receipts of `receiptType` `m.read.private` to any other
+user than the sender. Servers also MUST NOT send receipts of `receiptType`
+`m.read.private` to any server over federation.
 
 ## Security considerations
 
-Servers could ignore the flag without telling the user. The user must already trust the homeserver
-to a degree however, and the methods of notifying the user to the problem are difficult to
-implement. Users can always run their own homeservers to ensure it behaves correctly.
+Servers could act as if `m.read.private` is the same as `m.read` so the user
+must already trust the homeserver to a degree however, and the methods of
+notifying the user to the problem are difficult to implement. Users can always
+run their own homeservers to ensure it behaves correctly.
 
-## Why not X kind of EDUs?
+## Potential issues
 
-In short: don't send those EDUs. Typing notifications, device messages, etc can all be mitigated
-by simply not calling the endpoints. Read receipts have a side effect of causing stuck
-notifications for users however, which is why they are solved here.
+Clients which support read receipts would end up rendering the user's receipt as
+jumping down when they send a message. This is no different from how IRC and
+similarly bridged users are perceived today.
+
+## Alternatives
+
+It has been suggested to use account data to control this on a per-account
+basis. While this might have some benefits, it is much less flexible and would
+lead to us inventing a way to store per-account settings in account data which
+should be handled in a separate MSC.
+
+Previous iterations of this MSC additionally suggested that having an `m.hidden`
+flag on existing read receipts could work, however this feels like assigning too
+much responsibility to an existing structure.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use `org.matrix.msc2285` as a namespace
-for identifiers. `m.hidden` becomes `org.matrix.msc2285.hidden` for example.
+While this MSC is not considered stable, implementations should use
+`org.matrix.msc2285` as a namespace.
 
-To detect server support, clients can either rely on the spec version (when stable) or the presence of
-a `org.matrix.msc2285` flag in `unstable_features` on `/versions`. Clients are recommended to check for
-server support to ensure they are not misleading the user about "hidden read receipts".
+|Release         |Development                      |
+|----------------|---------------------------------|
+|`m.read.private`|`org.matrix.msc2285.read.private`|
+
+To detect server support, clients can either rely on the spec version (when
+stable) or the presence of a `org.matrix.msc2285` flag in  `unstable_features`
+on `/versions`. Clients are recommended to check for server support to ensure
+they are not misleading the user about their read receipts not being visible to
+other users.
