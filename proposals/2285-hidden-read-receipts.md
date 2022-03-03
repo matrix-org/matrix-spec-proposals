@@ -60,6 +60,10 @@ basis. While this might have some benefits, it is much less flexible and would
 lead to us inventing a way to store per-account settings in account data which
 should be handled in a separate MSC.
 
+Previous iterations of this MSC additionally suggested that having an `m.hidden`
+flag on existing read receipts could work, however this feels like assigning too
+much responsibility to an existing structure.
+
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use
