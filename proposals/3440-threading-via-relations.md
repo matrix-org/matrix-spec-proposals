@@ -88,9 +88,11 @@ A thread will be displayed as a chain of replies on clients unaware of threads.
 
 Thread-ready clients should always include an `m.in_reply_to` property when sending 
 a threaded event. It should always reference the latest message-like event in the 
-thread unless a user is explicitly replying to another event.
-The rich reply fallback should be displayed in a thread context unless it contains 
-the new `hide_reply` field as described in the previous section.
+thread unless a user is explicitly replying to another event (in which case `hide_reply`
+should be set to `false`, as above).
+
+The rich reply fallback should be ignored by thread-ready clients (ie, the
+event should be displayed in a thread context) unless `hide_reply` is `false`.
 
 ```jsonc
 "m.relates_to": {
