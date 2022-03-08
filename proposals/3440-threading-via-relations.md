@@ -60,14 +60,14 @@ would include additional information in the `unsigned` field:
 #### Rich replies in a thread 
 
 Rich replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
-However clients should fill in the new `hide_reply` property
+However clients should fill in the new `show_reply` property
 in order to display that in a thread context.
 
 ```json
 "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "$thread_root",
-    "hide_reply": false,
+    "show_reply": true,
     "m.in_reply_to": {
         "event_id": "$event_target"
     }
@@ -92,7 +92,7 @@ thread unless a user is explicitly replying to another event (in which case `hid
 should be set to `false`, as above).
 
 The rich reply fallback should be ignored by thread-ready clients (ie, the
-event should be displayed in a thread context) unless `hide_reply` is `false`.
+event should be displayed in a thread context) unless `show_reply` is `reply`.
 
 ```jsonc
 "m.relates_to": {
@@ -217,7 +217,7 @@ A `m.thread` event can only reference events that do not have a `rel_type`
     "m.relates_to": {
       "rel_type": "m.thread",
       "event_id": "ev1",
-      "hide_reply": true,
+      "show_reply": false,
       "m.in_reply_to": {
           "event_id": "ev1"
       }
@@ -285,7 +285,7 @@ copy in `rel_type` and `event_id` properties in their reply mixin.
   "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "ev1",
-    "hide_reply": false,
+    "show_reply": true,
     "m.in_reply_to": {
       "event_id": "$event_target"
     }
@@ -368,7 +368,7 @@ MSC has not been included in a spec release.
   in the `RoomEventFilter`
   * `io.element.relation_types` should be used in place of `related_by_rel_types` 
   in the `RoomEventFilter`
-  * `io.element.hide_reply` should be used in place of `hide_reply`
+  * `io.element.show_reply` should be used in place of `show_reply`
 
 ## Dependencies
 
