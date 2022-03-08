@@ -60,14 +60,14 @@ would include additional information in the `unsigned` field:
 #### Rich replies in a thread 
 
 Rich replies are still handled via the `m.in_reply_to` field of `m.relates_to`.
-However clients should fill in the new `show_reply` property
-in order to display that in a thread context.
+However clients should specify that this is not a thread fallback by setting
+the `is_falling_back` property to `false`.
 
 ```json
 "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "$thread_root",
-    "show_reply": true,
+    "is_falling_back": false,
     "m.in_reply_to": {
         "event_id": "$event_target"
     }
@@ -88,16 +88,17 @@ A thread will be displayed as a chain of replies on clients unaware of threads.
 
 Thread-ready clients should always include an `m.in_reply_to` property when sending 
 a threaded event. It should always reference the latest message-like event in the 
-thread unless a user is explicitly replying to another event (in which case `hide_reply`
-should be set to `false`, as above).
-
-The rich reply fallback should be ignored by thread-ready clients (ie, the
-event should be displayed in a thread context) unless `show_reply` is `reply`.
+thread. When sending the event, clients should also specify that `m.in_reply_to`
+is a fallback mechanism by setting the `is_falling_back` property to `true`.
+If omitted this property will default to `false` and client will treat the
+`m.in_reply_to` part of the event as a genuine reply and not as a fallback
+mechasnim anymore.
 
 ```jsonc
 "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "ev1",
+    "is_falling_back": true,
     "m.in_reply_to": {
         "event_id": "last_event_id_in_thread",
     }
@@ -217,7 +218,7 @@ A `m.thread` event can only reference events that do not have a `rel_type`
     "m.relates_to": {
       "rel_type": "m.thread",
       "event_id": "ev1",
-      "show_reply": false,
+      "is_falling_back": true,
       "m.in_reply_to": {
           "event_id": "ev1"
       }
@@ -285,7 +286,7 @@ copy in `rel_type` and `event_id` properties in their reply mixin.
   "m.relates_to": {
     "rel_type": "m.thread",
     "event_id": "ev1",
-    "show_reply": true,
+    "is_falling_back": false,
     "m.in_reply_to": {
       "event_id": "$event_target"
     }
@@ -368,7 +369,7 @@ MSC has not been included in a spec release.
   in the `RoomEventFilter`
   * `io.element.relation_types` should be used in place of `related_by_rel_types` 
   in the `RoomEventFilter`
-  * `io.element.show_reply` should be used in place of `show_reply`
+  * `io.element.show_reply` should be used in place of `is_falling_back`
 
 ## Dependencies
 
