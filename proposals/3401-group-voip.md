@@ -258,6 +258,35 @@ XXX: define how these DC messages muxes with other traffic, and consider what me
 
 TODO: spell out how this works with active speaker detection & associated signalling
 
+## Example Diagrams
+
+**Legend**
+
+| Arrow Style | Description |
+|-------------|-------------|
+| Solid | [State Event](https://spec.matrix.org/latest/client-server-api/#types-of-room-events) |
+| Dashed | [Event (sent as to-device message)](https://spec.matrix.org/latest/client-server-api/#send-to-device-messaging) |
+
+
+### Basic Call
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Alice
+    participant Room
+    participant Bob
+    Alice->>Room: m.call
+    Alice->>Room: m.call.member
+    Bob->>Room: m.call.member
+    Alice-->>Bob: m.call.invite
+    Alice-->>Bob: m.call.candidates
+    Alice-->>Bob: m.call.candidates
+    Bob-->>Alice: m.call.answer
+    Bob-->>Alice: m.call.candidates
+    Alice-->>Bob: m.call.select_answer
+```
+
 ## Encryption
 
 We get E2EE for 1:1 and full mesh calls automatically in this model.
