@@ -252,8 +252,6 @@ If you are using your SFU in a call, it will need to know how to connect to othe
 
 Also, in order to authenticate that only legitimate users are allowed to subscribe to a given conf_id on an SFU, it would make sense for the SFU to act as an AS and sniff the `m.call` events on their associated server, and only act on to-device `m.call.*` events which come from a user who is confirmed to be in the room for that `m.call`.  (In practice, if the conf is E2EE then it's of limited use to connect to the SFU without having the keys to decrypt the traffic, but this feature is desirable for non-E2EE confs and to stop bandwidth DoS)
 
-Finally, the DC transport is also used to detect connectivity timeouts more rapidly than webrtc's media timeout would allow, while avoiding clogging up the homeserver with keepalive traffic. This is done by each side sending a `"op": "ping"` packet every few seconds, and timing out the call if an `"op": "pong"` doesn't arrive within 5 seconds.
-
 XXX: define how these DC messages muxes with other traffic, and consider what message encoding to actually use.
 
 TODO: spell out how this works with active speaker detection & associated signalling
