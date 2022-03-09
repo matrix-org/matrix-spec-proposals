@@ -1,1 +1,0 @@
-Clarify that the `content` for `X-Matrix` signature validation is the parsed JSON body.

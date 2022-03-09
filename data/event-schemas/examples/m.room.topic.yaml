@@ -1,8 +1,0 @@
-{
-  "$ref": "core/state_event.json",
-  "type": "m.room.topic",
-  "state_key": "",
-  "content": {
-    "topic": "A room topic"
-  }
-}
