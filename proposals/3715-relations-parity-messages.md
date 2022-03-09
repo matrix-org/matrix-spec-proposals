@@ -18,6 +18,11 @@ which is copied below:
 >
 > One of: `[b f]`.
 
+In order to be backwards compatible with MSC2675 (and Synapse's legacy
+implementation), the `dir` parameter must be optional (defaulting to `b`). This
+differs from the specification of `/messages` where the `dir` parameter is
+required.[^1]
+
 Including the `dir` parameter will make it easier to request missing relation
 information without needed to paginate through known information -- this is
 particularly needed for mobile or low-bandwidth devices where it is desired to
@@ -28,10 +33,6 @@ surprises for developers.
 
 
 ## Potential issues
-
-Unlike for `/messages`, the `dir` parameter for `/relations` needs to be optional
-(defaulting to `b`) to be backwards  compatible with MSC2675 (and Synapse's
-legacy implementation).
 
 `/messages` does have one additional parameter (`filter`) which would still not
 be implemented for `/relations`. It is unclear if this parameter is useful here.
@@ -52,3 +53,6 @@ None.
 ## Unstable prefix
 
 Before standardization, `org.matrix.msc3715.dir` should be used in place of `dir`.
+
+[^1]: Note that Synapse's implementation does not require a `dir` parameter for
+the `/messages` API and defaults to `f` if it is not provided.
