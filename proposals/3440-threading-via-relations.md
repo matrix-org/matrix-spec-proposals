@@ -87,12 +87,13 @@ in the room.
 A thread will be displayed as a chain of replies on clients unaware of threads.
 
 Thread-ready clients should always include an `m.in_reply_to` property when sending 
-a threaded event. It should always reference the latest message-like event in the 
-thread. When sending the event, clients should also specify that `m.in_reply_to`
-is a fallback mechanism by setting the `is_falling_back` property to `true`.
-If omitted this property will default to `false` and client will treat the
-`m.in_reply_to` part of the event as a genuine reply and not as a fallback
-mechasnim anymore.
+a threaded event. Unless the user is explicitly replying to another event (see "Rich replies in a thread", above),
+the `m.in_reply_to` property should reference the latest message-like event in the 
+thread, and clients should also specify that `m.in_reply_to`
+is a fallback mechanism (rather than a genuine reply) by setting the `is_falling_back` property to `true`.
+
+(If omitted, `is_falling_back` defaults to `false`, and receiving clients will treat the
+`m.in_reply_to` part of the event as a genuine reply.)
 
 ```jsonc
 "m.relates_to": {
