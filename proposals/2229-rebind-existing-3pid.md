@@ -7,7 +7,7 @@ homeserver, and another for binding to an identity server. These new
 endpoints will allow the homeserver to enforce rules on emails that already
 exist on the homeserver, only when modifying homeserver email, while only
 needing to forward requests when binding to an identity server. This removes
-the problem MSC2229 is trying to solve, and it is thus made obselete.
+the problem MSC2229 is trying to solve, and it is thus made obsolete.
 
 ---
 

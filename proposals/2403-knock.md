@@ -196,9 +196,6 @@ contain this information:
 
 ```json
 {
-  "aliases": [
-    "#murrays:cheese.bar"
-  ],
   "avatar_url": "mxc://bleecker.street/CHEDDARandBRIE",
   "guest_can_join": false,
   "name": "CHEESE",
@@ -436,7 +433,7 @@ The room is unknown to the remote server. Example reply:
 
 ## Restrictions
 There are restrictions to being able to set this membership, as well as
-accepting or denying the knock.  A formal description of the changes to the auth rules is given below; 
+accepting or denying the knock.  A formal description of the changes to the auth rules is given below;
 first we summarise the semantics of the proposed changes.
 
 ### Current membership
@@ -604,7 +601,7 @@ partake in. That is why this proposal enables the `knock` join rule, in
 order to allow room admins to opt in to this behaviour.
 
 # Alternatives
-The possibility of initiating a knock by sending EDUs between users instead of sending 
+The possibility of initiating a knock by sending EDUs between users instead of sending
 a membership state event into a room has been raised. This is an ongoing discussion
 occurring at https://github.com/matrix-org/matrix-doc/pull/2403/files#r573180627.
 
