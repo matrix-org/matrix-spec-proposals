@@ -54,5 +54,6 @@ None.
 
 Before standardization, `org.matrix.msc3715.dir` should be used in place of `dir`.
 
-[^1]: Note that Synapse's implementation does not require a `dir` parameter for
-the `/messages` API and defaults to `f` if it is not provided.
+[^1]: Note that [Synapse's implementation](https://github.com/matrix-org/synapse/blob/10a88ba91cb16ccf757984f0a7d41ddf8b4dc07f/synapse/streams/config.py#L48)
+does not require a `dir` parameter for the `/messages` API and defaults to `f`
+if it is not provided.
