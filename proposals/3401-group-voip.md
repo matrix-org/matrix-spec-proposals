@@ -107,7 +107,11 @@ The fields within the item in the `m.calls` contents are:
 
  * `m.call_id` - the ID of the conference the user is claiming to participate in.  If this doesn't match an unterminated `m.call` event, it should be ignored.
  * `m.foci` - Optionally, if the user wants to be contacted via an SFU rather than called directly (either 1:1 or full mesh), the user can also specify the SFUs their client(s) are connecting to.
- * `m.sources` - Optionally, the user can list the various media streams (and tracks within the streams) they are able to send.  This is important if connecting to an SFU, as it lets the SFU know what simulcast tracks the sender can send.  In theory the offered SDP should include this, but if we are multiplexing all streams into the same SDP it seems likely that this will get lost, hence publishing it here.  If the conference has no SFU, this list defines the devices which other devices should connect to full-mesh in order to participate.
+ * `m.devices` - The list of the member's active devices in the call. A member may join from one or more devices at a time, but they may not have two active sessions from the same device. Each device contains the following properties:
+   * `device_id` - The device id to use for to-device messages when establishing a call
+   * `session_id` - A unique identifier used for resolving duplicate sessions from a given device. When the `session_id` field changes from an incoming `m.call.member` event, any existing calls from this device in this call should be terminated. `session_id` should be generated once per client session on application load.
+   * `feeds` - Contains an array of feeds the member is sharing and the opponent member may reference when setting up their WebRTC connection.
+     * `purpose` - Either `m.usermedia` or `m.screenshare` otherwise the feed should be ignored.
 
 For instance:
 
@@ -123,65 +127,23 @@ For instance:
                     "@sfu-lon:matrix.org",
                     "@sfu-nyc:matrix.org",
                 ],
-                "m.sources": [
+                "m.devices": [
                     {
-                        "id": "qegwy64121wqw", // WebRTC MediaStream id
-                        "purpose": "m.usermedia",
-                        "name": "Webcam", // optional, just to help users understand what multiple streams from the same person mean.
-                        "device_id": "ASDUHDGFYUW", // just in case people ending up dialing this directly for full mesh or 1:1
-                        "audio": [
+                        "device_id": "ASDUHDGFYUW", // Used to target to-device messages
+                        "session_id": "GHKJFKLJLJ", // Used to resolve duplicate calls from a device
+                        "feeds": [
                             {
-                                "id": "zbhsbdhwe", // WebRTC MediaStreamTrack id
-                                "settings": { // WebRTC MediaTrackSettings object
-                                    "channelCount": 2,
-                                    "sampleRate": 48000,
-                                    "m.maxbr": 32000, // Matrix-specific extension to advertise the max bitrate of this track
-                                }
+                                "purpose": "m.usermedia"
+                                // TODO: Add tracks
+                                // TODO: Available bitrates etc. should be listed here
                             },
-                        ],
-                        "video": [
                             {
-                                "id": "zbhsbdhzs", 
-                                "settings": {
-                                    "width": 1280,
-                                    "height": 720,
-                                    "facingMode": "user",
-                                    "frameRate": 30.0,
-                                    "m.maxbr": 512000,
-                                } 
-                            },
-                            { 
-                                "id": "zbhsbdhzx", 
-                                "settings": {
-                                    "width": 320,
-                                    "height": 240,
-                                    "facingMode": "user",
-                                    "frameRate": 15.0,
-                                    "m.maxbr": 64000,
-                                } 
-                            },
-                        ],
-                        "mosaic": {}, // for composited video streams?
-                    },
-                    {
-                        "id": "suigv372y8378",
-                        "name": "Screenshare", // optional
-                        "purpose": "m.screenshare", 
-                        "device_id": "ASDUHDGFYUW",
-                        "video": [
-                            {
-                                "id": "xbhsbdhzs", 
-                                "settings": {
-                                    "width": 3072,
-                                    "height": 1920,
-                                    "cursor": "moving",
-                                    "displaySurface": "monitor",
-                                    "frameRate": 30.0,
-                                    "m.maxbr": 768000,
-                                } 
-                            },
+                                "purpose": "m.screenshare"
+                                // TODO: Add tracks
+                                // TODO: Available bitrates etc. should be listed here
+                            }
                         ]
-                    },
+                    }
                 ]
             }
         ]
@@ -189,22 +151,25 @@ For instance:
 }
 ```
 
-This builds on MSC #3077, which describes streams in `m.call.*` events via a `sdp_stream_metadata` field, but providing the full set of information needed for all devices in the room to know what streams are available in the group call without having to independently discover them from the SFU.
+This builds on MSC #3077, which describes streams in `m.call.*` events via a `sdp_stream_metadata` field, but providing the full set of information needed for all devices in the room to know what feeds are available in the group call without having to independently discover them from the SFU.
 
-It's acceptable to advertise rigid formats here rather than dynamically negotiating resolution, bitrate etc, as in a group call we should just pick plausible desirable formats rather than try to please everyone.
+** TODO: Add tracks field **
+** TODO: Add bitrate/format fields **
 
-If a device loses connectivity, it is not particularly problematic that the membership data will be stale: all that will happen is that calls to the disconnected device will fail due to media or data-channel keepalive timeouts, and then subsequent attempts to call that device will fail.  Therefore (unlike the earlier demos) we don't need to spot timeouts by constantly re-posting the state event.
+Clients should do their best to ensure that calls in `m.call.member` state are removed when the member leaves the call. However, there will be cases where the device loses network connectivity, power, the application is forced closed, or it crashes. If the `m.call.member` state has stale device data the call setup will fail. Clients should re-attempt invites up to 3 times before giving up on calling a member.
 
 ### Call setup
 
 Call setup then uses the normal `m.call.*` events, except they are sent over to-device messages to the relevant devices (encrypted via Olm).  This means:
 
- * When initiating a 1:1 call, the `m.call.invite` is sent to `*` devices of the intended target user.
-     * Once the user answers the call from the device, the sender should rescind the other pending to-device messages, ensuring that other devices don't get spammed about long-obsolete 1:1 calls.  XXX: We will need a way to rescind pending to-device msgs.
-     * Subsequent candidates and other events are sent only to the device who answered.
-     * XXX: do we still need MSC2746's `party_id` and `m.call.select_answer`?
- * We will need to include the `m.call_id` and room_id so that peers can map the call to the right room.
- * However, especially for 1:1 calls, we might want to let the to-device messages flow and cause the client to ring even before the `m.call` event propagates, to minimise latency.  Therefore we'll need to include an `m.intent` on the `m.call.invite` too.
+ * When initiating a 1:1 call, the `m.call.invite` is sent to the devices listed in `m.call.member` event's `m.devices` array using the `device_id` field.
+ * `m.call.*` events sent via to-device messages should also include the following properties in their content:
+   * `conf_id` - The group call id listed in `m.call`
+   * `dest_session_id` - The recipient's session id. Incoming messages with a `dest_session_id` that doesn't match your current session id should be discarded.
+ * In addition to the fields above `m.call.invite` events sent via to-device messages should include the following properties  :
+   * `device_id` - The message sender's device id. Used by the opponent member to send response to-device signalling messages even if the `m.call.member` event has not been received yet.
+   * `sender_session_id` - Like the `device_id` the `sender_session_id` is used by the opponent member to filter out messages unrelated to the sender's session even if the `m.call.member` event has not been received yet.
+ * For 1:1 calls, we might want to let the to-device messages flow and cause the client to ring even before the `m.call` event propagates, to minimise latency.  Therefore we'll need to include an `m.intent` on the `m.call.invite` too.
  * When initiating a group call, we need to decide which devices to actually talk to.
      * If the client has no SFU configured, we try to use the `m.foci` in the `m.call` event.
          * If there are multiple `m.foci`, we select the closest one based on latency, e.g. by trying to connect to all of them simultaneously and discarding all but the first call to answer.
