@@ -84,9 +84,34 @@ The `exact` value should be the text occupying the designated location. The
 `prefix` should be a snippet of text occurring before the designated location,
 and the `suffix` should be a snippet occurring after the designated location.
 `prefix` and `suffix` may be omitted in cases where they're clearly unnecessary
-to disambiguate the location. Text should be normalized as above.
+to disambiguate the location. 
+
+Text should be normalized as above. In the case of multiple matches, all
+matches should be treated as part of the location.
 
 ### Text Ranges
+
+There may be cases in which we want to use the selectors above to indicate the
+endpoints of a text range, because we want, for example, to select from the
+beginning of a document to a certain phrase, or because we want to select a
+long quote without including the contents of the quote in the `exact` value.
+
+In these cases, we can use a Text Range location, `m.markup.text.range`. Each
+endpoint of the range should be given either as a non-negative integer, or as a
+`prefix`/`suffix` pair. So for example,
+
+```
+m.markup.location: {
+    m.markup.text.range: {
+        start: 0
+        end: {
+            prefix: "the",
+            suffix: " end"
+    }
+}
+```
+
+would indicate all of "this is the end" except " end".
 
 ### Web Annotation Data Model Serialization
 
