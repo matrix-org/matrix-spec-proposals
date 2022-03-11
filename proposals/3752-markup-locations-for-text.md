@@ -107,6 +107,7 @@ m.markup.location: {
         end: {
             prefix: "the",
             suffix: " end"
+        }
     }
 }
 ```
