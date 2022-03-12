@@ -1,4 +1,4 @@
-# MSCXXXX: Removing Profile Information
+# MSC3754: Removing Profile Information
 
 In the Client-Server API specification, there is currently no clear way to remove the profile information, or to know
 when it has been removed.
@@ -54,9 +54,9 @@ None that I can think of.
 
 ## Unstable prefix
 
-When implementing this proposal, clients and servers should use the `org.matrix.mscXXXX` unstable prefix;
+When implementing this proposal, clients and servers should use the `org.matrix.msc3754` unstable prefix;
 
 ```http
-DELETE /_matrix/client/unstable/org.matrix.mscXXXX/profile/{userId}/avatar_url
-DELETE /_matrix/client/unstable/org.matrix.mscXXXX/profile/{userId}/displayname
+DELETE /_matrix/client/unstable/org.matrix.msc3754/profile/{userId}/avatar_url
+DELETE /_matrix/client/unstable/org.matrix.msc3754/profile/{userId}/displayname
 ```
