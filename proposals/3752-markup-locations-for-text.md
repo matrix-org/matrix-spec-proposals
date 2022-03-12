@@ -103,7 +103,7 @@ endpoint of the range should be given either as a non-negative integer, or as a
 ```
 m.markup.location: {
     m.markup.text.range: {
-        start: 0
+        start: 0,
         end: {
             prefix: "the",
             suffix: " end"
@@ -116,4 +116,115 @@ would indicate all of "this is the end" except " end".
 
 ### Web Annotation Data Model Serialization
 
+[MSC3574](https://github.com/opentower/matrix-doc/blob/main/proposals/3574-resource-markup.md)
+includes a scheme for serializing matrix markup events as web annotations in
+the web annotation data model. The scheme requires each markup location type to
+have a canonical serialization as [a web annotation
+selector](https://www.w3.org/TR/annotation-model/#selectors]). In this section,
+we describe how to serialize `m.markup.text.range`, `m.markup.text.quote` and
+`m.markup.text.position` as WADM selectors.
+
+The correspondence between `m.markup.text.quote` and `m.markup.text.position`
+and WADM
+[TextQuoteSelector](https://www.w3.org/TR/annotation-model/#text-quote-selector)
+and
+[TextPositionSelector](https://www.w3.org/TR/annotation-model/#text-position-selector)
+selectors is very direct. In each case, we only need to add a field indicating
+the selector type. So a location like:
+
+```
+m.markup.text.quote: {
+    exact: ...
+    prefix: ...
+    suffix: ...
+}
+```
+
+becomes
+
+``` 
+{
+    type: "TextQuoteSelector"
+    exact: ... 
+    prefix: ... 
+    suffix: ... 
+}
+```
+
+and 
+
+```
+m.markup.text.position: {
+    start: ...
+    end: ...
+}
+```
+
+becomes
+
+``` 
+{
+    type: "TextPositionSelector"
+    start: ...
+    end: ...
+}
+```
+
+The more complicated `m.markup.text.range` should be serialized via the WADM
+[RangeSelector](https://www.w3.org/TR/annotation-model/#range-selector) selector, which
+combines two WADM selectors to designate an area reaching from the beginning of
+the area designated by the first selector to the beginning of the area
+designated by the second selector.
+
+If either endpoint of the `m.markup.text.range` location is an offset, that
+endpoint should be represented by a WADM `TextPositionSelector` with both the
+start and end values equal to the offset. If either endpoint of an
+`m.markup.text.range` location is a `prefix`/`suffix` pair, it should be
+represented by a `TextQuoteSelector` with the corresponding `prefix`, but with
+the `exact` value equal to the suffix, and with no suffix provided. 
+
+So, for example,
+
+```
+m.markup.text.range: { 
+    start: 0,
+    end: { 
+        prefix: "the", 
+        suffix: " end" 
+    } 
+}
+```
+
+becomes 
+
+```
+{ 
+    type: RangeSelector,
+    startSelector: {
+        type: TextPositionSelector,
+        start: 0,
+        end: 0
+    }
+    endSelector: { 
+        type: TextQuoteSelector
+        prefix: "the", 
+        exact: " end" 
+    } 
+}
+```
+
 ## Security considerations
+
+Because room state is unencrypted, `m.space.child` events conveying locations
+via `m.markup.location.quote` could leak information about an encrypted
+resource text. This is part of a more general problem with state events
+potentially leaking information, and deserves a general resolution, a la
+[MSC3414](https://github.com/matrix-org/matrix-spec-proposals/blob/travis/msc/encrypted-state/proposals/3414-encrypted-state.md)
+
+## Unstable prefix
+
+| Proposed Final Identifier | Purpose                                                    | Development Identifier                        |
+| ------------------------- | ---------------------------------------------------------- | --------------------------------------------- |
+| `m.markup.text.quote`     | key in `m.markup.location`                                 | `com.open-tower.msc3752.markup.text.quote`    |
+| `m.markup.text.position`  | key in `m.markup.location`                                 | `com.open-tower.msc3752.markup.text.position` |
+| `m.markup.text.range`     | key in `m.markup.location`                                 | `com.open-tower.msc3752.markup.text.range`    |
