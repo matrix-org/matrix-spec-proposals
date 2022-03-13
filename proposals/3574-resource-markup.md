@@ -1,6 +1,7 @@
 # Marking up resources
 
-This MSC proposes a way to annotate and discuss various resources (web pages, documents, videos, and other files) using Matrix. The general idea is to use [Spaces (MSC1772)](https://github.com/matrix-org/matrix-doc/pull/1772) to represent a general resource to be annotated, and then a combination of child rooms and [Extensible Events (MSC1767)](https://github.com/matrix-org/matrix-doc/blob/matthew/msc1767/proposals/1767-extensible-events.md) to represent annotations and discussion. This MSC specifies:
+This MSC proposes a way to annotate and discuss various resources (web pages, documents, videos, and other files) using Matrix. The general idea is to use [Spaces (MSC1772)](https://github.com/matrix-org/matrix-spec-proposals/pull/1772) to represent a general resource to be annotated, and then a combination of child rooms and [Extensible Events (MSC1767)](
+https://github.com/matrix-org/matrix-spec-proposals/pull/1767) to represent annotations and discussion. This MSC specifies:
 
 * Additional data in the `m.room.create` event to mark a space as describing  a resource to be annotated.
 * Additional (optional) data in the `m.space.child` and `m.space.parent` events to mark sections of the resource (pages, timestamps, etc.) that are being discussed by the child room. The specific format of the location data is resource-specific, and will be described in further MSCs.
@@ -17,7 +18,7 @@ A space will be considered a *resource* if its creation event includes a key `m.
 
 The `m.markup.resource` value MUST include either:
 
-1. an `m.file` key, populated according to the `m.file` schema as presented in [Extensible Events - Files (MSC3551)](https://github.com/matrix-org/matrix-doc/blob/travis/msc/extev/files/proposals/3551-extensible-events-files.md), or
+1. an `m.file` key, populated according to the `m.file` schema as presented in [Extensible Events - Files (MSC3551)](https://github.com/matrix-org/matrix-spec-proposals/pull/3551), or
 2. a `url` and `mimetype` key. This format is preferred for potentially mutable resources (like web pages with dynamic content) or for resources that require multiple network requests to display properly.
 
 Clients should recognize that a `url` subordinate to an `m.markup.resource` (including within an `m.file` value) may contain URI schemes other than `mxc`. It may contain `http(s)`, and may ultimately contain other schemes in the future. Clients handling `m.markup.resource` should be prepared to fail gracefully upon encountering an unrecognized scheme.
@@ -53,7 +54,8 @@ Different Media Types will require different notions of "location". A need for n
 
 Hence, the `m.markup.location` value MUST be an object, whose keys are different kinds of locations occupied by a single annotation, with the names of those locations either formalized in the matrix spec or namespaced using Java conventions. Some proposed location types are described in:
 
-- [MSC3592: Markup locations for PDF documents](https://github.com/matrix-org/matrix-doc/pull/3592)
+- [MSC3592: Markup locations for PDF documents](https://github.com/matrix-org/matrix-spec-proposals/pull/3592)
+- [MSC3752: Markup locations for text](https://github.com/matrix-org/matrix-spec-proposals/pull/3752)
 
 ### Examples
 
@@ -83,7 +85,7 @@ Hence, the `m.markup.location` value MUST be an object, whose keys are different
 
 It may be desirable, within a conversation concerning a resource, to make reference to some part of the resource. Annotation message events make this possible.
 
-An annotation message event will treat `m.markup` as an extensible event schema following [Extensible events (MSC1767)](https://github.com/matrix-org/matrix-doc/pull/1767), but the message will ordinarily include an `m.text` value with text optionally describing the annotation as a fallback. The `m.markup` value will consist of an `m.markup.location`, and an `m.markup.parent` that indicates the room id of the resource with which the annotation message is associated. (The latter is necessary when a room has more than one parent resource.) Until migration to extensible events is complete, annotations will send messages of the type `m.room.message`, for compatibility with non-annotation-aware clients.
+An annotation message event will treat `m.markup` as an extensible event schema following [Extensible events (MSC1767)](https://github.com/matrix-org/matrix-spec-proposals/pull/1767), but the message will ordinarily include an `m.text` value with text optionally describing the annotation as a fallback. The `m.markup` value will consist of an `m.markup.location`, and an `m.markup.parent` that indicates the room id of the resource with which the annotation message is associated. (The latter is necessary when a room has more than one parent resource.) Until migration to extensible events is complete, annotations will send messages of the type `m.room.message`, for compatibility with non-annotation-aware clients.
 
 ### Examples
 
@@ -185,7 +187,7 @@ However, these more abstract cases can be subsumed under the design here. Geospa
 
 ## Resources as a space type or subtype
 
-Resources could be designated as such using an `m.purpose` event, as in [Room subtyping (MSC3088)](https://github.com/matrix-org/matrix-doc/blob/travis/msc/mutable-subtypes/proposals/3088-room-subtyping.md), or with an `m.room.type` event as in [Room Types (MSC1840)](https://github.com/matrix-org/matrix-doc/pull/1840). 
+Resources could be designated as such using an `m.purpose` event, as in [Room subtyping (MSC3088)](https://github.com/matrix-org/matrix-spec-proposals/pull/3088), or with an `m.room.type` event as in [Room Types (MSC1840)](https://github.com/matrix-org/matrix-spec-proposals/pull/1840). 
 
 However, 
 
@@ -198,7 +200,7 @@ Rather than being represented by `m.space.child` events, annotations that open a
 
 ## Discussions as threads
 
-Discussions concerning a part of resource could be modeled as threads rooted in `m.markup` message events, using [Threading via `m.thread` relation (MSC3440)](https://github.com/matrix-org/matrix-doc/pull/3440). The current proposal is intended to be compatible with clients that model discussions this way, since those clients are free to build threads rooted in `m.markup` events and display these however they like. However, an alternative approach to marking up resources would be to *only* introduce `m.markup` events, and expect all clients to follow a thread-based model.
+Discussions concerning a part of resource could be modeled as threads rooted in `m.markup` message events, using [Threading via `m.thread` relation (MSC3440)](https://github.com/matrix-org/matrix-spec-proposals/pull/3440). The current proposal is intended to be compatible with clients that model discussions this way, since those clients are free to build threads rooted in `m.markup` events and display these however they like. However, an alternative approach to marking up resources would be to *only* introduce `m.markup` events, and expect all clients to follow a thread-based model.
 
 Instead, the current proposal also provides the option of modeling discussions concerning a resource as standalone rooms. There are a number of advantages to this choice. Discussions modeled as rooms inherit:
 
@@ -229,7 +231,7 @@ Some disadvantages are:
 
 # Security Considerations
 
-None.
+Because state events are not encrypted, `m.space.child` events with `m.markup.location` keys may leak information about encrypted resources. This is really a general problem with unencrypted state events, and should be solved by something like [MSC3414: Encrypted State Events](https://github.com/matrix-org/matrix-spec-proposals/pull/3414). Until encrypted state events are available, MSC individual location types with fields that might leak information should flag this as a security consideration, and clients should mitigate with appropriate warnings.
 
 # Unstable Prefix
 
