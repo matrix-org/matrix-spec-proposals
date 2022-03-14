@@ -1,6 +1,6 @@
 # Markup locations for Text
 
-[MSC3574](https://github.com/opentower/matrix-doc/blob/main/proposals/3574-resource-markup.md)
+[MSC3574](https://github.com/matrix-org/matrix-spec-proposals/pull/3574)
 proposes a mechanism for marking up resources (webpages, documents, videos, and
 other files) using Matrix. The proposed mechanism requires an
 `m.markup.location` schema for representing the location of annotations within
@@ -116,7 +116,7 @@ would indicate all of "this is the end" except " end".
 
 ### Web Annotation Data Model Serialization
 
-[MSC3574](https://github.com/opentower/matrix-doc/blob/main/proposals/3574-resource-markup.md)
+[MSC3574](https://github.com/matrix-org/matrix-spec-proposals/pull/3574)
 includes a scheme for serializing matrix markup events as web annotations in
 the web annotation data model. The scheme requires each markup location type to
 have a canonical serialization as [a web annotation
@@ -219,7 +219,7 @@ Because room state is unencrypted, `m.space.child` events conveying locations
 via `m.markup.location.quote` could leak information about an encrypted
 resource text. This is part of a more general problem with state events
 potentially leaking information, and deserves a general resolution, a la
-[MSC3414](https://github.com/matrix-org/matrix-spec-proposals/blob/travis/msc/encrypted-state/proposals/3414-encrypted-state.md)
+[MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
 
 ## Unstable prefix
 
