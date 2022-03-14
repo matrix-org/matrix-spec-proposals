@@ -48,8 +48,9 @@ JSON. The recommended default expiration for starting the upload is 1 minute.
 #### `PUT /_matrix/media/v3/upload/{serverName}/{mediaId}`
 Upload content to a MXC URI that was created earlier. If the endpoint is called
 with a media ID that already has content, the request should be rejected with
-the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP status code 409. This endpoint
-requires auth.
+the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP status code 409. The endpoint
+should also reject upload requests from users other than the user who created
+the media ID. This endpoint requires auth.
 
 If the upload is successful, an empty JSON object and status code 200 is
 returned. If the serverName/mediaId combination is not known or not local, an
