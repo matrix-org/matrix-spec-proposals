@@ -1,6 +1,6 @@
 # Markup locations for PDF documents
 
-[MSC3574](https://github.com/opentower/matrix-doc/blob/main/proposals/3574-resource-markup.md)
+[MSC3574](https://github.com/matrix-org/matrix-spec-proposals/pull/3574)
 proposes a mechanism for marking up resources (webpages, documents, videos, and
 other files) using Matrix. The proposed mechanism requires an
 `m.markup.location` schema for representing the location of annotations within
@@ -93,7 +93,7 @@ oriented quadrilateral region of the PDF page. Each quadrilateral is meant to
 encompass a word or group of contiguous words in the highlighted text.
 
 Optionally, the `m.markup.pdf.highlight` may also include a `text_content` value,
-which should be a string containing the highlighted text. the `text_content`
+which should be a string containing the highlighted text. The `text_content`
 value is not part of the PDF standard, but is included as a convenience for
 clients.
 
@@ -114,7 +114,12 @@ confusion, and precision greater than 1/72th of an inch is probably excessive.
 
 ## Security considerations
 
-None.
+Because room state is unencrypted, `m.space.child` events conveying locations
+via `m.markup.location.highlight` could leak information about an encrypted
+resource text through the `text_contents` field, or about the annotation itself
+through the `contents` field. This is part of a more general problem with state
+events potentially leaking information, and deserves a general resolution, a la
+[MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
 
 ## Unstable prefix
 
