@@ -10,13 +10,13 @@ uploading the media, which would make the aformentioned bridge message order
 preservation possible without blocking all other messages behind a long upload.
 
 In the future, this new functionality could be used for streaming file
-transfers, as requested in [#1885].
+transfers, as requested in [matrix-spec#432].
 
 ### Content repository behavior
 The proposal adds two new endpoints to the content repository API and modifies
 the download endpoint.
 
-#### `POST /_matrix/media/r0/create`
+#### `POST /_matrix/media/v3/create`
 Create a new MXC URI without content. Like `/upload`, this endpoint requires
 auth and returns the `content_uri` that can be used in events.
 
@@ -38,7 +38,7 @@ one potential way to do this.
 }
 ```
 
-#### `PUT /_matrix/media/r0/upload/{serverName}/{mediaId}`
+#### `PUT /_matrix/media/v3/upload/{serverName}/{mediaId}`
 Upload content to a MXC URI that was created earlier. If the endpoint is called
 with a media ID that already has content, the request should be rejected with
 the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP status code 409. This endpoint
@@ -81,13 +81,13 @@ media.
 
 ## Unstable prefix
 While this MSC is not in a released version of the spec, implementations should
-use `net.maunium.msc2246` as a prefix and as a `unstable_features` flag in the
+use `fi.mau.msc2246` as a prefix and as a `unstable_features` flag in the
 `/versions` endpoint.
 
-* `POST /_matrix/media/unstable/net.maunium.msc2246/create`
-* `PUT /_matrix/media/unstable/net.maunium.msc2246/upload/{serverName}/{mediaId}`
-* `?net.maunium.msc2246.max_stall_ms`
-* `?net.maunium.msc2246.allow_stream`
+* `POST /_matrix/media/unstable/fi.mau.msc2246/create`
+* `PUT /_matrix/media/unstable/fi.mau.msc2246/upload/{serverName}/{mediaId}`
+* `?fi.mau.msc2246.max_stall_ms`
+* `?fi.mau.msc2246.allow_stream`
 
-[#1885]: https://github.com/matrix-org/matrix-doc/issues/1885
+[matrix-spec#432]: https://github.com/matrix-org/matrix-spec/issues/432
 [MSC701]: https://github.com/matrix-org/matrix-doc/issues/701
