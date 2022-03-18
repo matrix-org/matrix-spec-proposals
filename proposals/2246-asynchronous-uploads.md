@@ -54,45 +54,43 @@ returned. If the serverName/mediaId combination is not known or not local, an
 `M_NOT_FOUND` error is returned. For other errors, such as file size, file type
 or user quota errors, the normal `/upload` rules apply.
 
-#### Changes to the `/download` endpoint
-Two new query parameters are added: `max_stall_ms` and `allow_stream`.
+The client should include a `Content-Length` header to ensure the server knows
+if the file was uploaded entirely. If the server receives a different amount of
+data than specified in the header, the upload must fail.
 
-* `max_stall_ms` is an integer that specifies the maximum number of milliseconds
-  that the client is willing to wait for the upload to start (or finish, when
-  streaming is not enabled). The default value is 10000 (10 seconds).
-* `allow_stream` is a boolean that specifies whether or not the content
-  repository should stream data as it comes in from the sender. Defaults to
-  `true`.
+#### Changes to the `/download` and `/thumbnail` endpoints
+A new query parameter, `max_stall_ms` is added to the endpoints that can
+download media. It's an integer that specifies the maximum number of
+milliseconds that the client is willing to wait to start receiving data.
+The default value is 20000 (20 seconds).
 
-When another client tries to download media that is currently being uploaded,
-the content repository should send already uploaded data and stream new data as
-it comes in from the sender.
+If the data is not available before the specified time is up, the content
+repository returns a `M_NOT_YET_UPLOADED` error with a HTTP 404 status code.
+The error may include an additional `retry_after_ms` field to suggest when the
+client should try again.
 
-If the upload is not started after the time limit, the content repository
-should return a `M_NOT_YET_UPLOADED` error. The error may include an additional
-`retry_after_ms` field to suggest when the client should try again.
-
-If streaming is not supported by the server, or if it's disabled with the query
-parameter, the content repository should act as if the upload has not started
-until the upload is finished.
-
-## Tradeoffs
+For the `/download` endpoint, the server could also stream data directly as it
+is being uploaded. However, streaming creates several implementation and spec
+complications (e.g. how to stream if the media repo has multiple workers, what
+to do if the upload is interrupted), so specifying exactly how streaming works
+is left for another MSC.
 
 ## Potential issues
 Other clients may time out the download if the sender takes too long to upload
 media.
 
+## Alternatives
+
 ## Security considerations
 
 ## Unstable prefix
 While this MSC is not in a released version of the spec, implementations should
-use `fi.mau.msc2246` as a prefix and as a `unstable_features` flag in the
+use `fi.mau.msc2246` as a prefix and as an `unstable_features` flag in the
 `/versions` endpoint.
 
 * `POST /_matrix/media/unstable/fi.mau.msc2246/create`
 * `PUT /_matrix/media/unstable/fi.mau.msc2246/upload/{serverName}/{mediaId}`
 * `?fi.mau.msc2246.max_stall_ms`
-* `?fi.mau.msc2246.allow_stream`
 
 [matrix-spec#432]: https://github.com/matrix-org/matrix-spec/issues/432
 [MSC701]: https://github.com/matrix-org/matrix-doc/issues/701
