@@ -14,7 +14,7 @@ transfers, as requested in [matrix-spec#432].
 
 ### Content repository behavior
 The proposal adds two new endpoints to the content repository API and modifies
-the download endpoint.
+the download and thumbnail endpoints.
 
 #### `POST /_matrix/media/v3/create`
 Create a new MXC URI without content. Like `/upload`, this endpoint requires
