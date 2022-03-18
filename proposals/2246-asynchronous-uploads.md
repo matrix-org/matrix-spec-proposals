@@ -91,6 +91,8 @@ use `fi.mau.msc2246` as a prefix and as an `unstable_features` flag in the
 * `POST /_matrix/media/unstable/fi.mau.msc2246/create`
 * `PUT /_matrix/media/unstable/fi.mau.msc2246/upload/{serverName}/{mediaId}`
 * `?fi.mau.msc2246.max_stall_ms`
+* `FI.MAU.MSC2246_NOT_YET_UPLOADED`
+* `FI.MAU.MSC2246_CANNOT_OVERWRITE_MEDIA`
 
 [matrix-spec#432]: https://github.com/matrix-org/matrix-spec/issues/432
 [MSC701]: https://github.com/matrix-org/matrix-doc/issues/701
