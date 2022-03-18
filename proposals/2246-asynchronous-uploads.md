@@ -24,18 +24,15 @@ The request body should be an empty JSON object. In the future, the body could
 be used for metadata about the file, such as the mime type or access control
 settings (related: [MSC701]).
 
-To prevent spam, servers should limit calls to this endpoint if the user has
-created many media IDs without uploading any content to them. The error code
-for such a spam limit is `M_TOO_MANY_IDS_ASSIGNED`. Servers should also provide
-configuration options to let high-traffic clients like application services
-bypass these limits. The `rate_limited` flag in the appservice registration is
-one potential way to do this.
-
 The server may optionally enforce a maximum age for unused media IDs to delete
 media IDs when the client doesn't start the upload in time, or when the upload
 was interrupted and not resumed in time. The server should include the maximum
 timestamp to start the upload in the `unused_expires_at` field in the response
 JSON. The recommended default expiration for starting the upload is 1 minute.
+
+The server should also rate limit requests to create media. When combined with
+the maximum age for created media IDs, it effectively prevents spam by creating
+lots of unused ids.
 
 ##### Example response
 ```json
