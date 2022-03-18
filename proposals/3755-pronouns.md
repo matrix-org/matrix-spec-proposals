@@ -2,14 +2,14 @@
 
 There are no pronoun labels in Matrix.
 We are often look to
-[MSC1769](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc1769/proposals/1769-extensible-profiles-as-rooms.md)
+[MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
 as the solution to this problem, but little progress has been made
 and even with 1769, there would still need to be a representation of
 pronouns.
 
 ## Proposal
 
-Rather than creating new precedents like [msc1769](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc1769/proposals/1769-extensible-profiles-as-rooms.md)
+Rather than creating new precedents like [msc1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
 and waiting indefintley for them, this solution relies
 on extending the m.room.member event with a new field: `m.pronouns.english`.
 
@@ -48,14 +48,19 @@ Changing avatars and displayname is already a cause of concern for
 users who are in lots of rooms as it takes a long time on Synapse to
 update the member event for all the rooms.
 
-The profile directory may also leak someone's pronouns that are used
-only in certain contexts and out them. Unsure if this has been fixed yet.
+The profile directory may also [leak](https://github.com/matrix-org/synapse/issues/5677)
+someone's pronouns that are used only in certain contexts and out them.
 
 This is very english centric and only specifies pronouns for english.
 
+Pronouns could be used maliciously by inserting abusive text in their place.
+
 ## Alternatives
 
-* An extensible state event combined with [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc1769/proposals/1769-extensible-profiles-as-rooms.md).
+* An [extensible](https://github.com/matrix-org/matrix-spec-proposals/pull/1767)
+state event combined with [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769).
+
+* An alternative involving per room profiles and spaces [MSC3189](https://github.com/matrix-org/matrix-spec-proposals/pull/3189).
 
 
 ## Security considerations
