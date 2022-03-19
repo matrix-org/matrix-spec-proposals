@@ -11,9 +11,9 @@ pronouns.
 
 Rather than creating new precedents like [msc1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
 and waiting indefintley for them, this solution relies
-on extending the m.room.member event with a new field: `m.pronouns.english`.
+on extending the m.room.member state event with a new optional field: `m.pronouns.english`.
 
-`m.pronouns.english` is a list of pronouns in order of user precedence.
+`m.pronouns.english` is a list of pronouns in order of user preference.
 
 The pronouns each have the required fields `subject`
 & `object`
