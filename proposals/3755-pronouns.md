@@ -15,11 +15,11 @@ on extending the m.room.member event with a new field: `m.pronouns.english`.
 
 `m.pronouns.english` is a list of pronouns in order of user precedence.
 
-The pronouns each have the required fields `m.pronouns.english.subject`
-& `m.pronouns.english.object`
-as well as the optional fields `m.pronouns.english.possessive`,
-`m.pronouns.english.possessive-determiner`,
-`m.pronouns.english.reflexive` and `m.pronouns.english.singular`
+The pronouns each have the required fields `subject`
+& `object`
+as well as the optional fields `possessive`,
+`possessive-determiner`,
+`reflexive` and `singular`
 
 The following gives an exmample for the pronouns `They/Them`:
 
@@ -27,12 +27,12 @@ The following gives an exmample for the pronouns `They/Them`:
 {
   "m.pronouns.english":[
     {
-      "m.pronouns.english.subject":"they",
-      "m.pronouns.english.object":"them",
-      "m.pronouns.english.possessive":"theirs",
-      "m.pronouns.english.possessive-determiner":"their",
-      "m.pronouns.english.reflexive":"themselves",
-      "m.pronouns.english.singular":"themself"
+      "subject":"they",
+      "object":"them",
+      "possessive":"theirs",
+      "possessive-determiner":"their",
+      "reflexive":"themselves",
+      "singular":"themself"
     }
   ]
 }
