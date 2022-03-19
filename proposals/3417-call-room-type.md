@@ -14,9 +14,9 @@ This MSC proposes that when creating a call room the `type` field in the
 `m.room.create` state event should be set to `m.call`. This way clients can
 clearly distinguish between regular chat rooms and call rooms.
 
-In the case of the `m.intent` field in the `m.call` state event getting out of
+In the case of the `m.intent` field in MSC3401's `m.call` state event getting out of
 sync with the the `type` field in the `m.room.create` state event, the
-information from the `m.room.create` state event should be preferred.
+information from the `m.room.create` state event is used instead.
 
 ### Example
 
