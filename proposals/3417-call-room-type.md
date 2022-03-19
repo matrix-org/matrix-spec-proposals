@@ -20,10 +20,8 @@ information from the `m.room.create` state event is used instead.
 
 ### Example
 
-```json
-POST /_matrix/client/r0/createRoom HTTP/1.1
-Content-Type: application/json
-
+```HTTP
+POST /_matrix/client/r0/createRoom
 {
     "preset": "private_chat",
     "name": "The Grand Duke Pub",
