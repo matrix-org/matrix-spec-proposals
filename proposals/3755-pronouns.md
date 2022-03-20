@@ -28,6 +28,15 @@ which gives examples for how to use a set of pronouns.
 This set of pronouns only works with the english language
 and cannot be used to specify pronouns for other languages
 or blindly copied to do so.
+A single text field can be considered problematic,
+especially with neopronouns, as it can be hard for someone
+who is new to a set of neopronouns to derive the others from just the
+subject & object pronouns. We believe that specifying only
+the subject and object pronouns can unfortunately lead to neopronouns
+being ignored when referring to someone who has them.
+Specifying each pronoun means that clients and bots can also use
+the pronouns when referring to other users.
+
 
 The following gives an example for the pronouns `They/Them`:
 
