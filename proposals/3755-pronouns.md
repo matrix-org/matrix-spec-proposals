@@ -1,7 +1,7 @@
 # MSC3755: Pronouns
 
 There are no pronoun labels in Matrix.
-We are often look to
+We often look to
 [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
 as the solution to this problem, but little progress has been made
 and even with 1769, there would still need to be a representation of
@@ -9,23 +9,31 @@ pronouns.
 
 ## Proposal
 
-Rather than creating new precedents like [msc1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
+Rather than creating new precedents like [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
 and waiting indefintley for them, this solution relies
-on extending the m.room.member state event with a new optional field: `m.pronouns.english`.
+on extending the m.room.member state event with a new optional field:
+`m.pronouns.en`.
+The name of this field uses a [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+code to classify a set of pronouns for the english language.
 
-`m.pronouns.english` is a list of pronouns in order of user preference.
+`m.pronouns.en` is a list of pronouns in order of user preference.
 
 The pronouns each have the required fields `subject`
 & `object`
 as well as the optional fields `possessive`,
 `possessive-determiner`,
-`reflexive` and `singular`
+`reflexive` and `singular`.
+These are directly inspired from the site https://pronoun.is,
+which gives examples for how to use a set of pronouns.
+This set of pronouns only works with the english language
+and cannot be used to specify pronouns for other languages
+or blindly copied to do so.
 
-The following gives an exmample for the pronouns `They/Them`:
+The following gives an example for the pronouns `They/Them`:
 
 ```
 {
-  "m.pronouns.english":[
+  "m.pronouns.en":[
     {
       "subject":"they",
       "object":"them",
@@ -71,7 +79,7 @@ No considertion taken so far.
 
 While this MSC is not considered stable by the specification, implementations *must* use
 `ge.applied-langua.msc3755` as a prefix to denote the unstable functionality. For example,
-the `m.pronouns.english` field would instead be `ge.applied-langua.msc3755.pronouns.english` instead.
+the `m.pronouns.en` field would instead be `ge.applied-langua.msc3755.pronouns.en` instead.
 
 ## Dependencies
 
