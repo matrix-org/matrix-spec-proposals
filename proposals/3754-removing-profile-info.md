@@ -17,8 +17,8 @@ PUT /_matrix/client/v3/profile/{userId}/displayname
 This proposal adds two new endpoints for deleting the data:
 
 ```http
-DELETE /_matrix/client/v1/profile/{userId}/avatar_url
-DELETE /_matrix/client/v1/profile/{userId}/displayname
+DELETE /_matrix/client/v3/profile/{userId}/avatar_url
+DELETE /_matrix/client/v3/profile/{userId}/displayname
 ```
 
 To identify the change, the `m.room.member` and `m.presence` events sent following the call to one of these two
