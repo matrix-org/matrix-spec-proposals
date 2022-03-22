@@ -22,7 +22,8 @@ receiving results. This would benefit from having the bundled aggregations.
 
 ## Proposal
 
-The server side search API (`POST /search`) for the `room_events` category will
+The server side search API ([`POST /search`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3search))
+for the `room_events` category will
 include bundled aggregations for any matching events returned to the client.
 Per MSC2675 the `unsigned` field of the results would include `m.relations` where
 appropriate. This applies to any events themselves, as well as contextual events
