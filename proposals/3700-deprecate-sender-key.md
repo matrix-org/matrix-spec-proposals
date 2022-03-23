@@ -3,7 +3,9 @@
 This MSC proposes to deprecate superfluous fields from the plaintext event
 content of encrypted events, increasing privacy and enhancing security.
 
-An encrypted message that uses an algorithm of `m.megolm.v1.aes-sha2` (such as
+An encrypted message that uses an algorithm of 
+[`m.megolm.v1.aes-sha2`](https://spec.matrix.org/v1.2/client-server-api/#mmegolmv1aes-sha2)
+(such as
 an `m.room.encrypted` event) contains the following plain text keys in its
 contents: `algorithm`, `session_id`, `sender_key` and `device_id`. Both the
 `algorithm` and `session_id` are required for clients to be able to decrypt the
