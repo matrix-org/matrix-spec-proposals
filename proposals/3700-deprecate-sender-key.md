@@ -17,8 +17,8 @@ lookup sessions in addition to the `session_id`, however the `session_id` is
 globally unique and so no disambiguation using `sender_key` or `device_id` is
 needed.
 
-Session IDs are encoded ed25519 public keys; when new sessions are shared they
-will be signed by the associated private key.
+Session IDs are encoded ed25519 public keys. In particular, the session ID is the
+public part of the key used to sign the session when it is shared.
 
 ## Proposal
 
