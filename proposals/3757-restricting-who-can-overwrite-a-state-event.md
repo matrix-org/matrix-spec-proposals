@@ -1,4 +1,4 @@
-# MSCxxxx: Restricting who can overwrite a state event.
+# MSC3757: Restricting who can overwrite a state event.
 
 ## Problem
 
