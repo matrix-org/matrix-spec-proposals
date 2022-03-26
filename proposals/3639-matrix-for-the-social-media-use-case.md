@@ -160,7 +160,6 @@ like:
       {
         "m.text": "The first part of full text of story, located before image.",
       },
-
       {
           "m.file": {
             "mimetype": "image/jpeg",
@@ -172,7 +171,7 @@ like:
           "height": 3456,
           "width": 5184
         },
-      }
+      },
       {
         "m.text": "The ending text of full story after image.",
       }
