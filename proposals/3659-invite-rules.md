@@ -67,7 +67,7 @@ A String-Enum.
 
 #### Evaluation
 
-* The Inviter attempts to create an invite request to the Invitee:
+* The Invitee's homeserver receives an invite request from the Inviter:
   * If the `"m.invite_rules"` account data state exists, then:
     * If `"rules"` is defined, then for each `RuleItem`:
       * Evaluate the `RuleItem` and save either the `"pass"` or `"fail"` `RuleItemAction` depending on the result.
