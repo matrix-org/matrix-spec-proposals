@@ -1,11 +1,13 @@
 # MSC3383: Include destination in X-Matrix Auth Header
 
-Currently, a federation request can't be validated mid-flight without talking
-to both the originating server and the destination server. The originating
-server needs to be asked for its key, and the destination server for its
-`server_name`, because the `Host` header does not necessarily contain the
-`server_name` of the destination server, if delegation via `.well-known` is
-being used.
+Currently, a federation request can't be validated mid-flight without some
+convoluted workarounds, because federation requests don't contain the
+`server_name` of the destination. The `Host` header does not necessarily contain
+the `server_name` of the destination server, if delegation via `.well-known` is
+being used. It's currently possible to get the `server_name` by making a
+request to `/_matrix/key/v2/server/{keyId}`, and then resolving the delegation
+for the contained `server_name` back to the `Host` included in the original
+request.
 
 This hasn't been a problem so far, as the `server_name` of the destination is
 usually known when validating the `Authorization` header, it's the
@@ -13,6 +15,26 @@ usually known when validating the `Authorization` header, it's the
 scenarios where this might not be the case: Forward proxies (that act as an API
 gateway for enforcing additional rules), or Matrix Homeservers implementing
 vhosting and have multiple `server_name`s pointing to the same `Host`.
+
+### Example: rule enforcing forward proxy
+
+Let's assume we have an organization running a matrix server in a protected
+network, that doesn't have direct internet access. The organization only allows
+access to the internet through a forward proxy enforcing additional security
+measures.
+
+For matrix federation, it's supposed to verify the matrix servers are on a list
+of allowed `server_name`s. As explained in the introduction, the `server_name`
+is not contained in the request, so verifying these requests is not possible
+without the workaround described in the introduction.
+
+Alternatively to that, it'd be also possible to keep a map for allowed
+`server_name`s to `Host` headers, but that needs to be updated regularly, to
+make sure it doesn't get stale.
+
+Both of these workarounds are more complicated than they need to be. If the
+`server_name` was included in the `Authorization` header, these workarounds
+could be completely avoided.
 
 ## Proposal
 
