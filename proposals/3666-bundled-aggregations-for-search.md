@@ -50,7 +50,7 @@ relations, not each related event.
 
 Older versions of MSC2675 included an `/rooms{roomId}/aggregations/{eventId}` API
 to fetch the bundled aggregations for an event directly. This would save on bandwidth
-and simplify the work that clients need to achieve, but would still need result
+and simplify the work that clients need to achieve, but would still result
 in needless roundtrips as it would have to be  called per event.
 
 
