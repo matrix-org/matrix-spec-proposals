@@ -108,7 +108,7 @@ which could never be overwritten.
 
 ## Unstable prefix
 
-None
+While this MSC is not considered stable, implementations should apply the behaviours of this MSC on top of room version 9 as `org.matrix.msc3757`.
 
 ## Dependencies
 
