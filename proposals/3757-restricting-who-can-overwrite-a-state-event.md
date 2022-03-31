@@ -47,7 +47,7 @@ For example, to post a live location sharing beacon from [MSC3672](https://githu
 ```json=
 {
     "type": "m.beacon_info",
-    "state_key": "@stefan:matrix.org_assetid1", // Ensures only the sender can update
+    "state_key": "@stefan:matrix.org_assetid1", // Ensures only the sender or higher PL users can update
     "content": {
         "m.beacon_info": {
             "description": "Stefan's live location",
