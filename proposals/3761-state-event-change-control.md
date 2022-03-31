@@ -12,6 +12,11 @@ the beacon.
 
 ***TODO: A better intro, probably from https://github.com/matrix-org/matrix-spec-proposals/pull/3757***
 
+Related MSCs:
+* [MSC3760: State sub-keys](https://github.com/matrix-org/matrix-spec-proposals/pull/3760)
+* [MSC3757: Restricting who can overwrite a state event](https://github.com/matrix-org/matrix-spec-proposals/pull/3757)
+  (string-packed state key version)
+
 ## Proposal
 
 We introduce a new state event called `m.event.acl` with a `content` which looks as follows:
