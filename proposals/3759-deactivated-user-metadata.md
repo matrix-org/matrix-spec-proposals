@@ -82,7 +82,7 @@ None at this time.
 
 ## Unstable prefix
 
-`org.matrix.mscXXXX.deactivated` should be used instead of `m.deactivated` while this proposal is in review.
+`org.matrix.msc3759.deactivated` should be used instead of `m.deactivated` while this proposal is in review.
 
 ## Dependencies
 
