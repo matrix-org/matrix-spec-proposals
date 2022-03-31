@@ -1,7 +1,7 @@
 # MSC3759: Leave event metadata for deactivated users
 
 When a user is deactivated on Matrix, some homeservers choose to remove that user from all the rooms
-they are joined to. This isn't strictly part of the Matrix spec, but nontheless major implementations
+they are joined to. This isn't strictly part of the Matrix spec, but nonetheless major implementations
 like Synapse do so. However to other users in the room, it is not clear whether an account is deactivated
 or just leaving the room, and this causes some significant problems.
 
