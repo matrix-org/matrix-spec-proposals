@@ -83,10 +83,9 @@ which needs to be unique and not subject to races from other malicious users.
 By scoping who can set the state_key to be the mxid of the sender, this problem
 goes away.
 
-Another option would be to include the `sender` (or a dedicated `state_subkey`)
-as the third component of what makes a state event unique. This is, however, a
-much bigger change and not justifiable for the goal meant to be reached with
-this MSC.
+[MSC3760](https://github.com/matrix-org/matrix-spec-proposals/pull/3760)
+proposes to include the `sender` (or a dedicated `state_subkey`)
+as the third component of what makes a state event unique.
 
 ## Security considerations
 
