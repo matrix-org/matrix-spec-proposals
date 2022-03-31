@@ -238,7 +238,7 @@ or
         "formatted_body": "<b>Hello</b> World",
         "m.message": [
             {"mimetype": "text/plain", "body": "Hello world"},
-            {"mimetype": "text/html", "body": "<b>Hello world</b>"}
+            {"mimetype": "text/html", "body": "<b>Hello</b> world"}
         ]
     }
 }
