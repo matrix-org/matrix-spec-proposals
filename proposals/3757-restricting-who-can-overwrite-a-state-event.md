@@ -90,6 +90,8 @@ this MSC.
 
 ## Security considerations
 
+This change requires a new room version, so will not affect old events.
+
 As this changes auth rules, we should think carefully about whether could
 introduce an attack on state resolution. For instance: if a user had higher
 PL at some point in the past, will they be able to abuse somehow this to
