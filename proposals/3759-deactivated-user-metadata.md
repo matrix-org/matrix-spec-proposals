@@ -65,7 +65,7 @@ bridge configuration) it is satisfactory enough.
 
 ## Alternatives
 
-[MSC3720])(https://github.com/matrix-org/matrix-spec-proposals/pull/3720) would help in solving this problem,
+[MSC3720](https://github.com/matrix-org/matrix-spec-proposals/pull/3720) would help in solving this problem,
 as services could lookup the status of a user when a leave event comes in and determine the deactivated
 status. However this comes with two notable drawbacks:
 
