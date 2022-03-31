@@ -84,8 +84,8 @@ By scoping who can set the state_key to be the mxid of the sender, this problem
 goes away.
 
 [MSC3760](https://github.com/matrix-org/matrix-spec-proposals/pull/3760)
-proposes to include the `sender` (or a dedicated `state_subkey`)
-as the third component of what makes a state event unique.
+proposes to include a dedicated `state_subkey` as the third component of what
+makes a state event unique.
 
 ## Security considerations
 
