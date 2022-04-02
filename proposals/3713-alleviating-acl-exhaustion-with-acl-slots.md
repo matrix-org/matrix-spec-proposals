@@ -30,7 +30,8 @@ As stated in the introduction this system works by sending a modified variant of
 event. This modified version has only a single change. We put the state key to `X`
 the X is the decimal value for the ACL in question inside of the range of 0 - Room Version MAX Value.
 
-For existing room versions at the time of writing this MSC aka Room Versions 1-9 a max value of 512 ACL
+For existing room versions at the time of writing this MSC aka Room Versions 1-9 a max value of 32 ACL
+
 events is set. Future room versions are allowed to change this value and are encouraged to if a need or
 desire exists. The reason for 512 is well simple its an arbitrary number that Cat thought sounded good.
 The number is big enough to make it very hard to exhaust and that is the important part. But also small
