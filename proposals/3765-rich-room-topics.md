@@ -6,7 +6,7 @@ Topics are a central piece of room meta data and usually made easily
 accessible to room members in clients. As a result, room administrators
 often extend the use of topics to collect helpful peripheral information
 that is related to the room’s purpose. Most commonly these are links to
-external resources. At the moment, topics are limitted to [plain text]
+external resources. At the moment, topics are limited to [plain text]
 which, depending on the number and length of URLs and other content,
 easily gets inconvenient to consume and calls for richer text formatting
 options.
