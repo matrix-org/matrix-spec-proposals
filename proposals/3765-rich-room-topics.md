@@ -1,4 +1,4 @@
-# MSC3677: Rich text in room topics
+# MSC3765: Rich text in room topics
 
 ## Problem
 
@@ -84,9 +84,9 @@ considerations that apply to HTML in room messages.
 
 While this MSC is not considered stable, implementations should apply
 the behaviours of this MSC on top of room version 9 as
-org.matrix.msc3677.
+org.matrix.msc3765.
 
--   `m.topic` should be referred to as `org.matrix.msc3677.topic` until
+-   `m.topic` should be referred to as `org.matrix.msc3765.topic` until
     this MSC lands
 
 ## Dependencies
