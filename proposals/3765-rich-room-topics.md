@@ -85,12 +85,8 @@ considerations that apply to HTML in room messages.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should apply
-the behaviours of this MSC on top of room version 9 as
-org.matrix.msc3765.
-
--   `m.topic` should be referred to as `org.matrix.msc3765.topic` until
-    this MSC lands
+While this MSC is not considered stable, `m.topic` should be referred
+to as `org.matrix.msc3765.topic`.
 
 ## Dependencies
 
