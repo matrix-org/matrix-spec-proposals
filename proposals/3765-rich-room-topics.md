@@ -18,7 +18,7 @@ defined in [MSC1767] and define a new `m.topic` event in `content`.
 The latter contains a list of renderings in the same format that
 [MSC1767] uses for `m.message` events.
 
-``` json
+```json5
 {
     "type": "m.room.topic",
     "state_key": "",
