@@ -35,6 +35,9 @@ The latter contains a list of renderings in the same format that
 }
 ```
 
+While the content of `m.topic` is currently identical to `m.message`, a
+dedicated event type allows the two to diverge in the future.
+
 A change to `/_matrix/client/v3/createRoom` is not necessary. The
 endpoint has a plain text `topic` parameter but also allows to specify a
 full `m.room.topic` event in `initial_state`.
