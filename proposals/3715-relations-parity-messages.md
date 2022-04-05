@@ -8,7 +8,7 @@ to fully achieve that.
 
 ## Proposal
 
-It is proposed to add the `dir`to the `/relations` API for parity with `/messages`,
+It is proposed to add the `dir` parameter to the `/relations` API for parity with `/messages`,
 it will [have the same as definition as for `/messages`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidmessages),
 which is copied below:
 
