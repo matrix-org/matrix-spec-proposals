@@ -75,6 +75,13 @@ Unlike notifications, it is not possible to not have the homeserver provide an
 unread count for a given room. A way to do this will be described in a separate
 MSC.
 
+A known limitation of this proposal is that it does not cover highlights: a message
+containing text that is supposed to highlight (i.e. that should impact a
+`highlight_count` counter in sync responses) will be counted in the same way as
+a message that does not highlight. This means that clients cannot rely on the
+`unread_count` field described in this proposal to decide whether there is a
+highlighting message in a room.
+
 
 ## Alternatives
 
