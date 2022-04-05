@@ -75,6 +75,9 @@ API may be required.
 
 ## Security considerations
 
+Requesting servers should be resilient to the `room_version` field in the response not
+matching that in the `m.room.create` event in `pdus`.
+
 In the case of a domain-name hijack, this may make recovering rooms that the
 domain name was in easier. However, since a domain name hijack will lead to
 other servers potentially sending PDUs with the required event IDs to allow
