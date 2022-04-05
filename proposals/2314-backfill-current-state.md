@@ -11,7 +11,7 @@ state events, provided the requesting server is in the room specified.
 ## Existing APIs
 
 If one knows the room ID and an event ID,
-`/_matrix/federation/v1/state/{roomId}?event_id={eventId}` can be used to
+[`/_matrix/federation/v1/state/{roomId}?event_id={eventId}`](https://spec.matrix.org/v1.2/server-server-api/#get_matrixfederationv1stateroomid) can be used to
 retrieve the auth chain and current state events for that given event. However,
 this requires knowing an event ID (which cannot be assumed), as well as the
 version of the room (which can be assumed to be contained within the current
@@ -22,11 +22,14 @@ impractical for rooms which may be low-traffic yet valuable to the end-user
 
 ## Proposal
 
-Make the `eventId` parameter to `/v1/state/{roomId}` optional, and return the
+Make the `eventId` parameter to [`/v1/state/{roomId}`](https://spec.matrix.org/v1.2/server-server-api/#get_matrixfederationv1stateroomid)
+optional, and return the
 room version to ease the parsing of the given events. If the `eventId` parameter
 is not given, the receiving server is to instead use what it considers the
-room's current state. If `eventId` is not provided, `room_version` in the
-response becomes mandatory.
+room's current state. 
+
+If `eventId` is not provided, `room_version` is added as a mandatory
+response field, giving the version of the room.
 
 ```
 GET /_matrix/federation/v1/state/{roomId}
@@ -63,7 +66,7 @@ successfully return results from this API is outside of the scope of this MSC.
 
 Users may not know the room ID for a given room, only a room alias. Translating
 this alias into a room ID is outside of the scope of this MSC. Users of this API
-may want to use it in conjunction with `/_matrix/federation/v1/query/directory`
+may want to use it in conjunction with [`/_matrix/federation/v1/query/directory`](https://spec.matrix.org/v1.2/server-server-api/#get_matrixfederationv1querydirectory)
 to resolve aliases to room IDs as part of an end-user focused API.
 
 Excessively large rooms may cause performance problems for servers implementing
