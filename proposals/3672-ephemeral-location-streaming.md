@@ -39,6 +39,8 @@ We will start by introducing `m.beacon_info` as a new state event type; the even
 | int | `m.ts` | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The timestamp of when the location sharing session was started by the sender. | yes
 | dict | `m.asset` | A dictionary (see below) | Describes the object being tracked. From [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). | yes
 
+TODO: This design does not currently allow for a user to have multiple live location sharing sessions active simultaneously. Incorporating either [MSC3671](https://github.com/matrix-org/matrix-spec-proposals/pull/3671) or [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) will help here.
+
 **`m.beacon_info` dictionary definition**
 
 | type | key | value | description | required |
