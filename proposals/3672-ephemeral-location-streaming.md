@@ -78,9 +78,6 @@ A full example of the `m.beacon_info` state event:
 }
 ```
 
-We define this new property in order to allow clients to distinguish between 
-share types without potentially overwriting static ones.
-
 Multiple live beacons on the same timeline have the option of either aggregating
 all available location EDUs or just the ones referencing a particular 
 `beacon_info`.
