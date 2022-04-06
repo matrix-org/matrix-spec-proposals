@@ -128,6 +128,13 @@ Another alternative is to use to-device events but that comes with disadvantages
 of its own as they're 1:1, single message per transaction and not intended for 
 conversational data.
 
+## Dependencies
+
+This proposal relies on the following MSCs:
+
+* [MSC2477: User-defined ephemeral events in rooms](https://github.com/matrix-org/matrix-doc/pull/2477)
+* [MSC3488: Extending events with location data](https://github.com/matrix-org/matrix-spec-proposals/pull/3488)
+
 ## Unstable prefix
 
 Until this MSC is merged, the following unstable prefixes should be used:
