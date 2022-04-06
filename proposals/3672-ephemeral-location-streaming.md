@@ -107,10 +107,6 @@ An full example of a `m.beacon` EDU as received by a client:
 }
 ```
 
-These will reach clients through `/sync`s `ephemeral` dictionary with the same 
-payload but with the addition of a `sender` which the clients can aggregate user 
-locations on.
-
 When the user decides they would like to stop sharing their live location the 
 original `m.beacon_info`'s `live` property should be set to `false`.
 
