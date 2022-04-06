@@ -86,7 +86,7 @@ Subsequently clients will start sending beacon data EDUs to the new
 `rooms/{roomId}/ephemeral/{eventType}/{txnId}` endpoint where `eventType` equals 
 `m.beacon` with the same location payload as defined in [MSC3489](https://github.com/matrix-org/matrix-doc/pull/3489).
 
-An full example of a `m.beacon` EDU:
+An full example of a `m.beacon` EDU as received by a client:
 
 ```json5
 {
