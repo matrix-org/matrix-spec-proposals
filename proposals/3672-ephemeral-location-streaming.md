@@ -78,8 +78,8 @@ A full example of the `m.beacon_info` state event:
 }
 ```
 
-Multiple live beacons on the same timeline have the option of either aggregating
-all available location EDUs or just the ones referencing a particular 
+If multiple live beacons exist, clients have the option of either aggregating
+all available location EDUs into one render or just those referencing a particular 
 `beacon_info`.
 
 Subsequently clients will start sending beacon data EDUs to the new 
