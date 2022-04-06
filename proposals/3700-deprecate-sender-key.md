@@ -31,7 +31,11 @@ deprecated. Clients must ignore the field when processing the request, but
 should still include it when generating *if* there is a `sender_key` field in
 the event we're requesting keys for.
 
-Clients must store and lookup sessions based purely on the session ID.
+Clients must not store or lookup sessions using the sender key or device ID.
+
+Client must continue to ensure that the event's sender and room ID fields match
+those of the looked up session, e.g. by storing and looking up session using the
+room ID and sender as well as the session ID.
 
 When updating an existing session key, clients must ensure:
 1. that the updated session data comes from a trusted source, e.g. either the
