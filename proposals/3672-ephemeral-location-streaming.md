@@ -89,18 +89,24 @@ Subsequently clients will start sending beacon data EDUs to the new
 `rooms/{roomId}/ephemeral/{eventType}/{txnId}` endpoint where `eventType` equals 
 `m.beacon` with the same location payload as defined in [MSC3489](https://github.com/matrix-org/matrix-doc/pull/3489).
 
+An full example of a `m.beacon` EDU:
 
 ```json5
 {
-    "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
-        "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
-        "event_id": "$beacon_info"
+    "content": {
+        "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
+            "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
+            "event_id": "$beacon_info"
+        },
+        "m.location": {
+            "uri": "geo:51.5008,0.1247;u=35",
+            "description": "Arbitrary beacon information"
+        },
+        "m.ts": 1636829458432,
     },
-    "m.location": {
-        "uri": "geo:51.5008,0.1247;u=35",
-        "description": "Arbitrary beacon information"
-    },
-    "m.ts": 1636829458432,
+    "type": "m.beacon",
+    "sender": "@stefan:matrix.org",
+    "origin_server_ts": 1636829518182
 }
 ```
 
