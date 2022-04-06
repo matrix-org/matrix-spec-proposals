@@ -8,7 +8,7 @@ historical knowledge.
 
 While that's perfect for situations in which long term storage of the data is a 
 non-issue and implied (e.g. flight paths, strava style exercises, fleet 
-tracking), there are also cases in doing so is undersirable for either privacy 
+tracking), there are also cases in doing so is undesirable for either privacy 
 or performance reasons.
 
 Sharing user live location updates is one of the cases in which privacy is 
