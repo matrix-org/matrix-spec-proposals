@@ -128,8 +128,13 @@ conversational data.
 
 ## Unstable prefix
 
- * `m.beacon_info.*` should be referred to as `org.matrix.msc3489.beacon_info.*` until this MSC lands.
- * `m.beacon` should be referred to as `org.matrix.msc3489.beacon` until this MSC lands.
- * `m.location` should be referred to as `org.matrix.msc3488.location.*` until MSC3488 lands.
- * `m.ts` should be referred to as `org.matrix.msc3488.ts.*` until MSC3488 lands.
- * `m.asset` should be referred to as `org.matrix.msc3488.asset.*` until MSC3488 lands.
+Until this MSC is merged, the following unstable prefixes should be used:
+
+ * Any instance of `m.beacon_info` should be referred to as `org.matrix.msc3672.beacon_info`
+ * `m.beacon` should be referred to as `org.matrix.msc3672.beacon`
+
+ Until [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488) is merged, the following unstable prefix should be used:
+
+ * `m.location` should be referred to as `org.matrix.msc3488.location`
+ * `m.ts` should be referred to as `org.matrix.msc3488.ts`
+ * `m.asset` should be referred to as `org.matrix.msc3488.asset`
