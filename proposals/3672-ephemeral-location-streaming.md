@@ -111,10 +111,13 @@ locations on.
 When the user decides they would like to stop sharing their live location the 
 original `m.beacon_info`'s `live` property should be set to `false`.
 
-## Encryption
+## Security considerations
 
-End to end encryption for ephemeral data units isn't currently available but a 
-mechanism for achieving that is defined separately in [MSC3673](https://github.com/matrix-org/matrix-doc/pull/3673)
+End-to-end encryption for ephemeral data units isn't currently available, but a 
+mechanism for achieving that is defined separately in [MSC3673](https://github.com/matrix-org/matrix-doc/pull/3673). This would prevent location data from being readable by homeservers participating in the room.
+
+Likewise, end-to-end encryption for state events could be provided by [MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414). This would hide the metadata that a user has started or stopped sharing their location from being known to the homeservers participating in the room.
+
 
 ## Alternatives
 
