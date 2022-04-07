@@ -31,23 +31,23 @@ We will start by introducing `m.beacon_info` as a new state event type; the even
 
 **`m.beacon_info` state event definition**
 
-| type | key | value | description | Required |
+| key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
-| string | `type` | `m.beacon_info` | This state event defines a single location sharing session. | yes |
-| string | `state_key` | The sender's MXID | As per [event auth rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules), this restricts the state event to only be editable by the sender. | yes |
-| int | `timeout` | A positive number of milliseconds | The maximum length of the location sharing session, relative to `m.ts`. | yes
-| string | `description` | Optional descriptive text | A human-readable description of the live location sharing session. | no |
-| bool | `live` | true | A boolean describing whether the location sharing session is currently active. Also denotes this session as ephemeral. | yes
-| int | `m.ts` | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The timestamp of when the location sharing session was started by the sender. | yes
-| dict | `m.asset` | A dictionary (see below) | Describes the object being tracked. From [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). | yes
+| `type` | string | `m.beacon_info` | This state event defines a single location sharing session. | yes |
+| `state_key` | string | The sender's MXID | As per [event auth rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules), this restricts the state event to only be editable by the sender. | yes |
+| `timeout` | int | A positive number of milliseconds | The maximum length of the location sharing session, relative to `m.ts`. | yes
+| `description` | string | Optional descriptive text | A human-readable description of the live location sharing session. | no |
+| `live` | bool | true | A boolean describing whether the location sharing session is currently active. Also denotes this session as ephemeral. | yes
+| `m.ts` | int | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The timestamp of when the location sharing session was started by the sender. | yes
+| `m.asset` | dict | A dictionary (see below) | Describes the object being tracked. From [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). | yes
 
 TODO: This design does not currently allow for a user to have multiple live location sharing sessions active simultaneously. Incorporating either [MSC3671](https://github.com/matrix-org/matrix-spec-proposals/pull/3671) or [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) will help here.
 
 **`m.asset` dictionary definition**
 
-| type | key | value | description | required |
+| key | type | value | description | required |
 | ---- | --- | ----- | ----------- | -------- |
-| string | `type` | `m.self`  | A string identifying the asset being tracked, as defined by [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). `m.self` means this session tracks the sender's location. | yes |
+| `type` | string | `m.self`  | A string identifying the asset being tracked, as defined by [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). `m.self` means this session tracks the sender's location. | yes |
 
 
 A full example of the `m.beacon_info` state event:
