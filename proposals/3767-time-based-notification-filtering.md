@@ -11,14 +11,17 @@ We introduce a push notification [condition](https://spec.matrix.org/v1.2/client
 This conditions specifies `intervals` and `timezone`.
 
 `timezone` is an [Olson formatted timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). This timezone format allows for automatic handling of DST.
-If not set, UTC will be used.
+If not set or invalid UTC will be used.
 
 `intervals` is an array of day and time interval configurations.
 Intervals in the array are an OR condition.
 
 Each interval is an object that defines a `time_of_day` tuple and `day_of_week` array.
 
-- `time_of_day` is a tuple of `hh:mm` [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). This condition is met when the server's timezone-adjusted time is between the values of the tuple. Values are inclusive.
+- `time_of_day` is a tuple of `hh:mm` [ISO 8601 formatted
+  times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.).
+  This condition is met when the server's timezone-adjusted time is between the values of the tuple. Values are
+  inclusive. If `time_of_day` is not set on an interval all times will meet the condition.
 - `day_of_week` is an array of integers representing days of the week, where 1 = Monday, 7 = Sunday. This condition is met when the server's timezone-adjusted day is included in the array.
 
 When both `time_of_day` and `day_of_week` conditions are met for one of the intervals in the`intervals` array the rule evaluates to true.
@@ -37,7 +40,8 @@ When both `time_of_day` and `day_of_week` conditions are met for one of the inte
             "day_of_week": [1, 2, 3, 4, 5] // Monday - Fri
         },
         {
-            ...
+            // no time_of_day, all day on Sunday is matched
+            "day_of_week": [7] // Sunday
         }
 },
 ```
