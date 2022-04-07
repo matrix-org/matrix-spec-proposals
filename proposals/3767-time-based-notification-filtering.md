@@ -1,4 +1,4 @@
-# MSC3677: Time based notification filtering
+# MSC3767: Time based notification filtering
 Do not disturb / focus features are becoming standard across operating systems and networking products. Users expect to be able to manage the level of noisiness from an application based on day and time.
 
 Users should be able to configure many periods of notification levels during the day; for example before work, lunch hour, and after work.
@@ -100,7 +100,7 @@ Previous versions used ms offsets to represent time of day instead of `hh:mm`. M
 
 ## Unstable prefix
 
-- While this MSC is not considered stable `time_and_day` should be referred to as `org.matrix.msc3677.time_and_day`
+- While this MSC is not considered stable `time_and_day` should be referred to as `org.matrix.msc3767.time_and_day`
 
 ## Dependencies
 None.
