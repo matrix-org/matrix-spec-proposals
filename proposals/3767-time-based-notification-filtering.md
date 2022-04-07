@@ -8,7 +8,7 @@ They should also be able to schedule notification levels for a particular day of
 
 We introduce a push notification [condition](https://spec.matrix.org/v1.2/client-server-api/#push-rules) `time_and_day` to filter based on time of day and day of week.
 
-**`dnd_time_and_day` condition definition**
+**`time_and_day` condition definition**
 
 | key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
@@ -20,8 +20,8 @@ We introduce a push notification [condition](https://spec.matrix.org/v1.2/client
 
 | key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
-| `time_of_day` | string[] | tuple of `hh:mm` times | times are [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). Times are inclusive | Optional. When omitted all times are matched.  |
-| `day_of_week` | number[] | array of integers 1-7 | An array of integers representing days of the week, where 1 = Monday, 7 = Sunday | **Required** |
+| `time_of_day` | string[] | tuple of `hh:mm` time | Tuple representing start and end of a time interval in which the ruule should match. Times are [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). Times are inclusive | Optional. When omitted all times are matched.  |
+| `day_of_week` | number[] | array of integers 1-7 | An array of integers representing days of the week on which the rule should match, where 1 = Monday, 7 = Sunday | **Required** |
 
 
 - `time_of_day` condition is met when the server's timezone-adjusted time is between the values of the tuple, or when no
@@ -32,7 +32,7 @@ When both `time_of_day` and `day_of_week` conditions are met for an interval in 
 
 ```json5
 {
-    "kind": "dnd_time_and_day",
+    "kind": "time_and_day",
     "timezone": "Europe/Berlin",
     "intervals": [
         {
@@ -44,7 +44,7 @@ When both `time_of_day` and `day_of_week` conditions are met for an interval in 
             "day_of_week": [1, 2, 3, 4, 5] // Monday - Fri
         },
         {
-            // no time_of_day, all day on Sunday is matched
+            // no time_of_day, all day is matched
             "day_of_week": [7] // Sunday
         }
 },
@@ -58,7 +58,8 @@ For example, Wednesday morning focus time rule:
     "default": true,
     "enabled": true,
     "conditions": [
-        "kind": "dnd_time_and_day",
+        "kind": "time_and_day",
+        "timezone": "Europe/Berlin",
         "intervals": [
             {
                 "time_of_day": ["09:00", "11:00"],
