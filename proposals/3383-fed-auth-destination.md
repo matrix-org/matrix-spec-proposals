@@ -1,6 +1,8 @@
 # MSC3383: Include destination in X-Matrix Auth Header
 
-Currently, a federation request can't be validated mid-flight without some
+Currently, a federation request can't be
+[validated](https://spec.matrix.org/v1.2/server-server-api/#request-authentication)
+mid-flight without some
 convoluted workarounds, because federation requests don't contain the
 `server_name` of the destination. The `Host` header does not necessarily contain
 the `server_name` of the destination server, if delegation via `.well-known` is
