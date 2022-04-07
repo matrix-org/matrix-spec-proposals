@@ -8,25 +8,15 @@ They should also be able to schedule notification levels for a particular day of
 
 We introduce a push notification [condition](https://spec.matrix.org/v1.2/client-server-api/#push-rules) `time_and_day` to filter based on time of day and day of week.
 
-This conditions specifies `intervals` and `timezone`.
-
-`timezone` is an [Olson formatted timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). This timezone format allows for automatic handling of DST.
-If not set or invalid UTC will be used.
-
-`intervals` is an array of day and time interval configurations.
-Intervals in the array are an OR condition.
-
-Each interval is an object that defines a `time_of_day` tuple and `day_of_week` array.
-
 **`dnd_time_and_day` condition definition**
 
 | key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
 | `kind` | string | 'dnd_time_of_day' | | **Required** |
 | `timezone` | string | user's [Olson formatted timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) | The timezone to use for time comparison. This format allows for automatic DST handling | Optional. Defaults to UTC |
-| `intervals` | array | array of time matching intervals (see below) | Intervals are evaluated with an OR condition | **Required** |
+| `intervals` | array | array of time matching intervals (see below) | Intervals representing time periods in which the rule should match. Evaluated with an OR condition | **Required** |
 
-**time matching interval definition**
+**Time matching interval definition**
 
 | key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
@@ -61,7 +51,7 @@ When both `time_of_day` and `day_of_week` conditions are met for an interval in 
 ```
 
 A primary usecase for this condition is creating 'do not disturb' behaviour.
-For example, Wednesday morning focus time rule
+For example, Wednesday morning focus time rule:
 ```json5
 {
     "rule_id": ".m.rule.master",
