@@ -35,21 +35,13 @@ We will start by introducing `m.beacon_info` as a new state event type; the even
 | ---- | ----| ----- | ----------- | -------- |
 | string | `type` | `m.beacon_info` | This state event defines a single location sharing session. | yes |
 | string | `state_key` | The sender's MXID | As per [event auth rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules), this restricts the state event to only be editable by the sender. | yes |
-| dict | `content->m.beacon_info` | An `m.beacon_info` dictionary (see below) | This defines the current state of the live location sharing session. | yes |
+| int | `timeout` | A positive number of milliseconds | The maximum length of the location sharing session, relative to `m.ts`. | yes
+| string | `description` | Optional descriptive text | A human-readable description of the live location sharing session. | no |
+| bool | `live` | true | A boolean describing whether the location sharing session is currently active. Also denotes this session as ephemeral. | yes
 | int | `m.ts` | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The timestamp of when the location sharing session was started by the sender. | yes
 | dict | `m.asset` | A dictionary (see below) | Describes the object being tracked. From [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). | yes
 
 TODO: This design does not currently allow for a user to have multiple live location sharing sessions active simultaneously. Incorporating either [MSC3671](https://github.com/matrix-org/matrix-spec-proposals/pull/3671) or [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) will help here.
-
-**`m.beacon_info` dictionary definition**
-
-| type | key | value | description | required |
-| ---- | --- | ----- | ----------- | -------- |
-| int | `timeout` | A positive number of milliseconds | The maximum length of the location sharing session, relative to a `m.ts`. | yes
-| string | `description` | Optional descriptive text | A human-readable description of the live location sharing session. | no |
-| bool | `live` | true | A boolean describing whether the location sharing session is currently active. Also denotes this session as ephemeral. | yes
-
-TODO: `m.beacon_info` being used in two contexts is confusing.
 
 **`m.asset` dictionary definition**
 
@@ -65,11 +57,9 @@ A full example of the `m.beacon_info` state event:
     "type": "m.beacon_info",
     "state_key": "@stefan:matrix.org",
     "content": {
-        "m.beacon_info": {
-            "timeout": 600000,
-            "description": "Stefan's live location",
-            "live": true
-        },
+        "timeout": 600000,
+        "description": "Stefan's live location",
+        "live": true,
         "m.ts": 1436829458432,
         "m.asset": {
             "type": "m.self"
@@ -77,10 +67,6 @@ A full example of the `m.beacon_info` state event:
     }
 }
 ```
-
-If multiple live beacons exist, clients have the option of either aggregating
-all available location EDUs into one render or just those referencing a particular 
-`beacon_info`.
 
 Subsequently clients will start sending beacon data EDUs to the new 
 `rooms/{roomId}/ephemeral/{eventType}/{txnId}` endpoint where `eventType` equals 
@@ -106,6 +92,10 @@ An full example of a `m.beacon` EDU as received by a client:
     "origin_server_ts": 1636829518182
 }
 ```
+
+If multiple live beacons exist, clients have the option of either aggregating
+all available location EDUs into one render or just those referencing a particular 
+`m.beacon_info` state event.
 
 When the user decides they would like to stop sharing their live location the 
 original `m.beacon_info`'s `live` property should be set to `false`.
@@ -141,7 +131,7 @@ This proposal relies on the following MSCs:
 
 Until this MSC is merged, the following unstable prefixes should be used:
 
- * Any instance of `m.beacon_info` should be referred to as `org.matrix.msc3672.beacon_info`
+ * `m.beacon_info` should be referred to as `org.matrix.msc3672.beacon_info`
  * `m.beacon` should be referred to as `org.matrix.msc3672.beacon`
 
  Until [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488) is merged, the following unstable prefix should be used:
