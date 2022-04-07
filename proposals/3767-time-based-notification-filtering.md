@@ -20,7 +20,7 @@ We introduce a push notification [condition](https://spec.matrix.org/v1.2/client
 
 | key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
-| `time_of_day` | string[] | tuple of `hh:mm` time | Tuple representing start and end of a time interval in which the ruule should match. Times are [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). Times are inclusive | Optional. When omitted all times are matched.  |
+| `time_of_day` | string[] | tuple of `hh:mm` time | Tuple representing start and end of a time interval in which the rule should match. Times are [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). Times are inclusive | Optional. When omitted all times are matched.  |
 | `day_of_week` | number[] | array of integers 1-7 | An array of integers representing days of the week on which the rule should match, where 1 = Monday, 7 = Sunday | **Required** |
 
 
