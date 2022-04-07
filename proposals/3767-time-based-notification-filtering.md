@@ -23,17 +23,17 @@ Each interval is an object that defines a `time_of_day` tuple and `day_of_week` 
 
 When both `time_of_day` and `day_of_week` conditions are met for one of the intervals in the`intervals` array the rule evaluates to true.
 
-```json
+```json5
 {
     "kind": "dnd_time_and_day",
     "timezone": "Europe/Berlin",
     "intervals": [
         {
-            "time_of_day": ['00:00', '09:00'],
+            "time_of_day": ["00:00", "09:00"],
             "day_of_week": [1, 2, 3, 4, 5] // Monday - Fri
         },
         {
-            "time_of_day": ['17:00', '23:59'],
+            "time_of_day": ["17:00", "23:59"],
             "day_of_week": [1, 2, 3, 4, 5] // Monday - Fri
         },
         {
@@ -44,7 +44,7 @@ When both `time_of_day` and `day_of_week` conditions are met for one of the inte
 
 A popular usecase for this condition is overriding default push rules to create a do not disturb behaviour.
 For example, Wednesday morning focus time rule
-```json
+```json5
 {
     "rule_id": ".m.rule.master",
     "default": false,
@@ -53,7 +53,7 @@ For example, Wednesday morning focus time rule
         "kind": "dnd_time_and_day",
         "intervals": [
             {
-                "time_of_day": ['09:00', '11:00'],
+                "time_of_day": ["09:00", "11:00"],
                 "day_of_week": [3] // Wednesday
             },
     ],
@@ -74,7 +74,7 @@ Some systems (e.g. iOS) have their own DND / focus mode but this is only an opti
 This also needs to be configured per device.
 
 #### `room_member_count` style comparison
-```json
+```json5
 "conditions": [
         {
             "kind": "time_of_day",
