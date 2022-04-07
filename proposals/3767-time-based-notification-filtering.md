@@ -18,13 +18,27 @@ Intervals in the array are an OR condition.
 
 Each interval is an object that defines a `time_of_day` tuple and `day_of_week` array.
 
-- `time_of_day` is a tuple of `hh:mm` [ISO 8601 formatted
-  times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.).
-  This condition is met when the server's timezone-adjusted time is between the values of the tuple. Values are
-  inclusive. If `time_of_day` is not set on an interval all times will meet the condition.
-- `day_of_week` is an array of integers representing days of the week, where 1 = Monday, 7 = Sunday. This condition is met when the server's timezone-adjusted day is included in the array.
+**`dnd_time_and_day` condition definition**
 
-When both `time_of_day` and `day_of_week` conditions are met for one of the intervals in the`intervals` array the rule evaluates to true.
+| key | type | value | description | Required |
+| ---- | ----| ----- | ----------- | -------- |
+| `kind` | string | 'dnd_time_of_day' | | **Required** |
+| `timezone` | string | user's [Olson formatted timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) | The timezone to use for time comparison. This format allows for automatic DST handling | Optional. Defaults to UTC |
+| `intervals` | array | array of time matching intervals (see below) | Intervals are evaluated with an OR condition | **Required** |
+
+**time matching interval definition**
+
+| key | type | value | description | Required |
+| ---- | ----| ----- | ----------- | -------- |
+| `time_of_day` | string[] | tuple of `hh:mm` times | times are [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). Times are inclusive | Optional. When omitted all times are matched.  |
+| `day_of_week` | number[] | array of integers 1-7 | An array of integers representing days of the week, where 1 = Monday, 7 = Sunday | **Required** |
+
+
+- `time_of_day` condition is met when the server's timezone-adjusted time is between the values of the tuple, or when no
+  `time_of_day` is set on the interval. Values are inclusive.
+- `day_of_week` condition is met when the server's timezone-adjusted day is included in the array.
+
+When both `time_of_day` and `day_of_week` conditions are met for an interval in the `intervals` array the rule evaluates to true.
 
 ```json5
 {
@@ -46,12 +60,12 @@ When both `time_of_day` and `day_of_week` conditions are met for one of the inte
 },
 ```
 
-A popular usecase for this condition is overriding default push rules to create a do not disturb behaviour.
+A primary usecase for this condition is creating 'do not disturb' behaviour.
 For example, Wednesday morning focus time rule
 ```json5
 {
     "rule_id": ".m.rule.master",
-    "default": false,
+    "default": true,
     "enabled": true,
     "conditions": [
         "kind": "dnd_time_and_day",
@@ -94,13 +108,17 @@ This also needs to be configured per device.
 As only one rule per `kind` + `rule_id` is allowed and rule conditions are an `AND` this allows only one contiguous range to be defined. This precludes one of the main usecases for the feature - ignoring notifications outside of work/waking hours.
 
 #### Device assessment
-An alternative version of the `time_and_day` defined above used timezone agnostic times and did not define a timezone. This rule would be assessed only on the device.
+An alternative version of the `time_and_day` defined above used timezone agnostic times and did not define a timezone.
+This rule would be assessed only on the device. This is not easily achieved on every platform. 
 
 #### ms offsets for time intervals
-Previous versions used ms offsets to represent time of day instead of `hh:mm`. Ms offsets may behave incorrectly on days with a DST jump.
+Previous proposals used ms offsets to represent time of day instead of `hh:mm`. Ms offsets may behave incorrectly on
+days with a DST jump and are less intuitive.
 
 ## Security considerations
-- Stores user's timezone on the server. DND periods saved to the server without timezone information would reveal information about a user's approximate timezone anyway. Users who do not wish to store their timezone can set DND periods in UTC.
+- Stores user's timezone on the server. DND periods saved to the server without timezone information would reveal
+  information about a user's approximate timezone anyway. Users who do not wish to store their timezone can set DND
+  periods in UTC (this option should be available in clients implementing time based notification filtering).
 
 ## Unstable prefix
 
