@@ -29,12 +29,12 @@ updates. As an extra precaution they can also be encrypted as defined in [MSC367
 
 We will start by introducing `m.beacon_info` as a new state event type; the event shape originally taken from [MSC3489](https://github.com/matrix-org/matrix-doc/pull/3489), but with some slight tweaks.
 
-**`m.beacon_info` state event definition**
+The `state_key` of this state event must be send to the sender's MXID. As per [event auth rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules), this restricts the state event to only be editable by the sender.
+
+**`m.beacon_info` state event `content` field definitions**
 
 | key | type | value | description | Required |
 | ---- | ----| ----- | ----------- | -------- |
-| `type` | string | `m.beacon_info` | This state event defines a single location sharing session. | yes |
-| `state_key` | string | The sender's MXID | As per [event auth rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules), this restricts the state event to only be editable by the sender. | yes |
 | `timeout` | int | A positive number of milliseconds | The maximum length of the location sharing session, relative to `m.ts`. | yes
 | `description` | string | Optional descriptive text | A human-readable description of the live location sharing session. | no |
 | `live` | bool | true | A boolean describing whether the location sharing session is currently active. Also denotes this session as ephemeral. | yes
@@ -42,6 +42,8 @@ We will start by introducing `m.beacon_info` as a new state event type; the even
 | `m.asset` | dict | A dictionary (see below) | Describes the object being tracked. From [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). | yes
 
 TODO: This design does not currently allow for a user to have multiple live location sharing sessions active simultaneously. Incorporating either [MSC3671](https://github.com/matrix-org/matrix-spec-proposals/pull/3671) or [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) will help here.
+
+TODO: Is `m.ts` really needed on `m.beacon_info`? Or can we just simply use `origin_server_ts`?
 
 **`m.asset` dictionary definition**
 
@@ -64,21 +66,32 @@ A full example of the `m.beacon_info` state event:
         "m.asset": {
             "type": "m.self"
         }
-    }
+    },
+    "origin_server_ts": 1436829458474,
+    "event_id": "$abcd:domain",
+    "room_id": "!1234:domain"
 }
 ```
 
 Subsequently clients will start sending beacon data EDUs to the new 
 `rooms/{roomId}/ephemeral/{eventType}/{txnId}` endpoint where `eventType` equals 
-`m.beacon` with the same location payload as defined in [MSC3489](https://github.com/matrix-org/matrix-doc/pull/3489).
+`m.beacon` with the following payload.
+
+**`m.beacon` ephemeral event `content` field definitions**
+
+| key | type | value | description | Required |
+| ---- | ----| ----- | ----------- | -------- |
+| `m.relates_to` | dictionary | Event reference, defined in [MSC2674](https://github.com/matrix-org/matrix-spec-proposals/pull/2674) | A reference to the state event defining a live location share that this location update is related to. | yes
+| `m.location` | dictionary | An extensible event containing location data, defined in [MSC3267](https://github.com/matrix-org/matrix-spec-proposals/pull/3267) | The asset's location, and an optional description | yes |
+| `m.ts` | int | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The optional timestamp of when the location was recorded. If missing, clients should use `origin_server_ts`. | no
 
 An full example of a `m.beacon` EDU as received by a client:
 
 ```json5
 {
     "content": {
-        "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
-            "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
+        "m.relates_to": {
+            "rel_type": "m.reference",
             "event_id": "$beacon_info"
         },
         "m.location": {
