@@ -65,9 +65,9 @@ for the new key, even if it required a higher level than what the user has.
 
 ## Unstable prefix
 While this MSC is not in a released version of the spec, implementations should
-use `net.maunium.msc2815.include_redacted_content` as the query parameter name,
-and `net.maunium.msc2815.content_keep_ms` in the error response. The error
-codes should use `NET.MAUNIUM.MSC2815` as a prefix instead of `M`.
+use `fi.mau.msc2815.include_redacted_content` as the query parameter name, and
+`fi.mau.msc2815.content_keep_ms` in the error response. The error codes should
+use `FI.MAU.MSC2815` as a prefix instead of `M`.
 
-Additionally, servers should advertise support using the `net.maunium.msc2815`
-flag in `unstable_features` in the `/versions` endpoint.
+Additionally, servers should advertise support using the `fi.mau.msc2815` flag
+in `unstable_features` in the `/versions` endpoint.
