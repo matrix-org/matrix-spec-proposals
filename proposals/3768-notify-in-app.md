@@ -54,14 +54,14 @@ complexity.
 For the sake of completeness, what follows is the result of an exercise
 in archaeology:
 
-### `dont_push` action
+### dont_push action
 
 An experimental [Synapse PR] defined a `dont_push` action. While the
 latter exhibits the same semantics as `notify_in_app`, its naming
 disguises the fact that notifications are still being displayed in-app.
 The PR was abandoned in favor of [MSC2625].
 
-### MSC2625:`mark_unread` action / `unread_count` field
+### MSC2625:mark_unread action / unread_count field
 
 [MSC2625] went a step further by introducing a `mark_unread` action
 together with an explicit `unread_count` next to the existing
