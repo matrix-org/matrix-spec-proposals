@@ -34,7 +34,7 @@ The existing `notify` action is changed to imply `notify_in_app`.
     notification. Implies `notify_in_app`.
 
 No change to the existing default push rules is required. Servers can
-treat `notifify_in_app` exactly like `notify`, merely omitting the push,
+treat `notify_in_app` exactly like `notify`, merely omitting the push,
 while clients don't have to distinguish between the two actions at all.
 This makes for a minimally invasive solution to the problem of
 in-app-only notifications.
