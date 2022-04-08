@@ -1,12 +1,15 @@
 # MSC3767: Time based notification filtering
-Do not disturb / focus features are becoming standard across operating systems and networking products. Users expect to be able to manage the level of noisiness from an application based on day and time.
+Do not disturb / focus features are becoming standard across operating systems and networking products. Users expect to
+be able to manage the level of noisiness from an application based on day and time.
 
-Users should be able to configure many periods of notification levels during the day; for example before work, lunch hour, and after work.
-They should also be able to schedule notification levels for a particular day of the week; for example a quieter notification setting all day on No Meeting Wednesday, or complete silence over the weekend.
+Users should be able to configure many periods of notification levels during the day; for example before work, lunch
+hour, and after work. They should also be able to schedule notification levels for a particular day of the week; for
+example a quieter notification setting all day on No Meeting Wednesday, or complete silence over the weekend.
 
 ## Proposal
 
-We introduce a push notification [condition](https://spec.matrix.org/v1.2/client-server-api/#push-rules) `time_and_day` to filter based on time of day and day of week.
+We introduce a push notification [condition](https://spec.matrix.org/v1.2/client-server-api/#push-rules) `time_and_day`
+to filter based on time of day and day of week.
 
 **`time_and_day` condition definition**
 
@@ -28,7 +31,8 @@ We introduce a push notification [condition](https://spec.matrix.org/v1.2/client
   `time_of_day` is set on the interval. Values are inclusive.
 - `day_of_week` condition is met when the server's timezone-adjusted day is included in the array.
 
-When both `time_of_day` and `day_of_week` conditions are met for an interval in the `intervals` array the rule evaluates to true.
+When both `time_of_day` and `day_of_week` conditions are met for an interval in the `intervals` array the rule evaluates
+to true.
 
 ```json5
 {
@@ -79,8 +83,9 @@ For example, Wednesday morning focus time rule:
 ## Alternatives
 
 #### System
-Some systems (e.g. iOS) have their own DND / focus mode but this is only an option if all of your devices are within that vendor ecosystem (here Apple) and doesn't help when you have e.g. an iPad and an Android phone.
-This also needs to be configured per device.
+Some systems (e.g. iOS) have their own DND / focus mode but this is only an option if all of your devices are within
+that vendor ecosystem (here Apple) and doesn't help when you have e.g. an iPad and an Android phone. This also needs to
+be configured per device.
 
 #### `room_member_count` style comparison
 ```json5
@@ -96,7 +101,9 @@ This also needs to be configured per device.
         
     ]
 ```
-As only one rule per `kind` + `rule_id` is allowed and rule conditions are an `AND` this allows only one contiguous range to be defined. This precludes one of the main usecases for the feature - ignoring notifications outside of work/waking hours.
+As only one rule per `kind` + `rule_id` is allowed and rule conditions are an `AND` this allows only one contiguous
+range to be defined. This precludes one of the main usecases for the feature - ignoring notifications outside of
+work/waking hours.
 
 #### Device assessment
 An alternative version of the `time_and_day` defined above used timezone agnostic times and did not define a timezone.
