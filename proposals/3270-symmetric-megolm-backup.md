@@ -1,5 +1,5 @@
 # MSC3270: Symmetric megolm backup
-The current megolm backup use asymmetric encryption. This was chosen so that
+The current megolm backup uses asymmetric encryption. This was chosen so that
 clients without the private key can still add their own megolm sessions to the
 backup. This, however, allows a homeserver admin to inject their own malicious
 megolm session into someone’s backup and then send an encrypted message as a user
