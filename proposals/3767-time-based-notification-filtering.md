@@ -49,7 +49,7 @@ to true.
         },
         {
             // no time_of_day, all day is matched
-            "day_of_week": [7] // Sunday
+            "day_of_week": [6, 7] // Weekend
         }
 },
 ```
