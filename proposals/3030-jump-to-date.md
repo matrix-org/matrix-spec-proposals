@@ -99,6 +99,12 @@ might actually get a rogue random delayed one that was backfilled from a
 federated server, but the human can figure that out by trying again with a
 slight variation on the date or something.
 
+Clients could abuse this new API for getting the `m.room.create` event, so
+servers might want to put extra care into optimizing whatever lookups they do.
+The create event contains quite a lot of information that a client needs in
+order to operate, so it is frequently requested by said clients. For example,
+the room type and room version (for displaying warnings about stability).
+
 
 ## Alternatives
 
