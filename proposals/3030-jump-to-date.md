@@ -27,9 +27,9 @@ previous days*
 
 These types of use cases are not supported by the current Matrix API because it
 has no way to fetch or filter older messages besides a manual brute force
-pagination from the latest. Paginating is time-consuming and expensive to
-process every event as you go (not practical for clients). Imagine wanting to
-get a message from 3 years ago 😫
+pagination from the most recent event in the room. Paginating is time-consuming
+and expensive to process every event as you go (not practical for clients).
+Imagine wanting to get a message from 3 years ago 😫
 
 
 ## Proposal
@@ -54,7 +54,10 @@ API endpoint `GET
 which other homeservers can use to ask about their closest `event_id` to the
 timestamp. This endpoint also returns `origin_server_ts` to make it easy to do a
 quick comparison to see if the remote `event_id` fetched is closer than the
-local one.
+local one. After the local homeserver receives a response from the federation
+endpoint, it should probably should try to backfill this event so that it's
+available to query with `/context` from a client in order to get a pagination
+token.
 
 The heuristics for deciding when to ask another homeserver for a closer event if
 your homeserver doesn't have something close, is left up to the homeserver
@@ -93,7 +96,6 @@ token directly in another MSC ⏩
 
 
 ## Potential issues
-
 
 ### Receiving a rogue random delayed event ID
 
