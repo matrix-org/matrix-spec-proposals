@@ -34,7 +34,6 @@ get a message from 3 years ago 😫
 
 ## Proposal
 
-
 Add new client API endpoint `GET
 /_matrix/client/v1/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]`
 which fetches the closest `event_id` to the given timestamp `ts` query parameter
@@ -88,6 +87,9 @@ GET /_matrix/federation/v1/timestamp_to_event/<roomID>?ts=<timestamp>&dir=<direc
 In order to paginate `/messages`, we need a pagination token which we can get
 using `GET /_matrix/client/r0/rooms/{roomId}/context/{eventId}?limit=0` for the
 `event_id` returned by `/timestamp_to_event`.
+
+We can always iterate on `/timestamp_to_event` later and return a pagination
+token directly in another MSC ⏩
 
 
 ## Potential issues
