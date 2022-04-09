@@ -146,7 +146,7 @@ reason and we could still go down those routes depending on how people like the
 current design.
 
 
-### Paginate `/messages` from timestamp 
+### Paginate `/messages?around=<timestamp>` from timestamp
 
 Add the `?around=<timestamp>` query parameter to the `GET
 /_matrix/client/r0/rooms/{roomId}/messages` endpoint. This will start the
@@ -155,11 +155,27 @@ timestamp. The direction is determined by the existing `?dir` query parameter.
 
 Use topological ordering, just as Element would use if you follow a permalink.
 
+This alternative could be confusing to the end-user around how this plays with
+the existing query parameters
+`/messages?from={paginationToken}&to={paginationToken}` which also determine
+what part of the timeline to query. Those parameters could be extended to accept
+timestamps in addition to pagination tokens but then could get confusing again
+when you start mixing timestamps and pagination tokens. The homeserver also has
+to disambiguate what a pagination token looks like vs a unix timestamp. Since
+pagination tokens don't follow a certain convention, some homeserver
+implementations may already be using arbitrary number tokens already which would
+be impossible to distinguish from  a timestamp.
+
+
 ### Filter by date in `RoomEventFilter`
 
 Extend `RoomEventFilter` to be able to specify a timestamp or a date range. The
 `RoomEventFilter` can be passed via the `?filter` query param on the `/messages`
 endpoint.
+
+This suffers from the same confusion to the end-user of how it plays with how
+this plays with `/messages?from={paginationToken}&to={paginationToken}` which
+also determines what part of the timeline to query.
 
 
 ### New `destination_server_ts` field
