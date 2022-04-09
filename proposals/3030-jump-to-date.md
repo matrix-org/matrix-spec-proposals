@@ -94,10 +94,39 @@ token directly in another MSC ⏩
 
 ## Potential issues
 
+
+### Receiving a rogue random delayed event ID
+
 If you ask for "the message with `origin_server_ts` closest to Jan 1st 2018" you
 might actually get a rogue random delayed one that was backfilled from a
 federated server, but the human can figure that out by trying again with a
 slight variation on the date or something.
+
+
+### Receiving an unrenderable event ID
+
+Another issue is that clients could land on an event they can't/won't render,
+such as a reaction, then they'll be forced to desperately seek around the
+timeline until they find an event they can do something with.
+
+Eg:
+ - Client wants to jump to January 1st, 2022
+ - Server says there's an event on January 2nd, 2022 that is close enough
+ - Client finds out there's a ton of unrenderable events like memberships, poll responses, reactions, etc at that time
+ - Client starts paginating forwards, finally finding an event on January 27th it can render
+ - Client wasn't aware that the actual nearest neighbouring event was backwards on December 28th, 2021 because it didn't paginate in that direction
+ - User is confused that they are a month past the target date when the message is *right there*.
+
+Clients can be smarter here though. Clients can see when events were sent as
+they paginate and if they see they're going more than a couple days out, they
+can also try the other direction before going further and further away.
+
+Clients can also just explain to the user what happened with a little toast: "We
+were unable to find an event to display on January 1st, 2022. The closest event
+after that date is on January 27th."
+
+
+### Abusing the `/timestamp_to_event` API to get the `m.room.create` event 
 
 Clients could abuse this new API for getting the `m.room.create` event, so
 servers might want to put extra care into optimizing whatever lookups they do.
