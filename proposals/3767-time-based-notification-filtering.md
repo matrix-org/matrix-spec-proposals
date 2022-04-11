@@ -76,11 +76,11 @@ For example, Wednesday morning focus time rule:
 }
 ```
 
-**`dont_notify` and Do Not Disturb behaviour**
+##### `dont_notify` and Do Not Disturb behaviour
 `dont_notify` will stop badges from being
 updated in the client during 'do not disturb' hours, so the user will not be
 able to locate messages that were silenced when they are back online.
-`notify_in_app` as proposed in
+To silence push notifications but allow discovery of missed messages in app, `notify_in_app` as proposed in
 [MSC3768](https://github.com/matrix-org/matrix-spec-proposals/pull/3768) should
 be used.
 
