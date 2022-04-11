@@ -49,6 +49,11 @@ A Matrix Homeserver receiving a request over the S2S API SHOULD gracefully
 handle requests that do not include the `destination` field in the
 `Authorization` header for backwards compatibility.
 
+When a matrix homeserver receives a request over the S2S API for a
+`destination` that is not the `server_name` (or one of the `server_name`s in
+case of vhosting) of itself, it should deny that request with an HTTP status
+code 401 - Unauthorized.
+
 ## Potential issues
 
 Server implementations could theoretically be affected by this change,
