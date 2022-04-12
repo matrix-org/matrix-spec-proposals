@@ -52,12 +52,71 @@ For instance, an `m.room.message` which replaces an existing event might look li
 }
 ```
 
-The `m.new_content` can include any fields that would normally be found in an
-event's `content` field, such as `formatted_body`.  In addition, the `msgtype`
-field need not be the same as in the original event. For example, if a user
-intended to send a message beginning with "/me", but their client sends an
-`m.emote` event instead, they could edit the message to send be an `m.text`
-event as they had originally intended.
+The `m.new_content` can include any properties that would normally be found in
+an event's `content` property, such as `formatted_body`.
+
+Note that the `msgtype` property of `m.room.message` events need not be the
+same as in the original event. For example, if a user intended to send a
+message beginning with "/me", but their client sends an `m.emote` event
+instead, they could edit the message to send be an `m.text` event as they had
+originally intended.
+
+#### Applying `m.new_content`
+
+When updating an existing event for an `m.replace` relating event, the old
+`content` property is replaced entirely by the `m.new_content`, with the
+exception of `m.relates_to`, which is left *unchanged*. For example, given a
+pair of events:
+
+```json
+{
+    "event_id": "$original_event",
+    "type": "m.room.message",
+    "content": {
+        "body": "I *really* like cake",
+        "msgtype": "m.text",
+        "formatted_body": "I <em>really</em> like cake",
+    }
+}
+```
+
+```json
+{
+    "event_id": "$edit_event",
+    "type": "m.room.message",
+    "content": {
+        "body": "* I *really* like *chocolate* cake",
+        "msgtype": "m.text",
+        "m.new_content": {
+            "body": "I *really* like *chocolate* cake",
+            "msgtype": "m.text",
+            "com.example.extension_property": "chocolate"
+        },
+        "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$original_event_id"
+        }
+    }
+}
+```
+
+... then the end result is an event as shown below. Note that `formatted_body`
+is now absent, because it was absent in the replacement event, but
+`m.relates_to` remains unchanged (ie, absent).
+
+```json
+{
+    "event_id": "$original_event",
+    "type": "m.room.message",
+    "content": {
+        "body": "I *really* like *chocolate* cake",
+        "msgtype": "m.text",
+        "com.example.extension_property": "chocolate"
+    }
+}
+```
+
+### Permalinks
 
 Permalinks to edited events should capture the event ID that the sender is
 viewing at that point (which might be an edit ID).  The client viewing the
