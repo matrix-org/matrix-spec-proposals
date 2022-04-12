@@ -170,16 +170,16 @@ most recent version of that event.
 ### Redactions
 
 When a message using a `rel_type` of `m.replace` is redacted, it removes that
-edit revision.
+edit revision. This has little effect if there were subsequent edits, however
+if it was the most recent edit, the event is in effect reverted to its content
+before the redacted edit.
 
-In the UI, the act of redacting an edited message in the timeline should
-remove the message entirely from the timeline.  It can do this by redacting the
-original msg, while ensuring that clients locally discard any edits to a
-redacted message on receiving a redaction.
-
-When a specific revision of an event is redacted, the client should manually
-refresh the parent event via `/events` to grab whatever the replacement
-revision is.
+Redacting the original message in effect removes the message, including all
+subsequent edits, from the visible timeline. In this situation, homeservers
+will return an empty `content` for the original event as with any other
+redacted event. It must be noted that, although they are not immediately
+visible in Element, subsequent edits remain unredacted and can be seen via API
+calls. See [Future considerations](#future-considerations).
 
 ### Server-side aggregation of `m.replace` relationships
 
@@ -209,6 +209,11 @@ event that is the target of an `m.replace` relationship. For example:
   }
 }
 ```
+
+If the original event is redacted, any `m.replace` relationship should **not**
+be bundled with it (whether or not any subsequent edits are themselves
+redacted). Note that this behaviour is specific to the `m.replace`
+relationship.
 
 ## Edge Cases
 
@@ -270,9 +275,20 @@ what happens if `m.new_content` is absent? or the `type` is different?
 
 ## Future considerations
 
+### Ordering of edits
+
 In future we may wish to consider ordering replacements (or relations in
 general) via a DAG rather than using `origin_server_ts` to determine ordering -
 particularly to mitigate potential abuse of edits applied by moderators.
 Whatever, care must be taken by the server to ensure that if there are multiple
 replacement events, the server must consistently choose the same one as all
 other servers.
+
+### Redaction of edits
+
+It is highly unintuitive that redacting the original event leaves subsequent
+edits visible to curious eyes even though they are hidden from the
+timeline. This is considered a bug which this MSC makes no attempt to
+resolve. See also
+[element-web#11978](https://github.com/vector-im/element-web/issues/11978) and
+[synapse#5594](https://github.com/matrix-org/synapse/issues/5594).
