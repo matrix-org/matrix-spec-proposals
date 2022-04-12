@@ -20,24 +20,25 @@ events to relate to each other.  Together, these proposals replace
 
 ## Proposal
 
+### `m.replace` event relationship type
+
 A new `rel_type` of `m.replace` is defined for use with the `m.relates_to`
 field as defined in
-[MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674).  This is
+[MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674). This is
 intended primarily for handling edits, and lets you define an event which
-replaces an existing event.  When aggregated (as in
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), returns the
-most recent replacement event (as determined by `origin_server_ts`). The
-replacement event must contain an `m.new_content` which defines the replacement
-content (allowing the normal `body` fields to be used for a fallback for
-clients who do not understand replacement events).
+replaces an existing event.
 
-For instance, an `m.room.message` which replaces an existing event looks like:
+The replacement event must contain a `m.new_content` property which defines the
+replacement content. (This allows the normal `body` fields to be used for a
+fallback for clients who do not understand replacement events.)
+
+For instance, an `m.room.message` which replaces an existing event might look like:
 
 ```json
 {
     "type": "m.room.message",
     "content": {
-        "body": "s/foo/bar/",
+        "body": "* Hello! My name is bar",
         "msgtype": "m.text",
         "m.new_content": {
             "body": "Hello! My name is bar",
@@ -51,9 +52,9 @@ For instance, an `m.room.message` which replaces an existing event looks like:
 }
 ```
 
-The `m.new_content` includes any fields that would normally be found in an
+The `m.new_content` can include any fields that would normally be found in an
 event's `content` field, such as `formatted_body`.  In addition, the `msgtype`
-field need not be the same as in the original event.  For example, if a user
+field need not be the same as in the original event. For example, if a user
 intended to send a message beginning with "/me", but their client sends an
 `m.emote` event instead, they could edit the message to send be an `m.text`
 event as they had originally intended.
@@ -76,6 +77,35 @@ redacted message on receiving a redaction.
 When a specific revision of an event is redacted, the client should manually
 refresh the parent event via `/events` to grab whatever the replacement
 revision is.
+
+### Server-side aggregation of `m.replace` relationships
+
+Note that there can be multiple event with an `m.replace` relationship to a
+given event (for example, if an event is edited multiple times).  Homeservers
+should aggregate `m.replace` relationships as in
+[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The aggregation
+gives the `event_id`, `origin_server_ts`, and `sender` of the most recent
+replacement event (as determined by `origin_server_ts`).
+
+This aggregation is bundled into the `unsigned/m.relations` property of any
+event that is the target of an `m.replace` relationship. For example:
+
+```json5
+
+{
+  "event_id": "$original_event_id",
+  // ...
+  "unsigned": {
+    "m.relations": {
+      "m.replace": {
+        "event_id": "$latest_edit_event_id",
+        "origin_server_ts": 1649772304313,
+        "sender": "@editing_user:localhost
+      }
+    }
+  }
+}
+```
 
 ## Edge Cases
 
@@ -131,6 +161,9 @@ does it fit in with federation event auth rules?
  * When it happens, we should make it super clear in the timeline that a message
    was edited by a specific user.
  * We do not recommend that native Matrix clients expose this as a feature.
+
+
+what happens if `m.new_content` is absent? or the `type` is different?
 
 ## Future considerations
 
