@@ -18,6 +18,32 @@ events to relate to each other.  Together, these proposals replace
   users can annotate events, such as reacting to events with emoji, using this
   mechanism.
 
+## Background
+
+Element-Web (then Riot-Web) and Synapse both implemented initial support for
+message editing, following the proposals of MSC1849, in May 2019
+([matrix-react-sdk](https://github.com/matrix-org/matrix-react-sdk/pull/2952),
+[synapse](https://github.com/matrix-org/synapse/pull/5209)). Element-Android
+and Element-iOS also added implementations around that time. Unfortunately,
+those implementations presented the feature as "production-ready", despite it
+not yet having been adopted into the Matrix specification.
+
+The current situation is therefore that client or server implementations hoping
+to interact with Element users must simply follow the examples of that
+implementation. In other words, message edits form part of the *de-facto* spec
+despite not being formalised in the written spec. This is clearly a regrettable
+situation. Hopefully, processes have improved over the last three years so that
+this situation will not arise again.  Nevertheless there is little we can do
+now other than formalise the status quo.
+
+This MSC, along with the others mentioned above, therefore seeks primarily to
+do that. Although there is plenty of scope for improvement, we consider that
+better done in *future* MSCs, based on a shared understaning of the *current*
+implementation.
+
+In short, this MSC prefers fidelity to the current implementations over
+elegance of design.
+
 ## Proposal
 
 ### `m.replace` event relationship type
