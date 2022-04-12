@@ -78,6 +78,8 @@ For instance, an `m.room.message` which replaces an existing event might look li
 }
 ```
 
+Such an event, with `rel_type: m.replace`, is referred to as a "message edit".
+
 The `m.new_content` can include any properties that would normally be found in
 an event's `content` property, such as `formatted_body`.
 
@@ -87,12 +89,28 @@ message beginning with "/me", but their client sends an `m.emote` event
 instead, they could edit the message to send be an `m.text` event as they had
 originally intended.
 
+Whenever a homeserver would return an event via the Client-Server API, it
+should check for any applicable `m.replace` event, and if one is found, it
+should first modify the `content` of the original event according to the
+`m.new_content` of the most recent edit (as determined by
+`origin_server_ts`). An exception applies to [`GET
+/_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
+which should return the *unmodified* event (though the relationship should still be
+"bundled", as described [below](#server-side-aggregation-of-mreplace-relationships).
+
+Clients are generally expected to ignore message edit events, since the server
+implementation takes care of updating the content of the original
+event. However, if the client has already received the original event, it must
+apply the replacement to the original itself (or, alternatively, request an
+updated copy of the original via [`GET
+/_matrix/client/v3/rooms/{roomId}/context/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)
+or similar).
+
 #### Applying `m.new_content`
 
-When updating an existing event for an `m.replace` relating event, the old
-`content` property is replaced entirely by the `m.new_content`, with the
-exception of `m.relates_to`, which is left *unchanged*. For example, given a
-pair of events:
+When applying a replacement, the `content` property of the origial event is
+replaced entirely by the `m.new_content`, with the exception of `m.relates_to`,
+which is left *unchanged*. For example, given a pair of events:
 
 ```json
 {
