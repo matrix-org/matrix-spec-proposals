@@ -28,8 +28,8 @@ room version to ease the parsing of the given events. If the `eventId` parameter
 is not given, the receiving server is to instead use what it considers the
 room's current state. 
 
-If `eventId` is not provided, `room_version` is added as a mandatory
-response field, giving the version of the room.
+In addition, `room_version` is added as a mandatory response field (giving the
+version of the room), irrespective of whether `eventId` is specified.
 
 ```
 GET /_matrix/federation/v1/state/{roomId}
@@ -75,11 +75,12 @@ API may be required.
 
 ## Security considerations
 
-Requesting servers should be resilient to the `room_version` field in the response not
-matching that in the `m.room.create` event in `pdus`.
+1. Requesting servers should be resilient to the `room_version` field in the response not
+   matching that in the `m.room.create` event in `pdus`: a malicious or buggy server
+   could return conflicting data.
 
-In the case of a domain-name hijack, this may make recovering rooms that the
-domain name was in easier. However, since a domain name hijack will lead to
-other servers potentially sending PDUs with the required event IDs to allow
-backfill and state querying, this does not constitute a meaningful increase in
-attack surface. Proposals such as MSC1228 are expected to mitigate.
+2. In the case of a domain-name hijack, this may make recovering rooms that the
+   domain name was in easier. However, since a domain name hijack will lead to
+   other servers potentially sending PDUs with the required event IDs to allow
+   backfill and state querying, this does not constitute a meaningful increase in
+   attack surface. Proposals such as MSC1228 are expected to mitigate.
