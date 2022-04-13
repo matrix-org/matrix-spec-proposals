@@ -23,9 +23,8 @@ impractical for rooms which may be low-traffic yet valuable to the end-user
 ## Proposal
 
 Make the `eventId` parameter to [`/v1/state/{roomId}`](https://spec.matrix.org/v1.2/server-server-api/#get_matrixfederationv1stateroomid)
-optional, and return the
-room version to ease the parsing of the given events. If the `eventId` parameter
-is not given, the receiving server is to instead use what it considers the
+optional. If the `eventId` parameter
+is not given, the receiving server is to return what it considers the
 room's current state. 
 
 In addition, `room_version` is added as a mandatory response field (giving the
