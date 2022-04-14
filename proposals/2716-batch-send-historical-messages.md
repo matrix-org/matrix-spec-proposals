@@ -107,8 +107,9 @@ those events. We would have to accept the redaction if it came over federation
 to avoid split-brained rooms.
 
 Because we also can't use the `historical` power level for controlling who can
-send these events in the existing room version, we instead only allow the room
-`creator` to send `m.room.insertion`, `m.room.batch`, and `m.room.marker` events.
+send these events in the existing room version, we always persist but instead
+only process and give meaning to the `m.room.insertion`, `m.room.batch`, and
+`m.room.marker` events when the room `creator` sends them.
 
 
 
@@ -180,7 +181,7 @@ Request response:
   // insertion event ID is returned in this field.
   //
   // When `?batch_id` is provided, this field is not present because we can hang
-  // the history off the insertione event specified associated by the batch ID. 
+  // the history off the insertion event specified associated by the batch ID.
   "base_insertion_event_id": "$pmmaTamxhcyLrrOKSrJf3c1zNmfvsE5SGpFpgE_UvN0"
 }
 ```
@@ -433,8 +434,7 @@ The structure of the "marker" event looks like:
     "type": "m.room.marker",
     "sender": "@appservice:example.org",
     "content": {
-        "m.insertion_id": insertion_event.event_id,
-        "m.historical": true
+        "m.insertion_id": insertion_event.event_id
     },
     "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
     "origin_server_ts": 1626914158639,
