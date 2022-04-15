@@ -80,6 +80,16 @@ If, for some reason, an event type exists in both `account_data.events` and `acc
 Full-state syncs must not include `.removed_events`, but consequently clients must see anything
 in `events` as replacing what existed previously.
 
+#### Backwards Compatibility Note
+
+Server implementations **may** include an empty (`{}`) `events` entry for deleted account data,
+together with an entry in `removed_events`.
+
+This is for backwards compatibility, as clients may or may not understand the `removed_events` key.
+
+*The author thinks that this should only be necessary for a single matrix version,
+as clients adapt, but the SCT can - of course - have differing opinions.*
+
 ## Potential issues
 
 Desync is possible, and so if there's a situation where the client has a different view on account
