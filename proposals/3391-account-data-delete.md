@@ -7,21 +7,21 @@
 Account data and room data currently have the following endpoints;
 
 ```
-GET /_matrix/client/r0/user/{userId}/account_data/{type}
+GET /_matrix/client/v3/user/{userId}/account_data/{type}
 
-PUT /_matrix/client/r0/user/{userId}/account_data/{type}
+PUT /_matrix/client/v3/user/{userId}/account_data/{type}
 
-GET /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/{type}
+GET /_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}
 
-PUT /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/{type}
+PUT /_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}
 ```
 
 This proposal aims to add the following two endpoints (with no body);
 
 ```
-DELETE /_matrix/client/r0/user/{userId}/account_data/{type}
+DELETE /_matrix/client/v3/user/{userId}/account_data/{type}
 
-DELETE /_matrix/client/r0/user/{userId}/rooms/{roomId}/account_data/{type}
+DELETE /_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}
 ```
 
 These, respectively, removes account-wide account data, and room-scoped account data.
