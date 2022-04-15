@@ -199,7 +199,6 @@ or the presence of a `org.matrix.msc3773` flag in `unstable_features` on `/versi
 This MSC depends on the following MSCs, which at the time of writing have not yet
 been accepted into the spec:
 
-* [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664): Pushrules for relations
 * [MSC3771](https://github.com/matrix-org/matrix-spec-proposals/pull/3771): Read receipts for threads
 * [MSC3772](https://github.com/matrix-org/matrix-spec-proposals/pull/3772): Push rule for mutually related events
 
