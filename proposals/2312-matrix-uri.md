@@ -2,7 +2,7 @@
 
 This is a proposal of a URI scheme to identify Matrix resources in a wide
 range of applications (web, desktop, or mobile) both throughout Matrix software
-and (especially) outside it. It supersedes 
+and (especially) outside it. It supersedes
 [MSC455](https://github.com/matrix-org/matrix-doc/issues/455) in order
 to continue the discussion in the modern GFM style.
 
@@ -49,7 +49,7 @@ This MSC does not introduce new Matrix entities, nor API endpoints -
 it merely defines a mapping between URIs with the scheme name `matrix:`
 and Matrix identifiers, as well as operations on them. The MSC should be
 sufficient to produce an implementation that would convert Matrix URIs to
-a series of [CS API](https://matrix.org/docs/spec/client_server/latest) calls,
+a series of [CS API](https://matrix.org/docs/spec/client_server/r0.6.1) calls,
 entirely on the client side. It is recognised, however, that most of
 the URI processing logic can and should (eventually) be on the server side
 in order to facilitate adoption of Matrix URIs; further MSCs are needed
@@ -173,7 +173,7 @@ before sending the request to the server (more on that below).
 #### Scheme name
 The proposed scheme name is `matrix`.
 [RFC 7595](https://tools.ietf.org/html/rfc7595) states:
-  
+
     if there’s one-to-one correspondence between a service name and
     a scheme name then the scheme name should be the same as
     the service name.
@@ -231,7 +231,7 @@ The path component consists of 1 or more descriptors separated by a slash
 extensions.
 
 This MSC only proposes mappings along `type-qualifier id-without-sigil` syntax;
-`nonid-segment` is unused and reserved for future use. 
+`nonid-segment` is unused and reserved for future use.
 For the sake of integrity future `nonid-segment` extensions must follow
 [the ABNF for `segment-nz` as defined in RFC 3986](https://tools.ietf.org/html/rfc3986#appendix-A).
 
@@ -276,7 +276,7 @@ This notably exempts `:` from percent-encoding but includes `/`.
 
 See the rationale behind dropping sigils and the respective up/downsides in
 "Discussion points and tradeoffs" as well as "Alternatives" below.
-  
+
 #### Query
 
 Matrix URI can optionally have
@@ -308,7 +308,7 @@ describes two possible actions:
   clients supporting
   [canonical direct chats](https://github.com/matrix-org/matrix-doc/pull/2199)
   SHOULD open the canonical direct chat.
-  
+
 For both actions, where applicable, client applications SHOULD ask for user
 confirmation or at least notify the user before joining or creating a new room.
 Conversely, no additional confirmation/notification is necessary when
@@ -327,7 +327,7 @@ perform the default operation suggested by this MSC (see below); e.g.,
 the client may be unable to display a room before joining it, while the URI
 doesn't have `action=join`. In these cases client applications are free to do
 what's best for user experience (e.g., suggest joining the room), even if that
-means performing an action on a URI with no `action` in the query. 
+means performing an action on a URI with no `action` in the query.
 
 The routing query (`via=`) indicates servers that are likely involved in
 the room (see also
@@ -366,7 +366,7 @@ across the client ecosystem.
 
 The reference algorithm of parsing a Matrix URI follows. Note that, although
 clients are encouraged to use lower-case strings in their URIs, all string
-comparisons are case-INsensitive. 
+comparisons are case-INsensitive.
 
 1. Parse the URI into main components (`scheme name`, `authority`, `path`,
    `query`, and `fragment`), decoding special or international characters
@@ -386,7 +386,7 @@ comparisons are case-INsensitive.
    fail parsing; the Matrix URI is invalid.
 
 1. To construct the top-level (primary) Matrix identifier:
-   
+
    a. Pick the leftmost segment of `path` until `/` (path segment) and match
       it against the following list to produce `sigil-1`:
       - `u` (or, optionally, `user` - see "Path") -> `@`
@@ -397,7 +397,7 @@ comparisons are case-INsensitive.
 
    b. Pick the next (2nd) leftmost path segment:
       - if the segment is empty, fail parsing;
-      - otherwise, percent-decode the segment (unless the initial URI parse 
+      - otherwise, percent-decode the segment (unless the initial URI parse
         has already done that) and make `mxid-1` by prepending `sigil-1`.
 
 1. If `sigil-1` is `!` or `#` and the URI path has exactly 4 segments,
@@ -408,19 +408,19 @@ comparisons are case-INsensitive.
       - if the segment is exactly `e` (or, optionally, `event`), proceed;
       - otherwise, including the case of an empty segment (trailing `/`, e.g.),
         fail parsing.
-    
+
    b. Pick the next (4th) leftmost path segment:
       - if the segment is empty, fail parsing;
-      - otherwise, percent-decode the segment (unless the initial URI parse 
+      - otherwise, percent-decode the segment (unless the initial URI parse
         has already done that) and make `mxid-2` by prepending `$`.
-      
+
 1. Split the `query` into items separated by `&` character; several subsequent
    `&` characters delimit empty items, ignored by this algorithm.
-   
+
    a. If `query` contains one or more items starting with `via=`: for each item, treat
       the rest of the item as a percent-encoded homeserver name to be used in
       [routing](https://matrix.org/docs/spec/appendices#routing).
-      
+
    b. If `query` contains one or more items starting with `action=`: treat
       _the last_ such item as an instruction, as this proposal defines in [query](#query).
 
@@ -467,7 +467,7 @@ For room and user identifiers (including room aliases):
    - `prefix-1`;
    - the remainder of identifier (`id without sigil`), percent-encoded as per
      [RFC 3986](https://tools.ietf.org/html/rfc3986).
-   
+
 For event identifiers (assuming they need the room context, see
 [MSC2695](https://github.com/matrix-org/matrix-doc/pull/2695) and
 [MSC2779](https://github.com/matrix-org/matrix-doc/issues/2779) that
@@ -477,7 +477,7 @@ may change this):
 2. Append to the result of previous step:
    - literal `e/`;
    - the event id after removing the sigil (`$`) and percent-encoding.
-   
+
 Clients MUST implement proper percent-encoding of the identifiers; there's no
 liberty similar to that of matrix.to.
 
@@ -507,7 +507,7 @@ extensions. Here are a few ideas:
   _routing over federation_ (the case for `via=` query items), as it would be
   against the spirit of RFC 3986. The authority part can be used in cases when
   a given Matrix entity is only available from certain servers (the case of
-  closed federations or non-federating servers). 
+  closed federations or non-federating servers).
 
   While being a part of the original proposal in an attempt to address
   [the respective case](https://github.com/matrix-org/matrix-doc/issues/2309),
@@ -572,7 +572,7 @@ further discussion should happen in GitHub comments.
    be considered a "document". Each event can be retrieved from the server
    individually, so each event can be viewed as a self-contained document.
    When/if URI processing is shifted to the server-side, servers are not even
-   going to receive fragments (as per RFC 3986), which is why usage of 
+   going to receive fragments (as per RFC 3986), which is why usage of
    fragments to remove the need for percent-encoding in other identifiers
    would lead to URIs that cannot be resolved on servers. Effectively, all
    clients would have to implement full URI processing with no chance
@@ -648,7 +648,7 @@ to meet the URN's hierarchical order would look confusing for Matrix
 users (as in example above - is `room` a part of the identifier or
 the type signifier?).
 
-#### "Full REST" 
+#### "Full REST"
 
 Yet another alternative considered was to go "full REST" and structure
 URLs in a more traditional way with serverparts coming first, followed
