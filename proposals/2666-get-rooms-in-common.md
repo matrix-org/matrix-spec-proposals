@@ -30,7 +30,7 @@ Additionally, a server may respond with a `400` `M_UNKNOWN` to this endpoint for
 signalling its unwillingess (or inability) to satisfy the request.
 
 ```
-GET /_matrix/client/r0/user/mutual_rooms/%40bob%3Aexample.com
+GET /_matrix/client/v1/user/mutual_rooms/%40bob%3Aexample.com
 ```
 
 ```json
@@ -77,5 +77,5 @@ to request all state ahead of time.
 The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/user/mutual_rooms/{user_id}`.
 The /versions endpoint MUST include a new key in `unstable_features` with the name `uk.half-shot.msc2666.mutual_rooms`.
 If the value is false or the key is not present, clients MUST assume the feature is not available.
-Once the MSC has been merged, clients should use `/_matrix/client/r0/user/mutual_rooms/{user_id}`
+Once the MSC has been merged, clients should use `/_matrix/client/v1/user/mutual_rooms/{user_id}`
 and will no longer need to check for the `unstable_features` flag.
