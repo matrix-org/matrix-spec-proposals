@@ -34,9 +34,9 @@ license their contribution under the same terms as the project's overall
 In order to have a concrete record that your contribution is intentional and
 you agree to license it under the same terms as the project's license, we've
 adopted the same lightweight approach used by the [Linux
-Kernel](https://www.kernel.org/doc/Documentation/SubmittingPatches),
+Kernel](https://www.kernel.org/doc/html/latest/process/submitting-patches.html),
 [Docker](https://github.com/docker/docker/blob/master/CONTRIBUTING.md), and
-many other project: the [Developer Certificate of
+many other projects: the [Developer Certificate of
 Origin](http://developercertificate.org/) (DCO). This is a simple declaration
 that you wrote the contribution or otherwise have the right to contribute it to
 Matrix:
