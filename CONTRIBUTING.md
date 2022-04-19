@@ -16,7 +16,7 @@ However, in brief, it amounts to:
     pull request number, which normally means you need to rename it once you've
     opened the PR.
 
- 3. Seek feedback on your proposal, for example in
+ 2. Seek feedback on your proposal, for example in
     [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org).
 
 Sign off
