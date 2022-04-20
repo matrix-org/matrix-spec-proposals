@@ -7,19 +7,33 @@ missing message. Without this, clients are unable to:
 * Let users know that a thread has new messages since they last read it.
 * Accurately display a count of unread messages in a room.
 
-To illustrate the issue with the current unread notification counts, we reuse
-the example from [MSC3771](https://github.com/matrix-org/matrix-spec-proposals/pull/3771):
+To illustrate the issue with the current unread notification counts, we can use
+the following DAG of events (note that the dotted lines are a thread relation,
+as specified by [MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440)):
+
+```mermaid
+flowchart RL
+    F-->E
+    E-->D
+    D-->C
+    C-->B
+    B-->A
+    D-.->A
+    F-.->A
+```
+
+A client might interpret this as:
 
 ```mermaid
 flowchart RL
     subgraph Main timeline
     C-->B
     B-->A
-    F-->C
+    E-->C
     end
     subgraph Thread timeline
     D-->A
-    E-->D
+    F-->D
     end
 
     style A fill:cyan,stroke:#333,stroke-width:2px
