@@ -86,6 +86,28 @@ Similarly to the hidden read receipts from [MSC2285](https://github.com/matrix-o
 homeservers are not to send the receipt to any other users except the sender nor
 over federation.
 
+This would then come down `/sync` for the user with other receipts:
+
+```json
+{
+  "content": {
+    "$thread_reply": {
+      "m.read.thread.private": {
+        "@rikj:jki.re": {
+          "ts": 1436451550453,
+          "context": "$thread_root"
+        }
+      }
+    }
+  },
+  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+  "type": "m.receipt"
+}
+```
+
+Since this is not shared, only the own user's matrix ID would be expected to
+have this kind of receipt.
+
 ## Potential issues
 
 For long-lived rooms or rooms with many threads there could be a significant number
