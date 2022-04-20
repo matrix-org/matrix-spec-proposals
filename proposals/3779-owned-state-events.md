@@ -1,4 +1,4 @@
-# MSC0000: "Owned" state events
+# MSC3779: "Owned" state events
 
 ## Problem
 
