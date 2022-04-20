@@ -3,7 +3,7 @@
 [Matrix URIs][matrix-uri] have an `action` query component,
 of which `=join` is taken as a hint that the user joins a particular room as described within the URI.
 
-Knocking came in [a new room version](https://spec.matrix.org/v1.2/rooms/#feature-matrix),
+Knocking was introduced in [room version 7](https://spec.matrix.org/v1.2/rooms/v7/#authorization-rules),
 which makes it possible to "knock" (i.e. notify) a room, announcing an intention to join.
 
 However, the [current specification for `=join`][matrix-uri] does not detail knocks as an action a client should present,
