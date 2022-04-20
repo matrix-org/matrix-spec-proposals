@@ -1,4 +1,4 @@
-# MSCXXXX: Knock on `action=join`
+# MSC3780: Knock on `action=join`
 
 [Matrix URIs][matrix-uri] have an `action` query component,
 of which `=join` is taken as a hint that the user joins a particular room as described within the URI.
