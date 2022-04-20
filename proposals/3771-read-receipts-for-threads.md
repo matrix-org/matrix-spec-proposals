@@ -17,8 +17,8 @@ flowchart RL
     D-->C
     C-->B
     B-->A
-    D-.->A
-    F-.->A
+    C-.->A
+    E-.->A
 ```
 
 A client might interpret this as:
@@ -26,22 +26,22 @@ A client might interpret this as:
 ```mermaid
 flowchart RL
     subgraph Main timeline
-    C-->B
+    D-->B
     B-->A
-    F-->C
+    F-->D
     end
     subgraph Thread timeline
-    D-->A
-    E-->D
+    C-->A
+    E-->C
     end
 
     style A fill:cyan,stroke:#333,stroke-width:2px
-    style E fill:orange,stroke:#333,stroke-width:2px
+    style F fill:orange,stroke:#333,stroke-width:2px
 ```
 
 While viewing the "main" timeline of the room, a client might move the read
-receipt from event `A` to event `E` without ever showing events `D` and `F`. The
-user then reads the thread, the client has no way to mark `F` as read.
+receipt from event `A` to event `F` without ever showing events `C` and `E`. The
+user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
