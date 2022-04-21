@@ -1,5 +1,5 @@
 
-# MSC0000: Add public/private key login as a new authentication type
+# MSC3782: Add public/private key login as a new authentication type
 
 Cryptographic signatures have played a pivotal role in blockchain. They are used to prove ownership of a public address without exposing its private key. This property can be (and has been) used for authentication. A server can use signature verification to prove that the user has possession of the private key to allow the user with that public address to log in.
 
