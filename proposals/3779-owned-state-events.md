@@ -23,7 +23,7 @@ This will require a new room version since it affects room permissions.
 
 For example, to start sharing a live location:
 
-```json
+```json5
 {
     "type": "m.beacon_info",
     "state_key": "@matthew:matrix.org_uiyeesknsfbhhbsdf",
@@ -38,7 +38,7 @@ The above event will be allowed even if the user does not have the `state_defaul
 
 Similarly, if the state key were exactly the sender's MXID it would also be allowed:
 
-```json
+```json5
 {
     "type": "m.beacon_info",
     "state_key": "@matthew:matrix.org",
@@ -53,7 +53,7 @@ Similarly, if the state key were exactly the sender's MXID it would also be allo
 
 Events like the following will NOT be affected:
 
-```json
+```json5
 {
     "state_key": "@andyb:matrix.org_uiy", // NOT affected - wrong MXID
     "sender": "@matthew:matrix.org",
@@ -61,7 +61,7 @@ Events like the following will NOT be affected:
 }
 ```
 
-```json
+```json5
 {
     "state_key": "", // NOT affected - must start with MXID
     "sender": "@matthew:matrix.org",
