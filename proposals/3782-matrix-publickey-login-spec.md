@@ -680,7 +680,40 @@ client with the access_token, username, device_id, etc.
 
 This concludes the registration flow.
 
-## Other considerations
+## Alternatives
+
+Our first attempt at supporting public key login was to implement it as an SSO
+flow. A lot of code was written to handle the basics of the flow such as
+processing various options a client might send, handling possible error
+states, and ensuring enough data validation is done to thwart attackers.
+
+In a typical SSO scenario where the identity server holds the secret hash, this
+makes sense because a Matrix server has no means to prove that the user
+possesses the secret key. It has to redirect the user to the identity server
+for authentication.
+
+In public key cryptography, by design, no server holds the private key. That
+makes the job of an identity server very simple. All it has to do is to verify
+the signature of a message with the public key to prove that the user has
+possession of the private key. It is a function that any server can easily do.
+In fact, if the Matrix server does this directly, the complexity of an SSO flow
+is unnecessary.
+
+So the first reason we propose having public key login support in the
+server is that it greatly simplifies the authentication flow; there is no
+advantage to implement it as an SSO flow.
+
+The second reason is that it opens up the possibility of a decentralized
+authentication system where any Matrix server can authenticate any Matrix
+client. There is no need to redirect the client to some home server, or to
+some identity server.
+
+There are other unresolved issues such as roaming profile - how to roam a user's
+profile from one home server to another home server. That is the next problem
+I am trying to figure out. This proposal unlocks the first step, which then
+makes it possible to solve the next steps.
+
+## Security Considerations
 
 ### Private key security
 
@@ -689,24 +722,6 @@ solutions which offer offline key storage.
 
 There is an open issue with compromised private keys. This proposal does not address the problem. There is no "password
 reset" solution. Needs a separate proposal to address compromised keys.
-
-### Address as localpart
-
-At the end of the login flow, the server will send back a response with the access_token, username, and other logged in
-data.
-
-With respect to the username, this proposal treats the public address like the localpart of ```m.id.user```. This allows
-immediate access to all existing Matrix features.
-
-```go
-LoginIdentifier{
-  Type: "m.id.user",
-  User: authData.address,
- }
-```
-
-Future proposals can map the crypto public address to other identities such as
-[MSC2787: Portable Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/2787)
 
 ### Version number
 
@@ -727,6 +742,26 @@ A server that supports version n+1 should still handle version n. But it does no
 This gives the server the ability to raise the bar when it needs to elevate its security requirements.
 
 This spec is version 1.
+
+## Other considerations
+
+### Address as localpart
+
+At the end of the login flow, the server will send back a response with the access_token, username, and other logged in
+data.
+
+With respect to the username, this proposal treats the public address like the localpart of ```m.id.user```. This allows
+immediate access to all existing Matrix features.
+
+```go
+LoginIdentifier{
+  Type: "m.id.user",
+  User: authData.address,
+ }
+```
+
+Future proposals can map the crypto public address to other identities such as
+[MSC2787: Portable Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/2787)
 
 ## References
 
