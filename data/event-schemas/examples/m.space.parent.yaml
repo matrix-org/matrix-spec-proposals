@@ -1,9 +1,0 @@
-{
-  "$ref": "core/state_event.json",
-  "type": "m.space.parent",
-  "state_key": "!parent_roomid:example.org",
-  "content": {
-    "canonical": true,
-    "via": ["example.org", "other.example.org"]
-  }
-}

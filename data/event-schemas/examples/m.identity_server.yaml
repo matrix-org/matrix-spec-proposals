@@ -1,7 +1,0 @@
-{
-  "$ref": "core/event.json",
-  "type": "m.identity_server",
-  "content": {
-    "base_url": "https://example.org"
-  }
-}

@@ -1,8 +1,0 @@
-blank_issues_enabled: true
-contact_links:
- - name: Matrix Spec Discussion
-   url: "https://matrix.to/#/#matrix-spec:matrix.org"
-   about: Questions about the spec and proposal process can be asked here.
- - name: Matrix Security Policy
-   url: https://www.matrix.org/security-disclosure-policy/
-   about: Learn more about our security disclosure policy.
