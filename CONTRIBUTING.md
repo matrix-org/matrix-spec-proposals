@@ -14,7 +14,7 @@ However, in brief, it amounts to:
     [`proposals`](./proposals) directory, expaining what you think should be
     changed, and why. (Ideally, the file should be numbered according to the
     pull request number, which normally means you need to rename it once you've
-    opened the PR.
+    opened the PR.)
 
  2. Seek feedback on your proposal, for example in
     [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org).
