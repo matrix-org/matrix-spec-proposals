@@ -7,7 +7,7 @@ Thus other implementations that use a correct base64 encoding are not
 compatible, and must instead [re-implement libolm's incorrect
 encoding](https://matrix-org.github.io/vodozemac/vodozemac/sas/struct.EstablishedSas.html#method.calculate_mac_invalid_base64).
 libolm now has a function that returns the correct base64 encoding, but it is
-currently not to ensure compatibility with older clients.
+currently not used to ensure compatibility with older clients.
 
 This proposal introduces a new message authentication code identifier for use
 with SAS verification that uses the correct base64 encoding.  The current
