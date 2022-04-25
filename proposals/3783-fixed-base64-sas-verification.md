@@ -1,4 +1,4 @@
-# MSCxxxx: Fixed base64 for SAS verification
+# MSC3783: Fixed base64 for SAS verification
 
 libolm's original implementation for calculating the MAC for SAS-based device
 verification [encoded the base64 output
@@ -44,7 +44,7 @@ This change does not introduce any security issues.
 ## Unstable prefix
 
 Until this MSC is accepted, the key agreement protocol identifier
-`org.matrix.mscxxx.hkdf-hmac-sha256` should be used instead of
+`org.matrix.msc3783.hkdf-hmac-sha256` should be used instead of
 `hkdf-hmac-sha256.v2`.
 
 ## Dependencies
