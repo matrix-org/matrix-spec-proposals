@@ -1,4 +1,4 @@
-# MSCXXXX Using room type of m.policy for policy rooms
+# MSC3784 Using room type of m.policy for policy rooms
 
 ## Introduction
 
