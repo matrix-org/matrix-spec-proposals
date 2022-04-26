@@ -56,7 +56,7 @@ For example, to post a live location sharing beacon from [MSC3672](https://githu
         },
         "m.ts": 1436829458432,
         "m.asset": {
-            "type": "m.self.live"
+            "type": "m.self"
         }
     }
 }
