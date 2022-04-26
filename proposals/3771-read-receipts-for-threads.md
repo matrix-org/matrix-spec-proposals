@@ -45,9 +45,8 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
-This MSC proposes adding a new receipt type of `m.read.thread.private` is to be
-added. This receipt type is used for clients to sync the read status of each
-thread in a room.
+This MSC proposes adding a new receipt type of `m.read.thread.private`, which is
+used for clients to sync the read status of each thread in a room.
 
 The [`/receipt`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 endpoint gains a new optional path part and becomes:
