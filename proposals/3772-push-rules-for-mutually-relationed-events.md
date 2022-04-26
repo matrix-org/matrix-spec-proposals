@@ -174,7 +174,7 @@ N/A
 
 While this feature is in development the following unstable prefixes should be used:
 
-* `relation_match` --> `org.matrix.MSC3772.relation_match`
+* `relation_match` --> `org.matrix.msc3772.relation_match`
 
 ## Dependencies
 
