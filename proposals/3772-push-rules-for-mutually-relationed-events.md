@@ -13,8 +13,9 @@ relate to events they have shown interest in. This is useful if:
 
 ## New push rule condition: ``relation_match``
 
-A new push rule condition is proposed to match against other events which relate
-to the same event as the current event. Unlike [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664),
+A new [push rule condition](https://spec.matrix.org/v1.2/client-server-api/#conditions-1)
+is proposed to match against other events which relate to the same event as the
+current event. Unlike [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664),
 which matches against the *related event*, this proposes matching against *other events
 with the same relation*. Such a condition could look like this:
 
