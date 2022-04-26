@@ -65,9 +65,6 @@ only if the user has voted in it:
 
 (Note that the `type` is important since `m.reference` is used in multiple contexts.)
 
-For example, to match against any reply in a thread that the requester (`@me:my.server`)
-has also replied to.
-
 A client can check for the `relation_match` condition being supported by testing
 for an existing `.m.rule.thread_reply` in the default rules (see below).
 
