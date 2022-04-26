@@ -70,7 +70,7 @@ has also replied to.
 A client can check for the `relation_match` condition being supported by testing
 for an existing `.m.rule.thread_reply` in the default rules (see below).
 
-Matching is done on a best effort, when evaluating the push rule against an event
+Matching is done on a best effort basis: when evaluating the push rule against an event,
 if the server (or client) doesn't know of any other events which meet the specified
 conditions than the rule should not be matched and processing continues with the
 next push rule.
