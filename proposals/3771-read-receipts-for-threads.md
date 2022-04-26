@@ -49,7 +49,8 @@ This MSC proposes adding a new receipt type of `m.read.thread.private` is to be
 added. This receipt type is used for clients to sync the read status of each
 thread in a room.
 
-The `/receipt` endpoint gains a new optional path part and becomes:
+The [`/receipt`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
+endpoint gains a new optional path part and becomes:
 
 `POST /_matrix/client/v3/rooms/{roomId}/receipt/{receiptType}/{eventId}/{context}`
 
