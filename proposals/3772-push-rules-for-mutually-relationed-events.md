@@ -76,11 +76,26 @@ next push rule.
 ### A push rule for threads
 
 For users to easily track notification of threads they have interacted with the
-following default push rule is proposed:
+following default push rules are proposed.
+
+Each rule should be a [default underride rule](https://spec.matrix.org/latest/client-server-api/#default-underride-rules),
+since it can't be a content rule and should be overridden when setting a room to
+mentions only. They should be placed just before `.m.rule.message` in the list.
+This ensures you get notified for replies to threads you're interested in. The
+actions are the same as for `.m.rule.message` and `m.rule.encrypted`.
+
+Note that an encrypted form of these rules are not needed since relation information
+and metadata required for it to function is not encrypted.
+
+#### Threaded replies to the user's message
+
+To receive notification that there is a reply to a thread that has the user's
+message as the root message. (Note that this uses `related_event_match` from
+[MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).)
 
 ```json5
 {
-  "rule_id": ".m.rule.thread_reply",
+  "rule_id": ".m.rule.thread_reply_to_me",
   "default": true,
   "enabled": true,
   "conditions": [
@@ -89,7 +104,25 @@ following default push rule is proposed:
       "rel_type": "m.thread",
       "key": "sender",
       "pattern": "@me:my.server"
-    },
+    }
+  ],
+  "actions": [
+    "notify"
+  ]
+}
+```
+
+#### Replies to threads the user has replied to
+
+To receive notification when there is a reply to a thread that the user has also
+replied to.
+
+```json5
+{
+  "rule_id": ".m.rule.thread_reply",
+  "default": true,
+  "enabled": true,
+  "conditions": [
     {
       "kind": "relation_match",
       "rel_type": "m.thread",
@@ -101,21 +134,6 @@ following default push rule is proposed:
   ]
 }
 ```
-
-This matches:
-
-* When there is a reply to a thread that has the user's message as the root message.
-  (Note that this uses `related_event_match` from [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).)
-* When there is a reply to a thread that the user has also replied to.
-
-This should be an underride rule, since it can't be a content rule and should be
-overridden when setting a room to mentions only. It should be placed just before
-`.m.rule.message` in the list. This ensures you get notified for replies to threads
-you're interested in. The actions are the same as for `.m.rule.message` and
-`m.rule.encrypted`.
-
-Note that an encrypted form of this rule is not needed since relation information
-and metadata required for it to function is not encrypted.
 
 ## Potential issues
 
