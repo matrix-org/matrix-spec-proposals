@@ -32,8 +32,6 @@ LoginIdentifier{
  }
 ```
 
-This mapping allows immediate access to all existing Matrix features.
-
 Future proposals can map the user identifier to other identities such as
 [MSC2787: Portable Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/2787).
 
@@ -740,12 +738,14 @@ LoginIdentifier{
  }
 ```
 
-Using the public key / address as the user identifier has a potential security issue ---
+This mapping should allow immediate access to all existing Matrix features.
+
+Note that using the public key / address as the user identifier has a potential security issue ---
 account hijacking.
 
 A new user can pick any username during account registration as long as it is still available.
 It is possible that a malicious user fills in someone else's public key / address as the username during registration.
-This is allowed for other authentications (such as password authentication). Doing this effectively hijacks
+This is allowed for other types of authentication (such as password authentication). Doing this effectively hijacks
 the account. It prevents the user with the actual public / private key from registering and logging in.
 
 The following are suggested mitigations:
