@@ -1,5 +1,21 @@
 # MSC3489 - m.beacon: Sharing streams of location data with history
 
+## MSC TODO
+
+- [ ] Timestamps are ms
+- [ ] Refer to related MSCs in a references section
+    - [ ] related: EDU-based live location
+    - [ ] related: 3488 - static location
+    - [ ] nice to have: deleting state events
+    - [ ] semi-needed: the 2 state_key ones
+    - [ ] relates_to https://github.com/matrix-org/matrix-spec-proposals/pull/2674
+    - [ ] m.reference https://github.com/matrix-org/matrix-spec-proposals/pull/3267
+- [ ] Update EDU-equivalent one to say it's identical to this except blah
+- [ ] Clarify how to stop sharing - make a new event
+- [ ] Update JSON to be what we want
+- [ ] Clarify beacon/beacon_info naming
+- [ ] Section on permissions: what we can do now, what the right solution is
+
 ## Problem
 
 A common communication feature is sharing live location data with other users.
@@ -15,11 +31,11 @@ The rationale for persisting location data is to support the use cases of:
 
 * Publishing things like Strava-style exercise data
 * Bridging to things like ADS-B sources for sharing plane flight path data.
-* Logistics use cases where you want to track where your fleet of vehicles/ships 
-has been, or the packages within them
-* Supporting scenarios where you're trying to rendezvous with someone/something 
-which will be aided by seeing their historical whereabouts (e.g. search-and-rescue 
-operations; enhanced Find-my-iPhone style use cases).
+* Logistics use cases where you want to track where your fleet of
+  vehicles/ships has been, or the packages within them
+* Supporting scenarios where you're trying to rendezvous with someone/something
+  which will be aided by seeing their historical whereabouts (e.g.
+  search-and-rescue operations; enhanced Find-my-iPhone style use cases).
 
 For purely ephemeral location sharing, see
 [MSC3672](https://github.com/matrix-org/matrix-doc/pull/3672)
@@ -27,51 +43,94 @@ For purely ephemeral location sharing, see
 ## Proposal
 
 This MSC adds the ability to publish real-time location beacons to Matrix by
-building on [MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488) 
-(m.location: Extending events with location data).
+building on [MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488),
+which allows sharing of single static locations via the `m.location` event
+type.
 
-We introduce two types of events to describe beacons: the first, a state event, contains
-the metadata about the beacons advertised by a given user: `m.beacon_info.*`.
-As Matrix doesn't yet have a way to stop other users overwriting an event
-other than setting its state_key to be the owner's mxid, we work around this
-by letting the final part of the event type be a unique ID for the beacon.
-(Ideally we would put the unique ID as its `state_key` and flip a bit on the
-event to indicate that it can only ever be written by its owner - we may get
-this via MSC3414 encrypted state events).
+We introduce two types of event to describe beacons:
 
-This lets us track an arbitrary number of beacons per user, and avoids beacon
-metadata being duplicated as location data is shared.
+* **`m.beacon_info`**: a single state event containing metadata about this
+  beacon (e.g. how long it will remain live).
 
-An example `m.beacon_info.*` event is:
+* **``m.beacon`**: multiple message events containing the actual locations at
+  various times. All of the `m.beacon`s refer to the original `m.beacon_info`.
+
+### `m.beacon_info` - "I am going to share live location"
+
+An example `m.beacon_info` event is:
 
 ```json5
 {
-    "type": "m.beacon_info.@matthew:matrix.org",
+    "type": "m.beacon_info",
     "state_key": "@matthew:matrix.org",
     "content": {
-        "m.beacon_info": {
-            "description": "The Matthew Tracker", // same as an `m.location` description
-            "timeout": 86400000, // how long from the last event until we consider the beacon inactive in milliseconds
-        },
-        "m.ts": 1436829458432, // creation timestamp of the beacon on the client
-        "m.asset": {
-            "type": "m.self" // the type of asset being tracked as per MSC3488
-        }
+        "description": "The Matthew Tracker",
+        "live": true,
+        "m.ts": 1436829458432,
+        "timeout": 86400000,
+        "m.asset": { "type": "m.self" }
     }
 }
 ```
 
-Separately, we have the actual location data from the beacon in question
-as `m.beacon` events forming a reference relationship to the original `m.beacon_info` event.
+`description` is the same as an `m.location` description
+([MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488)).
 
-Storing the location data as references as opposed to in a state event has multiple advantages:
-* Location data is easily encrypted (no dependency on MSC3414)
-* Doesn't thrash state resolution by storing new location points every time they change
-* Paginated history easily accessible through the `relations` endpoint. If history is not wanted, then one can use
-data retention policies(e.g. exploding messages) to ensure it does not
-accumulate unnecessarily.
-* Allows other users to request data from a beacon
+`live` should be true when a user starts sharing location.
 
+`m.ts` is the time when location sharing started, in milliseconds since the
+epoch.
+
+`timeout` is the length of time in milliseconds that the location will be live.
+So the location will stop being shared at `m.ts` + `timeout` milliseconds since
+the epoch.
+
+`m.asset` identifies the type of asset being tracked as per
+[MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488).
+
+#### `state_key` of `m.beacon_info`
+
+The `state_key` of the `m.beacon_info` identifies the beacon. It must start
+with the mxid of the sender, and if it contains more characters, the first
+character after the mxid must be underscore, to match
+[MSC3757](https://github.com/matrix-org/matrix-doc/pull/3757) and
+[MSC3779](https://github.com/matrix-org/matrix-doc/pull/3779).
+
+If `state_key` exactly equals the sender's mxid, then the current Matrix spec
+prevents anyone else from overwriting the state from this event. If `state_key`
+contains further characters, that protection will not apply until
+[MSC3757](https://github.com/matrix-org/matrix-doc/pull/3757) (some equivalent
+mechanism) is available.
+
+Obviously, if the `state_key` equals the sender's mxid, each user can only
+share a single beacon in each room at any time. We recommend that clients work
+in this mode until
+[MSC3757](https://github.com/matrix-org/matrix-doc/pull/3757) is available.
+
+To allow multiple beacons per user (e.g. one per device), we use a `state_key`
+of mxid plus underscore, and an identifier. For example:
+
+```json5
+{
+    "type": "m.beacon_info",
+    "state_key": "@matthew:matrix.org_46583241",  // inspired by MSC3757
+    "content": {
+        "description": "Matthew's other phone",
+        "live": true,
+        "m.ts": 1436829458432,
+        "timeout": 86400000,
+        "m.asset": { "type": "m.self" }
+    }
+}
+```
+
+We recommend clients do not use this style of `state_key` until
+[MSC3757](https://github.com/matrix-org/matrix-doc/pull/3757) is available.
+
+## `m.beacon` - "I am here"
+
+The actual location data is sent in `m.beacon` events, which have a reference
+relationship to the original `m.beacon_info` event.
 
 `m.beacon` events should be sent at a variable rate which is meaningful for
 the use case for the asset being tracked. This rate should not be more
@@ -86,8 +145,8 @@ An example `m.beacon` event is:
     "type": "m.beacon",
     "sender": "@matthew:matrix.org",
     "content": {
-        "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
-            "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
+        "m.relates_to": {
+            "rel_type": "m.reference",
             "event_id": "$beacon_info"
         },
         "m.location": {
@@ -99,8 +158,19 @@ An example `m.beacon` event is:
 }
 ```
 
-The `m.location` section of the `m.beacon` event can include an optional
-`description` field to provide user facing updates e.g. current address
+`m.relates_to` is a reference relationship ([MSC3267](https://github.com/matrix-org/matrix-spec-proposals/pull/3267)).  The `event_id` is the ID of the `m.beacon_info` event emitted when the user started this live share.
+
+`m.location` is identical to the `m.location` section of the `m.location` event
+type in [MSC3488](https://github.com/matrix-org/matrix-doc/pull/3488). As such,
+it must contain a `uri` field with an RFC5870 `geo:` URI. It can contain an
+optional `description` field to provide user-facing updates e.g. the current
+address of this location.
+
+`m.ts` is the time in milliseconds since the epoch when the location was measured.
+
+## Permission to share location
+
+
 
 ## Encryption
 
@@ -116,6 +186,18 @@ that had multiple downsides:
 * State resolution thrasing on every location update. By storing a state event for every location datapoint, 
 we put significant load on servers' state management implementations.  Current implementations
 may not handle this well.
+
+
+Storing the location data as references as opposed to in a state event has multiple advantages:
+* Location data is easily encrypted (no dependency on MSC3414)
+* Doesn't thrash state resolution by storing new location points every time they change
+* Paginated history easily accessible through the `relations` endpoint. If history is not wanted, then one can use
+data retention policies(e.g. exploding messages) to ensure it does not
+accumulate unnecessarily.
+* Allows other users to request data from a beacon
+
+
+
 
 Another option would be using ephemeral data units to broadcast location updates but they
 do come with downsides of their own:
