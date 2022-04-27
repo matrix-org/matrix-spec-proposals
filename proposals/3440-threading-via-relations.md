@@ -53,6 +53,9 @@ would include additional information in the `unsigned` field:
 
 * `latest_event`: The most recent event which relates to this event, with 
   `rel_type` of `m.thread`.
+
+  The latest event should be serialised in the same form as the event itself;
+  this includes adding any bundled aggregations for the event (and applying edits).[^1]
 * `count`: An integer counting the number of `m.thread` events
 * `current_user_participated`: A flag set to `true` if the current logged in user
   has participated in the thread
@@ -383,3 +386,12 @@ This MSC builds on [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674)
 [MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567) and,
 [MSC3676](https://github.com/matrix-org/matrix-doc/pull/3676) (which at the 
 time of writing have not yet been accepted into the spec).
+
+[^1]: It might seem like this could cause a loop where each latest event then
+includes another bundled aggregation with latest events in it, but this not
+possible since [nested threading is not supported](#single-layer-event-aggregation).
+This MSC does not limit the allowed other relations to bundle; but, at the time of
+writing, the only known relations are:
+`m.replace` (from [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676)),
+`m.annotation` (from [MSC2677](https://github.com/matrix-org/matrix-doc/pull/2677)), and
+`m.reference` (from [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267)).
