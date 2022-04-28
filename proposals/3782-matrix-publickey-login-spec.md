@@ -20,14 +20,15 @@ New authentication type:
 m.login.publickey
 ```
 
-The user identifier for this login type is the public key, or a public address
-that is derived from the private key. A user has to prove that he / she has the private key for this public
-key or address. This is done by signing a specially designed message that is then validated by the server during the
-login or registration flow.
+The public address is the localpart of a user ID. It has the new type `m.id.publickey`.
+Its username value is the public key, or a public address that is derived from the
+private key. A user has to prove that he / she has the private key for this public
+key or address. This is done by signing a specially designed message that is then
+validated by the server during the login or registration flow.
 
 ```go
 LoginIdentifier{
-  Type: "m.id.user",
+  Type: "m.id.publickey",
   User: "<public key or address as localpart>",
  }
 ```
@@ -729,7 +730,8 @@ a specific home server, or be redirected to some centralized identity service.
 At the end of the login or registration flow, the server sends back a response with the access_token, username,
 and other logged in data.
 
-With respect to the username, the public address is the localpart of `m.id.user`.
+With respect to the username, the public address is the localpart of a user ID.
+It has the new type `m.id.publickey`.
 
 ```go
 LoginIdentifier{
@@ -737,8 +739,6 @@ LoginIdentifier{
   User: "<public key or address as localpart>",
  }
 ```
-
-This mapping should allow immediate access to all existing Matrix features.
 
 Note that using the public key / address as the user identifier has a potential security issue ---
 account hijacking.
