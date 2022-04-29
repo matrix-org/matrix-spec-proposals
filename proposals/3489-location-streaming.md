@@ -22,12 +22,13 @@ The rationale for persisting location data is to support the use cases of:
   search-and-rescue operations; enhanced Find-my-iPhone style use cases).
 
 For purely ephemeral location sharing, see
-[MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672)
+[MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672).
 
 ## Proposal
 
 This MSC adds the ability to publish real-time location beacons to Matrix by
-building on [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488),
+building on
+[MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488),
 which allows sharing of single static locations via the `m.location` event
 type.
 
@@ -36,8 +37,9 @@ We introduce two types of event to describe beacons:
 * **`m.beacon_info`**: a single state event containing metadata about this
   beacon (e.g. how long it will remain live).
 
-* **``m.beacon`**: multiple message events containing the actual locations at
-  various times. All of the `m.beacon`s refer to the original `m.beacon_info`.
+* **`m.beacon`**: multiple message events containing the actual locations at
+  various times. All of the `m.beacon` events refer to the original
+  `m.beacon_info`.
 
 ### `m.beacon_info` - "I am going to share live location"
 
@@ -83,13 +85,14 @@ character after the mxid must be underscore, to match
 If `state_key` exactly equals the sender's mxid, then the current Matrix spec
 prevents anyone else from overwriting the state from this event. If `state_key`
 contains further characters, that protection will not apply until
-[MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) (some equivalent
-mechanism) is available.
+[MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) (or
+some equivalent mechanism) is available.
 
-Obviously, if the `state_key` equals the sender's mxid, each user can only
-share a single beacon in each room at any time. We recommend that clients work
-in this mode until
-[MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) is available.
+Obviously, if the `state_key` always equals the sender's mxid, each user can
+only share a single beacon in each room at any time. We recommend that clients
+work in this mode until
+[MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) is
+available.
 
 To allow multiple beacons per user (e.g. one per device), we use a `state_key`
 of mxid plus underscore, and an identifier. For example:
@@ -193,7 +196,7 @@ information about the shares in a room:
 To determine who is currently sharing their location in a room, clients should
 examine the room state for events of type `m.beacon_info`.
 
-For each `m.beacon_info` events in the room state, it is live if:
+For each `m.beacon_info` event in the room state, it is live if:
 
 * `live` is `true`, and
 * `m.ts + timeout < now_ts` where `now_ts` is the current time in milliseconds
@@ -449,3 +452,9 @@ Examples of the events with unstable prefixes:
   *Sharing ephemeral streams of location data*. Equivalent of this MSC, but
   using ephemeral events, for greater privacy but reduced historical
   functionality.
+
+## Implementations
+
+Element (Web, Android and iOS) implementations based on this MSC are underway
+in April 2022, and feedback from those implementations has been incorporated
+into updates of this document.
