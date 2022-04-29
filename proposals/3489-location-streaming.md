@@ -1,15 +1,5 @@
 # MSC3489 - m.beacon: Sharing streams of location data with history
 
-## MSC TODO
-
-- [x] Timestamps are ms
-- [x] Refer to related MSCs in a references section
-- [ ] Clarify how to stop sharing - make a new event
-- [ ] Update JSON to be what we want
-- [ ] Clarify beacon/beacon_info naming
-- [ ] Section on permissions: what we can do now, what the right solution is
-- [ ] Explicitly specify how to decide whether a location share is live
-
 ## Problem
 
 A common communication feature is sharing live location data with other users.
@@ -190,6 +180,58 @@ For example:
 
 ### Deciding which shared locations are live
 
+A location share is "live" if the sender is currently sharing their location.
+
+Client apps will often want to  determine two related but different pieces of
+information about the shares in a room:
+
+1. Which location shares are live
+2. How to display a single location share event (e.g. in a timeline)
+
+#### Which locations shares are live
+
+To determine who is currently sharing their location in a room, clients should
+examine the room state for events of type `m.beacon_info`.
+
+For each `m.beacon_info` events in the room state, it is live if:
+
+* `live` is `true`, and
+* `m.ts + timeout < now_ts` where `now_ts` is the current time in milliseconds
+  since the epoch.
+
+Otherwise it is not live.
+
+#### How to display a single location share event
+
+For clients with timelines, we expect that a map or similar will appear in the
+timeline whenever a `m.beacon_info` event with `live: true` is sent, and
+related `m.beacon` events will cause that map to update. Stopping sharing
+(sending a `m.beacon_info` event with `live: false`) might not create any new
+visible item in the timeline.
+
+For a map on a timeline associated with an initial `m.beacon_info`, to
+determine whether that map is "live", clients should:
+
+* look in the room state for an `m.beacon_info` event with the same
+  `state_key`, and
+* follow the rules in the previous section ("Which location shares are live").
+
+### Redacting shared locations
+
+Because location information is private, it is vital that people are able to
+delete information that they no longer want to reveal, or that was
+inadvertantly posted to the wrong room.
+
+We expect that clients will provide a single UI element that redacts all events
+for a live sharing session. This includes the original `m.beacon_info` event,
+all `m.beacon` events related to it, and any additional `m.beacon_info` event
+sent to stop sharing.
+
+Redaction should be done in the normal way, using the `redact` API as specified
+in section
+[7.9 Redactions](https://spec.matrix.org/v1.2/client-server-api/#redactions) of
+the Client-Server API.
+
 ## Permission to share location
 
 Since the `m.beacon_info` event is a state event, users who wish to share their
@@ -259,7 +301,8 @@ updates but they do come with downsides of their own:
 * They are not persisted and cannot provide historical data (by design).
 * There is no per-room API for them (but see
   [MSC2477](https://github.com/matrix-org/matrix-spec-proposals/pull/2477/)).
-* They are not end to end encrypted (but see [MSC3673](https://github.com/matrix-org/matrix-spec-proposals/pull/3673)).
+* They are not end to end encrypted (but see
+  [MSC3673](https://github.com/matrix-org/matrix-spec-proposals/pull/3673)).
 
 Since an EDU-based approach enables more privacy-preserving use cases, it may
 well be desirable, but is not covered in this proposal.  See
@@ -314,8 +357,11 @@ unencrypted or persisted. The same security considerations apply as for
 Normally, locations should only be shared in encrypted rooms, meaning that they
 are transferred and stored end-to-end encrypted automatically.
 
-Clients may wish to warn users when they request to share location in an
-unencrypted room.
+Clients will probably want to warn users when they request to share location in
+an unencrypted room.
+
+See "Redacting shared locations" above for information about deleting shared
+location data.
 
 ## Unstable prefix
 
