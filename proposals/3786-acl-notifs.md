@@ -31,5 +31,5 @@ events:
 
 ## Unstable prefix
 
-During development, `org.matrix.msc3786.rule.room.server_acl` is to be used
+During development, `.org.matrix.msc3786.rule.room.server_acl` is to be used
 instead of `.m.rule.room.server_acl`.
