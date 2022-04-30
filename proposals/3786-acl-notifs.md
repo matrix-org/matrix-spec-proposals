@@ -1,4 +1,4 @@
-# MSC0000: Add a default push rule to ignore `m.room.server_acl` events
+# MSC3786: Add a default push rule to ignore `m.room.server_acl` events
 
 `m.room.server_acl` events allow for expressing which servers can participate in
 a room. Often during spam attacks, these events are sent quite frequently, which
@@ -31,5 +31,5 @@ events:
 
 ## Unstable prefix
 
-During development, `org.matrix.msc0000.rule.room.server_acl` is to be used
+During development, `org.matrix.msc3786.rule.room.server_acl` is to be used
 instead of `.m.rule.room.server_acl`.
