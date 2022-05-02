@@ -13,6 +13,8 @@ Quite a few clients and tools have a need preview a room:
 - A traveller bot may use that to show a room summary on demand without actually
   keeping the whole room state around and having to subscribe to /sync (or
   using the appservice API).
+- A client can use this to knock on a room instead of joining it when the user
+    tries to join my room alias or link.
 
 There are a few ways to request a room summary, but they only support some of
 the use cases. The spaces summary API
@@ -167,7 +169,10 @@ apply rate limiting if necessary.
     stripped events, but could not provide a member count for a room.
 - Peeking could solve this too, but with additional overhead and
     [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753) is much more
-    complex.
+    complex. You need to add a peek and remember to remove it. For many usecases
+    you just want to do one request to get info about a room, no history and no
+    updates. This MSC solves that by reusing the existing hierarchy APIs,
+    returns a lightweight response and provides a convenient API instead.
 - This API could take a list of rooms with included `via`s for each room instead
     of a single room (as a POST request). This may have performance benefits for
     the federation API and a client could then easily request a summary of all
