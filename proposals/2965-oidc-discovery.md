@@ -27,12 +27,13 @@ Content-Type: application/json
     "base_url": "https://identity.example.com"
   },
   "m.authentication": {
-    "issuer": "https://account.example.com"
+    "issuer": "https://account.example.com",
+    "account": "https://account.example.com/myaccount"
   }
 }
 ```
 
-The authentication server metadata can then be discovered by the client using [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html).
+The authentication server metadata can then be discovered by the client using [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html) against the `issuer` field.
 
 ```
 GET /.well-known/openid-configuration
@@ -59,6 +60,8 @@ Content-Type: application/json
   "//": "some fields omitted"
 }
 ```
+
+The optional `account` field specifies the URL where the user is able to access the account management capabilities of the issuer.
 
 ## Potential issues
 
