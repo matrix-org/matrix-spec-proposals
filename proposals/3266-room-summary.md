@@ -93,7 +93,7 @@ client anyway, this API just provides it as a convenience.
 | join_rules         | Join rules of the room                                                                                                                                | Copied from `publicRooms`.                                                                                                            |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
 | membership         | The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
-| is_encrypted       | Optional. If the room is encrypted. This is already accessible as stripped state. Currently a bool, but maybe the algorithm makes more sense?         | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption. |
+| encryption         | Optional. If the room is encrypted this specified the algorithm used for this room. This is already accessible as stripped state. Currently a bool, but maybe the algorithm makes more sense?         | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption. |
 
 It should be possible to call this API without authentication, but servers may
 rate limit how often they fetch information over federation more heavily, if the
@@ -106,6 +106,8 @@ For the federation API
 [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) is reused. This
 provides all the information needed in this MSC, but it also provides a
 few additional fields and one level of children of this room.
+
+Additionally the `encryption` field is added to the response for each room.
 
 In theory one could also add the `max_depth` parameter with allowed values of 0
 and 1, so that child rooms are excluded, but this performance optimization does
@@ -194,3 +196,6 @@ with `unstable/im.nheko.summary`.
 Some implementations still use
     `/_matrix/client/unstable/im.nheko.summary/rooms/{roomIdOrAlias}/summary`,
     but this was a mistake in this MSC. Endpoints using aliases shouldn't be under /rooms.
+
+Additionally the field `encryption` in the summaries is prefixed with
+`im.nheko.summary` as well since it is new.
