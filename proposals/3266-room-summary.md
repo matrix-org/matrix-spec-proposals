@@ -80,7 +80,7 @@ adition of the membership field. The membership can already be accessed by a
 client anyway, this API just provides it as a convenience.
 
 
-#### Rationale and description of reponse fields
+#### Rationale and description of response fields
 
 | fieldname          | description                                                                                                                                           | rationale                                                                                                                             |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -128,7 +128,7 @@ author.)
 
 ## Potential issues
 
-### Perfomance
+### Performance
 
 Clients may start calling this API very often instead of using the batched
 summary API (MSC2946) for spaces or caching the state received via `/sync`.
@@ -156,8 +156,9 @@ apply rate limiting if necessary.
     it excludes `m.heroes` as well as membership events, since those are not
     included in the stripped state of a room. (A client can call
     `/joined_members` to receive those if needed. It may still make sense to
-    include heroes, but solving the security implications with that may better
-    be left to a separate MSC.)
+    include heroes so that clients could construct a human-friendly room display
+    name in case both the name and the canonical alias are absent; but solving
+    the security implications with that may better be left to a separate MSC.
 - The `/state` API could be used, but the response is much bigger than needed,
     can't be cached as easily and may need more requests. This also doesn't work
     over federation (yet). The variant of this API, which returns the full state
