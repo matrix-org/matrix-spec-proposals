@@ -64,12 +64,13 @@ A response includes the stripped state in the following format:
   join_rules: "public",
   room_type: "m.space",
   membership: "invite",
-  is_encrypted: true,
+  encryption: "m.megolm.v100",
+  version: 9001,
 }
 ```
 
 These are the same fields as those returned by `/publicRooms`, with a few
-additions: `room_type`, `membership` and `is_encrypted`.
+additions: `room_type`, `membership`, `version` and `encryption`.
 
 All those fields are already accessible as the stripped state according to
 [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173), with the
@@ -92,6 +93,7 @@ client anyway, this API just provides it as a convenience.
 | world_readable     | If the room history can be read without joining.                                                                                                      | Copied from `publicRooms`.                                                                                                            |
 | join_rules         | Join rules of the room                                                                                                                                | Copied from `publicRooms`.                                                                                                            |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
+| version            | Optional (for historical reasons). Version of the room.                                                                                               | Can be used by clients to show incompatibilities with a room early.                                                                   |
 | membership         | The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
 | encryption         | Optional. If the room is encrypted this specified the algorithm used for this room. This is already accessible as stripped state. Currently a bool, but maybe the algorithm makes more sense?         | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption. |
 
@@ -100,6 +102,11 @@ rate limit how often they fetch information over federation more heavily, if the
 user is unauthenticated. Also the fields `membership` will be
 missing.
 
+#### Modifications to `/_matrix/client/v1/rooms/{roomId}/hierarchy`
+
+For symmetry the `version` and `encryption` fields are also added to the
+`/hierarchy` API.
+
 ### Server-Server API
 
 For the federation API
@@ -107,7 +114,8 @@ For the federation API
 provides all the information needed in this MSC, but it also provides a
 few additional fields and one level of children of this room.
 
-Additionally the `encryption` field is added to the response for each room.
+Additionally the `encryption` and `version` fields are added to the responses for
+each room.
 
 In theory one could also add the `max_depth` parameter with allowed values of 0
 and 1, so that child rooms are excluded, but this performance optimization does
@@ -197,5 +205,5 @@ Some implementations still use
     `/_matrix/client/unstable/im.nheko.summary/rooms/{roomIdOrAlias}/summary`,
     but this was a mistake in this MSC. Endpoints using aliases shouldn't be under /rooms.
 
-Additionally the field `encryption` in the summaries is prefixed with
-`im.nheko.summary` as well since it is new.
+Additionally the fields `encryption` and `version` in the summaries are prefixed
+with `im.nheko.summary` as well since it is new.
