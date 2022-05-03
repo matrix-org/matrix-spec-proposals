@@ -38,7 +38,7 @@ The `state_key` of this state event must be send to the sender's MXID. As per [e
 | `timeout` | int | A positive number of milliseconds | The maximum length of the location sharing session, relative to `m.ts`. | yes
 | `description` | string | Optional descriptive text | A human-readable description of the live location sharing session. | no |
 | `live` | bool | true | A boolean describing whether the location sharing session is currently active. Also denotes this session as ephemeral. | yes
-| `m.ts` | int | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The timestamp of when the location sharing session was started by the sender. | yes
+| `m.ts` | int | [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time) | The timestamp of when the location sharing session was started by the sender. **Milliseconds** since the unix epoch. | yes
 | `m.asset` | dict | A dictionary (see below) | Describes the object being tracked. From [MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488). | yes
 
 TODO: This design does not currently allow for a user to have multiple live location sharing sessions active simultaneously. Incorporating either [MSC3671](https://github.com/matrix-org/matrix-spec-proposals/pull/3671) or [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) will help here.
