@@ -228,7 +228,7 @@ determine whether that map is "live", clients should:
 
 Because location information is private, it is vital that people are able to
 delete information that they no longer want to reveal, or that was
-inadvertantly posted to the wrong room.
+inadvertently posted to the wrong room.
 
 We expect that clients will provide a single UI element that redacts all events
 for a live sharing session. This includes the original `m.beacon_info` event,
