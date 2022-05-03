@@ -1,0 +1,15 @@
+name: Spell Check
+on: [pull_request]
+
+jobs:
+  run:
+    name: Spell Check with Typos
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Check spelling of proposals
+      uses: crate-ci/typos@4253c3c3eeb21070d64586855b263ce9bc7224ae
+      with:
+        config: ${{github.workspace}}/.github/_typos.toml
