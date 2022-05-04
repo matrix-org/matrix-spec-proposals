@@ -31,6 +31,8 @@ events:
 }
 ```
 
+This new push rule is inserted immediately after `.m.rule.reaction`.
+
 ## Unstable prefix
 
 During development, `.org.matrix.msc3786.rule.room.server_acl` is to be used
