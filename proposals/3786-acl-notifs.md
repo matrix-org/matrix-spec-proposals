@@ -2,9 +2,11 @@
 
 `m.room.server_acl` events allow for expressing which servers can participate in
 a room. Often during spam attacks, these events are sent quite frequently, which
-causes the users to be overwhelmed by notifications. (See
+causes the users to be overwhelmed by notifications, if they have the room rule
+set to `notify` (`All messages` in Element). (See
 <https://github.com/vector-im/element-web/issues/20788>) As this is very
-unideal, this MSC proposes a new push rule to avoid this.
+unideal, this MSC proposes a new push rule to avoid this. It is analogues
+to [MSC2153](https://github.com/matrix-org/matrix-spec-proposals/pull/2153).
 
 ## Proposal
 
