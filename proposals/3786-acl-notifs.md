@@ -8,7 +8,7 @@ unideal, this MSC proposes a new push rule to avoid this.
 
 ## Proposal
 
-A new default override rule is to be added that ignores `m.room.server_acl`
+A new [default override rule](https://spec.matrix.org/v1.2/client-server-api/#default-override-rules) is to be added that ignores `m.room.server_acl`
 events:
 
 ```json
