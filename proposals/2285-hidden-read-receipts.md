@@ -31,8 +31,14 @@ POST /_matrix/client/r0/rooms/!a:example.org/read_markers
 }
 ```
 
-It is assumed that if only an `m.read` receipt is received, the `m.read.private`
-should also be moved.
+Both `m.read` and `m.read.private` clear notifications in the same way. If the
+user sent two receipts into a room, the later one should be the one that decides
+the notification count.
+
+If the user has `m.read` and `m.read.private` receipts at the same event, the
+`m.read` receipt takes precedence - an `m.read.private` receipt sent to an event
+that already has `m.read`, shouldn't move the user's receipt up in the timeline
+from the perspective of other users.
 
 The `m.read` is now optional as sometimes we only want to send `m.read.private`.
 
