@@ -19,4 +19,5 @@ when serving such events over the Client-Server API.
 ## Unstable prefix
 
 Implementations should use `org.matrix.msc2174` for the room version containing
-this change until assigned to a specified room version.
+this change until assigned to a specified room version. That room version should
+use room version 6 as a base.
