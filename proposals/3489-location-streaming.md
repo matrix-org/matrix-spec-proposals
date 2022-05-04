@@ -238,7 +238,8 @@ sent to stop sharing.
 Redaction should be done in the normal way, using the `redact` API as specified
 in section
 [7.9 Redactions](https://spec.matrix.org/v1.2/client-server-api/#redactions) of
-the Client-Server API.
+the Client-Server API. (See also
+[MSC2244: Mass redactions](https://github.com/matrix-org/matrix-spec-proposals/pull/2244).)
 
 ## Permission to share location
 
