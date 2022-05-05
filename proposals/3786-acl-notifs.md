@@ -1,17 +1,24 @@
 # MSC3786: Add a default push rule to ignore `m.room.server_acl` events
 
 `m.room.server_acl` events allow for expressing which servers can participate in
-a room. Often during spam attacks, these events are sent quite frequently, which
-causes the users to be overwhelmed by notifications, if they have the room rule
-set to `notify` (`All messages` in Element). (See
-<https://github.com/vector-im/element-web/issues/20788>) As this is very
-unideal, this MSC proposes a new push rule to avoid this. It is analogues
-to [MSC2153](https://github.com/matrix-org/matrix-spec-proposals/pull/2153).
+a room. Room server ACLs aren't something the user should have to worry about,
+so these events should not trigger notifications, though right now they DO
+trigger notifications, if they have the room rule set to `notify` (`All
+messages` in Element). To add to this, often during spam attacks, these events
+are sent quite frequently, which causes the users to be overwhelmed by
+notifications. (See <https://github.com/vector-im/element-web/issues/20788>)
+
+Due to these problems, this MSC proposes a new push rule to ignore these events.
+The new push rule is analogues to `.m.rule.member_event` or `.m.rule.reaction`
+(from [MSC2153](https://github.com/matrix-org/matrix-spec-proposals/pull/2153)
+or [MSC2677](https://github.com/matrix-org/matrix-spec-proposals/pull/2677))
+when merged.
 
 ## Proposal
 
-A new [default override rule](https://spec.matrix.org/v1.2/client-server-api/#default-override-rules) is to be added that ignores `m.room.server_acl`
-events:
+A new [default override
+rule](https://spec.matrix.org/v1.2/client-server-api/#default-override-rules) is
+to be added that ignores `m.room.server_acl` events:
 
 ```json
 {
