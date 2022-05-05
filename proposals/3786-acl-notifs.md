@@ -31,7 +31,7 @@ events:
 }
 ```
 
-This new push rule is inserted immediately after `.m.rule.reaction`.
+This new push rule is inserted immediately after `.m.rule.tombstone`.
 
 ## Unstable prefix
 
