@@ -1,4 +1,4 @@
-# MSC2285: Hidden read receipts
+# MSC2285: Private read receipts
 
 Currently users must send read receipts in order to affect their notification
 counts, which alerts other people that the user has read their message. For
@@ -18,6 +18,7 @@ request such as this.
 POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read.private/$123
 {}
 ```
+
 The MSC also proposes adding `m.fully_read` as a possible `receiptType` for `/receipt`.
 
 To also move the user's `m.fully_read` marker and `m.read` receipt the client
