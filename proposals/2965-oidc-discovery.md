@@ -5,7 +5,13 @@ To be able to initiate an OAuth 2.0 login flow to use a Matrix server, the clien
 ## Proposal
 
 Clients already discover the homeserver when doing a server discovery via the well-known document.
-A new field is added to this document to discover what the issuer is trusted by the homeserver.
+
+Two new fields are added to this document to support OIDC Provider discovery:
+
+- REQUIRED `issuer` - the OIDC Provider that is trusted by the homeserver
+- OPTIONAL `account` - the URL where the user is able to access the account management capabilities of the OIDC Provider
+
+For example:
 
 ```
 GET /.well-known/matrix/client
@@ -61,7 +67,10 @@ Content-Type: application/json
 }
 ```
 
-The optional `account` field specifies the URL where the user is able to access the account management capabilities of the issuer.
+The account management URL may accept the following additional query parameters:
+
+- RECOMMENDED `id_token_hint` - ID Token (as previously issued by the issuer to the client) as a hint about the current authenticated user that is requesting to be able to manage their account. This may be used by the issuer to: if not logged in then used as a login hint; if already logged in, but for a different user/identity then warn the user that they are accessing account.
+
 
 ## Potential issues
 
@@ -116,6 +125,10 @@ The downsides of this approach are:
 
 - the `.well-known` resource is dynamic, which can be harder to host/delegate & might conflict with other services like Mastodon
 - this does not cover discovering the authentication server for user registration
+
+### 
+
+There is no standard in OIDC for the `account` field. If one was to be standardised in future then it would make sense to use that instead.
 
 ## Security considerations
 
