@@ -1,4 +1,4 @@
-# MSC3788: Register Clients
+# MSC3790: Register Clients
 It should be possible to delegate specific tasks to other clients which are able to handle them. To make this 
 possible the spec should define a special private room for the user, which is used by clients to register their 
 abilities, to which device they belong and by which method they can be startet.
