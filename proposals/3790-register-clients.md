@@ -87,10 +87,11 @@ Example message:
 - `url` is the url which performs the action.
 - `description` explains what the action does.
 
-when launch_command is excuted the enviorment varaible MATRIX_CLIENT_STARTUP_EVENT is set to `<room_id>/<message_id>`.
-when launch_url is used the url is extended by `?matrix_client_startup_event=<room_id>/<message_id>`.
-when an action is started the enviorment varaible MATRIX_CLIENT_ACTION_LOCATION is set to `<room_id>`.
-when an action_url is used the url is extended by `?matrix_client_action_location=<room_id>`.
+When running the client:
+- When launch_command is excuted the enviorment varaible MATRIX_CLIENT_STARTUP_EVENT is set to `<room_id>/<message_id>`.
+- When launch_url is used the url is extended by `?matrix_client_startup_event=<room_id>/<message_id>`.
+- When an action is started the enviorment varaible MATRIX_CLIENT_ACTION_LOCATION is set to `<room_id>`.
+- When an action_url is used the url is extended by `?matrix_client_action_location=<room_id>`.
 
 Using enviorment varaibles has the advantage that this functionality can be implemented as a plugin for an existing app.
 
