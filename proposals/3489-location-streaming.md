@@ -83,10 +83,12 @@ character after the mxid must be underscore, to match
 [MSC3779](https://github.com/matrix-org/matrix-spec-proposals/pull/3779).
 
 If `state_key` exactly equals the sender's mxid, then the current Matrix spec
-prevents anyone else from overwriting the state from this event. If `state_key`
-contains further characters, that protection will not apply until
+prevents anyone else from overwriting the state from this event. Until
+`state_key`
 [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) (or
-some equivalent mechanism) is available.
+some equivalent mechanism) lands, `state_key` will not be allowed to contain
+further characters. After it lands, adding underscore and further characters
+will allow one user to create multiple beacons.
 
 Obviously, if the `state_key` always equals the sender's mxid, each user can
 only share a single beacon in each room at any time. We recommend that clients
@@ -111,8 +113,9 @@ of mxid plus underscore, and an identifier. For example:
 }
 ```
 
-We recommend clients do not use this style of `state_key` until
-[MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) is available.
+This style of `state_key` will not work (is not allowed) until
+[MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) is
+available.
 
 ### `m.beacon` - "I am here"
 
@@ -445,7 +448,7 @@ Examples of the events with unstable prefixes:
 
 * [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757):
   *Restricting who can overwrite a state event*. If MSC3757 lands, it will be
-  safe for users to share multiple live locations with variable `state_keys`
+  possible for users to share multiple live locations with variable `state_keys`
   without fear that other users can overwrite their `m.beacon_info`.
 
 ### Related
