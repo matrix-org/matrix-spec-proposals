@@ -1,9 +1,13 @@
 # MSC3788: Register Clients
-It should be possible to delegate specific tasks to other clients which are able to handle them. To make this possible the spec should define a special private room for the user, which is used by clients to register their abilities, to which device they belong and by which method they can be startet.
+It should be possible to delegate specific tasks to other clients which are able to handle them. To make this 
+possible the spec should define a special private room for the user, which is used by clients to register their 
+abilities, to which device they belong and by which method they can be startet.
 
-If a matrix chat-client finds an event which is not related to messaging, it searches the registry for clients that can process the event and offers to launch them.
+If a matrix chat-client finds an event which is not related to messaging, it searches the registry for clients
+that can process the event and offers to launch them.
 
-For an example a remote-control app could use matrix to establish a p2p connection. Therefore the app would not need its own backend and account system. Another example is collaborative editing directly in matrix.
+For an example a remote-control app could use matrix to establish a p2p connection. Therefore the app would not
+need its own backend and account system. Another example is collaborative editing directly in matrix.
 
 ## Proposal
 
@@ -115,7 +119,8 @@ Example event:
 `description` gives information about this event.
 
 ## Potential issues
-By sending a malicious message to this room, you can trigger abitrary code execution. Maybe this can be circumvented by only allowing executing commnds which point to files that have a certain prefix like `matrix_client_`.
+By sending a malicious message to this room, you can trigger abitrary code execution. Maybe this can be circumvented
+by only allowing executing commnds which point to files that have a certain prefix like `matrix_client_`.
 
 ## Alternatives:
 Just do it mannually. The specialised client can send a message saying new events have arrived.
