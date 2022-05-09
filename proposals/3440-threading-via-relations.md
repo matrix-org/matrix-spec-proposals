@@ -375,9 +375,12 @@ MSC has not been included in a spec release.
   in the `RoomEventFilter`
   * `io.element.show_reply` should be used in place of `is_falling_back`
 
-While this MSC is considered stable, but not in v1.3 of the specification, clients
-should look for `org.matrix.msc3440.stable` as an unstable feature flag as part of
+While this MSC is considered stable, but not in a released version of the specification,
+clients should look for `org.matrix.msc3440.stable` as an unstable feature flag as part of
 the `/versions` API response to determine server support for the stable identifiers.
+
+**Note from the SCT**: This MSC was previously slated for v1.3, however ultimately it
+was decided to move it to a later release.
 
 ## Dependencies
 
