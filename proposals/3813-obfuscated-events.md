@@ -1,6 +1,6 @@
-# MSC0000: Template for new MSCs
+# MSC3813: Obfuscated events
 
-*Note: Text written in italics represents notes about the section or proposal process. This document
+<!--*Note: Text written in italics represents notes about the section or proposal process. This document
 serves as an example of what a proposal could look like (in this case, a proposal to have a template)
 and should be used where possible.*
 
@@ -16,12 +16,19 @@ does this proposal improve Matrix?" - the answer could reveal a small impact, an
 
 There can never be enough templates in the world, and MSCs shouldn't be any different. The level
 of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
+as a template itself) aims to resolve.-->
 
+Currently, event content can be end-to-end encrypted, but the metadata cannot. This means that if
+someone inspects the Matrix homeservers, they can see in what rooms one is most active, and at what
+time they are most active.
+
+We propose that clients send "dummy" events from time to time, at random intervals and times, in
+random rooms to obfuscate the user's online times and relationships. It is mainly intended to
+imitate the structure of two-sided conversations.
 
 ## Proposal
 
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
+<!--*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
 the technical points of your proposal. Including rationale for your proposed solution and detailing
 why parts are important helps reviewers understand the problem at hand. Not including enough detail
 can result in people guessing, leading to confusing arguments in the comments section. The example
@@ -49,7 +56,67 @@ The template should have the following sections:
   future and any potential risks in the proposal.
 
 Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
+maintain some sense of consistency between proposals.-->
+### Introduction
+
+### Events
+
+We add the following types of events:
+
+#### `m.obfuscate.request`
+
+Initiates a request to send obfuscated events to the other party.
+
+Content attributes:
+
+| Name | Type | Comments |
+|------|------|----------|
+| version | string | Must be `v0`. |
+| min_interval | number | Minimum interval, in seconds, between two keepalive events. |
+| max_interval | number | Maximum interval, in seconds, between two keepalive events. |
+| retries | number | The number of retries that can be sent in keepalive events if the other party does not respond in a timely manner. |
+| payload | string | Can be arbitrary content. |
+
+The attributes `min_interval`, `max_interval` and `retries` indicates the parameters this party will stick to, not the parameters it expects the other party to stick to.
+
+#### `m.obfuscate.accept`
+
+Indicates that this party is willing to exchange obfuscated events with the other party.
+
+| Name | Type | Comments |
+|------|------|----------|
+| version | string | Must be `v0`. |
+| min_interval | number | Minimum interval, in seconds, between two keepalive events. |
+| max_interval | number | Maximum interval, in seconds, between two keepalive events. |
+| retries | number | The number of retries that can be sent in keepalive events if the other party does not respond in a timely manner. |
+| payload | string | Can be arbitrary content. |
+
+The attributes `min_interval`, `max_interval` and `retries` indicates the parameters this party will stick to, not the parameters it expects the other party to stick to.
+
+#### `m.obfuscate.reject`
+
+Indicates that this party is not willing to exchange obfuscated events with the other party, or wants to stop doing so.
+
+| Name | Type | Comments |
+|------|------|----------|
+| version | string | Must be `v0`. |
+| duration | number | Tells the other party how long, in seconds, they should not send a request again. -1 means they should never send requests again. 0 means they can send again immediately. |
+| payload | string | Can be arbitrary content. |
+
+#### `m.obfuscate.keepalive`
+
+The keepalive message that imitates the structure of a conversation.
+
+| Name | Type | Comments |
+|------|------|----------|
+| version | string | Must be `v0`. |
+| payload | string | Can be arbitrary content. |
+
+### Client behaviour
+
+Clients MUST negotiate to exchange obfuscated events before sending the keepalive messages.
+
+### Server behaviour
 
 
 ## Potential issues
@@ -85,7 +152,7 @@ idea.
 
 ## Security considerations
 
-*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
+<!--*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
 section is a great place to outline some of the security-sensitive components of your proposal, such as
 why a particular approach was (or wasn't) taken. The example here is a bit of a stretch and unlikely to
 actually be worthwhile of including in a proposal, but it is generally a good idea to list these kinds
@@ -93,19 +160,27 @@ of concerns where possible.*
 
 By having a template available, people would know what the desired detail for a proposal is. This is not
 considered a risk because it is important that people understand the proposal process from start to end.
+-->
+
+The events MUST be sent in end-to-end encrypted rooms.
+
+
+The payload SHOULD be randomly generated, and with random lengths. It SHOULD ideally be similar in length to other non-obfuscated
+events in the room.
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
+<!--*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
 implementation is compatible with the final version that lands in the spec. This generally means that
 experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
 For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
 should be used to document things such as what endpoints and names are being used while the feature is
 in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+migration steps are needed to switch to newer versions of the proposal.*-->
+
+Please use `moe.kazv.mxc.msc.obfuscated-events` as the unstable prefix.
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
+No hard dependencies.
 
