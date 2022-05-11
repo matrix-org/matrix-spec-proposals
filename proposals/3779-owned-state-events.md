@@ -93,6 +93,8 @@ Additionally, to improve clarity, we propose that the relevant section be explic
 
 > If the event type’s *required power level* **(see "m.room.power_levels" in the Room Events section of the Client-Server API)** is greater than the `sender`’s power level, reject.
 
+No additional restrictions are made about the content of the `state_key`, so any characters that follow the `sender` + `_` part are only required to be valid for use in a `state_key`.
+
 ## Alternatives
 
 ### Manually set power_levels
