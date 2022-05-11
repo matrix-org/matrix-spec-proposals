@@ -29,7 +29,7 @@ manipulate.
 Therefore, we need a different way to state that a given state event may only
 be written by its owner. **We propose that if a state event's state_key *starts with* a matrix ID (followed by an underscore), only the sender with that matrix ID (or higher PL users) can set the state event.**  This is an extension of the current behaviour where state events may be overwritten only if the sender's mxid *exactly equals* the state_key.
 
-We also allow users with higher PL than the original sender to overwrite state 
+We also allow users with higher PL than the original sender to overwrite state
 events even if their mxid doesn't match the event's state_key. This fixes an abuse
 vector where a user can immutably graffiti the state within a room
 by sending state events whose state_key is their matrix ID.
@@ -41,6 +41,8 @@ Practically speaking, this means modifying the [authorization rules](https://spe
 becomes:
 
 > If the event has a `state_key` that starts with an `@`, and the substring before the first `_` that follows the first `:` (or end of string) does not match the `sender`, reject - unless the sender's powerlevel is greater than the event type's *required power level*.
+
+No additional restrictions are made about the content of the `state_key`, so any characters that follow the `sender` + `_` part are only required to be valid for use in a `state_key`.
 
 For example, to post a live location sharing beacon from [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672):
 
