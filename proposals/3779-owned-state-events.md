@@ -123,4 +123,4 @@ Any other proposal that allows non-admin users to update room state (e.g. by spe
 
 ### Beware of non-empty state_keys on special events
 
-Servers should take special care to ensure that important event types such as `m.room.power_levels` have no effect when the `sender_key` is set to start with the sender's MXID instead of the empty string as they usually do.  This proposal allows some such events to be created by unprivileged users, and they should be ignored when resolving power levels and room membership.
+Servers should take special care to ensure that important event types such as `m.room.power_levels` and `m.room.topic` have no effect when the `state_key` is set to start with the sender's MXID instead of the empty string as they usually do.  This proposal allows some such events to be created by unprivileged users, and they should be ignored in contexts where `state_key` should be empty.
