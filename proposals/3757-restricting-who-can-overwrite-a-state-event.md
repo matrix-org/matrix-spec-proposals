@@ -8,7 +8,7 @@ Currently there are three main ways to limit who can overwrite a state event:
  * If a user's PL is greater than the `m.room.power_levels` `events` field for that event type
  * If a state event has a state key which begins with an `@`, then the sender's mxid must match that state key.
 
-This is problematic if an unprivileged user needs to publish multiple state
+This is problematic if a user needs to publish multiple state
 events of the same type in a room, but would like to set access control so
 that only they can subsequently update the event. An example of this is if a
 user wishes to publish multiple live location share beacons as per [MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489)
@@ -31,7 +31,7 @@ be written by its owner. **We propose that if a state event's state_key *starts 
 
 We also allow users with higher PL than the original sender to overwrite state 
 events even if their mxid doesn't match the event's state_key. This fixes an abuse
-vector where an unprivileged user can immutably graffiti the state within a room
+vector where a user can immutably graffiti the state within a room
 by sending state events whose state_key is their matrix ID.
 
 Practically speaking, this means modifying the [authorization rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules) such that rule 8:
@@ -104,7 +104,7 @@ as `@matthew:matrix.org` will match a state_key of form `@matthew:matrix.org.evi
 This changes auth rules in a backwards incompatible way, which will break any
 use cases which assume that higher PL users cannot overwrite state events whose 
 state_key is a different mxid.  This is considered a feature rather than a bug,
-fixing an abuse vector where unprivileged users could send arbitrary state events
+fixing an abuse vector where users could send arbitrary state events
 which could never be overwritten.
 
 ## Unstable prefix
