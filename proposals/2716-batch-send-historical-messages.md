@@ -181,7 +181,7 @@ Request response:
   // insertion event ID is returned in this field.
   //
   // When `?batch_id` is provided, this field is not present because we can hang
-  // the history off the insertion event specified associated by the batch ID.
+  // the history off the insertion event specified and associated by the batch ID.
   "base_insertion_event_id": "$pmmaTamxhcyLrrOKSrJf3c1zNmfvsE5SGpFpgE_UvN0"
 }
 ```
@@ -194,7 +194,7 @@ the chat history which also allows us to insert multiple batches without having 
 bunch of `@mxid joined the room` noise between each batch. **The state will not
 be resolved into the current state of the room.**
 
-`events` is chronological list of events you want to insert. For Synapse,
+`events` is a chronological list of events you want to insert. For Synapse,
 there is a reverse-chronological constraint on batches so once you insert one
 batch of messages, you can only insert older an older batch after that. **tldr;
 Insert from your most recent batch of history -> oldest history.**
@@ -434,7 +434,7 @@ The structure of the "marker" event looks like:
     "type": "m.room.marker",
     "sender": "@appservice:example.org",
     "content": {
-        "m.insertion_id": insertion_event.event_id
+        "m.marker.insertion": insertion_event.event_id
     },
     "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
     "origin_server_ts": 1626914158639,
