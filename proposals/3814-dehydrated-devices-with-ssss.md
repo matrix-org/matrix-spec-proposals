@@ -1,4 +1,4 @@
-# MSCxxxx: Dehydrated Devices with SSSS
+# MSC3814: Dehydrated Devices with SSSS
 
 [MSC2697](https://github.com/matrix-org/matrix-doc/pull/2697) introduces device
 dehydration -- a method for creating a device that can be stored in a user's
@@ -212,12 +212,12 @@ access it and read the user's encrypted messages.
 ## Unstable prefix
 
 While this MSC is in development, the `/dehydrated_device` endpoints will be
-reached at `/unstable/org.matrix.mscxxxx.v1/dehydrated_device`, and the
+reached at `/unstable/org.matrix.msc3814.v1/dehydrated_device`, and the
 `/dehydrated_device/{device_id}/events` endpoint will be reached at
-`/unstable/org.matrix.mscxxxx.v1/dehydrated_device/{device_id}/events`.  The
+`/unstable/org.matrix.msc3814.v1/dehydrated_device/{device_id}/events`.  The
 dehydration algorithm `m.dehydration.v1.olm` will be called
-`org.matrix.mscxxxx.v1.olm`.  The SSSS name for the dehydration key will be
-`org.matrix.mscxxxx` instead of `m.dehydrated_device`.
+`org.matrix.msc3814.v1.olm`.  The SSSS name for the dehydration key will be
+`org.matrix.msc3814` instead of `m.dehydrated_device`.
 
 ## Dependencies
 
