@@ -1,4 +1,4 @@
-# MSC0000: Worlds
+# MSC3815: Worlds
 
 Worlds are 3D Matrix rooms currently being developed in the Third Room project. This spec defines additional state events that describe what 3D scene should be used for a room and what 3D avatar models should be used for each room member.
 
