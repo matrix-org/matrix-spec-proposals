@@ -9,9 +9,9 @@ random rooms to obfuscate the user's online times and relationships. It is mainl
 imitate the structure of two-sided conversations.
 
 ## Proposal
-
+TBD
 ### Introduction
-
+TBD
 ### Events
 
 We add the following types of events:
@@ -70,14 +70,11 @@ The keepalive message that imitates the structure of a conversation.
 Clients MUST negotiate to exchange obfuscated events before sending the keepalive messages.
 
 ### Server behaviour
-
-
+TBD
 ## Potential issues
-
-
+TBD
 ## Alternatives
-
-
+TBD
 ## Security considerations
 
 The events MUST be sent in end-to-end encrypted rooms.
@@ -93,4 +90,3 @@ Please use `moe.kazv.mxc.msc.obfuscated-events` as the unstable prefix.
 ## Dependencies
 
 No hard dependencies.
-
