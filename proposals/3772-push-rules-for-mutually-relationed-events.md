@@ -191,6 +191,8 @@ N/A
 While this feature is in development the following unstable prefixes should be used:
 
 * `relation_match` --> `org.matrix.msc3772.relation_match`
+* `.m.rule.thread_reply_to_me` --> `.org.matrix.msc3772.thread_reply_to_me`
+* `.m.rule.thread_reply` --> `.org.matrix.msc3772.thread_reply`
 
 ## Dependencies
 
