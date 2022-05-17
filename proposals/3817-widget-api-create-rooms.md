@@ -1,4 +1,4 @@
-# MSC0000: Allowing widgets to create rooms
+# MSC3817: Allowing widgets to create rooms
 
 [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236) and (among others)
 [MSC2763](https://github.com/matrix-org/matrix-spec-proposals/pull/2762) specify a Widget API that
@@ -143,7 +143,7 @@ such as `m.create_room:invite,m.room.encryption,…`.
 
 While this MSC is not present in the spec, clients and widgets should:
 
-- Use `org.matrix.msc0000.` in place of `m.` in all new identifiers of this MSC.
-- Use `org.matrix.msc0000.create_room` in place of `create_room` for the action type in the
+- Use `org.matrix.msc3817.` in place of `m.` in all new identifiers of this MSC.
+- Use `org.matrix.msc3817.create_room` in place of `create_room` for the action type in the
   `fromWidget` requests.
-- Only call/support the `action`s if an API version of `org.matrix.msc0000` is advertised.
+- Only call/support the `action`s if an API version of `org.matrix.msc3817` is advertised.
