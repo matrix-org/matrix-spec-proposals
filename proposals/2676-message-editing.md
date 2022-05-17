@@ -279,10 +279,11 @@ invalid edit events that may be received.
 
 ### Permalinks
 
-Permalinks to edited events should capture the event ID that the sender is
-viewing at that point (which might be an edit ID). The client viewing the
-permalink should resolve this ID to the source event ID, and then display the
-most recent version of that event.
+Permalinks to edited events should capture the event ID that the creator of the
+permalink is viewing at that point (which might be a message edit event).
+
+The client viewing the permalink should resolve this ID to the original event
+ID, and then display the most recent version of that event.
 
 ### Redactions
 
