@@ -54,9 +54,13 @@ field as defined in
 intended primarily for handling edits, and lets you define an event which
 replaces an existing event.
 
-The replacement event must contain a `m.new_content` property which defines the
-replacement content. (This allows the normal `body` fields to be used for a
-fallback for clients who do not understand replacement events.)
+Such an event, with `rel_type: m.replace`, is referred to as a "message edit event".
+
+### `m.new_content` property
+
+The `content` of a message edit event must contain a `m.new_content` property
+which defines the replacement content. (This allows the normal `body` fields to
+be used for a fallback for clients who do not understand replacement events.)
 
 For instance, an `m.room.message` which replaces an existing event might look like:
 
@@ -78,10 +82,55 @@ For instance, an `m.room.message` which replaces an existing event might look li
 }
 ```
 
-Such an event, with `rel_type: m.replace`, is referred to as a "message edit".
-
 The `m.new_content` can include any properties that would normally be found in
 an event's `content` property, such as `formatted_body`.
+
+#### Encrypted events
+
+If the original event was encrypted, the replacement should be too. In that
+case, `m.new_content` is placed in the `content` of the encrypted payload. For
+example, an encrypted replacement event might look like this:
+
+```json
+{
+    "type": "m.room.encrypted",
+    "content": {
+        "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$some_event_id"
+        },
+        "algorithm": "m.megolm.v1.aes-sha2",
+        "sender_key": "<sender_curve25519_key>",
+        "device_id": "<sender_device_id>",
+        "session_id": "<outbound_group_session_id>",
+        "ciphertext": "<encrypted_payload_base_64>"
+    }
+}
+```
+
+... and, once decrypted, the payload might look like this:
+
+
+```json
+{
+    "type": "m.room.<event_type>",
+    "room_id": "!some_room_id",
+    "content": {
+        "body": "* Hello! My name is bar",
+        "msgtype": "m.text",
+        "m.new_content": {
+            "body": "Hello! My name is bar",
+            "msgtype": "m.text"
+        },
+        "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$some_event_id"
+        }
+    }
+}
+```
+
+#### Server behaviour
 
 Whenever a homeserver would return an event via the Client-Server API, it
 should check for any applicable `m.replace` event, and if one is found, it
@@ -91,6 +140,8 @@ should first modify the `content` of the original event according to the
 /_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
 which should return the *unmodified* event (though the relationship should still be
 "bundled", as described [below](#server-side-aggregation-of-mreplace-relationships).
+
+#### Client behaviour
 
 Clients are generally expected to ignore message edit events, since the server
 implementation takes care of updating the content of the original
