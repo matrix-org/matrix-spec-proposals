@@ -57,8 +57,10 @@ would include additional information in the `unsigned` field:
   The latest event should be serialised in the same form as the event itself;
   this includes adding any bundled aggregations for the event (and applying edits).[^1]
 * `count`: An integer counting the number of `m.thread` events
-* `current_user_participated`: A flag set to `true` if the current logged in user
-  has participated in the thread
+* `current_user_participated`: A boolean flag, which is set to `true` if the
+  current logged in user has participated in the thread. The user has participated if:
+  * They created the current event.
+  * They created an event with a `m.thread` relation targeting the current event.
 
 #### Rich replies in a thread
 
