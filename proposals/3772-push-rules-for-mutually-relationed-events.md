@@ -3,8 +3,8 @@
 It is useful for users to be able to control getting notified for events which
 relate to events they have shown interest in. This is useful if:
 
-* Another user replies to a thread the user has also replied to, i.e. the user is
-  interested in a thread and wants to know when others respond.
+* Another user replies to a thread the user has also replied to, i.e. the user has
+  participated in a thread and wants to know when others respond.
 * Another user has voted in a poll the user has voted in, i.e. the user wants to
   know the results of a poll as people vote for it.
 * For "subscribing" to or "following" a thread or poll.[^1]
@@ -75,8 +75,9 @@ next push rule.
 
 ### A push rule for threads
 
-For users to easily track notification of threads they have interacted with the
-following default push rules are proposed.
+For users to easily track notification of threads they have participated in (as
+defined in [MSC3816](https://github.com/matrix-org/matrix-spec-proposals/pull/3816))
+the following default push rules are proposed.
 
 Each rule should be a [default underride rule](https://spec.matrix.org/latest/client-server-api/#default-underride-rules),
 since it can't be a content rule and should be overridden when setting a room to
@@ -200,6 +201,7 @@ This MSC depends on the following MSCs, which at the time of writing have not ye
 been accepted into the spec:
 
 * [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664): Pushrules for relations
+* [MSC3816](https://github.com/matrix-org/matrix-spec-proposals/pull/3816): Clarify Thread Participation
 
 This MSC depends on the following MSCs, which have been accepted into the spec,
 but have yet to be released:
