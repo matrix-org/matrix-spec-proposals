@@ -211,6 +211,23 @@ message beginning with "/me", but their client sends an `m.emote` event
 instead, they could edit the message to send be an `m.text` event as they had
 originally intended.
 
+### Validity of message edit events
+
+Some message edit events are defined to be invalid. To be considered valid, all
+of the following criteria must be satisfied:
+
+ * The replacement and original events must have the same `type`.
+ * Neither the replacement nor original events can be state events (ie, neither
+   may have a `state_key`).
+ * The original event must not, itself, have a `rel_type` of `m.replace`.
+ * The original event and replacement event must have the same `room_id`.
+ * The original event and replacement event must have the same `sender`.
+ * The replacement event (once decrypted, if appropriate) must have an
+   `m.new_content` property.
+
+If any of these criteria are not satisfied, implementations should ignore the
+replacement event (the content of the original should not be replaced, and the
+edit should not be included in the server-side aggregation).
 
 ### Permalinks
 
@@ -267,12 +284,8 @@ be bundled with it (whether or not any subsequent edits are themselves
 redacted). Note that this behaviour is specific to the `m.replace`
 relationship.
 
-## Edge Cases
 
-What can we edit?
- * Only non-state events for now.
- * We can't change event types, or anything else which is in an E2E payload
- * We can't change relation types either.
+## Edge Cases
 
 How do diffs work on edits if you are missing intermediary edits?
  * We just have to ensure that the UI for visualising diffs makes it clear
@@ -288,21 +301,6 @@ What happens when we edit a reply?
    can assume that any client which can handle edits can also display replies
    natively.
 
-What power level do you need to be able to edit other people's messages, and how
-does it fit in with federation event auth rules?
- * 50, by default?
-
-    XXX: Synapse doesn't impose this currently - it lets anyone send an edit,
-    but then filters them out of bundled data.
-
-"Editing other people's messages is evil; we shouldn't allow it"
- * Sorry, we have to bridge with systems which support cross-user edits.
- * When it happens, we should make it super clear in the timeline that a message
-   was edited by a specific user.
- * We do not recommend that native Matrix clients expose this as a feature.
-
-
-what happens if `m.new_content` is absent? or the `type` is different?
 
 ## Future considerations
 
@@ -323,3 +321,19 @@ timeline. This is considered a bug which this MSC makes no attempt to
 resolve. See also
 [element-web#11978](https://github.com/vector-im/element-web/issues/11978) and
 [synapse#5594](https://github.com/matrix-org/synapse/issues/5594).
+
+### Edits to state events
+
+There are various issues which would need to be resolved before edits to state
+events could be supported. In particular, we would need to consider how the
+semantically-meaningful fields of the content of a state event relate to
+`m.new_content`. Variation between implementations could easily lead to
+security problems (See
+[element-web#21851](https://github.com/vector-im/element-web/issues/21851) for
+example.)
+
+### Editing other users' events
+
+There is a usecase for users with sufficient power-level to edit other peoples'
+events. For now, no attempt is made to support this. If it is supported in the
+future, we would need to find a way to make it clear in the timeline.
