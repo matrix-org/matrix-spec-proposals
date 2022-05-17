@@ -7,7 +7,6 @@ relate to events they have shown interest in. This is useful if:
   participated in a thread and wants to know when others respond.
 * Another user has voted in a poll the user has voted in, i.e. the user wants to
   know the results of a poll as people vote for it.
-* For "subscribing" to or "following" a thread or poll.<sup id="a1">[1](#f1)</sup>
 
 ## Proposal
 
@@ -183,6 +182,29 @@ assumed instead of having a `sender` field, but would be less flexible. For
 example, it would not be possible to create a rule such as "notify me of any thread
 which includes a poll in it".
 
+### Manually subscribing to interesting threads
+
+An alternative could be for clients to manually subscribe to threads that the
+user relies to, which is possible today:
+
+```json
+[
+  {
+    "kind": "event_match",
+    "key": "content.relates_to.rel_type",
+    "pattern": "m.thread"
+  },
+  {
+    "kind": "event_match",
+    "key": "content.relates_to.event_id",
+    "pattern": "$thread_root"
+  }
+]
+```
+
+For user which heavily users threads, this could cause a significant number of
+push rules to be added.
+
 ## Security considerations
 
 N/A
@@ -208,24 +230,3 @@ but have yet to be released:
 
 * [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674): Event Relationships
 * [MSC3440](https://github.com/matrix-org/matrix-spec-proposals/pull/3440): Threading via `m.thread` relation
-
-<a id="f1"/>[1]: This is already possible today, but it is a useful example to consider.
-For threads which a user is interested in a push rule can be added with the
-following condition:
-
-```json
-[
-  {
-    "kind": "event_match",
-    "key": "content.relates_to.rel_type",
-    "pattern": "m.thread"
-  },
-  {
-    "kind": "event_match",
-    "key": "content.relates_to.event_id",
-    "pattern": "$thread_root"
-  }
-]
-```
-
-[↩](#a1)
