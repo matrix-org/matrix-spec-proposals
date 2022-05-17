@@ -130,27 +130,6 @@ example, an encrypted replacement event might look like this:
 }
 ```
 
-#### Server behaviour
-
-Whenever a homeserver would return an event via the Client-Server API, it
-should check for any applicable `m.replace` event, and if one is found, it
-should first modify the `content` of the original event according to the
-`m.new_content` of the most recent edit (as determined by
-`origin_server_ts`, falling back to `event_id`). An exception applies to [`GET
-/_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
-which should return the *unmodified* event (though the relationship should still be
-"bundled", as described [below](#server-side-aggregation-of-mreplace-relationships).
-
-#### Client behaviour
-
-Clients are generally expected to ignore message edit events, since the server
-implementation takes care of updating the content of the original
-event. However, if the client has already received the original event, it must
-apply the replacement to the original itself (or, alternatively, request an
-updated copy of the original via [`GET
-/_matrix/client/v3/rooms/{roomId}/context/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)
-or similar).
-
 #### Applying `m.new_content`
 
 When applying a replacement, the `content` property of the original event is
@@ -229,28 +208,21 @@ If any of these criteria are not satisfied, implementations should ignore the
 replacement event (the content of the original should not be replaced, and the
 edit should not be included in the server-side aggregation).
 
-### Permalinks
+### Server behaviour
 
-Permalinks to edited events should capture the event ID that the sender is
-viewing at that point (which might be an edit ID).  The client viewing the
-permalink should resolve this ID to the source event ID, and then display the
-most recent version of that event.
+Whenever a homeserver would return an event via the Client-Server API, it
+should check for any valid, applicable `m.replace` event, and if one is found, it
+should first modify the `content` of the original event according to the
+`m.new_content` of the most recent edit (as determined by
+`origin_server_ts`, falling back to `event_id`).
 
-### Redactions
+An exception applies to [`GET
+/_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
+which should return the *unmodified* event (though the relationship should
+still be "bundled", as described
+below.
 
-When a message using a `rel_type` of `m.replace` is redacted, it removes that
-edit revision. This has little effect if there were subsequent edits, however
-if it was the most recent edit, the event is in effect reverted to its content
-before the redacted edit.
-
-Redacting the original message in effect removes the message, including all
-subsequent edits, from the visible timeline. In this situation, homeservers
-will return an empty `content` for the original event as with any other
-redacted event. It must be noted that, although they are not immediately
-visible in Element, subsequent edits remain unredacted and can be seen via API
-calls. See [Future considerations](#future-considerations).
-
-### Server-side aggregation of `m.replace` relationships
+#### Server-side aggregation of `m.replace` relationships
 
 Note that there can be multiple events with an `m.replace` relationship to a
 given event (for example, if an event is edited multiple times).  Homeservers
@@ -283,6 +255,48 @@ If the original event is redacted, any `m.replace` relationship should **not**
 be bundled with it (whether or not any subsequent edits are themselves
 redacted). Note that this behaviour is specific to the `m.replace`
 relationship.
+
+### Client behaviour
+
+Clients can often ignore message edit events, since any events the server
+returns via the C-S API will be updated by the server to account for subsequent
+edits.
+
+However, clients should apply the replacement themselves (or, alternatively,
+request an updated copy of the original via [`GET
++/_matrix/client/v3/rooms/{roomId}/context/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)
+or similar) when the server is unable to do so. This happens in the following
+situations:
+
+1. The client has already received the original event before the message
+   edit event arrives.
+
+2. The original event (and hence its replacement) are encrypted.
+
+Client authors are reminded to take note of the requirements for [Validity of
+message edit events](#validity-of-message-edit-events), and to ignore any
+invalid edit events that may be received.
+
+### Permalinks
+
+Permalinks to edited events should capture the event ID that the sender is
+viewing at that point (which might be an edit ID). The client viewing the
+permalink should resolve this ID to the source event ID, and then display the
+most recent version of that event.
+
+### Redactions
+
+When a message using a `rel_type` of `m.replace` is redacted, it removes that
+edit revision. This has little effect if there were subsequent edits, however
+if it was the most recent edit, the event is in effect reverted to its content
+before the redacted edit.
+
+Redacting the original message in effect removes the message, including all
+subsequent edits, from the visible timeline. In this situation, homeservers
+will return an empty `content` for the original event as with any other
+redacted event. It must be noted that, although they are not immediately
+visible in Element, subsequent edits remain unredacted and can be seen via API
+calls. See [Future considerations](#future-considerations).
 
 
 ## Edge Cases
