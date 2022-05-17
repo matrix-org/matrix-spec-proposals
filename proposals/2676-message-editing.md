@@ -299,23 +299,46 @@ redacted event. It must be noted that, although they are not immediately
 visible in Element, subsequent edits remain unredacted and can be seen via API
 calls. See [Future considerations](#future-considerations).
 
+### Edits of replies
 
-## Edge Cases
+An event which replaces a [reply](https://spec.matrix.org/v1.2/client-server-api/#rich-replies) might look like this:
 
-How do diffs work on edits if you are missing intermediary edits?
- * We just have to ensure that the UI for visualising diffs makes it clear
-   that diffs could span multiple edits rather than strictly be per-edit-event.
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "body": "> <@richvdh:sw1v.org> ab\n\n * ef",
+    "msgtype": "m.text",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<mx-reply><blockquote><a href=\"https://matrix.to/#/!qOZKfwKPirAoSosXrf:matrix.org/$1652807718765kOVDf:sw1v.org?via=matrix.org&amp;via=sw1v.org\">In reply to</a> <a href=\"https://matrix.to/#/@richvdh:sw1v.org\">@richvdh:sw1v.org</a><br>ab</blockquote></mx-reply> * ef",
+    "m.new_content": {
+      "body": "ef",
+      "msgtype": "m.text",
+      "format": "org.matrix.custom.html",
+      "formatted_body": "ef"
+    },
+    "m.relates_to": {
+      "rel_type": "m.replace",
+      "event_id": "$original_reply_event"
+    }
+  }
+}
+```
 
-What happens when we edit a reply?
- * We just send an m.replace which refers to the m.reference target; nothing
-   special is needed.  i.e. you cannot change who the event is replying to.
- * The edited reply should ditch the fallback representation of the reply itself
-   however from `m.new_content` (specifically the `<mx-reply>` tag in the
-   HTML, and the chevron prefixed text in the plaintext which we don't know
-   whether to parse as we don't know whether this is a reply or not), as we
-   can assume that any client which can handle edits can also display replies
-   natively.
+Note in particular:
 
+ * There is no `m.in_reply_to` property in the the `m.relates_to`
+   object, since it would be redundant (see [Applying
+   `m.new_content`](#applying-mnew_content) above, which notes that the original
+   event's `m.relates_to` is preserved), as well as being contrary to the
+   spirit of
+   [MSC2674](https://github.com/matrix-org/matrix-spec-proposals/pull/2674)
+   which expects only one relationship per event.
+
+ * `m.new_content` does not contain any ["reply
+   fallback"](https://spec.matrix.org/v1.2/client-server-api/#fallbacks-for-rich-replies),
+   since it is assumed that any client which can handle edits can also
+   display replies natively.
 
 ## Future considerations
 
