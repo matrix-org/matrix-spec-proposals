@@ -108,7 +108,7 @@ or similar).
 
 #### Applying `m.new_content`
 
-When applying a replacement, the `content` property of the origial event is
+When applying a replacement, the `content` property of the original event is
 replaced entirely by the `m.new_content`, with the exception of `m.relates_to`,
 which is left *unchanged*. For example, given a pair of events:
 
@@ -183,7 +183,7 @@ calls. See [Future considerations](#future-considerations).
 
 ### Server-side aggregation of `m.replace` relationships
 
-Note that there can be multiple event with an `m.replace` relationship to a
+Note that there can be multiple events with an `m.replace` relationship to a
 given event (for example, if an event is edited multiple times).  Homeservers
 should aggregate `m.replace` relationships as in
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The aggregation
