@@ -83,12 +83,6 @@ Such an event, with `rel_type: m.replace`, is referred to as a "message edit".
 The `m.new_content` can include any properties that would normally be found in
 an event's `content` property, such as `formatted_body`.
 
-Note that the `msgtype` property of `m.room.message` events need not be the
-same as in the original event. For example, if a user intended to send a
-message beginning with "/me", but their client sends an `m.emote` event
-instead, they could edit the message to send be an `m.text` event as they had
-originally intended.
-
 Whenever a homeserver would return an event via the Client-Server API, it
 should check for any applicable `m.replace` event, and if one is found, it
 should first modify the `content` of the original event according to the
@@ -159,6 +153,13 @@ is now absent, because it was absent in the replacement event, but
     }
 }
 ```
+
+Note that the `msgtype` property of `m.room.message` events need not be the
+same as in the original event. For example, if a user intended to send a
+message beginning with "/me", but their client sends an `m.emote` event
+instead, they could edit the message to send be an `m.text` event as they had
+originally intended.
+
 
 ### Permalinks
 
