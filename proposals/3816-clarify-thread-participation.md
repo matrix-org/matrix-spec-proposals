@@ -31,8 +31,8 @@ participated in the thread (e.g. both tables would be `true` in the example abov
 
 ## Proposal
 
-The definition of the `current_user_participated` flag from
-[MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440) is updated to be:
+The [definition of the `current_user_participated` flag](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#event-format)
+from the bundled aggregations for `m.thread` relations is updated:
 
 > A boolean flag, which is set to `true` if the current logged in user has
 > participated in the thread. The user has participated if:
