@@ -87,7 +87,7 @@ Whenever a homeserver would return an event via the Client-Server API, it
 should check for any applicable `m.replace` event, and if one is found, it
 should first modify the `content` of the original event according to the
 `m.new_content` of the most recent edit (as determined by
-`origin_server_ts`). An exception applies to [`GET
+`origin_server_ts`, falling back to `event_id`). An exception applies to [`GET
 /_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
 which should return the *unmodified* event (though the relationship should still be
 "bundled", as described [below](#server-side-aggregation-of-mreplace-relationships).
@@ -217,27 +217,6 @@ redacted). Note that this behaviour is specific to the `m.replace`
 relationship.
 
 ## Edge Cases
-
-How do you handle racing edits?
- * The edits could form a DAG of relations for robustness.
-    * Tie-break between forward DAG extremities based on origin_ts
-    * this should be different from the target event_id in the relations, to
-      make it easier to know what is being replaced.
-    * hard to see who is responsible for linearising the DAG when receiving.
-      Nasty for the client to do it, but the server would have to buffer,
-      meaning relations could get stuck if an event in the DAG is unavailable.
- * ...or do we just always order by on origin_ts, and rely on a social problem
-   for it not to be abused?
-    * problem is that other relation types might well need a more robust way of
-      ordering. XXX: can we think of any?
-    * could add the DAG in later if it's really needed?
-    * the abuse vector is for a malicious moderator to edit a message with origin_ts
-      of MAX_INT. the mitigation is to redact such malicious messages, although this
-      does mean the original message ends up being vandalised... :/
- * Conclusion: let's do it for origin_ts as a first cut, but use event shapes which
-   could be switched to DAG in future is/as needed.  Good news is that it only
-   affects the server implementation; the clients can trust the server to linearise
-   correctly.
 
 What can we edit?
  * Only non-state events for now.
