@@ -17,7 +17,7 @@ The Spec currently specfies this in [section 11.32.3. server behaviour](https://
 It becomes:
 
 > 2. Creates a replacement room with a `m.room.create` event containing a `predecessor` field, a
-> `type` field if it was set in the previous room, and the applicable `room_version`.
+> `type` field set to what it was in the previous room (if it was set), and the applicable `room_version`.
 
 
 ## Potential issues
