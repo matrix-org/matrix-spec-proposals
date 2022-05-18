@@ -35,10 +35,10 @@ Quote.
 Text Positions will be represented within an `m.markup.location` as follows:
 
 ```
-m.markup.location: {
-    m.markup.text.position: {
-        start: ..
-        end: ..
+"m.markup.location": {
+    "m.markup.text.position": {
+        "start": ..
+        "end": ..
     }
     ..
 }
@@ -70,11 +70,11 @@ the resulting complexity of normalization, special markdown characters should
 Text Quotes will be represented within an `m.markup.location` as follows:
 
 ```
-m.markup.location: {
-    m.markup.text.quote: {
-        exact: ...
-        prefix: ...
-        suffix: ...
+"m.markup.location": {
+    "m.markup.text.quote": {
+        "exact": ...
+        "prefix": ...
+        "suffix": ...
     }
     ..
 }
@@ -101,12 +101,12 @@ endpoint of the range should be given either as a non-negative integer, or as a
 `prefix`/`suffix` pair. So for example,
 
 ```
-m.markup.location: {
-    m.markup.text.range: {
-        start: 0,
-        end: {
-            prefix: "the",
-            suffix: " end"
+"m.markup.location": {
+    "m.markup.text.range": {
+        "start": 0,
+        "end": {
+            "prefix": "the",
+            "suffix": " end"
         }
     }
 }
@@ -133,10 +133,10 @@ selectors is very direct. In each case, we only need to add a field indicating
 the selector type. So a location like:
 
 ```
-m.markup.text.quote: {
-    exact: ...
-    prefix: ...
-    suffix: ...
+"m.markup.text.quote": {
+    "exact": ...
+    "prefix": ...
+    "suffix": ...
 }
 ```
 
@@ -144,19 +144,19 @@ becomes
 
 ``` 
 {
-    type: "TextQuoteSelector"
-    exact: ... 
-    prefix: ... 
-    suffix: ... 
+    "type": "TextQuoteSelector"
+    "exact": ... 
+    "prefix": ... 
+    "suffix": ... 
 }
 ```
 
 and 
 
 ```
-m.markup.text.position: {
-    start: ...
-    end: ...
+"m.markup.text.position": {
+    "start": ...
+    "end": ...
 }
 ```
 
@@ -164,9 +164,9 @@ becomes
 
 ``` 
 {
-    type: "TextPositionSelector"
-    start: ...
-    end: ...
+    "type": "TextPositionSelector"
+    "start": ...
+    "end": ...
 }
 ```
 
@@ -186,11 +186,11 @@ the `exact` value equal to the suffix, and with no suffix provided.
 So, for example,
 
 ```
-m.markup.text.range: { 
-    start: 0,
-    end: { 
-        prefix: "the", 
-        suffix: " end" 
+"m.markup.text.range": { 
+    "start": 0,
+    "end": { 
+        "prefix": "the", 
+        "suffix": " end" 
     } 
 }
 ```
@@ -199,16 +199,16 @@ becomes
 
 ```
 { 
-    type: RangeSelector,
-    startSelector: {
-        type: TextPositionSelector,
-        start: 0,
-        end: 0
+    "type: "RangeSelector",
+    "startSelector": {
+        "type": "TextPositionSelector",
+        "start": 0,
+        "end": 0
     }
-    endSelector: { 
-        type: TextQuoteSelector
-        prefix: "the", 
-        exact: " end" 
+    "endSelector": { 
+        "type": "TextQuoteSelector"
+        "prefix": "the", 
+        "exact": " end" 
     } 
 }
 ```
