@@ -59,9 +59,7 @@ It is proposed that a [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750) f
 
 ```
 HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer realm="matrix-client.matrix.org",
-                  error="insufficient_scope",
-                  scope="urn:matrix:api:something"
+WWW-Authenticate: Bearer error="insufficient_scope", scope="urn:matrix:api:something"
 ```
 
 On receipt of such a response the client can then request a new authorization from the issuer as per [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) requesting the additional scope be granted.
@@ -72,7 +70,7 @@ For example:
 
 ```
 HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer realm="matrix-client.matrix.org", error="insufficient_scope", scope="urn:matrix:api:something"
+WWW-Authenticate: Bearer error="insufficient_scope", scope="urn:matrix:api:something"
 Content-Type: application/json
 
 {
