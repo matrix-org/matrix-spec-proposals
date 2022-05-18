@@ -8,7 +8,7 @@ rooms staying the same type leading to trouble.
 
 This MSC proposes that the room upgade API MUST copy the [room type](https://spec.matrix.org/v1.2/client-server-api/#types)
 over to the new room. Otherwise clients cannot trust that to happen and [Spaces](https://spec.matrix.org/v1.2/client-server-api/#spaces)
-or [MSC3588](https://github.com/matrix-org/matrix-doc/pull/3588) Story rooms may incorrectly become
+or [MSC3588](https://github.com/matrix-org/matrix-spec-proposals/pull/3588) Story rooms may incorrectly become
 normal rooms breaking user-experience.
 
 The Spec currently specfies this in [section 11.32.3. server behaviour](https://spec.matrix.org/v1.2/client-server-api/#server-behaviour-16):
