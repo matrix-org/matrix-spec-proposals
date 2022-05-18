@@ -1,4 +1,4 @@
-# MSCXXXX: Copy room type on upgrade.
+# MSC3818: Copy room type on upgrade
 
 There can never be enough templates in the world, and MSCs shouldn't be any different. The level
 of detail expected of proposals can be unclear - this is what this example proposal (which doubles
