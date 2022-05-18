@@ -45,14 +45,14 @@ spatio-temporal segments of video recordings.
 Media Fragments will be represented as follows:
 
 ```
-m.markup.location: {
-    m.markup.media.fragment: {
-        start: ..
-        end: ..
-        x: ..
-        y: ..
-        w: ..
-        h: ..
+"m.markup.location": {
+    "m.markup.media.fragment": {
+        "start": ..
+        "end": ..
+        "x": ..
+        "y": ..
+        "w": ..
+        "h": ..
     }
     ..
 }
@@ -61,14 +61,14 @@ m.markup.location: {
 or (when spatial dimensions are given in percentages) as
 
 ```
-m.markup.location: {
-    m.markup.media.fragment: {
-        start: ..
-        end: ..
-        xp: ..
-        yp: ..
-        wp: ..
-        hp: ..
+"m.markup.location": {
+    "m.markup.media.fragment": {
+        "start": ..
+        "end": ..
+        "xp": ..
+        "yp": ..
+        "wp": ..
+        "hp": ..
     }
     ..
 }
@@ -98,4 +98,76 @@ equal to 1000000, giving a spatial region within the media in percentage
 coordinates as described above. If either `xp` + `wp` or `yp` + `hp` is greater
 than 1000000, then the location should be ignored as invalid.
 
+### Web Annotation Data Model Serialization
 
+[MSC3574](https://github.com/matrix-org/matrix-spec-proposals/pull/3574)
+includes a scheme for serializing matrix markup events as web annotations in
+the web annotation data model. The scheme requires each markup location type to
+have a canonical serialization as [a web annotation
+selector](https://www.w3.org/TR/annotation-model/#selectors]). In this section,
+we describe how to serialize `m.markup.media.fragment` as a WADM selector.
+
+We take advantage of the WADM's support for URI fragments as locations, using
+the [FragmentSelector](https://www.w3.org/TR/annotation-model/#text-quote-selector)
+selector.
+
+This allows us to encode a location of the form
+
+```
+"m.markup.media.fragment": {
+    "start": $START
+    "end": $END
+    "x": $X
+    "y": $Y
+    "w": $W
+    "h": $H
+}
+```
+
+as a selector
+
+``` 
+{
+  "type": "FragmentSelector",
+  "conformsTo": "http://www.w3.org/TR/media-frags/",
+  "value": "t=($START/1000),($END/1000)&xywh=$X,$Y,$W,$H"
+}
+```
+
+and 
+
+```
+"m.markup.media.fragment": {
+    "start": $START
+    "end": $END
+    "xp": $X
+    "yp": $Y
+    "wp": $W
+    "hp": $H
+}
+```
+
+as
+
+``` 
+{
+  "type": "FragmentSelector",
+  "conformsTo": "http://www.w3.org/TR/media-frags/",
+  "value": "t=($START/1000),($END/1000)&xywh=percent:($X/1000),($Y/1000),($W/1000),($H/1000)"
+}
+```
+
+## Security considerations
+
+Because room state is unencrypted, `m.space.child` events conveying locations
+via `m.markup.media.fragment` could leak information about the duration and
+dimensions of a piece of media. This is part of a more general problem with
+state events potentially leaking information, and deserves a general
+resolution, a la [MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
+
+
+## Unstable prefix
+
+| Proposed Final Identifier | Purpose                                                    | Development Identifier                        |
+| ------------------------- | ---------------------------------------------------------- | --------------------------------------------- |
+| `m.markup.media.fragment` | key in `m.markup.location`                                 | `com.open-tower.msc3775.markup.media.fragment`|
