@@ -49,11 +49,11 @@ the front matter of a book).
 Text annotations will be represented within an `m.markup.location` as follows:
 
 ```
-m.markup.location: {
-    m.markup.pdf.text: {
-        rect: {left: ..., right: ..., top: ..., bottom: ...}
-        contents: ...
-        page_index: ...
+"m.markup.location": {
+    "m.markup.pdf.text": {
+        "rect": {"left": ..., "right": ..., "top": ..., "bottom": ...}
+        "contents": ...
+        "page_index": ...
     }
     ..
 }
@@ -73,12 +73,12 @@ Highlight Annotations will be represented within an `m.markup.location` as
 follows:
 
 ```
-m.markup.location: {
-    m.markup.pdf.highlight: {
-        rect: {left: ..., right: ..., top: ..., bottom: ...}
-        contents: ...,
-        quad_points: [...],
-        page_index: ...
+"m.markup.location": {
+    "m.markup.pdf.highlight": {
+        "rect": {"left": ..., "right": ..., "top": ..., "bottom": ...}
+        "contents": ...,
+        "quad_points": [...],
+        "page_index": ...
     }
     ..
 }
