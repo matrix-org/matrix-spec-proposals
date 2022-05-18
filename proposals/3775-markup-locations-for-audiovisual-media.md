@@ -34,7 +34,68 @@ specification uses seconds with a decimal part. Spatial locations consist of
 rectangular selections given by the x,y coordinates of the upper left corner
 and the width and height of the rectangle. The coordinates and dimensions of
 the rectangle can be indicated either with integers representing pixels (with
-0,0 representing the top left corner of the image), or with integers
-representing percentages of the width and height of the media. Temporal and
-spatial locations can be combined to select spatio-temporal segments of video
-recordings.
+0,0 representing the top left corner of the image or video), or with integers
+representing percentages of the width and height of the media. This MSC will
+represent percentages with integers in [0,1000000], allowing for four decimal
+points of accuracy. Temporal and spatial locations can be combined to select
+spatio-temporal segments of video recordings.
+
+### Media Fragments
+
+Media Fragments will be represented as follows:
+
+```
+m.markup.location: {
+    m.markup.media.fragment: {
+        start: ..
+        end: ..
+        x: ..
+        y: ..
+        w: ..
+        h: ..
+    }
+    ..
+}
+```
+
+or (when spatial dimensions are given in percentages) as
+
+```
+m.markup.location: {
+    m.markup.media.fragment: {
+        start: ..
+        end: ..
+        xp: ..
+        yp: ..
+        wp: ..
+        hp: ..
+    }
+    ..
+}
+```
+
+with all fields optional, but with the requirement that at least one field is
+present, and that if any of `xywh`  are present, then all are.
+
+The `start` and `end` values should be non-negative integers with `start <
+end`, where `start` indicates the first millisecond of media included in the
+location, and `end` indicates the first millisecond of media not included. If
+`start` is omitted, the location begins at zero, and if `end` is omitted, the
+location includes the whole duration of the media.
+
+The `xywh` fields should be non-negative integers describing a spatial region
+within the media in pixel coordinates as described above. So `xy` should be
+smaller than then [intrinsic height and width of the
+video](https://html.spec.whatwg.org/multipage/media.html#concept-video-intrinsic-width)
+respectively, and `wh` should be smaller than the difference between `x` and
+the intrinsic width, and the difference between `y` and the intrinsic height,
+respectively. In cases where the exception on `wh` is violated, the region
+described should be clipped at the edges of the media. In the case where the
+expectation on `xy` is violated, the location should be ignored as invalid.
+
+The `xp` `yp` `wp` and `hp` fields should be non-negative integers less than or
+equal to 1000000, giving a spatial region within the media in percentage
+coordinates as described above. If either `xp` + `wp` or `yp` + `hp` is greater
+than 1000000, then the location should be ignored as invalid.
+
+
