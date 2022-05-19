@@ -343,6 +343,24 @@ This doesn't give us historical data, however, and requiring a WebRTC stack
 is prohibitively complicated for simple clients (e.g. basic IOT devices
 reporting spatial telemetry).
 
+### One state event per user
+
+(As suggested by @deepbluev7)
+
+To reduce the problem of state bloat (too many state events with different keys) and avoid the need for permission changes on state events, we could post a single state event per user, which contained a list of all the currently-shared location events, and the location events could be normal timeline events, which are updated using message edits (with `m.replace`).
+
+Advantages:
+
+* Backwards compatible with static location sharing ([MSC3488](https://github.com/matrix-org/matrix-spec-proposals/pull/3488)) - clients that did not understand live location sharing but did understand static would see the location changing over time due to the edits.
+* Only one state event per user - less state bloat.
+* No need for changes to the rules about who can modify state events (but still requires the ability for unprivileged users to create a state event with `state_key` equal to their mxid).
+
+Disadvantages
+
+* Potential race where multiple clients update the same state event at the same time, and one overwrites the other.
+* Location events need to be fetched from the timeline before they can be used.
+* Potential confusion - a live location is semantically different from a static location that has been edited.
+
 ### No state events
 
 We could send location data as normal E2EE messages, with no state events
