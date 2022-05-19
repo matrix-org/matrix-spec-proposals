@@ -217,7 +217,7 @@ of the user who has it open.
 ## Security considerations
 
 Because the widget can implicitly decrypt events, it is absolutely imperative that clients
-prompt for permission to use these capabilities even though the capabilities negotation does not
+prompt for permission to use these capabilities even though the capabilities negotiation does not
 require this to be done. Strictly speaking, clients which do not prompt for confirmation from the
 user are frowned upon, however given the intended usecase of VoIP signaling it is reasonable to
 auto-approve some capabilities if the client can verifiably trust the widget is running safe code.
