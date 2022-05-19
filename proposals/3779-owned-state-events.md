@@ -109,6 +109,18 @@ We could modify the default power levels of a room to include a list of the even
 
 We did consider bundling this MSC as part of [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) but since they are actually independent and that MSC has already received some review we felt that the more principled approach was to keep them separate. We do prefer that they be included in the same room version if accepted.
 
+### Prevent propagation of non-empty state_keys on special events
+
+Under "Beware of non-empty state_keys on special events" below, we discuss the potential problem that unprivileged users can create state events that look like important events e.g. `m.room.power_levels` and `m.room.topic`, but are actually invalid, since those events require `state_key` to be empty.
+
+We considered the idea of requiring servers to delete events that use standard event types but have non-standard `state_key`s, but rejected it for the following reasons:
+
+* Event bodies should not be trusted by clients (see [Room Event Format](https://spec.matrix.org/v1.2/client-server-api/#room-event-format)), so it is already established that clients should take care to validate events before acting on their contents. Blocking these events could give the impression that event bodies are actually trustworthy, encouraging clients to be sloppy and reducing the security of the whole system.
+* Blocking these events in servers requires those servers to implement the rules correctly: it seems arbitrary to rely on servers to do the right thing and not clients.
+* Before this MSC, if clients obey e.g. `m.room.topic` with a non-empty `state_key`, their current behaviour is incorrect and could be exploited by users with permission to send state events. This MSC does not actually change the rules here.
+
+However, if the team feels that this idea should be implemented, I (@andybalaam) have no objection.
+
 ## Security considerations
 
 ### Attacks on room state
@@ -127,4 +139,4 @@ What is currently missing is the ability to clean up state after an attack. We b
 
 ### Beware of non-empty state_keys on special events
 
-Servers should take special care to ensure that important event types such as `m.room.power_levels` and `m.room.topic` have no effect when the `state_key` is set to start with the sender's MXID instead of the empty string as they usually do.  This proposal allows some such events to be created by unprivileged users, and they should be ignored in contexts where `state_key` should be empty.
+Clients and servers should take special care to ensure that important event types such as `m.room.power_levels` and `m.room.topic` have no effect when the `state_key` is set to start with the sender's MXID instead of the empty string as they usually do.  This proposal allows some such events to be created by unprivileged users, and they should be ignored in contexts where `state_key` should be empty.
