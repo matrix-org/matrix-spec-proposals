@@ -123,6 +123,8 @@ If many users are performing a distributed attack on room state, this should be 
 
 Any other proposal that allows non-admin users to update room state (e.g. by special-casing particular event types) will likely allow similar attacks.
 
+What is currently missing is the ability to clean up state after an attack. We believe this should be handled by allowing deleting state from a room, but since the exact definition of how to do that is tricky, we don't attempt to address it in this MSC.
+
 ### Beware of non-empty state_keys on special events
 
 Servers should take special care to ensure that important event types such as `m.room.power_levels` and `m.room.topic` have no effect when the `state_key` is set to start with the sender's MXID instead of the empty string as they usually do.  This proposal allows some such events to be created by unprivileged users, and they should be ignored in contexts where `state_key` should be empty.
