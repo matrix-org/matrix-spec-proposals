@@ -23,7 +23,9 @@ It becomes:
 
 ## Potential issues
 
-Non-applicable.
+Some room types such as Spaces also require copying over state events as a part of the update progress,
+in case of Spaces, `m.space.child` events. However as that can be changed later and done by the client,
+it's out of scope for this MSC.
 
 ## Alternatives
 
