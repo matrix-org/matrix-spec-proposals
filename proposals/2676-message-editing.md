@@ -134,7 +134,10 @@ example, an encrypted replacement event might look like this:
 
 When applying a replacement, the `content` property of the original event is
 replaced entirely by the `m.new_content`, with the exception of `m.relates_to`,
-which is left *unchanged*. For example, given a pair of events:
+which is left *unchanged*. Any `m.relates_to` property within `m.new_content`
+is ignored.
+
+For example, given a pair of events:
 
 ```json
 {
