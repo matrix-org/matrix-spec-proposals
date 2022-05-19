@@ -29,7 +29,11 @@ it's out of scope for this MSC.
 
 ## Alternatives
 
-Non-applicable.
+A suggested alternative is having every room type specify their own update process if they use other
+room types. However this would complicate the MSC process with even simple client-side proposals
+requiring also a server-side implementation. This could also result in room types dependent on a
+particular server software or discourage using Matrix for a smaller project where an MSC wasn't
+otherwise consider necessary.
 
 ## Security considerations
 
