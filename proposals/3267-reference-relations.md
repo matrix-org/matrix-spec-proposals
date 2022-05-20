@@ -1,4 +1,4 @@
-# MSC 3267: reference relationships
+# MSC3267: reference relationships
 
 ## Proposal
 
@@ -6,22 +6,25 @@ This proposal defines a relation type (using
 [MSC2674 relations](https://github.com/matrix-org/matrix-doc/pull/2674))
 for events to make a reference to another event.
 
-A `rel_type` of `m.reference` is defined for future handling replies and
-threading. This let you define an event which references an existing
-event. When aggregated, this currently doesn't do anything special, but in
-future could bundle chains of references (i.e. threads). These do not yet
-replace the [reply mechanism currently defined in the spec](https://matrix.org/docs/spec/client_server/latest#rich-replies).
+A `rel_type` of `m.reference` is defined as a generic way to associate an
+event with another event. There are no aggregation semantics applied to
+this relation.
 
-Reference relations are used by [MSC 2241](https://github.com/matrix-org/matrix-doc/pull/2241)
+In future, this relation or similar could replace [replies](https://spec.matrix.org/v1.2/client-server-api/#rich-replies)
+and aggregate into a chain of replies (simple threads).
+
+Reference relations are used by [MSC2241](https://github.com/matrix-org/matrix-doc/pull/2241)
 to tie all events together for the same verification request.
 
 For instance, an `m.room.message` which references an existing event
 would look like:
 
-```json
+```json5
 {
+    // Unimportant fields omitted
     "type": "m.room.message",
     "content": {
+        "msgtype": "m.text",
         "body": "i <3 shelties",
         "m.relates_to": {
             "rel_type": "m.reference",
@@ -33,14 +36,13 @@ would look like:
 
 ## Server aggregation
 
-Even though [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) states
+[MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) states
 that values for `rel_type` should define how the server should aggregate the
-`rel_type`, this MSC does not define how references should be aggregated by the
-server on the target event. One possibly way would be to aggregate them as an
-array of event ids, but the final layout is deferred to [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675).
-The aim of this MSC is to just document the status quo of how `m.reference`
-is used by [MSC2241](https://github.com/matrix-org/matrix-doc/pull/2241), where
-server aggregations are not assumed by the client.
+`rel_type`, and as such this MSC deliberately has no behaviour.
+
+In future, aggregation might be achieved with a list of event IDs for
+representation by [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) or
+similar.
 
 ## Limitations
 
@@ -63,3 +65,8 @@ Do we need to support retrospective references?
    dupes another, we might need to bundle two-levels deep (subject+ref and then
    ref+target).  We can cross this bridge when we get there though, as a 4th
    aggregation type
+
+## Unstable prefix
+
+Unfortunately not applicable - this MSC was used in production and appears in the
+specified version of the [key verification framework](https://spec.matrix.org/v1.2/client-server-api/#key-verification-framework).
