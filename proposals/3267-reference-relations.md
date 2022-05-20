@@ -11,7 +11,8 @@ event with another event. There are no aggregation semantics applied to
 this relation.
 
 In future, this relation or similar could replace [replies](https://spec.matrix.org/v1.2/client-server-api/#rich-replies)
-and aggregate into a chain of replies (simple threads).
+and aggregate into a chain of replies (simple threads), provided enough
+maintenance goes into the system to support multiple relations (see limitations).
 
 Reference relations are used by [MSC2241](https://github.com/matrix-org/matrix-doc/pull/2241)
 to tie all events together for the same verification request.
@@ -49,6 +50,10 @@ similar.
 Different subtypes of references could be defined through additional fields on
 the `m.relates_to` object, to distinguish between replies, threads, etc.
 This MSC doesn't attempt to define these subtypes.
+
+This relation cannot be used in conjunction with another relation due to `rel_type`
+being a single value. This is known and unfortunately not resolved by this MSC.
+A future MSC might address the concern.
 
 ## Edge Cases
 
