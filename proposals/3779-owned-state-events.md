@@ -113,10 +113,9 @@ We did consider bundling this MSC as part of [MSC3757](https://github.com/matrix
 
 Under "Beware of non-empty state_keys on special events" below, we discuss the potential problem that unprivileged users can create state events that look like important events e.g. `m.room.power_levels` and `m.room.topic`, but are actually invalid, since those events require `state_key` to be empty.
 
-We considered the idea of requiring servers to delete events that use standard event types but have non-standard `state_key`s, but rejected it for the following reasons:
+We considered the idea of using auth rules to prohibit events that use standard event types but have non-standard `state_key`s, but rejected it for the following reasons:
 
 * Event bodies should not be trusted by clients (see [Room Event Format](https://spec.matrix.org/v1.2/client-server-api/#room-event-format)), so it is already established that clients should take care to validate events before acting on their contents. Blocking these events could give the impression that event bodies are actually trustworthy, encouraging clients to be sloppy and reducing the security of the whole system.
-* Blocking these events in servers requires those servers to implement the rules correctly: it seems arbitrary to rely on servers to do the right thing and not clients.
 * Before this MSC, if clients obey e.g. `m.room.topic` with a non-empty `state_key`, their current behaviour is incorrect and could be exploited by users with permission to send state events. This MSC does not actually change the rules here.
 
 However, if the team feels that this idea should be implemented, I (@andybalaam) have no objection.
@@ -133,7 +132,7 @@ If an individual user is sending too many state events, the server should apply 
 
 If many users are performing a distributed attack on room state, this should be managed via moderation tools.
 
-Any other proposal that allows non-admin users to update room state (e.g. by special-casing particular event types) will likely allow similar attacks.
+Any other proposal that allows non-admin users to update room state (e.g. by special-casing particular event types) will likely allow similar attacks, and users with sufficient permission can already attack a room in this way.
 
 What is currently missing is the ability to clean up state after an attack. We believe this should be handled by allowing deleting state from a room, but since the exact definition of how to do that is tricky, we don't attempt to address it in this MSC.
 
