@@ -39,8 +39,8 @@ flowchart RL
 The condition can include the following fields to check:
 
 * `rel_type`: The relation type of the other event to the parent event.
-* `sender` (optional): The sender of the other event.
-* `type` (optional): The type of the other event.
+* `sender` (optional): A glob pattern to match against the sender of the other event.
+* `type` (optional): A globa pattern to match against the type of the other event.
 
 Another example would be to be notified of a poll closing (from
 [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/pull/3381)), but
