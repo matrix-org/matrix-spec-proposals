@@ -56,6 +56,7 @@ Hence, the `m.markup.location` value MUST be an object, whose keys are different
 
 - [MSC3592: Markup locations for PDF documents](https://github.com/matrix-org/matrix-spec-proposals/pull/3592)
 - [MSC3752: Markup locations for text](https://github.com/matrix-org/matrix-spec-proposals/pull/3752)
+- [MSC3775: Markup locations for Audiovisual Media](https://github.com/matrix-org/matrix-spec-proposals/pull/3775)
 
 ### Examples
 
