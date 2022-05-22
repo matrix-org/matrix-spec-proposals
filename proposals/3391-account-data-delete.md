@@ -66,29 +66,34 @@ Account Data changes are announced through sync, this proposal also aims to add 
 
 ```
 
-Providing an optional `removed_events` key per every `account_data` object,
-containing an array which references the deleted account-data types.
+Providing an optional `removed_events` key per every `account_data` object, containing an array
+which references the deleted account-data types.
 
-These are the tags that were removed since `since` and `next_batch`, if `since` is specified and valid.
+These are the tags that were removed since `since` and `next_batch`, if `since` is specified and
+valid.
 
-If between `since` and `next_batch` the account data has been deleted and re-created, this field shouldn't exist,
-and data should be just put in `account_data.events` as if it's a normal change/creation.
+If between `since` and `next_batch` the account data has been deleted and re-created, this field
+shouldn't exist, and data should be just put in `account_data.events` as if it's a normal
+change/creation.
 
-If, for some reason, an event type exists in both `account_data.events` and `account_data.removed_events`, the reference in
-`.removed_events` must be ignored.
+If, for some reason, an event type exists in both `account_data.events` and
+`account_data.removed_events`, the reference in `.removed_events` must be ignored.
 
-Full-state syncs must not include `.removed_events`, but consequently clients must see anything
-in `events` as replacing what existed previously.
+Requests to `/sync` without a `since` token must not include `.removed_events`. Consequently,
+anything present in `events` represents a full state of account data, and anything missing (from a
+previous `since`-less sync) must be removed from the client's cache.
 
 #### Backwards Compatibility Note
 
-Server implementations **may** include an empty (`{}`) `events` entry for deleted account data,
-together with an entry in `removed_events`.
+When a server announces it supports any version that does not include this MSC (via `/versions`), it
+**must** include an empty (`{}`) `events` entry for deleted account data (per sync), together with
+the entry in `removed_events`.
 
-This is for backwards compatibility, as clients may or may not understand the `removed_events` key.
+This is done for backwards compatibility reasons, as clients may or may not understand the
+`removed_events` key when communicating with this server.
 
-*The author thinks that this should only be necessary for a single matrix version,
-as clients adapt, but the SCT can - of course - have differing opinions.*
+*This author believes that any matrix client will act responsibly when encountering a server
+supporting only matrix versions it does not understand, and fail-fast if this is the case.*
 
 ## Potential issues
 
@@ -112,6 +117,3 @@ DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/rooms/{roomId}/
 ```
 
 And `org.matrix.msc3391.removed_events` for `account_data` sync.
-
-**Note:** As this operation would be largely "unknown" to clients,
-cache invalidation problems could occur as clients could aggressively cache account data.
