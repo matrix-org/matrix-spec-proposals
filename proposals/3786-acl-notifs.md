@@ -13,8 +13,7 @@ notifications. (See <https://github.com/vector-im/element-web/issues/20788>.)
 Due to these problems, this MSC proposes a new push rule to ignore these events.
 The new push rule is analogous to `.m.rule.member_event` (see https://spec.matrix.org/v1.2/client-server-api/#default-override-rules), or `.m.rule.reaction`
 (from [MSC2153](https://github.com/matrix-org/matrix-spec-proposals/pull/2153)
-or [MSC2677](https://github.com/matrix-org/matrix-spec-proposals/pull/2677))
-when merged.
+or [MSC2677](https://github.com/matrix-org/matrix-spec-proposals/pull/2677)).
 
 ## Proposal
 
