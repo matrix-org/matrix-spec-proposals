@@ -33,9 +33,7 @@ to be added that ignores `m.room.server_acl` events:
             "pattern": "m.room.server_acl"
         }
     ],
-    "actions": [
-        "dont_notify"
-    ]
+    "actions": []
 }
 ```
 
