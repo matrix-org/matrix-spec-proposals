@@ -3,7 +3,7 @@
 `m.room.server_acl` events allow for expressing which servers can participate in
 a room. Room server ACLs aren't something the user should have to worry about,
 so these events should not trigger notifications; however right now they *do*
-trigger notifications, if they have the room rule set to `notify` (`All
+trigger notifications, if the user has the room rule set to `notify` (`All
 messages` in Element). To add to this, often during spam attacks, these events
 are sent quite frequently, which causes the users to be overwhelmed by
 notifications. (See <https://github.com/vector-im/element-web/issues/20788>)
