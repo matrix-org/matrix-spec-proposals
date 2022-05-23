@@ -8,7 +8,7 @@ messages` in Element).
 
 Additionally, these events are often sent quite frequently during spam attacks, 
 which causes the users to be overwhelmed by
-notifications. (See <https://github.com/vector-im/element-web/issues/20788>)
+notifications. (See <https://github.com/vector-im/element-web/issues/20788>.)
 
 Due to these problems, this MSC proposes a new push rule to ignore these events.
 The new push rule is analogues to `.m.rule.member_event` or `.m.rule.reaction`
