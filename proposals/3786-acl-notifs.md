@@ -4,8 +4,10 @@
 a room. Room server ACLs aren't something the user should have to worry about,
 so these events should not trigger notifications; however right now they *do*
 trigger notifications, if the user has the room rule set to `notify` (`All
-messages` in Element). To add to this, often during spam attacks, these events
-are sent quite frequently, which causes the users to be overwhelmed by
+messages` in Element). 
+
+Additionally, these events are often sent quite frequently during spam attacks, 
+which causes the users to be overwhelmed by
 notifications. (See <https://github.com/vector-im/element-web/issues/20788>)
 
 Due to these problems, this MSC proposes a new push rule to ignore these events.
