@@ -26,9 +26,10 @@ with the same relation*. Such a condition could look like this:
 }
 ```
 
-This condition can be used to notify me whenever someone sends a reply to a thread
-that I have also replied to. For example, if there's a thread on event `A` and
-I have sent event `B`, the rule could match event `C` from another user.
+This condition matches whenever someone sends a reply to a thread that `@me:my.server`
+has also replied to. For example, if there's a thread on event `A` and
+`@me:my.server` has sent event `B`, the rule would match event `C` sent from
+another user.
 
 ```mermaid
 flowchart RL
@@ -38,9 +39,11 @@ flowchart RL
 
 The condition can include the following fields to check:
 
-* `rel_type`: The relation type of the other event to the parent event.
-* `sender` (optional): A glob pattern to match against the sender of the other event.
-* `type` (optional): A globa pattern to match against the type of the other event.
+* `rel_type`: The relation type of the mutually related event to the parent event.
+* `sender` (optional): A glob pattern to match against the sender of the mutually
+  related event.
+* `type` (optional): A globa pattern to match against the type of the mutually
+  related event.
 
 Another example would be to be notified of a poll closing (from
 [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/pull/3381)), but
@@ -62,15 +65,16 @@ only if the user has voted in it:
 ]
 ```
 
-(Note that the `type` is important since `m.reference` is used in multiple contexts.)
+(Note that the `type` is important since `m.reference` is used in multiple contexts,
+see [MSC3267](https://github.com/matrix-org/matrix-doc/pull/3267).)
 
 A client can check for the `relation_match` condition being supported by testing
 for an existing `.m.rule.thread_reply` in the default rules (see below).
 
-Matching is done on a best effort basis: when evaluating the push rule against an event,
-if the server (or client) doesn't know of any other events which meet the specified
-conditions than the rule should not be matched and processing continues with the
-next push rule.
+Matching is done on a best effort basis: when evaluating the push rule against an
+event, if the server (or client) doesn't know of any other events which meet the
+specified conditions than the rule should not be matched and processing continues
+with the next push rule.
 
 ### A push rule for threads
 
@@ -79,13 +83,13 @@ defined in [MSC3816](https://github.com/matrix-org/matrix-spec-proposals/pull/38
 the following default push rules are proposed.
 
 Each rule should be a [default underride rule](https://spec.matrix.org/latest/client-server-api/#default-underride-rules),
-since it can't be a content rule and should be overridden when setting a room to
+since it isn't a content rule and should be overridden when setting a room to
 mentions only. They should be placed just before `.m.rule.message` in the list.
 This ensures you get notified for replies to threads you're interested in. The
 actions are the same as for `.m.rule.message` and `m.rule.encrypted`.
 
-Note that an encrypted form of these rules are not needed since relation information
-and metadata required for it to function is not encrypted.
+Note that an encrypted form of these rules are not needed since the relation
+information and metadata required for these rules to function is not encrypted.
 
 #### Threaded replies to the user's message
 
@@ -176,16 +180,15 @@ not finished.
 
 ### `sender` field
 
-All of the given examples are only relevant when the current user also has a
-relation to same parent event as the current event being checked. This could be
-assumed instead of having a `sender` field, but would be less flexible. For
-example, it would not be possible to create a rule such as "notify me of any thread
-which includes a poll in it".
+The examples are only relevant when the current user also has a relation to same
+parent event as the event being processed. This proposal could be simplified to
+require that instead of having a `sender` field. This would reduce flexibility,
+while not dramatically simplifying implementation.
 
 ### Manually subscribing to interesting threads
 
 An alternative could be for clients to manually subscribe to threads that the
-user relies to, which is possible today:
+user replies to, which is possible today:
 
 ```json
 [
@@ -202,8 +205,8 @@ user relies to, which is possible today:
 ]
 ```
 
-For user which heavily users threads, this could cause a significant number of
-push rules to be added.
+This could cause a significant number of push rules to be added for a user which
+interacts with many threads.
 
 ## Security considerations
 
