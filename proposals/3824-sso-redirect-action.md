@@ -1,4 +1,4 @@
-# MSCxxxx: Login/register indication on SSO redirect
+# MSC3824: Login/register indication on SSO redirect
 
 At present a homeserver cannot tell if a request for `GET /_matrix/client/v3/login/sso/redirect` is intended to be used to sign in an existing user or register a new user.
 
