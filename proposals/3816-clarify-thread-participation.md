@@ -1,16 +1,19 @@
 # MSC3816: Clarify Thread Participation
 
-[MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440) defines relations
-for threads and includes a `current_user_participated` flag, which is not fully
-defined:
+[MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440) defines the `m.thread` relation
+type, and the format of the serverside aggregation for them. The definition of the aggregation includes a
+`current_user_participated` flag, which is not fully defined:
 
 > A flag set to `true` if the current logged in user has participated in the thread
 
-Known implementations implement this as whether the currently logged in user has
-sent an event with an `m.thread` relation targeting the event, but this does not
-make sense if the requesting user was the original event in the thread.
+In particular, it is unclear whether sending the initial event (i.e., the event which is the
+target of the `m.thread` relation) counts as participating in the thread.
 
-Consider `A` as the root event in a thread from `@alice:example.com`, and `B`
+Known implementations do *not* count the initial event in this way, and instead
+implement this as: "has the current user sent an event with an `m.thread` relation
+targeting the event", but this has found to give poor user experience in practice.
+
+For example, consider `A` as the root event in a thread from `@alice:example.com`, and `B`
 as a threaded reply from `@bob:example.com`. The bundled aggregations for `A`
 would include:
 
@@ -27,7 +30,7 @@ If `@alice:example.com` sends reply `C`, this would change:
 | `@bob:example.com`   | `true`                      |
 
 The proposed clarification is that `@alice:example.com` should have always have
-participated in the thread (e.g. both tables would be `true` in the example above).
+participated in the thread (i.e. both tables would be `true` in the example above).
 
 ## Proposal
 
@@ -49,7 +52,7 @@ The current implementations will need to be updated to take into account the
 sender of the current event when generating bundled aggregations. This should be
 trivial since all of the needed information is directly available.
 
-It is suggested to [the new `filter` parameters from MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#fetch-all-threads-in-a-room)
+MSC3440 proposes using [new `filter` parameters](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#fetch-all-threads-in-a-room)
 in order to list threads in a room that a user has participated in. There would
 now be an inconsistency that threads where the current user sent the root event
 but has not replied to the thread could not easily be fetched. A future MSC may
