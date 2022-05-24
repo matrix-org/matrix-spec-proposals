@@ -18,7 +18,7 @@ can adjust them to their own wishes.
 
 ### New push rule condition: `related_event_match`
 
-Notifications for relation based features need to distinguish, what type of
+Notifications for relation based features need to distinguish what type of
 relation was used and potentially match on the content of the related-to event.
 
 To do that we introduce a new type of condition: `related_event_match`. This is
@@ -38,7 +38,7 @@ event. Such a condition could look like this:
 This condition can be used to notify me whenever someone sends a reply to my
 messages.
 
-- `rel_type` is the relation type. For the sake of compatibility replies
+- `rel_type` is the relation type. For the sake of compatibility, replies
     should be matched as if they were sent in the relation format from
     [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) with a
     `rel_type` of `m.in_reply_to`. If the event has any relation of this type,
@@ -90,8 +90,8 @@ testing for an existing `.m.rule.reply` in the default rules.
 To enable notifications for replies without relying on the reply fallback, but
 with similar semantics we also define a new default push rule. The proposed
 push rule differs slightly from the old behaviour, because it only notifies you
-for replies to your events, but it does not notify you for replies to events,
-which contained your display name or matrix ID. The rule should look like this:
+for replies to your events, but it does not notify you for replies to events
+containing your display name or matrix ID. The rule should look like this:
 
 ```json5
 {
@@ -155,7 +155,7 @@ relations only added as a fallback are ignored. (Currently `is_falling_back` key
 is in a bit of a weird location. Maybe this can be amended in the threading MSC
 to be a bit more generic before it is added to the spec.)
 
-Adding a new rule that causes notifications, forces users to change their
+Adding a new rule that causes notifications will force users to change their
 notification settings again. In this case, a user who disabled notifications
 for mentions (or set them to silent) may be surprised to suddenly start
 receiving noisy notifications for replies. Worse, in the transition period,
