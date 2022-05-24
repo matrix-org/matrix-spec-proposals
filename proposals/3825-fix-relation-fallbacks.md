@@ -1,4 +1,4 @@
-# MSC0000: Obvious relation fallback location
+# MSC3825: Obvious relation fallback location
 
 [MSC3440](https://github.com/matrix-org/matrix-spec-proposals/pull/3440) defines
 a way to use replies as a fallback for threads. For that it adds an
@@ -61,6 +61,8 @@ And for other relations:
 For the transition period clients might still accept the old location for
 threads until the ecosystem has been migrated.
 
+The goal is to merge this change immediately before threads land in the specification.
+
 ## Potential issues
 
 This is a breaking change to an already merged feature. This means it will break
@@ -99,7 +101,7 @@ users. Impact should be fairly limited.
 ## Unstable prefix
 
 Until this MSC has finished FCP, implementations should use
-`im.nheko.mscXXXX.is_falling_back` as the fieldname instead.
+`im.nheko.msc3825.is_falling_back` as the fieldname instead.
 
 ## Dependencies
 
