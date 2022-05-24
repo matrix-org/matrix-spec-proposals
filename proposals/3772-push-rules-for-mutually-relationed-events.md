@@ -42,7 +42,7 @@ The condition can include the following fields to check:
 * `rel_type`: The relation type of the mutually related event to the parent event.
 * `sender` (optional): A glob pattern to match against the sender of the mutually
   related event.
-* `type` (optional): A globa pattern to match against the type of the mutually
+* `type` (optional): A glob pattern to match against the type of the mutually
   related event.
 
 Another example would be to be notified of a poll closing (from
