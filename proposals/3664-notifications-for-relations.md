@@ -45,7 +45,8 @@ messages.
     the related event should be matched using `pattern` and `key`.
 - `include_fallbacks` decides if the relation should be followed even for
     fallbacks (i.e. relations with the `is_falling_back` property set to `true`
-    like for threads). Defaults to false so only actual relations are counted.
+    like for [threads](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#backwards-compatibility).
+    Defaults to `false` so only actual relations are counted.
 - `key` (optional): The dot-separated field of the event to match, e.g. `content.body`
     or `sender`. If it is not present, the condition should match all events,
     that have a relation of type `rel_type`.
