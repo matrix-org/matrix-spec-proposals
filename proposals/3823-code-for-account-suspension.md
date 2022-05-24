@@ -79,3 +79,7 @@ in addition to the fields mentioned previously.
 This has the potential to expose private data.
 
 To avoid this, any `M_USER_ACCOUNT_SUSPENDED` MUST NOT be sent without authentication.
+
+### Unstable prefixes
+
+During testing, `M_USER_ACCOUNT_SUSPENDED` will be prefixed as `M_ORG_MATRIX_MSC3823_USER_ACCOUNT_SUSPENDED`.
