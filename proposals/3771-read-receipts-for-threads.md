@@ -45,19 +45,33 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
-This MSC proposes adding a new receipt type of `m.read.thread.private`, which is
-used for clients to sync the read status of each thread in a room.
+### Multiple receipts in a room
+
+This MSC proposes allowing the same receipt type to exist multiple times in a room
+by adding a `context` parameter to reach receipt.
 
 The [`/receipt`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 endpoint gains a new optional path part and becomes:
 
 `POST /_matrix/client/v3/rooms/{roomId}/receipt/{receiptType}/{eventId}/{context}`
 
+For backwards compatibility, a missing `context` is equivalent to an empty context.
+It is up to receipt types to define whether it is valid for them to have a `context`,
+it is invalid to provide a `context` for all currently known receipt types (`m.read`,
+`m.fully_read`, `m.read.private`).
+
+### A thread receipt type
+
+This MSC also proposes a new receipt type of `m.read.thread.private`, which is
+used for clients to sync the read status of each thread in a room.
+
 The `context` contains the thread that the read receipts belongs to (i.e. it should
 match the `event_id` contained within the `m.relates_to` of the event represented
 by `eventId`). This updates the unique tuple for receipts from
 `(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, context)`.
-For backwards compatibility, a missing `context` is equivalent to an empty context.
+A missing (or empty) `context` refers to the "main" timeline (or events which are
+not part of a thread). A client which understands threads is expected to only
+set the `m.read.thread.private` receipt type.
 
 Given a threaded message:
 
@@ -107,6 +121,15 @@ This would then come down `/sync` for the user with other receipts:
 
 Since this is not shared, only the own user's matrix ID would be expected to
 have this kind of receipt.
+
+## Compatibility with unthreaded clients
+
+When a user has clients which are both "unthreaded" and "threaded" then the read
+receipt and threaded read receipts would get out of sync. It is desirable to
+sync these two sets of read receipts and minimize duplicate notifications that
+occur from these two sets of read receipts.
+
+
 
 ## Potential issues
 
