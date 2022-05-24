@@ -29,6 +29,7 @@ event. Such a condition could look like this:
 {
   "kind": "related_event_match",
   "rel_type": "m.in_reply_to",
+  "include_fallbacks": false,
   "key": "sender",
   "pattern": "@me:my.server"
 }
@@ -42,6 +43,9 @@ messages.
     [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) with a
     `rel_type` of `m.in_reply_to`. If the event has any relation of this type,
     the related event should be matched using `pattern` and `key`.
+- `include_fallbacks` decides if the relation should be followed even for
+    fallbacks (i.e. relations with the `is_falling_back` property set to `true`
+    like for threads). Defaults to false so only actual relations are counted.
 - `key` (optional): The dot-separated field of the event to match, e.g. `content.body`
     or `sender`. If it is not present, the condition should match all events,
     that have a relation of type `rel_type`.
@@ -146,10 +150,10 @@ relations.
 [Threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
 [as a fallback](https://github.com/matrix-org/matrix-doc/pull/3440/files#diff-113727ce0257b4dc0ad6f1087b6402f2cfcb6ff93272757b947bf1ce444056aeR82).
 This would cause a notification with the new `.m.rule.reply` rule. To prevent
-that another MSC should add a or modify the existing push rules to not apply to
-threads, when they are not a reply. This MSC does not spell out a solution for
-that, because the author lacks familiarity with the design goals of the
-threading proposals.
+that this MSC adds the `include_fallbacks` key to the rule, so that reply
+relations only added as a fallback are ignored. (Currently `is_falling_back` key
+is in a bit of a weird location. Maybe this can be amended in the threading MSC
+to be a bit more generic before it is added to the spec.)
 
 Adding a new rule that causes notifications, forces users to change their
 notification settings again. In this case, a user who disabled notifications
