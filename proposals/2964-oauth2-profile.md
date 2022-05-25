@@ -1,8 +1,10 @@
-# MSC2964: Matrix profile for OAuth 2.0
+# MSC2964: Delegation of auth from homeserver to OIDC Provider
 
-The current authentication mechanisms in Matrix does look like a lot like OAuth 2.0 without most of its security mechanisms.
-This MSC is part of a change to replace Matrix authentication mechanisms with OAuth 2.0.
-This MSC in particular defines how clients should authenticate with OAuth 2.0 to access the Matrix Client-to-Server API.
+The current authentication mechanisms in Matrix looks a lot like OAuth 2.0 without most of its security hardening mechanisms.
+
+This MSC is part of an architectural change to replace the existing Matrix authentication mechanisms with OAuth 2.0. A fundamental change is that access tokens will no longer be issued by the homeserver and instead will be issued by an auth server (OIDC Provider) directly to the Matrix client.
+
+This MSC in particular defines how clients should authenticate with the OIDC Provider to obtain the access token used to access the Matrix Client-to-Server API.
 
 ## Proposal
 
