@@ -12,25 +12,25 @@ This MSC in particular defines how clients should authenticate with OAuth 2.0 to
 
 **OpenID Connect** is a set of specifications defining a standard auth system built on top of OAuth2. Often abbreviated OIDC. Specs to know about: OIDC Core defines the actual auth system, OIDC Discovery defines the discovery of OP metadata, OIDC Registration allows clients to register themselves dynamically.
 
-An **Authorization/Authentication Server** (AS) or **OIDC Provider** (OP) in the context of OIDC is the service that fulfills an authentication request. In the context of Matrix, it is either the homeserver itself acting as the OP or an external one like Keycloak, Auth0, etc.
+An **Authorization/Authentication Server** (AS - as this acronym is already used to refer to Application Service in Matrix we will avoid it) or **OIDC Provider** (OP) in the context of OIDC is the service that fulfills an authentication request. In the context of Matrix, it is either the homeserver itself acting as the OP or an external one like Keycloak, Auth0, etc.
 
 A **Resource Server** (RS) is a protected service that requires authentication. In the context of Matrix, the homeserver is a RS.
 
 A **Resource Owner** (RO) is an end user.
 
-A **Relying Party** (RP) (client applications) is an app using resources from RS on behalf of the RO. In the context of Matrix, Matrix clients like Element Web are RP.
+A **Relying Party** (RP) (client applications) is an app using resources from RS on behalf of the RO. In the context of Matrix, Matrix clients like Element Web are RPs.
 
 A **User-Agent** (UA) is a thing that hosts client applications, like a web browser.
 
 ### Assumptions and existing specifications
 
-This change assumes the client (RP) knows what authentication server (AS) it should use.
-The AS discovery is defined in [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
+This change assumes the client (RP) knows what OIDC Provider (OP) it should use.
+The OP discovery is defined in [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
 
-It also assumes the client (RP) is already known by the authentication server (AS).
+It also assumes the client (RP) is already known by the OIDC Provider (OP).
 The client registration process is defined in [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966).
 
-The goal of this MSC is not to explain how OAuth 2.0 works but rather what mechanisms of OAuth 2.0 RP and AS are expected to implement.
+The goal of this MSC is not to explain how OAuth 2.0 works but rather what mechanisms of OAuth 2.0 RP and OP are expected to implement.
 This is done to ensure interoperability between Matrix clients and Homeservers while ensuring that the login flow is secure.
 
 ### Client profiles
