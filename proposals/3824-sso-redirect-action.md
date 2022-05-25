@@ -2,7 +2,7 @@
 
 At present a homeserver cannot tell if a request for `GET /_matrix/client/v3/login/sso/redirect` is intended to be used to sign in an existing user or register a new user.
 
-In the context of [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2965) the homeserver needs to know the intent so that the correct UI can be shown to the user.
+In the context of [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) the homeserver needs to know the intent so that the correct UI can be shown to the user.
 
 ## Proposal
 
