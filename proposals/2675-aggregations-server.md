@@ -90,7 +90,7 @@ By sending a summary of the relations, bundling
 avoids us having to always send lots of individual relation events
 to the client.
 
-Aggregations are never bundled into state events. This is a current
+State events do not currently receive bundles. This is a current
 implementation detail that could be revisited later,
 rather than a specific design decision.
 
@@ -137,7 +137,7 @@ types) is as follows:
 #### Client-side aggregation
 
 Bundled aggregations on an event give a snapshot of what relations were known
-at the time the event was received. When relations are received through `/sync`,
+at the time the event was received by the client. When relations are received through `/sync`,
 clients should locally aggregate (as they might have done already before
 supporting this MSC) the relation on top of any bundled aggregation the server
 might have sent along previously with the target event, to get an up to date
