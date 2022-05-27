@@ -25,7 +25,7 @@ POST /_matrix/client/v3/publicRooms
 }
 ```
 
-the response then also includes a `room_type` field, so that clients can show
+The response is also modified to include a `room_type` field, so that clients can show
 the room type metadata.
 
 ```json
