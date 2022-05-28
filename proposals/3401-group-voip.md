@@ -292,4 +292,7 @@ Too many foci will chew bandwidth due to fullmesh between them.  In the worst ca
 
 ## Unstable prefix
 
-...
+| stable event type | unstable event type |
+|-------------------|---------------------|
+| m.call            | org.matrix.msc3401.call |
+| m.call.member     | org.matrix.msc3401.call.member |
