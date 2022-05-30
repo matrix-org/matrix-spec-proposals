@@ -133,14 +133,45 @@ For instance:
                         "session_id": "GHKJFKLJLJ", // Used to resolve duplicate calls from a device
                         "feeds": [
                             {
-                                "purpose": "m.usermedia"
-                                // TODO: Add tracks
-                                // TODO: Available bitrates etc. should be listed here
+                                "purpose": "m.usermedia",
+                                "tracks": [
+                                    {
+                                        "type": "audio",
+                                        "id": "zvhjiwqsx", // WebRTC MediaStreamTrack id
+                                        "settings": { // WebRTC MediaTrackSettings object
+                                            "channelCount": 2,
+                                            "sampleRate": 48000,
+                                            "m.maxbr": 32000, // Matrix-specific extension to advertise the max bitrate of this track
+                                        }
+                                    },
+                                    {
+                                        "type": "video",
+                                        "id": "zbhsbdhzs",
+                                        "settings": {
+                                            "width": 1280,
+                                            "height": 720,
+                                            "facingMode": "user",
+                                            "frameRate": 30.0,
+                                            "m.maxbr": 512000,
+                                        }
+                                    },
+                                ],
                             },
                             {
-                                "purpose": "m.screenshare"
-                                // TODO: Add tracks
-                                // TODO: Available bitrates etc. should be listed here
+                                "purpose": "m.screenshare",
+                                "tracks": [
+                                    {
+                                        "id": "xbhsbdhzs",
+                                        "settings": {
+                                            "width": 3072,
+                                            "height": 1920,
+                                            "cursor": "moving",
+                                            "displaySurface": "monitor",
+                                            "frameRate": 30.0,
+                                            "m.maxbr": 768000,
+                                        }
+                                    },
+                                ]
                             }
                         ]
                     }
