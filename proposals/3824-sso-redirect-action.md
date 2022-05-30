@@ -61,6 +61,8 @@ None.
 
 [Capabilities negotiation](https://spec.matrix.org/v1.2/client-server-api/#capabilities-negotiation) could be used for availability of login vs register.
 
+Add a `GET /_matrix/client/v3/register` endpoint that would return the available flows for registration. There is an appealing elegance/symmetry to this approach.
+
 For the param on redirect: a `prompt` parameter with values [`create`](https://openid.net/specs/openid-connect-prompt-create-1_0.html#rfc.section.4) and [`login`](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest) exists in OIDC for use on the authorized endpoint. However, our use case is different and it might cause confusion to overload these terms.
 
 ## Security considerations
