@@ -26,9 +26,6 @@ The response format will be an array containing all rooms where both the authent
 a membership of type `join`. If the `user_id` does not exist, or does not share any rooms with the authenticated user,
 an empty array should be returned.
 
-Additionally, a server may respond with a `400` `M_UNKNOWN` to this endpoint for any reason, 
-signalling its unwillingess (or inability) to satisfy the request.
-
 ```
 GET /_matrix/client/v1/user/mutual_rooms/%40bob%3Aexample.com
 ```
