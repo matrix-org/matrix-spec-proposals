@@ -82,4 +82,4 @@ To avoid this, any `M_USER_ACCOUNT_SUSPENDED` MUST NOT be sent without authentic
 
 ### Unstable prefixes
 
-During testing, `M_USER_ACCOUNT_SUSPENDED` will be prefixed as `M_ORG_MATRIX_MSC3823_USER_ACCOUNT_SUSPENDED`.
+During testing, `M_USER_ACCOUNT_SUSPENDED` will be prefixed as `ORG.MATRIX.MSC3823.USER_ACCOUNT_SUSPENDED`.
