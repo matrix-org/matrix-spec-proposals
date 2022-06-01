@@ -1,4 +1,4 @@
-# MSC0000: Content Repository Cross Origin Resource Policy (CORP) Headers
+# MSC3828: Content Repository Cross Origin Resource Policy (CORP) Headers
 
 In 2018 two side-channel hardware vulnerabilities, [Meltdown](https://en.wikipedia.org/wiki/Meltdown_(security_vulnerability)) and [Spectre](https://en.wikipedia.org/wiki/Spectre_(security_vulnerability)) were disclosed. In web browsers this meant that features such as high resolution timers and SharedArrayBuffer could be used to expose sensitive data across origins. In response, browser vendors have required documents that wish to continue using features such as SharedArrayBuffer to be served with the `Cross-Origin-Embedder-Policy: require-corp` header. This header prevents a document from loading any cross-origin resources that don't explicitly grant the document permission via the `Cross-Origin-Resource-Policy` header.
 
