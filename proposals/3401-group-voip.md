@@ -134,10 +134,12 @@ For instance:
                         "feeds": [
                             {
                                 "purpose": "m.usermedia",
+                                "id": "qegwy64121wqw", // WebRTC MediaStream id
                                 "tracks": [
                                     {
-                                        "type": "audio",
+                                        "kind": "audio",
                                         "id": "zvhjiwqsx", // WebRTC MediaStreamTrack id
+                                        "label": "Sennheiser Mic",
                                         "settings": { // WebRTC MediaTrackSettings object
                                             "channelCount": 2,
                                             "sampleRate": 48000,
@@ -145,8 +147,9 @@ For instance:
                                         }
                                     },
                                     {
-                                        "type": "video",
+                                        "kind": "video",
                                         "id": "zbhsbdhzs",
+                                        "label": "Logitech Webcam",
                                         "settings": {
                                             "width": 1280,
                                             "height": 720,
@@ -159,9 +162,12 @@ For instance:
                             },
                             {
                                 "purpose": "m.screenshare",
+                                "id": "suigv372y8378",
                                 "tracks": [
                                     {
+                                        "kind": "video",
                                         "id": "xbhsbdhzs",
+                                        "label": "My Screenshare",
                                         "settings": {
                                             "width": 3072,
                                             "height": 1920,
