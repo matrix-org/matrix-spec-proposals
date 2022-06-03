@@ -377,8 +377,8 @@ To lay out the different types of servers consuming these historical messages
     - This pretty much works out of the box. It's possible to just add the
       historical events to the database and they're available. The new endpoint
       is just a mechanism to insert the events.
- 1. Federated remote server that already has all scrollback history and then new
-    history is inserted
+ 1. Federated remote server that already has *all* scrollback history and then
+    new history is inserted
     - The big problem is how does a HS know it needs to go fetch more history if
       they already fetched all of the history in the room? We're solving this
       with "marker" events which are sent on the "live" timeline and point back
