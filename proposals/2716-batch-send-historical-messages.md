@@ -53,9 +53,10 @@ Here is what scrollback is expected to look like in Element:
    the DAG, we navigate from an insertion event to the batch event that points
    at it, up the historical messages to the insertion event, then repeat the
    process
- - `m.room.marker`: State event used to hint to homeservers (and potentially to
-   cache bust on clients) that there is new history back time that you should go
-   fetch next time someone scrolls back around the specified insertion event.
+ - `m.room.marker`: State event used to hint to homeservers that there is new
+   history back time that you should go fetch next time someone scrolls back
+   around the specified insertion event. Also used  on clients to cache bust the
+   timeline.
 
 **Content fields:**
 
@@ -367,8 +368,8 @@ The structure of the batch event looks like:
 
 #### Adding marker events
 
-Finally, we add "marker" events into the mix so that federated remote servers
-also know where in the DAG they should look for historical messages.
+Finally, we add "marker" state events into the mix so that federated remote
+servers also know where in the DAG they should look for historical messages.
 
 To lay out the different types of servers consuming these historical messages
 (more context on why we need "marker" events):
@@ -381,9 +382,9 @@ To lay out the different types of servers consuming these historical messages
     new history is inserted
     - The big problem is how does a HS know it needs to go fetch more history if
       they already fetched all of the history in the room? We're solving this
-      with "marker" events which are sent on the "live" timeline and point back
-      to the "insertion" event where we inserted history next to. The HS can
-      then go and backfill the "insertion" event and continue navigating the
+      with "marker" state events which are sent on the "live" timeline and point
+      back to the "insertion" event where we inserted history next to. The HS
+      can then go and backfill the "insertion" event and continue navigating the
       historical batches from there.
  1. Federated remote server that joins a new room with historical messages
     - The originating homeserver just needs to update the `/backfill` response
