@@ -53,9 +53,9 @@ Here is what scrollback is expected to look like in Element:
    the DAG, we navigate from an insertion event to the batch event that points
    at it, up the historical messages to the insertion event, then repeat the
    process
- - `m.room.marker`: Used to hint to homeservers (and potentially to cache bust
-   on clients) that there is new history back time that you should go fetch next
-   time someone scrolls back around the specified insertion event.
+ - `m.room.marker`: State event used to hint to homeservers (and potentially to
+   cache bust on clients) that there is new history back time that you should go
+   fetch next time someone scrolls back around the specified insertion event.
 
 **Content fields:**
 
@@ -406,18 +406,17 @@ To lay out the different types of servers consuming these historical messages
    the scenario where the federated HS already has all the history in the room,
    so it won't do a full sync of the room again.
  - Unlike the historical events sent via `/batch_send`, **the "marker" event is
-   sent separately as a normal event on the "live" timeline** so that comes down
-   incremental sync and is available to all homeservers regardless of how much
-   scrollback history they already have.
-    - Note: If a server joins after a "marker" event is sent, it could be lost
-      in the middle of the timeline and they could jump back in time past the
-      "marker" and never pick it up. But `backfill/` response should have
-      historical messages included. It gets a bit hairy if the server has the
-      room backfilled, the user leaves, a "marker" event is sent, more messages
-      put it back in the timeline, the user joins back, jumps back in the
-      timeline and misses the "marker" and expects to see the historical
-      messages. They will be missing the historical messages until they can
-      backfill the gap where they left.
+   sent separately as a normal state event on the "live" timeline** so that
+   comes down incremental sync and is available to all homeservers regardless of
+   how much scrollback history they already have. And since it's state it never
+   gets lost in a timeline gap and is immediately aparent to all servers that
+   join.
+ - Also instead of overwriting the same generic `state_key: ""` over and over,
+   the expected behavior is send each "marker" event with a unique `state_key`.
+   This way all of the "markers" are discoverable in the current state without
+   us having to go through the chain of previous state to figure it all out.
+   This also avoids potential state resolution conflicts where only one of the
+   "marker" events win and we would lose the other chain history.
  - A "marker" event is not needed for every batch of historical messages added
    via `/batch_send`. Multiple batches can be inserted then once we're done
    importing everything, we can add one "marker" event pointing at the root
@@ -432,6 +431,7 @@ The structure of the "marker" event looks like:
 ```js
 {
     "type": "m.room.marker",
+    "state_key": "<some-unique-state-key>",
     "sender": "@appservice:example.org",
     "content": {
         "m.marker.insertion": insertion_event.event_id
