@@ -204,7 +204,7 @@ To reduce the scope of changes required by this proposal, it is suggested to all
 events to skip these keys where no value could be easily assigned to them. E.g. typing notices, read
 receipts.
 
-```jsonc
+```json5
 {
   "next_batch": "...",
   // ...
@@ -424,6 +424,17 @@ Possibly, the additional requirements for user-defined types could instead also 
 the regular Matrix types as well, which would remove the need for optional fields - but could in
 return impact the federation between servers, if they're built to only handle the exact requirements
 of the spec.
+
+
+## Unstable Prefix
+
+During implementation, the URL for submitting user-defined EDUs should be
+`PUT /_matrix/client/unstable/org.matrix.msc2477/rooms/{roomId}/ephemeral/{eventType}/{txnId}`, and
+should only be allowed for rooms versioned as `org.matrix.msc2477`. (Using room version 9 as the base)
+
+Similarly, the keys `ephemeral` and `ephemeral_default` in `m.room.power_levels` should be prefixed
+with `org.matrix.msc2477.` until this MSC is incorporated into a stable room version.
+
 
 [PUT Room Event]: https://spec.matrix.org/v1.2/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid
 [MSC1763]: https://github.com/matrix-org/matrix-doc/pull/1763
