@@ -196,6 +196,10 @@ adds the related-to event in `original_event` property of the response.
 This way the full history (e.g. also the first, original event) of the event
 is obtained without further requests. See that MSC for further details.
 
+   * **Edited 2022-06-06**: This appears to be incorrect. MSC2676 contains
+     no reference to `original_event`, nor can I find any record of it ever
+     having done so.
+
 ### End to end encryption
 
 Since the server has to be able to aggregate relation events, structural
