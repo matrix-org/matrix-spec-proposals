@@ -176,7 +176,8 @@ Annotation messages can be serialized to the w3c model much as above, but with t
 
 # Potential Issues
 
-There's no notion of "ownership" for state events---anyone who can send `m.space.parent` events can overwrite `m.space.parent` events sent by others. So anyone who can create a conversation concerning a certain resource can also remove conversations created by others. Clients can partly mitigate this by at least discouraging accidental deletions and encouraging courtesy. A more robust mitigation might be to introduce subspaces of resources, within which less-trusted users could still create conversations concerning a given resource. However, this seems undesirably complicated for an initial implementation. If it turns out to be necessary in practice, it could be added in a future MSC.
+Until something like
+[MSC3761](https://github.com/matrix-org/matrix-spec-proposals/pull/3761) is added to the spec, there's no notion of "ownership" for state events. Anyone who can send `m.space.parent` events can overwrite `m.space.parent` events sent by others. So anyone who can create a conversation concerning a certain resource can also remove conversations created by others. Clients can partly mitigate this by at least discouraging accidental deletions and encouraging courtesy. A more robust mitigation might be to introduce subspaces of resources, within which less-trusted users could still create conversations concerning a given resource. However, this seems undesirably complicated for an initial implementation. If it turns out to be necessary in practice, it could be added in a future MSC.
 
 # Alternatives
 
@@ -195,7 +196,7 @@ However,
 1. Indicating an associated resource in the room creation event makes it possible to inspect an invitation to a new space, allowing annotation-oriented clients to ignore irrelevant invitations.
 2. If `m.purpose` or `m.room.type` are integrated into the spec and turn out to be useful for, e.g. filtering, then it would be straightforward to designate one or more `m.purpose` values or `m.room.type` values for resource rooms.
 
-## Standalone `m.annotation.location` state events
+## Standalone `m.markup.location` state events
 
 Rather than being represented by `m.space.child` events, annotations that open a conversation concerning a part of a resource could be introduced as a new kind of state event. This has the disadvantage of not making relationships between a resource and conversations about its parts visible to clients which are space-aware but not annotation-aware.
 
@@ -241,4 +242,4 @@ Because state events are not encrypted, `m.space.child` events with `m.markup.lo
 | `m.markup.location`       | key in `m.space.child`, `m.space.parent` and `m.annotation`| `com.open-tower.msc3574.markup.location`   |
 | `m.markup.resource`       | key in `m.create`                                          | `com.open-tower.msc3574.markup.resource`   |
 | `m.markup`                | extensible event schema                                    | `com.open-tower.msc3574.markup`            |
-| `m.markup.parent`         | key in `m.annotation`                                      | `com.open-tower.msc3574.markup.parent`     |
+| `m.markup.parent`         | key in `m.markup`                                      | `com.open-tower.msc3574.markup.parent`     |
