@@ -10,8 +10,8 @@ The content repository should serve assets with the `Cross-Origin-Resource-Polic
 
 This header should be set on responses from the following endpoints:
 
-- `/_matrix/media/r3/download`
-- `/_matrix/media/r3/thumbnail`
+- `/_matrix/media/v3/download`
+- `/_matrix/media/v3/thumbnail`
 
 ## Potential issues
 
