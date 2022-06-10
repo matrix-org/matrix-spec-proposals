@@ -101,9 +101,9 @@ We mandate at most one call per room at any given point to avoid UX nightmares -
 
 Users who want to participate in the call declare this by publishing a `m.call.member` state event using their matrix ID as the state key (thus ensuring other users cannot edit it).  The event contains a timestamp named `m.expires_ts` describing when this data should be considered stale, and an array `m.calls` of objects describing which calls the user is participating in within that room.  This array must contain one item (for now).
 
-When sending an `m.call.member` event, clients should set the `m.expires_ts` value to one hour in the future. If the user stays connected for longer than an hour, the client must actively update the state event with a new expiration timestamp (for example, every 45 minutes to allow for some amount of clock desync between participants).
+When sending an `m.call.member` event, clients should choose a reasonable value for `m.expires_ts` in case they go offline unexpectedly. If the user stays connected for longer than this time, the client must actively update the state event with a new expiration timestamp.
 
-`m.call.member` state events must be ignored if the `m.expires_ts` field indicates they have expired, or if their user's `m.room.member` event's membership field is not `join`. They must also be ignored if the `m.expires_ts` value is more than 75 minutes in the future, to prevent uncooperative clients from getting themselves permanently shown as 'connected' by setting the expiration date to way in the future.
+`m.call.member` state events must be ignored if the `m.expires_ts` field indicates they have expired, or if their user's `m.room.member` event's membership field is not `join`.
 
 The fields within the item in the `m.calls` contents are:
 
