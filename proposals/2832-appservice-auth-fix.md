@@ -1,4 +1,4 @@
-# HS -> AS authorization header
+# MSC2832: Homeserver -> Application Service authorization header
 Most of the auth tokens in the spec are passed in the `Authorization` header,
 with the `access_token` query parameter supported for backwards-compatibility.
 For some reason, the application service spec was not updated in the same way
