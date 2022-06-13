@@ -31,6 +31,14 @@ keep the round-trips to the server to a minimum.
 It is additionally useful to unify similar endpoints as much as possible to avoid
 surprises for developers.
 
+Since this endpoint can now be used to paginate backwards over children events,
+it is also useful for the `from` parameter to accept `prev_batch` values from
+previous calls (as well as `next_batch` values, as is currently specified). The
+[definition of the `from` parameter](https://spec.matrix.org/unstable/client-server-api/#get_matrixclientv1roomsroomidrelationseventid)
+is updated:
+
+> Can be a `from_batch` token or `next_batch` token from a previous call, or a
+> returned `start` token from `/messages`, or a `next_batch` token from `/sync`.
 
 ## Potential issues
 
