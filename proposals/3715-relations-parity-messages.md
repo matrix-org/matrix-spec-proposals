@@ -45,6 +45,10 @@ The endpoint could be replaced with the `/event_relationships` API proposed in
 add significant complexity over the current `/relations` API (e.g. arbitrary
 of relations) and is not necessary to simply iterate events in the reverse ordering.
 
+Instead of having a different default direction from `/messages`, a `v2` version
+could be added which accepts the `dir` parameter with the same default directionality
+as `/messages`, but the opposite of the current (`v1`) version of the endpoint.
+
 
 ## Security considerations
 
