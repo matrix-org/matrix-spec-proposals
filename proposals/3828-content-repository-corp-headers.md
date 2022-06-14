@@ -29,7 +29,9 @@ This header should be set on responses from the following endpoints:
 
 ## Potential issues
 
-See [Security considerations](#Security-considerations)
+Chrome 73-75 have problems downloading files with this header, see [bug 952834](https://crbug.com/952834). Chrome 80-85 has a [bug](https://crbug.com/1074261) with viewing multi-page PDF documents with CORP headers set to `same-origin`. This proposal is for setting the header to `cross-origin` which should not have an issue but I was not able to verify this. However, [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cross-Origin_Resource_Policy_(CORP)#browser_compatibility) suggests this bug was fixed in Chrome 86 by disabling partial PDF loading. I was able to verify that multi-page PDFs are viewable in the latest versions of Chrome, Safari, and Firefox with either header value set. This should only be an issue if you require supporting Chrome 73-75.
+
+Also see [Security considerations](#Security-considerations)
 
 ## Alternatives
 
