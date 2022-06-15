@@ -15,13 +15,13 @@ This proposal outlines changes to facilitate clients in becoming OIDC aware.
 
 Firstly, a client can specify which action the user is wanting to achieve at the point of SSO redirection. This allows the homeserver to display the most relevant UI to the user.
 
-Secondly, the homeserver can optionally specify which auth type is `delegated.oidc.compatibility` are supported for an authentication type.
+Secondly, the homeserver can optionally specify which auth type is `delegated_oidc_compatibility` are supported for an authentication type.
 
 ### Homeserver indicates that an `m.login.sso` flow is for compatibility
 
-Add an optional `delegated.oidc.compatibility` field to the response of `GET /_matrix/client/v3/login`:
+Add an optional `delegated_oidc_compatibility` field to the response of `GET /_matrix/client/v3/login`:
 
-`"delegated.oidc.compatibility"?: boolean`
+`"delegated_oidc_compatibility"?: boolean`
 
 For example, if a homeserver is advertising password login for legacy clients only then it could return the following:
 
@@ -31,13 +31,13 @@ For example, if a homeserver is advertising password login for legacy clients on
     "type": "m.login.password"
   }, {
     "type": "m.login.sso",
-    "delegated.oidc.compatibility": true
+    "delegated_oidc_compatibility": true
   }]
 }
 
 ```
 
-If the client finds `delegated.oidc.compatibility` to be `true` then, assuming it supports that auth type, it should present this as the only login/registration method available to the user.
+If the client finds `delegated_oidc_compatibility` to be `true` then, assuming it supports that auth type, it should present this as the only login/registration method available to the user.
 
 ### Client indicates `action` on SSO redirect
 
@@ -55,7 +55,7 @@ n.b. we don't need to add this to the [Login Fallback](https://spec.matrix.org/v
 For a client to be considered *OIDC aware* it would:
 
 - support the `m.login.sso` auth flow
-- where a `delegated.oidc.compatibility` value of `true` is present on an `m.login.sso` then offer that auth flow to the user
+- where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then offer that auth flow to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
 - sign post and link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
 
@@ -64,7 +64,7 @@ For an OIDC enabled homeserver to provide support for *OIDC aware* clients it wo
 - support OIDC delegation as per [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964) and others
 - recommended to advertise the account management UI in accordance with [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
 - provide a compatibility layer for `m.login.password` and `m.login.sso` that wraps on to OIDC
-- indicate that the `m.login.sso` is preferred by setting `delegated.oidc.compatibility` to `true`
+- indicate that the `m.login.sso` is preferred by setting `delegated_oidc_compatibility` to `true`
 - make use of the `action` param on the SSO redirect endpoints
 
 ## Potential issues
@@ -89,7 +89,7 @@ None relevant.
 
 While this feature is in development the following unstable prefixes should be used:
 
-* `delegated.oidc.compatibility` --> `org.matrix.msc3824.delegated.oidc.compatibility`
+* `delegated_oidc_compatibility` --> `org.matrix.msc3824.delegated_oidc_compatibility`
 
 ## Dependencies
 
