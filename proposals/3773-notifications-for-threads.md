@@ -1,108 +1,45 @@
 # MSC3773: Notifications for threads
 
 Since the unread notification count does not consider threads, a client is unable
-to separate the unread message counts into threads without iterating over every
-missing message. Without this, clients are unable to:
+to separate the unread message counts into threads (as defined by
+[MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440))
+without iterating over every missing message. Without this, clients are unable to:
 
 * Let users know that a thread has new messages since they last read it.
-* Accurately display a count of unread messages in a room.
-
-To illustrate the issue with the current unread notification counts, we can use
-the following DAG of events (note that the dotted lines are a thread relation,
-as specified by [MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440)):
-
-```mermaid
-flowchart RL
-    F-->E
-    E-->D
-    D-->C
-    C-->B
-    B-->A
-    D-.->A
-    F-.->A
-```
-
-A client might interpret this as:
-
-```mermaid
-flowchart RL
-    subgraph Main timeline
-    C-->B
-    B-->A
-    E-->C
-    end
-    subgraph Thread timeline
-    D-->A
-    F-->D
-    end
-
-    style A fill:cyan,stroke:#333,stroke-width:2px
-    style E fill:orange,stroke:#333,stroke-width:2px
-```
-
-While viewing the "main" timeline of the room, a client might move the read
-receipt from event `A` to event `E`. While the read receipt is at `A`, the unread
-notifications would be 5, once it moves to `E` it would be 1. Neither of these
-numbers make much sense to the user:
-
-* They have only read 3 messages (`B`, `C`, and `E`), but the unread count dropped by 4.
-* There's no more messages to read, but it reports 1 unread message.
+* Accurately display a count of unread messages in a room (or a thread).
 
 ## Proposal
 
-### A new push rule action: `relation`
+### Modification to push rule processing
 
-In order for clients to separate the notification of threads from the main timeline,
-a new `action` is proposed for push rules:
+When an event which is part of a thread (i.e. has a valid `m.relates_to` with
+`rel_type` of `m.thread`) matches a push rule which results in a `notify` action
+then the homeserver should note that the notification applies in the context of
+the thread ID (parent event ID).
 
-* `notify_thread`: This causes each matching event to generate a notification
-  in the context of a thread matching the `m.relates_to` information. If the event
-  is not part of a thread the behavior is the same as `dont_notify`.
-
-[Similarly to the `notify` action](https://spec.matrix.org/v1.2/client-server-api/#receiving-notifications),
-this increments the notification count for a thread specific notification count
-n addition to the overall room's unread notification count.  Setting a `highlight`
-tweak will cause the highlight count to increase in addition to the notification
-count.[^1]
-
-MSC3773 compatible clients will need to subtract off the count of each thread from
-the overall room count to get an accurate room count. This is to be backwards
-compatible with the current unread counts.
-
-In order to make use of this by default, the `actions` section of the
-`.m.rule.thread_reply` proposed in MSC3773 is updated to be `notfiy_thread`.
-
-```json5
-{
-  "rule_id": ".m.rule.thread_reply",
-  "default": true,
-  "enabled": true,
-  "conditions": [
-    {
-      "kind": "related_event_match", // from MSC3664
-      "rel_type": "m.thread",
-      "key": "sender",
-      "pattern": "@me:my.server"
-    },
-    {
-      "kind": "relation_match",  // from MSC3772
-      "rel_type": "m.thread",
-      "sender": "@me:my.server"
-    }
-  ],
-  "actions": [
-    "notify_thread"  // from MSC3773
-  ]
-}
-```
+Similar behavior should be applied for an event which results in `notify` action
+with a `highlight` tweak set.
 
 ### Unread thread notifications in the sync response
 
-For each ["Joined Room" in the `/sync` response](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync)
+Threaded clients can opt into receiving unread thread notifications by passing
+a new `unread_thread_notifications` parameter
+[as part of the `RoomEventFilter`](https://spec.matrix.org/v1.2/client-server-api/#filtering).
+(This is [similar to `lazy_load_members`](https://spec.matrix.org/v1.2/client-server-api/#lazy-loading-room-members),
+but only applies to the `/sync` endpoint.):
+
+* `unread_thread_notifications`:  If `true`, enables partitioning of unread notification
+  counts by thread. Defaults to false.
+
+If this flag is set to `true`, for each ["Joined Room" in the `/sync` response](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync)
 a new field is added:
 
-* `unread_threads`: Counts of unread thread notifications for this room, a map of
-  thread ID to "Unread Notification Counts".
+* `unread_thread_notifications`: Counts of unread thread notifications for this
+  room, an object which maps thread ID (the parent event ID) to
+  `Unread Notification Counts`.
+
+Additionally, the `unread_notifications` dictionary is modified to only include
+unread notifications from events which are not part of a thread.
 
 An example of a joined room from a sync response:
 
@@ -140,7 +77,7 @@ An example of a joined room from a sync response:
     "highlight_count": 2,
     "notification_count": 18
   },
-  "unread_threads": {
+  "unread_thread_notifications": {
     "$143273582443PhrSn:example.org": {
       "highlight_count": 0,
       "notification_count": 1
@@ -149,51 +86,58 @@ An example of a joined room from a sync response:
 }
 ```
 
-Similarly to read receipts, when the user updates their `m.read.thread.private`
-read receipt from [MSC3771](https://github.com/matrix-org/matrix-spec-proposals/pull/3771)
-(either by using the API or by sending an event into the thread), notifications
-prior to and including that event in the thread MUST be marked as read. In order
-to keep the unread counts for the room, the equivalent amount of unread
-notifications for the room are decremented at the same time.
-
 ## Potential issues
 
+### Backwards compatibility
+
 Trying to support backwards compatibility with the unread notifications count may
-prove finicky, but should be workable. This creates a significant amount more
-bookkeeping for the homeserver which could prove to be expensive.
+prove finicky, seems doable. Homeservers essentially need to track notifications
+in a per-thread context, and combine them if the client is not using the
+`unread_thread_notifications` flag for `/sync`.
 
-This has similar caveats to MSC3771 about the size of the `/sync` response -- if
-there are threads which are never read it the notification counts will continually
-appear in the sync response. This is not dissimilar to rooms which are never read,
-however, as their unread counts are tracked and returned.
+### Scalability
 
-This is somewhat incompatible with [MSC3768](https://github.com/matrix-org/matrix-spec-proposals/pull/3768)
-as that adds a new action as well (`notify_in_app`). It should be possible to
-layer in support without having to create a `notify_thread_in_app` action, but
-this hasn't been fully considered:
+Rooms with many unread threads could cause some downsides:
 
-| `actions`                        | Implied value                                          |
-|----------------------------------|--------------------------------------------------------|
-| [`notify`]                         | `notify`                                               |
-| [`notify_thread`]                  | `notify` + `notify_thread` (MSC3773 behavior)          |
-| [`notify_in_app`]                  | `notify_in_app`                                        |
-| [`notify_in_app`, `notify_thread`] | `notify_in_app`, `notify_thread` (MSC3768 for threads) |
+* The size of the `/sync` response would increase without bound.
+* The effort to generate and process the receipts for each room would increase
+  without bound.
+
+This is not dissimilar to rooms which are never read, however, as their unread
+counts are continually tracked and returned as part of the `/sync` response.
+
+### Clearing unread notifications
+
+This MSC does not attempt to modify how unread notifications (for a thread or
+otherwise) are cleared. It currently assumes the rules set forth by
+[read receipts](https://spec.matrix.org/latest/client-server-api/#receiving-notifications).
+This will cause some flakiness with unread notifications, as the current
+receipt infrastructure assumes that a room's timeline is linear, which is no
+longer true.
+
+[MSC3771](https://github.com/matrix-org/matrix-spec-proposals/pull/3771) is a
+potential solution for this.
 
 ## Alternatives
 
-### Alternative to push rules
+### Using push rules
 
-There have been thoughts to replace push rules (see [MSC2785](https://github.com/matrix-org/matrix-spec-proposals/pull/2785))
-or to circumvent them (see [MSC2654](https://github.com/matrix-org/matrix-spec-proposals/pull/2654))
-for some notification work, but since they are the current system used for notification
-it seems prudent to build on top of them instead of blocking behind work that is
-not finished.
+It might seem that a new push rule `action` (or `tweak`) should be used to control
+the behavior of whether an event generates a notification for a thread or the
+room itself. There are issues with either approach though:
 
-### An `action` instead of a `tweak`?
+A new `action` (e.g. `notify_thread`) would mean that additional logic would
+need to be defined and added for events which aren't part of a thread but attempt
+to use this action. It also conflicts with [MSC3768](https://github.com/matrix-org/matrix-spec-proposals/pull/3768),
+which attempts to define another `action` which should also work fine for threads.
 
-It was considered to add a `relation` or `thread` tweak, but this would not be
-passed through to the push server, which is at odds with the current `tweaks`
+A new `tweak` (e.g. `threaded`) does make much sense since there is not need to
+pass this through to the push server, which is at odds with the current `tweaks`
 mechanism.
+
+Regardless, the main issue with using push rules is that it becomes necessary to
+define rules which match threaded events. Whenever adding a new rule, matching rules
+would need to be added, but as a thread-specific version.
 
 ## Security considerations
 
@@ -203,18 +147,11 @@ N/A
 
 While this feature is in development the following unstable prefixes should be used:
 
-* `unread_threads` --> `org.matrix.msc3773.unread_threads`
+* `unread_thread_notifications` --> `org.matrix.msc3773.unread_thread_notifications`
 
 To detect server support, clients can either rely on the spec version (when stable)
 or the presence of a `org.matrix.msc3773` flag in `unstable_features` on `/versions`.
 
 ## Dependencies
 
-This MSC depends on the following MSCs, which at the time of writing have not yet
-been accepted into the spec:
-
-* [MSC3771](https://github.com/matrix-org/matrix-spec-proposals/pull/3771): Read receipts for threads
-* [MSC3772](https://github.com/matrix-org/matrix-spec-proposals/pull/3772): Push rule for mutually related events
-
-[^1]: Note that this section is already vague and does not mention the difference
-between "unread" and "highlight".
+N/A
