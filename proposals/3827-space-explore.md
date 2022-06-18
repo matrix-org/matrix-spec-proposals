@@ -46,6 +46,11 @@ the room type metadata.
     "total_room_count_estimate": 115
 }
 
+If the client wants to get rooms of the default type, it should include `null` in
+the `room_type` array. If the `room_type` filter is not specified, the server should
+return only the rooms of the default type. If the `room_type` array is empty, the
+server should return _all_ rooms no matter the type.
+
 ```
 
 ## Alternatives
