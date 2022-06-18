@@ -9,8 +9,8 @@ issue, this MSC proposes a mechanism for filtering the response of
 
 ## Proposal
 
-This MSC proposes adding a `room_type` filter to the `/publicRooms` endpoint.
-The value of `room_type` is an array of room types - possible values of the
+This MSC proposes adding a `room_types` filter to the `/publicRooms` endpoint.
+The value of `room_types` is an array of room types - possible values of the
 `type` field in the `m.room.create` state event - which should be returned.
 
 An example request could look like this:
@@ -19,7 +19,7 @@ An example request could look like this:
 POST /_matrix/client/v3/publicRooms
 {
     "filter": {
-        "room_type": ["m.space"]
+        "room_types": ["m.space"]
     },
     "limit": 10
 }
@@ -45,13 +45,12 @@ the room type metadata.
     "prev_batch": "p1902",
     "total_room_count_estimate": 115
 }
+```
 
 If the client wants to get rooms of the default type, it should include `null` in
-the `room_type` array. If the `room_type` filter is not specified, the server should
-return only the rooms of the default type. If the `room_type` array is empty, the
+the `room_types` array. If the `room_types` filter is not specified, the server should
+return only the rooms of the default type. If the `room_types` array is empty, the
 server should return _all_ rooms no matter the type.
-
-```
 
 ## Alternatives
 
@@ -73,6 +72,7 @@ client and the server side.
 While this MSC is not considered stable, implementations should use
 `org.matrix.msc3827` as a namespace.
 
-|Release    |Development                   |
-|-----------|------------------------------|
-|`room_type`|`org.matrix.msc3827.room_type`|
+|Release     |Development                    |
+|------------|-------------------------------|
+|`room_type` |`org.matrix.msc3827.room_type` |
+|`room_types`|`org.matrix.msc3827.room_types`|
