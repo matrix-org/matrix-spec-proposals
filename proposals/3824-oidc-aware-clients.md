@@ -91,6 +91,7 @@ None relevant.
 While this feature is in development the following unstable prefixes should be used:
 
 * `delegated_oidc_compatibility` --> `org.matrix.msc3824.delegated_oidc_compatibility`
+* `action` query param --> `org.matrix.msc3824.action`
 
 ## Dependencies
 
