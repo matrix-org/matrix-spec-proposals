@@ -55,17 +55,17 @@ n.b. we don't need to add this to the [Login Fallback](https://spec.matrix.org/v
 For a client to be considered *OIDC aware* it would:
 
 - support the `m.login.sso` auth flow
-- where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then offer that auth flow to the user
+- where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then *only* offer that auth flow to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
 - sign post and link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
 
 For an OIDC enabled homeserver to provide support for *OIDC aware* clients it would:
 
 - support OIDC delegation as per [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964) and others
-- recommended to advertise the account management UI in accordance with [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
 - provide a compatibility layer for `m.login.password` and `m.login.sso` that wraps on to OIDC
 - indicate that the `m.login.sso` is preferred by setting `delegated_oidc_compatibility` to `true`
 - make use of the `action` param on the SSO redirect endpoints
+- RECOMMENDED:  advertise the account management UI in accordance with [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
 
 ## Potential issues
 
