@@ -88,7 +88,7 @@ on the server side.
 
 ## Potential issues
 
-The relation between a private key and a user-session is expected to stay
+The relation between a user-secret and a user-session is expected to stay
 unchanged. A client requests a token and has a session.  
 But having a password change is no longer something that happens on the
 server, it happens completely local on the client. Many users will simply
