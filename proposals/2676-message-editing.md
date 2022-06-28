@@ -88,8 +88,12 @@ an event's `content` property, such as `formatted_body`.
 #### Encrypted events
 
 If the original event was encrypted, the replacement should be too. In that
-case, `m.new_content` is placed in the `content` of the encrypted payload. For
-example, an encrypted replacement event might look like this:
+case, `m.new_content` is placed in the `content` of the encrypted payload. The
+`m.relates_to` property remains unencrypted, as required by the
+[relationships](https://spec.matrix.org/v1.3/client-server-api/#forming-relationships-between-events)
+section of the Client-Server API specification.
+
+For example, an encrypted replacement event might look like this:
 
 ```json
 {
@@ -121,14 +125,14 @@ example, an encrypted replacement event might look like this:
         "m.new_content": {
             "body": "Hello! My name is bar",
             "msgtype": "m.text"
-        },
-        "m.relates_to": {
-            "rel_type": "m.replace",
-            "event_id": "$some_event_id"
         }
     }
 }
 ```
+
+Note that there is no `m.relates_to` property in the encrypted payload. (Any such
+property would be ignored.) Likewise, there is no `m.new_content` in the
+plaintext body. (Again, any such property would be ignored.)
 
 #### Applying `m.new_content`
 
@@ -202,10 +206,14 @@ of the following criteria must be satisfied:
  * Neither the replacement nor original events can be state events (ie, neither
    may have a `state_key`).
  * The original event must not, itself, have a `rel_type` of `m.replace`.
- * The original event and replacement event must have the same `room_id`.
  * The original event and replacement event must have the same `sender`.
  * The replacement event (once decrypted, if appropriate) must have an
    `m.new_content` property.
+
+The original event and replacement event must also have the same `room_id`, as
+required by the
+[relationships](https://spec.matrix.org/v1.3/client-server-api/#forming-relationships-between-events)
+section of the Client-Server API specification.
 
 If any of these criteria are not satisfied, implementations should ignore the
 replacement event (the content of the original should not be replaced, and the
@@ -265,13 +273,10 @@ Clients can often ignore message edit events, since any events the server
 returns via the C-S API will be updated by the server to account for subsequent
 edits.
 
-However, clients should apply the replacement themselves (or, alternatively,
-request an updated copy of the original via [`GET
-+/_matrix/client/v3/rooms/{roomId}/context/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)
-or similar) when the server is unable to do so. This happens in the following
-situations:
+However, clients should apply the replacement themselves when the server is
+unable to do so. This happens in the following situations:
 
-1. The client has already received the original event before the message
+1. The client has already received and stored the original event before the message
    edit event arrives.
 
 2. The original event (and hence its replacement) are encrypted.
@@ -304,7 +309,24 @@ calls. See [Future considerations](#future-considerations).
 
 ### Edits of replies
 
-An event which replaces a [reply](https://spec.matrix.org/v1.2/client-server-api/#rich-replies) might look like this:
+Some particular constraints apply to events which replace a
+[reply](https://spec.matrix.org/v1.3/client-server-api/#rich-replies). In
+particular:
+
+ * There should be no `m.in_reply_to` property in the the `m.relates_to`
+   object, since it would be redundant (see [Applying
+   `m.new_content`](#applying-mnew_content) above, which notes that the original
+   event's `m.relates_to` is preserved), as well as being contrary to the
+   spirit of
+   [MSC2674](https://github.com/matrix-org/matrix-spec-proposals/pull/2674)
+   which expects only one relationship per event.
+
+ * `m.new_content` should **not** contain any ["reply
+   fallback"](https://spec.matrix.org/v1.3/client-server-api/#fallbacks-for-rich-replies),
+   since it is assumed that any client which can handle edits can also
+   display replies natively.
+
+An example of an edit to a reply is as follows:
 
 ```json
 {
@@ -328,20 +350,6 @@ An event which replaces a [reply](https://spec.matrix.org/v1.2/client-server-api
 }
 ```
 
-Note in particular:
-
- * There is no `m.in_reply_to` property in the the `m.relates_to`
-   object, since it would be redundant (see [Applying
-   `m.new_content`](#applying-mnew_content) above, which notes that the original
-   event's `m.relates_to` is preserved), as well as being contrary to the
-   spirit of
-   [MSC2674](https://github.com/matrix-org/matrix-spec-proposals/pull/2674)
-   which expects only one relationship per event.
-
- * `m.new_content` does not contain any ["reply
-   fallback"](https://spec.matrix.org/v1.2/client-server-api/#fallbacks-for-rich-replies),
-   since it is assumed that any client which can handle edits can also
-   display replies natively.
 
 ## Future considerations
 
