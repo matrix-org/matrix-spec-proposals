@@ -21,8 +21,9 @@ POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read.private/$123
 
 The MSC also proposes adding `m.fully_read` as a possible `receiptType` for `/receipt`.
 
-To also move the user's `m.fully_read` marker and `m.read` receipt the client
-can make a POST request such as this.
+Alternatively, the client can move the user's `m.fully_read` marker and/or 
+`m.read` receipt at the same time as `m.read.private` by making a POST
+request to the [`/read_markers` endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers). For example:
 
 ```HTTP
 POST /_matrix/client/r0/rooms/!a:example.org/read_markers
