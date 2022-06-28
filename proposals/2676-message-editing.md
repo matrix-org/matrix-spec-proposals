@@ -236,11 +236,13 @@ below.
 #### Server-side aggregation of `m.replace` relationships
 
 Note that there can be multiple events with an `m.replace` relationship to a
-given event (for example, if an event is edited multiple times).  Homeservers
-should aggregate `m.replace` relationships as in
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675). The aggregation
+given event (for example, if an event is edited multiple times). These should
+be [aggregated](https://spec.matrix.org/v1.3/client-server-api/#aggregations)
+by the homeserver.
+
+The format of the aggregation for `m.replace` simply gives
 gives the `event_id`, `origin_server_ts`, and `sender` of the most recent
-replacement event (as determined by `origin_server_ts`).
+replacement event (determined as above).
 
 This aggregation is bundled into the `unsigned/m.relations` property of any
 event that is the target of an `m.replace` relationship. For example:
