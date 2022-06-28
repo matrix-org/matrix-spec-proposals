@@ -225,7 +225,7 @@ Whenever a homeserver would return an event via the Client-Server API, it
 should check for any valid, applicable `m.replace` event, and if one is found, it
 should first modify the `content` of the original event according to the
 `m.new_content` of the most recent edit (as determined by
-`origin_server_ts`, falling back to `event_id`).
+`origin_server_ts`, falling back to a lexicographic ordering of `event_id`).
 
 An exception applies to [`GET
 /_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
