@@ -7,23 +7,29 @@ others that they've read a message.
 
 ## Proposal
 
-This MSC proposes adding a new `receiptType` of `m.read.private`. This
-`receiptType` is used when the user wants to affect their notification count but
-doesn't want other users to see their read receipt.
+This MSC proposes adding a new `receiptType` (see [the receipts
+spec](https://spec.matrix.org/v1.3/client-server-api/#receipts)) of
+`m.read.private`. This `receiptType` is used when the user wants to affect their
+notification count but doesn't want other users to see their read receipt.
 
 To move the user's private read receipt to `$123` the client can make a POST
-request to the [`/receipt` endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid). For example:
+request to the [`/receipt`
+endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid).
+For example:
 
 ```HTTP
 POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read.private/$123
 {}
 ```
 
-The MSC also proposes adding `m.fully_read` as a possible `receiptType` for `/receipt`.
+The MSC also proposes adding `m.fully_read` as a possible `receiptType` for
+`/receipt`.
 
-Alternatively, the client can move the user's `m.fully_read` marker and/or 
-`m.read` receipt at the same time as `m.read.private` by making a POST
-request to the [`/read_markers` endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers). For example:
+Alternatively, the client can move the user's `m.fully_read` marker and/or
+`m.read` receipt at the same time as `m.read.private` by making a POST request
+to the [`/read_markers`
+endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers).
+For example:
 
 ```HTTP
 POST /_matrix/client/r0/rooms/!a:example.org/read_markers
