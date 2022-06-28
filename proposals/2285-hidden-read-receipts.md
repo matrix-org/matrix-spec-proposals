@@ -30,7 +30,7 @@ POST /_matrix/client/r0/rooms/!a:example.org/read_markers
 {
     "m.fully_read": "$123",
     "m.read": "$123",
-    "m.read.private": "$123",
+    "m.read.private": "$123"
 }
 ```
 
