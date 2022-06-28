@@ -18,7 +18,7 @@ endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roo
 For example:
 
 ```HTTP
-POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read.private/$123
+POST /_matrix/client/v3/rooms/!a:example.org/receipt/m.read.private/$123
 {}
 ```
 
