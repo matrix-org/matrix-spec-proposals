@@ -49,7 +49,9 @@ If the user has `m.read` and `m.read.private` receipts at the same event, the
 that already has `m.read`, shouldn't move the user's receipt up in the timeline
 from the perspective of other users.
 
-The `m.read` is now optional as sometimes we only want to send `m.read.private`.
+The `m.read` is now optional on the [`/read_markers`
+endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers)
+as sometimes we only want to send `m.read.private`.
 
 Servers MUST NOT send receipts of `receiptType` `m.read.private` to any other
 user than the sender. Servers also MUST NOT send receipts of `receiptType`
