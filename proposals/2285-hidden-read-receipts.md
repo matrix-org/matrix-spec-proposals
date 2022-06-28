@@ -12,7 +12,7 @@ This MSC proposes adding a new `receiptType` of `m.read.private`. This
 doesn't want other users to see their read receipt.
 
 To move the user's private read receipt to `$123` the client can make a POST
-request such as this.
+request to the [`/receipt` endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid). For example:
 
 ```HTTP
 POST /_matrix/client/r0/rooms/!a:example.org/receipt/m.read.private/$123
