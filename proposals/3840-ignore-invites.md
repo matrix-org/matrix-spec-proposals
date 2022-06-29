@@ -41,10 +41,6 @@ Wherever the server could filter out an event because of a `m.ignored_users_list
 - if `m.ignored_invites` is present in the recipient user's account; and
 - if the issuer is part of `ignored_user_ids` or the issuer is an account on `ignored_servers` or the invite room is part of `ignored_room_ids`, then filter out the event silently.
 
-
-The behavior of both client and server is expanded to also ignore any event issued from a server
-in `ignore_servers` wherever we would ignore an event from a user in `ignore_users`.
-
 ## Potential issues
 
 There is a risk that the list of ignored invites of some users may grow a lot, which might have
