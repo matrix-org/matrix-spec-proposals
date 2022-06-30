@@ -28,7 +28,15 @@ We adopt a similar `m.ignored_invites` with content:
 | `ignored_user_ids`   | optional `string[]` | Ignore invites from these users. |
 | `ignored_servers`    | optional `string[]` | Ignore invites from users in these homeservers. |
 | `ignored_room_ids`   | optional `string[]` | Ignore invites towards these rooms. |
-| `ignored_event_ids`  | optional `string[]` | Ignore specific invites. |
+| `ignored_invites`    | optional `Invite[]` | Ignore specific invites. |
+
+where `Invite` is
+
+| Content    | Type   | Description |
+|------------|--------|-------------|
+| `room_id`  | string | The room in which the user is invited. |
+| `user_id`  | string | The user who issued the invite.        |
+| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
 
 ### Client behaviour
 
@@ -37,20 +45,33 @@ currently displayed.
 
 ### Server behaviour
 
-Wherever the server could filter out an event because of a `m.ignored_users_list`:
-- if the event is an invite; and
-- if `m.ignored_invites` is present in the recipient user's account; and
-- if the event id is in `ignored_event_ids` or the issuer is part of `ignored_user_ids` or the issuer is an account on `ignored_servers` or the invite room is part of `ignored_room_ids`, then filter out the event silently.
+None.
+
+This is handled entirely client-side.
 
 ## Potential issues
+
+### Event size
 
 There is a risk that the list of ignored invites of some users may grow a lot, which might have
 performance impact, both during initial sync and during filtering. We believe that this risk is
 limited. If necessary, clients may decide to cleanup ignored invites after some time.
 
+### Sync size
+
+With this proposal, the server will repeat invites at each `/sync`. In time, this can grow expensive.
+
+If necessary, clients may decide to convert ignored invites into rejected invites after a while.
+
 ## Alternatives
 
-Can't think of any right now.
+### Server-side filtering
+
+Just as `m.ignored_users_list` is handled mostly on the server, we could handle `m.ignored_invites`
+largely on the server. However, this would make it much harder to undo erroneous ignores (i.e.
+implementing some sort of recovery from trashcan) on the client.
+
+So we prefer handling things on the client, even if this may require more traffic.
 
 ## Security considerations
 
