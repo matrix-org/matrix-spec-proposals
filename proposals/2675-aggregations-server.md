@@ -90,7 +90,7 @@ By sending a summary of the relations, bundling
 avoids us having to always send lots of individual relation events
 to the client.
 
-Aggregations are never bundled into state events. This is a current
+State events do not currently receive bundles. This is a current
 implementation detail that could be revisited later,
 rather than a specific design decision.
 
@@ -137,7 +137,7 @@ types) is as follows:
 #### Client-side aggregation
 
 Bundled aggregations on an event give a snapshot of what relations were known
-at the time the event was received. When relations are received through `/sync`,
+at the time the event was received by the client. When relations are received through `/sync`,
 clients should locally aggregate (as they might have done already before
 supporting this MSC) the relation on top of any bundled aggregation the server
 might have sent along previously with the target event, to get an up to date
@@ -195,6 +195,10 @@ Note that [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676)
 adds the related-to event in `original_event` property of the response.
 This way the full history (e.g. also the first, original event) of the event
 is obtained without further requests. See that MSC for further details.
+
+   * **Edited 2022-06-06**: This appears to be incorrect. MSC2676 contains
+     no reference to `original_event`, nor can I find any record of it ever
+     having done so.
 
 ### End to end encryption
 
