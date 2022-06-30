@@ -1,44 +1,212 @@
-# MSC3782: Add public/private key login as a new authentication type
-
-Cryptographic signatures have played a pivotal role in blockchain. They are used to prove ownership of a public address
-without exposing its private key. This property can be (and has been) used for decentralized authentication. A server
-can use signature verification to prove that the user has possession of the private key to allow the user with that
-public address to log in.
-
-The proposal is to add a new login type for public key cryptography. Under this new login type, a specific
-implementation can be supported, such as Ethereum and its signature algorithm - the Elliptic Curve Digital Signature
-Algorithm (ECDSA).
-
-This new login type would allow a Matrix server to authenticate a user without having to keep the user's secrets or
-redirect the user to a central identity service.
+# MSC3782: Add public/private key login as a new authentication type to support decentralized authentication and decentralized identifiers
 
 ## Proposal
 
-New authentication type:
+Cryptographic signatures have played a pivotal role in digital security and blockchain. They are used to prove
+ownership of a public key without exposing its private key. This property can be (and has been) used for
+decentralized authentication. A server can use signature verification to prove that the user has possession
+of the private key to allow the user with that public key / identifier to log in.
+
+The proposal is to add public key cryptography to Matrix as a new login type. This new login type would
+enable two new features on the server:
+
+1. Decentralized authentication
+
+2. Decentralized user identifier
+
+Decentrlized authentication gives the server the ability to cryptographically authenticate
+a user without having to keep the user's secret or redirect the user to a central
+identity service.
+
+Decentralized user identifiers are verifiable, digital identities. They are represented
+in a standard-conformant way. i.e. the identity is made up of parts according to
+some standard specification. Once the identity is verified, the server can use
+the identifier to find more information about the user from other servers in a
+decentralized infrastructure, such as the blockchain networks.
+
+The mapping between a decentralized identifier and the Matrix ID is explained
+in more details in the section
+[Decentralized identifier and Matrix ID](#decentralized-identifier-and-matrix-id).
+
+Note that decentralized identifier and infrastructue are actively being piloted and
+used by enterprises and governments. The following are some active specs being worked
+on:
+
+- [ChainAgnostic/CAIPs/caip-10](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-10.md)
+- [W3C Decentralized Identifiers](https://www.w3.org/TR/did-core/)
+- [W3C Decentralized Identifiers for public key hashes](https://github.com/w3c-ccg/did-pkh/blob/main/did-pkh-method-draft.md)
+
+Enbling both features in Matrix would pave the way for our ecosystem to eventually
+participate in some of these projects.
+
+## New login type
+
+The proposed new login type is:
 
 ```text
 m.login.publickey
 ```
 
-The public address is the localpart of a user ID. It has the new type `m.id.publickey`.
-Its username value is the public key, or a public address that is derived from the
-private key. A user has to prove that he / she has the private key for this public
-key or address. This is done by signing a specially designed message that is then
-validated by the server during the login or registration flow.
+Under the framework of this new login type, a specific implementation can be supported,
+such as Ethereum:
+
+```text
+m.login.publickey.ethereum
+```
+
+This convention refers to a set of implementation choices such as the signature and verification
+algorithm, and the decentralized identifier
+representation:
+
+- signature and verification algorithm is [EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361)
+
+- decentralized identifier is [Chain Agnostic ID](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-10.md).
+
+## Decentralized identifier and Matrix ID
+
+During the login or registration flow, the "input" from the client is the signature,
+the signed message, and other authentication data.
+
+The "output" response from the server is the `access_token`, `username`, etc. The
+`username` is the Matrix user ID. This Matrix ID is also the decentralized
+identifier.
+
+The mapping from the input data to the output Matrix ID is as follows:
+
+### Step 1
+
+The client signs the login message according to the chosen public key login type.
+The client then sends the signed message, its signature and other authentication
+data to the server.
+
+### Step 2
+
+The server cryptographically verifies the signature of the authentication
+message. The server must be able to get the public key, or derive the public address
+from the signature.
+
+The server then derives the decentralized identifier using the public
+address and information in the signed message according to the decentralized
+identifier specification.
+
+### Step 3
+
+Any characters in the identifier that is disallowed according to the
+[Matrix user identifier](https://spec.matrix.org/v1.2/appendices/#user-identifiers)
+must be escaped:
+
+```text
+Encode any remaining bytes outside the allowed character set, as well as =, as their
+hexadecimal value, prefixed with =. For example, # becomes =23; á becomes =c3=a1.
+```
+
+At the end of the flow, the server should represent the Matrix ID as:
 
 ```go
 LoginIdentifier{
-  Type: "m.id.publickey",
-  User: "<public key or address as localpart>",
+  Type: "m.id.decentralizedid",
+  User: "<decentralized identifier as localpart>",
  }
 ```
 
-Future proposals can map the user identifier to other identities such as
-[MSC2787: Portable Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/2787).
+To illustrate a specific login type, here is the implementation for
+`m.login.publickey.ethereum`:
 
-Also, see additional notes on [Public key identifier](#public-key-identifier).
+### Step 1 (Ethereum)
 
-The next sections describe details of the login and registration flows.
+The client signs a message according to the specification:
+[EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361). This
+is the "input" to the login flow.
+
+### Step 2 (Ethereum)
+
+When the server receives the login request, it performs a serious of steps to
+validate the login message, derive the user's identity from the signature, and
+signed message. Then it maps the identity to a Matrix ID.
+
+a) Verify the signature and signed message
+
+The server verifies the signature according to
+[EIP-191](https://eips.ethereum.org/EIPS/eip-191) (_personal_sign_ message).
+It recovers the public address from the signature; it does not require
+any blockchain look up. This is baked into the design of the
+[Ethereum address](https://ethereum.org/en/developers/docs/accounts/).
+
+The server also verifies the rest of the message according to
+[EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361).
+
+b) Derive the user's decentralized identifier
+
+The server derives the decentralized identifier according to
+[CAIP-10](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-10.md) in
+the format:
+
+`eip155:chain_id:account_address`
+
+where
+
+- `chain_id` comes from the signed
+  message in [EIP-4361](https://eips.ethereum.org/EIPS/eip-4361).
+
+- `account_address`
+  is the Ethereum address recovered from the signature.
+
+Example: `eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb`
+
+#### Chain ID attestation
+
+An important note about `chain_id`. When the user signs this message, the
+user is attesting to the fact that he / she is logging in with the intention to
+access resources on this specific blockchain network only.
+
+The server, after signature and message integrity verifications, will trust this
+attestation. It will derive a decentralized identifier according to the
+[CAIP-10](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-10.md)
+specification.
+
+Thus, the decentralized identifier represents a statement from the server that it
+has verified the user's intention for this chain ID only, and for not any other
+chain ID.
+
+### Step 3 (Ethereum)
+
+#### Decentralized Matrix ID (Ethereum)
+
+[CAIP-10](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-10.md)
+decentralized identifier is in the format:
+
+`eip155:chain_id:account_address`
+
+According to the [Matrix ID grammar](https://spec.matrix.org/v1.2/appendices/#user-identifiers),
+the character `:` is not allowed in the localpart. Replace the character with the
+escape rules by changing `:` to `=3a`.
+
+For example,
+
+`eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb`
+
+becomes
+
+`eip155=3a1=3a0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb`.
+
+On the server, this is represented as:
+
+```go
+LoginIdentifier{
+  Type: "m.id.decentralizedid",
+  User: "eip155=3a1=3a0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb",
+ }
+```
+
+Using this identifier, a Matrix Appservice has enough information to bridge into
+a decentralized infrastructure like the blockchain network for additional services.
+In the above example, this user is on:
+
+- Ethereum blockchain `eip155`
+- chain_id `1` (mainnet)
+- account address `0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb`.
+
+The next sections describe details about the login and registration flows.
 
 ## Summary of the end-to-end login flow
 
@@ -96,25 +264,32 @@ These are the steps at a high-level:
      +------------------+           +------------------+                                +------------------+
 ```
 
-1. User initiates a login. [More ...](#user-initiates-the-login-flow)
+1. User initiates a login.
+   [More ...](#user-initiates-the-login-flow)
 
 2. Matrix client requests a new user-interactive login session.
    [More ...](#client-requests-new-user-interactive-session)
 
-3. Matrix server responds with a list of supported login flows, including a new session ID. [More ...](#server-responds-with-supported-login-flow)
+3. Matrix server responds with a list of supported login flows, including a new session ID.
+   [More ...](#server-responds-with-supported-login-flow)
 
-4. Matrix client creates a new message for the user to sign. [More ...](#client-creates-message-to-sign)
+4. Matrix client creates a new message for the user to sign.
+   [More ...](#client-creates-message-to-sign)
 
-5. Matrix client presents the message to the user. [More ...](#client-presents-message-to-the-user-for-signing)
+5. Matrix client presents the message to the user.
+   [More ...](#client-presents-message-to-the-user-for-signing)
 
 6. User signs the message with the private key.
 
 7. Matrix client has the signature of the message.
 
-8. Matrix client sends a login request with the authentication data (message, signature, etc) to the server. [More ...](#client-sends-login-request-with-authenciation-data)
+8. Matrix client sends a login request with the authentication data (message,
+   signature, etc) to the server.
+   [More ...](#client-sends-login-request-with-authenciation-data)
 
-9. Matrix server performs validation checks such as signature verification, any message tampering, existence of the
-   account, etc. [More ...](#server-validates-authentication-data)
+9. Matrix server performs validation checks such as signature verification, any
+   message tampering, existence of the account, etc.
+   [More ...](#server-validates-authentication-data)
 
 10. Matrix client receives an access_token, and other login information. User is logged in.
 
@@ -131,7 +306,7 @@ community.
 
 Next, a Matrix client (or a Matrix sdk) needs to be extended to integrate with the crypto tool. For Ethereum, these
 crypto wallets can be accessed via the [JSON-RPC API](https://ethereum.org/en/developers/docs/apis/json-rpc/) for
-services such as message signing.
+services like message signing.
 
 Thus, a user can initiate the new login flow if a crypto wallet is installed, and the user is using a Matrix client
 that has support for wallet integration.
@@ -169,9 +344,9 @@ HTTP/1.1 401 Unauthorized with the following JSON body:
 
 where
 
-- params."m.login.publickey.someAlgo" -- speficies the public key choice. E.g. `m.login.publickey.ethereum`
+- `params."m.login.publickey.someAlgo"` -- speficies the public key choice. E.g. `"m.login.publickey.ethereum"`
 
-- "session" -- the session ID which acts as a nonce to prevent replay attacks. It is generated and tracked by the
+- `session` -- the session ID which acts as a nonce to prevent replay attacks. It is generated and tracked by the
   server. It should be at least 8 alphanumeric characters. Client is expected to present the session ID in its following
   authentication request for the same session. Session ID is deleted once the login flow is completed.
 
@@ -187,7 +362,8 @@ This is the response for the `m.login.publickey.ethereum` type:
   "params": {
     "m.login.publickey.ethereum": {
       "version": 1,
-      "chain_ids": ["1"]
+      "chain_ids": [1],
+      "nonce": "yyyyyyyy"
     }
   },
   "session": "xxxxxx"
@@ -196,84 +372,75 @@ This is the response for the `m.login.publickey.ethereum` type:
 
 where
 
-- params."m.login.publickey.ethereum" -- This means that the client should use the
-  [personal_sign](https://geth.ethereum.org/docs/rpc/ns-personal#personal_sign) method to sign the message and its public
-  address.
+- `params."m.login.publickey.ethereum"` -- the client should follow the signature
+  algorithm in [EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361).
+  The spec also describes the message format to be shown to the user.
 
-- params."m.login.publickey.ethereum".version -- the version of this spec that the server is willing to support. See
+- `params."m.login.publickey.ethereum".version` -- the version of this spec that the server is willing to support. See
   [version number](#version-number).
 
-- params."m.login.publickey.ethereum".chain_ids -- [blockchain network IDs](https://chainlist.org/) that the server
+- `params."m.login.publickey.ethereum".chain_ids` -- [blockchain network IDs](https://chainlist.org/) that the server
   will allow. Server is configured (via its configuration file) to allow login from a list of blockchain networks. For
-  example, the server can have a production config that specifies chain ID 1 for the Ethereum mainnet; a development
-  server can have a test config that specifies chain ID 4 for the rinkeby test network. Server should reject login
+  example, the server can have a production config that specifies chain ID `1` for the Ethereum mainnet; a development
+  server can have a test config that specifies chain ID `4` for the Rinkeby test network. Server should reject login
   attempts for any chain IDs that is not listed in the params.
+
+- `params."m.login.publickey.ethereum".nonce` - is the nonce value described in
+  [EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361)
 
 ## Client creates message to sign
 
-Once the client has received the server's response, it prepares the authentication data as follows:
+Once the client has received the server's response, it prepares a message for the user
+to sign. Each sign-in specification would have its own message-to-sign format, and
+signature algorithm.
 
-1. Create a JSON representation of the authentication data. This is meant for the server to process.
+To better illustrate the sign-in flow, this section uses the specification for
+[EIP-4361 Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361). Other
+sign-in specifications should follow a similar pattern.
 
-2. Create a text-friendly message for the user to sign. This representation is for the user to read, and so it needs to
-   allow spaces, line-breaks, etc. to make it readable.
+### Message for the user to sign (EIP-4361)
 
-### JSON authentication data (general)
+Refer to [EIP-4361](https://eips.ethereum.org/EIPS/eip-4361) for details. The
+following message template is copied from the specification. Reproduced here to
+explain different parts of the message:
 
-```json
-{
-  "domain": "home server domain",
-  "address": "public address",
-  "nonce": "session ID",
-  "...": "..."
-}
+```text
+${domain} wants you to sign in with your Ethereum account:
+${address}
+
+${statement}
+
+URI: ${uri}
+Version: ${version}
+Chain ID: ${chain-id}
+Nonce: ${nonce}
+...
 ```
 
 where
 
-- domain -- is the home server domain. It is the
+- ${domain} -- is the home server domain. It is the
   [RFC 3986 authority](https://datatracker.ietf.org/doc/html/rfc3986#section-3)
+  part of the URL. It must be the first words in the first line of the message.
 
-- address -- is the public address of the user account
+- ${address} -- is the user's public address performing the signing. It must be
+  on the second line of the message and end with "\n".
 
-- nonce -- is the session ID from the server's response
+- ${statement} -- is a text-friendly description of what the user is signing. It
+  `must begin with a "\n" and end with a "\n".
 
-### JSON authentication data (Ethereum)
+- ${uri} - is an RFC 3986 URI referring to the resource that is the subject of the
+  signing.
 
-Client prepares the following JSON data (aka `hashFields`):
+- ${version} - is the current version of the message, which MUST be 1 for the current
+  version of EIP-4361.
 
-```json
-{
-  "domain": "home server domain",
-  "address": "Ethereum address. 0x...",
-  "nonce": "session ID",
-  "version": 1,
-  "chainId": "blockchain network ID",
-  "...": "..."
-}
-```
+- ${chain-id} - is the EIP-155 Chain ID to which the login session is bound. See
+  important note about [Chain ID attestation](#chain-id-attestation)
 
-where
-
-- domain -- is the home server domain. It is the
-  [RFC 3986 authority](https://datatracker.ietf.org/doc/html/rfc3986#section-3) part of the URL.
-
-- address -- is the
-  [Externally-owned account (aka Ethereum address)](https://ethereum.org/en/developers/docs/accounts/). Address should
-  start with "0x".
-
-- nonce -- is the session ID from the server's response.
-
-- version -- is the version the client is conforming to. MUST be 1 for this current specification.
-
-- chainId -- is the EIP-155 Chain ID where any blockchain contract addresses must be resolved (as needed).
-
-- "..." -- any other properties for the app. Ignored by the server.
-
-Implementer's notes:
-From the server's response, the client app should check the `chain_ids` list to make sure that the user has
-selected the correct blockchain network. This gives the client a chance to show some UI to the user to switch to the
-right network if needed.
+- ${nonce} - is a randomized alphanumeric string with at least 8 characters.
+  The nonce comes from the server's initial response. Example
+  `params."m.login.publickey.ethereum".nonce`: `"yyyyyyyy"` (see below)):
 
 ```json
 {
@@ -284,70 +451,23 @@ right network if needed.
   ],
   "params": {
     "m.login.publickey.ethereum": {
-      "version": 1,
-      "chain_ids": ["1"]
+      "...": "...",
+      "nonce": "yyyyyyyy"
     }
   },
   "session": "xxxxxx"
 }
 ```
 
-### Create a hash value from the JSON authentication data
+- ... -- other fields defined in the specification.
 
-The text message that the user signs is intended to be readable. It will have long sentences, paragraphs, line-breaks,
-and so on. Not an optimal format for the server to process.
+This message is shown to the user. The user signs the message with the private key
+to produce a signature. The message, the signature, and other authentication data
+are then sent to the server to complete the login flow.
 
-A JSON representation of the authentication data is much easier for the server to process. To make sure that the JSON
-data is not tampered with, it needs to be covered by the message signature. i.e. when the user sees the message, some
-representation of this JSON must be in the message that is signed. The server can then cryptographically check that it
-has not been tampered with.
-
-To do this, the JSON authentication data is converted into a hash value, and is then included in the message. The
-conversion algorithm is as follows:
-
-1. Convert the authentication data into a JSON string value. For example, in JavaScript, use the `JSON.stringify`
-   function.
-
-2. Apply Keccak256 function to the string value.
-
-3. Base64-encode the hash value.
-
-This base64-encoded value is the **Hash** value in the [message for the user to sign](#message-for-the-user-to-sign).
-
-### Message for the user to sign
-
-The message template is a simplified version of [EIP-4361](https://eips.ethereum.org/EIPS/eip-4361). The prescriptive
-nature of the format is intended for regular expression extraction during server validation.
-
-This message is shown to the user. The user signs the message with the private key to produce a signature. The message,
-the signature, and other authentication data are then sent to the server to complete the login flow.
-
-```text
-${domain} wants you to sign in with your account:
-${address}
-
-${statement}
-
-Hash: ${hash}
-...
-```
-
-where
-
-- ${domain} -- is the home server domain. It is the
-  [RFC 3986 authority](https://datatracker.ietf.org/doc/html/rfc3986#section-3) part of the URL. It must be the first
-  words in the first line of the message.
-
-- ${address} -- is the user's public address performing the signing. It must be on the second line of the message and
-  end with "\n".
-
-- ${statement} -- is a text-friendly description of what the user is signing. It must begin with a "\n" and end with
-  a "\n".
-
-- ${hash} -- is the hash of the JSON authentication data. It must begin with a "\n" and end with a "\n". There should
-  only be one and only one "\nHash: xxxx\n" string in the entire message.
-
-- ... -- any other text content per application requirements. Ignored by the server.
+**_Note: EIP-4316 libraries are available in various programming languages. The
+libraries implement functions like the message construction, as well as message
+and signature verification. Visit <https://docs.login.xyz/>._**
 
 ## Client presents message to the user for signing
 
@@ -377,6 +497,21 @@ Refer to [User-interactive API](https://spec.matrix.org/v1.2/client-server-api/#
 
 Client sends a HTTP POST message to the endpoint `/login` with an `auth` JSON body.
 
+The general format should look like this:
+
+```json
+{
+  "type": "m.login.publickey",
+  "auth": {
+    "type": "m.login.publickey.someAlgo",
+    "address": "<decentralized identifier for someAlgo>",
+    "session": "xxxxxx",
+    "message": "...",
+    "signature": "..."
+  }
+}
+```
+
 For Ethereum, the `auth` JSON should look like this:
 
 ```json
@@ -384,20 +519,42 @@ For Ethereum, the `auth` JSON should look like this:
   "type": "m.login.publickey",
   "auth": {
     "type": "m.login.publickey.ethereum",
-    "address": "string",
-    "session": "session ID",
+    "address": "<decentralized identifier>",
+    "session": "xxxxxx",
     "message": "...",
-    "signature": "...",
-    "hashFields": {
-      "...": "..."
-    }
+    "signature": "..."
   }
 }
 ```
 
 where
 
-- hashFields -- are the [JSON fields that were hashed](#json-authentication-data-ethereum).
+- `address` - the decentralized identifier as defined in
+  [Decentralized Matrix ID (Ethereum)](#decentralized-matrix-id-ethereum)
+
+- `session` - the session ID in the initial session response from the server.
+  Example `session`: `"xxxxxx"` (see below):
+
+```json
+{
+  "flows": [
+    {
+      "stages": ["m.login.publickey.ethereum"]
+    }
+  ],
+  "params": {
+    "m.login.publickey.ethereum": {
+      "...": "...",
+      "nonce": "yyyyyyyy"
+    }
+  },
+  "session": "xxxxxx"
+}
+```
+
+- `message` and `signature` are the output from
+  [Message for the user to sign](#message-for-the-user-to-sign-eip-4361) and
+  [Client presents message to the user for signing](#client-presents-message-to-the-user-for-signing)
 
 ## Server validates authentication data
 
@@ -412,80 +569,65 @@ Refer to [login auth request from the client](#client-sends-login-request-with-a
 
 - Checks `auth.address` account exists.
 
-- Verifies the signature `auth.signature` is from `auth.address`, and the message `auth.message` has not
-  been tampered with. This step is different for each cryptographic signature type. See [Ethereum-specific validation](#ethereum-specific-validation).
+- Verifies the signature `auth.signature` is from `auth.address`, and the message
+  `auth.message` has not been tampered with. This step is different for each
+  cryptographic signature type. See [Ethereum-specific validation](#ethereum-specific-validation).
 
-- Extract required information from the [message signed by the user](#message-for-the-user-to-sign):
-
-  - ${domain} -- who is it addressed to?
-  - ${address} -- who is it from?
-  - ${hash} -- hash value of the JSON auth data. [More...](#create-a-hash-value-from-the-json-authentication-data)
-
-- Verify that the HASH of the authentication data is legitimate:
-
-  - Get the `auth.hashFields` as raw string.
-  - Apply Keccak256 function to the byte values.
-  - Base64-encode the hash value.
-  - Compare the computed value with the Hash value extracted from the message. They should be the same.
-
-- If the hash is verified, it means that the `auth.hashField` has not been tampered with. `auth.hashFields`
-  string can now be converted to JSON. The rest of the validation can use the JSON directly. This JSON object will be
-  referred to as `authData`.
-
-- Verify that the message (signed by the user) is consistent with both the JSON `authData`, and the server's
-  expectation:
-
-| Signed message |     | `authData`       |     | Server's expectation |
-| -------------- | --- | ---------------- | --- | -------------------- |
-| ${domain}      | ==  | authData.domain  | ==  | home server name     |
-| ${address}     | ==  | authData.address | ==  | `auth.address`       |
-|                |     | authData.nonce   | ==  | session ID           |
-
-- If all validation passes, the server completes the login flow, cleans up the session (by deleting the session ID),
-  and sends back a HTTP OK response to the client like other authentication types:
+- If all validation passes, the server adds a completed stage to the login flow,
+  cleans up the session (by deleting the session ID), and sends back a HTTP OK response
+  to the client like other authentication types:
 
   - access_token,
-  - username, [(additional notes about the localpart)](#public-key-identifier)
+  - username, [(Decentralized identifier and Matrix ID)](#decentralized-identifier-and-matrix-id)
   - device_id,
   - etc
 
 - If any of the validation step fails, delete the session ID and send a HTTP Unauthorized response to the client
   (or some appropriate error response).
 
-This completes the login flow.
-
 ### Ethereum-specific validation
 
 In addition to the general validation, Ethereum has these type-specific validation:
 
-1. Signature verification using the EDSA recovery function
-2. Check the chain ID
-3. Check the version number for spec compliance
+1. Verify the signature using the EDSA recovery function.
+2. Check that the chain ID is allowed by the server.
+3. Check that the decentralized identifier matches `auth.address` in the login
+   auth request.
 
-**Signature verification** --
-[Ethereum](http://gavwood.com/paper.pdf) uses the SECP-256k1 curve as its signing algorithm. It also defines an EDSA
-recovery function. The message signer's public address can be recovered from this function.
+**Signature verification** -- [Ethereum](http://gavwood.com/paper.pdf) uses the
+SECP-256k1 curve as its signing algorithm. It also defines an EDSA recovery function.
+The message signer's public address can be recovered from this function.
 
-Implementer's notes:
-There is no need to implement the verification and recovery function from scratch. There are a number of Open Source
-libraries that implement them, like [github ethereum/go-ethereum](https://github.com/ethereum/go-ethereum). Not all of
-them work seamlessly. For the recovery function, double check that:
+There are available EIP-4316 libraries for various programming languages that
+message and signature verification. Visit <https://docs.login.xyz/>.
 
-v = "recover id" is offset by -27 per the [Ethereum](http://gavwood.com/paper.pdf) spec.
+**Chain ID verification** -- Server is configured (via its configuration file)
+to allow login from a list of blockchain networks. For example, the production
+config allows chain ID `1` for the Ethereum mainnet; the test config allows chain
+ID `4` for the Rinkeby test network.
 
-**public address** -- after recovering the public key from the signature, derive its public address from the recovered
-key. You can use one of the Open Source libraries to do that. Compare the message signer's public address with the
-login address (who is attempting to login). It should match.
-
-**chain ID** -- Server is configured (via its configuration file) to allow login from a list of blockchain networks.
-For example, the production config allows chain ID 1 for the Ethereum mainnet; the test config allows chain ID 4 for
-the rinkeby test network.
-
-Server should reject login attempts for a chain ID that are not listed in its configurations. This avoids downstream
-problems for supporting servers (like Application services) that need to resolve contracts on specific blockchain
+Server should reject login attempts for a chain ID that are not listed in its
+configurations. This avoids downstream problems for supporting servers (like
+Application services) that need to resolve contracts on specific blockchain
 networks.
 
-**version** -- see [version number](#version-number) for the expected behavior.
+**Decentralized identifier verification** -- derive the decentralized
+identifier from the signature and the signed message
+See [Decentralized Matrix ID (Ethereum)](#decentralized-matrix-id-ethereum).
+The derived identifier should match the `auth.address` in the login auth request:
+
+```json
+{
+  "type": "m.login.publickey",
+  "auth": {
+    "type": "m.login.publickey.ethereum",
+    "address": "<decentralized identifier>",
+    "...": "..."
+  }
+}
+```
+
+**Supported version check** -- see [version number](#version-number) for the expected behavior.
 
 This concludes the login flow.
 
@@ -521,21 +663,25 @@ Registers a new user account. It is similar to the login flow.
               |                              |                                                    |   | 9. (server
               |                              |                                                    |<--+    validation &
               |                              |                                                    |        registration)
-              |                              |<----------10. ({ access_token, ...})------------|
-              |                              |           user registered & logged in           |
-              |                              |                                                 |
-     +------------------+           +------------------+                             +------------------+
+              |                              |<-------------10. ({ access_token, ...})------------|
+              |                              |              user registered & logged in           |
+              |                              |                                                    |
+     +------------------+           +------------------+                                +------------------+
 ```
 
 1. User initiates a new registration.
 
-2. Matrix client requests a new registration session. [More ...](#client-requests-new-registration-session)
+2. Matrix client requests a new registration session.
+   [More ...](#client-requests-new-registration-session)
 
-3. Matrix server responds with a list of supported registration flows, including a new session ID. [More ...](#server-responds-with-supported-registration-flow)
+3. Matrix server responds with a list of supported registration flows, including a new session ID.
+   [More ...](#server-responds-with-supported-registration-flow)
 
-4. Matrix client creates a new message for the user to sign. [More ...](#client-creates-message-to-sign)
+4. Matrix client creates a new message for the user to sign.
+   [More ...](#client-creates-message-to-sign)
 
-5. Matrix client presents the message to the user. [More ...](#client-presents-message-to-the-user-for-signing)
+5. Matrix client presents the message to the user.
+   [More ...](#client-presents-message-to-the-user-for-signing)
 
 6. User signs the message with the private key.
 
@@ -545,8 +691,8 @@ Registers a new user account. It is similar to the login flow.
    [More ...](#client-sends-registration-request-with-authentication-data)
 
 9. Matrix server performs validation checks such as signature verification, any message tampering, existence of the
-   account, etc. [More ...](#server-validates-authentication-data-and-registers-user). It creates the account if
-   validation checks are successful.
+   account, etc. It creates the account if validation checks are successful.
+   [More ...](#server-validates-authentication-data-and-registers-user)
 
 10. Matrix client receives an access_token, and other login information. User is registered and logged in.
 
@@ -558,7 +704,7 @@ Refer to [Client-server API](https://spec.matrix.org/v1.2/client-server-api/#pos
 
 ```json
 {
-  "username": "string",
+  "username": "<decentralized identifier>",
   "auth": {
     "type": "m.login.publickey"
   }
@@ -567,10 +713,10 @@ Refer to [Client-server API](https://spec.matrix.org/v1.2/client-server-api/#pos
 
 where
 
-- auth.type -- is the type of authentication. `m.login.publickey` indicates that the user wants to register a
+- `auth.type` -- is the type of authentication. `m.login.publickey` indicates that the user wants to register a
   public key account.
 
-- username -- is the user ID to register. For Ethereum, this is the public address that starts with "0x".
+- `username` -- is the user ID to register. This is the decentralized identifier.
 
 ## Server responds with supported registration flow
 
@@ -579,7 +725,7 @@ section 401 response.
 
 ```json
 {
-  "completed": [],
+  "completed": ["m.login.publickey.newregistration"],
   "flows": [
     {
       "stages": ["m.login.publickey.someAlgo"]
@@ -596,9 +742,12 @@ section 401 response.
 
 where
 
-- params."m.login.publickey.someAlgo" -- specifies the public key choice. E.g. `m.login.public.ethereum`
+- `completed: ["m.login.publickey.newregistration"]` -- a new registration
+  session is started.
 
-- "session" -- the session ID which acts as a nonce to prevent replay attacks. It is generated and tracked by the
+- `params."m.login.publickey.someAlgo"` -- specifies the public key choice. E.g. `m.login.public.ethereum`
+
+- `session` -- the session ID is a nonce to prevent replay attacks. It is generated and tracked by the
   server. It should be at least 8 alphanumeric characters. Client is expected to present the session ID in its following
   registration request for the same session. Session ID is deleted once the registration flow is completed.
 
@@ -606,7 +755,7 @@ This is the response for the `m.login.publickey.ethereum` type:
 
 ```json
 {
-  "completed": [],
+  "completed": ["m.login.publickey.newregistration"],
   "flows": [
     {
       "stages": ["m.login.publickey.ethereum"]
@@ -615,7 +764,8 @@ This is the response for the `m.login.publickey.ethereum` type:
   "params": {
     "m.login.publickey.ethereum": {
       "version": 1,
-      "chain_ids": ["1"]
+      "chain_ids": [1],
+      "nonce": "yyyyyyyy"
     }
   },
   "session": "xxxxxx"
@@ -624,17 +774,20 @@ This is the response for the `m.login.publickey.ethereum` type:
 
 where
 
-- params."m.login.publickey.ethereum" -- This means that the client should use the
+- `completed: ["m.login.publickey.newregistration"]` -- a new registration
+  session is started.
+
+- `params."m.login.publickey.ethereum"` -- This means that the client should use the
   [personal_sign](https://geth.ethereum.org/docs/rpc/ns-personal#personal_sign) method to sign the message and its
   account address.
 
-- params."m.login.publickey.ethereum".version -- the version of this spec that the server is willing to support.
+- `params."m.login.publickey.ethereum".version` -- the version of this spec that the server is willing to support.
   See [version number](#version-number).
 
-- params."m.login.publickey.ethereum".chain_ids -- [blockchain network IDs](https://chainlist.org/) that the server
+- `params."m.login.publickey.ethereum".chain_ids` -- [blockchain network IDs](https://chainlist.org/) that the server
   will allow. Server is configured (via its configuration file) to allow login from a list of blockchain networks. For
-  example, the production config allows chain ID 1 for the Ethereum mainnet; the test config allows chain ID 4 for the
-  rinkeby test network. Server should reject login attempts for any chain IDs that are not listed in the params.
+  example, the production config allows chain ID `1` for the Ethereum mainnet; the test config allows chain ID `4`
+  for the Rinkeby test network. Server should reject login attempts for any chain IDs that are not listed in the params.
 
 ## Client sends registration request with authentication data
 
@@ -644,11 +797,12 @@ Client sends a HTTP POST message to the endpoint `/register` with a `username` a
 
 ```json
 {
-  "username": "string",
+  "username": "<decentralized identifier for someAlgo>",
   "auth": {
     "type": "m.login.publickey",
-    "session": "session ID",
+    "session": "xxxxxx",
     "public_key_response": {
+      "type": "m.login.publickey.someAlgo",
       "...": "..."
     }
 }
@@ -658,27 +812,23 @@ For Ethereum, the JSON should look like this:
 
 ```json
 {
-  "username": "0x...",
+  "username": "<decentralized identifier>",
   "auth": {
     "type": "m.login.publickey",
-    "session": "sessionId",
+    "session": "xxxxxx",
     "public_key_response": {
       "type": "m.login.publickey.ethereum",
-      "address": "0x...",
-      "session": "session ID",
+      "address": "<decentralized identifier>",
+      "session": "xxxxxx",
       "message": "...",
-      "signature": "...",
-      "hashFields": {
-        "...": "..."
-      }
+      "signature": "..."
     }
   }
 }
 ```
 
-where
-
-- hashFields -- are the [JSON fields that were hashed](#json-authentication-data-ethereum).
+The JSON content of `public_key_response` is the same as the
+[client login request](#client-sends-login-request-with-authentication-data).
 
 ## Server validates authentication data and registers user
 
@@ -725,56 +875,46 @@ a specific home server, or be redirected to some centralized identity service.
 
 ## Security Considerations
 
-### Public key identifier
+### Mitigations against hijacking user identifier
 
-At the end of the login or registration flow, the server sends back a response with the access_token, username,
-and other logged in data.
-
-With respect to the username, the public address is the localpart of a user ID.
-It has the new type `m.id.publickey`.
-
-```go
-LoginIdentifier{
-  Type: "m.id.user",
-  User: "<public key or address as localpart>",
- }
-```
-
-Note that using the public key / address as the user identifier has a potential security issue ---
-account hijacking.
+Using decentralized identifier as the user identifier has a potential security issue
+--- account hijacking.
 
 A new user can pick any username during account registration as long as it is still available.
-It is possible that a malicious user fills in someone else's public key / address as the username during registration.
-This is allowed for other types of authentication (such as password authentication). Doing this effectively hijacks
-the account. It prevents the user with the actual public / private key from registering and logging in.
+This is allowed for other authentication types (like password authentication).
+It is possible that a malicious user fills in someone else's decentralized identifier
+as the username during registration. Doing this effectively hijacks the account.
+It prevents the user with the actual public / private key from registering and logging in.
 
 The following are suggested mitigations:
 
-- Give the admin the consfiguration option to turn off other authentication types (such as password authentication).
-  Configure the server to allow only public key login and registration.
+- Give the admin the consfiguration option to turn off other authentication types
+  (such as password authentication). Configure the server to allow only public key
+  login and registration.
 
 - A user has to prove that he / she has the private key during account registration.
   See [End-to-end registration flow](#end-to-end-registration-flow).
 
-- At the end of the registration flow, server should generate a random password, save the hash
-  in the account database, and discard the password. This prevents any misconfiguration that may allow
-  username + password login from happening.
+- At the end of the registration flow, server should generate a random password,
+  save the hash in the account database, and discard the password. This prevents
+  any misconfiguration that may allow username + password login from happening.
 
 ### Private key security
 
-Keeping private keys safe is out-of-scope for Matrix. Besides software wallet protections, there are hardware wallet
-solutions which offer offline key storage.
+Keeping private keys safe is out-of-scope. Besides software wallet protections,
+there are hardware wallet solutions which offer offline key storage.
 
-There is an open issue with compromised private keys. This proposal does not address the problem. There is no "password
-reset" solution. Needs a separate proposal to address compromised keys.
+There is an open issue with compromised private keys. This proposal does not
+address the problem. There is no "password reset" solution. A separate proposal
+is needed to address compromised keys.
 
 ### Version number
 
-Versioning gives the server a means to inform the client which version of this spec it must comply with. This is done
-as part of the initial login flow. See
+Versioning gives the server a means to inform the client which version of this
+spec it must comply with. This is done as part of the initial login flow. See
 [Client requests new user interactive session](#client-requests-new-user-interactive-session) and
-[Server responds with supported login flow](#server-responds-with-supported-login-flow). Within the server's response,
-it has a params `version` number.
+[Server responds with supported login flow](#server-responds-with-supported-login-flow).
+Within the server's response, it has a params `version` number.
 
 The semantics of the `version` is as follows:
 
@@ -791,6 +931,8 @@ This spec is version 1.
 
 ## References
 
+- [EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361)
+
 - [Ethereum address](https://ethereum.org/en/developers/docs/accounts/)
 
 - [JSON-RPC API](https://ethereum.org/en/developers/docs/apis/json-rpc/)
@@ -800,3 +942,9 @@ This spec is version 1.
 - [ETHEREUM: A SECURE DECENTRALISED GENERALISED TRANSACTION LEDGER](http://gavwood.com/paper.pdf)
 
 - [github ethereum/go-ethereum](https://github.com/ethereum/go-ethereum)
+
+- [ChainAgnostic/CAIPs/caip-10](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-10.md); or
+
+- [W3C Decentralized Identifiers for public key hashes](https://github.com/w3c-ccg/did-pkh/blob/main/did-pkh-method-draft.md)
+
+- [W3C Decentralized Identifiers](https://www.w3.org/TR/did-core/)
