@@ -28,6 +28,7 @@ We adopt a similar `m.ignored_invites` with content:
 | `ignored_user_ids`   | optional `string[]` | Ignore invites from these users. |
 | `ignored_servers`    | optional `string[]` | Ignore invites from users in these homeservers. |
 | `ignored_room_ids`   | optional `string[]` | Ignore invites towards these rooms. |
+| `ignored_event_ids`  | optional `string[]` | Ignore specific invites. |
 
 ### Client behaviour
 
@@ -39,7 +40,7 @@ currently displayed.
 Wherever the server could filter out an event because of a `m.ignored_users_list`:
 - if the event is an invite; and
 - if `m.ignored_invites` is present in the recipient user's account; and
-- if the issuer is part of `ignored_user_ids` or the issuer is an account on `ignored_servers` or the invite room is part of `ignored_room_ids`, then filter out the event silently.
+- if the event id is in `ignored_event_ids` or the issuer is part of `ignored_user_ids` or the issuer is an account on `ignored_servers` or the invite room is part of `ignored_room_ids`, then filter out the event silently.
 
 ## Potential issues
 
