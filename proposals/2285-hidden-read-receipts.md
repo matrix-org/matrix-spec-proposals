@@ -86,12 +86,18 @@ much responsibility to an existing structure.
 While this MSC is not considered stable, implementations should use
 `org.matrix.msc2285` as a namespace.
 
-|Release         |Development                      |
+|Stable          |Unstable                         |
 |----------------|---------------------------------|
 |`m.read.private`|`org.matrix.msc2285.read.private`|
 
-To detect server support, clients can either rely on the spec version (when
-stable) or the presence of a `org.matrix.msc2285` flag in  `unstable_features`
-on `/versions`. Clients are recommended to check for server support to ensure
-they are not misleading the user about their read receipts not being visible to
-other users.
+Clients are required to check for server support to ensure they are not
+misleading the user about their read receipts not being visible to other users.
+
+While the MSC is considered unstable, to detect server support clients can rely
+on the presence of the `org.matrix.msc2285` flag in `unstable_features` on
+`/versions`.
+
+While this MSC is considered stable, to determine server support clients can
+rely on the presence of the `org.matrix.msc2285.stable` flag in
+`unstable_features` (while the MSC is not in a spec version) or on the presence
+of a suitable spec version in `versions` on `/versions`.
