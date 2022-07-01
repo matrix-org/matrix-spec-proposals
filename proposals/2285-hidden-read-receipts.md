@@ -97,7 +97,7 @@ While the MSC is considered unstable, to detect server support clients should
 check for the presence of the `org.matrix.msc2285` flag in `unstable_features` on
 `/versions`.
 
-While this MSC is considered stable, to determine server support clients can
+Once this MSC is post-FCP, to determine server support clients should
 rely on the presence of the `org.matrix.msc2285.stable` flag in
 `unstable_features` (while the MSC is not in a spec version) or on the presence
 of a suitable spec version in `versions` on `/versions`.
