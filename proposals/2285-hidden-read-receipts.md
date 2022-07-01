@@ -90,8 +90,8 @@ While this MSC is not considered stable, implementations should use
 |----------------|---------------------------------|
 |`m.read.private`|`org.matrix.msc2285.read.private`|
 
-Clients are required to check for server support to ensure they are not
-misleading the user about their read receipts not being visible to other users.
+Clients are required to check for server support to ensure they are not sending
+read receipts which are not clearing notifications.
 
 While the MSC is considered unstable, to detect server support clients can rely
 on the presence of the `org.matrix.msc2285` flag in `unstable_features` on
