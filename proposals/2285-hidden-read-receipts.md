@@ -86,9 +86,9 @@ much responsibility to an existing structure.
 While this MSC is not considered stable, implementations should use
 `org.matrix.msc2285` as a namespace.
 
-|Stable          |Unstable                         |
-|----------------|---------------------------------|
-|`m.read.private`|`org.matrix.msc2285.read.private`|
+|Stable (post-FCP)|Unstable                         |
+|-----------------|---------------------------------|
+|`m.read.private` |`org.matrix.msc2285.read.private`|
 
 Clients are required to check for server support to ensure they are not sending
 read receipts which are not clearing notifications.
