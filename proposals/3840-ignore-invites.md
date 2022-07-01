@@ -25,10 +25,31 @@ We adopt a similar `m.ignored_invites` with content:
 
 | Content | Type | Description |
 |---------|------|-------------|
-| `ignored_user_ids`   | optional `string[]` | Ignore invites from these users. |
-| `ignored_servers`    | optional `string[]` | Ignore invites from users in these homeservers. |
-| `ignored_room_ids`   | optional `string[]` | Ignore invites towards these rooms. |
+| `ignored_user_ids`   | optional `User[]`   | Ignore invites from these users. |
+| `ignored_servers`    | optional `Server[]` | Ignore invites from users in these homeservers. |
+| `ignored_room_ids`   | optional `Room[]`   | Ignore invites towards these rooms. |
 | `ignored_invites`    | optional `Invite[]` | Ignore specific invites. |
+
+where `Server` is
+
+| Content    | Type   | Description |
+|------------|--------|-------------|
+| `domain`   | string | The server to ignore. |
+| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
+
+where `Room` is
+
+| Content    | Type   | Description |
+|------------|--------|-------------|
+| `room_id`  | string | The room to ignore. |
+| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
+
+where `User` is
+
+| Content    | Type   | Description |
+|------------|--------|-------------|
+| `user_id`  | string | The user to ignore. |
+| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
 
 where `Invite` is
 
