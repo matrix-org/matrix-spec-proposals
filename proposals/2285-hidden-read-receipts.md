@@ -90,14 +90,34 @@ While this MSC is not considered stable, implementations should use
 |-----------------|---------------------------------|
 |`m.read.private` |`org.matrix.msc2285.read.private`|
 
+## Detecting server support
+
 Clients are required to check for server support to ensure they are not sending
 read receipts which are not clearing notifications.
 
-While the MSC is considered unstable, to detect server support clients should
-check for the presence of the `org.matrix.msc2285` flag in `unstable_features` on
-`/versions`.
+If a client has this feature enabled, it is recommended that, in the case of the
+server not supporting the MSC, the client should either keep sending private
+read receipts and risk notifications not clearing (if the server really does not
+support the MSC) or it should warn the user and start sending public read
+receipts.
 
-Once this MSC is post-FCP, to determine server support clients should
-rely on the presence of the `org.matrix.msc2285.stable` flag in
-`unstable_features` (while the MSC is not in a spec version) or on the presence
-of a suitable spec version in `versions` on `/versions`.
+### While the MSC is unstable
+
+During this period, to detect server support clients should check for the
+presence of the `org.matrix.msc2285` flag in `unstable_features` on `/versions`.
+Clients are also required to use the unstable prefixes (see [unstable
+prefix](#unstable-prefix)) during this time.
+
+### Once the MSC is merged but not in a spec version
+
+Once this MSC is merged, but is not yet part of the spec, clients should rely on
+the presence of the `org.matrix.msc2285.stable` flag in `unstable_features` to
+determine server support. If the flag is present, clients are required to use
+stable prefixes (see [unstable prefix](#unstable-prefix)).
+
+### Once the MSC is in a spec version
+
+Once this MSC becomes a part of a spec version, clients should rely on the
+presence of the spec version, that supports the MSC, in `versions` on
+`/versions`, to determine support. Servers will also drop the
+`org.matrix.msc2285.stable` flag once the MSC is part of a spec version.
