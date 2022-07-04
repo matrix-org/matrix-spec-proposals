@@ -95,11 +95,10 @@ While this MSC is not considered stable, implementations should use
 Clients are required to check for server support to ensure they are not sending
 read receipts which are not clearing notifications.
 
-If a client has this feature enabled, it is recommended that, in the case of the
-server not supporting the MSC, the client should either keep sending private
-read receipts and risk notifications not clearing (if the server really does not
-support the MSC) or it should warn the user and start sending public read
-receipts.
+If a client has this feature enabled, in the case of the server not supporting
+the MSC, the client should either keep sending private read receipts and risk
+notifications not clearing or it should warn the user and start sending public
+read receipts.
 
 ### While the MSC is unstable
 
