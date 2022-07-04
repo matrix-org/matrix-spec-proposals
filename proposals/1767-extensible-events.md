@@ -189,7 +189,7 @@ an image. If a sender would like to refer a temperature to an image (or whatever
 they can use [event relationships](https://spec.matrix.org/v1.3/client-server-api/#forming-relationships-between-events).
 
 How the client decides to pick reusable event types to render in place of unknown
-primary event types is deliberately left as an implementation detail. This MSC suggets
+primary event types is deliberately left as an implementation detail. This MSC suggests
 that clients use the following order:
 
 1. All known primary event types not listed in this list.
