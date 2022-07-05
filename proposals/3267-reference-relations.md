@@ -65,7 +65,7 @@ MSC might add more fields.
 
 Different subtypes of references could be defined through additional fields on
 the `m.relates_to` object, to distinguish between other forms of semantic behaviour
-indepdent of type (hypothetical threads, replies, etc if we didn't have a system
+independent of type (hypothetical threads, replies, etc if we didn't have a system
 for them already). This MSC doesn't attempt to define these subtypes.
 
 This relation cannot be used in conjunction with another relation due to `rel_type`
