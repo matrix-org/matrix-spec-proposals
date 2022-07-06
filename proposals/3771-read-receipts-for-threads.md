@@ -45,33 +45,22 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
-### Multiple receipts in a room
-
 This MSC proposes allowing the same receipt type to exist multiple times in a room
-by adding a `context` parameter to reach receipt.
+by adding a `threadId` parameter to reach receipt.
 
 The [`/receipt`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 endpoint gains a new optional path part and becomes:
 
-`POST /_matrix/client/v3/rooms/{roomId}/receipt/{receiptType}/{eventId}/{context}`
+`POST /_matrix/client/v3/rooms/{roomId}/receipt/{receiptType}/{eventId}/{threadId}`
 
-For backwards compatibility, a missing `context` is equivalent to an empty context.
-It is up to receipt types to define whether it is valid for them to have a `context`,
-it is invalid to provide a `context` for all currently known receipt types (`m.read`,
-`m.fully_read`, `m.read.private`).
-
-### A thread receipt type
-
-This MSC also proposes a new receipt type of `m.read.thread.private`, which is
-used for clients to sync the read status of each thread in a room.
-
-The `context` contains the thread that the read receipts belongs to (i.e. it should
+The `threadId` contains the thread that the read receipts belongs to (i.e. it should
 match the `event_id` contained within the `m.relates_to` of the event represented
-by `eventId`). This updates the unique tuple for receipts from
-`(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, context)`.
-A missing (or empty) `context` refers to the "main" timeline (or events which are
-not part of a thread). A client which understands threads is expected to only
-set the `m.read.thread.private` receipt type.
+by `eventId`).
+
+This updates the unique tuple for receipts from
+`(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, threadId)`.
+A missing (or empty) `threadId` refers to the "main" timeline (or events which are
+not part of a thread).
 
 Given a threaded message:
 
@@ -91,16 +80,13 @@ Given a threaded message:
 A client could mark this as read by sending a request:
 
 ```
-POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read.thread.private/$thread_reply/$thread_root
+POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply/$thread_root
 
 {}
 ```
 
-Similarly to the hidden read receipts from [MSC2285](https://github.com/matrix-org/matrix-spec-proposals/pull/2285),
-homeservers are not to send the receipt to any other users except the sender nor
-over federation.
-
-This would then come down `/sync` for the user with other receipts:
+This would then come down `/sync` for the user with other receipts, but with an
+additional property in the body containing the thread ID:
 
 ```json
 {
@@ -109,7 +95,7 @@ This would then come down `/sync` for the user with other receipts:
       "m.read.thread.private": {
         "@rikj:jki.re": {
           "ts": 1436451550453,
-          "context": "$thread_root"
+          "threadId": "$thread_root"
         }
       }
     }
@@ -118,18 +104,6 @@ This would then come down `/sync` for the user with other receipts:
   "type": "m.receipt"
 }
 ```
-
-Since this is not shared, only the own user's matrix ID would be expected to
-have this kind of receipt.
-
-## Compatibility with unthreaded clients
-
-When a user has clients which are both "unthreaded" and "threaded" then the read
-receipt and threaded read receipts would get out of sync. It is desirable to
-sync these two sets of read receipts and minimize duplicate notifications that
-occur from these two sets of read receipts.
-
-
 
 ## Potential issues
 
@@ -140,13 +114,15 @@ of receipts. This has a few downsides:
 * The effort to generate and process the receipts for each room would increase
   without bound.
 
-Due to both of the above, this proposal is limited to a *private* read receipt for
-threads. This limits the impact to a user's own read receipts for threads, but
-does not completely solve the issue.
-
 [MSC2285](https://github.com/matrix-org/matrix-spec-proposals/pull/2285) suggests
 that the `/read_markers` endpoint should become a generic bulk receipt endpoint.
-This is not compatible with the additional `context` parameter in this MSC.
+This is not compatible with the additional `threadId` parameter in this MSC.
+
+### Compatibility with unthreaded clients
+
+When a user has both a client which is "unthreaded" and "threaded" then there
+is a possibility for read receipts to be misrepresented when switching between
+clients. Solutions to this problem are deemed out of scope of this MSC.
 
 ## Alternatives
 
@@ -154,21 +130,16 @@ Instead of adding the thread ID as a new path part, it could be added to the bod
 of the receipt. There may be a small backwards compatibility benefit to this, but
 it seems clearer to put it as part of the URL.
 
-Similarly, instead of adding a new receipt type, the read status of each thread in
-a room could be added to the body of the `m.read.private` receipt. This could
-cause data integrity issues if multiple clients attempt to update the receipt
-without first reading it.
-
-Instead of adding the thread ID as a new path part, it could be  encoded as a suffix
-on the receipt, e.g. `m.thread.read.private-$abcd`. This has the benefit of not
-changing the current receipt mechanisms, but seems sub-par and requires additional
-parsing of opaque identifiers.
+Instead of encoding the thread ID as an integral part of the receipt, the read
+threads could be added to the body of the receipt. This could cause data
+integrity issues if multiple clients attempt to update the receipt without first
+reading it.
 
 ## Security considerations
 
-There is potential for abuse by allowing clients to specify a unique `context`.
-A mitigation could be to ensure that it is the related event of the thread, ensuring
-that each thread only has a single context.
+There is potential for abuse by allowing clients to specify a unique `threadId`.
+A mitigation could be to ensure that the receipt is related to an event of the
+thread, ensuring that each thread only has a single receipt.
 
 ## Future extensions
 
@@ -176,24 +147,12 @@ Future extensions will tackle how the thread read receipts impact notification c
 
 ## Unstable prefix
 
-During implementation the receipt type shall be `org.matrix.mscXXXX`.
-
-To avoid receipts that will never be updated, after stabilization, homeservers are
-expected to reject the unstable receipt type and purge all receipts using the
-unstable receipt type.
-
 To detect server support, clients can either rely on the spec version (when stable)
 or the presence of a `org.matrix.msc3771` flag in `unstable_features` on `/versions`.
 
 ## Dependencies
 
-This MSC depends on the following MSCs, which at the time of writing have not yet
-been accepted into the spec:
+This MSC depends on the following MSCs, which have been accepted into the spec,
+but have yet to be released:
 
-* [MSC2285](https://github.com/matrix-org/matrix-spec-proposals/pull/2285): Hidden read receipts
-
-As well as the following MSCs, which have been accepted into the spec, but have
-yet to be released:
-
-* [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674): Event Relationships
 * [MSC3440](https://github.com/matrix-org/matrix-spec-proposals/pull/3440): Threading via `m.thread` relation
