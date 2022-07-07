@@ -25,39 +25,17 @@ We adopt a similar `m.ignored_invites` with content:
 
 | Content | Type | Description |
 |---------|------|-------------|
-| `ignored_user_ids`   | optional `User[]`   | Ignore invites from these users. |
-| `ignored_servers`    | optional `Server[]` | Ignore invites from users in these homeservers. |
-| `ignored_room_ids`   | optional `Room[]`   | Ignore invites towards these rooms. |
-| `ignored_invites`    | optional `Invite[]` | Ignore specific invites. |
+| `ignored_user_ids`   | optional map `UserId` => `IgnoreMetadata` | Ignore invites from these users. |
+| `ignored_servers`    | optional map `domain` => `IgnoreMetadata` | Ignore invites from users in these homeservers. |
+| `ignored_room_ids`   | optional map `RoomId` => `IgnoreMetadata` | Ignore invites towards these rooms. |
+| `ignored_invites`    | optional map `RoomId` => map `UserId` => `IgnoreMetadata` | Ignore specific invites. |
 
-where `Server` is
-
-| Content    | Type   | Description |
-|------------|--------|-------------|
-| `domain`   | string | The server to ignore. |
-| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
-
-where `Room` is
+where `IgnoreMetadata` is
 
 | Content    | Type   | Description |
 |------------|--------|-------------|
-| `room_id`  | string | The room to ignore. |
 | `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
-
-where `User` is
-
-| Content    | Type   | Description |
-|------------|--------|-------------|
-| `user_id`  | string | The user to ignore. |
-| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
-
-where `Invite` is
-
-| Content    | Type   | Description |
-|------------|--------|-------------|
-| `room_id`  | string | The room in which the user is invited. |
-| `user_id`  | string | The user who issued the invite.        |
-| `ts`       | timestamp | The instant at which the invite was received. Used for visual purposes (i.e. order by most recent) and/or cleanup. |
+| `reason`   | optional string | A human-readable reason for ignoring the invite. |
 
 ### Client behaviour
 
