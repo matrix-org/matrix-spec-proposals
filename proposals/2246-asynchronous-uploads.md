@@ -61,7 +61,7 @@ For other errors, such as file size, file type or user quota errors, the normal
 `/upload` rules apply.
 
 #### Changes to the `/download` and `/thumbnail` endpoints
-A new query parameter, `max_stall_ms` is added to the endpoints that can
+A new query parameter, `timeout_ms` is added to the endpoints that can
 download media. It's an integer that specifies the maximum number of
 milliseconds that the client is willing to wait to start receiving data.
 The default value is 20000 (20 seconds).
@@ -92,7 +92,7 @@ use `fi.mau.msc2246` as a prefix and as an `unstable_features` flag in the
 
 * `POST /_matrix/media/unstable/fi.mau.msc2246/create`
 * `PUT /_matrix/media/unstable/fi.mau.msc2246/upload/{serverName}/{mediaId}`
-* `?fi.mau.msc2246.max_stall_ms`
+* `?fi.mau.msc2246.timeout_ms`
 * `FI.MAU.MSC2246_NOT_YET_UPLOADED`
 * `FI.MAU.MSC2246_CANNOT_OVERWRITE_MEDIA`
 
