@@ -67,6 +67,9 @@ milliseconds that the client is willing to wait to start receiving data.
 The default value is 20000 (20 seconds). The server can and should impose a
 maximum value for this parameter.
 
+If the media is available immediately (for example in the case of a
+non-asynchronous upload), the server should ignore this parameter.
+
 If the data is not available before the specified time is up, the content
 repository returns a `M_NOT_YET_UPLOADED` error with a HTTP 404 status code.
 The error may include an additional `retry_after_ms` field to suggest when the
