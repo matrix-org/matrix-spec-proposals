@@ -64,7 +64,8 @@ For other errors, such as file size, file type or user quota errors, the normal
 A new query parameter, `timeout_ms` is added to the endpoints that can
 download media. It's an integer that specifies the maximum number of
 milliseconds that the client is willing to wait to start receiving data.
-The default value is 20000 (20 seconds).
+The default value is 20000 (20 seconds). The server can and should impose a
+maximum value for this parameter.
 
 If the data is not available before the specified time is up, the content
 repository returns a `M_NOT_YET_UPLOADED` error with a HTTP 404 status code.
