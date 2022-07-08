@@ -43,20 +43,22 @@ lots of unused ids.
 ```
 
 #### `PUT /_matrix/media/v3/upload/{serverName}/{mediaId}`
-Upload content to a MXC URI that was created earlier. If the endpoint is called
-with a media ID that already has content, the request should be rejected with
-the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP status code 409. The endpoint
-should also reject upload requests from users other than the user who created
-the media ID. This endpoint requires auth.
+Upload content to a MXC URI that was created earlier. This endpoint requires
+auth. If the upload is successful, an empty JSON object and status code 200 is
+returned.
 
-If the upload is successful, an empty JSON object and status code 200 is
-returned. If the serverName/mediaId combination is not known or not local, an
-`M_NOT_FOUND` error is returned. For other errors, such as file size, file type
-or user quota errors, the normal `/upload` rules apply.
+If the endpoint is called with a media ID that already has content, the request
+should be rejected with the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP
+status code 409.
 
-The client should include a `Content-Length` header to ensure the server knows
-if the file was uploaded entirely. If the server receives a different amount of
-data than specified in the header, the upload must fail.
+If the upload request comes from a user other than the one who created the media
+ID, the request should be rejected with an `M_FORBIDDEN` error.
+
+If the serverName/mediaId combination is not known, not local, or expired, an
+`M_NOT_FOUND` error is returned.
+
+For other errors, such as file size, file type or user quota errors, the normal
+`/upload` rules apply.
 
 #### Changes to the `/download` and `/thumbnail` endpoints
 A new query parameter, `max_stall_ms` is added to the endpoints that can
