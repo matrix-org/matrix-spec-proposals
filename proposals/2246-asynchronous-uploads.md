@@ -72,8 +72,6 @@ non-asynchronous upload), the server should ignore this parameter.
 
 If the data is not available before the specified time is up, the content
 repository returns a `M_NOT_YET_UPLOADED` error with a HTTP 504 status code.
-The error may include an additional `retry_after_ms` field to suggest when the
-client should try again.
 
 For the `/download` endpoint, the server could also stream data directly as it
 is being uploaded. However, streaming creates several implementation and spec
