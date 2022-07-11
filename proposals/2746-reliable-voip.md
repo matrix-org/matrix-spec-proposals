@@ -210,6 +210,9 @@ indicate the call has been hung up, rejected, or answered elsewhere, the client 
 If on startup, after processing locally stored events, the client determines that there is an invite
 that is still valid, it should still signal it but only after it has completed a sync from the homeserver.
 
+The minimal recommended lifetime is 90 seconds - this should give the user
+enough time to actually pick up the call.
+
 ### Introduce recommendations for batching of ICE candidates
 Clients should aim to send a small number of candidate events, with guidelines:
  * ICE candidates which can be discovered immediately or almost immediately in the invite/answer
