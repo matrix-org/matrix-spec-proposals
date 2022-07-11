@@ -15,10 +15,10 @@ Historically, Matrix has basic support for signalling 1:1 WebRTC calls which suf
    on a different device to be hung up.
 
 ## Proposal
-### Change the `version` field in all VoIP events to `1`
+### Change the `version` field in all VoIP events to `"1"`
 This will be used to determine whether determine whether devices support this new version of the protocol.
-If clients see events with `version` other than `0` or `1`, they should treat these the same as if they had
-`version` == `1`. In addition, clients must accept either the number `0` or a string for the value of the `version`
+If clients see events with `version` other than `0` or `"1"`, they should treat these the same as if they had
+`version` == `"1"`. In addition, clients must accept either the number `0` or a string for the value of the `version`
 field, in order to allow for namespaced versions in the future.
 
 ### Define the configurations of WebRTC streams and tracks in each call type
@@ -80,7 +80,7 @@ Example:
 {
     "type": "m.call.select_answer",
     "content": {
-        "version": 1,
+        "version": "1",
         "call_id": "12345",
         "party_id": "67890",
         "selected_party_id": "111213",
@@ -90,7 +90,7 @@ Example:
 
 ### Introduce `m.call.reject`
 
- * If the `m.call.invite` event has `version` `1`, a client wishing to reject the call
+ * If the `m.call.invite` event has `version` `"1"`, a client wishing to reject the call
    sends an `m.call.reject` event. This rejects the call on all devices, but if the calling
    device sees an accept, it disregards the reject event and carries on. The reject has a
    `party_id` just like an answer, and the caller sends a `select_answer` for it just like an
@@ -103,7 +103,7 @@ Example:
 {
     "type": "m.call.reject",
     "content" : {
-        "version": 1,
+        "version": "1",
         "call_id": "12345",
         "party_id": "67890",
     }
@@ -144,7 +144,7 @@ This introduces SDP negotiation semantics for media pause, hold/resume, ICE rest
 call up/downgrading. Clients should implement & honour hold functionality as per WebRTC's
 recommendation: https://www.w3.org/TR/webrtc/#hold-functionality
 
-If both the invite event and the accepted answer event have `version` equal to `1`, either party may
+If both the invite event and the accepted answer event have `version` equal to `"1"`, either party may
 send `m.call.negotiate` with a `description` field to offer new SDP to the other party. This event has
 `call_id` with the ID of the call and `party_id` equal to the client's party ID for that call.
 The caller ignores any negotiate events with `party_id` + `user_id` tuple not equal to that of the
@@ -311,3 +311,6 @@ field to a string so that this namespacing can be used for future changes. Since
 to namespace events whilst in development and ensure interoperability, we have chosen not to use an unstable
 prefix for this change, on the understanding that in future we will be able to use the string `version` field
 for the unstable prefix.
+
+For backwards compatibility, strongly typed implementations should allow for
+`version` to be both integer and string.
