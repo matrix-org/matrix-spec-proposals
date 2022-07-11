@@ -317,4 +317,4 @@ prefix for this change, on the understanding that in future we will be able to u
 for the unstable prefix.
 
 For backwards compatibility, strongly typed implementations should allow for
-`version` to be both integer and string.
+`version` to either be a string or the integer `0`.
