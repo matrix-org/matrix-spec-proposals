@@ -21,10 +21,12 @@ If clients see events with `version` other than `0` or `"1"`, they should treat 
 `version` == `"1"`. In addition, clients must accept either the number `0` or a string for the value of the `version`
 field, in order to allow for namespaced versions in the future.
 
-### Define the configurations of WebRTC streams and tracks in each call type
-We define that:
- * A voice call has at least one track of kind 'audio' in the first stream
- * A video call has at least one track of kind 'video' and at least one track of kind 'audio' in the first stream
+### Define the configurations of WebRTC streams and tracks
+
+Clients are expected to send one stream with one track of kind `audio` (creating
+voice call). They can optionally send a second track in the same stream of kind
+`video` (creating a video call).
+
 Clients implementing this specification use the first stream and will ignore any streamless tracks. Note that
 in the Javascript WebRTC API, this means `addTrack()` must be passed two parameters: a track and a stream,
 not just a track, and in a video call the stream must be the same for both audio and video track.
