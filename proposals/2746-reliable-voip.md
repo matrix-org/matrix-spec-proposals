@@ -16,7 +16,7 @@ Historically, Matrix has basic support for signalling 1:1 WebRTC calls which suf
 
 ## Proposal
 ### Change the `version` field in all VoIP events to `"1"`
-This will be used to determine whether determine whether devices support this new version of the protocol.
+This will be used to determine whether devices support this new version of the protocol.
 If clients see events with `version` other than `0` or `"1"`, they should treat these the same as if they had
 `version` == `"1"`. In addition, clients must accept either the number `0` or a string for the value of the `version`
 field, in order to allow for namespaced versions in the future.
