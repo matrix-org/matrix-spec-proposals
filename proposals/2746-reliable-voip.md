@@ -166,13 +166,16 @@ Example:
         "call_id": "12345",
         "party_id": "67890",
         "lifetime": 10000,
-	"description": {
+        "description": {
             "sdp": "[some sdp]",
             "type": "offer",
 	},
     }
 }
 ```
+
+Once an `m.call.negotiate` event is received, the client must respond with an
+event of the same type with type with the SDP answer (`type: "answer"`).
 
 This MSC also proposes clarifying the `m.call.invite` and `m.call.answer` events to state that
 the `offer` and `answer` fields respectively are objects of type `RTCSessionDescriptionInit`
