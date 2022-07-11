@@ -163,6 +163,7 @@ Example:
 {
     "type": "m.call.negotiate",
     "content": {
+        "version": "1",
         "call_id": "12345",
         "party_id": "67890",
         "lifetime": 10000,
