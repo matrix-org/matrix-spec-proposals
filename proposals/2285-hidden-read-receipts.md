@@ -96,9 +96,13 @@ Clients are required to check for server support to ensure they are not sending
 read receipts which are not clearing notifications.
 
 If a client has this feature enabled, in the case of the server not supporting
-the MSC, the client should either keep sending private read receipts and risk
-notifications not clearing or it should warn the user and start sending public
-read receipts.
+the MSC, the client should either keep sending private read receipts with the
+knowledge that notifications will not be clearing or it should warn the user and
+start sending public read receipts.
+
+**Once this MSC gets merged and once it becomes a part of a spec version,
+clients should update their implementations as fast as possible to accommodate
+the fact that the way of detecting server support will change.**
 
 ### While the MSC is unstable
 
