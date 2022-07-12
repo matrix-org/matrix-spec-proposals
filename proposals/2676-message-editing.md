@@ -134,6 +134,9 @@ Note that there is no `m.relates_to` property in the encrypted payload. (Any suc
 property would be ignored.) Likewise, there is no `m.new_content` in the
 plaintext body. (Again, any such property would be ignored.)
 
+For clarity: the payload must be encrypted as normal, ratcheting the Megolm session
+as normal. The original Megolm ratchet entry should **not** be re-used.
+
 #### Applying `m.new_content`
 
 When applying a replacement, the `content` property of the original event is
@@ -257,7 +260,7 @@ event that is the target of an `m.replace` relationship. For example:
       "m.replace": {
         "event_id": "$latest_edit_event_id",
         "origin_server_ts": 1649772304313,
-        "sender": "@editing_user:localhost
+        "sender": "@editing_user:localhost"
       }
     }
   }
