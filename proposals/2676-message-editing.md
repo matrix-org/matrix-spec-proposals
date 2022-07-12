@@ -231,9 +231,10 @@ given event (for example, if an event is edited multiple times). These should
 be [aggregated](https://spec.matrix.org/v1.3/client-server-api/#aggregations)
 by the homeserver.
 
-The format of the aggregation for `m.replace` simply gives
-gives the `event_id`, `origin_server_ts`, and `sender` of the most recent
-replacement event (determined as above).
+The format of the aggregation for `m.replace` simply gives gives the
+`event_id`, `origin_server_ts`, and `sender` of the most recent replacement
+event (as determined by `origin_server_ts`, falling back to a lexicographic
+ordering of `event_id`).
 
 This aggregation is bundled into the `unsigned/m.relations` property of any
 event that is the target of an `m.replace` relationship. For example:
@@ -264,8 +265,7 @@ relationship.
 
 Whenever an `m.replace` is to be bundled with an event as above, the server should
 also modify the `content` of the original event according
-to the `m.new_content` of the most recent edit (as determined by
-`origin_server_ts`, falling back to a lexicographic ordering of `event_id`).
+to the `m.new_content` of the most recent edit (determined as above).
 
 An exception applies to [`GET
 /_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
