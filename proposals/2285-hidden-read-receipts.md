@@ -92,19 +92,26 @@ While this MSC is not considered stable, implementations should use
 |-----------------|---------------------------------|
 |`m.read.private` |`org.matrix.msc2285.read.private`|
 
-## Detecting server support
+Clients should check for server support before sending private read receipts:
+if the server does not support them, then a private read receipt will not clear
+any notifications for the user.
 
-Clients are required to check for server support to ensure they are not sending
-read receipts which are not clearing notifications.
+The presence of `org.matrix.msc2285` or `org.matrix.msc2285.stable` in
+`unstable_features` is a reliable indication that a server supports private read
+receipts; however the converse is not true: their absence does not necessarily
+mean that the server does *not* support private read receipts. In particular,
+the server may have been updated to a future spec version which includes
+private read receipts, and hence removed the `unstable_features` entry.
 
-If a client has this feature enabled, in the case of the server not supporting
-the MSC, the client should either keep sending private read receipts with the
-knowledge that notifications will not be clearing or it should warn the user and
-start sending public read receipts.
+Therefore, if a client has this feature enabled, but the server does not advertise
+support for this MSC in `unstable_features`, the client should either keep sending
+private read receipts with the risk that notifications will not be clearing, or it
+should warn the user and start sending public read receipts instead.
 
-**Once this MSC gets merged and once it becomes a part of a spec version,
-clients should update their implementations as fast as possible to accommodate
-the fact that the way of detecting server support will change.**
+To mitigate this problem, once this MSC gets merged and once it becomes a part of a
+spec version, clients should update their implementations as fast as possible to
+accommodate the fact that the way of detecting server support will change: clients
+will now be looking for that spec version in `/versions`.
 
 ### While the MSC is unstable
 
@@ -124,5 +131,8 @@ stable prefixes (see [unstable prefix](#unstable-prefix)).
 
 Once this MSC becomes a part of a spec version, clients should rely on the
 presence of the spec version, that supports the MSC, in `versions` on
-`/versions`, to determine support. Servers will also drop the
-`org.matrix.msc2285.stable` flag once the MSC is part of a spec version.
+`/versions`, to determine support. Servers are encouraged to keep the
+`org.matrix.msc2285.stable` flag around for a reasonable amount of time
+to help smooth over the transition for clients. "Reasonable" is intentionally
+left as an implementation detail, however the MSC process currently recommends
+*at most* 2 months from the date of spec release.
