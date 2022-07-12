@@ -46,10 +46,23 @@ Both `m.read` and `m.read.private` clear notifications in the same way. If the
 user sent two receipts into a room, the later one should be the one that decides
 the notification count.
 
-If the user has `m.read` and `m.read.private` receipts at the same event, the
-`m.read` receipt takes precedence - an `m.read.private` receipt sent to an event
-that already has `m.read`, shouldn't move the user's receipt up in the timeline
-from the perspective of other users.
+The receipt that is more "ahead" of the other takes precedence when considering
+notifications and a client's rendering of read receipts. This means that given
+an ordered set of events A, B, C, and D the public read receipt could be at
+point C, private at point A. If the user moves the private receipt from A to B
+then the user's notification count is still considered from point C as the public
+receipt is further ahead, still. Other users would also see the user's public read
+receipt as not having moved. The user can then move the private read receipt
+to point D, hopping over the public receipt, to change their notification count.
+
+For clarity, if the public receipt is "fast forwarded" to be at the same position
+as the private receipt then the public receipt is broadcast to other users, even
+if previously considered private.
+
+Note that like regular read receipts today, neither receipt can cause a backwards
+movement: both receipts can only move forwards, but do not have to be ahead of
+each other. It's valid to, for example, update a public read receipt which lags
+20 messages behind the private one.
 
 The `m.read` property is now optional for the [`/read_markers`
 endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers)
