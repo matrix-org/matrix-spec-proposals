@@ -11,7 +11,7 @@ issue, this MSC proposes a mechanism for filtering the response of
 
 This MSC proposes adding a `room_types` filter to the `POST /publicRooms` endpoint.
 The value of `room_types` is an array of room types - possible values of the
-`type` field in the `m.room.create` state event - which should be returned.
+`type` field in the `m.room.create` state event's `content` dictionary - which should be returned.
 
 An example request could look like this:
 
