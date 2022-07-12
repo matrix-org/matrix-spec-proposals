@@ -224,18 +224,6 @@ edit should not be included in the server-side aggregation).
 
 ### Server behaviour
 
-Whenever a homeserver would return an event via the Client-Server API, it
-should check for any valid, applicable `m.replace` event, and if one is found, it
-should first modify the `content` of the original event according to the
-`m.new_content` of the most recent edit (as determined by
-`origin_server_ts`, falling back to a lexicographic ordering of `event_id`).
-
-An exception applies to [`GET
-/_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
-which should return the *unmodified* event (though the relationship should
-still be "bundled", as described
-below.
-
 #### Server-side aggregation of `m.replace` relationships
 
 Note that there can be multiple events with an `m.replace` relationship to a
@@ -271,6 +259,30 @@ If the original event is redacted, any `m.replace` relationship should **not**
 be bundled with it (whether or not any subsequent edits are themselves
 redacted). Note that this behaviour is specific to the `m.replace`
 relationship.
+
+#### Server-side replacement of content
+
+Whenever an `m.replace` is to be bundled with an event as above, the server should
+also modify the `content` of the original event according
+to the `m.new_content` of the most recent edit (as determined by
+`origin_server_ts`, falling back to a lexicographic ordering of `event_id`).
+
+An exception applies to [`GET
+/_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
+which should return the *unmodified* event (though the relationship should
+still be bundled, as described above.
+
+The endpoints where this behaviour takes place is the same as those where
+aggregations are bundled, with the exception of
+`/room/{roomId}/event/{eventId}`. This includes:
+
+  * `GET /rooms/{roomId}/messages`
+  * `GET /rooms/{roomId}/context/{eventId}`
+  * `GET /rooms/{roomId}/relations/{eventId}`
+  * `GET /rooms/{roomId}/relations/{eventId}/{relType}`
+  * `GET /rooms/{roomId}/relations/{eventId}/{relType}/{eventType}`
+  * `GET /sync` when the relevant section has a `limited` value of `true`
+  * `POST /search` for any matching events under `room_events`.
 
 ### Client behaviour
 
