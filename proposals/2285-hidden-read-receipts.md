@@ -74,10 +74,9 @@ similarly bridged users are perceived today.
 
 ## Alternatives
 
-It has been suggested to use account data to control this on a per-account
-basis. While this might have some benefits, it is much less flexible and would
-lead to us inventing a way to store per-account settings in account data which
-should be handled in a separate MSC.
+It has been suggested to use account data to store the setting that controls
+whether read receipts should be private on a per-account/per-room basis. While
+this might have some benefits, it is much less flexible.
 
 Previous iterations of this MSC additionally suggested that having an `m.hidden`
 flag on existing read receipts could work, however this feels like assigning too
