@@ -29,7 +29,7 @@ abilities of [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/
 
 ## Proposal
 
-To set up calls with minimal latency and support the full-mesh group call mode specified in
+To set up calls with minimal latency and support the full-mesh group call mode of
 [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401), widgets need to be able to continuously
 receive updates about the latest valid TURN server credentials, rather than requesting them once at start-up or
 on-demand. Otherwise, call setup with new participants may start failing midway through a call, or suffer the latency
