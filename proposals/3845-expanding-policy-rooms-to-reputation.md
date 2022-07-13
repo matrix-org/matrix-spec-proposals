@@ -66,17 +66,28 @@ We expand the **`enum`** `recommendation` with a new variant
 
 | Variant | Description |
 |---------|-------------|
-| `m.opinion` | The current policy states an *opinion* on an entity. The `content` has a field `opinion` (see below). |
+| `m.opinion` | The current policy states an *opinion* on an entity. The `content` MUST have a field `opinion` (see below). |
 
 We expand the `content` with a new field
 
 | Field     | Type | Description |
 |-----------|------|-------------|
-| `opinion` | Integer in [-100, 100], optional | A subjective opinon on the behavior of the entity. A value of `-100` represents an extremely poor opinion (e.g. a user with a highly toxic behavior), while a value of `100` represents an extremely favorable opinion (e.g. a pillar of the community). This field MUST be present if `type` is `m.opinion`. |
+| `opinion` | Integer in [-100, 100], optional | A subjective opinon on the behavior of the entity, where `-100` is the worst possible opinion and `+100` is the best possible opinion. This field MUST be present if `type` is `m.opinion`. |
 
 Tools are free to mix and match `opinion`s from different *sources that they trust* to come up with a
-decision on e.g. whether an entity should be allowed in a community. Tools are also free to decide of
-the default `opinion` value for any entity for which no `opinion` has been published.
+decision on e.g. whether an entity should be allowed in a community.
+
+### Opinion values
+
+This MSC does not present any normative value for which actions should be undertaken. However, the intuition behind this MSC is that:
+
+- `-100` represents an entity with a highly toxic behavior (e.g. a scammer, or a homeserver that hosts scammers and refuses to take measures against them), who should be permanently banned from any interaction with the user/community if possible;
+- `+100` represents an pillar of the community (e.g. someone who has been a member of the community for a long time and routinely participates to defuse potential complicated situations), whose abuse reports should be taken seriously;
+- any value between `-20` and `+20` is an average user/homeserver/room.
+
+Individual communities are free to decide of the default `opinion` value for an entity for which no `opinion` has been published. In particular, some communities offering public joins may decide that new users start with a negative `opinion` and progressively gain positive `opinion` as they interact with the rest of the community.
+
+Such policies are not meant to be specified as part of the Matrix protocol. Rather, we recommend that tools (e.g. moderation bots) be designed to explore this space.
 
 ## Potential issues
 ### Conflicting Opinions
