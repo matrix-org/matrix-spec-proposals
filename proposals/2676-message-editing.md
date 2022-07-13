@@ -38,7 +38,7 @@ now other than formalise the status quo.
 
 This MSC, along with the others mentioned above, therefore seeks primarily to
 do that. Although there is plenty of scope for improvement, we consider that
-better done in *future* MSCs, based on a shared understaning of the *current*
+better done in *future* MSCs, based on a shared understanding of the *current*
 implementation.
 
 In short, this MSC prefers fidelity to the current implementations over
