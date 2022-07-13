@@ -46,10 +46,23 @@ Both `m.read` and `m.read.private` clear notifications in the same way. If the
 user sent two receipts into a room, the later one should be the one that decides
 the notification count.
 
-If the user has `m.read` and `m.read.private` receipts at the same event, the
-`m.read` receipt takes precedence - an `m.read.private` receipt sent to an event
-that already has `m.read`, shouldn't move the user's receipt up in the timeline
-from the perspective of other users.
+The receipt that is more "ahead" of the other takes precedence when considering
+notifications and a client's rendering of read receipts. This means that given
+an ordered set of events A, B, C, and D the public read receipt could be at
+point C, private at point A. If the user moves the private receipt from A to B
+then the user's notification count is still considered from point C as the public
+receipt is further ahead, still. Other users would also see the user's public read
+receipt as not having moved. The user can then move the private read receipt
+to point D, hopping over the public receipt, to change their notification count.
+
+For clarity, if the public receipt is "fast forwarded" to be at the same position
+as the private receipt then the public receipt is broadcast to other users, even
+if previously considered private.
+
+Note that like regular read receipts today, neither receipt can cause a backwards
+movement: both receipts can only move forwards, but do not have to be ahead of
+each other. It's valid to, for example, update a public read receipt which lags
+20 messages behind the private one.
 
 The `m.read` property is now optional for the [`/read_markers`
 endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers)
@@ -92,19 +105,26 @@ While this MSC is not considered stable, implementations should use
 |-----------------|---------------------------------|
 |`m.read.private` |`org.matrix.msc2285.read.private`|
 
-## Detecting server support
+Clients should check for server support before sending private read receipts:
+if the server does not support them, then a private read receipt will not clear
+any notifications for the user.
 
-Clients are required to check for server support to ensure they are not sending
-read receipts which are not clearing notifications.
+The presence of `org.matrix.msc2285` or `org.matrix.msc2285.stable` in
+`unstable_features` is a reliable indication that a server supports private read
+receipts; however the converse is not true: their absence does not necessarily
+mean that the server does *not* support private read receipts. In particular,
+the server may have been updated to a future spec version which includes
+private read receipts, and hence removed the `unstable_features` entry.
 
-If a client has this feature enabled, in the case of the server not supporting
-the MSC, the client should either keep sending private read receipts with the
-knowledge that notifications will not be clearing or it should warn the user and
-start sending public read receipts.
+Therefore, if a client has this feature enabled, but the server does not advertise
+support for this MSC in `unstable_features`, the client should either keep sending
+private read receipts with the risk that notifications will not be clearing, or it
+should warn the user and start sending public read receipts instead.
 
-**Once this MSC gets merged and once it becomes a part of a spec version,
-clients should update their implementations as fast as possible to accommodate
-the fact that the way of detecting server support will change.**
+To mitigate this problem, once this MSC gets merged and once it becomes a part of a
+spec version, clients should update their implementations as fast as possible to
+accommodate the fact that the way of detecting server support will change: clients
+will now be looking for that spec version in `/versions`.
 
 ### While the MSC is unstable
 
@@ -124,5 +144,8 @@ stable prefixes (see [unstable prefix](#unstable-prefix)).
 
 Once this MSC becomes a part of a spec version, clients should rely on the
 presence of the spec version, that supports the MSC, in `versions` on
-`/versions`, to determine support. Servers will also drop the
-`org.matrix.msc2285.stable` flag once the MSC is part of a spec version.
+`/versions`, to determine support. Servers are encouraged to keep the
+`org.matrix.msc2285.stable` flag around for a reasonable amount of time
+to help smooth over the transition for clients. "Reasonable" is intentionally
+left as an implementation detail, however the MSC process currently recommends
+*at most* 2 months from the date of spec release.
