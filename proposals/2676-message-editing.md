@@ -132,7 +132,7 @@ For example, an encrypted replacement event might look like this:
 
 Note that there is no `m.relates_to` property in the encrypted payload. (Any such
 property would be ignored.) Likewise, there is no `m.new_content` in the
-plaintext body. (Again, any such property would be ignored.)
+cleartext body. (Again, any such property would be ignored.)
 
 For clarity: the payload must be encrypted as normal, ratcheting the Megolm session
 as normal. The original Megolm ratchet entry should **not** be re-used.
@@ -270,7 +270,7 @@ to the `m.new_content` of the most recent edit (determined as above).
 An exception applies to [`GET
 /_matrix/client/v3/rooms/{roomId}/event/{eventId}`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomideventeventid),
 which should return the *unmodified* event (though the relationship should
-still be bundled, as described above.
+still be bundled, as described above).
 
 The endpoints where this behaviour takes place is the same as those where
 aggregations are bundled, with the exception of
