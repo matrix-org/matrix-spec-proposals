@@ -55,9 +55,10 @@ The `m.read` property is now optional for the [`/read_markers`
 endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers)
 as sometimes we only want to send `m.read.private`.
 
-Servers MUST NOT send receipts of `receiptType` `m.read.private` to any other
-user than the sender. Servers also MUST NOT send receipts of `receiptType`
-`m.read.private` to any server over federation.
+The MSC proposes that from now on, not all things sent over `/receipt` are
+federated. Servers MUST NOT send receipts of `receiptType` `m.read.private` to
+any other user than the sender. Servers also MUST NOT send receipts of
+`receiptType` `m.read.private` to any server over federation.
 
 ## Security considerations
 
