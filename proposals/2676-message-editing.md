@@ -130,9 +130,11 @@ For example, an encrypted replacement event might look like this:
 }
 ```
 
-Note that there is no `m.relates_to` property in the encrypted payload. (Any such
-property would be ignored.) Likewise, there is no `m.new_content` in the
-cleartext body. (Again, any such property would be ignored.)
+Note that:
+ * There is no `m.relates_to` property in the encrypted payload. (Any such
+   property would be ignored.)
+ * There is no `m.new_content` property in the cleartext `content` of the
+   `m.room.encrypted` event. (Again, any such property would be ignored.)
 
 For clarity: the payload must be encrypted as normal, ratcheting the Megolm session
 as normal. The original Megolm ratchet entry should **not** be re-used.
