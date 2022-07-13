@@ -15,12 +15,10 @@ based on heuristics.
 The Client-Server API, Server-Server API, Application Service API, Identity Service API,
 and Push Gateway shall respond with a 400 HTTP error response with an error code
 of `M_UNKNOWN_ENDPOINT`. This is required for all endpoints under the `/_matrix`
-prefix and is recommended for any server-specific endpoints that might be
-implemented (e.g. the `/_synapse` prefix used by Synapse's admin API).
+prefix.
 
-This applies to a server not known the URL or an incorrect method being used for
-that URL, i.e. whenever nothing exists to handle a request.
-
+This applies if a server receives a request to an unknown URL or if an invalid method is
+used for a known URL, i.e. whenever the request cannot be routed to business logic.
 
 ## Potential issues
 
