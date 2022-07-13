@@ -1,9 +1,9 @@
-# MSCXXXX: Expanding Policy Rooms towards Distributed Reputation
+# MSC3845: Expanding Policy Rooms towards Distributed Reputation
 
 The Matrix network and protocol are open. However, some users, rooms or servers (let's call them
 "entities") may not play well together, which results in the necessity to kick, ignore or ban
 entities from individual rooms, spaces or other groups of rooms. This happens in particular when
-a user or an entirey homeserver adopt toxic behaviors, such as bullying or attempting to brigade
+a user or an entire homeserver adopt toxic behaviors, such as bullying, spamming or attempting to brigade
 other users. As it turns out, kicking, ignoring or banning entities is a complicated task in
 presence of federation. To aid with such actions, MSC2313 defines a vocabulary for storing,
 publishing and sharing *recommendations* on entities, in particular banning.
@@ -14,7 +14,7 @@ that implement this spec take the necessary actions.
 In many cases, however, banning is too boolean. Actually deciding whether an entity should be banned
 (or muted, or throttled, or any other possible recommendation) is something that may need to be decided
 after taking into account several sources. For instance, a community may decide to adopt a policy
-through which a user is banned from the entirey community if they behave as a troll on at least three
+through which a user is banned from the entire community if they behave as a troll on at least three
 of their rooms. If they behave as a troll in a single room, they should perhaps get away with a warning,
 or perhaps be muted for 15 minutes, etc.
 
@@ -23,7 +23,7 @@ To achieve this, we need two mechanisms:
 - a mechanism to store, publish and share actual *actions* against an entity (such as kicking or muting).
 
 The current proposal builds upon policies introduced in MSC2313 to serve as the former, letting
-communities share their opinion of an entity as a number in [0, 100). Further tools may be developed
+communities share their opinion of an entity as a number in [-100, 100]. Further tools may be developed
 to take action against entities based on the collation of opinions.
 
 We stress out that the Matrix network itself is neutral: it has no opinion on users or content. Different
@@ -56,23 +56,27 @@ We expand this to:
     "content": {
         "entity": "@darthvader:example.org",
         "recommendation": "m.opinion",
-        "opinion": 5,
+        "opinion": -50,
         "reason": "keeps trying to get other users to join the Dark Side, whatever that is"
     }
 },
 ```
 
-We expand the `enum` `recommendation` with a new value `m.opinion`. This value states that the
-policy states an opinion published by its issuer.
+We expand the **`enum`** `recommendation` with a new variant
+
+| Variant | Description |
+|---------|-------------|
+| `m.opinion` | The current policy states an *opinion* on an entity. The `content` has a field `opinion` (see below). |
 
 We expand the `content` with a new field
 
 | Field     | Type | Description |
 |-----------|------|-------------|
-| `opinion` | Integer in [0, 100) | A subjective opinon on the behavior of the entity. A value of `0` represents an extremely poor opinion, while a value of `100` represents an extremely favorable opinion. |
+| `opinion` | Integer in [-100, 100], optional | A subjective opinon on the behavior of the entity. A value of `-100` represents an extremely poor opinion (e.g. a user with a highly toxic behavior), while a value of `100` represents an extremely favorable opinion (e.g. a pillar of the community). This field MUST be present if `type` is `m.opinion`. |
 
 Tools are free to mix and match `opinion`s from different *sources that they trust* to come up with a
-decision on e.g. whether an entity should be allowed in a community.
+decision on e.g. whether an entity should be allowed in a community. Tools are also free to decide of
+the default `opinion` value for any entity for which no `opinion` has been published.
 
 ## Potential issues
 ### Conflicting Opinions
@@ -129,4 +133,4 @@ individual users, we will help demonstrate that such proposals are unnecessary.
 
 ## Unstable prefix
 
-During prototyping, `m.opinion` will be prefixed as `org.matrix.mscxxxx.opinion`.
+During prototyping, `m.opinion` will be prefixed as `org.matrix.msc3845.opinion`.
