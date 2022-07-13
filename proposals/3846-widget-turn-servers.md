@@ -29,8 +29,14 @@ abilities of [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/
 
 ## Proposal
 
-We introduce a new capability, `m.turn_servers`, used for accessing TURN server credentials. When approved, it opens up
-access to the following actions:
+To set up calls with minimal latency and support the full-mesh group call mode specified in
+[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401), widgets need to be able to continuously
+receive updates about the latest valid TURN server credentials, rather than requesting them once at start-up or
+on-demand. Otherwise, call setup with new participants may start failing midway through a call, or suffer the latency
+penalty of making a widget API call for every new participant.
+
+To this end, we introduce a new capability, `m.turn_servers`, used for accessing TURN server credentials. When approved,
+it opens up access to the following actions:
 
 **`fromWidget` action of `watch_turn_servers`**
 
