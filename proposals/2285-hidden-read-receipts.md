@@ -22,10 +22,10 @@ POST /_matrix/client/v3/rooms/!a:example.org/receipt/m.read.private/$123
 {}
 ```
 
-The MSC also proposes adding `m.fully_read` as a possible `receiptType` for
-`/receipt` to make this endpoint consistent with `/read_markers`. (we have two
-endpoints that do essentially the same thing, so it would make sense for them to
-be consistent)
+The MSC also proposes adding `m.fully_read` and `m.read.private` as a possible
+`receiptType` for `/receipt` to make this endpoint consistent with
+`/read_markers`. (we have two endpoints that do essentially the same thing, so
+it would make sense for them to be consistent)
 
 Alternatively, the client can move the user's `m.fully_read` marker and/or
 `m.read` receipt at the same time as `m.read.private` by making a POST request
