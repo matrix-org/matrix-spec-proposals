@@ -69,8 +69,8 @@ Both the `data` and `response` fields for this action are empty:
 }
 ```
 
-If the widget was already watching for TURN servers, or the client is otherwise unable to start polling (for example if
-TURN access for the account is 403'd), the client sends back an error response.
+If the widget was already watching, this action has no effect. If the client is for whatever reason unable to start
+polling (for example if TURN access for the account is 403'd), the client sends back an error response.
 
 **`fromWidget` action of `unwatch_turn_servers`**
 
@@ -86,8 +86,8 @@ TURN access for the account is 403'd), the client sends back an error response.
 ```
 
 This action tells the client to stop sending the widget TURN server updates. As with `watch_turn_servers`, the `data`
-and `response` fields for this action are empty. If the widget was not already watching for TURN servers, the client
-sends back an error response.
+and `response` fields for this action are empty. If the widget was not already watching for TURN servers, the action has
+no effect.
 
 ```json5
 {
