@@ -22,8 +22,8 @@ a specific server or towards a specific room.
 
 ### Background
 
-MSC2313 defines policy rooms. A policy room is a room in which rules such
-as the following may be published:
+[Matrix specs define policy rooms](https://spec.matrix.org/v1.3/client-server-api/#moderation-policy-lists).
+A policy room is a room in which rules such as the following may be published:
 
 ```jsonc
 {
@@ -38,48 +38,50 @@ as the following may be published:
 ```
 
 Policy rooms are designed to be associated with entire servers, communities,
-individual rooms or individual users, but there is no specification in MSC2313
+individual rooms or individual users, but there is no specification
 clarifying how to associate an issuer with a policy room.
 
-### Associating a policy room with a user
+### Associating policy rooms to a user
 
 For individual users, we introduce a new event `m.policies`, designed
 to be used as part of account data. This event has content:
 
 | Content | Type | Description |
 |---------|------|-------------|
-| `room`  | Room ID or Alias | The main room in which a user may publish policies to be applied on their behalf. |
+| `m.ignore.invites` | `Policies` | A list of rooms in which policies should be understood as "ignore invite" lists. |
 
-We expect that future MSCs will expand upon this event `m.policies` and add
-other rooms where policies are published by other users or communities but
-that the current user also wish to apply, e.g. for distributing trust. This
-is, however, beyond the scope of the current proposal.
+We expect that future MSCs will expand upon this event `m.policies` and
+add further fields with other lists of rooms in which policies should be
+understood differently. This is, however, beyond the scope of the current
+MSC.
 
-The expected behavior is that if a user Alice has a `m.policies` with `room` R,
-then:
+We also expect that future MSCs will expand upon this event `m.policies`
+to add semantics in other positions than account data, e.g. community rooms.
+This is also beyond the scope of the current MSC.
 
-- whenever Alice issues a new policy from their client or another trusted agent,
-    this policy will be stored in room R;
-- any client or trusted agent acting on behalf of Alice will monitor room R for
-    new policies and apply the recommendations on behalf of Alice.
+Where `Policies` is defined as:
 
-### A recommendation for ignoring invites
+| Content     | Type | Description |
+|-------------|------|-------------|
+| `target`    | Room ID or Alias   | A room in which to issue new policies. |
+| `sources`   | Room ID or Alias []| A list of rooms from which to apply new policies. Should generally include `target`. |
 
-We expand the **`enum`** `recommendation` with the following value
+The expected behavior is that:
 
-| Value | Description |
-|---------|-------------|
-| `m.invites.ignore`  | The user's client should not display any invite from/to the entity specified in `entity`. |
+- if a user Alice has a `m.policies` with key `m.ignore.invites` and `target` R,
+    then whenever Alice issues a new policy to ignore invites from their client
+    or another trusted agent, this policy will be stored in room R.
 
-In particular, if Alice has a policy with `recommendation` `m.invites.ignore`:
+- if a user Alice has a `m.policies` with key `m.ignore.invites` and `sources`
+    containing room R, any client or trusted agent acting on behalf of Alice will
+    monitor room R for new policies and apply the recommendations on behalf of Alice,
+    interpreting such policies as "ignore invites".
 
-- if `type` is `m.policy.rule.user` and `entity` is Bob's User ID, Alice's clients will not display any invite issued by Bob;
-- if `type` is `m.policy.rule.room` and `entity` is the Room ID or alias of room Bobroom, Alice's clients will not display any invite issued to Bobroom;
-- if `type` is `m.policy.rule.server` and `entity` is the server name of server Bobverse, Alice's clients will not display any invite issued from any account from Bobverse or towards a room alias on the Bobverse.
 
 ### Client behaviour
 
-If a new policy `m.invites.ignore` appears in Alice's individual policy room:
+If a user Alice has a `m.policies` with key `m.ignore.invites` and `sources` containing
+room R *and* if a new policy `m.ban` appears in R:
 
 - any pending invite currently displayed that matches the `entity` is removed from display;
 - any incoming invite that matches the `entity` is not displayed among invites.
@@ -88,12 +90,14 @@ However, clients are expected to offer the ability to look at any ignored invite
 in a manner similar to a trashcan/recycle bin/undelete mechanism for desktop file
 systems.
 
-Similarly, if a policy `m.invites.ignore` is redacted/amended, clients should show any
-invite that doesn't match any `m.invites.ignore` entity anymore.
+Similarly, if a policy `m.ignore` in a `m.ignore.invites` room is redacted/amended,
+clients should show any invite that doesn't match any `m.ignore.invites` & `m.ban`
+entities anymore.
 
 ### Server behavior
 
-As recommended in MSC2313, if a policy `m.ban` appears in Alice's individual policy room:
+As recommended in Matrix spec, if a user Alice has a `m.policies` with key
+`m.ignore.invites` and `sources` containing room R *and* if a policy `m.ban` is present in R:
 
 - if `type` is `m.policy.rule.user`, ignore any message or invite from the user `entity`, as per `m.ignored_users`;
 - if `type` is `m.policy.rule.room`, ignore any message in the room or invite from the room `entity`;
@@ -109,13 +113,21 @@ limited. If necessary, clients may decide to cleanup ignored invites after some 
 
 ### Sync size
 
-With this proposal, any invite ignored with `m.invites.ignore` will still show up at each `/sync`.
-In time, this can grow expensive.
+With this proposal, any invite ignored with `m.ignore.invites` will still show up at each `/sync`.
+In time, this can grow expensive. This is, however, necessary to be able to un-ignore invites
+from the client.
 
-If necessary, clients may decide to convert ignored invites into rejected invites or `m.ban`
-after a while.
+We plan to file a followup MSC to introduce a `m.policies` key `m.drop.invites`, which will
+ask the server to simply not send the invites during the next `/sync` operations.
 
 ## Alternatives
+
+### Rejecting invites
+
+A client could of course reject invites instead of ignoring them. However, experience shows that
+spam/bullying tools monitor invite rejections to send invite spam. This entire MSC is meant to
+offer an alternative mechanism that would close this gap and let users ignore invites without
+notifying the sender.
 
 ### Server-side filtering
 
@@ -123,7 +135,7 @@ Just as `m.ignored_users_list` is handled mostly on the server, we could handle 
 largely on the server. However, this would make it much harder to undo erroneous ignores (i.e.
 implementing some sort of recovery from trashcan) on the client.
 
-So we prefer handling things on the client, even if this may require more traffic.
+Consequently, we prefer handling things on the client, even if this may require more traffic.
 
 ## Security considerations
 
@@ -133,5 +145,6 @@ Can't think of any right now.
 
 During testing:
 
-- `m.invites.ignore` should be prefixed `org.matrix.msc3847.invites.ignore`;
+- `m.ignore.invites` should be prefixed `org.matrix.msc3847.ignore.invites`;
 - `m.policies` should be prefixed `org.matrix.msc3847.policies`.
+
