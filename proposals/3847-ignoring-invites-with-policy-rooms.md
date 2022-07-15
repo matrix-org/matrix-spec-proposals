@@ -90,18 +90,14 @@ However, clients are expected to offer the ability to look at any ignored invite
 in a manner similar to a trashcan/recycle bin/undelete mechanism for desktop file
 systems.
 
-Similarly, if a policy `m.ignore` in a `m.ignore.invites` room is redacted/amended,
+Similarly, if a policy `m.ban` in a `m.ignore.invites` room is redacted/amended,
 clients should show any invite that doesn't match any `m.ignore.invites` & `m.ban`
 entities anymore.
 
 ### Server behavior
 
-As recommended in Matrix spec, if a user Alice has a `m.policies` with key
-`m.ignore.invites` and `sources` containing room R *and* if a policy `m.ban` is present in R:
-
-- if `type` is `m.policy.rule.user`, ignore any message or invite from the user `entity`, as per `m.ignored_users`;
-- if `type` is `m.policy.rule.room`, ignore any message in the room or invite from the room `entity`;
-- if `type` is `m.policy.rule.server`, ignore any message in any room on server `entity`, any message from any user on server `entity`, any invite towards any room on server `entity`, any invite from any user on server `entity`.
+None at this stage. While implementation details may differ, key `m.ignore.invites` is
+designed *a priori* to be executed entirely client-side.
 
 ## Potential issues
 
