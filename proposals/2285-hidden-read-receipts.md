@@ -64,7 +64,7 @@ movement: both receipts can only move forwards, but do not have to be ahead of
 each other. It's valid to, for example, update a public read receipt which lags
 20 messages behind the private one.
 
-The `m.read` property is now optional for the [`/read_markers`
+The `m.fully_read` property is now optional for the [`/read_markers`
 endpoint](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidread_markers)
 as sometimes we only want to send `m.read.private`.
 
