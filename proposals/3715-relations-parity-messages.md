@@ -8,8 +8,8 @@ to fully achieve that.
 
 ## Proposal
 
-It is proposed to add the `dir` parameter to the `/relations` API for parity with `/messages`,
-it will [have the same as definition as for `/messages`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidmessages),
+It is proposed to add the `dir` parameter to the `/relations` API for parity with `/messages`.
+It will [have the same as definition as for `/messages`](https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3roomsroomidmessages),
 which is copied below:
 
 > The direction to return events from. If this is set to `f`, events will
@@ -37,9 +37,10 @@ previous calls (as well as `next_batch` values, as is currently specified). The
 [definition of the `from` parameter](https://spec.matrix.org/unstable/client-server-api/#get_matrixclientv1roomsroomidrelationseventid)
 is updated:
 
-> Can be a `from_batch` token or `next_batch` token from a previous call, or a
+> Can be a `from_batch` token **or `next_batch`** token from a previous call, or a
 > returned `start` token from `/messages`, or a `next_batch` token from `/sync`.
 
+(Bold indicates new text.)
 ## Potential issues
 
 `/messages` does have one additional parameter (`filter`) which would still not
