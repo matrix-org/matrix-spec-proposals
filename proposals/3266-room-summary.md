@@ -17,8 +17,7 @@ Quite a few clients and tools have a need preview a room:
     tries to join my room alias or link.
 
 There are a few ways to request a room summary, but they only support some of
-the use cases. The spaces summary API
-([MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946)) only provides
+the use cases. The [spaces hierarchy API](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy) only provides
 limited control over what rooms to summarize and returns a lot more data than
 necessary.  `{roomid}/initialSync` and `{roomid}/state/{event_type}` don't work
 over federation and are much heavier than necessary or need a lot of http calls
@@ -27,7 +26,7 @@ for each room.
 ## Proposal
 
 A new client-server API, which allows you to fetch a summary of a room by id or
-alias and a corresponding server-server API, to fetch a summary over federation.
+alias, and a corresponding server-server API to fetch a summary over federation.
 
 ### Client-Server API
 
@@ -48,7 +47,7 @@ GET /_matrix/client/r0/summary/{roomIdOrAlias}?
 (This is not under `/rooms`, because it can be used with an alias.
 
 - `roomIdOrAlias` can be the roomid or an alias to a room.
-- `via` are servers, that should be tried to request a summary from, if it can't
+- `via` are servers that should be tried to request a summary from, if it can't
   be generated locally. These can be from a matrix URI, matrix.to link or a
   `m.space.child` event for example.
 
@@ -74,7 +73,7 @@ A response includes the stripped state in the following format:
 These are the same fields as those returned by `/publicRooms`, with a few
 additions: `room_type`, `membership`, `room_version` and `encryption`.
 
-All those fields are already accessible as the stripped state according to
+`room_type`, `room_version` and `encryption` are already accessible as part of the stripped state according to
 [MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173), with the
 exception of `membership`. These are the same fields as in
 [MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) apart from the
@@ -86,7 +85,7 @@ client anyway, this API just provides it as a convenience.
 
 | fieldname          | description                                                                                                                                           | rationale                                                                                                                             |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| room_id            | Id of the room                                                                                                                                        | Useful, when the API is called with an alias or to disambiguate multiple responses clientside.                                        |
+| room_id            | Id of the room                                                                                                                                        | Useful when the API is called with an alias or to disambiguate multiple responses clientside.                                        |
 | avatar_url         | Avatar of the room                                                                                                                                    | Copied from `publicRooms`.                                                                                                            |
 | guest_can_join     | If guests can join the room.                                                                                                                          | Copied from `publicRooms`.                                                                                                            |
 | name               | Name of the room                                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
@@ -125,8 +124,7 @@ not seem necessary at this time and could be added at any later point while
 degrading gracefully.
 
 (Originally there was a separate federation API for this, but it was decided
-that lowering the duplication on the federation side is the way to go by the
-author.)
+by the author that lowering the duplication on the federation side is the way to go.)
 
 ## Potential issues
 
