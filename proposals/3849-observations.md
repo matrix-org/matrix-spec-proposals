@@ -82,7 +82,7 @@ though we provide a means for them to be extended.
     }
 ```
 
-ΛωΛ, alternatively you can just standardise the set of labels (boring).
+alternatively you can just standardise the set of labels (boring).
 
 ### Reinforcement of Observations
 
@@ -186,9 +186,9 @@ positive observations are also made about entities that you do like.
 
 ## Unstable prefix
 
-`m.policy.observation` => `org.matrix.msc.3849.observation`
-`m.policy.reinforcement` => `org.matrix.msc.3849.reinforcement`
-`m.policy.label` => `org.matrix.msc.3849.label`
+* `m.policy.observation` => `org.matrix.msc.3849.observation`
+* `m.policy.reinforcement` => `org.matrix.msc.3849.reinforcement`
+* `m.policy.label` => `org.matrix.msc.3849.label`
 
 
 ## Dependencies
