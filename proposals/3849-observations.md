@@ -46,9 +46,29 @@ Instead we propose sharing observations.
   "content": {
     "entity": "@alice:example.org",
     "observation": "spam",
-    "author": "@alice:example.org",
-    "author_server": "example.org"
-  }
+    "observed_server": "example.org"
+  },
+  "type": "m.policy.observation.user"
+```
+
+We're undecided on whether to propose an observation for an event
+but in cases where the observation is about an action or
+something an author is associated with we propose linking
+to them with an `observed` and `observed_server` field.
+This is so that you can get a general idea of the content
+being created by a user/server without depending on
+direct observations. It also makes auditing and trailing
+a decision a little easier.
+
+
+```
+  "content": {
+    "observation": "spam",
+	"entity": "$w23r0932ir:foo.net"
+    "observed": "@alice:example.org",
+    "observed_server": "example.org"
+  },
+  "type": "m.policy.observation.event"
 ``` 
 
 Observations can be made about any entity in the same way as policy rooms.
