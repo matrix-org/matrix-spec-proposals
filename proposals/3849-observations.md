@@ -1,4 +1,4 @@
-# MSC0000: Observations.
+# MSC3849: Observations.
 
 Matrix policy rooms have seen some problems in their use. 
 
@@ -186,9 +186,9 @@ positive observations are also made about entities that you do like.
 
 ## Unstable prefix
 
-`m.policy.observation` => `org.matrix.msc.xxxx.observation`
-`m.policy.reinforcement` => `org.matrix.msc.xxxx.reinforcement`
-`m.policy.label` => `org.matrix.msc.xxxx.label`
+`m.policy.observation` => `org.matrix.msc.3849.observation`
+`m.policy.reinforcement` => `org.matrix.msc.3849.reinforcement`
+`m.policy.label` => `org.matrix.msc.3849.label`
 
 
 ## Dependencies
