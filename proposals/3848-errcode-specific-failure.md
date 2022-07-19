@@ -10,25 +10,25 @@ if it tries to invite a user that is already joined.
 ## Proposal
 
 New `errcode` would be introduced into the error body of a response
-(https://spec.matrix.org/latest/client-server-api/#standard-error-response). 
+(https://spec.matrix.org/v1.3/client-server-api/#standard-error-response). 
 
 `M_ALREADY_JOINED` would be fired when a membership action fails when the user
 is already joined to the room.
 This would cover endpoints:
-  - [POST /_matrix/client/v3/rooms/{roomId}/invite](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3roomsroomidinvite)
-  - [POST /_matrix/client/v3/rooms/knock/{roomIdOrAlias}](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3knockroomidoralias)
-  - [PUT  /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}](https://spec.matrix.org/latest/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+  - [POST /_matrix/client/v3/rooms/{roomId}/invite](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidinvite)
+  - [POST /_matrix/client/v3/rooms/knock/{roomIdOrAlias}](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3knockroomidoralias)
+  - [PUT  /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
 Note that it would not cover endpoints where trying to join a room when the
 user is already joined would no-op, like `POST /_matrix/client/v3/join/{roomIdOrAlias}`.
 
 `M_INSUFFICIENT_POWER` would be when your user does not have the specific required power level to
 perform an action in the room.
-  - [POST /_matrix/client/v3/rooms/{roomId}/invite](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3roomsroomidinvite)
-  - [POST /_matrix/client/v3/rooms/knock/{roomIdOrAlias}](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3knockroomidoralias)
-  - [POST /_matrix/client/v3/rooms/{roomId}/unban](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3roomsroomidban)
-  - [POST /_matrix/client/v3/rooms/{roomId}/ban](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3roomsroomidban)
-  - [POST /_matrix/client/v3/rooms/{roomId}/kick](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3roomsroomidkick)
-  - [PUT  /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}](https://spec.matrix.org/latest/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+  - [POST /_matrix/client/v3/rooms/{roomId}/invite](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidinvite)
+  - [POST /_matrix/client/v3/rooms/knock/{roomIdOrAlias}](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3knockroomidoralias)
+  - [POST /_matrix/client/v3/rooms/{roomId}/unban](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidban)
+  - [POST /_matrix/client/v3/rooms/{roomId}/ban](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidban)
+  - [POST /_matrix/client/v3/rooms/{roomId}/kick](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidkick)
+  - [PUT  /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
 
 
 ## Potential issues
