@@ -31,15 +31,20 @@ alias, and a corresponding server-server API to fetch a summary over federation.
 ### Client-Server API
 
 The API returns the summary of the specified room, if the room could be found
-and the client should be able to view its contents according to the join_rules,
-history visibility, space membership and similar rules outlined in
-[MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173) as well as if the
-user is already a member of that room.
+and the client should be able to view its contents according to the same rules
+[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#server-behaviour-19)
+endpoint. This is generally described as being a "potential joiner", which
+includes rules such as being a member of a room that allows joining a
+[`restricted`](https://spec.matrix.org/v1.3/client-server-api/#restricted-rooms),
+the room being
+[knockable](https://spec.matrix.org/v1.3/client-server-api/#knocking-on-rooms),
+public or you already being a member. For unauthenticated requests a response
+should only be returned if the room is publically accessible.
 
 A request could look like this:
 
 ```
-GET /_matrix/client/r0/summary/{roomIdOrAlias}?
+GET /_matrix/client/v1/summary/{roomIdOrAlias}?
     via=matrix.org&
     via=neko.dev
 ```
@@ -62,7 +67,7 @@ A response includes the stripped state in the following format:
   num_joined_members: 37,
   topic: "Tasty tasty cheese",
   world_readable: true,
-  join_rules: "public",
+  join_rule: "public",
   room_type: "m.space",
   membership: "invite",
   encryption: "m.megolm.v100",
@@ -73,35 +78,41 @@ A response includes the stripped state in the following format:
 These are the same fields as those returned by `/publicRooms`, with a few
 additions: `room_type`, `membership`, `room_version` and `encryption`.
 
-`room_type`, `room_version` and `encryption` are already accessible as part of the stripped state according to
-[MSC3173](https://github.com/matrix-org/matrix-doc/pull/3173), with the
-exception of `membership`. These are the same fields as in
-[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) apart from the
-adition of the membership field. The membership can already be accessed by a
-client anyway, this API just provides it as a convenience.
+`room_type`, `room_version` and `encryption` are already accessible as part of
+the stripped state according to
+https://spec.matrix.org/v1.3/client-server-api/#stripped-state , with the
+exception of `membership`. These are the same fields as in the response to
+[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+apart from the addition of the `room_type`, `membership`, `room_version` and
+`encryption` fields. The membership can already be accessed by a client anyway,
+this API just provides it as a convenience.
 
 
 #### Rationale and description of response fields
 
 | fieldname          | description                                                                                                                                           | rationale                                                                                                                             |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| room_id            | Id of the room                                                                                                                                        | Useful when the API is called with an alias or to disambiguate multiple responses clientside.                                        |
-| avatar_url         | Avatar of the room                                                                                                                                    | Copied from `publicRooms`.                                                                                                            |
-| guest_can_join     | If guests can join the room.                                                                                                                          | Copied from `publicRooms`.                                                                                                            |
-| name               | Name of the room                                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
-| num_joined_members | Member count of the room                                                                                                                              | Copied from `publicRooms`.                                                                                                            |
-| topic              | Topic of the room                                                                                                                                     | Copied from `publicRooms`.                                                                                                            |
-| world_readable     | If the room history can be read without joining.                                                                                                      | Copied from `publicRooms`.                                                                                                            |
-| join_rules         | Join rules of the room                                                                                                                                | Copied from `publicRooms`.                                                                                                            |
+| room_id            | Required. Id of the room                                                                                                                               | Useful when the API is called with an alias or to disambiguate multiple responses clientside.                                        |
+| avatar_url         | Optional. Avatar of the room                                                                                                                          | Copied from `publicRooms`.                                                                                                            |
+| guest_can_join     | Required. If guests can join the room.                                                                                                                | Copied from `publicRooms`.                                                                                                            |
+| name               | Optional. Name of the room                                                                                                                            | Copied from `publicRooms`.                                                                                                            |
+| num_joined_members | Required. Member count of the room                                                                                                                    | Copied from `publicRooms`.                                                                                                            |
+| topic              | Optional. Topic of the room                                                                                                                           | Copied from `publicRooms`.                                                                                                            |
+| world_readable     | Required. If the room history can be read without joining.                                                                                            | Copied from `publicRooms`.                                                                                                            |
+| join_rule          | Optional. Join rules of the room                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
 | room_version       | Optional (for historical reasons). Version of the room.                                                                                               | Can be used by clients to show incompatibilities with a room early.                                                                   |
-| membership         | The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
+| membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
 | encryption         | Optional. If the room is encrypted this specified the algorithm used for this room. This is already accessible as stripped state. Currently a bool, but maybe the algorithm makes more sense?         | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption. |
 
 It should be possible to call this API without authentication, but servers may
 rate limit how often they fetch information over federation more heavily, if the
-user is unauthenticated. Also the fields `membership` will be
-missing.
+user is unauthenticated.
+
+(1) The field `membership` will not be present when called unauthenticated, but
+is required when called authenticated. It should be `leave` if the server
+doesn't know the users membership state (for example if the server is not known
+to the local server).
 
 #### Modifications to `/_matrix/client/v1/rooms/{roomId}/hierarchy`
 
@@ -110,10 +121,11 @@ For symmetry the `room_version` and `encryption` fields are also added to the
 
 ### Server-Server API
 
-For the federation API
-[MSC2946](https://github.com/matrix-org/matrix-doc/pull/2946) is reused. This
-provides all the information needed in this MSC, but it also provides a
-few additional fields and one level of children of this room.
+For the
+[`/hierarchy`](https://spec.matrix.org/v1.3/server-server-api/#get_matrixfederationv1hierarchyroomid)
+federation API is reused. This provides (with a few changes) all the information
+needed in this MSC, but it also provides a few additional fields and one level
+of children of this room.
 
 Additionally the `encryption` and `room_version` fields are added to the
 responses for each room.
@@ -130,8 +142,9 @@ by the author that lowering the duplication on the federation side is the way to
 
 ### Performance
 
-Clients may start calling this API very often instead of using the batched
-summary API (MSC2946) for spaces or caching the state received via `/sync`.
+Clients may start calling this API very often instead of using the
+[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+for spaces or caching the state received via `/sync`.
 Looking up all the state events required for this API may cause performance
 issues in that case.
 
@@ -140,9 +153,12 @@ apply rate limiting if necessary.
 
 ## Alternatives
 
-- The spaces summary API could be used, but it returns more data than necessary
+- The 
+    [`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+    API could be used, but it returns more data than necessary
     by default (but it can be limited to just 1 room) such as all the
-    `m.space.child` events in a space. (We do reuse the federation API now.)
+    `m.space.child` events in a space, but also is missing the room version,
+    membership and the encryption field. (We do reuse the federation API now.)
 - For joined rooms, the `/sync` API can be used to get a summary for all joined
     rooms. Apart from not working for unjoined rooms, like knocks, invites and
     space children, `/sync` is very heavy for the server and the client needs to
