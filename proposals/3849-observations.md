@@ -33,7 +33,7 @@ policies against an entity across a room, server or user.
 For example adding a rule to `m.ban` `@evil:example.org` to my list
 would be used by Mjolnir to synchronize that ban to a group of rooms.
 
-We see the synchronization of bans as a seperate concern to the sharing
+We see the synchronization of bans as a separate concern to the sharing
 of an observation.
 
 In order to warn the wider community about `@evil:example.org`'s behaviour
