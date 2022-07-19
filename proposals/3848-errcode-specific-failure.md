@@ -21,7 +21,7 @@ This would cover endpoints:
 Note that it would not cover endpoints where trying to join a room when the
 user is already joined would no-op, like `POST /_matrix/client/v3/join/{roomIdOrAlias}`.
 
-`M_INSUFFICENT_POWER` would be when your user does not have the specific required power level to
+`M_INSUFFICIENT_POWER` would be when your user does not have the specific required power level to
 perform an action in the room.
   - [POST /_matrix/client/v3/rooms/{roomId}/invite](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3roomsroomidinvite)
   - [POST /_matrix/client/v3/rooms/knock/{roomIdOrAlias}](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3knockroomidoralias)
