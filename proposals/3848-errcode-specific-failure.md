@@ -53,6 +53,8 @@ While this MSC is not considered stable for implementation, implementations shou
 as a prefix to the fields on the error body. `M_FORBIDDEN` will still be emitted as a `errcode` while the
 MSC is unstable, and will be replaced when the spec stabilizes.
 
+The errcodes will be have the prefix `M_` replaced with `ORG.MATRIX.MSC3848.`.
+
 ## Dependencies
 
 None.
