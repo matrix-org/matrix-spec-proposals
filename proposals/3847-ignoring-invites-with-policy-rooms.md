@@ -10,10 +10,10 @@ this and to let clients perform filtering of unwanted invites.
 
 We proceed as follows:
 
-1. We build upon the mechanism of policy rooms, defined in MSC2313, and define
+1. We build upon the mechanism of policy rooms, introduced in [MSC2313](https://github.com/matrix-org/matrix-doc/pull/2313), and define
 a user's individual policy room, which may be created on behalf of the user by
 a Matrix client, and which is shared across all devices and clients of the user.
-2. We build upon the mechanism of recommendations, also defined in MSC2313,
+2. We build upon the mechanism of recommendations, also introduced in [MSC2313](https://github.com/matrix-org/matrix-doc/pull/2313),
 and create a new recommendation for ignoring invites from a specific user, from
 a specific server or towards a specific room.
 
@@ -63,8 +63,8 @@ Where `Policies` is defined as:
 
 | Content     | Type | Description |
 |-------------|------|-------------|
-| `target`    | Room ID or Alias   | A room in which to issue new policies. |
-| `sources`   | Room ID or Alias []| A list of rooms from which to apply new policies. Should generally include `target`. |
+| `target`    | Room ID            | A room in which to issue new policies. |
+| `sources`   | Room ID []         | A list of rooms from which to apply new policies. Should generally include `target`. |
 
 The expected behavior is that:
 
@@ -93,6 +93,9 @@ systems.
 Similarly, if a policy `m.ban` in a `m.ignore.invites` room is redacted/amended,
 clients should show any invite that doesn't match any `m.ignore.invites` & `m.ban`
 entities anymore.
+
+If the client detects that one of the rooms has been upgraded, it should follow
+the tombstone to the new room.
 
 ### Server behavior
 
@@ -135,7 +138,16 @@ Consequently, we prefer handling things on the client, even if this may require 
 
 ## Security considerations
 
-Can't think of any right now.
+### Room aliases
+We have decided to specify room IDs rather than room aliases as room aliases can, in some circumstances,
+be forged by malicious users/administrators.
+
+### Trust
+If the administrator of a policy room R is malicious, they can use this room to specify that all invites,
+or some specific good invites, should be ignored. A user who uses R as a `source` will therefore not see
+some invites that they would otherwise see.
+
+In other words, using a room as source requires trusting the administrator of that room.
 
 ## Unstable prefix
 
