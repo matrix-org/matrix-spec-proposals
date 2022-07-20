@@ -78,7 +78,7 @@ The expected behavior is that:
     interpreting such policies as "ignore invites".
 
 
-### Client behaviour
+### Suggested client behaviour
 
 If a user Alice has a `m.policies` with key `m.ignore.invites` and `sources` containing
 room R *and* if a new policy `m.ban` appears in R:
