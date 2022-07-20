@@ -1,11 +1,17 @@
-# MSC3848: Introduce errcodes for specific membership change failures.
+# MSC3848: Introduce errcodes for specific event sending failures.
 
-When performing an action on the C-S API, sometimes it will fail if the user is
-already joined to the room. In these cases, homeservers will throw a `M_FORBIDDEN`
-stating that the action wasn't successful. However, it's difficult to distinguish this
-kind of failure from insufficient permission errors (or other kinds of errors). This would be
-useful, as the caller can then react to the error e.g. refresh it's membership cache
-if it tries to invite a user that is already joined.
+When performing an action on the C-S API, sometimes requests will fail with
+a generic `M_FORBIDDEN` error with implementations providing a more meaningful
+context in the `error` field. While some client implementations have taken it
+upon themselves to scan these error fields for probable causes, this isn't a
+particularly safe or spec-complaint way to react to errors.
+
+Some examples of failures which require more standardized error information
+include already-joined errors when a user tries to invite another user to a room,
+or being unable to send an event into a room due to lacking the required power level.
+
+For this reason, this proposal suggests including new `errcode` definitions
+which provide more specific information about the failure.
 
 ## Proposal
 
@@ -28,20 +34,24 @@ perform an action in the room.
   - [POST /_matrix/client/v3/rooms/{roomId}/unban](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidban)
   - [POST /_matrix/client/v3/rooms/{roomId}/ban](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidban)
   - [POST /_matrix/client/v3/rooms/{roomId}/kick](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3roomsroomidkick)
-  - [PUT  /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+  - [PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+  - [PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 
 
 ## Potential issues
 
 Changing long-established error codes in Matrix will be fraught with risk, as many
 clients will need updating to support the new error types. Failure to do so might lead
-to unexpected behaviours or confusing error messages. However, the alternative is keeping
-the non-specific error codes and having the 
+to unexpected behaviours or confusing error messages. For this reason, the unstable implementation
+will continue to provide the old errcode in the body of the error while providing the
+new proposed errcode under it's own field. This gives clients a chance to adapt to the
+new errcode / ensure their behaviours with unexpected errcodes are acceptable.
 
 ## Alternatives
 
 We could introduce a second field to the error body for more specific errors, but this would likely make
-error handling in clients much more complicated.
+error handling in clients much more complicated. There is precedence already in the spec for specific
+error codes for specific failures, so there is little need to subclass.
 
 ## Security considerations
 
