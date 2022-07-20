@@ -5,7 +5,7 @@ The Matrix network and protocol are open. However, some users, rooms or servers 
 entities from individual rooms, spaces or other groups of rooms. This happens in particular when
 a user or an entire homeserver adopt toxic behaviors, such as bullying, spamming or attempting to brigade
 other users. As it turns out, kicking, ignoring or banning entities is a complicated task in
-presence of federation. To aid with such actions, MSC2313 defines a vocabulary for storing,
+presence of federation. To aid with such actions, the Matrix spec defines [a vocabulary](https://spec.matrix.org/v1.3/client-server-api/#mban-recommendation) for storing,
 publishing and sharing *recommendations* on entities, in particular banning.
 Individual users, room or space moderators or even homeserver administrators may either issue
 such recommendations or follow existing recommendations, in both cases letting clients/bots/homeservers
@@ -16,7 +16,7 @@ In many cases, however, banning is too boolean. Actually deciding whether an ent
 after taking into account several sources. For instance, a community may decide to adopt a policy
 through which a user is banned from the entire community if they behave as a troll on at least three
 of their rooms. If they behave as a troll in a single room, they should perhaps get away with a warning,
-or perhaps be muted for 15 minutes, etc.
+or perhaps be muted for 15 minutes, or lose the ability to post links and images, etc.
 
 To achieve this, we need two mechanisms:
 - a mechanism to store, publish and share the *opinion* of a community (or a single user) on an entity;
@@ -33,7 +33,7 @@ against entities that they judge malicious or toxic to their own well-being.
 
 ## Proposal
 
-MSC2313 defines `m.policy.rule.<kind>` state events, as follows:
+The Matrix spec [defines](https://spec.matrix.org/v1.3/client-server-api/#mban-recommendation)  `m.policy.rule.<kind>` state events, as follows:
 
 ```jsonc
 {
@@ -97,6 +97,14 @@ actually not an issue but rather a feature. If these communities cannot trust ea
 judgement, perhaps because they share different worldviews, they should not attempt to use
 each other's published opinions.
 
+### Combining Opinions
+
+This MSC does not specify how to combine opinions from two trusted groups. If group A assigns
+an opinion of -20 to Marvin and group B assigns an opinion of -10 to Marvin, does this mean
+that Marvin should have a total opinion of -30? -15?
+
+We do not expect to specify this in the current MSC but rather in a further MSC down the line,
+once the Matrix community has had the opportunity to experiment with opinions.
 
 ### Malicious Gossip
 
@@ -133,6 +141,9 @@ However, existing social networks typically create these bubbles through a form 
 analysis. By opposition, the mechanism of opinions can be audited. Further, tools can be built
 e.g. in Matrix clients to let users investigate the opinions they follow, tweak them,
 deactivate them.
+
+It is our hope that the mechanism of explicit opinions will actually help fight thought
+bubbles.
 
 ## Alternatives
 
