@@ -9,7 +9,7 @@ issue, this MSC proposes a mechanism for filtering the response of
 
 ## Proposal
 
-This MSC proposes adding a `room_types` filter to the `POST /publicRooms` endpoint.
+This MSC proposes adding a `room_types` filter to the [`POST /publicRooms`](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3publicrooms) endpoint.
 The value of `room_types` is an array of room types - possible values of the
 `type` field in the `m.room.create` state event's `content` dictionary - which should be returned.
 
