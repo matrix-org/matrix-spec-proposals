@@ -1,5 +1,6 @@
 # MSC3813: Obfuscated events
 
+## Introduction
 Currently, event content can be end-to-end encrypted, but the metadata cannot. This means that if
 someone inspects the Matrix homeservers, they can see in what rooms one is most active, and at what
 time they are most active.
@@ -7,11 +8,6 @@ time they are most active.
 We propose that clients send "dummy" events from time to time, at random intervals and times, in
 random rooms to obfuscate the user's online times and relationships. It is mainly intended to
 imitate the structure of two-sided conversations.
-
-## Proposal
-TBD
-### Introduction
-TBD
 ### Events
 
 We add the following types of events:
@@ -69,11 +65,7 @@ The keepalive message that imitates the structure of a conversation.
 
 Clients MUST negotiate to exchange obfuscated events before sending the keepalive messages.
 
-### Server behaviour
-TBD
 ## Potential issues
-TBD
-## Alternatives
 TBD
 ## Security considerations
 
