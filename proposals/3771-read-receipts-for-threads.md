@@ -45,6 +45,8 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
+### Sending a threaded read receipt
+
 This MSC proposes allowing the same receipt type to exist multiple times in a room
 by adding a `threadId` parameter to reach receipt.
 
@@ -85,6 +87,8 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply/$th
 {}
 ```
 
+### Received threaded read receipts
+
 This would then come down `/sync` for the user with other receipts, but with an
 additional property in the body containing the thread ID:
 
@@ -104,6 +108,14 @@ additional property in the body containing the thread ID:
   "type": "m.receipt"
 }
 ```
+
+### Notifications
+
+[MSC3773](https://github.com/matrix-org/matrix-spec-proposals/pull/3773) discusses
+how notifications for threads are created and returned to the client, but does
+not provide a way to clear threaded notifications. A threaded read receipt should
+clear notifications for the matching thread following the [same rules](https://spec.matrix.org/latest/client-server-api/#receiving-notifications)
+as notifications which are not part of a thread.
 
 ## Potential issues
 
@@ -155,4 +167,4 @@ or the presence of a `org.matrix.msc3771` flag in `unstable_features` on `/versi
 This MSC depends on the following MSCs, which have been accepted into the spec,
 but have yet to be released:
 
-* [MSC3440](https://github.com/matrix-org/matrix-spec-proposals/pull/3440): Threading via `m.thread` relation
+* [MSC3773](https://github.com/matrix-org/matrix-spec-proposals/pull/3773): Notifications for threads
