@@ -1,4 +1,4 @@
-# MSCXXX: Expose user agent information on `Device`
+# MSC3852: Expose user agent information on `Device`
 
 Currently, sessions are only easily recognisable by their `device_name`. Depending on client implementation, this may
 include some stringified information about the session. (For example, Element web uses `'%(appName)s (%(browserName)s,
@@ -33,4 +33,4 @@ The `/devices` endpoints only return device information for the current user, so
 
 ## Unstable prefix
 While this MSC is not included in the spec `last_seen_user_agent` should use the unstable prefix
-`org.matrix.mscXXX.last_seen_user_agent`
+`org.matrix.msc3852.last_seen_user_agent`
