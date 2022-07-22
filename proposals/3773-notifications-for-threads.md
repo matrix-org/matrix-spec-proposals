@@ -91,7 +91,7 @@ An example of a joined room from a sync response:
 ### Backwards compatibility
 
 Trying to support backwards compatibility with the unread notifications count may
-prove finicky, seems doable. Homeservers essentially need to track notifications
+prove finicky, but seems doable. Homeservers essentially need to track notifications
 in a per-thread context, and combine them if the client is not using the
 `unread_thread_notifications` flag for `/sync`.
 
@@ -110,8 +110,8 @@ counts are continually tracked and returned as part of the `/sync` response.
 
 This MSC does not attempt to modify how unread notifications (for a thread or
 otherwise) are cleared. It currently assumes the rules set forth by
-[read receipts](https://spec.matrix.org/latest/client-server-api/#receiving-notifications).
-This will cause some flakiness with unread notifications, as the current
+[read receipts](https://spec.matrix.org/latest/client-server-api/#receiving-notifications)
+still apply. This will cause some flakiness with unread notifications, as the current
 receipt infrastructure assumes that a room's timeline is linear, which is no
 longer true.
 
