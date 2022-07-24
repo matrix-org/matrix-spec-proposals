@@ -55,8 +55,10 @@ implications should be minimal.
 ## Unstable prefix
 
 If you want to implement this MSC before its merged your free to use the unstable type of 
-`support.feline.policy.lists.msc.v1` please note that stakeholders are under no obligation to support this
-unstable prefix after this MSC gets merged as of time of writing. 
+`support.feline.policy.lists.msc.v1`. 
+
+After this MSC gets merged if a stakeholder has elected to remove its support for the unstable prefix if any
+support existed or support never existed revert to Legacy room behavior for rooms that used the unstable prefix.
 
 ## Dependencies
 
