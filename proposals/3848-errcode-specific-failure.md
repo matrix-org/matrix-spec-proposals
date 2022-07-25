@@ -62,7 +62,7 @@ None.
 
 ## Unstable prefix
 
-While this MSC is not considered stable for implementation, implementations should use `org.matrix.unstable.errcode`
+While this MSC is not considered stable for implementation, implementations should use `org.matrix.msc3848.unstable.errcode`
 as a prefix to the fields on the error body. `M_FORBIDDEN` will still be emitted as a `errcode` while the
 MSC is unstable, and will be replaced when the spec stabilizes.
 
