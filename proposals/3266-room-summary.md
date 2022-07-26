@@ -75,17 +75,16 @@ A response includes the stripped state in the following format:
 }
 ```
 
-These are the same fields as those returned by `/publicRooms`, with a few
-additions: `room_type`, `membership`, `room_version` and `encryption`.
+These are the same fields as those returned by `/publicRooms` or
+[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+, with a few additions: `room_type`, `membership`, `room_version` and
+`encryption`.
 
 `room_type`, `room_version` and `encryption` are already accessible as part of
 the stripped state according to
-https://spec.matrix.org/v1.3/client-server-api/#stripped-state , with the
-exception of `membership`. These are the same fields as in the response to
-[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
-apart from the addition of the `room_type`, `membership`, `room_version` and
-`encryption` fields. The membership can already be accessed by a client anyway,
-this API just provides it as a convenience.
+https://spec.matrix.org/v1.3/client-server-api/#stripped-state . The
+`membership` is not, but a client could access that in various different ways
+already. This API just makes this more convenient.
 
 
 #### Rationale and description of response fields
