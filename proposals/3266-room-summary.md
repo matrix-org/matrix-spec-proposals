@@ -30,16 +30,11 @@ alias, and a corresponding server-server API to fetch a summary over federation.
 
 ### Client-Server API
 
-The API returns the summary of the specified room, if the room could be found
-and the client should be able to view its contents according to the same rules as the
-[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#server-behaviour-19)
-endpoint. This is generally described as being a "potential joiner", which
-includes rules such as being a member of a room that allows joining a
-[`restricted`](https://spec.matrix.org/v1.3/client-server-api/#restricted-rooms),
-the room being
-[knockable](https://spec.matrix.org/v1.3/client-server-api/#knocking-on-rooms),
-public or you already being a member. For unauthenticated requests a response
-should only be returned if the room is publicly accessible.
+The API returns a summary of the given room, provided the user is either already
+a member, or has the necessary permissions to join. (For example, the user may
+be a member of a room mentioned in an `allow` condition in the join rules of a
+restricted room.) For unauthenticated requests a response should only be
+returned if the room is publicly accessible.
 
 A request could look like this:
 
