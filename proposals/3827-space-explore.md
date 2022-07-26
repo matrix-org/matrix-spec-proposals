@@ -76,3 +76,34 @@ While this MSC is not considered stable, implementations should use
 |------------|-------------------------------|
 |`room_type` |`org.matrix.msc3827.room_type` |
 |`room_types`|`org.matrix.msc3827.room_types`|
+
+Clients should check for server support before using the features proposed by
+this MSC.
+
+Once this MSC gets merged and once it becomes a part of a spec version, clients
+should update their implementations as fast as possible to accommodate the fact
+that the way of detecting server support will change.
+
+### While the MSC is unstable
+
+During this period, to detect server support, clients should check for the
+presence of the `org.matrix.msc3827` flag in `unstable_features` on `/versions`.
+Clients are also required to use the unstable prefixes (see [unstable
+prefix](#unstable-prefix)) during this time.
+
+### Once the MSC is merged but not in a spec version
+
+Once this MSC is merged, but is not yet part of the spec, clients should rely on
+the presence of the `org.matrix.msc3827.stable` flag in `unstable_features` to
+determine server support. If the flag is present, clients are required to use
+stable prefixes (see [unstable prefix](#unstable-prefix)).
+
+### Once the MSC is in a spec version
+
+Once this MSC becomes a part of a spec version, clients should rely on the
+presence of the spec version, that supports the MSC, in `versions` on
+`/versions`, to determine support. Servers are encouraged to keep the
+`org.matrix.msc3827.stable` flag around for a reasonable amount of time to help
+smooth over the transition for clients. "Reasonable" is intentionally left as an
+implementation detail, however the MSC process currently recommends _at most_ 2
+months from the date of spec release.
