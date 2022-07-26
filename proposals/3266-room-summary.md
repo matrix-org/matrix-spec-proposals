@@ -101,7 +101,7 @@ this API just provides it as a convenience.
 | world_readable     | Required. If the room history can be read without joining.                                                                                            | Copied from `publicRooms`.                                                                                                            |
 | join_rule          | Optional. Join rules of the room                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
-| room_version       | Optional (for historical reasons). Version of the room.                                                                                               | Can be used by clients to show incompatibilities with a room early.                                                                   |
+| room_version       | Optional (for historical reasons (2)). Version of the room.                                                                                           | Can be used by clients to show incompatibilities with a room early.                                                                   |
 | membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
 | encryption         | Optional. If the room is encrypted this specified the algorithm used for this room. This is already accessible as stripped state. | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption or not this algorithm. |
 
@@ -111,8 +111,16 @@ user is unauthenticated.
 
 (1) The field `membership` will not be present when called unauthenticated, but
 is required when called authenticated. It should be `leave` if the server
-doesn't know the users membership state (for example if the server is not known
-to the local server).
+doesn't know about the room, since for all other membership states the server
+would know about the room already.
+
+(2) Originally the `/hierarchy` endpoint didn't return the room version. It is
+however a useful field, especially when you are considering to join a room. It
+would also help with the
+[validation of `/hierarchy` responses](https://github.com/matrix-org/synapse/blob/57d334a13d983406ea452dfa203bbe4837509c4e/synapse/handlers/room_summary.py#L662).
+So until this MSC is supported by servers, the field will be missing over
+federation and can't be added by the local server. After a certain migration
+period this field could be made a required field.
 
 #### Modifications to `/_matrix/client/v1/rooms/{roomId}/hierarchy`
 
@@ -135,8 +143,9 @@ and 1, so that child rooms are excluded, but this performance optimization does
 not seem necessary at this time and could be added at any later point while
 degrading gracefully.
 
-(Originally there was a separate federation API for this, but it was decided
-by the author that lowering the duplication on the federation side is the way to go.)
+(Originally there was a separate federation API for this, but it was decided by
+the author that lowering the duplication on the federation side is the way to
+go.)
 
 ## Potential issues
 
@@ -153,54 +162,82 @@ apply rate limiting if necessary.
 
 ## Alternatives
 
-- The 
-    [`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
-    API could be used, but it returns more data than necessary
-    by default (but it can be limited to just 1 room) such as all the
-    `m.space.child` events in a space, but also is missing the room version,
-    membership and the encryption field. (We do reuse the federation API now.)
-- For joined rooms, the `/sync` API can be used to get a summary for all joined
-    rooms. Apart from not working for unjoined rooms, like knocks, invites and
-    space children, `/sync` is very heavy for the server and the client needs to
-    cobble together information from the `state`, `timeline` and
-    [`summary`](https://github.com/matrix-org/matrix-doc/issues/688) sections to
-    calculate the room name, topic and other fields provided in this MSC.
-    Furthermore, the membership counts in the summary field are only included, if
-    the client is using lazy loading.
-    This MSC provides similar information as calling `/sync`, but it uses the
-    stripped state, which is needed to allow this to work for unjoined rooms and
-    it excludes `m.heroes` as well as membership events, since those are not
-    included in the stripped state of a room. (A client can call
-    `/joined_members` to receive those if needed. It may still make sense to
-    include heroes so that clients could construct a human-friendly room display
-    name in case both the name and the canonical alias are absent; but solving
-    the security implications with that may better be left to a separate MSC.
-- The `/state` API could be used, but the response is much bigger than needed,
-    can't be cached as easily and may need more requests. This also doesn't work
-    over federation (yet). The variant of this API, which returns the full state
-    of a room, also does not return stripped events, which prevents it from
-    being used by non-members. The event for specific events DOES return
-    stripped events, but could not provide a member count for a room.
-- Peeking could solve this too, but with additional overhead and
-    [MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753) is much more
-    complex. You need to add a peek and remember to remove it. For many usecases
-    you just want to do one request to get info about a room, no history and no
-    updates. This MSC solves that by reusing the existing hierarchy APIs,
-    returns a lightweight response and provides a convenient API instead.
-- This API could take a list of rooms with included `via`s for each room instead
-    of a single room (as a POST request). This may have performance benefits for
-    the federation API and a client could then easily request a summary of all
-    joined rooms. It could still request the summary of a single room by just
-    including only a single room in the POST or a convenience GET could be
-    provided by the server (that looks like this proposal).
-- [MSC3429](https://github.com/matrix-org/matrix-doc/pull/3429) is an
-    alternative implementation, but it chooses a different layout. While this
-    layout might make sense in the future, it is inconsistent with the APIs
-    already in use, harder to use for clients (iterate array over directly
-    including the interesting fields) and can't reuse the federation API. In my
-    opinion an MSC in the future, that bases all summary APIs on a list of
-    stripped events seems like the more reasonable approach to me and would make
-    the APIs more extensible.
+### The Space Summary / `/hierarchy` API
+
+The
+[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+API could be used, but it returns more data than necessary by default (but it
+can be limited to just 1 room) such as all the `m.space.child` events in a
+space, but also is missing the room version, membership and the encryption
+field.
+
+Additionally the `/hierarchy` API doesn't work using aliases. This currently
+doesn't allow users to preview rooms not known to the local server over
+federation. While the user can resolve the alias and then call the `/hierarchy`
+API using the resolved roomid, a roomid is not a routable entity, so the server
+never receives the information which servers to ask about the requested rooms.
+This MSC resolves that by providing a way to pass server names to ask for the
+room as well as the alias directly.
+
+For server to server communication the efficiency is not as important, which is
+why we use the same API as the `/hierarchy` API to fetch the data over
+federation.
+
+### The `sync` API
+
+For joined rooms, the `/sync` API can be used to get a summary for all joined
+rooms. Apart from not working for unjoined rooms, like knocks, invites and space
+children, `/sync` is very heavy for the server and the client needs to cobble
+together information from the `state`, `timeline` and
+[`summary`](https://github.com/matrix-org/matrix-doc/issues/688) sections to
+calculate the room name, topic and other fields provided in this MSC.
+
+Furthermore, the membership counts in the summary field are only included, if
+the client is using lazy loading.  This MSC provides similar information as
+calling `/sync`, but it uses the stripped state, which is needed to allow this
+to work for unjoined rooms and it excludes `m.heroes` as well as membership
+events, since those are not included in the stripped state of a room. (A client
+can call `/joined_members` to receive those if needed. It may still make sense
+to include heroes so that clients could construct a human-friendly room display
+name in case both the name and the canonical alias are absent; but solving the
+security implications with that may better be left to a separate MSC.
+
+### The `/state` API
+
+The `/state` API could be used, but the response is much bigger than needed,
+can't be cached as easily and may need more requests. This also doesn't work
+over federation (yet). The variant of this API, which returns the full state of
+a room, also does not return stripped events, which prevents it from being used
+by non-members. The event for specific events DOES return stripped events, but
+could not provide a member count for a room.
+
+### Proper peeking
+
+Peeking could solve this too, but with additional overhead and
+[MSC2753](https://github.com/matrix-org/matrix-doc/pull/2753) is much more
+complex. You need to add a peek and remember to remove it. For many usecases you
+just want to do one request to get info about a room, no history and no updates.
+This MSC solves that by reusing the existing hierarchy APIs, returns a
+lightweight response and provides a convenient API instead.
+
+### A more batched API
+
+This API could take a list of rooms with included `via`s for each room instead
+of a single room (as a POST request). This may have performance benefits for the
+federation API and a client could then easily request a summary of all joined
+rooms. It could still request the summary of a single room by just including
+only a single room in the POST or a convenience GET could be provided by the
+server (that looks like this proposal).
+
+### MSC3429: Individual room preview API (closed)
+
+[MSC3429](https://github.com/matrix-org/matrix-doc/pull/3429) is an alternative
+implementation, but it chooses a different layout. While this layout might make
+sense in the future, it is inconsistent with the APIs already in use, harder to
+use for clients (iterate array over directly including the interesting fields)
+and can't reuse the federation API. In my opinion an MSC in the future, that
+bases all summary APIs on a list of stripped events seems like the more
+reasonable approach to me and would make the APIs more extensible.
 
 ## Security considerations
 
