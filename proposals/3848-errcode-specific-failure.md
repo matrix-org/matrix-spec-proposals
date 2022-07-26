@@ -29,7 +29,7 @@ This would cover endpoints:
 Note that it would not cover endpoints where trying to join a room when the
 user is already joined would no-op, like `POST /_matrix/client/v3/join/{roomIdOrAlias}`.
 
-`M_INSUFFICIENT_POWER` would be when the authenticated user does not have the specific required power level to
+`M_INSUFFICIENT_POWER` would be when the authenticated user does not have the required power level to
 perform an action in the room.
 
 `M_NOT_JOINED` would be when the authenticated user is not joined to a room, but attempts to perform
@@ -51,7 +51,7 @@ Changing long-established error codes in Matrix will be fraught with risk, as ma
 clients will need updating to support the new error types. Failure to do so might lead
 to unexpected behaviours or confusing error messages. For this reason, the unstable implementation
 will continue to provide the old errcode in the body of the error while providing the
-new proposed errcode under it's own field. This gives clients a chance to adapt to the
+new proposed errcode under its own field. This gives clients a chance to adapt to the
 new errcode / ensure their behaviours with unexpected errcodes are acceptable.
 
 ## Alternatives
