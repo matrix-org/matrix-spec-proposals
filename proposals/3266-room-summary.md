@@ -31,7 +31,7 @@ alias, and a corresponding server-server API to fetch a summary over federation.
 ### Client-Server API
 
 The API returns the summary of the specified room, if the room could be found
-and the client should be able to view its contents according to the same rules
+and the client should be able to view its contents according to the same rules as the
 [`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#server-behaviour-19)
 endpoint. This is generally described as being a "potential joiner", which
 includes rules such as being a member of a room that allows joining a
@@ -39,7 +39,7 @@ includes rules such as being a member of a room that allows joining a
 the room being
 [knockable](https://spec.matrix.org/v1.3/client-server-api/#knocking-on-rooms),
 public or you already being a member. For unauthenticated requests a response
-should only be returned if the room is publically accessible.
+should only be returned if the room is publicly accessible.
 
 A request could look like this:
 
@@ -92,7 +92,7 @@ this API just provides it as a convenience.
 
 | fieldname          | description                                                                                                                                           | rationale                                                                                                                             |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| room_id            | Required. Id of the room                                                                                                                               | Useful when the API is called with an alias or to disambiguate multiple responses clientside.                                        |
+| room_id            | Required. Id of the room                                                                                                                               | Useful when the API is called with an alias.                                        |
 | avatar_url         | Optional. Avatar of the room                                                                                                                          | Copied from `publicRooms`.                                                                                                            |
 | guest_can_join     | Required. If guests can join the room.                                                                                                                | Copied from `publicRooms`.                                                                                                            |
 | name               | Optional. Name of the room                                                                                                                            | Copied from `publicRooms`.                                                                                                            |
