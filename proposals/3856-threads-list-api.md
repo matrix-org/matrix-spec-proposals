@@ -50,15 +50,13 @@ GET /_matrix/client/v1/rooms/{roomId}/threads
 
 Query Parameters:
 
-* **`filter`**: `enum`
+* **`include`**: `enum`
 
   Whether to include all threads in the room or only threads which the user has
   participated in, meaning that the user has created the root event of the thread
   or have created an event with a `m.thread` relation targeting the root.
 
   One of `[all participated]`. Defaults to `all`.
-
-  XXX Rename this to something besides `filter`.
 * **`from`**: `string`
 
   The token to start returning events from. This token can be obtained from a
@@ -68,7 +66,7 @@ Query Parameters:
   If it is not provided, the homeserver shall return a list of threads from the
   last visible event in the room history for the requesting user.
 * **`limit`**: Optional: a client-defined limit to the maximum
-  number of rooms to return per page. Must an integer greater than zero.
+  number of rooms to return per page. Must be an integer greater than zero.
 
   Server implementations should impose a maximum value to avoid resource
   exhaustion.
@@ -107,7 +105,7 @@ XXX Define how ignored users are handled, which has two cases:
 ```
 GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/threads?
     limit=25&
-    filter=participated
+    include=participated
 ```
 
 #### Example response:
