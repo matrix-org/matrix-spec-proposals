@@ -6,15 +6,10 @@ This MSC proposes a method for differentiating WebRTC streams from each other.
 immeasurably. Yet, there is still no clear way to handle things such as
 screen-sharing.
 
-The simplest possible implementation of VoIP call upgrades would assume that any
-new incoming stream would replace the old one. This solution works, but problems
-start to appear with the introduction of screen-sharing. There is no way to know
-which one of the already existing incoming streams (user-media and
-screen-sharing) should a new incoming stream replace. Further, if conferencing
-using an SFU (as suggested in
-[MSC2359](https://github.com/matrix-org/matrix-doc/pull/2359)) were implemented
-there would be no way to know from which user a stream is coming from.
-Therefore, a way to differentiate streams from each other is needed.
+Simple VoIP calls only ever feature one stream, though often clients will want
+to send multiple - usermedia, screensharing and possibly more. In a situation
+with more streams, it can be very helpful to provide the other side with
+metadata about the content of the streams.
 
 ## Proposal
 
@@ -31,7 +26,7 @@ have the following fields:
 
 + `purpose` - a string indicating the purpose of the stream. For compatibility
   between clients values `m.usermedia` and `m.screenshare` are defined.
-  `m.usermedia` is the stream that contains the webcam and microphone tracks.
+  `m.usermedia` is the stream that contains the webcam and/or microphone tracks.
   `m.screenshare` is then the stream with the screen-sharing tracks.
 
 ### Example
@@ -67,11 +62,9 @@ have the following fields:
 
 ### Edge cases
 
-+ There should _never_ be more than one `SDPStreamMetadata` in
-  `sdp_stream_metadata` with the same `purpose`.
 + If an incoming stream is not described, in `sdp_stream_metadata`, it should be
   ignored.
-+ If a stream has `purpose` of an unknown type (i.e. not `m.usermedia` or
++ If a stream has a `purpose` of an unknown type (i.e. not `m.usermedia` or
   `m.screenshare`), it should be ignored.
 
 ### Backwards compatibility
@@ -91,7 +84,14 @@ Similar is true for SDP attributes.
 
 This proposal is also more practical for cases where more complex metadata is
 needed. For conferencing, a `user_id` field could be added to
-`SDPStreamMetadata`.
+`SDPStreamMetadata`; for differentiating between the front and rear camera of a
+phone, a `camera_type` field could be added.
+
+Previously, it has been thought that the `purpose` field has to be unique (or
+another unique field has to be added), though this could only ever be important
+if we wanted to replace a stream with another one in-place. It was deemed as a
+rather uncommon thing for which there doesn't seem to be any use-case, so
+uniqueness is not required.
 
 ## Unstable prefix
 
