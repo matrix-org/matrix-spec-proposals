@@ -1,22 +1,24 @@
 # MSC2967: API scope restriction
 
-When a user logs in with a Matrix client, it gives this client full access to their Matrix account.
+When a user signs in with a Matrix client, it currently gives this client full access to their Matrix account.
 
 This proposal introduces access scopes to allow restricting client access to only part(s) of the Matrix client API.
 
 ## Proposal
 
-The [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) introduces the usage of OAuth 2.0 to authenticate against a Matrix server.
-OAuth 2.0 grants have scopes associated to them and encourage to ask for user consent when a client asks for a new scope that was not granted before.
+[MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) introduces the usage of OAuth 2.0 for a client to authenticate against a Matrix homeserver.
 
-This MSC does not attempt to define all the scopes necessary to cover the whole API, but lays out a base for that.
+OAuth 2.0 grants have scopes associated to them and provides a framework for obtaining user consent.
+
+The framework encourages the practise of obtaining additional use consent when a client asks for a new scope that was not granted previously.
+
+This MSC does not attempt to define all the scopes necessary to cover all Matrix APIs and use cases, but proposes the structure of a namespace and some specific scopes to cover existing use cases.
 
 Additionally it is proposed that a standard approach to error response representation is adopted across the API. This could replace the UIA based responses that exist on some API endpoints today.
 
 ### Scope format
 
-URN are widely used formats for OAuth 2.0 scopes.
-All scopes related to Matrix must therefore start with `urn:matrix:`.
+All scopes related to Matrix should start with `urn:matrix:`.
 
 Calls to the Matrix client API, excluding calls that need UIA, must be restricted by scopes prefixed by `urn:matrix:api:`.
 Calls to endpoints that currently need User-Interactive Authentication (UIA) must be restricted by scopes prefixed by `urn:matrix:sudo:`.
@@ -37,20 +39,22 @@ Wildcards can only replace URN segments, e.g. `urn:matrix:a*` is invalid.
 
 #### Device handling
 
-With the pre-MSC2964 authentication mechanism, a `device_id` was associated with the access token.
-Since there are no such thing as a session in OAuth 2.0, this can be hardly mapped like this.
+With the pre-MSC2964 authentication mechanism, a `device_id` was associated with a specific access token. In OAuth 2.0 there is no such thing as a session and so a mapping cannot be handled using the same mechanism.
 
-`device_id` can be bound to a client session via a scope with this format: `urn:matrix:device:[device_id]`.
-If the client does not ask such a scope during the initial login, the authentication server must generate a new `device_id` and give it as a granted scope to the client.
-A client can adopt and rehydrate an existing client by asking for its scope on login.
+MSC2964 proposes that the client is responsible for generating/allocating a `device_id`. A client can adopt and rehydrate an existing client by asking for its scope on login.
+
+The client can then bind the `device_id` to the grant by requesting a scope with the format: `urn:matrix:device:<device_id>`.
+
 This also has a nice side-effect: if the device asked was never used by the client making the request, the authorization server will ask for explicit consent from the user.
 
 The authentication server must only grant exactly one device scope for a token.
+
 Wildcards are not allowed under the `urn:matrix:device:` prefix.
 
 ### Exact scopes
 
-The exact scopes are intentionally not specified in this MSC.
+Exact scopes for the whole API are intentionally not specified in this MSC.
+
 The glob mechanism allows to the existing behaviour during a transition period while allowing further MSCs that introduces those exact scopes.
 
 ### Insufficient privilege response
@@ -81,9 +85,7 @@ Content-Type: application/json
 
 ## Potential issues
 
-The Device ID handling involves some custom logic on the authorization server side.
-This means the Matrix server must be involved at some point in the authorization logic, which also involves implementation-specific code for each Matrix server implementation and OAuth 2.0 authentication server implementation.
-This is not a problem when the Matrix server acts as the authorization server.
+The Device ID handling involves some custom logic on the authorization server side to handle the dynamic scope format.
 
 The addition of the `WWW-Authenticate` header could cause issue with some clients.
 
