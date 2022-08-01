@@ -48,7 +48,7 @@ Example `m.room.message` content:
     "blurhash": "JadR*.7kCMdnj"
   },
   "msgtype": "m.image",
-  "url": "mxc://example.org/abcde",
+  "url": "mxc://example.org/abcde"
 }
 ```
 
@@ -135,13 +135,20 @@ Example `m.room.member` event content:
 Endpoints that return profile information, and thus MXC URLs to user avatars, are
 extended to optionally include BlurHashes as well.
 
-[`GET /_matrix/client/r0/profile/{userId}`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid) has an optional field added with
+[`GET /_matrix/client/r0/profile/{userId}`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid)
+has an optional field added with
 the key `blurhash`. Its value is a BlurHash of the media that is pointed to
 by `avatar_url`. `blurhash` MUST be omitted if `avatar_url` is not present.
-The same applies to [`GET /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid-avatar-url), and to the federation endpoint [`GET /_matrix/federation/v1/query/profile`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-query-profile).
+The same applies
+to [`GET /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid-avatar-url)
+, and to the federation
+endpoint [`GET /_matrix/federation/v1/query/profile`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-query-profile)
+.
 
-[`PUT /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#put-matrix-client-r0-profile-userid-avatar-url) has an optional field added
-to the request body with the key `blurhash`. Its value is a BlurHash of the media that is pointed to by the value of the `avatar_url` field in the same request.
+[`PUT /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#put-matrix-client-r0-profile-userid-avatar-url)
+has an optional field added
+to the request body with the key `blurhash`. Its value is a BlurHash of the media that is pointed to by the value of
+the `avatar_url` field in the same request.
 
 ### URL previews
 
@@ -284,14 +291,14 @@ Implementations wishing to add this before this MSC is merged can do so with
 the following:
 
 * The `blurhash` key in any events, request or response bodies should be
-replaced with `xyz.amorgan.blurhash`.
+  replaced with `xyz.amorgan.blurhash`.
 
 * `/_matrix/media/r0/upload`'s new `generate_blurhash` query parameter
-should instead be `xyz.amorgan.generate_blurhash`. And instead of the
-key `blurhash`, the endpoint should return `xyz.amorgan.blurhash`.
+  should instead be `xyz.amorgan.generate_blurhash`. And instead of the
+  key `blurhash`, the endpoint should return `xyz.amorgan.blurhash`.
 
 * The `data-mx-blurhash` attribute in `<img>` tags should be replaced with
-`data-xyz-amorgan-blurhash`.
+  `data-xyz-amorgan-blurhash`.
 
 ## Security considerations
 
