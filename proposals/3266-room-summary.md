@@ -108,13 +108,9 @@ is required when called authenticated. It should be `leave` if the server
 doesn't know about the room, since for all other membership states the server
 would know about the room already.
 
-(2) Originally the `/hierarchy` endpoint didn't return the room version. It is
-however a useful field, especially when you are considering to join a room. It
-would also help with the
-[validation of `/hierarchy` responses](https://github.com/matrix-org/synapse/blob/57d334a13d983406ea452dfa203bbe4837509c4e/synapse/handlers/room_summary.py#L662).
-So until this MSC is supported by servers, the field will be missing over
-federation and can't be added by the local server. After a certain migration
-period this field could be made a required field.
+(2) Prior to this MSC, `/_matrix/federation/v1/hierarchy/{roomId}` doesn't
+return the room version, so `room_version` may be unavailable for remote
+rooms.
 
 #### Modifications to `/_matrix/client/v1/rooms/{roomId}/hierarchy`
 
