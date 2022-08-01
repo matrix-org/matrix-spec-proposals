@@ -103,7 +103,7 @@ Example `m.room.avatar` content:
 
 ```json
 {
-  "url": "mxc://amorgan.xyz/a59ee02f180677d83d1b57d366127f8e1afdd4ed",
+  "url": "mxc://matrix.example.com/a59ee02f180677d83d1b57d366127f8e1afdd4ed",
   "info": {
     "blurhash": "JadR*.7kCMdnj"
   }
@@ -148,10 +148,61 @@ to [`GET /_matrix/client/v3/profile/{userId}/avatar_url`](https://spec.matrix.or
 endpoint [`GET /_matrix/federation/v1/query/profile`](https://spec.matrix.org/v1.3/server-server-api/#get_matrixfederationv1queryprofile)
 .
 
-[`PUT /_matrix/client/v3/profile/{userId}/avatar_url`](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3profileuseridavatar_url)
+#### Example responses:
+
+`GET /_matrix/client/v3/profile/{userId}`
+
+```json5
+{
+  "avatar_url": "mxc://matrix.org/SDGdghriugerRg",
+  "displayname": "Alice Margatroid",
+  "blurhash": "oyp8ky2BWn7VHEL"
+}
+```
+
+`GET /_matrix/federation/v1/query/profile`
+
+```json5
+{
+  "avatar_url": "mxc://matrix.org/SDGdghriugerRg",
+  "displayname": "Alice Margatroid",
+  "blurhash": "oyp8ky2BWn7VHEL"
+}
+```
+
+`GET /_matrix/client/v3/profile/{userId}/avatar_url`
+
+```json5
+{
+  "avatar_url": "mxc://matrix.org/SDGdghriugerRg",
+  "blurhash": "oyp8ky2BWn7VHEL"
+}
+```
+
+Separately, [`PUT /_matrix/client/v3/profile/{userId}/avatar_url`](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3profileuseridavatar_url)
 has an optional field added
 to the request body with the key `blurhash`. Its value is a BlurHash of the media that is pointed to by the value of
 the `avatar_url` field in the same request.
+
+#### Example request/response interaction
+
+Request:
+```
+PUT /_matrix/client/v3/profile/{userId}/avatar_url HTTP/1.1
+
+{
+  "avatar_url": "mxc://matrix.org/SDGdghriugerRg",
+  "blurhash": "oyp8ky2BWn7VHEL"
+}
+```
+
+Successful response:
+
+```
+200 OK
+
+{}
+```
 
 ### URL previews
 
@@ -228,7 +279,7 @@ blurhash would look like:
 
 ```
 POST /_matrix/media/v3/upload?generate_blurhash=true&filename=My+Family+Photo.jpeg HTTP/1.1
-Content-Type: Content-Type: image/jpeg
+Content-Type: image/jpeg
 
 <bytes>
 ```
