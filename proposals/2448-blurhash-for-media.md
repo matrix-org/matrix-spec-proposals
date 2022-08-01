@@ -13,8 +13,11 @@ receipt other clients can render for a pretty media preview while the actual
 thumbnail downloads. They also do not contain any `"` characters, making them
 simple to stick inside existing JSON blobs.
 
-To be clear: A BlurHash does not replace a thumbnail - it will be shown
-before the thumbnail is downloaded.
+To be clear: A BlurHash does not replace a thumbnail - rather it is a placeholder
+and should be shown before the thumbnail is downloaded. For a familiar messaging
+user experience, clients are recommended to first render and display a blurhash,
+then download the thumbnail of the media. Once the thumbnail file is downloaded,
+display it. Finally, the user can optionally view the full media item by selecting it.
 
 ## Proposal
 
