@@ -8,8 +8,8 @@ loading. Some clients, such as Element, simply display an empty space.
 While thumbnails exist to combat this to some degree, they still need to be
 downloaded from a homeserver, which is not instantaneous.
 
-Instead, a BlurHash can be sent inside the `m.room.message` event, which upon
-receipt other clients can render for a pretty preview while the actual
+Instead, a BlurHash can be sent inside events, which upon
+receipt other clients can render for a pretty media preview while the actual
 thumbnail downloads. They also do not contain any `"` characters, making them
 simple to stick inside existing JSON blobs.
 
@@ -262,7 +262,7 @@ Once the image loads:
 
 ![the image has loaded](images/2448-loaded-image.png)
 
-For reference, the current state of things in Element is:
+As a sample, this is Element's behaviour prior to this MSC's introduction:
 
 ![boo, sad](images/2448-current-state.png)
 
