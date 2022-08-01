@@ -1,7 +1,7 @@
 # MSC2448: Using BlurHash as a Placeholder for Matrix Media
 
 [BlurHash](https://blurha.sh) is a compact representation of a placeholder
-for an image (or a frame of video). Currently in Matrix, clients must
+for an image (or a frame of video). Currently, in Matrix, clients must
 display a placeholder image in the message timeline while a piece of media is
 loading. Some clients, such as Element, simply display an empty space.
 
@@ -138,17 +138,17 @@ Example `m.room.member` event content:
 Endpoints that return profile information, and thus MXC URLs to user avatars, are
 extended to optionally include BlurHashes as well.
 
-[`GET /_matrix/client/r0/profile/{userId}`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid)
+[`GET /_matrix/client/v3/profile/{userId}`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3profileuserid)
 has an optional field added with
 the key `blurhash`. Its value is a BlurHash of the media that is pointed to
 by `avatar_url`. `blurhash` MUST be omitted if `avatar_url` is not present.
 The same applies
-to [`GET /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-client-r0-profile-userid-avatar-url)
+to [`GET /_matrix/client/v3/profile/{userId}/avatar_url`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3profileuseridavatar_url)
 , and to the federation
-endpoint [`GET /_matrix/federation/v1/query/profile`](https://matrix.org/docs/spec/server_server/r0.1.4#get-matrix-federation-v1-query-profile)
+endpoint [`GET /_matrix/federation/v1/query/profile`](https://spec.matrix.org/v1.3/server-server-api/#get_matrixfederationv1queryprofile)
 .
 
-[`PUT /_matrix/client/r0/profile/{userId}/avatar_url`](https://matrix.org/docs/spec/client_server/r0.6.1#put-matrix-client-r0-profile-userid-avatar-url)
+[`PUT /_matrix/client/v3/profile/{userId}/avatar_url`](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3profileuseridavatar_url)
 has an optional field added
 to the request body with the key `blurhash`. Its value is a BlurHash of the media that is pointed to by the value of
 the `avatar_url` field in the same request.
@@ -157,7 +157,7 @@ the `avatar_url` field in the same request.
 
 An optional attribute is added to the OpenGraph data returned by a call
 to
-[`GET /_matrix/media/r0/preview_url`](https://matrix.org/docs/spec/client_server/r0.6.1#get-matrix-media-r0-preview-url)
+[`GET /_matrix/media/v3/preview_url`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixmediav3preview_url)
 called `matrix:image:blurhash`. The value
 of this attribute is the blurhash representation of the media specified
 by `og:image`. Note that we place this value under the `matrix` namespace as
@@ -167,7 +167,7 @@ for BlurHashes.
 Note that `matrix:image:blurhash` MUST be omitted if `og:image` is not present
 in the response.
 
-Example response to `GET /_matrix/media/r0/preview_url`:
+Example response to `GET /_matrix/media/v3/preview_url`:
 
 ```json
 {
@@ -206,7 +206,7 @@ of media for the client, similar to how thumbnails are calculated by media
 repositories today.
 
 A new boolean query parameter, `generate_blurhash`, is added to
-[`/_matrix/media/r0/upload`](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-media-r0-upload)
+[`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.3/client-server-api/#post_matrixmediav3upload)
 which allows clients to ask the server to generate a BlurHash for them. This
 may be useful for clients that are designed to run on very low-power hardware,
 or otherwise cannot generate a BlurHash itself.
@@ -220,14 +220,14 @@ in the response. Additionally, if `generate_blurhash` is not `true`, then the
 server SHOULD NOT return a `blurhash` key in the response.
 
 Fundamentally, this means that clients SHOULD NOT assume that a server will always
-return a BlurHash in the response to `/_matrix/media/r0/upload`, even if they have
+return a BlurHash in the response to `/_matrix/media/v3/upload`, even if they have
 set the `generate_blurhash` query parameter to `true` in the request.
 
 An example request from a client that would like the server to generate a
 blurhash would look like:
 
 ```
-POST /_matrix/media/r0/upload?generate_blurhash=true&filename=My+Family+Photo.jpeg HTTP/1.1
+POST /_matrix/media/v3/upload?generate_blurhash=true&filename=My+Family+Photo.jpeg HTTP/1.1
 Content-Type: Content-Type: image/jpeg
 
 <bytes>
@@ -244,8 +244,8 @@ Example response:
 
 We explicitly make this behaviour opt-in as it is assumed that the majority of
 clients that end up supporting BlurHashes will be capable of generating them
-locally. Thus the less load we can put on the homeserver, (by not making
-blurhash generation the default), the better.
+locally. Thus, the less load we can put on the homeserver (by not making
+blurhash generation the default) the better.
 
 Note that media servers will not be able to return a BlurHash string for
 encrypted media; that must be left to the client.
@@ -296,7 +296,7 @@ the following:
 * The `blurhash` key in any events, request or response bodies should be
   replaced with `xyz.amorgan.blurhash`.
 
-* `/_matrix/media/r0/upload`'s new `generate_blurhash` query parameter
+* `/_matrix/media/v3/upload`'s new `generate_blurhash` query parameter
   should instead be `xyz.amorgan.generate_blurhash`. And instead of the
   key `blurhash`, the endpoint should return `xyz.amorgan.blurhash`.
 
