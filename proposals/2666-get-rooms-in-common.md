@@ -19,7 +19,7 @@ This proposal aims to implement a simple mechanism to fetch rooms you have in co
 
 ## Proposal
 
-Homeservers should implement a new endpoint `/user/mutual_rooms/{user_id}` which will take
+Homeservers should implement a new endpoint `/_matrix/client/v1/user/mutual_rooms/{user_id}` which will take
 the MxID of the user who is being searched for.
 
 The response format will be an array containing all rooms where both the authenticated user and `user_id` have
@@ -46,7 +46,7 @@ The response error for trying to get shared rooms with yourself will be an HTTP 
 
 Homeserver performance and storage may be impacted by this endpoint. While a homeserver already stores
 membership information for each of its users, the information may not be stored in a way that is readily
-accessible. Homeservers that have implemented [POST /user-directory/search](https://matrix.org/docs/spec/client_server/r0.6.0#post-matrix-client-r0-user-directory-search)
+accessible. Homeservers that have implemented [POST /user_directory/search](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3user_directorysearch)
 may have started some of this work, if they are limiting users to searching for users for which they
 share rooms. While this is not a given by any means, it may mean that implementations of this API
 and /search may be complimentary.
