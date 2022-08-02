@@ -17,6 +17,7 @@ Such an event would look like:
 ```json5
 {
   "type": "m.room.welcome",
+  "state_key": "",
   "content": {
     "m.room.welcome": {
       // we use an object to support future extensions like a theoretical "must_accept: true" flag
@@ -92,6 +93,7 @@ event type instead, including in `content`:
 ```json5
 {
   "type": "org.matrix.msc3857.welcome",
+  "state_key": "",
   "content": {
     "org.matrix.msc3857.welcome": {
       "org.matrix.msc1767.message": [ // note unstable prefix for extensible events
