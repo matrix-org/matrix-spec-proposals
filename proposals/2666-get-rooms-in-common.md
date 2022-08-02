@@ -11,8 +11,9 @@ invites on their own do not present much context. With this endpoint, a client c
 rooms you have in common before you accept an invite.
 
 While this information can be determined if the user has full access to member state for all rooms,
-modern clients often implement "lazy-loading", so they often only have a subset of state for the rooms
-the user is in. Therefore, the homeserver should have a means to provide this information.
+modern clients often implement [lazy-loading of room members](https://spec.matrix.org/v1.3/client-server-api/#lazy-loading-room-members),
+so they often only have a subset of state for the rooms the user is in. Therefore, the homeserver
+should have a means to provide this information.
 
 This proposal aims to implement a simple mechanism to fetch rooms you have in common with another user.
 
