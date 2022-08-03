@@ -96,7 +96,7 @@ additional property in the body containing the thread ID:
 {
   "content": {
     "$thread_reply": {
-      "m.read.thread.private": {
+      "m.read": {
         "@rikj:jki.re": {
           "ts": 1436451550453,
           "thread_id": "$thread_root"
