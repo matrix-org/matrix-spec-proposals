@@ -52,6 +52,11 @@ in the `room_types` array. If the `room_types` filter is not specified or the
 `room_types` array is empty, the server should return _all_ rooms no matter the
 type.
 
+The same API shape is added to the Server-Server API for the [public room directory](https://spec.matrix.org/v1.3/server-server-api/#public-room-directory),
+allowing servers to proxy the request over federation if needed. Note that the
+remote server might not support this filtering mechanism - the local server should
+further filter the results if needed/possible.
+
 ## Alternatives
 
 ### Using a special endpoint
