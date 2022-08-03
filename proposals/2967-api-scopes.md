@@ -1,6 +1,6 @@
 # MSC2967: API scopes
 
-When a user signs in with a Matrix client, it currently gives this client full access to their Matrix account.
+When a user signs in with a Matrix client, it currently gives the client full access to their Matrix account.
 
 This proposal introduces access scopes to allow restricting client access to only part(s) of the Matrix client API.
 
@@ -23,7 +23,6 @@ All scopes related to Matrix should start with `urn:matrix` and use the `:` deli
 | Prefix | Purpose |
 | - | - |
 | `urn:matrix:client` | For mapping of Client Server API access levels |
-| `urn:matrix:device` | For representing device IDs |
 
 For future MSCs that build on this namespace unstable sub divisions should be used whilst in development:
 
@@ -54,7 +53,7 @@ The client can then bind the device ID to the grant by requesting a scope with t
 
 | Scope | Purpose | Implementation notes |
 | - | - | - |
-| `urn:matrix:device:<device ID>` | bind the given device ID to the grant/access token | The OIDC Provider must only grant exactly one device scope for a token. |
+| `urn:matrix:client:device:<device ID>` | bind the given device ID to the grant/access token | The OIDC Provider must only grant exactly one device scope for a token. |
 
 For the purpose of this MSC we are assuming that device IDs are as per [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/pull/1597) and, as such, are already URL safe and so can be represented as a scope without modification.
 
@@ -131,7 +130,6 @@ TBD
 While this feature is in development the following unstable scope prefixes should be used:
 
 - `urn:matrix:client` --> `urn:matrix:org.matrix.msc2967.client`
-- `urn:matrix:device` --> `urn:matrix:org.matrix.msc2967.device`
 
 ## Dependencies
 
