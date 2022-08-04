@@ -1,4 +1,4 @@
-# MSCxxxx: Matrix architecture change to delegate authentication via OIDC 
+# MSC3861: Matrix architecture change to delegate authentication via OIDC
 
 This MSC proposes a change to the architecture of Matrix with respect to how authentication works.
 
