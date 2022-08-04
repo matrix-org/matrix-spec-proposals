@@ -5,4 +5,8 @@ make it possible for the media repo to tell clients/servers to pull data direct 
 
 ## Proposal
 
-This MSC simply proposes that a 307 redirect code is allowed and followed according to the `Location` header. It is possible some clients would already follow these which needs to be confirmed.
+This MSC simply proposes that a 307 redirect code is allowed and followed according to the `Location` header. It is possible some clients would already follow these which needs to be confirmed. Specifc endpoints in question:
+
++ `/_matrix/media/v3/download/{serverName}/{mediaId}`
++ `/_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`
++ `/_matrix/media/v3/thumbnail/{serverName}/{mediaId}`
