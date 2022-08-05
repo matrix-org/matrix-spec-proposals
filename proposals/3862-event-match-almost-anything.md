@@ -65,7 +65,7 @@ to treat both data types identically anyway.
 As mentioned earlier, [MSC3758] provides an alternative by introducing
 a new condition kind `exact_event_match`. While being more powerful,
 this option is also more invasive, complicating the push rule API. The
-existing specifcation of `event_match` already allows for exact matches
+existing specification of `event_match` already allows for exact matches
 on strings and the proposal at hand offers a lightweight generalisation
 to other primitive types that is both easy to implement (see
 e.g. [matrix-org/synapse#13466]) and use.
