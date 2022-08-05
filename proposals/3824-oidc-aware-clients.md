@@ -1,5 +1,7 @@
 # MSC3824: OIDC aware clients
 
+This proposal is part of the broader [MSC3861: Matrix architecture change to delegate authentication via OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/2967).
+
 In the context of [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) we can define four types of client:
 
 1. *OIDC native client* - This is a client that, where the homeserver supports it, talks to the specified OP in order to complete login and registration. e.g. Element X (WIP), Hydrogen (WIP)
