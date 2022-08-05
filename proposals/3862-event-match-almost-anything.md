@@ -1,4 +1,4 @@
-# MSC0000: event_match (almost) anything
+# MSC3862: event_match (almost) anything
 
 The `event_match` condition kind on push rules currently only matches
 string values. This is limiting because some event types have important
