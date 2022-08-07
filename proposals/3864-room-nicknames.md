@@ -69,13 +69,13 @@ which makes them a perfect fit for storing user-given names and user-given descr
 
 ### Implementation
 
-For user-given names, a new tag called `m.user_given_name` may be added.
+For user-given names, a new tag called `m.name.user_given` may be added.
 Its `content` key shall contain the user-given name.
 
-For user-given descriptions, a new tag called `m.user_given_description` may be added.
+For user-given descriptions, a new tag called `m.description.user_given` may be added.
 Its `content` key shall contain the user-given description.
 
-Clients shall append the tags `m.user_given_name` and `m.user_given_description`
+Clients shall append the tags `m.name.user_given` and `m.description.user_given`
 with their `content` key containing the user-given name / description
 to the selected room.
 
@@ -94,10 +94,10 @@ the answer may look like this:
     "m.favourite": {
       "order": 0.1
     },
-    "m.user_given_name": {
+    "m.name.user_given": {
       "content": "Sweatheart"
     },
-    "m.user_given_description": {
+    "m.description.user_given": {
       "content": "my crush since middle school"
     }
   }
@@ -232,7 +232,7 @@ ans so should not create any security-releated issues.
 ## Unstable prefix
 
 Until this MSC lands, clients shall use tag names with the `m.` prefix with `work.banananet.msc3864.`
-(e.g. use `work.banananet.msc3864.user_given_name` instead of `m.user_given_name`).
+(e.g. use `work.banananet.msc3864.name.user_given` instead of `m.name.user_given`).
 
 After this MSC lands, they shall begin use the official tag names
 and also migrate from an unstable tag to an official tag,
