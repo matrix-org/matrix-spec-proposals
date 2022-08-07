@@ -208,7 +208,7 @@ however hopefully this will move clients to migrate as well
 and users to update their clients.
 
 
-#### Dependencies
+## Dependencies
 
 This MSC formaly depends on [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199).
 However, as long as clients can resolve an 1:1 DM room successfully by other means
