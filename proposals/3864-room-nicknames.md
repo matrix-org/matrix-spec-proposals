@@ -60,51 +60,34 @@ because user-given names and descriptions are synced using the home server of th
 For the same reason, this proposal includes a description of the expected user experience.
 
 This proposal takes advantage of the already implemented
-[room tagging feature](https://spec.matrix.org/unstable/client-server-api/#room-tagging)
-so the API and the server implementations hopefully do not need to be changed drastically
-(see [implementation issues](#implementation) below).
-Room tags are only visible to the user who set them and are synced accross all devices of the user,
+[client config feature](https://spec.matrix.org/unstable/client-server-api/#client-config) (a.k.a. `account_data`)
+so the API and the server implementations do not need to change.
+The user-given names and descriptions will be saved scoped to the room and in an own namespace.
+Client configs are only visible to the user who set them and are synced accross all devices of the user,
 which makes them a perfect fit for storing user-given names and user-given description.
 
 
 ### Implementation
 
-For user-given names, a new tag called `m.name.user_given` may be added.
-Its `content` key shall contain the user-given name.
+For user-given names, a new event type called `m.name.user_given` may be added.
+The content of this event will be `{"content": "<USER_GIVEN_NAME>"}`
 
-For user-given descriptions, a new tag called `m.description.user_given` may be added.
-Its `content` key shall contain the user-given description.
+For user-given descriptions, a new event type called `m.description.user_given` may be added.
+The content of this event will be `{"content": "<USER_GIVEN_DESCRIPTION>"}`
 
-Clients shall append the tags `m.name.user_given` and `m.description.user_given`
-with their `content` key containing the user-given name / description
-to the selected room.
+Clients shall store & read those event types scoped to the selected / affected room.
+This means they will GET / PUT following URL:
+`/_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}`
+with parameters as follows:
+- `{userId}`: The user id of the current user.
+- `{roomId}`: The room id of the selected / affected room id.
+- `{type}`: Either `m.name.user_given` or `m.description.user_given`
 
 When setting user-given names and descriptions to other users,
 clients shall append the tags to the room both users use to exchange direct messages.
 If a user may leave the last DM room, the user-given names and descriptions may be lost as well.
 This behavior may or may not be expected, depending on the user's preference.
 Clients may inform the user about this circumstance so they can make an informed choice.
-
-If the client will be informed about room tags of a room with an user-given name and description,
-the answer may look like this:
-
-```json
-{
-  "tags": {
-    "m.favourite": {
-      "order": 0.1
-    },
-    "m.name.user_given": {
-      "content": "Sweatheart"
-    },
-    "m.description.user_given": {
-      "content": "my crush since middle school"
-    }
-  }
-}
-```
-
-(See [Implementation Issues](#implementation-issues) for potential issues this one might have.)
 
 
 ### User Experience
@@ -137,16 +120,6 @@ For both rooms and other users, the client must not replace the Matrix ID of roo
 
 Some issues I discovered while writing or applying this MSC.
 These are listed here as points open to discuss further.
-
-#### Implicit Support for content key
-
-This MSC requires servers to implicitly support to store the new `content` key
-along the already existing `order` key for room tags.
-Probably a further MSC is required to define that tags may either:
-- can contain any additional metadata in form of more JSON keys (like `content`) OR
-- can contain an additional string with the key `content`.
-I left this out of this MSC because I am not sure if that change requires an additional MSC
-and so I want to first discuss this further in reference to this MSC.
 
 #### Non-unique DM room
 
@@ -201,16 +174,12 @@ or at least in way so users can separate them from one and another easily.
 
 ## Alternatives
 
-User-given names and descriptions for rooms may be stored into the general account data.
-However, it places them away from similar properties like being a favorite
-and instead near other configurations like client-dependent configuration options.
-
 User-given names and descriptions set for others users only may be stored into the general account data.
 This would circumvent the problem with [non-unique DM rooms](#non-unique-dm-room) particular for this MSC.
 However, clients may still need to solve this problem for other implementations,
 so no complexity would be saved in the end.
-And alongside the same reasoning from above,
-the user-given names and description may be lost when another user changes its Matrix ID
+It instead places them near other configurations like client-dependent (not room-dependent) configuration options,
+and the user-given names and description may be lost when another user changes its Matrix ID
 and it also lets the implementation for rooms and users differ more.
 
 Conceptually, the user-given name could also be displayed as a secondary attribute alongside the global name
@@ -231,15 +200,18 @@ ans so should not create any security-releated issues.
 
 ## Unstable prefix
 
-Until this MSC lands, clients shall use tag names with the `m.` prefix with `work.banananet.msc3864.`
+Until this MSC is merged, clients shall use event type names
+where the `m.` prefix is replaced with `work.banananet.msc3864.`
 (e.g. use `work.banananet.msc3864.name.user_given` instead of `m.name.user_given`).
+Event types with the former prefix are further called *official event types*.
+event types with the latter *unstable event types*.
 
-After this MSC lands, they shall begin use the official tag names
-and also migrate from an unstable tag to an official tag,
-prefereable automtatically and in the background when finding such a tag.
-However, for a reasonable time, the unstable tags shall still be set along the official ones.
-If the clients detect, that the unstable tag's and official tag's contents differ,
+After this MSC is merged, they shall begin to use the official event type.
+and also migrate from an unstable event type to an official event type,
+prefereable automtatically and in the background when finding such a event type.
+However, for a reasonable time, the unstable event types shall still be set along the official ones.
+If the clients detect, that the unstable event type's and official event type's contents differ,
 they may prefer the content of the official ones.
 
-After the reasonable migration time, clients may remove the unstable tags,
-prefereable automtatically and in the background when finding such a tag.
+After the reasonable migration time, clients may remove the unstable event types unconditionally,
+prefereable automtatically and in the background when finding such a event type.
