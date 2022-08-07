@@ -215,3 +215,6 @@ they may prefer the content of the official ones.
 
 After the reasonable migration time, clients may remove the unstable event types unconditionally,
 prefereable automtatically and in the background when finding such a event type.
+The migration policy might cause old clients to "lose" the user-given ones,
+however hopefully this will move clients to migrate as well
+and users to update their clients.
