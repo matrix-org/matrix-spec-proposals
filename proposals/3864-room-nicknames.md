@@ -84,7 +84,8 @@ with parameters as follows:
 - `{type}`: Either `m.name.user_given` or `m.description.user_given`
 
 When setting user-given names and descriptions to other users,
-clients shall append the tags to the room both users use to exchange direct messages.
+clients shall scope the events to the room both users use to exchange 1:1 direct messages
+(according to [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199)).
 If a user may leave the last DM room, the user-given names and descriptions may be lost as well.
 This behavior may or may not be expected, depending on the user's preference.
 Clients may inform the user about this circumstance so they can make an informed choice.
@@ -123,20 +124,7 @@ These are listed here as points open to discuss further.
 
 #### Non-unique DM room
 
-If users have multiple, similar looking rooms to exchange direct messages,
-clients may not be able to determine which room to append the defined tags to and read from.
-
-This may be mitigated by either using all DM rooms equivally
-(appending the user-given name to all DM-like rooms),
-which itself could lead to consistency issues
-if clients have different assumptions about such DM rooms.
-Also, there may be no way to determine which user-given name the client shall display,
-if multiple DM-like rooms have such a tag but with a different content.
-
-Clients may prefer to only display the user-given names and descriptions
-from the room which was created first.
-This may make multiple clients behave more consistent,
-so users have it easier to workaround problems arising from multiple DM rooms to their satisfaction.
+This issue will be solved by [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199).
 
 
 ### Privacy Issues
@@ -218,3 +206,11 @@ prefereable automtatically and in the background when finding such a event type.
 The migration policy might cause old clients to "lose" the user-given ones,
 however hopefully this will move clients to migrate as well
 and users to update their clients.
+
+
+#### Dependencies
+
+This MSC formaly depends on [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199).
+However, as long as clients can resolve an 1:1 DM room successfully by other means
+(hopefully compatible to other clients as well),
+clients should be able to implement this one.
