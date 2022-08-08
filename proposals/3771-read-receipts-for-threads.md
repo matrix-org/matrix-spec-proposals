@@ -109,6 +109,9 @@ additional property in the body containing the thread ID:
 }
 ```
 
+A missing (or empty) `thread_id` refers to the "main" timeline (or events which are
+not part of a thread).
+
 ### Notifications
 
 [MSC3773](https://github.com/matrix-org/matrix-spec-proposals/pull/3773) discusses
@@ -138,14 +141,32 @@ clients. Solutions to this problem are deemed out of scope of this MSC.
 
 ## Alternatives
 
+### Thread ID location
+
 Instead of adding the thread ID as a new path part, it could be added to the body
 of the receipt. There may be a small backwards compatibility benefit to this, but
 it seems clearer to put it as part of the URL.
 
-Instead of encoding the thread ID as an integral part of the receipt, the read
-threads could be added to the body of the receipt. This could cause data
-integrity issues if multiple clients attempt to update the receipt without first
-reading it.
+Instead of encoding the thread ID as an integral part of the receipt, all of the
+read threads could be added to the body of the single receipt. This could cause
+data integrity issues if multiple clients attempt to update the receipt without
+first reading it.
+
+### Receipt type
+
+To potentially improve compatibility it could make sense to use a separate receipt
+type (e.g. `m.read.thread`) as the read receipt for threads. Without some syncing
+mechanism between unthreaded and threaded receipts this seems likely to cause
+users to re-read the same notifications on threaded and unthreaded clients.
+
+While it is possible to map from an unthreaded read receipt to multiple threaded
+read receipts, the opposite is not possible (to the author's knowledge). In short,
+it seems the [compatibility issues discussed above](#compatibility-with-unthreaded-clients)
+would not be solved by adding more receipt types.
+
+This also gets more complcated with the addition of the `m.read.private` receipt --
+would there additionally be an `m.read.private.thread`? How do you map between
+all of these?
 
 ## Security considerations
 
