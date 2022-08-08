@@ -88,12 +88,14 @@ An example of a joined room from a sync response:
 
 ## Potential issues
 
-### Backwards compatibility
+### Events related to thread events
 
-Trying to support backwards compatibility with the unread notifications count may
-prove finicky, but seems doable. Homeservers essentially need to track notifications
-in a per-thread context, and combine them if the client is not using the
-`unread_thread_notifications` flag for `/sync`.
+Events which are related to thread events (e.g. a reaction to a message which is
+part of a thread) would not be represented in the notification count for that
+thread, it would still appear in the main timeline's notification count.
+
+With the default push rules this does not seem to be a problem as thread notifications
+mostly apply to `m.room.message` and `m.room.encrypted` events.
 
 ### Scalability
 
