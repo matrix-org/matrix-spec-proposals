@@ -17,7 +17,7 @@ domain offers maximum flexibility for server owners.
 Add a new optional field, `m.media_server` that can specify a separate URL to be used for media requests. Clients can 
 then optionally use this field for all media endpoints, including both download and upload.
 
-```
+```json
 {
   "m.homeserver": {
     "base_url": "https://matrix.example.com"
@@ -35,7 +35,7 @@ proxy or some other backend system).
 
 This is the same as above but for the server endpoint:
 
-```
+```json
 {
   "m.server": "matrix.example.com:443",
   "m.media_server": "matrix-media.example.com:443"
@@ -43,3 +43,37 @@ This is the same as above but for the server endpoint:
 ```
 
 As above, the non-media endpoint must also serve media requests.
+
+
+## Alternatives
+
+### Redirects
+
+For the download path, the homeserver could send a redirect response to a CDN backed domain. This is proposed in 
+MSC3860.
+
+For the upload path this is not possible under HTTP.
+
+
+## Security Considerations
+
+Server admins may have to manage two distinct domains/installs increasing management & attack vector.
+
+
+## Unstable Prefix
+
+While not released in the Matrix spec implementations should use field `com.beeper.msc3859.m.media_server` in place of 
+`m.media_server` in the well known responses:
+
+```json
+# Client
+{
+  "com.beeper.msc3859.m.media_server": {
+    "base_url": "https://matrix-media.example.com"
+  }
+}
+# Server
+{
+  "com.beeper.msc3859.m.media_server": "matrix-media.example.com:443"
+}
+```
