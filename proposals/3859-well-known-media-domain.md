@@ -57,7 +57,7 @@ As above, the non-media endpoint must also serve media requests.
 ### Redirects
 
 For the download path, the homeserver could send a redirect response to a CDN backed domain. This is proposed in 
-MSC3860.
+[MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860).
 
 For the upload path this is not possible under HTTP.
 
