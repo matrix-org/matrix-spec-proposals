@@ -63,9 +63,10 @@ Specifically it is proposed that the OpenID Connect (OIDC) protocol is chosen to
 
 ![](https://i.imgur.com/NMqiFSl.png)
 
-There are five proposed action points:
+There are six proposed action points:
 
 1. Accept the set of MSCs to enable delegation via OIDC.
+1. The Matrix.org Foundation join the [OpenID Foundation](https://openid.net/foundation/) as a non-profit member to support their work to build a robust and audited ecosystem for open authentication.
 1. Deprecate non-OIDC auth related API endpoints or capabilities in existing Matrix APIs.
 1. Provide migration support to the ecosystem.
 1. Close all existing MSCs relating to non-OIDC as `obsolete`.
