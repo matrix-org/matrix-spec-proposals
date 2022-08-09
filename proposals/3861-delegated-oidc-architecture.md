@@ -63,7 +63,7 @@ Specifically it is proposed that the OpenID Connect (OIDC) protocol is chosen to
 
 ![](https://i.imgur.com/NMqiFSl.png)
 
-There are five proposed actions points:
+There are five proposed action points:
 
 1. Accept the set of MSCs to enabled delegation via OIDC.
 1. Deprecate non-OIDC auth related API endpoints or capabilities in existing Matrix APIs.
@@ -88,7 +88,7 @@ This proposal requires changes to all Clients, Homeservers, Bridges etc. This wi
 
 Furthermore, during a migration period it will be necessary to support both existing "legacy" auth as well as OIDC.
 
-For existing Homserver deployments we will need to work out migration paths and provide tools to facilitate the transition.
+For existing Homeserver deployments we will need to work out migration paths and provide tools to facilitate the transition.
 
 ## Alternatives
 
