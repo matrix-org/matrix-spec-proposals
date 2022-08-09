@@ -9,7 +9,7 @@ The reasoning behind this change is to support hosting media behind a CDN design
 serving media. Since media transfers and endpoints are very different to the other JSON based endpoints a separate 
 domain offers maximum flexibility for server owners. This is particularly important for path optimisation between
 client and server over long dinstances where home internet providers generally offer inferior routing between countries
-than CDN providers do. By allowing clients to upload/download from the closest CDN POP they will benefit from improved
+than CDN providers do. By allowing clients to upload/download from the closest CDN Point of Presence they will benefit from improved
 upload and download performance.
 
 This cannot be achieved currently unless the entire homeserver is served behind a CDN, which may have other cost or
