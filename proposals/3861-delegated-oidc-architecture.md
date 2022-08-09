@@ -35,7 +35,7 @@ Yes, the ecosystem needs authentication to work, but it is not core to the missi
 
 ## Alternative architecture
 
-The key concept of this proposal is the idea that the Matrix ecosystem would be better served by an architecture where authentication is decoupled from the Homserver to some kind of authentication server.
+The key concept of this proposal is the idea that the Matrix ecosystem would be better served by an architecture where authentication is decoupled from the Homeserver to some kind of authentication server.
 
 That decoupling would be achieved by adopting an existing open authentication protocol rather than writing our own.
 
