@@ -362,8 +362,7 @@ This is the response for the `m.login.publickey.ethereum` type:
   "params": {
     "m.login.publickey.ethereum": {
       "version": 1,
-      "chain_ids": [1],
-      "nonce": "yyyyyyyy"
+      "chain_ids": [1]
     }
   },
   "session": "xxxxxx"
