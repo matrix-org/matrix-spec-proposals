@@ -163,7 +163,7 @@ Request body:
 ```
 
 Request response:
-```jsonc
+```json5
 {
   // List of state event ID's we inserted
   "state_event_ids": [
