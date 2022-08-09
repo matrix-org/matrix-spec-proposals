@@ -384,9 +384,6 @@ where
   server can have a test config that specifies chain ID `4` for the Rinkeby test network. Server should reject login
   attempts for any chain IDs that is not listed in the params.
 
-- `params."m.login.publickey.ethereum".nonce` - is the nonce value described in
-  [EIP-4361: Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361)
-
 ## Client creates message to sign
 
 Once the client has received the server's response, it prepares a message for the user
@@ -438,25 +435,7 @@ where
   important note about [Chain ID attestation](#chain-id-attestation)
 
 - ${nonce} - is a randomized alphanumeric string with at least 8 characters.
-  The nonce comes from the server's initial response. Example
-  `params."m.login.publickey.ethereum".nonce`: `"yyyyyyyy"` (see below)):
-
-```json
-{
-  "flows": [
-    {
-      "stages": ["m.login.publickey.ethereum"]
-    }
-  ],
-  "params": {
-    "m.login.publickey.ethereum": {
-      "...": "...",
-      "nonce": "yyyyyyyy"
-    }
-  },
-  "session": "xxxxxx"
-}
-```
+This is generated on the client.
 
 - ... -- other fields defined in the specification.
 
@@ -543,8 +522,7 @@ where
   ],
   "params": {
     "m.login.publickey.ethereum": {
-      "...": "...",
-      "nonce": "yyyyyyyy"
+      "...": "..."
     }
   },
   "session": "xxxxxx"
@@ -763,8 +741,7 @@ This is the response for the `m.login.publickey.ethereum` type:
   "params": {
     "m.login.publickey.ethereum": {
       "version": 1,
-      "chain_ids": [1],
-      "nonce": "yyyyyyyy"
+      "chain_ids": [1]
     }
   },
   "session": "xxxxxx"
