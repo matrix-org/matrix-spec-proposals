@@ -124,6 +124,8 @@ The latter takes precendence.
 Clients shall replace most occurencies of another user's global attribute with its user-given attribute.
 When the user gets informed about a change of a global attribute of an user,
 this occurency may not be replaced with the user-given attribute.
+Clients shall also replace the global displayname in auto-generated names,
+for example for direct messaging rooms.
 However, in such events, the user-given attribute may be displayed as well, if possible and not already.
 The client must not replace the Matrix ID of these users.
 
