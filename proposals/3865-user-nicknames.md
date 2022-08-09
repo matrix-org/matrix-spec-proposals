@@ -1,4 +1,4 @@
-# MSCXXXX: User-given attributes for users
+# MSC3865: User-given attributes for users
 
 > This MSC is similar to [MSC3864](https://github.com/matrix-org/matrix-spec-proposals/pull/3864),
 > which specifies user-given attributes for rooms.
@@ -218,8 +218,8 @@ ans so should not create any security-releated issues.
 ## Unstable prefix
 
 Until this MSC is merged, clients shall use event type names
-where the `m.` prefix is replaced with `work.banananet.mscxxxx.`
-(e.g. use `work.banananet.mscxxxx.user_given.user.displayname` instead of `m.user_given.user.displayname`).
+where the `m.` prefix is replaced with `work.banananet.msc3865.`
+(e.g. use `work.banananet.msc3865.user_given.user.displayname` instead of `m.user_given.user.displayname`).
 Event types with the former prefix are further called *official event types*.
 event types with the latter *unstable event types*.
 
