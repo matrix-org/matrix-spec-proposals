@@ -51,10 +51,10 @@ Here is what scrollback is expected to look like in Element:
    historical messages
  - `m.room.batch`: This is what connects one historical batch to the other. In
    the DAG, we navigate from an insertion event to the batch event that points
-   at it, up the historical messages to the insertion event, then repeat the
+   at it, up the historical messages to the next insertion event, then repeat the
    process
  - `m.room.marker`: State event used to hint to homeservers that there is new
-   history back time that you should go fetch next time someone scrolls back
+   history that you should go fetch next time someone scrolls back
    around the specified insertion event. Also used  on clients to cache bust the
    timeline.
 
@@ -102,10 +102,10 @@ wouldn't be removed during redaction. In practice, this means:
 However, this MSC is mostly backwards compatible and can be used with the
 current room version with the fact that redactions aren't supported for
 `m.room.insertion`, `m.room.batch`, `m.room.marker` events. We can protect
-people from this limitation by throwing an error when they try to use `PUT
-/_matrix/client/r0/rooms/{roomId}/redact/{eventId}/{txnId}` to redact one of
-those events. We would have to accept the redaction if it came over federation
-to avoid split-brained rooms.
+people from this limitation by throwing an error when they try to use [`PUT
+/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}`](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidredacteventidtxnid)
+to redact one of those events. We would have to accept the redaction if
+it came over federation to avoid split-brained rooms.
 
 Because we also can't use the `historical` power level for controlling who can
 send these events in the existing room version, we always persist but instead
@@ -197,7 +197,7 @@ be resolved into the current state of the room.**
 
 `events` is a chronological list of events you want to insert. For Synapse,
 there is a reverse-chronological constraint on batches so once you insert one
-batch of messages, you can only insert older an older batch after that. **tldr;
+batch of messages, you can only insert an older batch after that. **tldr;
 Insert from your most recent batch of history -> oldest history.**
 
 
@@ -410,7 +410,7 @@ To lay out the different types of servers consuming these historical messages
    sent separately as a normal state event on the "live" timeline** so that
    comes down incremental sync and is available to all homeservers regardless of
    how much scrollback history they already have. And since it's state it never
-   gets lost in a timeline gap and is immediately aparent to all servers that
+   gets lost in a timeline gap and is immediately apparent to all servers that
    join.
  - Also instead of overwriting the same generic `state_key: ""` over and over,
    the expected behavior is send each "marker" event with a unique `state_key`.
@@ -419,11 +419,11 @@ To lay out the different types of servers consuming these historical messages
    This also avoids potential state resolution conflicts where only one of the
    "marker" events win and we would lose the other chain history.
  - A "marker" event is not needed for every batch of historical messages added
-   via `/batch_send`. Multiple batches can be inserted then once we're done
+   via `/batch_send`. Multiple batches can be inserted. Then once we're done
    importing everything, we can add one "marker" event pointing at the root
    "insertion" event
     - If more history is decided to be added later, another "marker" can be sent to let the homeservers know again.
- - When a remote federated homeserver, receives a "marker" event, it can mark
+ - When a remote federated homeserver receives a "marker" event, it can mark
    the "insertion" prev events as needing to backfill from that point again and
    can fetch the historical messages when the user scrolls back to that area in
    the future.
