@@ -65,7 +65,7 @@ Specifically it is proposed that the OpenID Connect (OIDC) protocol is chosen to
 
 There are five proposed action points:
 
-1. Accept the set of MSCs to enabled delegation via OIDC.
+1. Accept the set of MSCs to enable delegation via OIDC.
 1. Deprecate non-OIDC auth related API endpoints or capabilities in existing Matrix APIs.
 1. Provide migration support to the ecosystem.
 1. Close all existing MSCs relating to non-OIDC as `obsolete`.
@@ -102,7 +102,7 @@ Examples of existing proposals include:
 | [MSC1998: Two-Factor Authentication Providers](https://github.com/matrix-org/matrix-spec-proposals/pull/1998)<br>[MSC2271: TOTP 2FA login](https://github.com/matrix-org/matrix-spec-proposals/pull/2271) | OP is free to implement MFA and many do. The [Matrix OIDC Playground](https://github.com/vector-im/oidc-playground) contains a Keycloak configured to demonstrate this |
 | [MSC2000: Server-side password policies](https://github.com/matrix-org/matrix-spec-proposals/pull/2000) | Because the UI is served by the OP it is free to implement whatever password policies it sees fit |
 | [MSC3105: Previewing UIA flows](https://github.com/matrix-org/matrix-spec-proposals/pull/3105)<br>[MSC3741: Revealing the useful login flows to clients after a soft logout](https://github.com/matrix-org/matrix-spec-proposals/pull/3741) | These become unnecessary as the burdon to implement auth flows is moved away from the client to the OP |
-| [MSC3262: aPAKE authentication](https://github.com/matrix-org/matrix-spec-proposals/pull/3262)<br>[MSC2957: Cryptographically Concealed Credentials](https://github.com/matrix-org/matrix-spec-proposals/pull/2957) | This is an interesting one as OIDC explicitly discourages a user from trusting their client with credentials. As such their is no existing flow for PAKEs. To achieve this in OIDC you would need to implement a custom grant in the Client and OP (perhaps an extension of the Resource Owner Password Credentials flow).|
+| [MSC3262: aPAKE authentication](https://github.com/matrix-org/matrix-spec-proposals/pull/3262)<br>[MSC2957: Cryptographically Concealed Credentials](https://github.com/matrix-org/matrix-spec-proposals/pull/2957) | This is an interesting one as OIDC explicitly discourages a user from trusting their client with credentials. As such there is no existing flow for PAKEs. To achieve this in OIDC you would need to implement a custom grant in the Client and OP (perhaps an extension of the Resource Owner Password Credentials flow).|
 | [MSC3782: Matrix public key login spec](https://github.com/matrix-org/matrix-spec-proposals/pull/3782) | Similar to above |
 | [MSC3744: Support for flexible authentication](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | OIDC would instead be used as the pluggable layer for auth in Matrix|
 
