@@ -66,7 +66,7 @@ Query Parameters:
   If it is not provided, the homeserver shall return a list of threads from the
   last visible event in the room history for the requesting user.
 * **`limit`**: Optional: a client-defined limit to the maximum
-  number of rooms to return per page. Must be an integer greater than zero.
+  number of threads to return per page. Must be an integer greater than zero.
 
   Server implementations should impose a maximum value to avoid resource
   exhaustion.
