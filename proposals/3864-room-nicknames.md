@@ -1,16 +1,12 @@
-# MSC3864: User-given nicknames & descriptions for rooms & users
+# MSC3864: User-given nicknames & descriptions for rooms
 
-User-given Nicknames or names loaded from an addressbook are great,
-they allow you to personalize your experience in using an IM
-while others do not need to change anything.
-Like when you write with privacy-concerned users,
-they might use a nickname for their account on their own,
-but you may want to have them listed by their real name
-or any other funny nickname you've given them.
-Or people are using their display name to present statements like "(away until X)"
-and you want to set an end to that (for yourself).
+> This MSC is similar to [MSC3865](https://github.com/matrix-org/matrix-spec-proposals/pull/3865),
+> which specifies user-given attributes for rooms.
+> They were split because it makes more sense for now to store user attributes in another way
+> and because it shall be possible to set a user-given name for any MXID restricted to a single room.
+> However, they may share the same ideas and reasonings.
 
-The same for groups, sometimes, the *global* room name works fine,
+Sometimes, the *global* room name works fine,
 but it would be funnier or easier for you to use another one.
 Maybe because you've grouped similar rooms together into a (personal) space,
 so parts of the name become irrelevant.
@@ -18,29 +14,26 @@ Like in a space called "My Long Cooperation Name",
 where every room is called like "My Long Cooperation Name - IT Team Chat",
 maybe shorter names like "IT Team" or "MLCN - IT Team" are better suited to you.
 Or maybe because the admin is just too lazy or stubborn to improve the room name.
+Or because you prefer them in another language to make your daily life easier.
 
-Also, sometimes you just may want to append a description to a room or user,
-so you know why you joined the room or are knowning the user.
-Descriptions like "old class mate from XYZ School" can certainly improve your UX,
-especially when users or rooms change their names due to personal reasons ("new name is cooler, duh")
-and you stop recognizing who they are and need to ask them for their real life name
-or read through the chat history (happened multiple times to me personally).
+Also, sometimes you just may want to append a description to a room,
+so you know why you joined the room of have fast access to more information.
+Especially when rooms change their descriptions,
+but you still want to retain some links you connect to this group,
+or these links do only apply for you.
+
+The same reasons apply to the room's avatar.
+If you have a better one, you shall be able to select that one for yourself.
 
 
 ## Definitions
 
 Further on, for the sake of simplicity and clarity:
-- **global name** is the display name
-  - a user set for itself, visible globally to all other Matrix users.
-  - a room was given, visible globally to all other users who can see the room.
-- **user-given name** refers to the name defined here a user shall be able to set,
-  only visible for itself, for other users or rooms,
-  replacing the global name.
-- **global description** is the display description
-  a room was given, visible globally to all other users who can see the room.
-- **user-given description** refers to the description defined here a user shall be able to set,
-  only visible for itself, for rooms,
-  extending the global description.
+- the prefix **global** refers to the attribute which are set for a room,
+  visible globally to all Matrix users.
+- the prefix **user-given** refers to the overrided/extended attribute a user defines for a room,
+  only visible to the former user.
+  These are newly defined by this MSC.
 
 
 ## Proposal
@@ -48,83 +41,89 @@ Further on, for the sake of simplicity and clarity:
 
 ### Reasoning
 
-Allowing users to set user-given names and descriptions for rooms and other users is useful
+Allowing users to set user-given attributes for rooms is useful
 because it let users increase their usability and accessibility to the Matrix infrastructure on their own and as required.
-These names shall stay private to the user itself and may not be seen to others,
+These attributes shall stay private to the user itself and may not be seen to others,
 so users are able to choose what they see fit best
-without thinking about privacy issues or the feelings of the room or users renamed.
+without thinking about privacy issues or the feelings of the users in the rooms affected.
 
-Adding this feature to the spec has the advantage that presumable most clients will implement support for displaying and hopefully also setting names and descriptions.
+Adding this feature to the spec has the advantage
+that presumable most clients will implement support for displaying
+and hopefully also setting these user-given attributes.
 It also allows a more unified experience accross all clients and devices
-because user-given names and descriptions are synced using the home server of the user.
+because user-given attributes are synced using the home server of the user.
 For the same reason, this proposal includes a description of the expected user experience.
 
 This proposal takes advantage of the already implemented
 [client config feature](https://spec.matrix.org/unstable/client-server-api/#client-config) (a.k.a. `account_data`)
 so the API and the server implementations do not need to change.
-The user-given names and descriptions will be saved scoped to the room and in an own namespace.
-Client configs are only visible to the user who set them and are synced accross all devices of the user,
+The user-given attributes will be saved scoped to the room and in an own event type.
+Client configs are only visible to the user who set them and are synced across all devices of the user,
 which makes them a perfect fit for storing user-given names and user-given description.
 
 
 ### Implementation
 
-For user-given names, a new event type called `m.name.user_given` may be added.
-The content of this event will be `{"content": "<USER_GIVEN_NAME>"}`
+For each state event of a room which present the aesthetic information about the room,
+a new event type for the user-given counterpart shall be defined.
+To get the new event type, the prefix `m.` will be replaced with `m.user_given.`.
+Keeping the subpart `room` prevents name clashings with user's user-defined attributes
+from [MSC3865](https://github.com/matrix-org/matrix-spec-proposals/pull/3865).
+For the currently defined aesthetic state events, the new event types are listed below.
 
-For user-given descriptions, a new event type called `m.description.user_given` may be added.
-The content of this event will be `{"content": "<USER_GIVEN_DESCRIPTION>"}`
+| Current room attribute name | User-defined event type         | Content type |
+| --------------------------- | ------------------------------- | ------------ |
+| `m.room.name`               | `m.user_given.room.name`        | `string`     |
+| `m.room.avatar`             | `m.user_given.room.avatar`      | `URI`        |
+| `m.room.topic`              | `m.user_given.room.description` | `string`     |
 
-Clients shall store & read those event types scoped to the selected / affected room.
-This means they will GET / PUT following URL:
-`/_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}`
-with parameters as follows:
-- `{userId}`: The user id of the current user.
-- `{roomId}`: The room id of the selected / affected room id.
-- `{type}`: Either `m.name.user_given` or `m.description.user_given`
+However, when rooms get a new aesthetic state event,
+the same rules may apply to it to store its user-defined counterparts.
 
-When setting user-given names and descriptions to other users,
-clients shall scope the events to the room both users use to exchange 1:1 direct messages
-(according to [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199)).
-If a user may leave the last DM room, the user-given names and descriptions may be lost as well.
-This behavior may or may not be expected, depending on the user's preference.
-Clients may inform the user about this circumstance so they can make an informed choice.
+The user-defined event must contain the keys `type` with its event type
+and `content` which must have the same type as the overriden/extended room state event.
+The following shall serve as an example value of the event type `m.user_given.room.name`,
+which a client requested with the listed request:
+
+- `GET /_matrix/client/v3/user/{userId}/room/{roomId}/account_data/m.user_given.room.name`
+
+```json
+{
+    "content": "Support Group: Gaming",
+    "type": "m.user_given.room.name"
+}
+```
 
 
 ### User Experience
 
-Clients shall replace most occurencies of the global name of a room with user-given name, if set.
-Clients may still display the global name in some occurencies
-according to the section [User Experience Issues](#user-experience-issues) below.
-When the user wants to change the global name of a room,
-or the user gets informed about a change of the global name of a room,
-the global name may also not be replaced with the user-given name.
-However in such events, the user-given name may be displayed as well.
+Clients shall replace most occurencies of a room's global attribute with its user-given attribute.
+When the user gets informed about a change of a global attribute of a room,
+this occurency may not be replaced with the user-given attribute.
+However, in such events, the user-given attribute may be displayed as well, if possible and not already.
+The client must not replace the IDs of these rooms.
 
-Clients shall append the user-given description to most occurencies of the global description of a room.
-Clients shall display both in a way so the user can separate them and interpret them correctly.
+In some cases, the client may display both attributes (global and user-given) alongside each other,
+if it makes sense in context of the attribute
+and both attributes can be distinguished from one and another
+(see [User Experience Issues](#user-experience-issues) for approaches on how to make them distinguishable).
+However, the user-given attribute shall take precendece over the global one,
+especially if the client can or wants to only display one of both
+(see [Alternatives](#alternatives) for reasoning).
+As an example, the client may display the name of a room as `USER_GIVEN_NAME (GLOBAL_NAME)`
+with only the user-given avatar
+but both the user-given description and the global description in this order
+(assuming all user-given attributes were set).
 
-Clients shall also replace most occurencies of another user's global name with its user-given name.
-Aside from the DM room both users are using to exchange DMs,
-this may include occurencies like in events or in member lists of other rooms.
-When the user gets informed about a change of the global name of an user,
-the global name may also not be replaced with the user-given name.
-However in such events, the user-given name may be displayed as well, if not already.
-
-For both rooms and other users, the client must not replace the Matrix ID of rooms / users.
+If clients want to divert from the user experience declared here,
+but still want to confirm to this MSC,
+they may implement the user experience from above and their own approach
+and make them configurable for the user.
+As long as a configuration option is easily available,
+clients may choose their own approach as the default.
 
 
 ## Potential Issues
-
-
-### Implementation Issues
-
-Some issues I discovered while writing or applying this MSC.
-These are listed here as points open to discuss further.
-
-#### Non-unique DM room
-
-This issue will be solved by [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199).
 
 
 ### Privacy Issues
@@ -138,46 +137,32 @@ however this is a task for another MSC to solve, preferably for all account data
 
 ### User Experience Issues
 
-Using user-given names and forgetting that the user has configured them
+Using user-given attributes forgetting that the user has configured them
 could lead into the bad UX that users think their client stopped working correctly,
-as a new name of the room or user is not displayed correctly.
-This may be mitigated by clients by informing users about that the name is custom, either by:
-- displaying user-given names in a custom font, style (e.g. **bold** or *italics*) or color
-- displaying the global name aside in brackets ("USER_GIVEN_NAME (GLOBAL_NAME)", e.g. "Sweatheart (Erika Musterfrau)")
-  - this may only happen when reading messages of the room
-- displaying the global name when hovering with the cursor over the user-given name
+as a new attribute of the room is not updated correctly.
+This may be mitigated by clients by informing users about that the attribute is custom, either by:
 
-Clients may choose how they want to display and annotate user-given name and global name
+- displaying user-given attributes in a custom style (e.g. **bold** or *italics*), border or color,
+- displaying the global attribute aside ("USER_GIVEN_NAME (GLOBAL_NAME)", e.g. "Support Group: Gaming (Gaming Buddies)"),
+- displaying the global attribute when hovering with the cursor over the user-given attribute,
+- or by another, similar approach.
+
+Clients may choose how they want to display and annotate user-given attributes and global attributes
 by implementing none or any or some or all points from above as they see fit.
-However, the user-given name shall be displayed as the primary name
-(e.g. displaying as "**GLOBAL_NAME** (USER_GIVEN_NAME)"
-or displaying the user-given name with less contrast than the global name
-shall be prohibited, see [Alternatives](#alternatives) for reasoning).
-
-The same problem should not occur in the same way to the user-given descriptions
-as they shall expand the global description instead of replacing it.
-However, clients should still display them either separated and labeled
-or at least in way so users can separate them from one and another easily.
 
 
 ## Alternatives
 
-User-given names and descriptions set for others users only may be stored into the general account data.
-This would circumvent the problem with [non-unique DM rooms](#non-unique-dm-room) particular for this MSC.
-However, clients may still need to solve this problem for other implementations,
-so no complexity would be saved in the end.
-It instead places them near other configurations like client-dependent (not room-dependent) configuration options,
-and the user-given names and description may be lost when another user changes its Matrix ID
-and it also lets the implementation for rooms and users differ more.
-
-Conceptually, the user-given name could also be displayed as a secondary attribute alongside the global name
-("GLOBAL_NAME (USER_GIVEN_NAME)", e.g. "Erika Musterfrau (Sweatheart)").
+Conceptually, the user-given attribute could also be displayed as a secondary attribute alongside the global attribute
+("GLOBAL_NAME (USER_GIVEN_NAME)", e.g. "Gaming Buddies (Support Group: Gaming)").
 This could prevent some [UX issues](#user-experience-issues),
 however this prevents users to customize their experience in certain ways
 (e.g. when they don't want to read the global name).
 With this implementation, a user is still able to display (parts of) the global name
 as they like by adding it to the user-given name theirselves.
 It only would not be updated automatically.
+Clients which do not want to agree may implement both approaches and make the configurable to the user
+as stated above in [User Experience](#user-experience).
 
 
 ## Security considerations
@@ -190,7 +175,7 @@ ans so should not create any security-releated issues.
 
 Until this MSC is merged, clients shall use event type names
 where the `m.` prefix is replaced with `work.banananet.msc3864.`
-(e.g. use `work.banananet.msc3864.name.user_given` instead of `m.name.user_given`).
+(e.g. use `work.banananet.msc3864.user_given.room.name` instead of `m.user_given.room.name`).
 Event types with the former prefix are further called *official event types*.
 event types with the latter *unstable event types*.
 
@@ -206,11 +191,3 @@ prefereable automtatically and in the background when finding such a event type.
 The migration policy might cause old clients to "lose" the user-given ones,
 however hopefully this will move clients to migrate as well
 and users to update their clients.
-
-
-## Dependencies
-
-This MSC formaly depends on [MSC2199](https://github.com/matrix-org/matrix-spec-proposals/pull/2199).
-However, as long as clients can resolve an 1:1 DM room successfully by other means
-(hopefully compatible to other clients as well),
-clients should be able to implement this one.
