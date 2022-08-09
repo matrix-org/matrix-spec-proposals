@@ -72,15 +72,14 @@ Server admins may have to manage two distinct domains/installs increasing manage
 While not released in the Matrix spec implementations should use field `com.beeper.msc3859.m.media_server` in place of 
 `m.media_server` in the well known responses:
 
-```json
-# Client
+```json5
+// Client
 {
   "com.beeper.msc3859.m.media_server": {
     "base_url": "https://matrix-media.example.com"
   }
 }
-# Server
+// Server
 {
   "com.beeper.msc3859.m.media_server": "matrix-media.example.com:443"
 }
-```
