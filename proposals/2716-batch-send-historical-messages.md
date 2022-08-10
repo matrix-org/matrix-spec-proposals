@@ -271,7 +271,8 @@ Here is how the historical batch concept looks like in the DAG:
 
 ```mermaid
 flowchart BT
-    subgraph live timeline
+    A --- annotation1>"Note: older events are at the top"]
+    subgraph live [live timeline]
         B --------------------> A
     end
     
@@ -298,7 +299,9 @@ flowchart BT
     batch2-insertion --- alignment1
     %% make the alignment links/nodes invisible
     style alignment1 visibility: hidden,color:transparent;
-    linkStyle 17 stroke-width:2px,fill:none,stroke:none;
+    linkStyle 18 stroke-width:2px,fill:none,stroke:none;
+    %% make the annotation links invisible
+    linkStyle 0 stroke-width:2px,fill:none,stroke:none;
 ```
 
 
@@ -413,6 +416,7 @@ The structure of the "marker" event looks like:
 
 ```mermaid
 flowchart BT
+    A --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
         marker1>"marker"] ----> B -----------------> A
     end
@@ -441,7 +445,9 @@ flowchart BT
     batch2-insertion --- alignment1
     %% make the alignment links/nodes invisible
     style alignment1 visibility: hidden,color:transparent;
-    linkStyle 19 stroke-width:2px,fill:none,stroke:none;
+    linkStyle 20 stroke-width:2px,fill:none,stroke:none;
+    %% make the annotation links invisible
+    linkStyle 0 stroke-width:2px,fill:none,stroke:none;
 ```
 
 
@@ -464,6 +470,7 @@ bunch of `@mxid joined the room` noise between each batch.
 
 ```mermaid
 flowchart BT
+    A --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
         marker1>"marker"] ----> B -----------------> A
     end
@@ -490,6 +497,9 @@ flowchart BT
     batch0-batch -.-> batch0-insertionBase[/insertion\]
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
+
+    %% make the annotation links invisible
+    linkStyle 0 stroke-width:2px,fill:none,stroke:none;
 ```
 
 
