@@ -123,8 +123,8 @@ Add a new endpoint, `POST
 /_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`,
 which can insert a batch of events historically back in time next to the given
 `?prev_event_id` (required). This endpoint can only be used by application
-services. `?batch_id` is optional and only necessary to connect the current
-batch to the previous.
+services. `?batch_id` is not required for the first batch send and is only
+necessary to connect the current batch to the previous.
 
 This endpoint handles the complexity of creating "insertion" and "batch" events.
 All the application service has to do is use `?batch_id` which comes from
@@ -202,7 +202,7 @@ be resolved into the current state of the room.**
 
 `events` is a chronological list of events you want to insert. For Synapse,
 there is a reverse-chronological constraint on batches so once you insert one
-batch of messages, you can only insert older an older batch after that. **tldr;
+batch of messages, you can only insert an older batch after that. **tldr;
 Insert from your most recent batch of history -> oldest history.**
 
 
@@ -214,7 +214,7 @@ This section explains the homeserver magic that happens when someone uses the
 breakdown which incrementally explains how everything fits together.
 
  1. An "insertion" event for the batch is added to the start of the batch.
-    This is the starting point of the next batch and holds the `next_batch_id`
+    This will be the starting point of the next batch and holds the `next_batch_id`
     that we return in the batch send response. The application service passes
     this as `?batch_id`
  1. A "batch" event is added to the end of the batch. This is the event that
@@ -270,7 +270,7 @@ Here is how the historical batch concept looks like in the DAG:
 
 ```mermaid
 flowchart BT
-    subgraph live
+    subgraph live timeline
         B --------------------> A
     end
     
@@ -412,7 +412,7 @@ The structure of the "marker" event looks like:
 
 ```mermaid
 flowchart BT
-    subgraph live
+    subgraph live timeline
         marker1>"marker"] ----> B -----------------> A
     end
     
@@ -463,7 +463,7 @@ bunch of `@mxid joined the room` noise between each batch.
 
 ```mermaid
 flowchart BT
-    subgraph live
+    subgraph live timeline
         marker1>"marker"] ----> B -----------------> A
     end
     
