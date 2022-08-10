@@ -44,7 +44,7 @@ Here is what scrollback is expected to look like in Element:
 
 **Endpoint:**
 
- - `POST /_matrix/client/r0/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`
+ - `POST /_matrix/client/v1/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`
 
 **Event types:**
 
@@ -120,7 +120,7 @@ applies to existing room versions.
 ### New historical batch send endpoint
 
 Add a new endpoint, `POST
-/_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`,
+/_matrix/client/v1/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`,
 which can insert a batch of events historically back in time next to the given
 `?prev_event_id` (required). This endpoint can only be used by application
 services. `?batch_id` is not required for the first batch send and is only
