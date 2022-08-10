@@ -112,7 +112,8 @@ to avoid split-brained rooms.
 Because we also can't use the `historical` power level for controlling who can
 send these events in the existing room version, we always persist but instead
 only process and give meaning to the `m.room.insertion`, `m.room.batch`, and
-`m.room.marker` events when the room `creator` sends them.
+`m.room.marker` events when the room `creator` sends them. This caveat/rule only
+applies to existing room versions.
 
 
 
