@@ -20,10 +20,11 @@ This is currently not supported because:
  * There is no way to create messages in the context of historical room state in
    a room via CS or AS API - you can only create events relative to current room
    state.
- * There is currently no way to override the timestamp on an event via the AS API.
-   (We used to have the concept of [timestamp
-   massaging](https://matrix.org/docs/spec/application_service/r0.1.2#timestamp-massaging),
-   but it never got properly specified)
+ * It is possible to override the timestamp with the `?ts` query parameter
+   ([timestamp
+   massaging](](https://spec.matrix.org/v1.3/application-service-api/#timestamp-massaging)))
+   using the AS API but the event will still be appended to the tip of the DAG.
+   It's not possible to change the DAG ordering with this.
 
 
 
@@ -54,7 +55,7 @@ Here is what scrollback is expected to look like in Element:
    at it, up the historical messages to the insertion event, then repeat the
    process
  - `m.room.marker`: State event used to hint to homeservers that there is new
-   history back time that you should go fetch next time someone scrolls back
+   history back in time that you should go fetch next time someone scrolls back
    around the specified insertion event. Also used  on clients to cache bust the
    timeline.
 
@@ -79,8 +80,9 @@ to limit who can send "insertion", "batch", and "marker" events since someone
 can attempt to send them via the normal `/send` API (we don't want any nasty
 weird knots to reconcile either).
 
- - `historical`: This controls who can send `m.room.insertion`, `m.room.batch`,
-   and `m.room.marker` in the room.
+ - `historical`: A new top-level field in the `content` dictionary of the room's
+    power levels, controlling who can send `m.room.insertion`, `m.room.batch`,
+    and `m.room.marker` events in the room.
 
 **Room version:**
 
@@ -190,7 +192,7 @@ Request response:
 
 `state_events_at_start` is used to define the historical state events needed to
 auth the `events` like invite and join events. These events can float outside of
-the normal DAG. In Synapse, these are called `outlier`'s and won't be visible in
+the normal DAG. In Synapse, these are called `outlier`s and won't be visible in
 the chat history which also allows us to insert multiple batches without having a
 bunch of `@mxid joined the room` noise between each batch. **The state will not
 be resolved into the current state of the room.**
