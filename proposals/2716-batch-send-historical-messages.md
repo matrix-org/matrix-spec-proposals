@@ -37,7 +37,7 @@ would if they were sent back at that time.
 
 Here is what scrollback is expected to look like in Element:
 
-![](https://user-images.githubusercontent.com/558581/119064795-cae7e380-b9a1-11eb-9366-5e1f5e6370a8.png)
+![Two historical batches in between some existing messages](./images/2716-message-scrollback-example.png)
 
 
 ### Overview
