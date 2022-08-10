@@ -569,7 +569,7 @@ via SS API.
 
 ## Unstable prefix
 
-Servers will indicate support for the new endpoint via a non-empty value for feature flag
+Servers will indicate support for the new endpoint via a `true` value for feature flag
 `org.matrix.msc2716` in `unstable_features` in the response to `GET
 /_matrix/client/versions`.
 
