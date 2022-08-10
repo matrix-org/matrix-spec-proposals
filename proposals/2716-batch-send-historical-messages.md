@@ -194,13 +194,13 @@ Request response:
 }
 ```
 
-
-`state_events_at_start` is used to define the historical state events needed to
-auth the `events` like invite and join events. These events can float outside of
-the normal DAG. In Synapse, these are called `outlier`s and won't be visible in
-the chat history which also allows us to insert multiple batches without having a
-bunch of `@mxid joined the room` noise between each batch. **The state will not
-be resolved into the current state of the room.**
+`state_events_at_start` is unioned with the state at the `prev_event_id` and is
+used to define the historical state events needed to auth the `events` like
+invite and join events. These events can float outside of the normal DAG. In
+Synapse, these are called `outlier`s and won't be visible in the chat history
+which also allows us to insert multiple batches without having a bunch of `@mxid
+joined the room` noise between each batch. **The state will not be resolved into
+the current state of the room.**
 
 `events` is a chronological list of events you want to insert. For Synapse,
 there is a reverse-chronological constraint on batches so once you insert one
