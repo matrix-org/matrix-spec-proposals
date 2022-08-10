@@ -122,13 +122,15 @@ applies to existing room versions.
 Add a new endpoint, `POST
 /_matrix/client/unstable/org.matrix.msc2716/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`,
 which can insert a batch of events historically back in time next to the given
-`prev_event_id`. This endpoint can only be used by application services. 
+`?prev_event_id` (required). This endpoint can only be used by application
+services. `?batch_id` is optional and only necessary to connect the current
+batch to the previous.
 
-This endpoint will handle the complexity of creating "insertion" and "batch"
-events. All the application service has to do is use `?batch_id` which comes
-from `next_batch_id` in the response of the batch send endpoint. `next_batch_id`
-is derived from the insertion events added to each batch and is not required for
-the first batch send.
+This endpoint handles the complexity of creating "insertion" and "batch" events.
+All the application service has to do is use `?batch_id` which comes from
+`next_batch_id` in the response of the batch send endpoint to connect batches
+together. `next_batch_id` is derived from the insertion events added to each
+batch.
 
 Request body:
 ```json
