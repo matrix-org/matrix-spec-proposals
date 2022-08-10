@@ -209,6 +209,11 @@ so once you insert one batch of messages, you can only insert an older batch
 after that. **tldr; Insert from your most recent batch of history -> oldest
 history.**
 
+One aspect that isn't solved yet is how to handle relations/annotations (such as
+reactions, replies, and threaded conversations) that reference each other within
+the same `events` batch because the events don't have `event_ids` to reference
+before being persisted. A solution for this can be proposed in another MSC.
+
 
 #### What does the batch send endpoint do behind the scenes?
 
