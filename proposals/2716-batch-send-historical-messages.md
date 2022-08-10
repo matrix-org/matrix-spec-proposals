@@ -86,7 +86,9 @@ weird knots to reconcile either).
 
 **Room version:**
 
-The redaction algorithm changes are the only hard requirement for a new room
+The new `historical` power level necessitates a new room version (changes the structure of `m.room.power_levels`).
+
+The redaction algorithm changes is also hard requirement for a new room
 version because we need to make sure when redacting, we only strip out fields
 without affecting anything at the protocol level. This means that we need to
 keep all of the structural fields that allow us to navigate the batches of
