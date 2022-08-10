@@ -202,10 +202,12 @@ which also allows us to insert multiple batches without having a bunch of `@mxid
 joined the room` noise between each batch. **The state will not be resolved into
 the current state of the room.**
 
-`events` is a chronological list of events you want to insert. For Synapse,
-there is a reverse-chronological constraint on batches so once you insert one
-batch of messages, you can only insert an older batch after that. **tldr;
-Insert from your most recent batch of history -> oldest history.**
+`events` is a chronological list of events you want to insert. It's possible to
+also include `state_events` here which will be used to auth further events in
+the batch. For Synapse, there is a reverse-chronological constraint on batches
+so once you insert one batch of messages, you can only insert an older batch
+after that. **tldr; Insert from your most recent batch of history -> oldest
+history.**
 
 
 #### What does the batch send endpoint do behind the scenes?
