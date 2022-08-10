@@ -263,6 +263,7 @@ should connect to each other and how the homeserver can navigate the DAG.
 
 Here is how the historical batch concept looks like in the DAG:
 
+ - `A --> B` is any point in the DAG that we want to import between.
  - `A` is the oldest-in-time message
  - `B` is the newest-in-time message
  - `batch0` is the first batch we try to import
