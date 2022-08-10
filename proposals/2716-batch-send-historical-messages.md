@@ -241,55 +241,10 @@ breakdown which incrementally explains how everything fits together.
 
 ### Room DAG breakdown
 
-#### Basic batch structure
+#### "insertion" and "batch" events
 
-Here is the starting point for how the historical batch concept looks like in
-the DAG. We're going to build from this in the next sections.
-
- - `A` is the oldest-in-time message
- - `B` is the newest-in-time message
- - `batch0` is the first batch we try to import
- - Each batch of messages is older-in-time than the last (`batch1` is
-   older-in-time than `batch0`, etc)
-
-```mermaid
-flowchart BT
-    subgraph live
-        B -------------> A
-    end
-    
-    subgraph batch0
-        batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0))
-    end
-
-    subgraph batch1
-        batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0))
-    end
-    
-    subgraph batch2
-        batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0))
-    end
-
-    
-    batch0-0 -------> A
-    batch1-0 --> A
-    batch2-0 --> A
-    
-    %% alignment links 
-    batch0-0 --- batch1-2
-    batch1-0 --- batch2-2
-    %% make the links invisible 
-    linkStyle 10 stroke-width:2px,fill:none,stroke:none;
-    linkStyle 11 stroke-width:2px,fill:none,stroke:none;
-```
-
-
-
-#### Adding "insertion" and "batch" events
-
-Next we add "insertion" and "batch" events so it's more prescriptive on how each
-historical batch should connect to each other and how the homeserver can
-navigate the DAG.
+We use "insertion" and "batch" events to describe how each historical batch
+should connect to each other and how the homeserver can navigate the DAG.
 
  - With "insertion" events, we just add them to the start of each chronological
    batch (where the oldest message in the batch is). The next older-in-time
@@ -299,6 +254,14 @@ navigate the DAG.
    the batch from there after a "marker" event points to it.
  - We use `m.room.batch` events to indicate which `m.room.insertion` event it
    connects to by its `m.next_batch_id` field.
+
+Here is how the historical batch concept looks like in the DAG:
+
+ - `A` is the oldest-in-time message
+ - `B` is the newest-in-time message
+ - `batch0` is the first batch we try to import
+ - Each batch of messages is older-in-time than the last (`batch1` is
+   older-in-time than `batch0`, etc)
 
 ```mermaid
 flowchart BT
