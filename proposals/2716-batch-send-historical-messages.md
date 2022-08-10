@@ -64,7 +64,7 @@ Here is what scrollback is expected to look like in Element:
  - `m.historical` (`[true|false]`): Used on any event to indicate that it was
    historically imported after the fact
  - `m.next_batch_id` (`string`): This is a random unique string for a
-   `m.room.insertion` event to indicate what ID the next "batch" event should
+   `m.room.insertion` event to indicate what ID the next `m.room.batch` event should
    specify in order to connect to it
  - `m.batch_id` (`string`): Used on `m.room.batch` events to indicate which
    `m.room.insertion` event it connects to by its `m.next_batch_id` field
@@ -76,7 +76,7 @@ Here is what scrollback is expected to look like in Element:
 Since events being silently sent in the past is hard to moderate, it will
 probably be good to limit who can add historical messages to the timeline. The
 batch send endpoint is already limited to application services but we also need
-to limit who can send "insertion", "batch", and "marker" events since someone
+to limit who can send `m.room.insertion`, `m.room.batch`, and `m.room.marker` events since someone
 can attempt to send them via the normal `/send` API (we don't want any nasty
 weird knots to reconcile either).
 
@@ -128,7 +128,7 @@ which can insert a batch of events historically back in time next to the given
 services. `?batch_id` is not required for the first batch send and is only
 necessary to connect the current batch to the previous.
 
-This endpoint handles the complexity of creating "insertion" and "batch" events.
+This endpoint handles the complexity of creating `m.room.insertion` and `m.room.batch` events.
 All the application service has to do is use `?batch_id` which comes from
 `next_batch_id` in the response of the batch send endpoint to connect batches
 together. `next_batch_id` is derived from the insertion events added to each
@@ -213,18 +213,18 @@ history.**
 #### What does the batch send endpoint do behind the scenes?
 
 This section explains the homeserver magic that happens when someone uses the
-`/batch_send` endpoint. If you're just trying to understand how the "insertion",
-"batch", "marker" events work, you might want to just skip down to the room DAG
+`/batch_send` endpoint. If you're just trying to understand how the `m.room.insertion`,
+`m.room.batch`, `m.room.marker` events work, you might want to just skip down to the room DAG
 breakdown which incrementally explains how everything fits together.
 
- 1. An "insertion" event for the batch is added to the start of the batch.
+ 1. An `m.room.insertion` event for the batch is added to the start of the batch.
     This will be the starting point of the next batch and holds the `next_batch_id`
     that we return in the batch send response. The application service passes
     this as `?batch_id`
- 1. A "batch" event is added to the end of the batch. This is the event that
+ 1. A `m.room.batch` event is added to the end of the batch. This is the event that
     connects to an insertion event by `?batch_id`.
  1. If `?batch_id` is not specified (usually only for the first batch), create a
-    base "insertion" event as a jumping off point from `?prev_event_id` which can
+    base `m.room.insertion` event as a jumping off point from `?prev_event_id` which can
     be added to the end of the `events` list in the response.
  1. All of the events in the historical batch get a content field,
     `"m.historical": true`, to indicate that they are historical at the point of
@@ -250,18 +250,18 @@ breakdown which incrementally explains how everything fits together.
 
 ### Room DAG breakdown
 
-#### "insertion" and "batch" events
+#### `m.room.insertion` and `m.room.batch` events
 
-We use "insertion" and "batch" events to describe how each historical batch
+We use `m.room.insertion` and `m.room.batch` events to describe how each historical batch
 should connect to each other and how the homeserver can navigate the DAG.
 
- - With "insertion" events, we just add them to the start of each chronological
+ - With `m.room.insertion` events, we just add them to the start of each chronological
    batch (where the oldest message in the batch is). The next older-in-time
-   batch can connect to that "insertion" event from the previous batch.
- - The initial base "insertion" event could be from the main DAG or we can
-   create it ad-hoc in the first batch. In the latter case, a "marker" event
+   batch can connect to that `m.room.insertion` event from the previous batch.
+ - The initial base `m.room.insertion` event could be from the main DAG or we can
+   create it ad-hoc in the first batch. In the latter case, a `m.room.marker` event
    (detailed below) inserted into the main DAG can be used to point to the new
-   "insertion" event.
+   `m.room.insertion` event.
  - `m.room.batch` events have a `m.next_batch_id` field which is used to indicate the
    `m.room.insertion` event that the batch connects to.
 
@@ -282,15 +282,15 @@ flowchart BT
     end
     
     subgraph batch0
-        batch0-batch[["batch"]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
+        batch0-batch[[`m.room.batch`]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
     end
 
     subgraph batch1
-        batch1-batch[["batch"]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
+        batch1-batch[[`m.room.batch`]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
     end
     
     subgraph batch2
-        batch2-batch[["batch"]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
+        batch2-batch[[`m.room.batch`]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
     end
 
     
@@ -345,11 +345,11 @@ The structure of the batch event looks like:
 
 #### Adding marker events
 
-Finally, we add "marker" state events into the mix so that federated remote
+Finally, we add `m.room.marker` state events into the mix so that federated remote
 servers also know where in the DAG they should look for historical messages.
 
 To lay out the different types of servers consuming these historical messages
-(more context on why we need "marker" events):
+(more context on why we need `m.room.marker` events):
 
  1. Local server
     - This pretty much works out of the box. It's possible to just add the
@@ -359,9 +359,9 @@ To lay out the different types of servers consuming these historical messages
     new history is inserted
     - The big problem is how does a HS know it needs to go fetch more history if
       they already fetched all of the history in the room? We're solving this
-      with "marker" state events which are sent on the "live" timeline and point
-      back to the "insertion" event where we inserted history next to. The HS
-      can then go and backfill the "insertion" event and continue navigating the
+      with `m.room.marker` state events which are sent on the "live" timeline and point
+      back to the `m.room.insertion` event where we inserted history next to. The HS
+      can then go and backfill the `m.room.insertion` event and continue navigating the
       historical batches from there.
  1. Federated remote server that joins a new room with historical messages
     - The originating homeserver just needs to update the `/backfill` response
@@ -371,41 +371,41 @@ To lay out the different types of servers consuming these historical messages
       has all history, see scenario 2, if doesn't, see scenario 3.
  1. For federated servers already in the room that haven't implemented MSC2716
     - Those homeservers won't have historical messages available because they're
-      unable to navigate the "marker"/"insertion"/"batch" events. But the
+      unable to navigate the `m.room.marker`/`m.room.insertion`/`m.room.batch` events. But the
       historical messages would be available once the HS implements MSC2716 and
-      processes the "marker" events that point to the history.
+      processes the `m.room.marker` events that point to the history.
 
 
 ---
 
- - A "marker" event simply points back to an "insertion" event.
- - The "marker" event solves the problem of, how does a federated homeserver
+ - A `m.room.marker` event simply points back to an `m.room.insertion` event.
+ - The `m.room.marker` event solves the problem of, how does a federated homeserver
    know about the historical events which won't come down incremental sync? And
    the scenario where the federated HS already has all the history in the room,
    so it won't do a full sync of the room again.
- - Unlike the historical events sent via `/batch_send`, **the "marker" event is
+ - Unlike the historical events sent via `/batch_send`, **the `m.room.marker` event is
    sent separately as a normal state event on the "live" timeline** so that
    comes down incremental sync and is available to all homeservers regardless of
    how much scrollback history they already have. And since it's state it never
    gets lost in a timeline gap and is immediately apparent to all servers that
    join.
  - Also instead of overwriting the same generic `state_key: ""` over and over,
-   the expected behavior is send each "marker" event with a unique `state_key`.
+   the expected behavior is send each `m.room.marker` event with a unique `state_key`.
    This way all of the "markers" are discoverable in the current state without
    us having to go through the chain of previous state to figure it all out.
    This also avoids potential state resolution conflicts where only one of the
-   "marker" events win and we would lose the other chain history.
- - A "marker" event is not needed for every batch of historical messages added
+   `m.room.marker` events win and we would lose the other chain history.
+ - A `m.room.marker` event is not needed for every batch of historical messages added
    via `/batch_send`. Multiple batches can be inserted. Then once we're done
-   importing everything, we can add one "marker" event pointing at the root
-   "insertion" event
-    - If more history is decided to be added later, another "marker" can be sent to let the homeservers know again.
- - When a remote federated homeserver receives a "marker" event, it can mark
-   the "insertion" prev events as needing to backfill from that point again and
+   importing everything, we can add one `m.room.marker` event pointing at the root
+   `m.room.insertion` event
+    - If more history is decided to be added later, another `m.room.marker` can be sent to let the homeservers know again.
+ - When a remote federated homeserver receives a `m.room.marker` event, it can mark
+   the `m.room.insertion` prev events as needing to backfill from that point again and
    can fetch the historical messages when the user scrolls back to that area in
    the future.
 
-The structure of the "marker" event looks like:
+The structure of the `m.room.marker` event looks like:
 ```js
 {
     "type": "m.room.marker",
@@ -423,19 +423,19 @@ The structure of the "marker" event looks like:
 flowchart BT
     A --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
-        marker1>"marker"] ----> B -----------------> A
+        marker1>`m.room.marker`] ----> B -----------------> A
     end
     
     subgraph batch0
-        batch0-batch[["batch"]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
+        batch0-batch[[`m.room.batch`]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
     end
 
     subgraph batch1
-        batch1-batch[["batch"]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
+        batch1-batch[[`m.room.batch`]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
     end
     
     subgraph batch2
-        batch2-batch[["batch"]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
+        batch2-batch[[`m.room.batch`]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
     end
 
     
@@ -477,19 +477,19 @@ bunch of `@mxid joined the room` noise between each batch.
 flowchart BT
     A --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
-        marker1>"marker"] ----> B -----------------> A
+        marker1>`m.room.marker`] ----> B -----------------> A
     end
     
     subgraph batch0
-        batch0-batch[["batch"]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
+        batch0-batch[[`m.room.batch`]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/insertion\]
     end
 
     subgraph batch1
-        batch1-batch[["batch"]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
+        batch1-batch[[`m.room.batch`]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/insertion\]
     end
     
     subgraph batch2
-        batch2-batch[["batch"]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
+        batch2-batch[[`m.room.batch`]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/insertion\]
     end
 
 
@@ -573,7 +573,7 @@ However, this feels needlessly complicated if the DAG approach is sufficient.
 
 ## Security considerations
 
-The "insertion" and "batch" events add a new way for an application service to
+The `m.room.insertion` and `m.room.batch` events add a new way for an application service to
 tie the batch reconciliation in knots(similar to the DAG knots that can happen)
 which can potentially DoS message and backfill navigation on the server.
 
