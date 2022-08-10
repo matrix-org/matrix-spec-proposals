@@ -253,12 +253,13 @@ should connect to each other and how the homeserver can navigate the DAG.
 
  - With "insertion" events, we just add them to the start of each chronological
    batch (where the oldest message in the batch is). The next older-in-time
-   batch can connect to that "insertion" point from the previous batch.
+   batch can connect to that "insertion" event from the previous batch.
  - The initial base "insertion" event could be from the main DAG or we can
-   create it ad-hoc in the first batch so the homeserver can start traversing up
-   the batch from there after a "marker" event points to it.
- - We use `m.room.batch` events to indicate which `m.room.insertion` event it
-   connects to by its `m.next_batch_id` field.
+   create it ad-hoc in the first batch. In the latter case, a "marker" event
+   (detailed below) inserted into the main DAG can be used to point to the new
+   "insertion" event.
+ - `m.room.batch` events have a `m.next_batch_id` field which is used to indicate the
+   `m.room.insertion` event that the batch connects to.
 
 Here is how the historical batch concept looks like in the DAG:
 
