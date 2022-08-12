@@ -1,4 +1,4 @@
-# MSCXXXX: `M_USER_NOT_APPROVED` error code
+# MSC3866: `M_USER_NOT_APPROVED` error code
 
 Over the past few years, there has been some demand for the ability to let
 administrators of homeservers approve any new user created on their homeserver
@@ -86,5 +86,5 @@ they've been approved) or a server administrator generated one for them).
 
 ## Unstable prefix
 
-During development, `ORG_MATRIX_MSCXXXX_USER_NOT_APPROVED` must be used instead
+During development, `ORG_MATRIX_MSC3866_USER_NOT_APPROVED` must be used instead
 of `M_USER_NOT_APPROVED`.
