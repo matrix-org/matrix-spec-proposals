@@ -28,11 +28,12 @@ This is currently not supported because:
 
 
 
+
 ## Proposal
 
-### Expectation
+## Expectation
 
-Historical messages that we insert should appear in the timeline just like they
+Historical messages that we import should appear in the timeline just like they
 would if they were sent back at that time.
 
 Here is what scrollback is expected to look like in Element:
@@ -40,83 +41,92 @@ Here is what scrollback is expected to look like in Element:
 ![Two historical batches in between some existing messages](./images/2716-message-scrollback-example.png)
 
 
-### Overview
+### Any event
 
-**Endpoint:**
-
- - `POST /_matrix/client/v1/rooms/<roomID>/batch_send?prev_event_id=<eventID>&batch_id=<batchID>`
-
-**Event types:**
-
- - `m.room.insertion`: Events that mark points in time where you can insert
-   historical messages
- - `m.room.batch`: This is what connects one historical batch to the other. In
-   the DAG, we navigate from an insertion event to the batch event that points
-   at it, up the historical messages to the next insertion event, then repeat the
-   process
- - `m.room.marker`: State event used to hint to homeservers that there is new
-   history back in time that you should go fetch next time someone scrolls back
-   around the specified insertion event. Also used  on clients to cache bust the
-   timeline.
-
-**Content fields:**
-
- - `m.historical` (`[true|false]`): Used on any event to indicate that it was
-   historically imported after the fact
- - `m.next_batch_id` (`string`): This is a random unique string for a
-   `m.room.insertion` event to indicate what ID the next `m.room.batch` event should
-   specify in order to connect to it
- - `m.batch_id` (`string`): Used on `m.room.batch` events to indicate which
-   `m.room.insertion` event it connects to by its `m.next_batch_id` field
- - `m.marker.insertion` (another `event_id` string): For `m.room.marker` events
-   to point at an `m.room.insertion` event by `event_id`
-
-**Power level:**
-
-Since events being silently sent in the past is hard to moderate, it will
-probably be good to limit who can add historical messages to the timeline. The
-batch send endpoint is already limited to application services but we also need
-to limit who can send `m.room.insertion`, `m.room.batch`, and `m.room.marker` events since someone
-can attempt to send them via the normal `/send` API (we don't want any nasty
-weird knots to reconcile either).
-
- - `historical`: A new top-level field in the `content` dictionary of the room's
-    power levels, controlling who can send `m.room.insertion`, `m.room.batch`,
-    and `m.room.marker` events in the room.
-
-**Room version:**
-
-The new `historical` power level necessitates a new room version (changes the structure of `m.room.power_levels`).
-
-The redaction algorithm changes is also hard requirement for a new room
-version because we need to make sure when redacting, we only strip out fields
-without affecting anything at the protocol level. This means that we need to
-keep all of the structural fields that allow us to navigate the batches of
-history in the DAG. We also only want to auth events against fields that
-wouldn't be removed during redaction. In practice, this means:
-
- - When redacting `m.room.insertion` events, keep the `m.next_batch_id` content field around
- - When redacting `m.room.batch` events, keep the `m.batch_id` content field around
- - When redacting `m.room.marker` events, keep the `m.marker.insertion` content field around
- - When redacting `m.room.power_levels` events, keep the `historical` content field around
+key | type | description | Required
+--- | --- | --- | --- | ---
+`m.historical` | bool | `true` | Used on any event to hint that it was historically imported after the fact. This field should just be omitted if `false`. | no
 
 
-#### Backwards compatibility
+### `m.room.insertion`
 
-However, this MSC is mostly backwards compatible and can be used with the
-current room version with the fact that redactions aren't supported for
-`m.room.insertion`, `m.room.batch`, `m.room.marker` events. We can protect
-people from this limitation by throwing an error when they try to use [`PUT
-/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}`](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidredacteventidtxnid)
-to redact one of those events. We would have to accept the redaction if
-it came over federation to avoid split-brained rooms.
+Events that mark points in time where you can insert historical messages.
 
-Because we also can't use the `historical` power level for controlling who can
-send these events in the existing room version, we always persist but instead
-only process and give meaning to the `m.room.insertion`, `m.room.batch`, and
-`m.room.marker` events when the room `creator` sends them. This caveat/rule only
-applies to existing room versions.
+**`m.room.insertion` event `content` field definitions:**
 
+key | type | value | description | required
+--- | --- | --- | --- | ---
+`m.next_batch_id` | string | randomly generated string | This is a random unique string that the next `m.room.batch` event should specify in order to connect to it. | yes
+
+A full example of the `m.room.insertion` event:
+```json5
+{
+  "type": "m.room.insertion",
+  "sender": "@appservice:example.org",
+  "content": {
+    "m.next_batch_id": next_batch_id,
+    "m.historical": true
+  },
+  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+  // Doesn't affect much but good to use the same time as the closest event
+  "origin_server_ts": 1626914158639
+}
+```
+
+### `m.room.batch`
+
+This is what connects one historical batch to the other. In the DAG, we navigate
+from an insertion event to the batch event that points at it, up the historical
+messages to the next insertion event, then repeat the process.
+
+**`m.room.batch` event `content` field definitions:**
+
+key | type | value | description | required
+--- | --- | --- | --- | ---
+`m.batch_id` | string | A batch ID from an insertion event | Used to indicate which `m.room.insertion` event it connects to by its `m.next_batch_id` field. | yes
+
+A full example of the `m.room.batch` event:
+```json5
+{
+  "type": "m.room.batch",
+  "sender": "@appservice:example.org",
+  "content": {
+    "m.batch_id": batch_id,
+    "m.historical": true
+  },
+  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+  // Doesn't affect much but good to use the same time as the closest event
+  "origin_server_ts": 1626914158639
+}
+```
+
+
+### `m.room.marker`
+
+State event used to hint to homeservers that there is new
+history back in time that you should go fetch next time someone scrolls back
+around the specified insertion event. Also used on clients to cache bust the
+timeline.
+
+**`m.room.marker` event `content` field definitions:**
+
+key | type | value | description | required
+--- | --- | --- | --- | ---
+`m.marker.insertion` | string | Another `event_id` | Used to point at an `m.room.insertion` event by its `event_id`. | yes
+
+A full example of the `m.room.marker` event:
+```json5
+{
+    "type": "m.room.marker",
+    "state_key": "<some-unique-state-key>",
+    "sender": "@appservice:example.org",
+    "content": {
+        "m.marker.insertion": insertion_event.event_id
+    },
+    "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+    "origin_server_ts": 1626914158639,
+}
+```
 
 
 ### New historical batch send endpoint
@@ -222,7 +232,7 @@ This section explains the homeserver magic that happens when someone uses the
 `m.room.batch`, `m.room.marker` events work, you might want to just skip down to the room DAG
 breakdown which incrementally explains how everything fits together.
 
- 1. An `m.room.insertion` event for the batch is added to the start of the batch.
+ 1. A `m.room.insertion` event for the batch is added to the start of the batch.
     This will be the starting point of the next batch and holds the `next_batch_id`
     that we return in the batch send response. The application service passes
     this as `?batch_id`
@@ -251,6 +261,52 @@ breakdown which incrementally explains how everything fits together.
       decrements and each event is sorted behind the next. (from
       https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201)
 
+
+### Power levels
+
+Since events being silently sent in the past is hard to moderate, it will
+probably be good to limit who can add historical messages to the timeline. The
+batch send endpoint is already limited to application services but we also need
+to limit who can send `m.room.insertion`, `m.room.batch`, and `m.room.marker` events since someone
+can attempt to send them via the normal `/send` API (we don't want any nasty
+weird knots to reconcile either).
+
+ - `historical`: A new top-level field in the `content` dictionary of the room's
+    power levels, controlling who can send `m.room.insertion`, `m.room.batch`,
+    and `m.room.marker` events in the room.
+
+### Room version
+
+The new `historical` power level necessitates a new room version (changes the structure of `m.room.power_levels`).
+
+The redaction algorithm changes is also hard requirement for a new room
+version because we need to make sure when redacting, we only strip out fields
+without affecting anything at the protocol level. This means that we need to
+keep all of the structural fields that allow us to navigate the batches of
+history in the DAG. We also only want to auth events against fields that
+wouldn't be removed during redaction. In practice, this means:
+
+ - When redacting `m.room.insertion` events, keep the `m.next_batch_id` content field around
+ - When redacting `m.room.batch` events, keep the `m.batch_id` content field around
+ - When redacting `m.room.marker` events, keep the `m.marker.insertion` content field around
+ - When redacting `m.room.power_levels` events, keep the `historical` content field around
+
+
+#### Backwards compatibility with existing room versions
+
+However, this MSC is mostly backwards compatible and can be used with the
+current room version with the fact that redactions aren't supported for
+`m.room.insertion`, `m.room.batch`, `m.room.marker` events. We can protect
+people from this limitation by throwing an error when they try to use [`PUT
+/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}`](https://spec.matrix.org/v1.3/client-server-api/#put_matrixclientv3roomsroomidredacteventidtxnid)
+to redact one of those events. We would have to accept the redaction if
+it came over federation to avoid split-brained rooms.
+
+Because we also can't use the `historical` power level for controlling who can
+send these events in the existing room version, we always persist but instead
+only process and give meaning to the `m.room.insertion`, `m.room.batch`, and
+`m.room.marker` events when the room `creator` sends them. This caveat/rule only
+applies to existing room versions.
 
 
 ### Room DAG breakdown
@@ -315,37 +371,6 @@ flowchart BT
 ```
 
 
-The structure of the insertion event looks like:
-```js
-{
-  "type": "m.room.insertion",
-  "sender": "@appservice:example.org",
-  "content": {
-    "m.next_batch_id": next_batch_id,
-    "m.historical": true
-  },
-  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
-  // Doesn't affect much but good to use the same time as the closest event
-  "origin_server_ts": 1626914158639
-}
-```
-
-
-The structure of the batch event looks like:
-```js
-{
-  "type": "m.room.batch",
-  "sender": "@appservice:example.org",
-  "content": {
-    "m.batch_id": batch_id,
-    "m.historical": true
-  },
-  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
-  // Doesn't affect much but good to use the same time as the closest event
-  "origin_server_ts": 1626914158639
-}
-```
-
 
 
 #### Adding marker events
@@ -409,20 +434,6 @@ To lay out the different types of servers consuming these historical messages
    the `m.room.insertion` prev events as needing to backfill from that point again and
    can fetch the historical messages when the user scrolls back to that area in
    the future.
-
-The structure of the `m.room.marker` event looks like:
-```js
-{
-    "type": "m.room.marker",
-    "state_key": "<some-unique-state-key>",
-    "sender": "@appservice:example.org",
-    "content": {
-        "m.marker.insertion": insertion_event.event_id
-    },
-    "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
-    "origin_server_ts": 1626914158639,
-}
-```
 
 ```mermaid
 flowchart BT
