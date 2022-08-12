@@ -43,7 +43,7 @@ Here is what scrollback is expected to look like in Element:
 
 ### Any event
 
-key | type | description | Required
+key | type | value | description | Required
 --- | --- | --- | --- | ---
 `m.historical` | bool | `true` | Used on any event to hint that it was historically imported after the fact. This field should just be omitted if `false`. | no
 
@@ -64,9 +64,10 @@ A full example of the `m.room.insertion` event:
   "type": "m.room.insertion",
   "sender": "@appservice:example.org",
   "content": {
-    "m.next_batch_id": next_batch_id,
+    "m.next_batch_id": "w25ljc1kb4",
     "m.historical": true
   },
+  "event_id": "$insertionabcd:example.org",
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
   // Doesn't affect much but good to use the same time as the closest event
   "origin_server_ts": 1626914158639
@@ -91,9 +92,10 @@ A full example of the `m.room.batch` event:
   "type": "m.room.batch",
   "sender": "@appservice:example.org",
   "content": {
-    "m.batch_id": batch_id,
+    "m.batch_id": "w25ljc1kb4",
     "m.historical": true
   },
+  "event_id": "$batchabcd:example.org",
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
   // Doesn't affect much but good to use the same time as the closest event
   "origin_server_ts": 1626914158639
@@ -121,8 +123,9 @@ A full example of the `m.room.marker` event:
     "state_key": "<some-unique-state-key>",
     "sender": "@appservice:example.org",
     "content": {
-        "m.marker.insertion": insertion_event.event_id
+        "m.marker.insertion": "$insertionabcd:example.org"
     },
+    "event_id": "$markerabcd:example.org",
     "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
     "origin_server_ts": 1626914158639,
 }
