@@ -219,8 +219,9 @@ the current state of the room.**
 also include `state_events` here which will be used to auth further events in
 the batch. For Synapse, there is a reverse-chronological constraint on batches
 so once you insert one batch of messages, you can only insert an older batch
-after that. **tldr; Insert from your most recent batch of history -> oldest
-history.**
+after that. For more information on this Synapse constraint, see the ["Depth
+discussion"](#depth-discussion) below. **tldr; Insert from your most recent batch of history ->
+oldest history.**
 
 One aspect that isn't solved yet is how to handle relations/annotations (such as
 reactions, replies, and threaded conversations) that reference each other within
@@ -251,17 +252,20 @@ breakdown which incrementally explains how everything fits together.
     (`[0, 1, 2]`) and is processed in that order so the `prev_events` point to
     it's older-in-time previous message which gives us a nice straight line in
     the DAG.
-    - **Depth discussion:** For Synapse, when persisting, we **reverse the list
-      (to make it reverse-chronological)** so we can still get the correct
-      `(topological_ordering, stream_ordering)` so it sorts between A and B as
-      we expect. Why?  `depth` is not re-calculated when historical messages are
+    - <a name="depth-discussion"></a>**Depth discussion:** For Synapse, when
+      persisting, we **reverse the list (to make it reverse-chronological)** so
+      we can still get the correct `(topological_ordering, stream_ordering)` so
+      it sorts between A and B as we expect. Why?  `depth` (or the
+      `topological_ordering`) is not re-calculated when historical messages are
       inserted into the DAG. This means we have to take care to insert in the
       right order. Events are sorted by `(topological_ordering,
       stream_ordering)` where `topological_ordering` is just `depth`. Normally,
       `stream_ordering` is an auto incrementing integer but for
-      `backfilled=true` events, it decrements. Historical messages are inserted
-      all at the same `depth`, and marked as backfilled so the `stream_ordering`
-      decrements and each event is sorted behind the next. (from
+      `backfilled=true` events, it decrements. Since historical messages are
+      inserted all at the same `depth`, the only way we can control the ordering
+      in between is the `stream_ordering`. Historical messages are marked as
+      backfilled so the `stream_ordering` decrements and each event is sorted
+      behind the next. (from
       https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201)
 
 
