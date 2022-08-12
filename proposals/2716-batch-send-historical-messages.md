@@ -220,8 +220,8 @@ also include `state_events` here which will be used to auth further events in
 the batch. For Synapse, there is a reverse-chronological constraint on batches
 so once you insert one batch of messages, you can only insert an older batch
 after that. For more information on this Synapse constraint, see the ["Depth
-discussion"](#depth-discussion) below. **tldr; Insert from your most recent batch of history ->
-oldest history.**
+discussion"](#depth-discussion) below. **tldr; Insert from your most recent
+batch of history -> oldest history.**
 
 One aspect that isn't solved yet is how to handle relations/annotations (such as
 reactions, replies, and threaded conversations) that reference each other within
