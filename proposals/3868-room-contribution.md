@@ -1,7 +1,7 @@
 # MSC3868: Room Contribution
 
-Many projects and communities have a room on Matrix nowadays and many may wish to show their friends how to support 
-them.  
+Many projects and communities have a room on Matrix nowadays and many may wish to show their friends how to support
+them.
 The goal, would be to have something only visible to room & space members and to provide something easier to manage &
 display than putting links into the room topic or announcing them periodically.
 
@@ -43,7 +43,7 @@ An example of this event would look like this:
 
 ## Alternatives
 
-Historically, that sort of advertisement is either taken care of by adding the said URIs to the room topic or 
+Historically, that sort of advertisement is either taken care of by adding the said URIs to the room topic or
 periodically sending an announcement in the channel. However room topic is public information when the room
 has `m.room.join_rules` other than `invite`.
 
