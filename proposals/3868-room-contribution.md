@@ -1,4 +1,4 @@
-# MSCXXXX: Room Contribution
+# MSC3868: Room Contribution
 
 Many projects and communities have a room on Matrix nowadays and many may wish to show their friends how to support them.  
 The goal, would be to have something only visible to room & space members and to provide something easier to manage & display than putting links into the room topic or announcing them periodically.
