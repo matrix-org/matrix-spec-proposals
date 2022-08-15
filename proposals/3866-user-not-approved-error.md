@@ -87,5 +87,5 @@ them).
 
 ## Unstable prefix
 
-During development, `ORG_MATRIX_MSC3866_USER_AWAITING_APPROVAL` must be used
+During development, `ORG.MATRIX.MSC3866_USER_AWAITING_APPROVAL` must be used
 instead of `M_USER_AWAITING_APPROVAL`.
