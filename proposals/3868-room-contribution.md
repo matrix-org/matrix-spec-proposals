@@ -51,6 +51,10 @@ has `m.room.join_rules` other than `invite`.
 
 State events are currently not encrypted which could leak some data.
 
+## Unstable prefix
+
+Unstable implementations should use the state event type of `eu.dn0.msc3868.rev1.room.contribute`
+
 ## Dependencies
 
 None.
