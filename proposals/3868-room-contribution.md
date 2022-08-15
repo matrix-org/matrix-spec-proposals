@@ -44,7 +44,8 @@ An example of this event would look like this:
 ## Alternatives
 
 Historically, that sort of advertisement is either taken care of by adding the said URIs to the room topic or 
-periodically sending an announcement in the channel.
+periodically sending an announcement in the channel. However room topic is public information when the room
+has `m.room.join_rules` other than `invite`.
 
 ## Security considerations
 
