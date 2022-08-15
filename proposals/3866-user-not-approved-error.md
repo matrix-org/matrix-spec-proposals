@@ -1,4 +1,4 @@
-# MSC3866: `M_USER_NOT_APPROVED` error code
+# MSC3866: `M_USER_AWAITING_APPROVAL` error code
 
 Over the past few years, there has been some demand for the ability to let
 administrators of homeservers approve any new user created on their homeserver
@@ -9,9 +9,9 @@ additional details such as an email address.
 
 ## Proposal
 
-This document proposes the addition of a new `M_USER_NOT_APPROVED` error code to
-the Matrix specification. This error code can be returned in two scenarios:
-registration and login.
+This document proposes the addition of a new `M_USER_AWAITING_APPROVAL` error
+code to the Matrix specification. This error code can be returned in two
+scenarios: registration and login.
 
 This proposal does not describe a way for the homeserver to alert an
 administrator about new accounts that are waiting to be reviewed, or a way for
@@ -25,11 +25,11 @@ admin room).
 When a user successfully registers on a homeserver that is configured so that
 new accounts must be approved by an administrator, the final `POST
 /_matrix/client/v3/register` request is responded to with a `403 Forbidden`
-response that includes the `M_USER_NOT_APPROVED` error code. For example:
+response that includes the `M_USER_AWAITING_APPROVAL` error code. For example:
 
 ```json
 {
-    "errcode": "M_USER_NOT_APPROVED",
+    "errcode": "M_USER_AWAITING_APPROVAL",
     "error": "This account needs to be approved by an administrator before it can be used."
 }
 ```
@@ -38,12 +38,12 @@ response that includes the `M_USER_NOT_APPROVED` error code. For example:
 
 When a user whose account is still pending approval by a server administrator
 attempts to log in, `POST /_matrix/client/v3/login` requests are responded to
-with a `403 Forbidden` response that includes the `M_USER_NOT_APPROVED` error
-code. For example:
+with a `403 Forbidden` response that includes the `M_USER_AWAITING_APPROVAL`
+error code. For example:
 
 ```json
 {
-    "errcode": "M_USER_NOT_APPROVED",
+    "errcode": "M_USER_AWAITING_APPROVAL",
     "error": "This account is pending approval by a server administrator. Please try again later."
 }
 ```
@@ -77,14 +77,15 @@ of User-Interactive Authentication.
 
 ## Security considerations
 
-It shouldn't be necessary to implement the `M_USER_NOT_APPROVED` error code on
-other endpoints than `/register` and `/login`. This is because other endpoints
-are either unauthenticated (in which case we don't care about whether the user
-is approved) or authenticated via an access token (in which case the fact that
-the user has an access token either means they've managed to log in (meaning
-they've been approved) or a server administrator generated one for them).
+It shouldn't be necessary to implement the `M_USER_AWAITING_APPROVAL` error code
+on other endpoints than `/register` and `/login`. This is because other
+endpoints are either unauthenticated (in which case we don't care about whether
+the user is approved) or authenticated via an access token (in which case the
+fact that the user has an access token either means they've managed to log in
+(meaning they've been approved) or a server administrator generated one for
+them).
 
 ## Unstable prefix
 
-During development, `ORG_MATRIX_MSC3866_USER_NOT_APPROVED` must be used instead
-of `M_USER_NOT_APPROVED`.
+During development, `ORG_MATRIX_MSC3866_USER_AWAITING_APPROVAL` must be used
+instead of `M_USER_AWAITING_APPROVAL`.
