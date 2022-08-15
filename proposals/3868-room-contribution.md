@@ -39,7 +39,7 @@ An example of this event would look like this:
 
 ## Potential issues
 
-// To be determined
+The authors aren't aware of any potential issues being raised.
 
 ## Alternatives
 
@@ -57,4 +57,6 @@ Unstable implementations should use the state event type of `eu.dn0.msc3868.rev1
 
 ## Dependencies
 
-None.
+The authors believe this MSC could benefit from
+[MSC3414: Encrypted State Events](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
+while not considering it as a blocker.
