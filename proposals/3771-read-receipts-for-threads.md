@@ -187,7 +187,7 @@ or the presence of a `org.matrix.msc3771` flag in `unstable_features` on `/versi
 
 ## Dependencies
 
-This MSC depends on the following MSCs, which have been accepted into the spec,
-but have yet to be released:
+This MSC depends on the following MSCs, which have not yet been accepted into
+the spec:
 
 * [MSC3773](https://github.com/matrix-org/matrix-spec-proposals/pull/3773): Notifications for threads
