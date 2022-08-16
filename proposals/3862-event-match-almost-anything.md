@@ -1,6 +1,6 @@
 # MSC3862: event_match (almost) anything
 
-The `event_match` condition kind on push rules currently only matches
+The [`event_match`] condition kind on push rules currently only matches
 string values. This is limiting because some event types have important
 information in boolean or integer fields that currently cannot be
 matched against.
@@ -27,7 +27,7 @@ representation. In particular this means
 After the transformation the condition is evaluated on the string
 representations.
 
-In order to reflect these changes, the wording in the spec is updated.
+In order to reflect these changes, the wording in the [spec] is updated.
 Specifically
 
 > **event_match** This is a glob pattern match on a field of the event.
@@ -74,5 +74,7 @@ e.g. [matrix-org/synapse#13466]) and use.
 
 None.
 
+  [`event_match`]: https://spec.matrix.org/v1.3/client-server-api/#conditions-1
+  [spec]: https://spec.matrix.org/v1.3/client-server-api/#conditions-1
   [MSC3758]: https://github.com/matrix-org/matrix-spec-proposals/pull/3758
   [matrix-org/synapse#13466]: https://github.com/matrix-org/synapse/pull/13466
