@@ -1,6 +1,6 @@
 # MSC3026: `busy` presence state
 
-The current specification for presence in Matrix describes three states:
+The current specification for [presence](https://spec.matrix.org/v1.3/client-server-api/#presence) in Matrix describes three states:
 
 * `online` if the user is online and active
 * `unavailable` (aka idle or away) if the user is online but inactive
