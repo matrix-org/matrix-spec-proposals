@@ -1,10 +1,12 @@
 # MSC3771: Read receipts for threads
 
-Currently, each room has a single read receipt per user. This is used to sync the
-read status of a room across clients and calculate the number of unread messages.
+Currently, each room can only have a single receipt of each type per user. The
+read receipt (`m.read` or `m.read.private`) is used to sync the read status of a
+room across clients, to share with other users which events have been read and
+is used by the homeserver to calculate the number of unread messages.
 
 Unfortunately a client displaying threads may show a subset of a room's messages
-at a time, causing the read receipt to be misleading.
+at a time, causing a user's read receipt to be misleading.
 
 This might better be described by an example. Given a room with the following
 DAG of events (note that the dotted lines are a thread relation, as specified by
@@ -45,10 +47,10 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
-### Sending a threaded read receipt
+### Threaded read receipts
 
-This MSC proposes allowing the same receipt type to exist multiple times in a room
-by adding a `threadId` parameter to reach receipt.
+This MSC proposes allowing the same receipt type to exist multiple times in a room,
+once per thread.
 
 The [`/receipt`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 endpoint gains a new optional path part and becomes:
@@ -87,7 +89,7 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply/$th
 {}
 ```
 
-### Received threaded read receipts
+### Receiving threaded read receipts
 
 This would then come down `/sync` for the user with other receipts, but with an
 additional property in the body containing the thread ID:
