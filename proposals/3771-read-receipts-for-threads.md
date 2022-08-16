@@ -47,24 +47,23 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ## Proposal
 
-### Threaded read receipts
+### Threaded receipts
 
 This MSC proposes allowing the same receipt type to exist multiple times in a room,
 once per thread.
 
-The [`/receipt`](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
-endpoint gains a new optional path part and becomes:
+To denote that a receipt belongs to a thread, the body of the receipt can include
+a `thread_id` property when calling the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid).
 
-`POST /_matrix/client/v3/rooms/{roomId}/receipt/{receiptType}/{eventId}/{threadId}`
-
-The `threadId` contains the thread that the read receipts belongs to (i.e. it should
+The `thread_id` contains the thread that the receipt belongs to (i.e. it should
 match the `event_id` contained within the `m.relates_to` of the event represented
-by `eventId`).
+by `eventId`). Omitting the `thread_id` corresponds to the receipt being for the
+"main" timeline (or events which are not part of a thread). A non-string `thread_id`
+(or empty) `thread_id` field is an error and should be rejected with a `400` error
+with `errcode` of `M_INVALID_PARAM`.
 
 This updates the unique tuple for receipts from
-`(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, threadId)`.
-A missing (or empty) `threadId` refers to the "main" timeline (or events which are
-not part of a thread).
+`(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, thread ID)`.
 
 Given a threaded message:
 
@@ -84,15 +83,18 @@ Given a threaded message:
 A client could mark this as read by sending a request:
 
 ```
-POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply/$thread_root
+POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply
 
-{}
+{
+  "thread_id": "$thread_root"
+}
 ```
 
-### Receiving threaded read receipts
+The `thread_id` property is not valid for `m.fully_read` receipts.
 
-This would then come down `/sync` for the user with other receipts, but with an
-additional property in the body containing the thread ID:
+### Receiving threaded receipts
+
+This would then come down `/sync` for the user with other receipts:
 
 ```json
 {
@@ -111,16 +113,22 @@ additional property in the body containing the thread ID:
 }
 ```
 
-A missing (or empty) `thread_id` refers to the "main" timeline (or events which are
-not part of a thread).
+Since [event bodies must be treated as untrusted](https://spec.matrix.org/latest/client-server-api/#room-event-format)
+the `thread_id` field may be of an invalid form. It should be treated as missing
+if the field is not a non-empty string.
 
 ### Notifications
 
 [MSC3773](https://github.com/matrix-org/matrix-spec-proposals/pull/3773) discusses
 how notifications for threads are created and returned to the client, but does
-not provide a way to clear threaded notifications. A threaded read receipt should
-clear notifications for the matching thread following the [same rules](https://spec.matrix.org/latest/client-server-api/#receiving-notifications)
+not provide a way to clear threaded notifications.
+
+A threaded read receipt (i.e. a `m.read` or `m.read.private` receipt with a `thread_id`
+property) should clear notifications for the matching thread following the
+[same rules](https://spec.matrix.org/latest/client-server-api/#receiving-notifications)
 as notifications which are not part of a thread.
+
+XXX Add an example here.
 
 ## Potential issues
 
@@ -140,6 +148,10 @@ This is not compatible with the additional `threadId` parameter in this MSC.
 When a user has both a client which is "unthreaded" and "threaded" then there
 is a possibility for read receipts to be misrepresented when switching between
 clients. Solutions to this problem are deemed out of scope of this MSC.
+
+### Second-order relations
+
+XXX Is this valid?
 
 ## Alternatives
 
@@ -178,7 +190,16 @@ thread, ensuring that each thread only has a single receipt.
 
 ## Future extensions
 
-Future extensions will tackle how the thread read receipts impact notification counts.
+### Threaded fully read markers
+
+The `m.fully_read` marker is not supported in threads, a future MSC could expand
+support to this pseudo-receipt.
+
+### Setting threaded receipts using the `/read_markers` endpoint
+
+This MSC does not propose expanding the `/read_markers` endpoint to support threaded
+receipts. A future MSC might expand this to support an object per receipt with
+an event ID and thread ID or some other way of setting multiple receipts at once.
 
 ## Unstable prefix
 
