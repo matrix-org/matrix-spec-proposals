@@ -45,7 +45,7 @@ Here is what scrollback is expected to look like in Element:
 
 key | type | value | description | Required
 --- | --- | --- | --- | ---
-`m.historical` | bool | `true` | Used on any event to hint that it was historically imported after the fact. This field should just be omitted if `false`. | no
+`historical` | bool | `true` | Used on any event to hint that it was historically imported after the fact. This field should just be omitted if `false`. | no
 
 
 ### `m.room.insertion`
@@ -56,7 +56,7 @@ Events that mark points in time where you can insert historical messages.
 
 key | type | value | description | required
 --- | --- | --- | --- | ---
-`m.next_batch_id` | string | randomly generated string | This is a random unique string that the next `m.room.batch` event should specify in order to connect to it. | yes
+`next_batch_id` | string | randomly generated string | This is a random unique string that the next `m.room.batch` event should specify in order to connect to it. | yes
 
 A full example of the `m.room.insertion` event:
 ```json5
@@ -64,8 +64,8 @@ A full example of the `m.room.insertion` event:
   "type": "m.room.insertion",
   "sender": "@appservice:example.org",
   "content": {
-    "m.next_batch_id": "w25ljc1kb4",
-    "m.historical": true
+    "next_batch_id": "w25ljc1kb4",
+    "historical": true
   },
   "event_id": "$insertionabcd:example.org",
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
@@ -84,7 +84,7 @@ messages to the next insertion event, then repeat the process.
 
 key | type | value | description | required
 --- | --- | --- | --- | ---
-`m.batch_id` | string | A batch ID from an insertion event | Used to indicate which `m.room.insertion` event it connects to by its `m.next_batch_id` field. | yes
+`batch_id` | string | A batch ID from an insertion event | Used to indicate which `m.room.insertion` event it connects to by its `next_batch_id` field. | yes
 
 A full example of the `m.room.batch` event:
 ```json5
@@ -92,8 +92,8 @@ A full example of the `m.room.batch` event:
   "type": "m.room.batch",
   "sender": "@appservice:example.org",
   "content": {
-    "m.batch_id": "w25ljc1kb4",
-    "m.historical": true
+    "batch_id": "w25ljc1kb4",
+    "historical": true
   },
   "event_id": "$batchabcd:example.org",
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
@@ -114,7 +114,7 @@ timeline.
 
 key | type | value | description | required
 --- | --- | --- | --- | ---
-`m.marker.insertion` | string | Another `event_id` | Used to point at an `m.room.insertion` event by its `event_id`. | yes
+`insertion_event_reference` | string | Another `event_id` | Used to point at an `m.room.insertion` event by its `event_id`. | yes
 
 A full example of the `m.room.marker` event:
 ```json5
@@ -123,7 +123,7 @@ A full example of the `m.room.marker` event:
     "state_key": "<some-unique-state-key>",
     "sender": "@appservice:example.org",
     "content": {
-        "m.marker.insertion": "$insertionabcd:example.org"
+        "insertion_event_reference": "$insertionabcd:example.org"
     },
     "event_id": "$markerabcd:example.org",
     "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
@@ -246,7 +246,7 @@ breakdown which incrementally explains how everything fits together.
     base `m.room.insertion` event as a jumping off point from `?prev_event_id` which can
     be added to the end of the `events` list in the response.
  1. All of the events in the historical batch get a content field,
-    `"m.historical": true`, to indicate that they are historical at the point of
+    `"historical": true`, to indicate that they are historical at the point of
     being added to a room.
  1. The `state_events_at_start`/`events` payload is in **chronological** order
     (`[0, 1, 2]`) and is processed in that order so the `prev_events` point to
@@ -293,9 +293,9 @@ keep all of the structural fields that allow us to navigate the batches of
 history in the DAG. We also only want to auth events against fields that
 wouldn't be removed during redaction. In practice, this means:
 
- - When redacting `m.room.insertion` events, keep the `m.next_batch_id` content field around
- - When redacting `m.room.batch` events, keep the `m.batch_id` content field around
- - When redacting `m.room.marker` events, keep the `m.marker.insertion` content field around
+ - When redacting `m.room.insertion` events, keep the `next_batch_id` content field around
+ - When redacting `m.room.batch` events, keep the `batch_id` content field around
+ - When redacting `m.room.marker` events, keep the `insertion_event_reference` content field around
  - When redacting `m.room.power_levels` events, keep the `historical` content field around
 
 
@@ -330,7 +330,7 @@ should connect to each other and how the homeserver can navigate the DAG.
    create it ad-hoc in the first batch. In the latter case, a `m.room.marker` event
    (detailed below) inserted into the main DAG can be used to point to the new
    `m.room.insertion` event.
- - `m.room.batch` events have a `m.next_batch_id` field which is used to indicate the
+ - `m.room.batch` events have a `next_batch_id` field which is used to indicate the
    `m.room.insertion` event that the batch connects to.
 
 Here is how the historical batch concept looks like in the DAG:
@@ -625,9 +625,6 @@ Servers will indicate support for the new endpoint via a `true` value for featur
 **Content fields:**
 
  - `org.matrix.msc2716.historical`
- - `org.matrix.msc2716.next_batch_id`
- - `org.matrix.msc2716.batch_id`
- - `org.matrix.msc2716.marker.insertion`
 
 **Room version:**
 
