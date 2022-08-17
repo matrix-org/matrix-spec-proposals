@@ -14,3 +14,7 @@ endpoints in question:
 + `/_matrix/media/v3/download/{serverName}/{mediaId}`
 + `/_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`
 + `/_matrix/media/v3/thumbnail/{serverName}/{mediaId}`
+
+The media repo already conforms to standard HTTP practices so this may already work as expected. The
+MSC is proposing to add redirects to the list of possible HTTP responses for the above endpoints in
+the Matrix Specifiction. Implementation would be confirming that this works in all the major clients.
