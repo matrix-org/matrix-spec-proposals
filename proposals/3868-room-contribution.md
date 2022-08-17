@@ -11,7 +11,9 @@ This proposal implements a new `m.room.contribute` state event. This state event
 link to a git repo or any kind of URI and a "text" parameter that may contain the text of the button directing to the
 support link. There may be multiple "uri" and "text" parameters, each adding a different button containing a different
 link. Alternatively to the "uri" parameter, a "copy" one can be specified and will tell clients to copy the value in
-the clipboard.
+the clipboard. Another, optional, "badge_uri" parameter may be specified and only may contain a MXC URI to a image
+media. When specified, the image, or badge, is displayed in place of the text, the text becoming the `alt` property
+of said image.
 An example of this event would look like this:
 
 ```json
@@ -32,6 +34,11 @@ An example of this event would look like this:
     {
       "text": "Donation IBAN",
       "copy": "CH5604835012345678009"
+    },
+    {
+      "uri": "https://liberapay.com/foo",
+      "text": "Support us on LiberaPay",
+      "badge_uri": "mxc://jae.fi/5d718eb34d05c8b6b1304e2a106aa800400476a6"
     }
   ]
 }
@@ -60,3 +67,6 @@ Unstable implementations should use the state event type of `eu.dn0.msc3868.rev1
 The authors believe this MSC could benefit from
 [MSC3414: Encrypted State Events](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
 while not considering it as a blocker.
+Given the use of MXC URIs to display badges, the implementation of
+[MSC3468: MXC to Hashes](https://github.com/matrix-org/matrix-spec-proposals/pull/3468)
+would benefit the current MSC while, again, not blocking its implementation.
