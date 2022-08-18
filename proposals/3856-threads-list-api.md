@@ -111,10 +111,18 @@ Query Parameters:
   A token corresponding to the start of `chunk`. This will be the same as the
   value given in `from`.
 
-XXX Define how ignored users are handled, which has two cases:
+If the sender of an event is ignored by the current user the results are modified
+slightly. This has two situations:
 
-1. If the ignored user sent the root thread event.
-2. If the ignored user sent the latest thread event.
+1. If the ignored user sent the root thread event: the server should return the
+   redacted form of the root event, but otherwise act as normal. This matches the
+   information that a client would have if the threads list was aggregated locally
+   (and generally matches the behavior if a thread root is unavailable, e.g. due
+   to room history visibility).
+2. If the ignored user send the latest thread event: the server should treat the
+   latest event as not existing and replace it with the latest event from a
+   non-ignored user; with the caveat that the ordering of the threads is not
+   re-arranged due to this replacement.
 
 #### Example request:
 
@@ -163,7 +171,7 @@ server-side maximum.
 It does not seem useful to be able to paginate in reverse order, i.e. starting with
 the thread which was least recently updated. If there becomes a future need of this
 a `dir` parameter could be added which takes an enum value of `[f b]` defaulting to
-`b` to maintain backwards compatibility with this proposal. 
+`b` to maintain backwards compatibility with this proposal.
 
 ## Unstable prefix
 
