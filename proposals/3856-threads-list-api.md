@@ -7,7 +7,7 @@ issues:
 2. Clients wish to display a list of threads the user is interested in.
 
 It is currently difficult for clients to sort threads by the most recently
-responded to. Clients use the `/messages` API with a filter of
+responded to. Clients can use the [`/messages`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3roomsroomidmessages) API with a filter of
 `"related_by_rel_types": ["m.thread"]` to fetch the list of threads in a room. This
 returns the root thread events in topological order of those events (either
 forwards or backwards depending on the `dir` parameter).
