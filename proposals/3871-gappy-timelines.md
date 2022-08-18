@@ -81,7 +81,7 @@ A full example of the `m.timeline.gap` indicator:
     {
       "type": "m.timeline.gap",
       "content": {
-        "gap_start_event": "$12345",
+        "gap_start_event_id": "$12345",
         "pagination_token": "t47409-4357353_219380_26003_2265",
       }
     },
