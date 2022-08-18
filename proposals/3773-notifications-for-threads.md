@@ -14,11 +14,13 @@ without iterating over every missing message. Without this, clients are unable t
 
 When an event which is part of a thread (i.e. has a valid `m.relates_to` with
 `rel_type` of `m.thread`) matches a push rule which results in a `notify` action
-then the homeserver should note that the notification applies in the context of
-the thread ID (parent event ID).
+then the homeserver should partition the resulting notification count per-thread.
+(This is needed for the [proposed `/sync` changes](#unread-thread-notifications-in-the-sync-response)).
 
 Similar behavior should be applied for an event which results in `notify` action
 with a `highlight` tweak set.
+
+This MSC does not propoase any changes to the payload sent to push gateways.
 
 ### Unread thread notifications in the sync response
 
