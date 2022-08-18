@@ -7,10 +7,12 @@ issues:
 2. Clients wish to display a list of threads the user is interested in.
 
 It is currently difficult for clients to sort threads by the most recently
-responded to. Clients can use the [`/messages`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3roomsroomidmessages) API with a filter of
-`"related_by_rel_types": ["m.thread"]` to fetch the list of threads in a room. This
-returns the root thread events in topological order of those events (either
-forwards or backwards depending on the `dir` parameter).
+responded to. Clients can use the [`/messages`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3roomsroomidmessages)
+API with a filter of `"related_by_rel_types": ["m.thread"]` (as defined in
+[MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#fetch-all-threads-in-a-room))
+to fetch the list of threads in a room. This returns the root thread events in
+topological order of those events (either forwards or backwards depending on the
+`dir` parameter).
 
 Each event also includes bundled aggregation, which will include the latest
 event in each thread.
