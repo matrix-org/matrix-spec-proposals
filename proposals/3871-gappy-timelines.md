@@ -10,11 +10,11 @@ Currently, there is an unwritten expectation(TODO: better word) between the
 server and client that the server will always return all contiguous events in
 that part of the timeline. But the server has to break this promise(TODO: match
 word above) sometimes when it doesn't have the event and is unable to get the
-event from anyone else and the client is unaware. This MSC aims to change the
+event from anyone else. This MSC aims to change the
 dynamic so the server can give the client feedback and an indication of where
 the gaps are.
 
-This way clients know where they are missing events and can even retry fetching
+This way, clients know where they are missing events and can even retry fetching
 by perhaps adding some UI to the timeline like "We failed to get some messages
 in this gap, try again."
 
@@ -22,11 +22,11 @@ This can also make servers faster to respond to `/messages`. For example,
 currently, Synapse always tries to backfill and fill in the gap (even when it
 has enough messages locally to respond). In big rooms like `#matrix:matrix.org`
 (Matrix HQ), almost every place you ask for has gaps in it (thousands of
-backwards extremities) and lots are unreachable so we try the same thing over
-and over hoping the response will be different this time but instead, we just
-make the `/messages` response time slow. With this MSC, we can instead be more
-intelligent about backfilling in the background and just tell the client about
-the gap that they can retry fetching a little later.
+backwards extremities) and lots of those events are unreachable so we try the
+same thing over and over hoping the response will be different this time but
+instead, we just make the `/messages` response time slow. With this MSC, we can
+instead be more intelligent about backfilling in the background and just tell
+the client about the gap that they can retry fetching a little later.
 
 
 ## Proposal
@@ -57,19 +57,19 @@ so it should not be mistaken as a real event in the room.
 
 A full example of the `m.timeline.gap` indicator:
 
-```json5
+```json
 {
   "type": "m.timeline.gap",
   "content": {
     "gap_start_event_id": "$12345",
     "pagination_token": "t47409-4357353_219380_26003_2265",
   }
-},
+}
 ```
 
 `/messages` response example with a gap:
 
-```json5
+```json
 {
   "chunk": [
     {
