@@ -1,4 +1,4 @@
-# MSC0000: Gappy timeline
+# MSC3871: Gappy timeline
 
 `/messages` returns a linearized version of the event DAG. From any given
 homeservers perspective of the room, the DAG can have gaps where they're missing
@@ -120,6 +120,6 @@ edge case where the gap is trying to get you to fetch spam or something.
 
 ## Unstable prefix
 
-The `m.timeline.gap` indicator can be used in the `org.matrix.mscXXXX` room version.
+The `m.timeline.gap` indicator can be used in the `org.matrix.msc3871` room version.
 
 
