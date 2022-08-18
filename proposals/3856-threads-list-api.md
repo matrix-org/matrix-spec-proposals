@@ -158,6 +158,13 @@ filtering in the future.
 As with other endpoints that accept a `limit`, homeservers should apply a hard
 server-side maximum.
 
+## Future extensions
+
+It does not seem useful to be able to paginate in reverse order, i.e. starting with
+the thread which was least recently updated. If there becomes a future need of this
+a `dir` parameter could be added which takes an enum value of `[f b]` defaulting to
+`b` to maintain backwards compatibility with this proposal. 
+
 ## Unstable prefix
 
 The client-server API will be: `/_matrix/client/unstable/org.matrix.msc3856/rooms/{roomId}/threads`
