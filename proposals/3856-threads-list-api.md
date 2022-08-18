@@ -47,11 +47,15 @@ threads where the user sent the root message and has not yet replied.
 ### Client-Server endpoint
 
 A new endpoint is proposed to query for threads in a room. This endpoint requires
-authentication and is subject to rate-limiting. This endpoint includes
-[bundled aggregations](https://spec.matrix.org/v1.3/client-server-api/#aggregations)
-in the response.
+authentication and is subject to rate-limiting.
 
-The returned threads are ordered by the most recently updated thread.
+The endpoint returns events, which represent thread roots and includes
+[bundled aggregations](https://spec.matrix.org/v1.3/client-server-api/#aggregations)
+in the response (which includes the "latest event" of each thread, see
+[MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#event-format)
+for the format of bundled aggregations of threads).
+
+The returned events are ordered by the latest event of each thread.
 
 #### Request format
 
@@ -63,9 +67,10 @@ Query Parameters:
 
 * **`include`**: `enum`
 
-  Whether to include all threads in the room or only threads which the user has
-  participated in, meaning that the user has created the root event of the thread
-  or have created an event with a `m.thread` relation targeting the root.
+  Whether to include all thread roots in the room or only thread roots which the
+  user has participated in, meaning that the user has created the root event of
+  the thread or replied to the thread (they have created an event with a `m.thread`
+  relation targeting the root event).
 
   One of `[all participated]`. Defaults to `all`.
 * **`from`**: `string`
@@ -74,8 +79,8 @@ Query Parameters:
   `prev_batch` or `next_batch` token returned by the `/sync` endpoint, or from
   an `end` token returned by a previous request to this endpoint.
 
-  If it is not provided, the homeserver shall return a list of threads from the
-  last visible event in the room history for the requesting user.
+  If it is not provided, the homeserver shall return a list of thread roots starting
+  from the last visible event in the room history for the requesting user.
 * **`limit`**: Optional: a client-defined limit to the maximum
   number of threads to return per page. Must be an integer greater than zero.
 
