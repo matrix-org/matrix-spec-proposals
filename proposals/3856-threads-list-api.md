@@ -1,10 +1,10 @@
 # MSC3856: Threads List API
 
 An endpoint specific to listing the threads in a room is proposed to solve two
-issues:
+client problems:
 
-1. Clients wish to display threads by the most recently active.
-2. Clients wish to display a list of threads the user is interested in.
+1. Clients wish to display threads ordered by the most recently active.
+2. Clients wish to display a list of threads the user has participated in.
 
 It is currently difficult for clients to sort threads by the most recently
 responded to. Clients can use the [`/messages`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3roomsroomidmessages)
@@ -22,16 +22,25 @@ paginate through all of the threads in the room, inspect the latest event from
 the bundled aggregations and attempt to sort them. This can require many round
 trips to the server and is wasteful for both the client and server.
 
-Additionally, even with all of the threads a client is not able to accurately
-sort the threads since they lack the proper topological ordering of events. (The
-closest they can get is by using `age` or `origin_server_ts`, but this is not
-correct.)
+Unfortunately even when a client has all the threads in a room is not able to accurately
+sort the threads since the client lacks the proper topological ordering of events. (The
+closest available information is the `age` or `origin_server_ts` of the events, but this
+is not always correct.)
 
-For the second problem, it is currently not possible for a client to query for
-threads that the user has participated in (as defined in
-[MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#event-format)).
-A client could add the user's MXID to the filter, e.g. `"related_by_senders":["@alice:example.com"]`,
-but this misses threads where the user sent the root message and has not yet replied.
+Additionally, it is currently not possible for a client to query for threads that
+the user has participated in, as defined in
+[MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#event-format):
+
+> The user has participated if:
+>
+> * They created the current event.
+> * They created an event with a m.thread relation targeting the current event.
+
+Currently, clients add the requesting user's MXID to the `related_by_senders` filter
+(as defined in
+[MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#fetch-all-threads-in-a-room)),
+e.g. `"related_by_senders":["@alice:example.com"]`, but this results in missing
+threads where the user sent the root message and has not yet replied.
 
 ## Proposal
 
