@@ -6,11 +6,10 @@ events. This could be because the homeserver hasn't fetched them yet or because
 it failed to fetch the events because those homeservers are unreachable and no
 one else knows about the event.
 
-Currently, there is an unwritten expectation(TODO: better word) between the
-server and client that the server will always return all contiguous events in
-that part of the timeline. But the server has to break this promise(TODO: match
-word above) sometimes when it doesn't have the event and is unable to get the
-event from anyone else. This MSC aims to change the
+Currently, there is an unwritten rule between the server and client that the
+server will always return all contiguous events in that part of the timeline.
+But the server has to break this rule sometimes when it doesn't have the event
+and is unable to get the event from anyone else. This MSC aims to change the
 dynamic so the server can give the client feedback and an indication of where
 the gaps are.
 
