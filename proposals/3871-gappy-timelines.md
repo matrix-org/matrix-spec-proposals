@@ -30,9 +30,10 @@ the client about the gap that they can retry fetching a little later.
 
 ## Proposal
 
-Add a `m.timeline.gap` indicator, that can be used in the `chunk` list of events
-from a `GET /_matrix/client/v3/rooms/{roomId}/messages` response. There can be
-multiple gaps per response.
+Add a `?gaps_allowed=true` query parameter flag to `GET
+/_matrix/client/v3/rooms/{roomId}/messages` which allows usage of a
+`m.timeline.gap` indicator, that can be used in the `response` `chunk` list of
+events. There can be multiple gaps per response.
 
 
 ### `m.timeline.gap`
@@ -119,6 +120,7 @@ edge case where the gap is trying to get you to fetch spam or something.
 
 ## Unstable prefix
 
-The `m.timeline.gap` indicator can be used in the `org.matrix.msc3871` room version.
+While this feature is in development, it can be used as `GET
+/_matrix/client/unstable/org.matrix.msc3871/rooms/{roomId}/messages?gaps_allowed=true`
 
 
