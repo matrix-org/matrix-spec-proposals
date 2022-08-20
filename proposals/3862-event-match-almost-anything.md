@@ -1,9 +1,9 @@
 # MSC3862: event_match (almost) anything
 
-The [`event_match`] condition kind on push rules currently only matches
-string values. This is limiting because some event types have important
-information in boolean or integer fields that currently cannot be
-matched against.
+The [`event_match`] condition kind on push rules currently only
+matches string values. This is limiting because some event types have
+important information in boolean or integer fields that currently cannot
+be matched against.
 
 [MSC3758] tries to address this by introducing a new condition kind
 `exact_event_match`. The current proposal takes a different route by
@@ -20,15 +20,41 @@ representation. In particular this means
 - `true` / `false` become `"true"` / `"false"`
 - Integers such as `123` become `"123"`
 - `null` becomes `"null"`
-- Arrays remain unchanged
-- Nested objects are handled recursively, their values being transformed
-  according to the rules above
+
+This transformation is applied regardless of how deeply the value is
+nested but not if the value is part of an array. Arrays – which are not
+primitive values – and their elements are not converted. This means
+that, as before, it's not possible to match anything inside an array.
+
+For the avoidance of doubt, the exemplary event body
+
+    {
+      "a": "string",
+      "b": true,
+      "c": {
+        "d": 1,
+        "e": null
+      },
+      "f": [1]
+    }
+
+is transformed into
+
+    {
+      "a": "string",
+      "b": "true",
+      "c": {
+        "d": "1",
+        "e": "null"
+      },
+      "f": [1]
+    }
 
 After the transformation the condition is evaluated on the string
 representations.
 
-In order to reflect these changes, the wording in the [spec] is updated.
-Specifically
+In order to reflect these changes, the wording in the
+[spec] is updated. Specifically
 
 > **event_match** This is a glob pattern match on a field of the event.
 
