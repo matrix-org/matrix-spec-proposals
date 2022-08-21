@@ -17,7 +17,7 @@ where it is unclear which field the dot-separated path `m.foo` should
 match ([#648]).
 
 While collisions are often not a practical problem, the ambiguity in the
-specification leads to incomptible implementations as evidenced by
+specification leads to incompatible implementations as evidenced by
 [matrix-org/matrix-js-sdk#1454]. The current proposal resolves the
 ambiguity by leveraging the existing solution for the same problem in
 the [filter API].
@@ -35,7 +35,7 @@ Revisiting the example from above
       "m.foo": "baz"
     }
 
-this means that `"key": "m.foo"` unambigously matches the nested `foo`
+this means that `"key": "m.foo"` unambiguously matches the nested `foo`
 field. The top-level `m.foo` field in turn can be matched through
 `"key": "m\.foo"`.
 
@@ -82,7 +82,7 @@ very purpose of this proposal is to resolve said ambiguity.
 
 An alternative to the current proposal are [JSON pointers]. While
 being more versatile than the simplistic escaping proposed here, JSON
-pointers introduce a wholy new DSL for the `key` parameter which breaks
+pointers introduce a wholly new DSL for the `key` parameter which breaks
 backwards compatibility for *all* existing `event_match` conditions.
 
 ## Security considerations
