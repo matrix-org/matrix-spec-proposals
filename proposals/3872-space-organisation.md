@@ -26,7 +26,7 @@ Rooms and subspaces are stored in an array with a certain order. This order is, 
 manually set by client interaction (like drag-and-drop reordering), and does not sort by an algorithm like alphabetical
 sorting.
 
-This helps the Space administrators organize the Space as they see fit, and can always be overriden client-side.
+This helps the Space administrators organize the Space as they see fit, and can always be overridden client-side.
 
 ## Potential Issues
 
