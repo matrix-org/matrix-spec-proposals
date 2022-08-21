@@ -1,4 +1,4 @@
-# MSCXXXX: event_match dotted keys
+# MSC3873: event_match dotted keys
 
 The current specification of [`event_match`] describes the parameter
 `key` as
