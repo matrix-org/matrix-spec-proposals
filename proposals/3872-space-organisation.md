@@ -9,3 +9,5 @@ To solve this issue, this MSC proposes a custom, manual order for rooms and subs
 This MSC proposes Spaces to have a specific, custom order of rooms and subspaces that clients are sent upon joining, and that can be updated at any time with the right permissions, which can then be reflected on other clients
 
 This should greatly complement Spaces, and would make organisation and navigation simpler, especially since clients could implement features such as drag-and-drop reordering.
+
+<!-- This entire file's contents and all commits (including bc589d8fad66f954363bc72188cb71564c1922f2) are Signed-off-by: Alex LeBlanc <alexsour@protonmail.com> -->
