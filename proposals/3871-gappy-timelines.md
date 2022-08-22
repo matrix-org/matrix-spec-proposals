@@ -120,6 +120,10 @@ edge case where the gap is trying to get you to fetch spam or something.
 
 ## Unstable prefix
 
+Servers will indicate support for the new endpoint via a true value for feature
+flag `org.matrix.msc3871` in `unstable_features` in the response to `GET
+/_matrix/client/versions`.
+
 While this feature is in development, it can be used as `GET
 /_matrix/client/unstable/org.matrix.msc3871/rooms/{roomId}/messages?gaps_allowed=true`
 
