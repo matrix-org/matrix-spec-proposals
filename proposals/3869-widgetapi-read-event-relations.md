@@ -31,7 +31,7 @@ The following rules apply:
    rejects the request.
 2. The list of related events only include events that the widget has the respective
    `m.receive.event:<event type>` or `m.receive.state_event:<event type>` capability for. Other
-   events are silently ignored.
+   events are silently dropped.
 
 To trigger the read, widgets will use a new `fromWidget` request with the action `read_relations`
 which takes the following shape:
@@ -92,9 +92,8 @@ This is an example of a minimal request to get an event from the current room:
 }
 ```
 
-The client SHOULD NOT modify the data of the request. The widget is responsible for producing valid
-events - the client MUST pass through any errors, such as permission errors, to the widget using the
-standard error response in the Widget API.
+If the widget doesn't have appropriate permission, or an error occurs anywhere along the send path,
+a standardized widget error response is returned.
 
 If the request was successful, the client sends the following response:
 
