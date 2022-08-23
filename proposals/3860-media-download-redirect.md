@@ -18,3 +18,27 @@ endpoints in question:
 The media repo already conforms to standard HTTP practices so this may already work as expected. The
 MSC is proposing to add redirects to the list of possible HTTP responses for the above endpoints in
 the Matrix Specifiction. Implementation would be confirming that this works in all the major clients.
+
+## Potential Issues
+
+There may be clients that don't follow redirect responses properly, in which case they would fail
+to retrieve the media. One possible workaround for this is utilising an opt-in query string parameter
+to allow redirects, e.g `?allow-redirect=true`.
+
+## Alternatives
+
+None at this time.
+
+## Security Considerations
+
+A media repo could redirect requests to a bad actor, although this would make the primary media
+repo itself a bad actor, this does present any increased security issues.
+
+## Unstable Prefix
+
+No need for an unstable prefix for redirects as it stands. If a query string was to be used to
+enable this functionality this could use the following unstable prefix:
+
+```
+?com.beeper.msc3860.allow-redirects=true
+```
