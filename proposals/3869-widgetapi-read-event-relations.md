@@ -76,7 +76,7 @@ The `limit`, `from`, and `to` parameters work like described in
 ([MSC2675](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2675-aggregations-server.md)).
 
 The `direction` parameter is used to specify the direction to search for relations. It has the same
-semantic as defined by ([MSC2675](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2675-aggregations-server.md)).
+semantic as defined by ([MSC3715](https://github.com/matrix-org/matrix-spec-proposals/pull/3715)).
 
 This is an example of a minimal request to get an event from the current room:
 
