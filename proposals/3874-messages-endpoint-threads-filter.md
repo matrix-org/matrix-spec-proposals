@@ -18,7 +18,7 @@ This proposal recommends extending the existing [Event filters] are extended wit
 This means, if this filter is specified, only message which match none of the given relation types will be returned.
 
 ```
-GET /_matrix/client/v3/rooms/!room_id:domain/messages?filter=...
+GET /_matrix/client/unstable/org.matrix.msc3874/rooms/!room_id:domain/messages?filter=...
 ```
 
 The filter string includes the new fields, above. In this example, the URL encoded JSON is presented unencoded and
