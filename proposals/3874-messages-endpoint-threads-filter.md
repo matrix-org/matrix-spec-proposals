@@ -19,7 +19,7 @@ This means, if this filter is specified, only message which match none of the gi
 GET /_matrix/client/v3/rooms/!room_id:domain/messages?filter=...
 ```
 
-The filter string includes the new fields, above. In this example, the URL  encoded JSON is presented unencoded and
+The filter string includes the new fields, above. In this example, the URL encoded JSON is presented unencoded and
 formatted for legibility:
 
 ```jsonc
@@ -29,20 +29,20 @@ formatted for legibility:
 }
 ```
 
-Note that the newly added filtering parameters return events based on information  in related events. Consider the
+Note that the newly added filtering parameters return events based on information in related events. Consider the
 following events in a room:
 
 * `A`: a `m.room.message` event sent by `alice`
 * `B`: a `m.room.message` event sent by `bob`
 * `C`: a `m.room.message` event sent by `charlie` which relates to `A` with type `m.thread`
 
-Using a filter of `"not_related_by_rel_types": ["m.thread"]` would return only event `B` as  it has no event which
+Using a filter of `"not_related_by_rel_types": ["m.thread"]` would return only event `B` as it has no event which
 relates to it via `m.thread`.
 
 ### Server capabilities
 
 Threads might have sporadic support across servers, to simplify feature detections for clients, a homeserver must
-advertise unstable support for threads  as part of the `/versions` API:
+advertise unstable support for threads as part of the `/versions` API:
 
 ```jsonc
 {
