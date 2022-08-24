@@ -356,19 +356,19 @@ flowchart BT
     end
     
     subgraph batch0
-        batch0-batch[[`m.room.batch`]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/`m.room.insertion`\]
+        batch0-batch[[m.room.batch]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/m.room.insertion\]
     end
 
     subgraph batch1
-        batch1-batch[[`m.room.batch`]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/`m.room.insertion`\]
+        batch1-batch[[m.room.batch]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/m.room.insertion\]
     end
     
     subgraph batch2
-        batch2-batch[[`m.room.batch`]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/`m.room.insertion`\]
+        batch2-batch[[m.room.batch]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/m.room.insertion\]
     end
 
     
-    batch0-insertionBase[/`m.room.insertion`\] ---------------> A
+    batch0-insertionBase[/m.room.insertion\] ---------------> A
     batch0-batch -.-> batch0-insertionBase
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
@@ -452,24 +452,24 @@ To lay out the different types of servers consuming these historical messages
 flowchart BT
     A --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
-        marker1>`m.room.marker`] ----> B -----------------> A
+        marker1>m.room.marker] ----> B -----------------> A
     end
     
     subgraph batch0
-        batch0-batch[[`m.room.batch`]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/`m.room.insertion`\]
+        batch0-batch[[m.room.batch]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/m.room.insertion\]
     end
 
     subgraph batch1
-        batch1-batch[[`m.room.batch`]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/`m.room.insertion`\]
+        batch1-batch[[m.room.batch]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/m.room.insertion\]
     end
     
     subgraph batch2
-        batch2-batch[[`m.room.batch`]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/`m.room.insertion`\]
+        batch2-batch[[m.room.batch]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/m.room.insertion\]
     end
 
     
     marker1 -.-> batch0-insertionBase
-    batch0-insertionBase[/`m.room.insertion`\] ---------------> A
+    batch0-insertionBase[/m.room.insertion\] ---------------> A
     batch0-batch -.-> batch0-insertionBase
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
@@ -506,19 +506,19 @@ bunch of `@mxid joined the room` noise between each batch.
 flowchart BT
     A --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
-        marker1>`m.room.marker`] ----> B -----------------> A
+        marker1>m.room.marker] ----> B -----------------> A
     end
     
     subgraph batch0
-        batch0-batch[[`m.room.batch`]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/`m.room.insertion`\]
+        batch0-batch[[m.room.batch]] --> batch0-2(("2")) --> batch0-1((1)) --> batch0-0((0)) --> batch0-insertion[/m.room.insertion\]
     end
 
     subgraph batch1
-        batch1-batch[[`m.room.batch`]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/`m.room.insertion`\]
+        batch1-batch[[m.room.batch]] --> batch1-2(("2")) --> batch1-1((1)) --> batch1-0((0)) --> batch1-insertion[/m.room.insertion\]
     end
     
     subgraph batch2
-        batch2-batch[[`m.room.batch`]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/`m.room.insertion`\]
+        batch2-batch[[m.room.batch]] --> batch2-2(("2")) --> batch2-1((1)) --> batch2-0((0)) --> batch2-insertion[/m.room.insertion\]
     end
 
 
@@ -527,7 +527,7 @@ flowchart BT
     batch2-insertion -.-> memberBob2(["m.room.member (bob)"]) --> memberAlice2(["m.room.member (alice)"])
 
     marker1 -.-> batch0-insertionBase
-    batch0-insertionBase[/`m.room.insertion`\] ---------------> A
+    batch0-insertionBase[/m.room.insertion\] ---------------> A
     batch0-batch -.-> batch0-insertionBase
     batch1-batch -.-> batch0-insertion
     batch2-batch -.-> batch1-insertion
