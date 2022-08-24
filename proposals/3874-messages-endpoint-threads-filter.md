@@ -60,6 +60,11 @@ advertise unstable support for threads as part of the `/versions` API:
 This proposal moves the loading and processing of these hidden events onto the server. Depending on the server’s
 architecture, this may have a non-negligible performance impact. 
 
+## Limitations
+
+This proposal only considers events which have a direct relationship with the thread itself. Events such as reactions
+don’t, so they won’t be able to be filtered by this proposal.
+
 ## Alternatives
 
 - A suitable workaround, depending on the ratio of thread-messages compared to main timeline messages in a room, may be 
