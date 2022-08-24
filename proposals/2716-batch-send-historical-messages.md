@@ -30,7 +30,9 @@ This is currently not supported because:
 ## Expectation
 
 Historical messages that we import should appear in the timeline just like they
-would if they were sent back at that time.
+would if they were sent back at that time. In the example below, Maria's
+messages 1-6 were sent originally in the room and the "Historical" messages in
+the middle were imported after the fact.
 
 Here is what scrollback is expected to look like in Element:
 
