@@ -38,6 +38,45 @@ Here is what scrollback is expected to look like in Element:
 
 ![Two historical batches in between some existing messages](./images/2716-message-scrollback-example.png)
 
+To accomplish what's shown in the image, this is the basic flow:
+
+ 1. `maria` sends messages 1-6. These represent messages in the normal "live" timeline before any history is imported.
+ 1. Create hitsorical batch 0 via `POST /_matrix/client/v1/rooms/<roomID>/batch_send?prev_event_id=<message3-eventID>` with the "Historical [xyz]" message `events` from Eric and the necessary `state_events_at_start` to auth them.
+    - This will return a response that contains the `next_batch_id` that we will use for the next batch.
+    - This also returns `base_insertion_event_id` which we will use the for the `m.room.marker` even later.
+ 1. Create hitsorical batch 1 via `POST /_matrix/client/v1/rooms/<roomID>/batch_send?prev_event_id=<message3-eventID>&batch_id=<batchID-that-we-got-from-the-previous-batch>` with the "Historical [foo|bar|baz]" message `events` from Eric and the necessary `state_events_at_start` to auth them.
+ 1. Send a `m.room.marker` event so the history is discoverable across all federated homeservers: `PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.marker/{txnId}` with `insertion_event_reference` set as the `base_insertion_event_id` from before.
+
+The DAG for these messages ends up looking like:
+
+```mermaid
+flowchart BT
+    A --- annotation1>"Note: older events are at the top"]
+    subgraph live timeline
+        marker1>m.room.marker] ----> B -----------------> A
+    end
+    
+    subgraph batch0
+        batch0-batch[[m.room.batch]] --> batch0-2((z)) --> batch0-1((y)) --> batch0-0((x)) --> batch0-insertion[/m.room.insertion\]
+    end
+
+    subgraph batch1
+        batch1-batch[[m.room.batch]] --> batch1-2((baz)) --> batch1-1((bar)) --> batch1-0((foo)) --> batch1-insertion[/m.room.insertion\]
+    end
+
+
+    batch0-insertion -.-> memberBob0(["m.room.member (Eric)"])
+    batch1-insertion -.-> memberBob1(["m.room.member (Eric)"])
+
+    marker1 -.-> batch0-insertionBase
+    batch0-insertionBase[/m.room.insertion\] ---------------> A
+    batch0-batch -.-> batch0-insertionBase
+    batch1-batch -.-> batch0-insertion
+
+    %% make the annotation links invisible
+    linkStyle 0 stroke-width:2px,fill:none,stroke:none;
+```
+
 
 ## Proposal
 
