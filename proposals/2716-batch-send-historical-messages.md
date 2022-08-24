@@ -41,7 +41,7 @@ Here is what scrollback is expected to look like in Element:
 
 ## Proposal
 
-### `historical` property on any event
+### `historical` `content` property on any event
 
 A new `historical` property is defined which can be included in the content of any
 event to indicate it was retrospectively imported.
@@ -242,7 +242,7 @@ breakdown which incrementally explains how everything fits together.
  1. A `m.room.insertion` event for the batch is added to the start of the batch.
     This will be the starting point of the next batch and holds the `next_batch_id`
     that we return in the batch send response. The application service passes
-    this as `?batch_id`
+    this as `?batch_id` next time to continue the chain of historical messages.
  1. A `m.room.batch` event is added to the end of the batch. This is the event that
     connects to an insertion event by `?batch_id`.
  1. If `?batch_id` is not specified (usually only for the first batch), create a
