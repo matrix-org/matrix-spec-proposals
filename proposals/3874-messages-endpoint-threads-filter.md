@@ -2,9 +2,11 @@
 
 ## Motivation
 
-In our beta deployment of threads, it's become a noticeable issue where a room may have activity in a long-running
-thread while the main timeline is inactive. If a user starts their client and tries to paginate through the main
-timeline, loading will feel sluggish, as lots of events have to be loaded that won’t be displayed.
+In Element's beta implementation of threads, it's become a noticeable issue where a room may have activity in a 
+long-running thread while the main timeline is inactive. If a user starts their client and tries to paginate through the 
+main timeline, loading will feel sluggish, as lots of events have to be loaded that won’t be displayed.
+
+This proposal would allow reducing the number of requests and amount of data transmitted. 
 
 ## Proposal
 
