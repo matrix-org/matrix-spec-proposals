@@ -51,9 +51,9 @@ The DAG for these messages ends up looking like:
 
 ```mermaid
 flowchart BT
-    A --- annotation1>"Note: older events are at the top"]
+    1 --- annotation1>"Note: older events are at the top"]
     subgraph live timeline
-        marker1>m.room.marker] ----> B -----------------> A
+        marker1>m.room.marker] ----> 6[Message 6] --> 5[Message 5] --> 4[Message 4] -----------------> 3[Message 3] --> 2[Message 2] --> 1[Message 1]
     end
     
     subgraph batch0
@@ -69,7 +69,7 @@ flowchart BT
     batch1-insertion -.-> memberBob1(["m.room.member (Eric)"])
 
     marker1 -.-> batch0-insertionBase
-    batch0-insertionBase[/m.room.insertion\] ---------------> A
+    batch0-insertionBase[/m.room.insertion\] ---------------> 1
     batch0-batch -.-> batch0-insertionBase
     batch1-batch -.-> batch0-insertion
 
