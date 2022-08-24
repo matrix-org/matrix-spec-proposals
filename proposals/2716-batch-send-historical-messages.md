@@ -27,10 +27,6 @@ This is currently not supported because:
    It's not possible to change the DAG ordering with this.
 
 
-
-
-## Proposal
-
 ## Expectation
 
 Historical messages that we import should appear in the timeline just like they
@@ -41,7 +37,12 @@ Here is what scrollback is expected to look like in Element:
 ![Two historical batches in between some existing messages](./images/2716-message-scrollback-example.png)
 
 
-### Any event
+## Proposal
+
+### `historical` property on any event
+
+A new `historical` property is defined which can be included in the content of any
+event to indicate it was retrospectively imported.
 
 key | type | value | description | Required
 --- | --- | --- | --- | ---
