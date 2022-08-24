@@ -10,8 +10,8 @@ a compatibility between the different social media projects.
 
 This MSC tries to cover those following social media cases:
 
-* **'Regular'** social media (Twitter style, Facebook : Circles, MinesTRIX)
-* **'Art'** social media (Matrix Art)
+* **'Regular'** social media like Circuli or MinesTRIX
+* **'Art'** social media like Matrix Art
 
 ## The proposal
 
@@ -133,23 +133,8 @@ The structure of the event should just be extensible events.
 m.social.post
 ```
 
-A type for general content.
+A type for general content. It's structure is of type:
 
-Could be text, pictures, video ...
-
-**TODO:**
-
-Define what base events the clients supporting those events
-should be able to display.
-
-like:
-
-* m.text
-* m.image
-* m.video
-* m.file
-
-**Example:**
 ```json
 {
   "type": "m.social.post", 
@@ -159,29 +144,21 @@ like:
     "m.social.post": [
       {
         "m.text": "The first part of full text of story, located before image.",
-      },
-      {
-          "m.file": {
-            "mimetype": "image/jpeg",
-            "name": "_MG_0641.jpg",
-            "size": 10158773,
-            "url": "mxc://"
-        },
-        "m.image": {
-          "height": 3456,
-          "width": 5184
-        },
-      },
-      {
-        "m.text": "The ending text of full story after image.",
       }
+    ],
+    "m.social.image-ref": [
+      "$<event_id>",
     ]
   }
 }
 ```
 
-Using an array for `m.social.post` will help define the order in which
-content should be displayed.
+If we want to embed images in the post, we should first send a `m.social.image` event and then it's event id in the `m.social.image-ref` attribute of the post content. This, to allow user to allow a user to comment an image individually or to reuse it in different posts. This allow us also to display more easily all the images who have been posted in the room.
+
+**TODO:**
+
+Define what base events the clients supporting those events
+should be able to display.
 
 #### Social: Image
 
@@ -309,7 +286,7 @@ is to define events like this one
 
 On a regular chat client like element, it should render as a simple link.
 
-Another solution is to just send two events, one m.post.post or m.social.image
+Another solution is to just send two events, one `m.social.post` or `m.social.image`
 and a summary in the form of a room message.
 
 ##### Todo
@@ -320,12 +297,14 @@ A text fall back, `Open in xxx to see the whole post` could make sense.
 ### Reactions
 
 * Emoji reaction will use the regular event.
-* However, post comment will be threads.
+* However, comments on posts will be threads.
 
 For rooms where only the user can write, it could be interesting to
 allow other users to have a comment only permission.
 See [MSC3394 -  new auth rule that only allows someone to post a message in relation to another message](https://github.com/frandavid100/matrix-doc/blob/threaded-replies/proposals/3394-new-auth-rule-that-only-allows-someone-to-post-a-message-in-relation-to-another-message.md)
 for such a proposal.
+
+Another way to achieve this could be to use a different event type for comment so we can prevent people to send a post in a group but still allow them to comment.
 
 ### Tagging
 
@@ -434,4 +413,6 @@ The following mapping will be used for identifiers in this MSC during developmen
 | `m.social.group`          | Group room                                                 | `org.matrix.msc3639.social.group`   |
 | `m.social.post`           | Post event                                                 | `org.matrix.msc3639.social.post`    |
 | `m.social.image`          | Image event                                                | `org.matrix.msc3639.social.image`   |
+| `m.social.image-ref` | Link to an image event | `org.matrix.msc3639.social.image-ref` |
 | `m.social.tags`           | Tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`     |
+
