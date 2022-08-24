@@ -51,7 +51,9 @@ key | type | value | description | Required
 `historical` | bool | `true` | Used on any event to hint that it was historically imported after the fact. This field should just be omitted if `false`. | no
 
 
-### `m.room.insertion`
+### New event types
+
+#### `m.room.insertion`
 
 Events that mark points in time where you can insert historical messages.
 
@@ -77,7 +79,7 @@ A full example of the `m.room.insertion` event:
 }
 ```
 
-### `m.room.batch`
+#### `m.room.batch`
 
 This is what connects one historical batch to the other. In the DAG, we navigate
 from an insertion event to the batch event that points at it, up the historical
@@ -106,7 +108,7 @@ A full example of the `m.room.batch` event:
 ```
 
 
-### `m.room.marker`
+#### `m.room.marker`
 
 State event used to hint to homeservers that there is new
 history back in time that you should go fetch next time someone scrolls back
