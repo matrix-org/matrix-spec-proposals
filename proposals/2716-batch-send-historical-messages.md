@@ -243,8 +243,9 @@ breakdown which incrementally explains how everything fits together.
     This will be the starting point of the next batch and holds the `next_batch_id`
     that we return in the batch send response. The application service passes
     this as `?batch_id` next time to continue the chain of historical messages.
- 1. A `m.room.batch` event is added to the end of the batch. This is the event that
-    connects to an insertion event by `?batch_id`.
+ 1. A `m.room.batch` event is added to the end of the batch. This is the event
+    that connects to an `m.room.insertion` event by specifying a `batch_id` that
+    matches the `next_batch_id` on the `m.room.insertion` event.
  1. If `?batch_id` is not specified (usually only for the first batch), create a
     base `m.room.insertion` event as a jumping off point from `?prev_event_id` which can
     be added to the end of the `events` list in the response.
