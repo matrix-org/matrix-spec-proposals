@@ -6,7 +6,8 @@ In Element's beta implementation of threads, it's become a noticeable issue wher
 long-running thread while the main timeline is inactive. If a user starts their client and tries to paginate through the 
 main timeline, loading will feel sluggish, as lots of events have to be loaded that won’t be displayed.
 
-This proposal would allow reducing the number of requests and amount of data transmitted. 
+This proposal would allow reducing the number of requests and amount of data transmitted. Especially for mobile usage
+this would allow clients significant usability improvements with threads.  
 
 ## Proposal
 
