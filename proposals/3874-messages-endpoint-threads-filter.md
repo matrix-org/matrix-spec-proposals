@@ -72,11 +72,11 @@ don’t, so they won’t be able to be filtered by this proposal.
 
 ## Dependencies
 
-- [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674)
-- [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)
-- [MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567)
-- [MSC3676](https://github.com/matrix-org/matrix-doc/pull/3676)
-- [MSC3440](https://github.com/matrix-org/matrix-doc/pull/344ß)
+- [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) ✓
+- [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) ✓
+- [MSC3567](https://github.com/matrix-org/matrix-doc/pull/3567) ✓
+- [MSC3676](https://github.com/matrix-org/matrix-doc/pull/3676) ✓
+- [MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440) ✓
 
 <!-- inline links -->
 [Event filters]: https://spec.matrix.org/v1.2/client-server-api/#filtering
