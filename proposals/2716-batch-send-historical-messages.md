@@ -106,7 +106,7 @@ key | type | value | description | required
 --- | --- | --- | --- | ---
 `next_batch_id` | string | randomly generated string | This is a random unique string that the next `m.room.batch` event should specify in order to connect to it. | yes
 
-A full example of the `m.room.insertion` event:
+An example of the `m.room.insertion` event:
 ```json5
 {
   "type": "m.room.insertion",
@@ -134,7 +134,7 @@ key | type | value | description | required
 --- | --- | --- | --- | ---
 `batch_id` | string | A batch ID from an insertion event | Used to indicate which `m.room.insertion` event it connects to by its `next_batch_id` field. | yes
 
-A full example of the `m.room.batch` event:
+An example of the `m.room.batch` event:
 ```json5
 {
   "type": "m.room.batch",
@@ -164,7 +164,7 @@ key | type | value | description | required
 --- | --- | --- | --- | ---
 `insertion_event_reference` | string | Another `event_id` | Used to point at an `m.room.insertion` event by its `event_id`. | yes
 
-A full example of the `m.room.marker` event:
+An example of the `m.room.marker` event:
 ```json5
 {
     "type": "m.room.marker",
