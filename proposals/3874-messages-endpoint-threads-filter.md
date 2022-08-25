@@ -13,7 +13,7 @@ This proposal would allow reducing the number of requests and amount of data tra
 ### Allow filtering the `/messages` API to not include threaded messages
 
 This proposal recommends extending the existing [Event filters] are extended with a new filter, named
-`not_related_by_rel_types`, which acts exactly like the opposite of the existing `related_by_rel_types` filter.
+`not_rel_types`, which acts exactly like the opposite of the existing `rel_types` filter.
 
 This means, if this filter is specified, only message which match none of the given relation types will be returned.
 
@@ -27,7 +27,7 @@ formatted for legibility:
 ```jsonc
 {
   "types": ["m.room.message"],
-  "not_related_by_rel_types": ["m.thread"]
+  "not_rel_types": ["m.thread"]
 }
 ```
 
@@ -38,7 +38,7 @@ following events in a room:
 * `B`: a `m.room.message` event sent by `bob`
 * `C`: a `m.room.message` event sent by `charlie` which relates to `A` with type `m.thread`
 
-Using a filter of `"not_related_by_rel_types": ["m.thread"]` would return only event `B` as it has no event which
+Using a filter of `"not_rel_types": ["m.thread"]` would return only event `B` as it has no event which
 relates to it via `m.thread`.
 
 ### Server capabilities
