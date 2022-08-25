@@ -10,7 +10,7 @@ This proposal would allow reducing the number of requests and amount of data tra
 
 ## Proposal
 
-### Allow filtering the /messages API to not include threaded messages
+### Allow filtering the `/messages` API to not include threaded messages
 
 This proposal recommends extending the existing [Event filters] are extended with a new filter, named
 `not_related_by_rel_types`, which acts exactly like the opposite of the existing `related_by_rel_types` filter.
