@@ -82,8 +82,12 @@ flowchart BT
 
 ### `historical` `content` property on any event
 
-A new `historical` property is defined which can be included in the content of any
-event to indicate it was retrospectively imported.
+A new `historical` property is defined which can be included in the content of
+any event to indicate it was retrospectively imported. Used as a hint/indication
+to clients that history didn't originally happen in the room and to add the
+right semantics to the historical messages. Perhaps a little "Historical" flag
+in the corner of these messages to show that they are maybe a little less
+trusted in terms of attribution.
 
 key | type | value | description | Required
 --- | --- | --- | --- | ---
