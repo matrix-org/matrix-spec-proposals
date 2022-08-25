@@ -44,6 +44,7 @@ To accomplish what's shown in the image, this is the basic flow:
  1. Create historical batch 0 via `POST /_matrix/client/v1/rooms/<roomID>/batch_send?prev_event_id=<message3-eventID>` with the "Historical [xyz]" message `events` from Eric and the necessary `state_events_at_start` to auth them.
     - This will return a response that contains the `next_batch_id` that we will use for the next batch.
     - This also returns `base_insertion_event_id` which we will use the for the `m.room.marker` even later.
+    - `/batch_send` inserts `m.room.insertion` and `m.room.batch` events as necessary to connect the batches into a historical chain of history.
  1. Create historical batch 1 via `POST /_matrix/client/v1/rooms/<roomID>/batch_send?prev_event_id=<message3-eventID>&batch_id=<batchID-that-we-got-from-the-previous-batch>` with the "Historical [foo|bar|baz]" message `events` from Eric and the necessary `state_events_at_start` to auth them.
  1. Send a `m.room.marker` event so the history is discoverable across all federated homeservers: `PUT /_matrix/client/v3/rooms/{roomId}/send/m.room.marker/{txnId}` with `insertion_event_reference` set as the `base_insertion_event_id` from before.
 
