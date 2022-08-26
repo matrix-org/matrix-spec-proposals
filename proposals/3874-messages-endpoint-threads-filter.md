@@ -39,8 +39,8 @@ following events in a room:
 * `B`: a `m.room.message` event sent by `bob`
 * `C`: a `m.room.message` event sent by `charlie` which relates to `A` with type `m.thread`
 
-Using a filter of `"not_rel_types": ["m.thread"]` would return only event `B` as it has no event which
-relates to it via `m.thread`.
+Using a filter of `"not_rel_types": ["m.thread"]` would return only events `A` and `B` as they do not have a relation of
+`m.thread` in them. Thread roots are returned in the same way as messages which are not part of threads at all.
 
 ### Server capabilities
 
