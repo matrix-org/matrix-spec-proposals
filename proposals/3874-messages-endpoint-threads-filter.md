@@ -13,8 +13,8 @@ this would allow clients significant usability improvements with threads.
 
 ### Allow filtering the `/messages` API to not include threaded messages
 
-This proposal recommends extending the existing [Event filters] are extended with a new filter, named
-`not_rel_types`, which acts exactly like the opposite of the existing `rel_types` filter.
+This proposal recommends extending the existing [Event filters] are extended with a new filter, named `not_rel_types`.
+If this filter is specified, only messages which match none of the given relation types will be returned.
 
 This means, if this filter is specified, only message which match none of the given relation types will be returned.
 
