@@ -61,3 +61,10 @@ support for this.
 
 
 ## Unstable Prefix
+
+While this MSC is not in a released version of the spec, implementations should use `com.beeper.msc3880`
+as a prefix and as an unstable_features flag in the /versions endpoint.
+
+```
+ POST /_matrix/media/unstable/com.beeper.msc3870/upload/{serverName}/{mediaId}/complete
+```
