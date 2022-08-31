@@ -12,7 +12,7 @@ primitive value.
 
 ## Proposal
 
-In order to apply an `event_match` condition, home servers transform all
+In order to apply an `event_match` condition, homeservers transform all
 primitive values in the event body into a lowercase string
 representation. In particular this means
 
