@@ -16,7 +16,7 @@ In order to apply an `event_match` condition, homeservers transform all
 primitive values in the event body into a lowercase string
 representation. In particular this means
 
-- Strings are converted into lowercase (this already happens today)
+- Strings are converted into case-insensitive strings (this already happens today)
 - `true` / `false` become `"true"` / `"false"`
 - Integers such as `123` become `"123"`
 - `null` becomes `"null"`
