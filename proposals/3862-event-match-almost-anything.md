@@ -19,6 +19,11 @@ representation. In particular this means
 - Strings are converted into case-insensitive strings (this already happens today)
 - `true` / `false` become `"true"` / `"false"`
 - Integers such as `123` become `"123"`
+  - Implementations should take care to perform the conversion without adding
+    formatting (such as thousands separators) and without shortening the result
+    (e.g. through exponential representation). The final string should match the
+    pattern `^-?(0|[1-9][0-9]*)$`. This aligns with the number format enforced by
+    [canonical JSON] itself.
 - `null` becomes `"null"`
 
 This transformation is applied regardless of how deeply the value is
@@ -80,6 +85,7 @@ e.g. [matrix-org/synapse#13466]) and use.
 None.
 
   [`event_match`]: https://spec.matrix.org/v1.3/client-server-api/#conditions-1
+  [canonical JSON]: https://spec.matrix.org/v1.3/appendices/#grammar
   [spec]: https://spec.matrix.org/v1.3/client-server-api/#conditions-1
   [MSC3758]: https://github.com/matrix-org/matrix-spec-proposals/pull/3758
   [matrix-org/synapse#13466]: https://github.com/matrix-org/synapse/pull/13466
