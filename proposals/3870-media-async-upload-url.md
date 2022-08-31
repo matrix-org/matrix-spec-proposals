@@ -35,14 +35,31 @@ client may continue to upload via the new upload endpoint defined in MSC2246.
 }
 ```
 
-If the client chooses to upload media via the `upload_url` field, the media server must implement
-it's own methods of detecting when an upload is complete if desired (eg. thumbnailing or spam
-detection).
+If the client chooses to upload media via the `upload_url` field it must use a `PUT` request, in this
+case:
 
-**Alternative**: a new endpoint that clients `POST` to after uploading media to the `upload_url`
-used to notify the media server. However in the case of spam detection this makes it possible for
-bad acting clients to bypass spam detection for media uploads. This means any server side only
-detection is necessary anyway making the client endpoint redundant.
+`PUT https://cdn.example.com/media-repo/upload/XAPw4CtrzArk?signed=h4tGOHvCu`
+
+The response to the upload is implementation specific depending on the target server, the client
+should interpret standard HTTP responses, a 200 or 201 indicating successful upload. Once the upload
+is complete, the client must notify the media server via a new endpoint:
+
+`POST /_matrix/media/v3/upload/{serverName}/{mediaId}/complete`
+
+**Example response**
+
+```json
+{
+  "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw"
+}
+```
+
+This allows the media server to perform any post-upload actions before either allowing the media
+to be downloaded (and returning the URI to the client as above) or rejecting the upload.
+
+This means that there is potential for a client to send an event referencing an MXC that is then
+uploaded and rejected. Note that this is also a problem MSC2246 faces, whatever solution applies
+there can be applied here.
 
 
 ## Alternatives
