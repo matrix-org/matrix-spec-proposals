@@ -50,17 +50,24 @@ user then reads the thread, the client has no way to mark `E` as read.
 ### Threaded receipts
 
 This MSC proposes allowing the same receipt type to exist multiple times in a room,
-once per thread.
+once per thread (and once for the "main" timeline of the room).
 
-To denote that a receipt belongs to a thread, the body of the receipt can include
-a `thread_id` property when calling the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid).
+The body of request to the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
+gains the following fields:
 
-The `thread_id` contains the thread that the receipt belongs to (i.e. it should
-match the `event_id` contained within the `m.relates_to` of the event represented
-by `eventId`). Omitting the `thread_id` corresponds to the receipt being for the
-"main" timeline (or events which are not part of a thread). A non-string `thread_id`
-(or empty) `thread_id` field is an error and should be rejected with a `400` error
-with `errcode` of `M_INVALID_PARAM`.
+
+* `thread_id` (`string`): The thread that the receipt belongs to (i.e. the
+  `event_id` contained within the `m.relates_to` of the event represented by
+  `eventId`).
+
+  A special value of `"main"` corresponds to the receipt being for the "main"
+  timeline (i.e. events which are not part of a thread).
+
+The following conditions are errors and should be rejected with a `400` error
+with `errcode` of `M_INVALID_PARAM`:
+
+* A non-string `thread_id` (or empty) `thread_id` field.
+* Providing the `thread_id` properties for a receipt of type `m.fully_read`.
 
 This updates the unique tuple for receipts from
 `(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, thread ID)`.
@@ -90,20 +97,28 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply
 }
 ```
 
-The `thread_id` property is not valid for `m.fully_read` receipts.
+And to send a receipt on the "main" timeline (e.g. on the root event):
 
-### Receiving threaded receipts
+```
+POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
 
-This would then come down `/sync` for the user with other receipts:
+{
+  "thread_id": "main"
+}
+```
 
-```json
+### Receiving threaded receipts via `/sync`.
+
+The client would receive this as part of `/sync` response similar to other receipts:
+
+```json5
 {
   "content": {
     "$thread_reply": {
       "m.read": {
         "@rikj:jki.re": {
           "ts": 1436451550453,
-          "thread_id": "$thread_root"
+          "thread_id": "$thread_root" // or "main"
         }
       }
     }
@@ -113,9 +128,15 @@ This would then come down `/sync` for the user with other receipts:
 }
 ```
 
-Since [event bodies must be treated as untrusted](https://spec.matrix.org/latest/client-server-api/#room-event-format)
-the `thread_id` field may be of an invalid form. It should be treated as missing
-if the field is not a non-empty string.
+If there is no `thread_id` field than no thread information was supplied with
+the receipt, clients may interpret this as only applying to the main timeline or
+as applying across all threads, if possible.
+
+### Sending threaded receipts over federation
+
+Homeservers should provide the `thread_id` (as provided by the client) in the
+[Receipt Metadata](https://spec.matrix.org/v1.3/server-server-api/#receipts) when
+sending the `m.receipt` EDU over federation.
 
 ### Notifications
 
@@ -125,12 +146,27 @@ not provide a way to clear threaded notifications.
 
 A threaded read receipt (i.e. a `m.read` or `m.read.private` receipt with a `thread_id`
 property) should clear notifications for the matching thread following the
-[same rules](https://spec.matrix.org/latest/client-server-api/#receiving-notifications)
-as notifications which are not part of a thread.
+[current rules](https://spec.matrix.org/v1.3/client-server-api/#receiving-notifications),
+but only clear notifications with a matching `thread_id`.
 
-XXX Add an example here.
+An unthreaded read receipt (i.e. a `m.read` or `m.read.private` receipt *without*
+a `thread_id`) should apply follow the [current rules](https://spec.matrix.org/v1.3/client-server-api/#receiving-notifications)
+as today and disregard thread information when clearing notifications.
+
+Using the example room DAG from the preamble of this MSC, consider the following
+scenarios (all of which start with 5 unread messages: 3 on the main timeline and
+2 in thread `A`).
+
+* A threaded read receipt sent for event `C` on thread `A`, results in: 3 unread
+  on the main timeline and 1 on thread `A`.
+* A threaded read receipt sent for event `D` on the main timeline: 1 unread on
+  the main timeline and 2 on thread `A`.
+* An unthreaded read receipt send for event `D`: 1 unread on the main timeline
+  and 1 on thread `A`.
 
 ## Potential issues
+
+### Long-lived rooms
 
 For long-lived rooms or rooms with many threads there could be a significant number
 of receipts. This has a few downsides:
@@ -139,19 +175,23 @@ of receipts. This has a few downsides:
 * The effort to generate and process the receipts for each room would increase
   without bound.
 
-[MSC2285](https://github.com/matrix-org/matrix-spec-proposals/pull/2285) suggests
-that the `/read_markers` endpoint should become a generic bulk receipt endpoint.
-This is not compatible with the additional `threadId` parameter in this MSC.
-
 ### Compatibility with unthreaded clients
 
 When a user has both a client which is "unthreaded" and "threaded" then there
 is a possibility for read receipts to be misrepresented when switching between
-clients. Solutions to this problem are deemed out of scope of this MSC.
+clients. Using the example room DAG from the preamble of this MSC:
+
+* A user which has an unthreaded receipt on event `D` and a threaded receipt on
+  event `E` would likely see event `E` as unread on an "unthreaded" client.
+
+Solutions to this problem are deemed out of scope of this MSC.
 
 ### Second-order relations
 
-XXX Is this valid?
+For simplicity, clients may wish to send receipts for events which are not directly
+related to a root thread event (e.g. a reaction to thread event). This should
+generally be treated as acceptable by the server (i.e. the server should only care
+about the ordering of events, not about whether the events are in the same thread).
 
 ## Alternatives
 
