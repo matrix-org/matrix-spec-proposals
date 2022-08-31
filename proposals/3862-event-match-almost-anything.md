@@ -53,28 +53,6 @@ is transformed into
 After the transformation the condition is evaluated on the string
 representations.
 
-In order to reflect these changes, the wording in the
-[spec] is updated. Specifically
-
-> **event_match** This is a glob pattern match on a field of the event.
-
-is changed to
-
-> **event_match** This is a glob pattern match on any primitive field of
-> the event. Non-string values are converted to their lowercased string
-> representation before attempting the match.
-
-and
-
-> If the property specified by `key` is completely absent from the
-> event, or does not have a string value, then the condition will not
-> match, even if `pattern` is `*`.
-
-is changed to
-
-> If the property specified by `key` is completely absent from the
-> event, then the condition will not match, even if `pattern` is `*`.
-
 ## Potential issues
 
 It is possible for JSON values of different data types to map to the
