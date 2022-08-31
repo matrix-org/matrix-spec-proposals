@@ -62,7 +62,8 @@ These values are not possible to differentiate with the generalised
 practice it is rare for two events to differ only in the data type of a
 particular field. If that happens, it’s most probably due to the
 evolution of an unstable event type in which case it’s likely desirable
-to treat both data types identically anyway.
+to treat both data types identically anyway. The same applies to
+situations where clients accidentally sent the wrong type.
 
 ## Alternatives
 
