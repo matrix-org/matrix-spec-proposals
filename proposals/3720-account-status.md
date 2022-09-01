@@ -83,6 +83,9 @@ Below is how this endpoint behaves in case of errors:
   user ID, the endpoint responds with a 400 status code and a `M_INVALID_PARAM`
   error code.
 
+If the `user_ids` field is an empty list, the server responds with a `200 OK`
+status and an empty body (`{}`).
+
 ### `POST /_matrix/federation/v1/account_status`
 
 This endpoint behaves in an identical way to the client-side endpoint described
