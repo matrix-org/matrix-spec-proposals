@@ -5,8 +5,8 @@ Thank you for taking the time to contribute to Matrix!
 
 This repository is for proposals to changes to the Matrix protocol. The process
 for submitting a proposal is spelt out in detail at
-https://spec.matrix.org/unstable/proposals (in particular,
-https://spec.matrix.org/unstable/proposals/#process).
+https://spec.matrix.org/proposals (in particular,
+https://spec.matrix.org/proposals/#process).
 
 However, in brief, it amounts to:
 
