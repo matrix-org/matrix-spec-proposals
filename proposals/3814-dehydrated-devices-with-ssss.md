@@ -90,7 +90,7 @@ Response:
 ```
 
 If no dehydrated device is available, the server responds with an error code of
-`M_NOT_FOUND`, http code 404.
+`M_NOT_FOUND`, HTTP code 404.
 
 If the client is able to decrypt the data and wants to use the dehydrated
 device, the client retrieves the to-device messages sent to the dehydrated
@@ -122,11 +122,14 @@ Response:
 Once a client calls `POST /dehydrated_device/{device_id}/events`, the server
 can delete the device (though not necessarily its to-device messages).  Once a
 client calls `POST /dehydrated_device/{device_id}/events` with a `next_batch`
-token, the server can delete any to-device messages delivered in previous
-batches.  It is recommended that, for the last batch of messages, the server
-still send a `next_batch` token, and return an empty `events` array when called
-with that token, so that it knows that the client has successfully received all
-the messages.
+token, the server will delete any to-device messages delivered in previous
+batches.  For the last batch of messages, the server will still send a
+`next_batch` token, and return an empty `events` array when called with that
+token, so that it knows that the client has successfully received all the
+messages and can clean up all the to-device messages for that device.
+
+If the given `device_id` is not the dehydrated device ID, the server responds
+with an error code of `M_FORBIDDEN`, HTTP code 403.
 
 ### Device Dehydration Format
 
@@ -205,9 +208,10 @@ The alternatives discussed in MSC2697 are also alternatives here.
 
 ## Security considerations
 
-The security consideration in MSC2697 also applies to this proposal: If the
-dehydrated device is encrypted using a weak password or key, an attacker could
-access it and read the user's encrypted messages.
+A similar security consideration to the one in MSC2697 also applies to this
+proposal: if SSSS is encrypted using a weak passphrase or key, an attacker
+could access it and rehydrate the device to read the user's encrypted
+messages.
 
 ## Unstable prefix
 
