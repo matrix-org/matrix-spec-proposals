@@ -1,4 +1,4 @@
-# MSCxxxx: Dummy replies for olm
+# MSC3880: Dummy replies for olm
 
 Olm is a [double ratchet
 algorithm](https://en.wikipedia.org/wiki/Double_Ratchet_Algorithm).  When Alice
