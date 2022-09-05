@@ -20,6 +20,10 @@ assigning an enabled state to every pusher.
 #### Disabling pushers
 A new nullable field `is_disabled` is added to the `Pusher` model.
 
+| Name | Type | Description |
+|------|------|-------------|
+| `is_disabled` | boolean | Whether the pusher should actively create push notifications
+
 In [POST /_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset)
 the value is optional and if omitted, defaults to `false`.
 
@@ -31,9 +35,16 @@ Pushers that are disabled do not send
 produce email notifications.
 
 #### Explicitly linking device and pusher
-A new field `device_id` is added to the `Pusher` model. To be able to remove Pushers when sessions are deleted home
-servers must have some existing way to link a session to pusher, so exposing the `device_id` on http pushers should be
-trivial. (Synapse, for instance, stores the [access
+A new field `device_id` is added to the `Pusher` model as returned from [GET
+/_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers).
+
+| Name | Type | Description |
+|------|------|-------------|
+| `device_id` | string | **Required.** The device_id of the session that registered the pusher
+
+
+To be able to remove Pushers when sessions are deleted home servers must have some existing way to link a session to
+pusher, so exposing the `device_id` on http pushers should be trivial. (Synapse, for instance, stores the [access
 token](https://github.com/matrix-org/synapse/blob/develop/synapse/storage/databases/main/pusher.py#L487) when adding a
 pusher)
 
