@@ -73,6 +73,8 @@ existing or not existing, implementations now have to also evaluate the pusher's
 
 ## Alternatives
 
+
+#### Profile tags
 The spec allows for pushers to be assigned a
 [`profile_tag`](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset) which can be used to
 define per-device push rule sets. In combination with the `notify_in_app` action proposed in
@@ -83,10 +85,12 @@ Furthermore, the overrides could be simplified through cascading profile tags as
 not be trivial. Additionally, profile tags are only partially spec'ed and there is active interest in
 [removing](https://github.com/matrix-org/matrix-spec/issues/637) them entirely.
 
+#### Client side notification filtering
 Another alternative is client-side notification filtering at the time of delivery which is supported on many platforms.
 This feature could be (ab)used to create the _impression_ of paused push notifications. The downside, however, is that
 this is not a true deactivation and the wasteful overhead of sending and processing push notifications still exists.
 
+#### Caching pusher-client relationships in account_data
 Finally, when registering a pusher, a client could store the request body for
 [/_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset) in a
 per-device account data event. Other clients of the same user could then issue network request on the client's behalf
