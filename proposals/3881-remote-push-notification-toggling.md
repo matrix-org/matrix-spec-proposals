@@ -1,4 +1,4 @@
-# MSC9999: Remotely toggling push notifications for another client
+# MSC3881: Remotely toggling push notifications for another client
 
 The [push notification API](https://spec.matrix.org/v1.3/client-server-api/#push-notifications) allows clients to
 register HTTP pushers so that they can receive notifications. An HTTP pusher is always tied to a specific Matrix device
@@ -105,8 +105,8 @@ None.
 
 Until this proposal lands
     
-- `is_disabled` should be referred to as `org.matrix.msc0000.is_disabled`
-- `device_id` should be referred to as `org.matrix.msc0000.device_id`
+- `is_disabled` should be referred to as `org.matrix.msc3881.is_disabled`
+- `device_id` should be referred to as `org.matrix.msc3881.device_id`
 
 ## Dependencies
 
