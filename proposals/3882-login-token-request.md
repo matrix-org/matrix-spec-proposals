@@ -1,4 +1,4 @@
-# MSCxxxx: Allow an existing session to sign in a new session
+# MSC3882: Allow an existing session to sign in a new session
 
 todo
 
