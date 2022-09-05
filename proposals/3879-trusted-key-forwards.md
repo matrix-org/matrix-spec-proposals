@@ -1,4 +1,4 @@
-# MSCxxxx: Trusted key forwards
+# MSC3879: Trusted key forwards
 
 When a device does not have a megolm session, it can [request the session from
 another device](https://spec.matrix.org/unstable/client-server-api/#key-requests).
@@ -65,7 +65,7 @@ indirectly), will incorrectly trust messages.
 ## Unstable prefix
 
 Until this proposal is accepted, clients should use
-`org.matrix.mscxxxx.trusted` as the property name.
+`org.matrix.msc3879.trusted` as the property name.
 
 ## Dependencies
 
