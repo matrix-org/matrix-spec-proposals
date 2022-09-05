@@ -57,7 +57,7 @@ In [POST /_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-ser
 
 ### Pusher-less clients
 
-Pausing notifications for clients that create notifications outside of the Push Gateway will be handled separately.
+Pausing notifications for clients that create notifications outside of the Push Gateway will not be addressed in this MSC.
 
 ## Migration
 
