@@ -51,7 +51,7 @@ Changing this behaviour may break clients which expect these fields to always ex
 ## Alternatives
 
 The alternative is to not include this extension at all, making it impossible to include reliable
-E2EE support in Sliding Sync. As this extension is opt-in, as all Sliding Sync extensions are, this
+E2EE support in Sliding Sync. As this extension is opt-in, as all Sliding Sync extensions are, it
 feels undesirable to not provide this extension.
 
 ## Security considerations
