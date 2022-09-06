@@ -49,12 +49,18 @@ user then reads the thread, the client has no way to mark `E` as read.
 
 ### Threaded receipts
 
-This MSC proposes allowing the same receipt type to exist multiple times in a room,
-once per thread (and once for the "main" timeline of the room). This still does not
-allow a caller to move their receipts backwards in a room.
+This MSC proposes allowing the same receipt type to exist multiple times in a room:
+
+* Once for the unthreaded timeline.
+* Once for the "main" timeline in the room.
+* Once per threaded timeline.
+
+This still does not allow a caller to move their receipts backwards in a room.
+
+It is not expected that a client would send both "unthreaded" and "threaded" receipts.
 
 The body of request to the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
-gains the following fields:
+gains the following optional fields:
 
 * `thread_id` (`string`): The thread that the receipt belongs to (i.e. the
   `event_id` contained within the `m.relates_to` of the event represented by
@@ -62,6 +68,9 @@ gains the following fields:
 
   A special value of `"main"` corresponds to the receipt being for the "main"
   timeline (i.e. events which are not part of a thread).
+
+  If this field is not provided than the receipt applies to the unthreaded
+  version of the room.
 
 The following conditions are errors and should be rejected with a `400` error
 with `errcode` of `M_INVALID_PARAM`:
@@ -107,6 +116,14 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
 }
 ```
 
+For backwards compatibility, not providing the `thread_id` field is supported:
+
+```
+POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
+
+{}
+```
+
 ### Receiving threaded receipts via `/sync`.
 
 The client would receive this as part of `/sync` response similar to other receipts:
@@ -128,9 +145,9 @@ The client would receive this as part of `/sync` response similar to other recei
 }
 ```
 
-If there is no `thread_id` field than no thread information was supplied with
-the receipt, clients may interpret this as only applying to the main timeline or
-as applying across all threads, if possible.
+If there is no `thread_id` field then the receipt applies to the unthreaded
+timeline. Clients may interpret this as applying only to the main timeline or
+as applying across the main timeline and all threaded timelines.
 
 ### Sending threaded receipts over federation
 
