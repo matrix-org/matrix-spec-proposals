@@ -184,7 +184,12 @@ clients. Using the example room DAG from the preamble of this MSC:
 * A user which has an unthreaded receipt on event `D` and a threaded receipt on
   event `E` would likely see event `E` as unread on an "unthreaded" client.
 
-Solutions to this problem are deemed out of scope of this MSC.
+The proposed solution may result in events being incorrectly marked as unread
+(when they have been read). The false positive for unread notifications is
+deliberate to avoid losing message / missing notifications.
+
+Solutions to this problem are deemed out of scope of this MSC. A solution that
+was briefly explored was [ranged read receipts](https://hackmd.io/Gxm8zuuSROeencoJ6gjgSg).
 
 ### Second-order relations
 
