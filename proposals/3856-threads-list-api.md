@@ -80,7 +80,7 @@ Query Parameters:
   an `end` token returned by a previous request to this endpoint.
 
   If it is not provided, the homeserver shall return a list of thread roots starting
-  from the last visible event in the room history for the requesting user.
+  from the most recent visible event in the room history for the requesting user.
 * **`limit`**: Optional: a client-defined limit to the maximum
   number of threads to return per page. Must be an integer greater than zero.
 
@@ -119,7 +119,7 @@ slightly. This has two situations:
    information that a client would have if the threads list was aggregated locally
    (and generally matches the behavior if a thread root is unavailable, e.g. due
    to room history visibility).
-2. If the ignored user send the latest thread event: the server should treat the
+2. If the ignored user sent the latest thread event: the server should treat the
    latest event as not existing and replace it with the latest event from a
    non-ignored user; with the caveat that the ordering of the threads is not
    re-arranged due to this replacement.
@@ -144,7 +144,7 @@ GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/threads?
 
 ### MSC3440 Filtering
 
-This MSC deprecates the [event filters added in MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#fetch-all-threads-in-a-room)
+This MSC replaces the [event filters added in MSC3440](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#fetch-all-threads-in-a-room)
 (`related_by_rel_types` and `related_by_senders`) as the only known use-case is
 more efficiently solved by this MSC.
 
