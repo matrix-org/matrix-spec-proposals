@@ -34,11 +34,13 @@ todo
 
 ## Alternatives
 
-If Matrix was already using OIDC as per [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) then we could use the device authorization grant flow which allows for a new device to be signed in using an existing device.
+If Matrix was already using OIDC as per [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) then we
+could use the device authorization grant flow which allows for a new device to be signed in using an existing device.
 
 ## Security considerations
 
-A malicious client could use the mechanism to spawn more than one session. For this reason the endpoint can be placed behind user interactive authentication.
+A malicious client could use the mechanism to spawn more than one session. For this reason the endpoint can be placed
+behind user interactive authentication.
 
 ## Unstable prefix
 
