@@ -21,7 +21,7 @@ the `e2ee` extension response:
     "device_one_time_keys_count": {
         "signed_curve25519": 50
     },
-    "device_lists: {
+    "device_lists": {
         "changed": ["@alice:example.com"],
         "left": ["@bob:example.com"]
     },
