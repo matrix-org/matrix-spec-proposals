@@ -38,12 +38,12 @@ have changed/left.
 For sliding sync, an initial response will include all fields. When there are updates, only the
 _changed_ fields are returned. That is to say, if `device_one_time_keys_count` has not changed between
 requests, it will be omitted which means to use the previous value. This deviates from the current
-`/sync` implementation which alwyas includes this field. Likewise for `device_unused_fallback_key_types`.
+`/sync` implementation which always includes this field. Likewise for `device_unused_fallback_key_types`.
 
 ## Potential issues
 
 It's unclear if `device_unused_fallback_key_types` and `device_one_time_keys_count` should always be
-included or not, as this extension follows the same logic as v1.3 of the Specification which is not
+included or not, as this extension deviates from the logic as v1.3 of the Specification which is not
 clear on this. If it is always included, this adds extra bytes and therefore consumes needless
 bandwidth. In practice, Synapse _always_ includes these fields, when this is probably not needed.
 Changing this behaviour may break clients which expect these fields to always exist.
