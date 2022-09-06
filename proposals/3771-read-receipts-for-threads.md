@@ -50,11 +50,11 @@ user then reads the thread, the client has no way to mark `E` as read.
 ### Threaded receipts
 
 This MSC proposes allowing the same receipt type to exist multiple times in a room,
-once per thread (and once for the "main" timeline of the room).
+once per thread (and once for the "main" timeline of the room). This still does not
+allow a caller to move their receipts backwards in a room.
 
 The body of request to the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 gains the following fields:
-
 
 * `thread_id` (`string`): The thread that the receipt belongs to (i.e. the
   `event_id` contained within the `m.relates_to` of the event represented by
