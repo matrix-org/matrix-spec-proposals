@@ -1,7 +1,7 @@
 # MSC3771: Read receipts for threads
 
 Currently, each room can only have a single receipt of each type per user. The
-read receipt (`m.read` or `m.read.private`) is used to sync the read status of a
+read receipt ([`m.read`](https://spec.matrix.org/v1.3/client-server-api/#receipts) or [`m.read.private`](https://github.com/matrix-org/matrix-spec-proposals/pull/2285)) is used to sync the read status of a
 room across clients, to share with other users which events have been read and
 is used by the homeserver to calculate the number of unread messages.
 
