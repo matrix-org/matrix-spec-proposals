@@ -20,7 +20,7 @@ then the homeserver should partition the resulting notification count per-thread
 Similar behavior should be applied for an event which results in `notify` action
 with a `highlight` tweak set.
 
-This MSC does not propoase any changes to the payload sent to push gateways.
+This MSC does not propose any changes to the payload sent to push gateways.
 
 ### Unread thread notifications in the sync response
 
