@@ -33,7 +33,7 @@ but only applies to the `/sync` endpoint.):
 * `unread_thread_notifications`:  If `true`, enables partitioning of unread notification
   counts by thread. Defaults to false.
 
-If this flag is set to `true`, for each ["Joined Room" in the `/sync` response](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync)
+If this flag is set to `true`, for each ["Joined Room" in the `/sync` response](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3sync)
 a new field is added:
 
 * `unread_thread_notifications`: Counts of unread thread notifications for this
@@ -114,7 +114,7 @@ counts are continually tracked and returned as part of the `/sync` response.
 
 This MSC does not attempt to modify how unread notifications (for a thread or
 otherwise) are cleared. It currently assumes the rules set forth by
-[read receipts](https://spec.matrix.org/latest/client-server-api/#receiving-notifications)
+[read receipts](https://spec.matrix.org/v1.3/client-server-api/#receiving-notifications)
 still apply. This will cause some flakiness with unread notifications, as the current
 receipt infrastructure assumes that a room's timeline is linear, which is no
 longer true.
