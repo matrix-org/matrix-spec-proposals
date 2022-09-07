@@ -25,7 +25,7 @@ The proposal is to introduce a new extension called `to_device` with the followi
 ```
 If `enabled` is `true`, then the sliding sync response includes the following response fields in
 the `to_device` extension response:
-```json
+```js
 {
     "next_batch": "some_token", // REQUIRED: even if no changes
     "events": [ // optional, only if there are events since the last `since` value.
