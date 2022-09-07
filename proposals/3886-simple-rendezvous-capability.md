@@ -19,17 +19,163 @@ It will work with devices behind NAT. It doesn't require homeserver administrato
 
 ## Proposal
 
+It is proposed that a general purpose HTTP based protocol be used to establish ephemeral bi-directional communication
+channels over which arbitrary data can be exchanged.
+
+A typical flow might look like this where device A is initiating the rendezvous with device B:
+
+```mermaid
+
+sequenceDiagram
+  participant A as Device A
+  participant R as Rendezvous Server
+  participant B as Device B
+  Note over A: Device A determines which rendezvous server to use
+
+  A->R: POST / Hello from A
+  R->A: 200 OK {"id": "<rendezvous ID>"}
+
+  A-->B: Rendezvous URI between clients, perhaps as QR code: https://rendzvous-server/<rendezvous ID>
+
+  Note over A: Device A starts polling for contact at the rendezvous
+
+  B->R: GET /<rendezvous ID>
+  R->B: 200 OK Hello from A
+
+  loop Device A polls for rendezvous updates
+    A->R: GET /<rendezvous ID> If-None-Match: <ETag>
+    R->A: 304 Not Modified
+  end
+
+  B->R: PUT /<rendezvous ID> Hello from B
+  R->B: 202 Accepted 
+
+  Note over A,B: Rendezvous now established
+```
+
+Please note that it is intentional that this protocol does nothing to ensure the integrity of the data exchanged at a rendezvous.
+
 ### Protocol
 
-`POST /`
+#### Create a new rendezvous point: `POST /`
 
-`PUT /<channel id>`
+HTTP request headers:
 
-`GET /<channel id>`
+- `Content-Type` - optional, server should assume `application/octet-stream` if not specified
 
-`DELETE /<channel id>`
+HTTP request body:
+
+- any data up to maximum size allowed by the server
+
+HTTP response codes:
+
+- `200 OK` - rendezvous created
+- `403 Forbidden` - forbidden by server policy
+- `413 Payload Too Large` - the supplied payload is too large
+- `429 Too Many Requests` - the request has been rate limited
+
+HTTP response headers for `200 OK`:
+
+- `Content-Type` - required, always `application/json`
+- `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+
+HTTP response body for `200 OK`:
+
+- `id` - required, the identifier to use with subsequent requests
+- `max_bytes` - required, the maximum allowed bytes for the payload
+
+Example:
+
+```json
+{
+    "id": "<rendezvous id>",
+    "max_bytes": 102400,
+}
+```
+
+#### Update payload at rendezvous point: `PUT /<rendezvous id>`
+
+HTTP request headers:
+
+- `Content-Type` - optional, server should assume `application/octet-stream` if not specified
+- `If-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-match) server will assume `*`
+if not specified
+
+HTTP request body:
+
+- any data up to maximum size allowed by the server
+
+HTTP response codes:
+
+- `202 Accepted` - payload set
+- `404 Not Found` - rendezvous ID is not valid (it could have expired)
+- `413 Payload Too Large` - the supplied payload is too large
+- `412 Precondition Failed` - when `If-Match` is supplied and the ETag does not match
+- `429 Too Many Requests` - the request has been rate limited
+
+HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
+
+- `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+
+#### Get payload from rendezvous point: `GET /<rendezvous id>`
+
+HTTP request headers:
+
+- `If-None-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-none-match) server will
+only return data if given ETag does not match
+
+HTTP response codes:
+
+- `200 OK` - payload returned
+- `404 Not Found` - rendezvous ID is not valid (it could have expired)
+- `304 Not Modified` - when `If-None-Match` is supplied and the ETag does not match
+- `429 Too Many Requests` - the request has been rate limited
+
+HTTP response headers for `200 OK` and `304 Not Modified`:
+
+- `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+
+- `Content-Type` - required for `200 OK`
+
+#### Cancel a rendezvous: `DELETE /<rendezvous id>`
+
+HTTP response codes:
+
+- `204 No Content` - rendezvous cancelled
+- `404 Not Found` - rendezvous ID is not valid (it could have expired)
+- `429 Too Many Requests` - the request has been rate limited
+
+### Maximum payload size
+
+The server should enforce a maximum payload size for the payload size. It is recommended that this be no less than 10KB.
+
+### Maximum duration of a rendezvous
+
+The rendezvous only needs to persist for the duration of the handshake. So a timeout such as 30 seconds is adequate.
+
+Clients should handle the case of the rendezvous being cancelled or timed out by the server.
+
+### ETags
+
+The ETag generated should be unique to the rendezvous point and the last modified time so that two clients can
+distinguish between identical payloads sent by either client.
 
 ### CORS
+
+To support usage from web browsers, the server should allow CORS requests from any origin and expose the ETag header:
+
+```http
+Access-Control-Allow-Headers: Content-type
+Access-Control-Allow-Methods: GET,PUT,POST,DELETE
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: ETag
+```
 
 ### Choice of server
 
@@ -52,15 +198,17 @@ The proposed protocol requires the devices to have IP connectivity to the server
 
 Try and do something with STUN or TURN or [COAP](http://coap.technology/).
 
+Rather than requiring the devices to poll for updated "long-polling" could be used instead similar to `/sync`.
+
 ## Security considerations
 
 ### Confidentiality of data
 
 Whilst the data transmitted can be encrypted in transit via HTTP/TLS the rendezvous server does have visibility over the
-data.
+data and can also perform man in the middle attacks.
 
 As such, for the purposes of authentication and end-to-end encryption the channel should be treated as untrusted and some
-form of secure layer should be used on top of the channel.
+form of secure layer should be used on top of the channel such as a Diffie-Hellman key exchange.
 
 ### Denial of Service attack surface
 
@@ -81,3 +229,8 @@ None.
 ## Dependencies
 
 None.
+
+## Credits
+
+This proposal was influenced by https://wiki.mozilla.org/Services/KeyExchange which also has some helpful discussion
+around DoS mitigation.
