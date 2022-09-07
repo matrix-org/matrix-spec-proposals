@@ -33,7 +33,7 @@ sequenceDiagram
   Note over A: Device A determines which rendezvous server to use
 
   A->R: POST / Hello from A
-  R->A: 200 OK {"id": "<rendezvous ID>"}
+  R->A: 201 Created Location: <rendezvous ID>
 
   A-->B: Rendezvous URI between clients, perhaps as QR code: https://rendzvous-server/<rendezvous ID>
 
@@ -69,12 +69,12 @@ HTTP request body:
 
 HTTP response codes:
 
-- `201 Accepted` - rendezvous created
+- `201 Created` - rendezvous created
 - `403 Forbidden` - forbidden by server policy
 - `413 Payload Too Large` - the supplied payload is too large
 - `429 Too Many Requests` - the request has been rate limited
 
-HTTP response headers for `201 OK`:
+HTTP response headers for `201 Created`:
 
 - `Location` - required, the allocated rendezvous ID represented as a relative path
 - `X-Max-Bytes` - required, the maximum allowed bytes for the payload
@@ -106,7 +106,7 @@ HTTP request body:
 
 HTTP response codes:
 
-- `202 Accepted` - payload set
+- `202 Accepted` - payload updated
 - `404 Not Found` - rendezvous ID is not valid (it could have expired)
 - `413 Payload Too Large` - the supplied payload is too large
 - `412 Precondition Failed` - when `If-Match` is supplied and the ETag does not match
