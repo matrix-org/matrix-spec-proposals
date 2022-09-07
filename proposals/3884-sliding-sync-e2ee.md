@@ -64,7 +64,7 @@ No unstable prefix as Sliding Sync is still in review. To enable this extension,
 your request JSON:
 ```js
 {
-    "extensions: {
+    "extensions": {
         "e2ee": {
             "enabled": true
         }
