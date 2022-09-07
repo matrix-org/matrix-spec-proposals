@@ -1,4 +1,4 @@
-# MSC3886: Simple rendezvous capability
+# MSC3886: Simple client rendezvous capability
 
 In MSCyyyy a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
 QR code.
