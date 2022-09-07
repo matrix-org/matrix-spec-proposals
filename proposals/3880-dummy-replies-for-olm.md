@@ -26,7 +26,10 @@ meaningful event to send, it should send an `m.dummy` event.
 It is up to the client to decide whether and when to send the event.  One
 possibility is: if the client receives an event over Olm, it waits 2 minutes.
 If it has not sent any other event over Olm within those 2 minutes, it will
-send an `m.dummy` event.
+send an `m.dummy` event.  Clients may want to take measures to ensure that
+sending the dummy events does not interfere with the normal functioning of
+the client.  For example, a client may delay sending dummy events while it is
+sending other events.
 
 The definition of the `m.dummy` event in the spec will be updated to indicate
 the more general nature of the event: it is an event that should be ignored by
