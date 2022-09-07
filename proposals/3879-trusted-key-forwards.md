@@ -19,15 +19,16 @@ property is set to `true` if the forwarder believes the session should be
 trusted.  If the property is set to `false` or is absent, this indicates that
 the session cannot be trusted.
 
-The recipient can trust the session if:
+The recipient should trust the session if and only if all of the following is true:
 
 - the `m.forwarded_room_key` event marks the key as trusted,
-- the recipient and forwarder belong to the same user, and
+- the recipient and forwarding devices belong to the same user, and
 - the forwarder has been verified (e.g. by verifying the device directly, or
   via cross-signing).
 
 Note that this depends on the forwarder being able to determine whether it
-trusts the session.  The forwarder can mark the session as trusted if:
+trusts the session.  The forwarder can mark the session as trusted if any of
+the following is true:
 
 - it created the session;
 - it received the session from the session creator via an `m.room_key` message;
@@ -35,7 +36,7 @@ trusts the session.  The forwarder can mark the session as trusted if:
   to the same user, and it was marked as trusted; or
 - it was received from a key backup that can be trusted (such as [Symmetric key
   backup](https://github.com/matrix-org/matrix-spec-proposals/pull/3270)), and
-  was marked as trusted.
+  was marked as trusted in the backup.
 
 ## Potential issues
 
