@@ -69,30 +69,27 @@ HTTP request body:
 
 HTTP response codes:
 
-- `200 OK` - rendezvous created
+- `201 Accepted` - rendezvous created
 - `403 Forbidden` - forbidden by server policy
 - `413 Payload Too Large` - the supplied payload is too large
 - `429 Too Many Requests` - the request has been rate limited
 
-HTTP response headers for `200 OK`:
+HTTP response headers for `201 OK`:
 
-- `Content-Type` - required, always `application/json`
+- `Location` - required, the allocated rendezvous ID represented as a relative path
+- `X-Max-Bytes` - required, the maximum allowed bytes for the payload
 - `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
 - `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
 - `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
 
-HTTP response body for `200 OK`:
+Example response headers:
 
-- `id` - required, the identifier to use with subsequent requests
-- `max_bytes` - required, the maximum allowed bytes for the payload
-
-Example:
-
-```json
-{
-    "id": "<rendezvous id>",
-    "max_bytes": 102400,
-}
+```http
+Location: abcdEFG12345
+X-Max-Bytes: 10240
+ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
+Expires: Wed, 07 Sep 2022 14:28:51 GMT
+Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
 ```
 
 #### Update payload at rendezvous point: `PUT /<rendezvous id>`
@@ -168,13 +165,14 @@ distinguish between identical payloads sent by either client.
 
 ### CORS
 
-To support usage from web browsers, the server should allow CORS requests from any origin and expose the ETag header:
+To support usage from web browsers, the server should allow CORS requests from any origin and expose the `ETag` and
+`Location` headers:
 
 ```http
 Access-Control-Allow-Headers: Content-type
 Access-Control-Allow-Methods: GET,PUT,POST,DELETE
 Access-Control-Allow-Origin: *
-Access-Control-Expose-Headers: ETag
+Access-Control-Expose-Headers: ETag,Location
 ```
 
 ### Choice of server
