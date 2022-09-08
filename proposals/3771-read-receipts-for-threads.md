@@ -1,65 +1,141 @@
 # MSC3771: Read receipts for threads
 
+## Background
+
 Currently, each room can only have a single receipt of each type per user. The
 read receipt ([`m.read`](https://spec.matrix.org/v1.3/client-server-api/#receipts)
 or [`m.read.private`](https://github.com/matrix-org/matrix-spec-proposals/pull/2285))
 is used to sync the read status of a room across clients, to share with other
-users which events have been read and is used by the homeserver to calculate the
+users which events have been read, and is used by the homeserver to calculate the
 number of unread messages.
 
-Unfortunately a client displaying threads may show a subset of a room's messages
-at a time, causing a user's read receipt to be misleading.
+Now that [MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440) has merged
+to add support for threads, there are two ways to display messages:
 
-This might better be described by an example. Given a room with the following
-DAG of events (note that the dotted lines are a thread relation, as specified by
-[MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440)):
+* *Unthreaded*: The traditional way of displaying messages before threads existed.
+  All messages are just shown in the order they’re provided by the server as a
+  single timeline[^1].
+* *Threaded*: Taking into account the `m.thread` and other relations to separate
+  a room DAG into multiple sub-timelines:
+  * One timeline for each root message (I.e. the target of a thread relation)
+  * One for messages which are not part of a thread: the main timeline.
+
+For an example room DAG (solid lines are show topological ordering, dotted lines
+show event relations):
 
 ```mermaid
 flowchart RL
+    I-->H
+    H-->G
+    G-->F
     F-->E
     E-->D
     D-->C
     C-->B
     B-->A
-    C-.->A
-    E-.->A
+    C-.->|m.thread|A
+    D-.->|m.thread|B
+    E-.->|m.thread|A
+    F-.->|m.thread|B
+    G-.->|m.reaction|C
+    H-.->|m.edit|E
 ```
 
-A client might interpret this as:
+This can be separated into three threaded timelines:
 
 ```mermaid
 flowchart RL
-    subgraph Main timeline
-    D-->B
+    subgraph "Main" timeline
     B-->A
-    F-->D
+    I-->B
     end
-    subgraph Thread timeline
+    subgraph Thread A timeline
     C-->A
     E-->C
+    G-.->|m.reaction|C
+    H-.->|m.edit|E
     end
-
-    style A fill:cyan,stroke:#333,stroke-width:2px
-    style F fill:orange,stroke:#333,stroke-width:2px
+    subgraph Thread B timeline
+    D-->B
+    F-->D
+    end
 ```
 
-While viewing the "main" timeline of the room, a client might move the read
-receipt from event `A` to event `F` without ever showing events `C` and `E`. The
-user then reads the thread, the client has no way to mark `E` as read.
+Due to this separation of messages into separate timelines a single read receipt
+per room causes missed (or flaky) notification counts and does not give an accurate
+representation of what messages have been read by people.
+
+Note that it is expected that some clients will continue to show only an unthreaded
+view of the room, either until they are able to support a threaded view or because
+they do not wish to incorporate threads.
 
 ## Proposal
 
+This MSC proposes allowing a receipt per thread, as well as an unthreaded receipt.
+Thus, receipts are split into two categories, which this document calls "unthreaded"
+and "threaded". Threaded receipts are identified by the root message of the thread;
+additionally there is a special pseudo-thread for the main timeline.
+
+The most significant difference between threaded and unthreaded receipts is how
+they clear notifications:
+
+* Unthreaded receipts clear notifications just as they do today (i.e.
+  "notifications prior to and including that event MUST be marked as read").
+* Threaded receipts clear notifications in a similar way, but taking into account
+  the thread the receipt is part of (i.e. "notifications generated from events
+  with a thread relation matching the receipt’s thread ID prior to and including
+  that event which are MUST be marked as read")
+
+Using the above diagrams with threaded read receipts on `E` and `I`; and an
+unthreaded read receipt on `D` would give:
+
+```
+flowchart RL
+    subgraph "Main" timeline
+    B-->A
+    I-->B
+    end
+    subgraph Thread A timeline
+    C-->A
+    E-->C
+    G-.->|m.reaction|C
+    H-.->|m.edit|E
+    end
+    subgraph Thread B timeline
+    D-->B
+    F-->D
+    end
+
+    classDef unthreaded fill:yellow,stroke:#333,stroke-width:2px
+    classDef threaded fill:crimson,stroke:#333,stroke-width:2px
+    classDef both fill:orange,stroke:#333,stroke-width:2px
+
+    %% An unthreaded read receipt on D marks A, B, C, D as read.
+    class A,B,C both;
+    class D unthreaded;
+    %% Threaded read receipts on E and I mark C, E and A, B, I as
+    %% read, respectively.
+    class E,I threaded;
+```
+
+As denoted by the colors:
+
+* The unthreaded read receipt on `D` would mark `A`, `B`, `C`, and `D` as read.
+* The threaded read receipt on `E` would mark `C` and `E` as read.
+* The threaded read receipt on `I` would mark `A`, `B`, and `I` as read.
+
 ### Threaded receipts
 
-This MSC proposes allowing the same receipt type to exist multiple times in a room:
+This MSC proposes allowing the same receipt type to exist multiple times in a room
+per user:
 
 * Once for the unthreaded timeline.
-* Once for the "main" timeline in the room.
+* Once for the main timeline in the room.
 * Once per threaded timeline.
 
-This still does not allow a caller to move their receipts backwards in a room.
-
-It is not expected that a client would send both "unthreaded" and "threaded" receipts.
+No other changes to receipts are proposed, i.e. this still does not allow a caller
+to move their receipts backwards in a room. The relationship between `m.read` and
+`m.read.private` is not changed.
 
 The body of request to the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 gains the following optional fields:
@@ -68,20 +144,17 @@ gains the following optional fields:
   `event_id` contained within the `m.relates_to` of the event represented by
   `eventId`).
 
-  A special value of `"main"` corresponds to the receipt being for the "main"
+  A special value of `"main"` corresponds to the receipt being for the main
   timeline (i.e. events which are not part of a thread).
 
   If this field is not provided than the receipt applies to the unthreaded
-  version of the room.
+  version of the room.[^2]
 
 The following conditions are errors and should be rejected with a `400` error
 with `errcode` of `M_INVALID_PARAM`:
 
 * A non-string `thread_id` (or empty) `thread_id` field.
 * Providing the `thread_id` properties for a receipt of type `m.fully_read`.
-
-This updates the unique tuple for receipts from
-`(room ID, user ID, receipt type)` to `(room ID, user ID, receipt type, thread ID)`.
 
 Given a threaded message:
 
@@ -108,7 +181,7 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply
 }
 ```
 
-And to send a receipt on the "main" timeline (e.g. on the root event):
+And to send a receipt on the main timeline (e.g. on the root event):
 
 ```
 POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
@@ -118,7 +191,7 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
 }
 ```
 
-For backwards compatibility, not providing the `thread_id` field is supported:
+As it is today, not providing the `thread_id` field sends an unthreaded receipt:
 
 ```
 POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
@@ -137,7 +210,7 @@ The client would receive this as part of `/sync` response similar to other recei
       "m.read": {
         "@rikj:jki.re": {
           "ts": 1436451550453,
-          "thread_id": "$thread_root" // or "main"
+          "thread_id": "$thread_root" // or "main" or absent
         }
       }
     }
@@ -153,9 +226,10 @@ as applying across the main timeline and all threaded timelines.
 
 ### Sending threaded receipts over federation
 
-Homeservers should provide the `thread_id` (as provided by the client) in the
+Homeservers should include a `thread_id` field for threaded receipts in the
 [Receipt Metadata](https://spec.matrix.org/v1.3/server-server-api/#receipts) when
-sending the `m.receipt` EDU over federation.
+sending the `m.receipt` EDU over federation. Unthreaded receipts lack this field,
+as they do today.
 
 ### Notifications
 
@@ -166,22 +240,14 @@ not provide a way to clear threaded notifications.
 A threaded read receipt (i.e. a `m.read` or `m.read.private` receipt with a `thread_id`
 property) should clear notifications for the matching thread following the
 [current rules](https://spec.matrix.org/v1.3/client-server-api/#receiving-notifications),
-but only clear notifications with a matching `thread_id`.
+but only clear notifications with a matching `thread_id` (as discussed in MSC3773).
+See the examples of the read receipts on `E` and `I` [above](#proposal).
 
 An unthreaded read receipt (i.e. a `m.read` or `m.read.private` receipt *without*
-a `thread_id`) should apply follow the [current rules](https://spec.matrix.org/v1.3/client-server-api/#receiving-notifications)
-as today and disregard thread information when clearing notifications.
-
-Using the example room DAG from the preamble of this MSC, consider the following
-scenarios (all of which start with 5 unread messages: 3 on the main timeline and
-2 in thread `A`).
-
-* A threaded read receipt sent for event `C` on thread `A`, results in: 3 unread
-  on the main timeline and 1 on thread `A`.
-* A threaded read receipt sent for event `D` on the main timeline: 1 unread on
-  the main timeline and 2 on thread `A`.
-* An unthreaded read receipt send for event `D`: 1 unread on the main timeline
-  and 1 on thread `A`.
+a `thread_id`) should apply the [current rules](https://spec.matrix.org/v1.3/client-server-api/#receiving-notifications)
+and disregard thread information when clearing notifications. To re-iterate, this
+means it would clear any earlier notifications across *all* threads. This is
+illustrated by the read receipt on event `D` [above](#proposal).
 
 ## Potential issues
 
@@ -216,6 +282,16 @@ For simplicity, clients may wish to send receipts for events which are not direc
 related to a root thread event (e.g. a reaction to thread event). This should
 generally be treated as acceptable by the server (i.e. the server should only care
 about the ordering of events, not about whether the events are in the same thread).
+
+### Federation compatibility
+
+A homeserver which does not understand threaded receipts will be unable to properly
+understand that multiple receipts exist in a room. They will generally be processed
+as unthreaded receipts with the latest receipt winning, regardless of thread.
+
+This could make read receipts of remote users jump between threads, but this should
+not be any worse than it is today. Additionally, since it only affects remote
+users, it will not impact notifications.
 
 ## Alternatives
 
@@ -276,3 +352,12 @@ This MSC depends on the following MSCs, which have not yet been accepted into
 the spec:
 
 * [MSC3773](https://github.com/matrix-org/matrix-spec-proposals/pull/3773): Notifications for threads
+
+[^1]: Throughout this document "timeline" is used to mean what the user sees in
+the user interface of their Matrix client.
+
+[^2]: Generally it would be surprising if the same client sent both threaded and
+unthreaded receipts, but it is allowed. The only known use-case for this is that
+a threaded client can use this to clear *all* notifications in a room by sending
+an unthreaded read receipt on the latest event in the room (regardless of which
+thread it appears in).
