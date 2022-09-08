@@ -77,6 +77,14 @@ The expected behavior is that:
     monitor room R for new policies and apply the recommendations on behalf of Alice,
     interpreting such policies as "ignore invites".
 
+### Expanding recommendations to individual events
+
+Policy lists define three scopes `m.policy.rule.user` for rules that deal with users,
+`m.policy.rule.room` for rules that deals with rooms and `m.policy.rule.server` for
+rules that deal with servers.
+
+We expand these lists with a fourth scope `m.policy.rule.event` for rules that deal
+with individual events, in this case ignoring a specific invite.
 
 ### Suggested client behaviour
 
@@ -154,5 +162,6 @@ In other words, using a room as source requires trusting the administrator of th
 During testing:
 
 - `m.ignore.invites` should be prefixed `org.matrix.msc3847.ignore.invites`;
-- `m.policies` should be prefixed `org.matrix.msc3847.policies`.
+- `m.policies` should be prefixed `org.matrix.msc3847.policies`;
+- `m.policy.rule.event` should be prefixed `org.matrix.msc3847.policy.rule.event`.
 
