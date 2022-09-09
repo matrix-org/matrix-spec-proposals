@@ -33,21 +33,21 @@ sequenceDiagram
   Note over A: Device A determines which rendezvous server to use
 
   A->R: POST / Hello from A
-  R->A: 201 Created Location: <rendezvous ID>
+  R->A: 201 Created Location: /abc-def-123-456
 
-  A-->B: Rendezvous URI between clients, perhaps as QR code: https://rendzvous-server/<rendezvous ID>
+  A-->B: Rendezvous URI between clients, perhaps as QR code: e.g. https://rendzvous-server/abc-def-123-456
 
   Note over A: Device A starts polling for contact at the rendezvous
 
-  B->R: GET /<rendezvous ID>
+  B->R: GET <rendezvous URI>
   R->B: 200 OK Hello from A
 
   loop Device A polls for rendezvous updates
-    A->R: GET /<rendezvous ID> If-None-Match: <ETag>
+    A->R: GET <rendezvous URI> If-None-Match: <ETag>
     R->A: 304 Not Modified
   end
 
-  B->R: PUT /<rendezvous ID> Hello from B
+  B->R: PUT <rendezvous URI> Hello from B
   R->B: 202 Accepted 
 
   Note over A,B: Rendezvous now established
@@ -76,7 +76,7 @@ HTTP response codes:
 
 HTTP response headers for `201 Created`:
 
-- `Location` - required, the allocated rendezvous ID represented as a URI safe **relative path**. e.g. `Location: abc-def-1234`
+- `Location` - required, the allocated rendezvous URI which can be on a different server
 - `X-Max-Bytes` - required, the maximum allowed bytes for the payload
 - `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
 - `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
@@ -85,14 +85,14 @@ HTTP response headers for `201 Created`:
 Example response headers:
 
 ```http
-Location: abcdEFG12345
+Location: /abcdEFG12345
 X-Max-Bytes: 10240
 ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
 Expires: Wed, 07 Sep 2022 14:28:51 GMT
 Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
 ```
 
-#### Update payload at rendezvous point: `PUT /<rendezvous id>`
+#### Update payload at rendezvous point: `PUT <rendezvous URI>`
 
 HTTP request headers:
 
@@ -107,7 +107,7 @@ HTTP request body:
 HTTP response codes:
 
 - `202 Accepted` - payload updated
-- `404 Not Found` - rendezvous ID is not valid (it could have expired)
+- `404 Not Found` - rendezvous URI is not valid (it could have expired)
 - `413 Payload Too Large` - the supplied payload is too large
 - `412 Precondition Failed` - when `If-Match` is supplied and the ETag does not match
 - `429 Too Many Requests` - the request has been rate limited
@@ -118,7 +118,7 @@ HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
 - `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
 - `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
 
-#### Get payload from rendezvous point: `GET /<rendezvous id>`
+#### Get payload from rendezvous point: `GET <rendezvous URI>`
 
 HTTP request headers:
 
@@ -128,7 +128,7 @@ only return data if given ETag does not match
 HTTP response codes:
 
 - `200 OK` - payload returned
-- `404 Not Found` - rendezvous ID is not valid (it could have expired)
+- `404 Not Found` - rendezvous URI is not valid (it could have expired)
 - `304 Not Modified` - when `If-None-Match` is supplied and the ETag does not match
 - `429 Too Many Requests` - the request has been rate limited
 
@@ -140,12 +140,12 @@ HTTP response headers for `200 OK` and `304 Not Modified`:
 
 - `Content-Type` - required for `200 OK`
 
-#### Cancel a rendezvous: `DELETE /<rendezvous id>`
+#### Cancel a rendezvous: `DELETE <rendezvous URI>`
 
 HTTP response codes:
 
 - `204 No Content` - rendezvous cancelled
-- `404 Not Found` - rendezvous ID is not valid (it could have expired)
+- `404 Not Found` - rendezvous URI is not valid (it could have expired)
 - `429 Too Many Requests` - the request has been rate limited
 
 ### Maximum payload size
