@@ -108,8 +108,8 @@ HTTP response codes:
 
 - `202 Accepted` - payload updated
 - `404 Not Found` - rendezvous URI is not valid (it could have expired)
-- `413 Payload Too Large` - the supplied payload is too large
 - `412 Precondition Failed` - when `If-Match` is supplied and the ETag does not match
+- `413 Payload Too Large` - the supplied payload is too large
 - `429 Too Many Requests` - the request has been rate limited
 
 HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
@@ -128,8 +128,8 @@ only return data if given ETag does not match
 HTTP response codes:
 
 - `200 OK` - payload returned
-- `404 Not Found` - rendezvous URI is not valid (it could have expired)
 - `304 Not Modified` - when `If-None-Match` is supplied and the ETag does not match
+- `404 Not Found` - rendezvous URI is not valid (it could have expired)
 - `429 Too Many Requests` - the request has been rate limited
 
 HTTP response headers for `200 OK` and `304 Not Modified`:
