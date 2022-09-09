@@ -18,21 +18,20 @@ assigning an enabled state to every pusher.
 ### Pusher-dependent clients
 
 #### Disabling pushers
-A new nullable field `is_disabled` is added to the `Pusher` model.
+A new nullable field `enabled` is added to the `Pusher` model.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `is_disabled` | boolean | Whether the pusher should actively create push notifications
+| `enabled` | boolean | Whether the pusher should actively create push notifications
 
 In [POST /_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset)
-the value is optional and if omitted, defaults to `false`.
+the value is optional and if omitted, defaults to `true`.
 
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
 is always returned.
 
-Pushers that are disabled do not send
-[`/notify`](https://spec.matrix.org/v1.3/push-gateway-api/#post_matrixpushv1notify) requests to push providers, or
-produce email notifications.
+Pushers that are not enabled do not send
+[`/notify`](https://spec.matrix.org/v1.3/push-gateway-api/#post_matrixpushv1notify) requests to push providers.
 
 #### Explicitly linking device and pusher
 A new field `device_id` is added to the `Pusher` model as returned from [GET
@@ -61,15 +60,15 @@ Pausing notifications for clients that create notifications outside of the Push 
 
 ## Migration
 
-Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `is_disabled`
-value as `false`.
+Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `enabled`
+value as `true`.
 
-Home servers should migrate pushers that were registered before this proposal so that `is_disabled` is `false`
+Home servers should migrate pushers that were registered before this proposal so that `enabled` is `true`
 
 ## Potential issues
 
 Adding an enabled state to pushers increases the complexity of the push notification API. In addition to a pusher
-existing or not existing, implementations now have to also evaluate the pusher's `is_disabled` field.
+existing or not existing, implementations now have to also evaluate the pusher's `enabled` field.
 
 ## Alternatives
 
@@ -105,7 +104,7 @@ None.
 
 Until this proposal lands
     
-- `is_disabled` should be referred to as `org.matrix.msc3881.is_disabled`
+- `enabled` should be referred to as `org.matrix.msc3881.enabled`
 - `device_id` should be referred to as `org.matrix.msc3881.device_id`
 
 ## Dependencies
