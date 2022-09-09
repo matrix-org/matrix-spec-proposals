@@ -13,7 +13,8 @@ JSON types.
 
 ### Exact matching event data
 
-We propose a new type of condition, `exact_event_match`. Similar to `event_match`, this condition
+We propose a new type of condition, `exact_event_match`. Similar to  the current `event_match`
+([link to spec](https://spec.matrix.org/v1.3/client-server-api/#conditions-1)), this condition
 takes two parameters: `pattern` and `key`. The exact match compares the `pattern` to the event data
 associated with `key` exactly. Both type and content (when a string) should be identical. This allows
 for matching all valid JSON types `null`, `true`, `false` and numbers. This also provides a simpler
