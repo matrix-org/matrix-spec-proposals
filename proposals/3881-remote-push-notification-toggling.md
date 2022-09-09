@@ -30,8 +30,9 @@ the value is optional and if omitted, defaults to `true`.
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
 is always returned.
 
-Pushers that are not enabled do not send
-[`/notify`](https://spec.matrix.org/v1.3/push-gateway-api/#post_matrixpushv1notify) requests to push providers.
+Pushers that are not enabled do not produce push notifications of any kind, either by sending
+[`/notify`](https://spec.matrix.org/v1.3/push-gateway-api/#post_matrixpushv1notify) requests to push providers for
+`http` pushers or otherwise.
 
 #### Explicitly linking device and pusher
 A new field `device_id` is added to the `Pusher` model as returned from [GET
@@ -44,8 +45,8 @@ A new field `device_id` is added to the `Pusher` model as returned from [GET
 
 To be able to remove Pushers when sessions are deleted home servers must have some existing way to link a session to
 pusher, so exposing the `device_id` on http pushers should be trivial. (Synapse, for instance, stores the [access
-token](https://github.com/matrix-org/synapse/blob/3d201151152ca8ba9b9aae8da5b76a26044cc85f/synapse/storage/databases/main/pusher.py#L487) when adding a
-pusher)
+token](https://github.com/matrix-org/synapse/blob/3d201151152ca8ba9b9aae8da5b76a26044cc85f/synapse/storage/databases/main/pusher.py#L487)
+when adding a pusher)
 
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
 is required when `kind` is `http`. If `kind` is _not_ `http`, the `device_id` field is null.
@@ -56,12 +57,13 @@ In [POST /_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-ser
 
 ### Pusher-less clients
 
-Pausing notifications for clients that create notifications outside of the Push Gateway will not be addressed in this MSC.
+Pausing notifications for clients that create notifications outside of the Push Gateway will not be addressed in this
+MSC.
 
 ## Migration
 
-Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `enabled`
-value as `true`.
+Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `enabled` value
+as `true`.
 
 Home servers should migrate pushers that were registered before this proposal so that `enabled` is `true`
 
