@@ -45,7 +45,7 @@ A new field `device_id` is added to the `Pusher` model as returned from [GET
 
 To be able to remove Pushers when sessions are deleted home servers must have some existing way to link a session to
 pusher, so exposing the `device_id` on http pushers should be trivial. (Synapse, for instance, stores the [access
-token](https://github.com/matrix-org/synapse/blob/develop/synapse/storage/databases/main/pusher.py#L487) when adding a
+token](https://github.com/matrix-org/synapse/blob/3d201151152ca8ba9b9aae8da5b76a26044cc85f/synapse/storage/databases/main/pusher.py#L487) when adding a
 pusher)
 
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
