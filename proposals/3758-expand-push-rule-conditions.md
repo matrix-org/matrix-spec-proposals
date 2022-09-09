@@ -9,7 +9,7 @@ This approach is currently limited to only checking for string values within the
 JSON types.
 
 
-## Proposals
+## Proposal
 
 ### Exact matching event data
 
@@ -33,3 +33,25 @@ An example condition may look like (encoded as a JSON object):
 
 
 ## Alternatives
+
+[MSC3862](https://github.com/matrix-org/matrix-spec-proposals/pull/3862) proposes an alternative
+solution by converting non-string JSON objects to strings in the `event_match` condition type.
+
+## Security considerations
+
+None.
+
+## Unstable prefix
+
+While still not part of the Matrix spec, the new rule type should be prefixed as so:
+
+```json
+{
+  "kind": "com.beeper.msc3758.exact_event_match",
+  "key": "..."
+}
+```
+
+## Dependencies
+
+None.
