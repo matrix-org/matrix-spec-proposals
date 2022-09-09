@@ -61,6 +61,7 @@ Please note that it is intentional that this protocol does nothing to ensure the
 
 HTTP request headers:
 
+- `Content-Length` - required
 - `Content-Type` - optional, server should assume `application/octet-stream` if not specified
 
 HTTP request body:
@@ -96,6 +97,7 @@ Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
 
 HTTP request headers:
 
+- `Content-Length` - required
 - `Content-Type` - optional, server should assume `application/octet-stream` if not specified
 - `If-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-match) server will assume `*`
 if not specified
