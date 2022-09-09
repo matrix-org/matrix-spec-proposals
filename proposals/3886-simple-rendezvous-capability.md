@@ -165,14 +165,14 @@ distinguish between identical payloads sent by either client.
 
 ### CORS
 
-To support usage from web browsers, the server should allow CORS requests from any origin and expose the `ETag` and
-`Location` headers:
+To support usage from web browsers, the server should allow CORS requests from any origin and expose the `ETag`,
+`Location` and `X-Max-Bytes` headers as:
 
 ```http
-Access-Control-Allow-Headers: Content-type
+Access-Control-Allow-Headers: Content-Type,If-Match,If-None-Match
 Access-Control-Allow-Methods: GET,PUT,POST,DELETE
 Access-Control-Allow-Origin: *
-Access-Control-Expose-Headers: ETag,Location
+Access-Control-Expose-Headers: ETag,Location,X-Max-Bytes
 ```
 
 ### Choice of server
