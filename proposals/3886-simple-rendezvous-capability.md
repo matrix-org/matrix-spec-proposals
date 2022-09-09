@@ -76,7 +76,7 @@ HTTP response codes:
 
 HTTP response headers for `201 Created`:
 
-- `Location` - required, the allocated rendezvous ID represented as a relative path
+- `Location` - required, the allocated rendezvous ID represented as a URI safe **relative path**. e.g. `Location: abc-def-1234`
 - `X-Max-Bytes` - required, the maximum allowed bytes for the payload
 - `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
 - `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
