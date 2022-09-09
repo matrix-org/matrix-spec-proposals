@@ -15,7 +15,7 @@ JSON types.
 
 We propose a new type of condition, `exact_event_match`. Similar to  the current `event_match`
 ([link to spec](https://spec.matrix.org/v1.3/client-server-api/#conditions-1)), this condition
-takes two parameters: `pattern` and `key`. The exact match compares the `pattern` to the event data
+takes two parameters: `value` and `key`. The exact match compares the `value` to the event data
 associated with `key` exactly. Both type and content (when a string) should be identical. This allows
 for matching all valid JSON types `null`, `true`, `false` and numbers. This also provides a simpler
 exact string matching mechanism (and any associated performance gains on implementation side without
@@ -27,7 +27,7 @@ An example condition may look like (encoded as a JSON object):
 {
   "kind": "exact_event_match",
   "key": "event.content.is_something",
-  "pattern": true
+  "value": true
 }
 ```
 
