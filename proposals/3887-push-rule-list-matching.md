@@ -1,4 +1,4 @@
-# MSCXXXX: List matching push rules
+# MSC3887: List matching push rules
 
 This MSC proposes a way to match against a list within event content.
 [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796) is an example change that
