@@ -1,12 +1,12 @@
 # MSC3886: Simple client rendezvous capability
 
-In MSCyyyy a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
+In MSCyyyy (to be published) a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
 QR code.
 
 In order to facilitate this the two devices need some bi-directional communication channel which they can use to exchange
 information such as:
 
-- the homserver being used
+- the homeserver being used
 - the user ID
 - facilitation of issuing a new access token
 - device ID for end-to-end encryption
