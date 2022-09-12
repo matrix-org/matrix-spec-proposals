@@ -25,7 +25,7 @@ event to mark them as voice broadcast chunks.
 
 ```json
 {
-    "type": "m.voice_broadcast_info,
+    "type": "m.voice_broadcast_info",
     "state_key": "@matthew:matrix.org",
     "content": {
         "state": "started",
