@@ -283,13 +283,6 @@ deliberate to avoid losing message / missing notifications.
 Solutions to this problem are deemed out of scope of this MSC. A solution that
 was briefly explored was [ranged read receipts](https://hackmd.io/Gxm8zuuSROeencoJ6gjgSg).
 
-### Second-order relations
-
-For simplicity, clients may wish to send receipts for events which are not directly
-related to a root thread event (e.g. a reaction to thread event). This should
-generally be treated as acceptable by the server (i.e. the server should only care
-about the ordering of events, not about whether the events are in the same thread).
-
 ### Federation compatibility
 
 A homeserver which does not understand threaded receipts will be unable to properly
