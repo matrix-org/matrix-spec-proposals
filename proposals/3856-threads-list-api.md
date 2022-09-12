@@ -154,12 +154,29 @@ None forseen.
 
 ## Alternatives
 
-Additional parameters could be added to the `/messages` API to control the ordering
-of the returned results. This would likely not be compatible with all the other
-options available on that endpoint.
+### Reusing the `/messages` endpoint
 
-Keeping this a separate API also gives the possibility of additional threads-specific
-filtering in the future.
+Additional parameters could be added to the `/messages` endpoint to control the
+ordering of the returned results. This would likely not be compatible with all
+the other options available on that endpoint.
+
+Keeping this a separate endpoint also gives the possibility of additional
+threads-specific filtering in the future.
+
+### MSC2836 Threading
+
+[MSC2836](https://github.com/matrix-org/matrix-spec-proposals/pull/2836) includes
+a generic `/event_relationships` endpoint, but it is overly complex for
+[MSC3440](https://github.com/matrix-org/matrix-doc/pull/3440)-style threads.
+
+MSC2836 attempts to solve a larger problem, including allowing for arbitrary
+branching of threads (and many levels of event relations). MSC3440 forbids creating
+threads off a threaded message, allowing for a simpler design. Additionally, the
+MSC2836 design is more computensively intensive for both clients and servers to
+implement due to the tree-like nature of the query.
+
+A benefit to the MSC2836 design is that it supports querying over federation for
+additional events related to the event in question.
 
 ## Security considerations
 
