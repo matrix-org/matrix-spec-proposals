@@ -155,6 +155,13 @@ with `errcode` of `M_INVALID_PARAM`:
 
 * A non-string `thread_id` (or empty) `thread_id` field.
 * Providing the `thread_id` properties for a receipt of type `m.fully_read`.
+* If the given `event_id` is not related to the `thread_id`. There may be multiple
+  relations between events ((e.g. a `m.annotation` to `m.thread`), homeservers
+  should apply a reasonable maximum number of relations to traverse when attempting
+  to identify if an event is part of a thread.
+
+  It is recommended that at least 3 relations are traversed when attempting to find
+  a thread, implementations should be careful to not infinitely recurse.[^3]
 
 Given a threaded message:
 
@@ -361,3 +368,10 @@ unthreaded receipts, but it is allowed. The only known use-case for this is that
 a threaded client can use this to clear *all* notifications in a room by sending
 an unthreaded read receipt on the latest event in the room (regardless of which
 thread it appears in).
+
+[^3]: Three relations is relatively arbitrary, but is meant to cover an edit or
+reaction to a thread (to an event with no relations, i.e. the root of a thread):
+`A<--[m.thread]--B<--[m.annotation]--C`.
+With an additional leftover for future improvements. This is considered reasonable
+since threads cannot fork, edits cannot modify relation information, and generally
+annotations to annotations are ignored by user interfaces.
