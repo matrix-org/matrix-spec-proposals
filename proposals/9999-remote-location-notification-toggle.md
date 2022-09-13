@@ -1,9 +1,14 @@
-# MSCXXX: Silence local notifications
+# MSCXXX: Remotely silence local notifications
 Some clients (eg Element Web) do not use http pushers for notifications, but rather generate their own notifications in
-the client based on the `/sync` response. 
+the client based on the `/sync` response. Users should be able to remotely toggle on and off these notifications (as
+well as [push notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)) to control interruptions
+and reachability in private and professional contexts.
 
 To allow these clients to silence notifications remotely we will use account data and client-side notification
 filtering.
+
+*This proposal only refers to notifications that are generated on the client. Silencing of push notifications is covered
+by [MSC3881: Remotely toggle push notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)*
 
 ## Proposal
 Add a new account data event `m.local_notification_settings.<device-id>` with content:
@@ -25,9 +30,6 @@ Clients that implement `m.local_notification_settings.<device-id>` notification 
 only expose local notification silencing controls for devices that have indicated their support.
 
 When a device is removed these events should be pruned by clients.
-
-This proposal only refers to notifications that are generated on the client. Silencing of push notifications is covered
-by [MSC3881: Remotely toggle push notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)
 
 ## Alternatives
 #### Push rules with profile tags
