@@ -89,7 +89,7 @@ they clear notifications:
 Using the above diagrams with threaded read receipts on `E` and `I`; and an
 unthreaded read receipt on `D` would give:
 
-```
+```mermaid
 flowchart RL
     subgraph "Main" timeline
     B-->A
