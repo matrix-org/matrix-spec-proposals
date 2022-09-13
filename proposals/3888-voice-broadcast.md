@@ -9,6 +9,11 @@ Think of this being a live-podcast over Matrix.
 Some use-case scenarios for this feature can be to verbally provide updates,
 trainings, or talk to a large number of people.
 
-## State of this MSC
+## Proposal
 
-This MSC is on hold until Element Call with SFU is ready.
+We'd use [MSC3401: Native Group VoIP Signalling][MSC3401] in combination with 
+"voice/video rooms" to provide a broadcast feature.
+
+TODO: Describe how that works
+
+[MSC3401]: https://github.com/matrix-org/matrix-spec-proposals/pull/3401
