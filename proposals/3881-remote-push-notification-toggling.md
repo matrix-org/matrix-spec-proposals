@@ -40,13 +40,13 @@ A new field `device_id` is added to the `Pusher` model as returned from [GET
 
 | Name | Type | Description |
 |------|------|-------------|
-| `device_id` | string | **Required.** The device_id of the session that registered the pusher
+| `device_id` | string | **Nullable.** The device_id of the session that registered the pusher
 
 
-To be able to remove Pushers when sessions are deleted home servers must have some existing way to link a session to
+To be able to remove Pushers when sessions are deleted some home servers have some existing way to link a session to
 pusher, so exposing the `device_id` on http pushers should be trivial. (Synapse, for instance, stores the [access
 token](https://github.com/matrix-org/synapse/blob/3d201151152ca8ba9b9aae8da5b76a26044cc85f/synapse/storage/databases/main/pusher.py#L487)
-when adding a pusher)
+when adding a pusher, which is usually associated with a device)
 
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
 is required when `kind` is `http`. If `kind` is _not_ `http`, the `device_id` field is null.
