@@ -1,4 +1,4 @@
-# MSCXXX: Remotely silence local notifications
+# MSC3890: Remotely silence local notifications
 Some clients (eg Element Web) do not use http pushers for notifications, but rather generate their own notifications in
 the client based on the `/sync` response. Users should be able to remotely toggle on and off these notifications (as
 well as [push notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)) to control interruptions
@@ -53,4 +53,4 @@ data.](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
 
 ## Unstable prefix
 While this MSC is not included in the spec `m.local_notification_settings.<device-id>` should use the unstable prefix
-`m.mscXXX.local_notification_settings.<device-id>`
+`m.msc3890.local_notification_settings.<device-id>`
