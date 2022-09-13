@@ -7,6 +7,13 @@ and reachability in private and professional contexts.
 To allow these clients to silence notifications remotely we will use account data and client-side notification
 filtering.
 
+This proposal seeks to silence interrupting notifications that are generated in the client. This includes:
+- system notifications such as system banners, popups, system notification center
+- sounds, including noisy notifications and ringers
+
+In-app notifications will not be affected, with in-app notification center, badges, unread markers and counts remaining
+the same.
+
 *This proposal only refers to notifications that are generated on the client. Silencing of push notifications is covered
 by [MSC3881: Remotely toggle push notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)*
 
