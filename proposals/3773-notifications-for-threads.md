@@ -135,7 +135,7 @@ need to be defined and added for events which aren't part of a thread but attemp
 to use this action. It also conflicts with [MSC3768](https://github.com/matrix-org/matrix-spec-proposals/pull/3768),
 which attempts to define another `action` which should also work fine for threads.
 
-A new `tweak` (e.g. `threaded`) does make much sense since there is not need to
+A new `tweak` (e.g. `threaded`) was discarded as an option since there is no need to
 pass this through to the push server, which is at odds with the current `tweaks`
 mechanism.
 
