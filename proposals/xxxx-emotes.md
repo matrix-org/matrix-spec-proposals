@@ -10,24 +10,28 @@ In the current implementation/proposal it is rendered in the message html as fol
 This is similar to current implementations in structure, but rather than having clients render img tags from the message source they are added during construction of the message html.
 ## Emote sources
 ### Room emotes
-Room emotes are per-room emotes that are defined in an m.room.emote event. They can be uploaded from the room settings by moderators or above.
+Room emotes are per-room emotes that are defined in an m.room.emotes event. They can be uploaded from the room settings by moderators or above.
 The emotes are defined inside of a dict which has the shortcode as a key and the either encrypted or unencrypted source for the emote as a value.
 ### Storage format
-For encrypted rooms it follows the format:
+For encrypted rooms the m.room.emotes event follows the format:
 ```
 {
-  "short": IEncryptedFile
+"content":{
+	"short": IEncryptedFile (a json object with information on how to decrypt the file)
+	}
 }
 ```
 
-For non encrypted rooms it follows: 
+For non encrypted rooms the m.room.emotes event follows: 
 ```
 {
- "short": “mxc://abcdefg”
+"content":{
+ 	"short": “mxc://abcdefg”
+	}
 }
 ```
 
-Note: this format could be modified, but would have to be agreed upon so the clients can load them in properly.
+Note: this format could be modified, but would have to be agreed upon so the clients can load the emotes in properly.
 
 ## Alternatives:
 Other proposals regarding this issue: [MSC2545](https://github.com/matrix-org/matrix-spec-proposals/pull/2545) and [MSC1951](https://github.com/matrix-org/matrix-doc/pull/1951)
