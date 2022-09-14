@@ -12,10 +12,13 @@ without iterating over every missing message. Without this, clients are unable t
 
 ### Modification to push rule processing
 
-When an event which is part of a thread (i.e. has a valid `m.relates_to` with
-`rel_type` of `m.thread`) matches a push rule which results in a `notify` action
-then the homeserver should partition the resulting notification count per-thread.
-(This is needed for the [proposed `/sync` changes](#unread-thread-notifications-in-the-sync-response)).
+When an event which is part of a thread matches a push rule which results in a
+`notify` action then the homeserver should partition the resulting notification
+count per-thread. (This is needed for the
+[proposed `/sync` changes](#unread-thread-notifications-in-the-sync-response)).
+
+It is recommended that at least 3 relations are traversed when attempting to
+find a thread, implementations should be careful to not infinitely recurse.[^1]
 
 Similar behavior should be applied for an event which results in `notify` action
 with a `highlight` tweak set.
@@ -90,15 +93,6 @@ An example of a joined room from a sync response:
 
 ## Potential issues
 
-### Events related to thread events
-
-Events which are related to thread events (e.g. a reaction to a message which is
-part of a thread) would not be represented in the notification count for that
-thread, it would still appear in the main timeline's notification count.
-
-With the default push rules this does not seem to be a problem as thread notifications
-mostly apply to `m.room.message` and `m.room.encrypted` events.
-
 ### Scalability
 
 Rooms with many unread threads could cause some downsides:
@@ -159,3 +153,10 @@ or the presence of a `org.matrix.msc3773` flag in `unstable_features` on `/versi
 ## Dependencies
 
 N/A
+
+[^1]: Three relations is relatively arbitrary, but is meant to cover an edit or
+reaction to a thread (to an event with no relations, i.e. the root of a thread):
+`A<--[m.thread]--B<--[m.annotation]--C`.
+With an additional leftover for future improvements. This is considered reasonable
+since threads cannot fork, edits cannot modify relation information, and generally
+annotations to annotations are ignored by user interfaces.
