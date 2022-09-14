@@ -1,13 +1,13 @@
 # MSCXXXX: Emotes
 ## Proposal
-Every emote proposal uses a shortcode and a way to store the image and make the client render it. Under this proposal they are not sent in the message source as <img> tags, which is what many non-Element clients use. In this proposal, the message source is not edited and it is sent as a shortcode. Rather it is up to the client to load it when rendering. In the current implementation/proposal it is rendered in the message as follows:
+Every emote proposal uses a shortcode and a way to store the image and make the client render it. Under this proposal they are not sent in the message source as img tags, which is what many non-Element clients use. In this proposal, the message source is not edited and it is sent as a shortcode. Rather, it is up to the client to load it when rendering messages. In the current implementation/proposal it is rendered in the message html as follows:
 ```html
  <img class="mx_Emote" title=":shortcode:" src="blob:https://example.com/blob-guid">
 ```
 This is similar to current implementations in structure, but rather than having clients render img tags from the message source they are added during construction of the message html.
 ## Emote sources
 ### Room emotes
-Room emotes are per-room emotes that are defined in an m.room.emote event. 
+Room emotes are per-room emotes that are defined in an m.room.emote event. They can be uploaded from the room settings by moderators or above.
 The emotes are defined inside of a dict which has the shortcode as a key and the either encrypted or unencrypted source for the emote as a value.
 ### Storage format
 For encrypted rooms it follows the format:
@@ -34,7 +34,7 @@ Other proposals regarding this issue: [MSC2545](https://github.com/matrix-org/ma
 Below is a comparison highlighting the differences between this and other proposals.
 ### Advantages
 #### Security
-Emotes in private rooms can be encrypted so that potentially sensitive data is not publicly available to the server. Emotes in public rooms are necessarily unencrypted. One note is that although emotes are encrypted they are available to anyone in the private room, and server admins can join private rooms so they are not fully e2ee like messages. If server admins lose the ability to join any private room
+Emotes in private rooms can be encrypted so that potentially sensitive data is not publicly available to the server. Emotes in public rooms are necessarily unencrypted. One note is that although emotes are encrypted they are available to anyone in the private room, and server admins can join private rooms so they are not fully e2ee like messages. If server admins lose the ability to join any private room it would be fully private.
 <br/>
 #### Message source is not edited
 The client does not edit the actual sent message but renders emotes locally. Leaving the message source untouched could be helpful for future updates or deleting emotes/changing the way emotes are rendered.
