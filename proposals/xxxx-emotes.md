@@ -33,13 +33,13 @@ Other proposals regarding this issue: [MSC2545](https://github.com/matrix-org/ma
 
 Below is a comparison highlighting the differences between this and other proposals.
 ### Advantages
-#### Security: 
+#### Security
 Emotes in private rooms can be encrypted so that potentially sensitive data is not publicly available to the server. Emotes in public rooms are necessarily unencrypted. One note is that although emotes are encrypted they are available to anyone in the private room, and server admins can join private rooms so they are not fully e2ee like messages. If server admins lose the ability to join any private room
 <br/>
 #### Message source is not edited
 The client does not edit the actual sent message but renders emotes locally. Leaving the message source untouched could be helpful for future updates or deleting emotes/changing the way emotes are rendered.
 <br/>
-#### Rendering. 
+#### Rendering
 Current implementations use data-mx-emoticon types in the img tag. This uses the mx_Emote class name although that could also be changed since it is rendered locally.
 Compatibility with other MSCs: Although certain aspects of other MSCs cannot be kept the same, many general ideas from those could be carried over.
 ### Disadvantages
