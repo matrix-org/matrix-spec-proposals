@@ -55,9 +55,9 @@ which other homeservers can use to ask about their closest `event_id` to the
 timestamp. This endpoint also returns `origin_server_ts` to make it easy to do a
 quick comparison to see if the remote `event_id` fetched is closer than the
 local one. After the local homeserver receives a response from the federation
-endpoint, it should probably should try to backfill this event so that it's
-available to query with `/context` from a client in order to get a pagination
-token.
+endpoint, it should probably should try to backfill this event via the
+federation `/event/<event_id>` endpoint so that it's available to query with
+`/context` from a client in order to get a pagination token.
 
 The heuristics for deciding when to ask another homeserver for a closer event if
 your homeserver doesn't have something close, is left up to the homeserver
