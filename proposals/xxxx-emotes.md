@@ -1,6 +1,7 @@
 # MSCXXXX: Emotes
 ## Proposal
 Every emote proposal uses a shortcode and a way to store the image and make the client render it. Under this proposal they are not sent in the message source as img tags, which is what many non-Element clients use. In this proposal, the message source is not edited and it is sent as a shortcode. Rather, it is up to the client to load it when rendering messages. In the current implementation/proposal it is rendered in the message html as follows:
+Emotes are added in message by sending a short piece of text called the shortcode between colons.
 ```html
  <img class="mx_Emote" title=":shortcode:" src="blob:https://example.com/blob-guid">
 ```
@@ -13,16 +14,14 @@ The emotes are defined inside of a dict which has the shortcode as a key and the
 For encrypted rooms it follows the format:
 ```
 {
-  "short": { IEncryptedFile  }
+  "short": IEncryptedFile
 }
 ```
 
 For non encrypted rooms it follows: 
 ```
 {
-"short": { 
-“mxc://abcdefg”
-  }
+ "short": “mxc://abcdefg”
 }
 ```
 
