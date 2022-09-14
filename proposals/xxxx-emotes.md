@@ -49,8 +49,8 @@ It might be possible to implement this in public rooms if the client pulls every
 Requires existing clients to change their implementations.
 ## Additional Points
 This could be extended to spaces although the main current implementation does not have this. Spaces would take priority over individual room emotes if there is a shortcode clash. 
-<br/>
+<br/><br/>
 Add custom emotes for reactions and the emoji picker. 
-<br/>
+<br/><br/>
 Other MSCs introduced the idea of shareable packs. Those would be compatible with image packs except for encrypted rooms. It might be simpler to allow users to download a zip file of all the emotes in a room.
-<br/>
+<br/><br/>
