@@ -1,7 +1,7 @@
 # MSCXXXX: Emotes
 ## Proposal
 Every emote proposal uses a shortcode and a way to store the image and make the client render it. Under this proposal they are not sent in the message source as img tags, which is what many non-Element clients use. In this proposal, the message source is not edited and it is sent as a shortcode. Rather, it is up to the client to load it when rendering messages. Emotes are added in message by sending a short piece of text called the shortcode between colons.
-<br/>
+<br/><br/>
 In the current implementation/proposal it is rendered in the message html as follows:
 
 ```html
