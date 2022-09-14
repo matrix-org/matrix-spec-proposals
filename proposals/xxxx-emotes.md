@@ -53,3 +53,4 @@ This could be extended to spaces although the main current implementation does n
 Add custom emotes for reactions and the emoji picker. 
 <br/>
 Other MSCs introduced the idea of shareable packs. Those would be compatible with image packs except for encrypted rooms. It might be simpler to allow users to download a zip file of all the emotes in a room.
+<br/>
