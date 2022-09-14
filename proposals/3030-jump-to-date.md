@@ -172,6 +172,15 @@ pagination tokens don't follow a certain convention, some homeserver
 implementations may already be using arbitrary number tokens already which would
 be impossible to distinguish from  a timestamp.
 
+A related alternative is to use `/messages` with a `from_time`/`to_time` (or
+`from_ts`/`to_ts`) query parameters that only accept timestamps which solves the
+confusion and disambigution problem of trying to re-use the existing `from`/`to`
+query paramters. Re-using `/messages` would reduce the number of round-trips and
+potentially client-side implementations for the use case where you want to fetch
+a window of messages from a given time. But has the same round-trip problem if
+you want to use the returned `event_id` with `/context` or another endpoint
+instead.
+
 
 ### Filter by date in `RoomEventFilter`
 
