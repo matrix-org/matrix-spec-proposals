@@ -6,18 +6,19 @@ Every emote proposal uses a shortcode and a way to store the image and make the 
 ```
 This is similar to current implementations in structure, but rather than having clients render img tags from the message source they are added during construction of the message html.
 ## Emote sources
-###Room emotes
+### Room emotes
 Room emotes are per-room emotes that are defined in an m.room.emote event. 
 The emotes are defined inside of a dict which has the shortcode as a key and the either encrypted or unencrypted source for the emote as a value.
+### Storage format
 For encrypted rooms it follows the format:
-```json
+```
 {
   "short": { IEncryptedFile  }
 }
 ```
 
 For non encrypted rooms it follows: 
-```json
+```
 {
 "short": { 
 “mxc://abcdefg”
