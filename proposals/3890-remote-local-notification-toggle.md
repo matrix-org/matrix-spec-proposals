@@ -60,4 +60,4 @@ data.](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
 
 ## Unstable prefix
 While this MSC is not included in the spec `m.local_notification_settings.<device-id>` should use the unstable prefix
-`m.msc3890.local_notification_settings.<device-id>`
+`org.matrix.msc3890.local_notification_settings.<device-id>`
