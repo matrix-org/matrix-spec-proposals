@@ -65,6 +65,10 @@ implementation. Although the heuristics will probably be based on whether the
 closest event is a forward/backward extremity indicating it's next to a gap of
 events which are potentially closer.
 
+A good heuristic for which servers to try first is to sort by servers that have
+been in the room the longest because they're most likely to have anything we ask
+about.
+
 These endpoints are authenticated and should be rate-limited like similar client
 and federation endpoints to prevent resource exhaustion abuse.
 
