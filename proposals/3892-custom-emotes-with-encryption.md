@@ -39,7 +39,9 @@ Other proposals regarding this issue: [MSC2545](https://github.com/matrix-org/ma
 Below is a comparison highlighting the differences between this and other proposals.
 ### Advantages
 #### Security
-Emotes in private rooms can be encrypted so that potentially sensitive data is not publicly available to the server. Emotes in public rooms are necessarily unencrypted. One note is that although emotes are encrypted they are available to anyone in the private room, and server admins can join private rooms so they are not fully e2ee like messages. If server admins lose the ability to join any private room it would be fully private.
+Emotes in private rooms can be encrypted so that potentially sensitive data is not publicly available to server members. Emotes in public rooms are necessarily unencrypted.
+One important note is that although emotes are encrypted they are available to anyone in the private room, and server admins can see the emotes in the room state so they are not e2ee like messages. If the file keys or room state is encrypted [MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414) and if server admins lose the ability to join any private room it would then be e2ee.
+The current advantage is that the emotes will not be obtainable for other users on the server who are not in the private room.
 <br/>
 #### Message source is not edited
 The client does not edit the actual sent message but renders emotes locally. Leaving the message source untouched could be helpful for future updates or deleting emotes/changing the way emotes are rendered.
@@ -49,7 +51,7 @@ Current implementations use data-mx-emoticon types in the img tag. This uses the
 Compatibility with other MSCs: Although certain aspects of other MSCs cannot be kept the same, many general ideas from those could be carried over.
 ### Disadvantages
 #### Lack of user-specific emotes. 
-It might be possible to implement this in public rooms if the client pulls every user’s public emote data to load. Generally user specific emotes goes against the idea of emotes being a shared set of images.
+It might be possible to implement this in public rooms if the client pulls every user’s public emote data to load. Generally, however, user specific emotes goes against the idea of emotes being a shared set of images.
 #### Might be more difficult for clients to implement
 Requires existing clients to change their implementations.
 ## Additional Points
@@ -57,5 +59,5 @@ This could be extended to spaces although the main current implementation does n
 <br/><br/>
 Add custom emotes for reactions and the emoji picker. 
 <br/><br/>
-Other MSCs introduced the idea of shareable packs. Those would be compatible with image packs except for encrypted rooms. It might be simpler to allow users to download a zip file of all the emotes in a room.
+Other MSCs introduced the idea of shareable packs. This could be compatible with image packs except for encrypted rooms. It would be simpler to allow users to download a zip file of all the emotes in a room.
 <br/><br/>
