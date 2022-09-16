@@ -264,7 +264,7 @@ for integration with their autocomplete mechanisms and for general performance.
 Due to the heuristics of `m.pack.metadata` events, it is possible for moderators to hide rooms from
 existing members by applying the state event. Moderators already have several opportunities to damage
 a room, and are already considered in a place of trust to not do so maliciously - therefore, this
-risk of mitigated by having trusted moderators and administrators in a room, just like with any other
+risk is mitigated by having trusted moderators and administrators in a room, just like with any other
 new state event which would be added.
 
 The sharable URL for a pack could leak information about who created it or what it contains, potentially
