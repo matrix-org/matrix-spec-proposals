@@ -75,9 +75,8 @@ Query Parameters:
   One of `[all, participated]`. Defaults to `all`.
 * **`from`**: `string`
 
-  The token to start returning events from. This token can be obtained from a
-  `prev_batch` or `next_batch` token returned by the `/sync` endpoint, or from
-  an `end` token returned by a previous request to this endpoint.
+  The token to start returning events from. This token can be obtained from an
+  `next_batch` token returned by a previous request to this endpoint.
 
   If it is not provided, the homeserver shall return a list of thread roots starting
   from the most recent visible event in the room history for the requesting user.
@@ -86,11 +85,6 @@ Query Parameters:
 
   Server implementations should impose a maximum value to avoid resource
   exhaustion.
-* **`to`**: `string`
-
-  The token to stop returning events at. This token can be obtained from a
-  `prev_batch` or `next_batch` token returned by the `/sync` endpoint, or from
-  an `end` token returned by a previous request to this endpoint.
 
 #### Response format
 
@@ -98,18 +92,13 @@ Query Parameters:
 
   A list of room of events which are the root event of threads. Each event includes
   bundled aggregations. The order is chronological by the latest event in that thread.
-* **`end`**: `string`
+* **`next_batch`**: `string`
 
-  A token corresponding to the end of `chunk`. This token can be passed back to
-  this endpoint to request further events.
+  A token which can be passed back to this endpoint to request additional events.
 
   If no further events are available (either because we have reached the start
   of the timeline, or because the user does not have permission to see any more
   events), this property is omitted from the response.
-* **`start`**: `string` **Required**
-
-  A token corresponding to the start of `chunk`. This will be the same as the
-  value given in `from`.
 
 If the sender of an event is ignored by the current user the results are modified
 slightly. This has two situations:
@@ -137,8 +126,7 @@ GET /_matrix/client/v1/rooms/%21ol19s%3Ableecker.street/threads?
 ```json
 {
   "chunk": [ClientEvent],
-  "end": "...",
-  "start": "..."
+  "next_batch": "..."
 }
 ```
 
@@ -150,7 +138,7 @@ more efficiently solved by this MSC.
 
 ## Potential issues
 
-None forseen.
+None foreseen.
 
 ## Alternatives
 
@@ -187,7 +175,7 @@ server-side maximum.
 
 It does not seem useful to be able to paginate in reverse order, i.e. starting with
 the thread which was least recently updated. If there becomes a future need of this
-a `dir` parameter could be added which takes an enum value of `[f b]` defaulting to
+a `dir` parameter could be added which takes an enum value of `[f, b]` defaulting to
 `b` to maintain backwards compatibility with this proposal.
 
 ## Unstable prefix
