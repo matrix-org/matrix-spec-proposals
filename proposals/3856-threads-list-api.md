@@ -72,7 +72,7 @@ Query Parameters:
   the thread or replied to the thread (they have created an event with a `m.thread`
   relation targeting the root event).
 
-  One of `[all participated]`. Defaults to `all`.
+  One of `[all, participated]`. Defaults to `all`.
 * **`from`**: `string`
 
   The token to start returning events from. This token can be obtained from a
