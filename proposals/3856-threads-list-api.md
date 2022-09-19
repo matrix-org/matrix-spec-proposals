@@ -22,7 +22,7 @@ paginate through all of the threads in the room, inspect the latest event from
 the bundled aggregations and attempt to sort them. This can require many round
 trips to the server and is wasteful for both the client and server.
 
-Unfortunately even when a client has all the threads in a room is not able to accurately
+Unfortunately even when a client has all the threads in a room it is not able to accurately
 sort the threads since the client lacks the proper topological ordering of events. (The
 closest available information is the `age` or `origin_server_ts` of the events, but this
 is not always correct.)
@@ -160,7 +160,7 @@ a generic `/event_relationships` endpoint, but it is overly complex for
 MSC2836 attempts to solve a larger problem, including allowing for arbitrary
 branching of threads (and many levels of event relations). MSC3440 forbids creating
 threads off a threaded message, allowing for a simpler design. Additionally, the
-MSC2836 design is more computensively intensive for both clients and servers to
+MSC2836 design is more computationally intensive for both clients and servers to
 implement due to the tree-like nature of the query.
 
 A benefit to the MSC2836 design is that it supports querying over federation for
