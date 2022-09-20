@@ -299,14 +299,15 @@ users, it will not impact notifications.
 
 ### Thread ID location
 
-Instead of adding the thread ID as a new path part, it could be added to the body
-of the receipt. There may be a small backwards compatibility benefit to this, but
-it seems clearer to put it as part of the URL.
+Instead of adding the thread ID in the body, it could be provided as part of the
+URL path or as a query parameter. Adding it to the URL (as part of the path or a
+query parameter) would make it difficult to differentiate the receipt's event ID
+field from the thread ID.
 
-Instead of encoding the thread ID as an integral part of the receipt, all of the
-read threads could be added to the body of the single receipt. This could cause
-data integrity issues if multiple clients attempt to update the receipt without
-first reading it.
+Another idea was to encode information for all threads in the single receipt, e.g.
+by adding them to the body of the single read receipt. This could cause data
+integrity issues if multiple clients attempt to update the receipt without first
+reading it.
 
 ### Receipt type
 
