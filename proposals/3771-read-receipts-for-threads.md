@@ -203,7 +203,7 @@ POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
 As it is today, not providing the `thread_id` field sends an unthreaded receipt:
 
 ```
-POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_root
+POST /_matrix/client/r0/rooms/!room:example.org/receipt/m.read/$thread_reply
 
 {}
 ```
