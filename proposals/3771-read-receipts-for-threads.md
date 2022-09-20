@@ -139,7 +139,7 @@ No other changes to receipts are proposed, i.e. this still does not allow a call
 to move their receipts backwards in a room. The relationship between `m.read` and
 `m.read.private` is not changed.
 
-The body of request to the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
+The request body to the [`/receipt` endpoint](https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3roomsroomidreceiptreceipttypeeventid)
 gains the following optional fields:
 
 * `thread_id` (`string`): The thread that the receipt belongs to (i.e. the
