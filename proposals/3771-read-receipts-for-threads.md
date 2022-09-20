@@ -76,7 +76,7 @@ Thus, receipts are split into two categories, which this document calls "unthrea
 and "threaded". Threaded receipts are identified by the root message of the thread;
 additionally there is a special pseudo-thread for the main timeline. This allows marking
 the main timeline (a pseudo-thread) as read, without marking any actual threads (split
- off from the main timeline) as read.
+off from the main timeline) as read.
 
 The most significant difference between threaded and unthreaded receipts is how
 they clear notifications:
@@ -149,7 +149,7 @@ gains the following optional fields:
   A special value of `"main"` corresponds to the receipt being for the main
   timeline (i.e. events which are not part of a thread).
 
-  If this field is not provided than the receipt applies to the unthreaded
+  If this field is not provided then the receipt applies to the unthreaded
   version of the room.[^2]
 
 The following conditions are errors and should be rejected with a `400` error
@@ -320,7 +320,7 @@ read receipts, the opposite is not possible (to the author's knowledge). In shor
 it seems the [compatibility issues discussed above](#compatibility-with-unthreaded-clients)
 would not be solved by adding more receipt types.
 
-This also gets more complcated with the addition of the `m.read.private` receipt --
+This also gets more complicated with the addition of the `m.read.private` receipt --
 would there additionally be an `m.read.private.thread`? How do you map between
 all of these?
 
