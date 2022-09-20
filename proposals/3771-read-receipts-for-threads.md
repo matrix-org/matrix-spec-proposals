@@ -74,7 +74,9 @@ they do not wish to incorporate threads.
 This MSC proposes allowing a receipt per thread, as well as an unthreaded receipt.
 Thus, receipts are split into two categories, which this document calls "unthreaded"
 and "threaded". Threaded receipts are identified by the root message of the thread;
-additionally there is a special pseudo-thread for the main timeline.
+additionally there is a special pseudo-thread for the main timeline. This allows marking
+the main timeline (a pseudo-thread) as read, without marking any actual threads (split
+ off from the main timeline) as read.
 
 The most significant difference between threaded and unthreaded receipts is how
 they clear notifications:
