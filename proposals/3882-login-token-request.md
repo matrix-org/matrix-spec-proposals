@@ -1,6 +1,11 @@
 # MSC3882: Allow an existing session to sign in a new session
 
-todo
+In MSCyyyy (to be published) a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
+QR code.
+
+In order to support the above proposal a mechanism is needed where by the new device can obtain a new access token that it can use with the Client-Server API.
+
+It is proposed that the current `m.login.token` mechanism is extended to allow the issuance of a login token by an existing client session.
 
 ## Proposal
 
@@ -30,7 +35,7 @@ This token can then be used as per the existing Login spec of the Client-Server 
 
 ## Potential issues
 
-todo
+None identified.
 
 ## Alternatives
 
@@ -44,7 +49,7 @@ behind user interactive authentication.
 
 ## Unstable prefix
 
-tbd
+None.
 
 ## Dependencies
 
