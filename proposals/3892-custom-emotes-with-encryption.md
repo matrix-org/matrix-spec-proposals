@@ -1,8 +1,8 @@
 # MSC3892: Emotes
 ## Proposal
-#### Definitions:<br/>
+#### Definitions:
 Emotes: Short for emoticons, a shortcode/image pair that are used inline in messages and in reactions. <br/> 
-Emojis: Shortcode/image pairs with unicode representations. Currently supported in most clients. A subset of emotes. <br/>
+Emojis: Shortcode/image pairs with unicode representations. Currently supported in most clients. A subset of emotes. <br/><br/>
 Every emote proposal uses a shortcode and a way to store the image and make the client render it. <br/> 
 Under this proposal they are not sent in the message source as img tags, which is what many non-Element clients use. <br/> 
 In this proposal, the message source is not edited and it is sent as a shortcode. Rather, it is up to the client to load it when rendering messages. <br/> 
