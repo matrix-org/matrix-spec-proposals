@@ -3,7 +3,7 @@
 #### Definitions:
 Emotes: Short for emoticons, a shortcode/image pair that are used inline in messages and in reactions. <br/> 
 Emojis: Shortcode/image pairs with unicode representations. Currently supported in most clients. A subset of emotes. <br/> 
-Shortcode: A short piece of text surrounded in colons to represent an emote/emoji. Ex. :smile: 
+Shortcode: A short piece of text surrounded in colons to represent an emote/emoji. Ex. :shortcode: 
 <br/><br/>
 Every emote proposal uses a shortcode and a way to store the image and make the client render it. <br/> 
 Under this proposal they are not sent in the message source as img tags, which is what many non-Element clients use. <br/> 
