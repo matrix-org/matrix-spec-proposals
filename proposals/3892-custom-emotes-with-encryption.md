@@ -15,7 +15,7 @@ In the current implementation/proposal it is rendered in the message html as fol
  <img class="mx_Emote" title=":shortcode:" src="blob:https://example.com/blob-guid">
 ```
 This is similar to current implementations in structure, but rather than having clients render img tags <br/>
-from the message source they are added during construction of the message html. Encrypted rooms can use the blob obtained after decryption <br/> 
+from the message source they are added during construction of the message html. Encrypted rooms can use the blob obtained after decryption
 while unencrypted ones can directly use the mxc url.
 
 ## Emote sources
@@ -53,8 +53,7 @@ Emotes in private rooms can be encrypted so that potentially sensitive data is n
 Emotes in public rooms are necessarily unencrypted. <br/>
 One important note is that although emotes are encrypted they are available to anyone in the private room, and server <br/> 
 admins can see the emotes in the room state so they are not e2ee like messages. <br/> 
-If the file keys or room state is encrypted [MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414) <br/> 
-and if server admins lose the ability to join any private room it would then be e2ee.
+If the file keys or room state is encrypted [MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414) and if server admins lose the ability to join any private room <br/>it would then be e2ee.
 The current advantage is that the emotes will not be obtainable for other users on the server who are not in the private room.
 <br/>
 #### Message source is not edited
