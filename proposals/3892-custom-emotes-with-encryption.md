@@ -2,11 +2,12 @@
 ## Proposal
 #### Definitions:
 Emotes: Short for emoticons, a shortcode/image pair that are used inline in messages and in reactions. <br/> 
-Emojis: Shortcode/image pairs with unicode representations. Currently supported in most clients. A subset of emotes. <br/><br/>
+Emojis: Shortcode/image pairs with unicode representations. Currently supported in most clients. A subset of emotes. <br/> 
+Shortcode: A short piece of text surrounded in colons to represent an emote/emoji. Ex. :smile: 
+<br/><br/>
 Every emote proposal uses a shortcode and a way to store the image and make the client render it. <br/> 
 Under this proposal they are not sent in the message source as img tags, which is what many non-Element clients use. <br/> 
-In this proposal, the message source is not edited and it is sent as a shortcode. Rather, it is up to the client to load it when rendering messages. <br/> 
-Emotes are added in message by sending a short piece of text called the shortcode between colons.
+In this proposal, the message source is not edited and it is sent as a shortcode. Rather, it is up to the client to <br/>load it when rendering messages.<br/> 
 <br/><br/>
 In the current implementation/proposal it is rendered in the message html as follows:
 
@@ -14,7 +15,8 @@ In the current implementation/proposal it is rendered in the message html as fol
  <img class="mx_Emote" title=":shortcode:" src="blob:https://example.com/blob-guid">
 ```
 This is similar to current implementations in structure, but rather than having clients render img tags <br/>
-from the message source they are added during construction of the message html.
+from the message source they are added during construction of the message html. Encrypted rooms can use the blob obtained after decryption <br/> 
+while unencrypted ones can directly use the mxc url.
 
 ## Emote sources
 ### Room emotes
