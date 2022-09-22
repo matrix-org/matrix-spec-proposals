@@ -66,11 +66,6 @@ as `true`.
 
 Home servers should migrate pushers that were registered before this proposal so that `enabled` is `true`
 
-
-
-# Adds support for remotely enabling/disabling pushers, as per MSC3881
-                    "org.matrix.msc3881": self.config.experimental.msc3881_enabled,
-
 ## Potential issues
 
 Adding an enabled state to pushers increases the complexity of the push notification API. In addition to a pusher
