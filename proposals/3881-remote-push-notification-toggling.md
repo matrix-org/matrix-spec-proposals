@@ -51,10 +51,6 @@ when adding a pusher, which is usually associated with a device)
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
 is required when `kind` is `http`. If `kind` is _not_ `http`, the `device_id` field is null.
 
-In [POST /_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset)
-`device_id` is an invalid parameter and should raise an invalid request error.
-
-
 ### Pusher-less clients
 
 Pausing notifications for clients that create notifications outside of the Push Gateway will not be addressed in this
