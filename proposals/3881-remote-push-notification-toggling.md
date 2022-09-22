@@ -18,11 +18,11 @@ assigning an enabled state to every pusher.
 ### Pusher-dependent clients
 
 #### Disabling pushers
-A new nullable field `enabled` is added to the `Pusher` model.
+A new optional field `enabled` is added to the `Pusher` model.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `enabled` | boolean | Whether the pusher should actively create push notifications
+| `enabled` | boolean | **Optional** Whether the pusher should actively create push notifications
 
 In [POST /_matrix/client/v3/pushers/set](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset)
 the value is optional and if omitted, defaults to `true`.
@@ -35,12 +35,12 @@ Pushers that are not enabled do not produce push notifications of any kind, eith
 `http` pushers or otherwise.
 
 #### Explicitly linking device and pusher
-A new field `device_id` is added to the `Pusher` model as returned from [GET
+A new optional field `device_id` is added to the `Pusher` model as returned from [GET
 /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers).
 
 | Name | Type | Description |
 |------|------|-------------|
-| `device_id` | string | **Nullable.** The device_id of the session that registered the pusher
+| `device_id` | string | **Optional** The device_id of the session that registered the pusher
 
 
 To be able to remove Pushers when sessions are deleted some home servers have some existing way to link a session to
@@ -49,7 +49,7 @@ token](https://github.com/matrix-org/synapse/blob/3d201151152ca8ba9b9aae8da5b76a
 when adding a pusher, which is usually associated with a device)
 
 In [GET /_matrix/client/v3/pushers](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3pushers) the value
-is required when `kind` is `http`. If `kind` is _not_ `http`, the `device_id` field is null.
+is optional.
 
 ### Pusher-less clients
 
