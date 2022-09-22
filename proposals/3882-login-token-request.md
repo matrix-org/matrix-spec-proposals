@@ -49,7 +49,22 @@ behind user interactive authentication.
 
 ## Unstable prefix
 
-None.
+While this feature is in development the new endpoint should be exposed using the following unstable prefix:
+
+- `/_matrix/client/unstable/org.matrix.msc3882/login/token`
+
+Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions`
+response, with the key `org.matrix.msc3882` set to `true`. So, the response could look then as
+following:
+
+```json
+{
+    "versions": ["r0.6.0"],
+    "unstable_features": {
+        "org.matrix.msc3882": true
+    }
+}
+```
 
 ## Dependencies
 
