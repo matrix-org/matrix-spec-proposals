@@ -128,7 +128,7 @@ The downsides of this approach are:
 - the `.well-known` resource is dynamic, which can be harder to host/delegate & might conflict with other services like Mastodon
 - this does not cover discovering the authentication server for user registration
 
-### 
+### Account management URL
 
 There is no standard in OIDC for the `account` field. If one was to be standardised in future then it would make sense to use that instead.
 
