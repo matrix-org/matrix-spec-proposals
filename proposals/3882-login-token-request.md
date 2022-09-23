@@ -22,6 +22,11 @@ Add a new POST endpoint to the Client-Server API that issues a time limited `m.l
 
 This new endpoint MAY be protected by user interactive authentication.
 
+The values returned are:
+
+- `login_token` - required, the token to use with `m.login.token`
+- `expires_in` - required, the expiry time for the token in seconds
+
 This token can then be used as per the existing Login spec of the Client-Server API as follows:
 
 `POST /login`
