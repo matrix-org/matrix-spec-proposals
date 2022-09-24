@@ -1,4 +1,4 @@
-# MSCxxxx: Appservice media
+# MSC3896: Appservice media
 
 Appservices often need to bridge media, and do so by reuploading files to the homeserver. This
 can cause a lot of storage usage. This MSC proposes a way for appservices to register media
@@ -38,7 +38,7 @@ Media may not be able to load if the appservice is unable to reach wherever remo
 
 ## Unstable prefix
 
-`org.eu.celery.mscxxxx.media` should be used instead of `media`
+`org.eu.celery.msc3896.media` should be used instead of `media`
 
 ## Dependencies
 
