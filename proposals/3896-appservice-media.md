@@ -6,7 +6,12 @@ can cause a lot of storage usage. This MSC proposes a way for appservices to reg
 
 ## Proposal
 
-This proposal adds a new key to the namespaces block of appservice registration. For example:
+This proposal adds a new key (`media`) to the namespaces block of appservice registration.
+
+Whenever the homeserver gets a request that matches the regex, it should make a http GET request
+to `/_matrix/app/v1/media/{mediaId}`.
+
+For example:
 
 ```yaml
 namespaces:
@@ -15,11 +20,8 @@ namespaces:
       regex: "foobar-.*"
 ```
 
-Whenever the homeserver gets a request that matches the regex, it should make a http GET request
-to `/_matrix/app/v1/media/{mediaId}`.
-
-Example: using the example registration, fetching `mxc://server.tld/foobar-bazqux` should lead to a
-request to `/_matrix/app/v1/media/foobar-bazqux`.
+In this case, fetching `mxc://server.tld/foobar-bazqux` leads to a request to
+`/_matrix/app/v1/media/foobar-bazqux`.
 
 Appservices may set `Cache-Control` on their response. Homeservers should cache the response, though
 they may remove cached remote media to save space.
