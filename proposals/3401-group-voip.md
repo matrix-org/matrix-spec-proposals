@@ -1,5 +1,9 @@
 # MSC3401: Native Group VoIP signalling
 
+Note: previously this MSC included SFU signalling which has now been moved to
+[MSC3898](https://github.com/matrix-org/matrix-spec-proposals/pull/3898) to
+avoid making this MSC too large.
+
 ## Problem
 
 VoIP signalling in Matrix is currently conducted via timeline events in a 1:1 room.
