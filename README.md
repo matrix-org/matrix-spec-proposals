@@ -219,7 +219,7 @@ other identifiers; your unstable room version may be called
 
 In order for the changes to end up in a "real" room version (the ones listed in
 the spec), it will need a second MSC which aggregates a bunch of functionality
-from varying MSCs into a single room version. Typically these sorts of curating
+from various MSCs into a single room version. Typically these sorts of curating
 MSCs are written by the Spec Core Team given the complexity in wording, but
 you're more than welcome to bring an MSC forward which makes the version real.
 
