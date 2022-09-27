@@ -114,16 +114,21 @@ Some tips for MSC writing:
 
 #### Step 2: Submitting a Pull Request
 
-1. Open a
-   [Pull Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+1. Open a [Pull
+   Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
    to add your proposal document to the [`proposals`](proposals) directory.
    Note that this will require a GitHub account.
+      * [Mark your Pull Request as a
+        draft](https://github.blog/2019-02-14-introducing-draft-pull-requests/)
+        for now.
 2. The MSC number is the number of the pull request that is automatically
    assigned by GitHub. Go back through and edit the document accordingly. Don't
    forget the file name itself!
 3. Edit the pull request title to fit the format "MSC1234: Your proposal
-   title". If it's still a work in progress, put "WIP" somewhere in the title
-   (usually the beginning).
+   title".
+4. Once your proposal is correctly formatted and ready for review from the
+   wider ecosystem, [take your Pull Request out of draft
+   status](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request#marking-a-pull-request-as-ready-for-review).
 
 The Spec Core Team will notice this and apply various labels/status tracking to
 your MSC, which will announce it to the wider world.
@@ -165,7 +170,6 @@ something called _Final Comment Period_. This is a 5 calendar day countdown to
 give anyone one last chance to raise any blockers or concerns about the
 proposed change. Typically MSCs pass this stage without incident, but it
 nevertheless serves as a safeguard.
-
 
 #### Step 5: MSC is accepted
 
