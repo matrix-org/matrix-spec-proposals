@@ -12,7 +12,6 @@ https://spec.matrix.org/proposals/#process.
 The source of the Matrix specification itself is maintained at
 https://github.com/matrix-org/matrix-spec.
 
-
 ## The Matrix Spec Process
 
 An MSC is meant to be a **technical document that unambiguously describes a
@@ -25,6 +24,26 @@ it's important for an MSC to be fully fleshed out in technical detail, as once
 merged it's immediately part of the formal spec (even though it still needs to
 be transcribed into the actual spec itself).
 
+### What changes need to follow this process?
+
+In most cases a change to [the Matrix protocol](https://spec.matrix.org) will
+require an MSC. Changes that would not require an MSC are typically small and
+uncontentious, or are simply clarifications to the spec. Fixing typos in the
+spec do not require an MSC. In most cases, removing ambiguities do not either.
+The exception may be if implementations in the ecosystem have differing views
+on clarifying the ambiguity. In that case, an MSC is typically the best place
+to reach consensus.
+
+Ultimately, the [Spec Core Team](https://matrix.org/foundation) have the final
+say on this, but generally if the change would require updates to a
+non-insignificant portion of the Matrix implementation ecosystem or would be
+met with contention, an MSC is the best route to take. You can also ask in the
+[Matrix Spec](https://matrix.to/#/#matrix-spec:matrix.org) or [Office of the
+Spec Core Team](https://matrix.to/#/#sct-office:matrix.org) Matrix rooms for
+clarification.
+
+### Summary of the process
+
 The MSC process consists of five basic steps:
 
 1. **Write up the proposal** in a
@@ -34,9 +53,9 @@ The MSC process consists of five basic steps:
 2. **Submit it as a Pull Request** to this repo, adding "WIP" to the title if
    it's still a work in progress.
 3. **Seek review** from the community. Once people are happy
-   with it, ask the [Spec Core Team](https://matrix.org/foundation) (SCT) to
+   with it, ask the [Spec Core Team](https://matrix.org/foundation) to
    look at it in
-   [the SCT office Matrix room](https://matrix.to/#/#sct-office:matrix.org).
+   [the Office of the SCT Matrix room](https://matrix.to/#/#sct-office:matrix.org).
 4. When the SCT are happy with the proposal, they'll vote for its acceptance.
    The proposal will go into a **Final Comment Period (FCP)**, which gives
    everyone the chance to raise any concerns.
@@ -49,7 +68,6 @@ controversial changes, getting an MSC merged can take more time and effort, but
 the overall process remains the same.
 
 Below is various guidance to try and help make the experience smoother.
-
 
 ### Guidance on the process
 
@@ -115,7 +133,7 @@ After the MSC has been implemented, fully fleshed out, and generally feels
 ready for final review, you should ask a member of the Spec Core Team to review it in
 the public [Spec Core Team Office room on
 Matrix](https://matrix.to/#/#sct-office:matrix.org). Someone from the SCT will
-then review it, and if all looks well will propose _Final Comment Period_ (FCP)
+then review it, and if all looks well will propose FCP
 to start.
 
 At this point, other members of the SCT will look at the proposal and consider
