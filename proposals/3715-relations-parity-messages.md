@@ -75,7 +75,7 @@ previous calls (as well as `next_batch` values, as is currently specified). The
 [definition of the `from` parameter](https://spec.matrix.org/unstable/client-server-api/#get_matrixclientv1roomsroomidrelationseventid)
 is updated:
 
-> Can be a `from_batch` token **or `next_batch`** token from a previous call, or a
+> Can be a `next_batch` token **or `prev_batch`** token from a previous call, or a
 > returned `start` token from `/messages`, or a `next_batch` token from `/sync`.
 
 (Bold indicates new text.)
