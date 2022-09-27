@@ -183,7 +183,7 @@ Core Team themselves.
 
 ### Other useful information
 
-## Unstable prefixes
+#### Unstable prefixes
 
 *Unstable* prefixes are the namespaces which are used before an MSC has
 completed FCP (see above). While the MSC might propose that a `m.space` or
@@ -199,7 +199,7 @@ breaking compatibility changes between edits of the MSC itself, or indeed
 another competing MSC that's attempting to add the same identifiers.
 
 
-## Room versions
+#### Room versions
 
 To summarize [the spec](https://spec.matrix.org/latest/rooms/) on room
 versions: they are how servers agree upon algorithms in a decentralized world
@@ -228,7 +228,7 @@ feature can look like, see
 of what making a new "real" room version looks like, see
 [MSC3604](https://github.com/matrix-org/matrix-doc/pull/3604).
 
-## Ownership of MSCs and closing them
+#### Ownership of MSCs and closing them
 
 If an author decides that they would no longer like to pursue their MSC, they
 can either pass ownership of it off to someone else, or close it themselves.
@@ -261,7 +261,7 @@ Additionally, FCP can be also proposed with a disposition of "postpone". This
 may be done for MSCs for which the proposed changes do not make sense for the
 current state of the ecosystem, but may make sense further down the road.
 
-# Asking for help
+## Asking for help
 
 The Matrix community and members of the Spec Core Team are here to help guide
 you through the process!
