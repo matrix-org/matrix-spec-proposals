@@ -113,6 +113,10 @@ slightly. This has two situations:
    non-ignored user; with the caveat that the ordering of the threads is not
    re-arranged due to this replacement.
 
+Like [`/messages`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3roomsroomidmessages),
+this returns a 403 `M_FORBIDDEN` error response if the caller isn't able to see the
+room's history.
+
 #### Example request:
 
 ```
