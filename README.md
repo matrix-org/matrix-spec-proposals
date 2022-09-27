@@ -71,7 +71,7 @@ Below is various guidance to try and help make the experience smoother.
 
 ### Guidance on the process
 
-#### Step 1: Writing up the proposal
+#### Step 1: Writing the proposal
 
 Come up with an idea. The idea can be for anything, but the solution (MSC)
 needs to benefit the Matrix ecosystem rather than yourself (or your company)
@@ -90,6 +90,27 @@ There's a [proposal template](proposals/0000-proposal-template.md) under
 same major points is fine.
   * Note: At this stage, you won't have an MSC number, so feel free to use
     `0000`, `XXXX`, or whatever other placeholder you feel comfortable with.
+
+Some tips for MSC writing:
+
+* Please wrap your lines to 80 characters maximum (some small leeway is OK).
+  This allows readers to review your markdown without needing to horizontally
+  scroll back and forth. Many markdown text editors have this a feature.
+* If you are referencing an existing endpoint in the spec, or another MSC, it
+  is very helpful to add a link to them so the reader does not need to search
+  themselves. Examples:
+    * "This MSC proposals an alternative to
+      [MSC3030](https://github.com/matrix-org/matrix-spec-proposals/pull/3030)."
+    * "A new field will be added to the response body of
+      [`/_matrix/client/v3/sync`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3sync)".
+        * Note: it is best to link to the latest stable version of the spec
+          (e.g. /v1.3, not /latest) - failing that,
+          [/unstable](https://spec.matrix.org/unstable/) if the change is not
+          yet in a released spec version.
+* GitHub supports rendering fancy diagrams from text with very little
+  effort using [Mermaid](https://mermaid-js.github.io/mermaid/#/). See [this
+  guide](https://github.blog/2022-02-14-include-diagrams-markdown-files-mermaid/)
+  for more information.
 
 #### Step 2: Submitting a Pull Request
 
