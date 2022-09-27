@@ -211,8 +211,6 @@ like ours. Examples of changes that require a new room version include anything 
  * [the redaction
    algorithm](https://spec.matrix.org/latest/client-server-api/#redactions).
 
-See [an example of an MSC](https://github.com/matrix-org/matrix-spec-proposals/pull/3667) that proposes a new room version.
-
 Unstable prefixes (see above) for room versions work the same as they do for
 other identifiers; your unstable room version may be called
 "org.matrix.msc1234".
@@ -223,16 +221,9 @@ from various MSCs into a single room version. Typically these sorts of curating
 MSCs are written by the Spec Core Team given the complexity in wording, but
 you're more than welcome to bring an MSC forward which makes the version real.
 
-Note that your MSC *should not* declare the stable room version it gets
-included in - it should simply specify the need for a new room version as well
-as the unstable identifier. Even after your MSC is accepted, your change will
-remain as part of a prefixed room version until a second room version MSC is
-accepted.
-
-For a relatively simple example of what introducing a new room version-required
-feature can look like, see
-[MSC3613](https://github.com/matrix-org/matrix-doc/pull/3613). For an example
-of what making a new "real" room version looks like, see
+For an example of what introducing a new room version-required feature can look
+like, see [MSC3667](https://github.com/matrix-org/matrix-doc/pull/3667). For an
+example of what making a new "real" room version looks like, see
 [MSC3604](https://github.com/matrix-org/matrix-doc/pull/3604).
 
 #### Ownership of MSCs and closing them
