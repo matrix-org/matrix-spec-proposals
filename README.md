@@ -44,24 +44,21 @@ clarification.
 
 ### Summary of the process
 
-The MSC process consists of five basic steps:
+The MSC process consists of three basic steps:
 
 1. **Write up the proposal** in a
    [markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#GitHub-flavored-markdown)
    document. (There's a [proposal
    template](proposals/0000-proposal-template.md), but don't feel bound by it.)
-2. **Submit it as a Pull Request** to this repo, adding "WIP" to the title if
-   it's still a work in progress.
-3. **Seek review** from the community. Once people are happy
-   with it, ask the [Spec Core Team](https://matrix.org/foundation) to
-   look at it in
-   [the Office of the SCT Matrix room](https://matrix.to/#/#sct-office:matrix.org).
-4. When the SCT are happy with the proposal, they'll vote for its acceptance.
-   The proposal will go into a **Final Comment Period (FCP)**, which gives
-   everyone the chance to raise any concerns.
-5. After 5 days has passed, assuming no major issues have arisen, your pull
-   request is merged and the **MSC is now officially accepted** as part of the
-   Matrix Spec and can be used 🎉
+2. **Submit it as a Pull Request** to this repo, marking it as a draft until
+   it's ready for wider review.
+3. **Seek review** from the community. Once people are generally happy with it,
+   ask the [Spec Core Team](https://matrix.org/foundation) to look at it in
+   [the Office of the SCT Matrix
+   room](https://matrix.to/#/#sct-office:matrix.org). When the SCT are happy
+   with the proposal, and after a successful voting process, your pull request
+   is merged and the **MSC is now officially accepted** as part of the Matrix
+   Spec and can be used 🎉
 
 For simple changes this is really all you need to know. For larger or more
 controversial changes, getting an MSC merged can take more time and effort, but
@@ -71,7 +68,7 @@ Below is various guidance to try and help make the experience smoother.
 
 ### Guidance on the process
 
-#### Step 1: Writing the proposal
+#### 1. Writing the proposal
 
 Come up with an idea. The idea can be for anything, but the solution (MSC)
 needs to benefit the Matrix ecosystem rather than yourself (or your company)
@@ -112,7 +109,7 @@ Some tips for MSC writing:
   guide](https://github.blog/2022-02-14-include-diagrams-markdown-files-mermaid/)
   for more information.
 
-#### Step 2: Submitting a Pull Request
+#### 2. Submitting a Pull Request
 
 1. Open a [Pull
    Request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
@@ -133,7 +130,7 @@ Some tips for MSC writing:
 The Spec Core Team will notice this and apply various labels/status tracking to
 your MSC, which will announce it to the wider world.
 
-#### Step 3: Seeking review
+#### 3. Seeking review
 
 Seek review from the Matrix community. Generally this will happen naturally,
 but if you feel that your proposal is lacking review then ask for people's
@@ -153,7 +150,7 @@ At this stage the proposal should also be implemented as a proof of concept
 somewhere to show that it _actually_ works in practice. This can be done on any
 client or server and doesn't need to be merged or released.
 
-#### Step 4: Entering Final Comment Period
+#### 4. Entering Final Comment Period
 
 After the MSC has been implemented, fully fleshed out, and generally feels
 ready for final review, you should ask a member of the Spec Core Team to review it in
@@ -171,10 +168,10 @@ give anyone one last chance to raise any blockers or concerns about the
 proposed change. Typically MSCs pass this stage without incident, but it
 nevertheless serves as a safeguard.
 
-#### Step 5: MSC is accepted
+#### 5. The MSC is accepted
 
-Once FCP has end and the MSC pull request merged, the proposed change
-is considered officially part of the spec. Congratulations!
+Once FCP has ended and the MSC pull request is merged, the proposed change is
+considered officially part of the spec. Congratulations!
 
 Clients and servers can now start using the change, even though at this stage
 it still needs to be transcribed into the spec document. This happens over in
