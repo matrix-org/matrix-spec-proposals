@@ -20,6 +20,18 @@ detail, as different homeserver implementations have different ways for
 administrators to interact with them (e.g. Synapse's admin API vs Conduit's
 admin room).
 
+An error with the code `M_USER_AWAITING_APPROVAL` must include an
+`approval_notice_medium` field, which indicates to the user how the homeserver
+will let them know of their account's approval. The allowed values are:
+
+* `m.email`: the user is made aware of their account's approval by email to an
+  address they provided during registration.
+* `m.none`: the user is not made aware of their account approval in an automated
+  way that's managed by the homeserver. This can mean that a server
+  administrator will reach out to them out of bounds (using any relevant
+  medium), or that they should wait some time and try logging in again to see if
+  their account has been approved.
+
 ### Registration
 
 When a user successfully registers on a homeserver that is configured so that
@@ -30,7 +42,8 @@ response that includes the `M_USER_AWAITING_APPROVAL` error code. For example:
 ```json
 {
     "errcode": "M_USER_AWAITING_APPROVAL",
-    "error": "This account needs to be approved by an administrator before it can be used."
+    "error": "This account needs to be approved by an administrator before it can be used.",
+    "approval_notice_medium": "m.email"
 }
 ```
 
@@ -44,7 +57,8 @@ error code. For example:
 ```json
 {
     "errcode": "M_USER_AWAITING_APPROVAL",
-    "error": "This account is pending approval by a server administrator. Please try again later."
+    "error": "This account is pending approval by a server administrator. Please try again later.",
+    "approval_notice_medium": "m.email"
 }
 ```
 
@@ -53,27 +67,42 @@ confident that the user trying to log in is pending approval - as opposed to
 registration requests where only the last one can return such an error, in order
 to ensure the registration completes.
 
+This error can also be returned by login requests performed in the context of a
+user's first authentication through an SSO provider. Since this does not involve
+the user's client performing a `/register` request, this means the homeserver
+must track approval of users when they are registered as part of the SSO flow.
+
 Once an account is approved, homeserver must allow the user to log in (unless
 the account becomes unavailable for unrelated reasons, e.g. by getting
 deactivated).
 
 ## Potential issues
 
+### Informing the user about this feature before they register
+
 This MSC does not include a way to communicate to clients early on whether the
 homeserver requires new accounts to be approved by an administrator, which can
 make the registration experience frustrating (because the user might not be
-expecting to need to wait before using your account).
+expecting to need to wait before using their account). The author of this
+proposal tried and failed to figure out a good way to expose this information:
 
-It is also unclear how to inform a user about their account being approved. This
-can probably be done on a best-effort basis using contact information (e.g.
-email address) provided by the user during the registration process, if any.
+* the capabilities endpoint is authenticated and therefore does not work in this
+  context
+* the `/versions` endpoint does not feel like the correct place to expose
+  information about locally-enabled features
+* adding a boolean to initial `/register` requests feels out of place, and could
+  potentially be non-trivial to implement in a way that doesn't get in the way
+  of User-Interactive Authentication
 
-## Alternatives
+### Informing the user about their account's approval
 
-The homeserver could include a boolean indicating whether new accounts require
-approval in the response to an initial `/register` request, but it feels out of
-place and possibly non-trivial to implement in a way that doesn't get in the way
-of User-Interactive Authentication.
+By design, Matrix does not force users to provide way to contact them outside of
+Matrix (e.g. via email) when registering. This means the homeserver might not
+have a way to let the user know once their account has been approved by their
+administrator. In this case, homeservers should use the `m.none` value for the
+`approval_notice_medium` field in error responses. The expectation is then that
+a server administrator reaches out to the user out of bounds, or that the user
+waits some time before manually trying to log in again.
 
 ## Security considerations
 
