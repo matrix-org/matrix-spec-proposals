@@ -201,16 +201,15 @@ another competing MSC that's attempting to add the same identifiers.
 To summarize [the spec](https://spec.matrix.org/latest/rooms/) on room
 versions: they are how servers agree upon algorithms in a decentralized world
 like ours. Examples of changes that require a new room version include anything that changes:
- * the format of the core event structure (such as renaming a top-level field),
-   as this will change the [reference
+ * The format of the core event structure (such as renaming a top-level field,
+   or modifying [the redaction
+   algorithm](https://spec.matrix.org/latest/client-server-api/#redactions)),
+   therefore altering the [reference
    hash](https://spec.matrix.org/latest/server-server-api/#calculating-the-reference-hash-for-an-event)
    of an event.
- * [the authorisation of
+ * [The authorisation of
    events](https://spec.matrix.org/latest/server-server-api/#authorization-rules)
    (such as changes to power levels).
- * [the redaction
-   algorithm](https://spec.matrix.org/latest/client-server-api/#redactions).
-
 Unstable prefixes (see above) for room versions work the same as they do for
 other identifiers; your unstable room version may be called
 "org.matrix.msc1234".
