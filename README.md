@@ -210,6 +210,7 @@ like ours. Examples of changes that require a new room version include anything 
  * [The authorisation of
    events](https://spec.matrix.org/latest/server-server-api/#authorization-rules)
    (such as changes to power levels).
+
 Unstable prefixes (see above) for room versions work the same as they do for
 other identifiers; your unstable room version may be called
 "org.matrix.msc1234".
