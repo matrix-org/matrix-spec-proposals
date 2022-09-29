@@ -22,7 +22,8 @@ admin room).
 
 An error with the code `M_USER_AWAITING_APPROVAL` must include an
 `approval_notice_medium` field, which indicates to the user how the homeserver
-will let them know of their account's approval. The allowed values are:
+will let them know of their account's approval. This proposal specifies the
+following values:
 
 * `m.email`: the user is made aware of their account's approval by email to an
   address they provided during registration.
@@ -116,5 +117,10 @@ them).
 
 ## Unstable prefix
 
-During development, `ORG.MATRIX.MSC3866_USER_AWAITING_APPROVAL` must be used
-instead of `M_USER_AWAITING_APPROVAL`.
+During development, the following unstable identifiers must be used:
+
+| Stable identifier          | Unstable identifier                         |
+|----------------------------|---------------------------------------------|
+| `M_USER_AWAITING_APPROVAL` | `ORG.MATRIX.MSC3866_USER_AWAITING_APPROVAL` |
+| `m.email`                  | `org.matrix.msc3866.email`                  |
+| `m.none`                   | `org.matrix.msc3866.none`                   |
