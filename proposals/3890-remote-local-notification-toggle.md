@@ -31,12 +31,16 @@ During client-side notification generation:
 - While a `local_notification_settings` event exists for the current device where `is_silenced` is true, no event should
   trigger a system notification or sound.
 
+During server-side removal of devices:
+- When devices are removed servers should delete any
+`m.local_notification_settings.<device-id>` account_data events for the given device, and communicate these changes to
+clients as described in [MSC3391](https://github.com/matrix-org/matrix-spec-proposals/pull/3391).
+
+
 #### Support
 Clients that implement `m.local_notification_settings.<device-id>` notification filtering should ensure a
 `local_notification_settings` event exists for the active device to indicate support for that device. Clients should
 only expose local notification silencing controls for devices that have indicated their support.
-
-When a device is removed these events should be pruned by clients.
 
 ## Alternatives
 #### Push rules with profile tags
@@ -55,7 +59,7 @@ control of notifications for clients using http-pushers and local notification g
 N/A
 
 ## Dependencies
-Proper deletion of account data is enabled by [MSC3391: Removing account
+Communication of deletion of account data to clients is enabled by [MSC3391: Removing account
 data.](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
 
 ## Unstable prefix
