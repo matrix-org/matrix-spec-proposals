@@ -177,6 +177,8 @@ Access-Control-Allow-Origin: *
 Access-Control-Expose-Headers: ETag,Location,X-Max-Bytes
 ```
 
+These headers are different from the ones currently specified in the [spec](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients).
+
 ### Choice of server
 
 Ultimately it will be up to the Matrix client implementation to decide which rendezvous server to use.
