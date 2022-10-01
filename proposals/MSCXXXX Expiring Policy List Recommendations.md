@@ -2,28 +2,31 @@
 
 ## Introduction
 
-Currently in matrix if you desire to have an action coordinated via policy list be temporary you have
-no canonical way to communicate this that is parsable by policy list parsers. This proposal aims to
-change this. By giving Policy List entries the ability to expire we keep down the amount of events
-we have to send and we also make it straight up more user friendly.
+Currently in matrix there is no canonical way to specify a desire to have an action that is coordinated via policy
+list to be temporary and expire.
+This proposal gives a field to express expiry within Policies which we hope will improve the user experience.
+We also believe expiry on policies will reduce the amount of attention maintaining lists,
+as currently emulating an explicit expiry field to work with tools such as mjolnir requires manually
+removing policies after the expiry date.
 
-The means of getting to this goal is simple. The use of a new `"expiry"` key. This key will define
-at what point the recommendation is considered expired. Further detail about this system is found in
-the proposal section.
+The means of getting to this goal are simple. The use of a new `"expiry"` key. This key will define
+the point in time the recommendation is considered expired.
 
 By letting entries expire we easily enable features like making temp bans, making a mute from MSC_POLICY_MUTE
 temporary and other future policy recommendations can also be temporary.
 
 ## Proposal
 
-To enable policy list entries to expire a `"expiry"` field will be added that contains a timestamp for
-when the policy expires. An expired policy is to have its effects reverted if applied.
+To enable policies to expire an `"expiry"` field is used that contains a timestamp for
+when the policy expires.
+An expired policy should have its recommendation discarded and any existing effects reverted.
 
-Implementations are free to determine how they do their expiry checking on applied recommendations.
-A policy list recommendation is deemed expired once its expiry timestamp is reached from your perspective.
-
-Policy list expiry is from your own perspective to make it so we can ignore issues related to distributed
-accurate time.
+How the field is used to determine if a policy has expired is left to an implementation detail.
+It is important that consumers understand that a policy is deemed to have expired
+once the expiry date is met from a subjective perspective.
+While we expect that there won't be much disagreement about when a date has been met,
+it is still somewhat likely disagreement can occur between clients, bots, server modules
+about whether the date has been met, especially around the boundary of the date.
 
 Below is an example recommendation to mute the user `@evil:example.com` with the help of MSC_POLICY_MUTE
 this recommendation expires 1 hour after it was sent. The mute was sent at 2000000000. Now please note that the
@@ -47,29 +50,43 @@ only timestamp that matters is the expiry timestamp.
 
 ## Potential issues
 
-It is also deemed perfectly acceptable that if an recommendation for a mute that was at time of sending going
-to be in effect for 5 minutes is only applied for 4 minutes because of the time it took to receive. This choice
-was made because it makes it so we avoid the issues mentioned earlier. Its expected that realistic lag times
-for recommendations to propagate is going to be measured in maximum of seconds so in the real world the effects
-are usually quite minimal under normal conditions.
+##### Effects of federation lag
+
+It is possible that the duration for which a policy is in effect can be reduced by the time taken
+to propogate the event to servers (and their clients) in the policy room, from the perspective
+of the client which sent it.
+In an exaggerated example, a policy with a recommendation to mute an entity sent at 12:00 with the intention
+to mute a participant for 15 minutes may take 1 minute to propogate to all of their moderation tooling.
+This could mean that the policy only in effect for 14 minutes.
+
+
+##### Temporal disagreement for tooling that works collaboratively
+
+It is possible that if two (or more) bots are responsible for enacting a policy list over a set of
+rooms that they can disagree about whether the expiry date of a policy has been reached.
+This can lead to them applying and reverting each other's actions in conflict
+until they agree.
+If this proves to be a serious concern we suggest that tools send an acknowledgement of expiry
+event with a relation to the policy to inform other tools that they are about to revert
+the effects of a policy.
 
 ## Alternatives
 
-There have been alternatives considered that attempt to introduce the concept of a temporary ban into the DAG
-and these have been dismissed as completely insecure or easy to bypass. It is clear to the authors of this MSC
-that the current consensus in the parts of the matrix community that understand the mathematics of state resolution
-is that time and the DAG should be kept apart because its a very complicated problem to attempt to solve if
-we can even solve it.
+##### DAG based expiry
 
-Going the direction of doing all this at the Policy application level means we avoid the complexities of
-dealing with time in the DAG and since this is done at the applying parties own temporal perspective we avoid
-all the issues of synchronisation of time and doing that in a way that we consider secure and decentralised.
+There have been alternatives considered that attempt to introduce the concept of a temporary ban
+directly into the DAG but these have been dismissed as completely insecure or easy to bypass.
+It is clear to the authors of this MSC that the current consensus in the parts of the community
+is that introducing dependents on time into the authorization DAG is a no-go.
+In either case this MSC deliberately avoids the complexities of dealing with
+servers having different temporal perspective.
 
 ## Security considerations
 
-As is mentioned in multiple earlier sections this MSC tries its best to avoid the issues that normally comes
-with dealing with time by making it so this MSC hinges on that the party that applies a policy recommendation
-trusts their own perspective on what time it is. As long as you trust your own perspective this MSC is secure.
+As is mentioned previously we deliberately avoid trying to achieve a consensus on when
+a policy has expires.
+By allowing the party that applies a policy recommendation
+to trust only their own perspective on what time it is we believe the MSC is secure.
 
 ## Unstable prefix
 
