@@ -61,33 +61,47 @@ Below is the same event but without the expiry.
 }
 ```
 
-These events are both as they would be sent by a theoretical Mjolnir. Mjolnir's format was chosen for
-the fact its used and this is intended to show how this could look in the real world for fields that
-are implementation details.
+Note: The state key is an identifier for the rule, it is not supposed to be used for traceability
+between the entity and the state event, it includes the mxid of the user in this example
+for debuging purposes only.
 
-Now how is this MSC applied in a vacuum. This MSC is recommended to be applied in the following way.
-Please note that these recommendations are suggestions not requirements.
-
-Because this rule type is practically useless unless the entity is a user this MSC Revision does not
-allow the mute recommendation to be issued against rooms or servers. A future revision might.
-
-When its applied on a client level its recommended to be ignored as to not be redundant with the m.ban
+When it's applied on a client level its recommended to be ignored as to not be redundant with the m.ban
 recommendation. A future MSC is welcome to make m.ban and m.mute be recommended to be applied the same.
 
-When applied towards a user in a room a mute under this MSC would be executed by changing their power level
-to a powerlevel that makes them unable to send events. Yes this does come at the cost of rapid PL churn
-that is why MSC_DAG_MUTE exists to address this. That MSC will define how room level mutes are affected.
+When the `m.mute` recommendation is used, the entities effected by the rule should be suspended from
+participation where possible, but have their visibility of the room maintained.
+The enforcement of this is deliberately left as an implementation detail to avoid imposing an on how
+the policy rule is interpreted. However a suggestion for a simple implementation is as follows:
 
-When applied towards a user on a homeserver level the homeserver can make the user read only. This is
-effectively a lesser punishment than a deactivation since they can still access data cant just spread
-problematic information.
+* is a `user` rule:
+  + Applied to a user: Hide any new messages from the user's DM's, do not display notifications
+    or pings from them.
+  + Applied to a room: The user's power level should be lowered below the required level to send
+    `events_default`.
+  + Applied to a server: The user should be suspended from sending events and uploading media.
+    Effectively leaving the user's account in a read-only state.
 
-Now as noted earlier these are only recommendations as to how you can implement the `m.mute` recommendation.
+* is a `room` rule:
+  + Apllied to a user: New events from the room are ignored, not displayed in notifications and
+    not shown to be active in a client.
+  + Applied to a room: No-op? Could be changing `events_default` to the same level as moderators
+  + Applied to a server: Uknown, no action recommended.
+
+* is a `server` rule:
+  + Applied to a user: No op
+  + Applied to a room: No op
+  + Applied to a server: No op.
+
+The most important (and main motivation)
+of these recommendations is when a `user` rule is applied to a `room`.
+
+It should be noted that the current recommendation for a `user` rule applied to a `room`
+can come at the cost of rapid PL churn if used frequently. We hope that MSC_DAG_MUTE can address this.
 
 ## Potential issues
 
-Currently identified potential issues include. Causing state resolution to become more intensive due to
-causing a rapid growth in PL events being issued.
+- Causing state resolution to become more intensive due to causing a rapid growth in PL events being
+  when implementations follow the advice for a `user` rule applied to a `room`.
 
 ## Alternatives
 
