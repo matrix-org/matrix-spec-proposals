@@ -76,7 +76,7 @@ the effects of a policy.
 
 There have been alternatives considered that attempt to introduce the concept of a temporary ban
 directly into the DAG but these have been dismissed as completely insecure or easy to bypass.
-It is clear to the authors of this MSC that the current consensus in the parts of the community
+It is clear to the authors of this MSC that the current consensus in parts of the community
 is that introducing dependents on time into the authorization DAG is a no-go.
 In either case this MSC deliberately avoids the complexities of dealing with
 servers having different temporal perspective.
