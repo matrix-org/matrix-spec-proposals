@@ -16,7 +16,7 @@ On top of this, the process has to be repeated in each room that they wish to mu
 Granted, some of this can be alleviated with use of a script/bot, but we believe a mute policy
 recommendation would enable for a standard user expeirance for muting participants.
 The mute recommendation would also open the door for the implementation of mute to be
-changed transparently, and we will be introducing another MSC MSC_DAG_MUTE that does this.
+changed transparently, and we will be introducing another MSC_DAG_MUTE that does this.
 
 Mutes will become less clumsy to use if they can be applied as policy. Especially when used together with
 MSC_EXPIRY to make them be able to expire on their own. MSC_DAG_MUTE will in the future also make them even better
