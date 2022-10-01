@@ -2,21 +2,26 @@
 
 ## Introduction
 
-In todays matrix policy lists have a very limited scope. This MSC is just the first out of a series
-of MSCs that aim to expand this system. In this MSC we add a new recommendation of `m.mute` to the list
-of recommendations that a policy list can have.
+Matrix policy lists currently have a very limited scope. This MSC is just the first out of a series
+of MSCs that aim to expand this system. In this MSC we add a new recommendation of `m.mute`.
 
-The authors of this proposal feel like there is not a need to go into why we want mutes in matrix. Mutes are a
-standard tool in the moderators toolkit on most platforms and are actually a tool here on matrix today.
-They are just very much clumsy today compared to what they could be and especially bad for communities.
+Mutes are a standard tool in the moderators toolkit on most platforms and are already
+used informally on matrix today.
+Typically to mute a member of a room, a moderator has two options. They either find the member
+to mute a user listing in their client and edit their power level or they
+edit their power level directly by editing the room's `m.room.power_level` event manually.
+This is an error prone process as in either case the incorrect value can be given for the power
+level and some degree of risk in racing if another moderator also edits the rooms power level.
+On top of this, the process has to be repeated in each room that they wish to mute the user in.
+Granted, some of this can be alleviated with use of a script/bot, but we believe a mute policy
+recommendation would enable for a standard user expeirance for muting participants.
+The mute recommendation would also open the door for the implementation of mute to be
+changed transparently, and we will be introducing another MSC MSC_DAG_MUTE that does this.
 
 Mutes will become less clumsy to use if they can be applied as policy. Especially when used together with
 MSC_EXPIRY to make them be able to expire on their own. MSC_DAG_MUTE will in the future also make them even better
 by making them a membership state if that MSC is implemented. This MSC is technically fully independent
 of these 2 MSCs.
-
-Now as to why all these mentioned companion MSCs are split. Its simple. If a part of this ecosystem
-of MSCs fail it shouldn't bring down the whole ecosystem.
 
 ## Proposal
 
