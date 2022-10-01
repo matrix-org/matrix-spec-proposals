@@ -36,11 +36,9 @@ that displays how it would be used in conjunction with MSC_EXPIRY.
     "recommendation": "m.mute",
     "expiry": 2000003600
   },
-  "origin_server_ts": 2000000000,
   "sender": "@mjolnir:example.com",
   "state_key": "_evil:example.com",
   "type": "m.policy.rule.user",
-  "unsigned": {},
   "event_id": "exampleid",
   "room_id": "!policylist:example.com"
 }
@@ -55,11 +53,9 @@ Below is the same event but without the expiry.
     "reason": "spam",
     "recommendation": "m.mute",
   },
-  "origin_server_ts": 2000000000,
   "sender": "@mjolnir:example.com",
   "state_key": "_evil:example.com",
   "type": "m.policy.rule.user",
-  "unsigned": {},
   "event_id": "exampleid",
   "room_id": "!policylist:example.com"
 }
