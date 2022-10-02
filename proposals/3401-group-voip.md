@@ -45,7 +45,6 @@ Full mesh between clients
 ```
 
 SFU (aka Focus):
-
 ```
           A __    __ B
               \  /   
@@ -57,7 +56,6 @@ Where F is an SFU focus
 ```
 
 Cascaded decentralised SFU:
-
 ```
      A1 --.           .-- B1
      A2 ---Fa ----- Fb--- B2
@@ -68,6 +66,7 @@ Cascaded decentralised SFU:
                Fc
               |  |
              C1  C2
+
 Where Fa, Fb and Fc are SFU foci, one per homeserver, each with two clients.
 ```
 
