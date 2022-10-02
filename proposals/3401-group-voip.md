@@ -44,6 +44,33 @@ Full mesh between clients
                C
 ```
 
+SFU (aka Focus):
+
+```
+          A __    __ B
+              \  /   
+               F 
+               | 
+               |
+               C
+Where F is an SFU focus
+```
+
+Cascaded decentralised SFU:
+
+```
+     A1 --.           .-- B1
+     A2 ---Fa ----- Fb--- B2
+           \       /
+            \     /
+             \   /
+              \ /
+               Fc
+              |  |
+             C1  C2
+Where Fa, Fb and Fc are SFU foci, one per homeserver, each with two clients.
+```
+
 ### m.call state event
 
 The user who wants to initiate a call sends a `m.call` state event into the room to inform the room participants that a call is happening in the room. This effectively becomes the placeholder event in the timeline which clients would use to display the call in their scrollback (including duration and termination reason using `m.terminated`). Its body has the following fields:
