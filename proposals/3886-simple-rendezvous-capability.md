@@ -32,7 +32,7 @@ sequenceDiagram
   participant B as Device B
   Note over A: Device A determines which rendezvous server to use
 
-  A->R: POST / Hello from A
+  A->R: POST /rendezvous Hello from A
   R->A: 201 Created Location: /abc-def-123-456
 
   A-->B: Rendezvous URI between clients, perhaps as QR code: e.g. https://rendzvous-server/abc-def-123-456
@@ -57,7 +57,7 @@ Please note that it is intentional that this protocol does nothing to ensure the
 
 ### Protocol
 
-#### Create a new rendezvous point: `POST /`
+#### Create a new rendezvous point: `POST /rendezvous`
 
 HTTP request headers:
 
@@ -227,7 +227,22 @@ and administrators:
 
 ## Unstable prefix
 
-None.
+While this feature is in development the new endpoint should be exposed using the following unstable prefix:
+
+- `/_matrix/client/unstable/org.matrix.msc3886/rendezvous`
+
+Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions`
+response, with the key `org.matrix.msc3886` set to `true`. So, the response could look then as
+following:
+
+```json
+{
+    "versions": ["r0.6.0"],
+    "unstable_features": {
+        "org.matrix.msc3886": true
+    }
+}
+```
 
 ## Dependencies
 
