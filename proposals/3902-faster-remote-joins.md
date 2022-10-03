@@ -16,7 +16,7 @@ This proposal therefore sets out the changes needed so that most of the room
 state can be popuated lazily, in the background, *after* the user has joined
 the room.
 
-This proposal supercedes [MSC2775](https://github.com/matrix-org/matrix-spec-proposals/pull/2775).
+This proposal supersedes [MSC2775](https://github.com/matrix-org/matrix-spec-proposals/pull/2775).
 
 ## Proposal
 
@@ -140,3 +140,32 @@ recalculating the state at each event, and rechecking event authorisation,
 until it has caught up with "real time" and new events are being created with
 "full state".
 
+## Potential issues
+
+TBD
+
+## Alternatives
+
+TBD
+
+## Security considerations
+
+It's important to note that, during the resynchronisation process, events are
+accepted without running the full checks process; this is an inevitable
+consequence of having partial state, but does mean that we might accept abusive
+events that would otherwise be rejected.
+
+This is mitigated by (a) the process of re-running the event authorisation
+process once we have full state, and (b) the fact that "partial state" is a
+transient state: in other words, the window for sending abusive content is
+limited, and only users who happen to be in the room during the
+"resynchronisation" process will observe the abusive content.
+
+## Unstable prefix
+
+n/a
+
+## Dependencies
+
+This MSC builds on [MSC3706](https://github.com/matrix-org/matrix-spec-proposals/pull/3706) and [MSC3895](https://github.com/matrix-org/matrix-spec-proposals/pull/3895)
+(which at the time of writing have not yet been accepted into the spec).
