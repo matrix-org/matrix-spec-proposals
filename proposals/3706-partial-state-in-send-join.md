@@ -9,10 +9,10 @@ Much of the reason for this is the large number of events which are returned by
 the [`/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
 API, and must be validated and stored.
 
-[MSC2775](https://github.com/matrix-org/matrix-doc/pull/2775) makes a number of
-suggestions for ways that this can be improved. This MSC focuses on a specific
-aspect of those suggestions by proposing specific changes to the `/send_join`
-API.
+[MSC3902](https://github.com/matrix-org/matrix-doc/pull/3902) gives an overview
+of changes to the matrix protocol to improve this situation. This MSC focuses
+on a specific aspect of those suggestions by proposing specific changes to the
+`/send_join` API.
 
 ## Proposal
 
@@ -40,13 +40,10 @@ The following changes are made to the response:
    to indicate that partial state is being returned. It must otherwise be set
    to `false` or omitted.
 
- * `state`: if partial state is being returned, then a subset of the full room
-   state, rather than the complete room state. In particular, the following
-   state should be returned:
-
-     * any state with event type other than `m.room.member`.
-     * TODO: anything else?
-
+ * `state`: if partial state is being returned, then state events with event
+   type `m.room.member` are omitted from the response. (All other room state is
+   returned as normal.)
+ 
  * `auth_chain`: The spec currently defines this as "The auth chain for the
    entire current room state". We instead rephrase this as:
 
@@ -78,17 +75,19 @@ The following changes are made to the response:
 
 ## Potential issues
 
-TBD
+None at present.
 
 ## Alternatives
 
-TBD
-
+ * In future, the list of event types to omit could be expanded. (Some rooms
+   may have large numbers of other state events). For now, this has been
+   descoped, but could be revisited in future MSCs.
+ 
 ## Security considerations
 
 No security issues are currently foreseen with this specific MSC, though the
 larger topic of incremental synchronisation of state has several concerns;
-these will be discussed in other MSCs such as MSC2775.
+these will be discussed in other MSCs such as MSC3902.
 
 ## Unstable prefix
 
