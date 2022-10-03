@@ -74,6 +74,7 @@ HTTP response codes:
 - `403 Forbidden` - forbidden by server policy
 - `413 Payload Too Large` - the supplied payload is too large
 - `429 Too Many Requests` - the request has been rate limited
+- `307 Temporary Redirect` - if the request should be served from somewhere else specified in the `Location` response header
 
 HTTP response headers for `201 Created`:
 
