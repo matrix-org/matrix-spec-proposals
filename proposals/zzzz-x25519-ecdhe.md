@@ -1,0 +1,104 @@
+# MSCzzzz: X25519 Elliptic-curve Diffie-Hellman ephemeral for establishing secure channel between two Matrix clients
+
+In MSCyyyy (to be published) a proposal is made to allow a user to login on a new device using an existing device by
+means of scanning a QR code.
+
+[MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) already proposes a simple unsecured rendezvous protocol.
+
+In this proposal we build a secure layer on top of MSC3886 to allow for trusted out-of-bands communication between two
+Matrix clients.
+
+## Proposal
+
+The proposal is to use X25519 to agree a shared secret that is then used to perform AES.
+
+All payloads are transmitted as JSON and could be done over any bidirectional transport including
+[MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) or elsewhere in Matrix.
+
+**1a.** The initiator generates a ephemeral Curve25519 private key `privateA`. This key should never be re-used.
+**1b.** The initiator derives the public key from `privateA` as `publicA = scalarMult(privateA, 9)`
+**1c.** The initiator shares it's key with the recipient via a trusted medium using the following payload:
+
+```json
+{
+    "algorithm": "m.rendezvous.v1.curve25519-aes-sha256",
+    "key": "gRr3uZSpm2qz37CkqnrhZTW3H0JQvc6l4HYOtBULNSU="
+}
+```
+
+The `key` is the base64-encoded value for `publicA` (the x co-ordinate of the curve).
+
+It's critical that the initiator public key `publicA` is transmitted via a trusted medium such as a QR code or some other
+already-authenticated channel, and not via the unauthenticated channel.
+
+**2.** The recipient similarly generates a private key `privateB`, derives the public key `publicB` and shares is using
+the same structure of payload:
+
+```json
+{
+    "algorithm": "m.rendezvous.v1.curve25519-aes-sha256",
+    "key": "E03zK4t29xyiXlt54kOVpIzNtGytjQSvaHXF8n8tTBs="
+}
+```
+
+Unlike `publicA` the recipient public key `publicB` does not need to be transmitted via a trusted medium.
+**3.** Both sides derive the same shared secret as follows:
+
+Initiator: `sharedSecret = scalarMult(privateA, publicB) = scalarMult(privateA, scalarMult(privateB, 9))`
+
+Recipient: `sharedSecret = scalarMult(privateB, publicA) = scalarMult(privateB, scalarMult(privateA, 9))`
+
+**4.** Both sides then derive a 256 bit AES key using HKDF SHA-256 with a salt of 8 bytes of zero (i.e. `[0,0,0,0,0,0,0,0]`)
+and info of `<algorithm>|<base64-encoded initiator public key>|<base64-encoded recipient public key>`.
+
+For the above example keys the info would be: `m.rendezvous.v1.curve25519-aes-sha256|gRr3uZSpm2qz37CkqnrhZTW3H0JQvc6l4HYOtBULNSU=|E03zK4t29xyiXlt54kOVpIzNtGytjQSvaHXF8n8tTBs=`.
+
+**5.** Subsequent payloads are then sent encrypted using 256 bit AES-GCM using a 256 bit random initialisation vector/salt.
+
+**6.** Encrypted payloads are then encoded and transmitted by either party as follows:
+
+```json
+{
+    "ciphertext": "L3SHZU2DnfPxiVHVcgqe2HNq7Acdv13XCK/mC5f0JmxGqeUNQdeta8HD8qGBu3YdYrv5Bf7xl8WjlGaUOLr3uceZUuSv8amRZUghZ+/GQsi8tPZLzHk0xOePmKhRg95HUZrja7cQIgw+iKY/Vp1UoUJRqk1iQv/86RHz3c5a/GqyhGyWnXfuy16tPxmNQ4IpI/hVJof+7iiA3IucMtLHZnGH/VpNuZ1kv97GJJbUX3XfTIjyN2jmA9zFP5d/mE10YYzG7XcZ0hWj5BPhpM1jojwVyTRhMseJAX7MVvqQ7HT7LjvoJSYm5xk+0ptsWodAuol7uYjGszIu+EFvpuYmweZa6ewcnf/T5fXb6hXfqCZf43gumrXx5ACUMC4IWBOI0mFE28ITRmw9ZjL2CodxFsbTGRYp3Arb0SMcF1KUsiYBXxLasXFaEtrE244QD+oc9FEWNPLdgCDcwEhalaK9OP7MJF7jXc2y+zOPfUPCdCHoSV6F5Y/MnPkrpwprrIn/yp2E4/4QTe2VTXG7ZJa/aCGh8eAo9nBANQi7sGElr83SU0oy80MvVWUmxnaWc8UDgASkC/dGQNCfZzsZeho0+Y2smcETJlD/7+D1c8YC3LevAtYXDOOO9ApaY+SpPloKp/zdoZdkf+ggGfyytvTEw0gZUygZnBplefaIry9lASpv6XXkowVFFP5kGf0ZAhPOr2ET3DTyoBXP7u7MJrRAtBEex6OaysVaJ2DDEj8JknpdwatuWPduygMt",
+    "iv": "Fk/2eSQ2hANwpQhAI94/BQ=="
+}
+```
+
+- `ciphertext` - base64-encoded AES-GCM encrypted data
+- `iv` - base64-encoded initialization vector/salt
+
+Steps **1** and **2** can happen simultaneously or in any order.
+
+**7.** The user should confirm that the established channel is secure by means of a checksum derived from the shared key.
+The checksum is 12 numeric digits in the form `1234-5678-9012` and should be displayed on both devices for the user to
+visually verify.
+
+The checksum should be derived in a similar manner to step **4** above, however only 40 bit should be derived this time.
+The salt and info are the same as before.
+
+The decimal representation of the 40 bits is calculated using the method described in
+https://spec.matrix.org/v1.4/client-server-api/#sas-method-decimal.
+
+## Potential issues
+
+This proposal introduces yet another key that Matrix client implementations need awareness of. It's also not clear to me
+where exactly this would fit in the spec documents.
+
+## Alternatives
+
+The algorithm name is arbitrary.
+
+Alternative key exchange algorithms to X25519 could be used. Alternative symmetric ciphers to AES-GCM could be used. The
+purpose of the `algorithm` field is allow for alternative algorithms in the future.
+
+## Security considerations
+
+Algorithm selection and implementation are crucial.
+
+## Unstable prefix
+
+TBD
+
+## Dependencies
+
+None.
