@@ -26,10 +26,7 @@ We won't introduce new capabilities but instead rely on the capabilities that we
 
 The following rules apply:
 
-1. If the requested event-id belongs to a event, and the widget didn't receive the respective
-   `m.receive.event:<event type>` or `m.receive.state_event:<event type>` capability, the widget
-   rejects the request.
-2. The list of related events only include events that the widget has the respective
+1. The list of related events only include events that the widget has the respective
    `m.receive.event:<event type>` or `m.receive.state_event:<event type>` capability for. Other
    events are silently dropped.
 
@@ -107,10 +104,6 @@ If the request was successful, the client sends the following response:
     "event_id": "$event-id"
   },
   "response": {
-    "original_event": {
-      "type": "m.room.message",
-      "..."
-    },
     "chunk": [
       {
         "type": "m.room.message",
@@ -123,8 +116,6 @@ If the request was successful, the client sends the following response:
   }
 }
 ```
-
-The `original_event` field contains the event that has the requested event id.
 
 The `chunk` field contains an array of events that are related to the parent event and matches the
 filters and the capabilities. This list might include less events than the specified `limit` due to
