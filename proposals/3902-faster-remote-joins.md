@@ -122,7 +122,7 @@ MSC is concluded.)
       do not discard incoming device list updates, we keep a record of any
       *remote* device list updates we receive, and replay them once resync
       completes. ([Synapse
-      implementation](https://github.com/matrix-org/synapse/pull/13913)
+      implementation](https://github.com/matrix-org/synapse/pull/13913))
 
 ### Resynchronisation
 
