@@ -56,13 +56,18 @@ key | type | value | description | required
 Pagination tokens are positions between events. This already an established
 concept but to illustrate this better, see the following diagram:
 ```
-                                                     pagination_token
-                                                     |
-<oldest-in-time> [0]<--[1] <gap> [gap_start_event_id]▼<--[4]<--[5]<--[6] <newest-in-time>
+                                   pagination_token
+                                   |
+<oldest-in-time> [0]<--[1]<-- <gap>▼ <--[4 (next_to_event_id)]<--[5]<--[6] <newest-in-time>
 ```
+
+The idea is to be able to keep paginating from `pagination_token` in the same
+direction of the request to fill in the gap.
 
 
 ### `/messages` response examples
+
+#### `/messages?dir=f`
 
 `/messages?dir=f` response example with a gap (`chunk` has events in
 chronoligcal order):
@@ -95,6 +100,15 @@ chronoligcal order):
 }
 ```
 
+```
+                                             pagination_token
+                                             |
+<oldest-in-time> [foo (next_to_event_id)]<-- ▼<gap> <--[baz] <newest-in-time>
+```
+
+
+#### `/messages?dir=b`
+
 
 `/messages?dir=b` response example with a gap (`chunk` has events in
 reverse-chronoligcal order):
@@ -126,6 +140,13 @@ reverse-chronoligcal order):
   ]
 }
 ```
+
+```
+                               pagination_token
+                               |
+<oldest-in-time> [foo]<-- <gap>▼ <--[baz (next_to_event_id)] <newest-in-time>
+```
+
 
 
 ## Potential issues
