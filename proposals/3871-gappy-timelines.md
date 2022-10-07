@@ -30,17 +30,27 @@ the client about the gap that they can retry fetching a little later.
 
 ## Proposal
 
-Add a `?gaps_allowed=true` query parameter flag to `GET
-/_matrix/client/v3/rooms/{roomId}/messages` which allows usage of a
-`m.timeline.gap` indicator, that can be used in the `response` `chunk` list of
-events. There can be multiple gaps per response.
+Add a `gaps` field to the response of [`GET
+/_matrix/client/v3/rooms/{roomId}/messages`](https://spec.matrix.org/v1.1/client-server-api/#get_matrixclientv3roomsroomidmessages).
+This field is an array of `GapEntry` indicating where missing events in the
+timeline are as defined below.
 
 
-### `m.timeline.gap`
+### 200 response
+
+Thid describes the new `gaps` response field being added to the `200 response`
+of `/messages`:
+
+Name | Type | Description | required
+--- | --- | --- | ---
+`gaps` | `[GapEntry]` | A list of gaps indicating where events are missing in the `chunk` | no
+
+
+#### `GapEntry`
 
 key | type | value | description | required
 --- | --- | --- | --- | ---
-`gap_start_event_id` | string | Event ID | The event ID that the homeserver is missing where the gap begins | yes
+`next_to_event_id` | string | Event ID | The event ID that the homeserver is missing where the gap begins | yes
 `pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG after the missing `gap_start_event_id`. Useful when retrying to fetch the missing part of the timeline again via `/messages?dir=b&from=<pagination_token>` | yes
 
 Pagination tokens are positions between events. This already an established
@@ -51,21 +61,94 @@ concept but to illustrate this better, see the following diagram:
 <oldest-in-time> [0]<--[1] <gap> [gap_start_event_id]▼<--[4]<--[5]<--[6] <newest-in-time>
 ```
 
-`m.timeline.gap` has a similar shape to a normal event so it's still easy to
-iterate over the `/messages` response and process but has no `event_id` itself
-so it should not be mistaken as a real event in the room.
 
-A full example of the `m.timeline.gap` indicator:
+### `/messages` response examples
 
-```json
+`/messages?dir=f` response example with a gap (`chunk` has events in
+chronoligcal order):
+
+```json5
 {
-  "type": "m.timeline.gap",
-  "content": {
-    "gap_start_event_id": "$12345",
-    "pagination_token": "t47409-4357353_219380_26003_2265",
-  }
+  "chunk": [
+    {
+      "event_id": "$foo",
+      "type": "m.room.message",
+      "content": {
+        "body": "foo",
+      }
+    },
+    // <the `GapEntry` indicates a gap here>
+    {
+      "event_id": "$baz",
+      "type": "m.room.message",
+      "content": {
+        "body": "baz",
+      }
+    },
+  ]
+  "gaps": [
+        {
+          "next_to_event_id": "$foo",
+          "pagination_token": "t47402-4357353_219380_26003_2265",
+        }
+  ]
 }
 ```
+
+
+`/messages?dir=b` response example with a gap (`chunk` has events in
+reverse-chronoligcal order):
+
+```json5
+{
+  "chunk": [
+    {
+      "event_id": "$baz",
+      "type": "m.room.message",
+      "content": {
+        "body": "baz",
+      }
+    },
+    // <the `GapEntry` indicates a gap here>
+    {
+      "event_id": "$foo",
+      "type": "m.room.message",
+      "content": {
+        "body": "foo",
+      }
+    }
+  ]
+  "gaps": [
+        {
+          "next_to_event_id": "$baz",
+          "pagination_token": "t47403-4357353_219380_26003_2265",
+        }
+  ]
+}
+```
+
+
+## Potential issues
+
+Lots of gaps/extremities are generated when a spam attack occurs and federation
+falls behind. If clients start showing gaps with retry links, we might just be
+exposing the spam more.
+
+
+## Alternatives
+
+As an alternative, we can continue to do nothing as we do today and not worry
+about the occasional missing events. People seem not to notice any missing
+messages anyway but they do probably see our slow `/messages` pagination.
+
+
+### Synthetic `m.timeline.gap` event alternative
+
+Another alternative is using synthetic events (thing that looks like an event
+without an `event_id`) which the server inserts alongside other events in the
+`chunk` to indicate where the gap is. But this has detractors since it's harder
+to implement in strongly typed SDK's and easy for a client to naively display
+every "event" in the `chunk`.
 
 `/messages` response example with a gap:
 
@@ -96,35 +179,20 @@ A full example of the `m.timeline.gap` indicator:
 ```
 
 
-## Potential issues
-
-Lots of gaps/extremities are generated when a spam attack occurs and federation
-falls behind. If clients start showing gaps with retry links, we might just be
-exposing the spam more.
-
-
-## Alternatives
-
-As an alternative, we can continue to do nothing as we do today and not worry
-about the occasional missing events. People seem not to notice any missing
-messages anyway but they do probably see our slow `/messages` pagination.
-
-
-
 ## Security considerations
 
-Only your own homeserver controls whether a `m.timeline.gap` indicator is added to the
-message response and it isn't an event of the room so there shouldn't be any weird
-edge case where the gap is trying to get you to fetch spam or something.
+Only your own homeserver controls whether a gap is added to the `/messages`
+response so there shouldn't be any weird edge case where someone else can
+control whether you to fetch something.
 
 
 ## Unstable prefix
 
-Servers will indicate support for the new endpoint via a true value for feature
+Servers will indicate support for this MSC via a `true` value for feature
 flag `org.matrix.msc3871` in `unstable_features` in the response to `GET
 /_matrix/client/versions`.
 
-While this feature is in development, it can be used as `GET
-/_matrix/client/unstable/org.matrix.msc3871/rooms/{roomId}/messages?gaps_allowed=true`
+While this feature is in development, the `gaps` field can be used as
+`org.matrix.msc3871.gaps`
 
 
