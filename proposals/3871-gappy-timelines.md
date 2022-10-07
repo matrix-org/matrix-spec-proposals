@@ -67,46 +67,6 @@ direction of the request to fill in the gap.
 
 ### `/messages` response examples
 
-#### `/messages?dir=f`
-
-`/messages?dir=f` response example with a gap (`chunk` has events in
-chronoligcal order):
-
-```json5
-{
-  "chunk": [
-    {
-      "event_id": "$foo",
-      "type": "m.room.message",
-      "content": {
-        "body": "foo",
-      }
-    },
-    // <the `GapEntry` indicates a gap here>
-    {
-      "event_id": "$baz",
-      "type": "m.room.message",
-      "content": {
-        "body": "baz",
-      }
-    },
-  ]
-  "gaps": [
-        {
-          "next_to_event_id": "$foo",
-          "pagination_token": "t47402-4357353_219380_26003_2265",
-        }
-  ]
-}
-```
-
-```
-                                             pagination_token
-                                             |
-<oldest-in-time> [foo (next_to_event_id)]<-- ▼<gap> <--[baz] <newest-in-time>
-```
-
-
 #### `/messages?dir=b`
 
 
@@ -145,6 +105,46 @@ reverse-chronoligcal order):
                                pagination_token
                                |
 <oldest-in-time> [foo]<-- <gap>▼ <--[baz (next_to_event_id)] <newest-in-time>
+```
+
+
+#### `/messages?dir=f`
+
+`/messages?dir=f` response example with a gap (`chunk` has events in
+chronoligcal order):
+
+```json5
+{
+  "chunk": [
+    {
+      "event_id": "$foo",
+      "type": "m.room.message",
+      "content": {
+        "body": "foo",
+      }
+    },
+    // <the `GapEntry` indicates a gap here>
+    {
+      "event_id": "$baz",
+      "type": "m.room.message",
+      "content": {
+        "body": "baz",
+      }
+    },
+  ]
+  "gaps": [
+        {
+          "next_to_event_id": "$foo",
+          "pagination_token": "t47402-4357353_219380_26003_2265",
+        }
+  ]
+}
+```
+
+```
+                                             pagination_token
+                                             |
+<oldest-in-time> [foo (next_to_event_id)]<-- ▼<gap> <--[baz] <newest-in-time>
 ```
 
 
