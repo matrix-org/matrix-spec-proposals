@@ -38,7 +38,7 @@ timeline are as defined below.
 
 ### 200 response
 
-Thid describes the new `gaps` response field being added to the `200 response`
+This describes the new `gaps` response field being added to the `200 response`
 of `/messages`:
 
 Name | Type | Description | required
