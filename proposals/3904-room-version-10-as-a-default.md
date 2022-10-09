@@ -1,4 +1,4 @@
-# MSCXXXX: Room version 10 as a default
+# MSC3904: Room version 10 as a default
 
 Enough time has passed to allow the public federation to upgrade their servers to support room
 version 10, though with some caveats (see "potential issues"). This proposal aims to make v10 the
