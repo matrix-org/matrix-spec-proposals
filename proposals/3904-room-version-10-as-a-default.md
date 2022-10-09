@@ -27,8 +27,8 @@ when Synapse in 1.64.0 added its support. Dendrite added its support back in 202
 Conduit as the only major implementation to lack v10 support. 
 
 Conduit status for v10 is not implemented as of (2022-10-09) but has been reported that its getting close
-by Conduit developer Timo. Ruma has it implemented and the Catalyst Conduit fork has v10 working for about
-as long as Synapse has had its implementation based on the memory of the Author of this MSC.
+by Conduit developer Timo. Ruma has it implemented and the Catalyst Conduit fork has v10 working 
+for about as long as Synapse has had its implementation based on the memory of the Author of this MSC.
 
 For completeness, some links:
 
@@ -38,6 +38,7 @@ For completeness, some links:
 * Library support: https://github.com/ruma/ruma/pull/1213
 * Release: N/A
 * Testing: N/A
+* Update Progress Source: https://matrix.to/#/!NasysSDfxKxZBzJJoE:matrix.org/$jiDPeEk2ELXVIzPCWF9Z7z780TrNL0I4DdCPFHi-GVs?via=matrix.org&via=libera.chat&via=element.io
 
 ## Alternatives
 
