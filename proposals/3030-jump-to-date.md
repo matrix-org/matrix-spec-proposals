@@ -47,17 +47,15 @@ When an event can't be found in the given direction, the endpoint throws a 404
 `"errcode":"M_NOT_FOUND",` (example error message `"error":"Unable to find event
 from 1672531200000 in direction f"`).
 
-In order to solve the problem where a remote federated homeserver does not have
-all of the history in a room and no suitably close event, we also add a server
-API endpoint `GET
-/_matrix/federation/v1/timestamp_to_event/{roomId}?ts=<timestamp>?dir=[f|b]`
-which other homeservers can use to ask about their closest `event_id` to the
-timestamp. This endpoint also returns `origin_server_ts` to make it easy to do a
-quick comparison to see if the remote `event_id` fetched is closer than the
-local one. After the local homeserver receives a response from the federation
-endpoint, it should probably should try to backfill this event via the
-federation `/event/<event_id>` endpoint so that it's available to query with
-`/context` from a client in order to get a pagination token.
+In order to solve the problem where a homeserver does not have all of the history in a
+room and no suitably close event, we also add a server API endpoint `GET
+/_matrix/federation/v1/timestamp_to_event/{roomId}?ts=<timestamp>?dir=[f|b]` which other
+homeservers can use to ask about their closest `event_id` to the timestamp. This
+endpoint also returns `origin_server_ts` to make it easy to do a quick comparison to see
+if the remote `event_id` fetched is closer than the local one. After the local
+homeserver receives a response from the federation endpoint, it should probably should
+try to backfill this event via the federation `/event/<event_id>` endpoint so that it's
+available to query with `/context` from a client in order to get a pagination token.
 
 The heuristics for deciding when to ask another homeserver for a closer event if
 your homeserver doesn't have something close, is left up to the homeserver
