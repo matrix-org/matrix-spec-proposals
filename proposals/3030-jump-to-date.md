@@ -8,7 +8,7 @@ feature in order to see messages back at a given point in time. Pick a date from
 a calender, heatmap, or paginate next/previous between days and view all of the
 messages that were sent on that date.
 
-For our [roadmap of feature parity with
+Alongside the [roadmap of feature parity with
 Gitter](https://github.com/vector-im/roadmap/issues/26), we're also interested
 in using this for a new better static Matrix archive. Our idea is to server-side
 render [Hydrogen](https://github.com/vector-im/hydrogen-web) and this new
@@ -35,7 +35,7 @@ Imagine wanting to get a message from 3 years ago 😫
 ## Proposal
 
 Add new client API endpoint `GET
-/_matrix/client/v1/rooms/{roomId}/timestamp_to_event?ts=<timestamp>?dir=[f|b]`
+/_matrix/client/v1/rooms/{roomId}/timestamp_to_event?ts=<timestamp>&dir=[f|b]`
 which fetches the closest `event_id` to the given timestamp `ts` query parameter
 in the direction specified by the `dir` query parameter. The direction `dir`
 query parameter accepts `f` for forward-in-time from the timestamp and `b` for
