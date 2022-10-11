@@ -1,13 +1,12 @@
 # Proposal for specifying configurable per-room message retention periods.
 
-A major shortcoming of Matrix has been the inability to specify how long
-events should stored by the servers and clients which participate in a given
-room.
+A major shortcoming of Matrix has been the inability to specify how long events
+should stored by the servers and clients which participate in a given room.
 
 This proposal aims to specify a simple yet flexible set of rules which allow
-users, room admins and server admins to determine how long data should be
-stored for a room, from the perspective of respecting the privacy requirements
-of that room (which may range from a "burn after reading" ephemeral conversation,
+users, room admins and server admins to determine how long data should be stored
+for a room, from the perspective of respecting the privacy requirements of that
+room (which may range from a "burn after reading" ephemeral conversation,
 through to FOIA-style public record keeping requirements).
 
 As well as enforcing privacy requirements, these rules provide a way for server
@@ -19,41 +18,28 @@ retention as well as per-room; this has been split out into
 [MSC2228](https://github.com/matrix-org/matrix-doc/pull/2228) in order to get
 the easier per-room semantics landed.
 
-## Problem:
+
+## Problem
 
 Matrix is inherently a protocol for storing and synchronising conversation
 history, and various parties may wish to control how long that history is stored
 for.
 
- * Users may wish to specify a maximum age for their messages for privacy
-   purposes, for instance:
-   * to avoid their messages (or message metadata) being profiled by
-     unscrupulous or compromised homeservers
-   * to avoid their messages in public rooms staying indefinitely on the public
-     record
-   * because of legal/corporate requirements to store message history for a
-     limited period of time
-   * because of legal/corporate requirements to store messages forever
-     (e.g. FOIA)
-   * to provide "ephemeral messaging" semantics where messages are best-effort
-     deleted after being read.
- * Room admins may wish to specify a retention policy for all messages in a
-   room.
-   * A room admin may wish to enforce a lower or upper bound on message
-     retention on behalf of its users, overriding their preferences.
-   * A bridged room should be able to enforce the data retention policies of the
-     remote rooms.
- * Server admins may wish to specify a retention policy for their copy of given
-   rooms, in order to manage disk space.
+Room administrators, for instance, may wish to control how long a message can be
+stored (e.g. to comply with corporate/legal requirements to store message
+history for at least a specific amount of time), or how early a message can be
+deleted (e.g. to address privacy concerns of the room's members, to avoid
+messages staying in the public record forever, or to comply with corporate/legal
+requirements to only store specific kinds of information for a limited amount of
+time).
 
-Additionally, we would like to provide this behaviour whilst also ensuring that
-users generally see a consistent view of message history, without lots of gaps
-and one-sided conversations where messages have been automatically removed.
+Additionally, server administrators may also wish to control how long message
+history is kept in order to better manage their server's disk space, or to
+enforce corporate/legal requirements for the organisation managing the server.
 
-At the least, it should be possible for people participating in a conversation
-to know the expected lifetime of the other messages in the conversation **at
-the time they are sent** in order to know how best to interact with them (i.e.
-whether they are knowingly participating in a ephemeral conversation or not).
+We would like to provide this behaviour whilst also ensuring that users
+generally see a consistent view of message history, without lots of gaps and
+one-sided conversations where messages have been automatically removed.
 
 We would also like to set the expectation that rooms typically have a long
 message retention - allowing those who wish to use Matrix to act as an archive
@@ -77,67 +63,42 @@ This proposal does not try to solve the problems of:
    purge arbitrary events from the DB without fracturing the DAG of the room,
    and so a different approach is required)
 
+
 ## Proposal
 
-### Room Admin-specified per-room retention
+### Per-room retention
 
-We introduce a `m.room.retention` state event, which room admins can set to
-mandate the history retention behaviour for a given room. It follows the
-default PL semantics for a state event (requiring PL of 50 by default to be
-set).
+We introduce a `m.room.retention` state event, which room admins or moderators
+can set to mandate the history retention behaviour for a given room. It follows
+the default PL semantics for a state event (requiring PL of 50 by default to be
+set). Its state key is an empty string (`""`).
 
 The following fields are defined in the `m.room.retention` contents:  
 
-`max_lifetime`:
-  the maximum duration in milliseconds for which a server must store events in this room. 
-  Must be null or an integer in range [0, 2<sup>53</sup>-1]. If absent, or
-  null, should be interpreted as 'forever'.
+* `max_lifetime`: the maximum duration in milliseconds for which a server must
+  store events in this room. Must be null or an integer in range [0,
+  2<sup>53</sup>-1]. If absent or null, should be interpreted as not setting an
+  upper bound to the room's retention policy.
 
-`min_lifetime`:
-  the minimum duration in milliseconds for which a server should store events in this room.
-  Must be null or an integer in range [0, 2<sup>53</sup>-1]. If absent, or
-  null, should be interpreted as 'forever'.
-  
-`expire_on_clients`:
-  a boolean for whether clients must expire messages clientside to match the
-  min/max lifetime fields. If absent, or null, should be interpreted as false.
-  The intention of this is to distinguish between rules intended to impose a
-  data retention policy on the server - versus rules intended to provide a
-  degree of privacy by requesting all data is purged from all clients after a
-  given time.
+* `min_lifetime`: the minimum duration in milliseconds for which a server should
+  store events in this room. Must be null or an integer in range [0,
+  2<sup>53</sup>-1]. If absent or null, should be interpreted as not setting a
+  lower bound to the room's retention policy.
 
-Retention is only considered for non-state events.
+In the instance of both `max_lifetime` and `min_lifetime` being provided,
+`max_lifetime` must always be higher or equal to `min_lifetime`.
 
-If set, these fields SHOULD replace other retention behaviour configured by
-the user or server admin - even if it means forcing laxer privacy requirements
-on that user.  This is a conscious privacy tradeoff to allow admins to specify
-explicit privacy requirements for a room.  For instance, a room may explicitly
-require all messages in the room be stored forever with `min_lifetime: null`.
-
-In the instance of `min_lifetime` or `max_lifetime` being overridden, the
-invariant that `max_lifetime >= min_lifetime` must be maintained by clamping
-max_lifetime to be equal to `min_lifetime`.
-
-If the user's retention settings conflicts with those in the room, then the
-user's clients are expected to warn the user when participating in the room. 
-A conflict exists if the user has configured their client to create rooms with
-retention settings which differing from the values on the `m.room.retention`
-state event.  This is particularly important in order to warn the user if the
-room's retention is longer than their default requested retention period.
-
-The UI for this could be a warning banner in the room to remind the user that
-that room's retention setting doesn't match their preferred default.
 
 For instance:
 
 ```json
 {
-	"max_lifetime": 86400000,
+	"max_lifetime": 86400000
 }
 ```
 
 The above example means that servers receiving messages in this room should
-store the event for only 86400 seconds (1 day), as measured from that
+store the event for only 86400000 milliseconds (1 day), as measured from that
 event's `origin_server_ts`, after which they MUST purge all references to that
 event (e.g. from their db and any in-memory queues).
 
@@ -147,7 +108,7 @@ the DAG.
 
 ```json
 {
-	"min_lifetime": 2419200000,
+	"min_lifetime": 2419200000
 }
 ```
 
@@ -155,161 +116,273 @@ The above example means that servers receiving this message SHOULD store the
 event forever, but can choose to purge their copy after 28 days (or longer) in
 order to reclaim diskspace.
 
-### Server Admin-specified per-room retention
+```json
+{
+	"min_lifetime": 2419200000, 
+    "max_lifetime": 15778800000
+}
+```
 
-Server admins have two ways of influencing message retention on their server:
+The above example means that servers SHOULD store their copy of the event for at least 28
+days after it has been sent, and MUST delete it at the latest after 6 months.
 
-1) Specifying a default `m.room.retention` for rooms created on the server, as
-defined as a per-server implementation configuration option which inserts the
-state events after creating the room, and before `initial_state` is applied on
-`/createRoom` (effectively augmenting the presets used when creating a room). 
-If a server admin is trying to conserve diskspace, they may do so by
-specifying and enforcing a relatively low min_lifetime (e.g. 1 month), but not
-specify a max_lifetime, in the hope that other servers will retain the data
-for longer.  This is not recommended however, as it harms users who want to
-use Matrix like e-mail, as a permenant archive of their conversations.
 
-2) By adjusting how aggressively their server enforces the the `min_lifetime`
-value for message retention within a room.  For instance, a server admin could
-configure their server to attempt to automatically purge remote messages in
-public rooms which are older than three months (unless min_lifetime for those
-messages was set higher).
+## Server-defined retention
 
-A possible implementation-specific server configuration here could be
-something like:
- * target_lifetime_public_remote_events: 3 months
- * target_lifetime_public_local_events: null # forever
- * target_lifetime_private_remote_events: null # forever
- * target_lifetime_private_local_events: null # forever
+Server administrators can benefit from a few capabilities to control how long
+history is stored:
 
-...which would try to automatically purge remote events from public rooms after
-3 months (assuming their individual min_lifetime is not higher), but leave
-others alone.
+* the ability to set a default retention policy for rooms that don't have a
+  retention policy defined in their state
+* the ability to override the retention policy for a room
+* the ability to cap the effective `max_lifetime` and `min_lifetime` of the rooms the
+  server is in
 
-These config values would interact with the min_lifetime and max_lifetime
-values in the different classes of room by decreasing the effective
-max_lifetime to the proposed value (whilst preserving the `max_lifetime >=
-min_lifetime` invariant).  However, the precise behaviour would be up to the
-server implementation.
+The implementation of these capabilities in the server is left as an
+implementation detail.
 
-Server admins could also override the requested retention limits (e.g. if
-resource constrained), but this isn't recommended given it may result in
-history being irrevocably lost against the senders' wishes.
+We introduce the following authenticated endpoint to allow clients to enquire
+about how the server implements this policy:
 
-## Pruning algorithm
 
-To summarise, servers and clients must implement the pruning algorithm as
-follows. For each event `E` in the room:
+```
+GET /_matrix/client/v3/retention/configuration
+```
 
-If we're a client (including bots and bridges), apply the algorithm:
-  * if specified, the `expire_on_clients` field in the `m.room.retention` event for the room (as of `E`) is true.
-  * otherwise, don't apply the algorithm.
+200 response properties:
 
-The maximum lifetime of an event is calculated as:
-  * if specified, the `max_lifetime` field in the `m.room.retention` event (as of `E`) for the room.
-  * otherwise, the message's maximum lifetime is considered 'forever'.
+* `policies` (required): An object mapping room IDs to a retention policy. If
+  the room ID is `*`, the associated policy is the default policy. Each policy
+  follows the format for the content of an `m.room.retention` state event.
+* `limits` (required): An object defining the limits to apply to policies
+  defined by `m.room.retention` state events. This object has two optional
+  properties, `min_lifetime` and `max_lifetime`, which each define a limit to
+  the equivalent property of the state events' content. Each limit defines an
+  optional `min` (the minimum value, in milliseconds) and an optional `max` (the
+  maximum value, in milliseconds).
 
-The minimum lifetime of an event is calculated as:
-  * if specified, the `min_lifetime` field in the `m.room.retention` event (as of `E`) for the room.
-  * otherwise, the message's minimum lifetime is considered 'forever'.
-  * for clients, `min_lifetime` should be considered to be 0 (as there is no
-    requirement for clients to persist events).
+If both `policies` and `limits` are included in the response, the policies
+specified in `policies` __must__ comply with the limits defined in `limits`.
 
-If the calculated `max_lifetime` is less than the `min_lifetime` then the `max_lifetime`
-is set to be equal to the `min_lifetime`.
+Example response:
 
-The server/client then selects a lifetime of the event to lie between the
-calculated values of minimum and maximum lifetime, based on their implementation
-and configuration requirements.  The selected lifetime MUST NOT exceed the
-calculated maximum lifetime. The selected lifetime SHOULD NOT be less than the
-calculated minimum lifetime, but may be less in case of constrained resources,
-in which case the server should prioritise retaining locally generated events
-over remote generated events.
+```json
+{
+    "policies": {
+        "*": {
+            "max_lifetime": 15778800000
+        },
+        "!someroom:test": {
+            "min_lifetime": 2419200000, 
+            "max_lifetime": 15778800000
+        }
+    },
+    "limits": {
+        "min_lifetime": {
+            "min": 86400000,
+            "max": 172800000
+        },
+        "max_lifetime": {
+            "min": 7889400000,
+            "max": 15778800000
+        }
+    }
+}
+```
 
-Server/clients then set a maintenance task to remove ("purge") old events and
-references to their IDs from their DB and in-memory queues after the lifetime
-has expired (starting timing from the absolute `origin_server_ts` on the event).
-It's worth noting that this means events may sometimes disappear from event
-streams; calling the same `/sync` or `/messages` API twice may give different
-results if some of the events have disappeared in the interim.
+In this example, the server is configured with:
 
-A room must have at least one forward extremity in order to allow new events
-to be sent within it. Therefore servers must redact rather than purge obsolete
-events which are forward extremities in order to avoid wedging the room.
+* a default policy with a `max_lifetime` of 6 months and no `min_lifetime` (i.e. messages
+  can only be kept up to 6 months after they have been sent)
+* an override for the retention policy in room `!someroom:test`
+* limits on `min_lifetime` that 
 
-Server implementations must ensure that clients cannot back-paginate into a
-region of the event graph which has been purged (bearing in mind that other
-servers may or may not give a successful response to requests to backfill such
-events). One approach to this could be to discard the backwards extremities
-caused by a purge, or otherwise mark them as unpaginatable. There is a
-separate related [spec
-bug](https://github.com/matrix-org/matrix-doc/issues/2251) and [impl
-bug](https://github.com/matrix-org/synapse/issues/1623) that the CS API does
-not currently provide a well-defined way to say when `/messages` has hit a hole
-in the DAG or the start of the room and cannot paginate further.
+Example response with no policy or limit set:
 
-If possible, servers/clients should remove downstream notifications of a message
-once it has expired (e.g. by cancelling push notifications).
+```json
+{
+    "policies": {},
+    "limits": {}
+}
+```
 
-If a user tries to re-backfill in history which has already been purged, it's
-up to the server implementation's configuration on whether to allow it or not,
-and if allowed, configure how long the backfill should persist before being
-purged again.
+Example response with only a default policy and an upper limit on `max_lifetime`:
 
-Cleaning up the media attachments of expired or redacted events has been
-split out into https://github.com/matrix-org/matrix-doc/issues/2278.
+```json
+{
+    "policies": {
+        "*": {
+            "min_lifetime": 86400000,
+            "max_lifetime": 15778800000
+        }
+    },
+    "limits": {
+        "max_lifetime": {
+            "max": 15778800000
+        }
+    }
+}
+```
 
-Clients and Servers are recommended to not default to setting a `max_lifetime`
-when creating rooms; instead users should only specify a `max_lifetime` when
-they need it for a specific conversation.  This avoids unintentionally
-stopping users from using Matrix as a way to archive their conversations if
-they so desire.
+### Defining the effective retention policy of a room
+
+In this section, as well as in the rest of this document, we define the
+"effective retention policy" of a room as the retention policy that is used to
+determine whether an event should be deleted or not. This may be the policy
+determined by the `m.room.retention` event in the state of the room, but it
+might not be depending on limits set by the homeserver.
+
+The algorithm implementation must implement to determine the effective retention
+policy of a room is
+
+
+* if the homeserver defines a specific retention policy for this room, then use
+  this policy as the effective retention policy of the room.
+* otherwise, if the state of the room does not include a `m.room.retention`
+  event with an empty state key:
+    * if the homeserver defines a default retention policy, then use this policy
+      as the effective retention policy of the room.
+    * if the homeserver does not define a default retention policy, then don't
+      apply a retention policy in this room.
+* otherwise, if the state of the room includes a `m.room.retention` event with
+  an empty state key:
+    * if no limit is set by the homeserver use the policy in the state of the
+      room as the effective retention policy of the room.
+    * for `min_lifetime` and `max_lifetime`:
+        * if there is no limit for the property, use the value specified in the
+          room's state for the effective retention policy of the room (if any).
+        * if there is a limit for the property:
+            * if the value specified in the room's state complies with the
+              limit, use this value for the effective retention policy of the
+              room.
+                * if the value specified in the room's state is lower than the
+                  limit's `min` value, use the `min` value for the effective
+                  retention policy of the room.
+                * if the value specified in the room's state is greater than the
+                  limit's `max` value, use the `max` value for the effective
+                  retention policy of the room.
+                * if there is no value specified in the room's state, use the
+                  limit's `min` value for the effective retention policy of the
+                  room (which can be null or absent).
+* otherwise, don't apply a retention policy in this room.
+
+So, for example, if a homeserver defines a lower limit on `max_lifetime` of
+`86400000` (a day) and no limit on `min_lifetime`, and a room's retention policy
+is the following:
+
+```json
+{
+  "max_lifetime": 43200000,
+  "min_lifetime": 21600000
+}
+```
+
+Then the effective retention policy of the room is:
+
+```json
+{
+  "max_lifetime": 86400000,
+  "min_lifetime": 21600000
+}
+```
+
+
+## Enforcing a retention policy
+
+Retention is only considered for non-state events. Retention is also not
+considered for the most recent event in a room, in order to allow a new event
+sent to that room to reference it in its  `prev_events`.
+
+When purging events in a room, only the latest retention policy state event in
+that room is considered. This means that in a room where the history looks like
+the following (oldest event first):
+
+1. Retention policy A
+2. Event 1
+3. Event 2
+4. Retention policy B
+
+Then the retention policy B is used to determine the effective retention that
+defines whether events 1 and 2 should be purged, even though they were sent when
+the retention policy A was in effect. This is to avoid creating wholes in the
+room's DAG caused by events in the middle of the timeline being subject to a
+lower `max_lifetime` than other events being sent before and after them. Such
+holes would make it more difficult for homeservers to calculate room timelines
+when showing them to clients. They would also force clients to display
+potentially incomplete or one-sided conversations without being able to easily
+tell which parts of the conversation is missing.
+
+Servers decide whether an event should or should not be purged by calculating
+how much time has passed since the event's `origin_server_ts` property, and
+comparing this duration with the room's effective retention policy.
+
+Note that, for performance reasons, a server might decide to not purge an event
+the second it hits the end of its lifetime (e.g. so it can batch several events
+together). In this case, the server must make sure to omit the expired events
+from reponses to client requests. Similarly, if the server is sent an expired
+event over federation, it must omit it from responses to client requests (and
+ensure it is eventually purged).
 
 ## Tradeoffs
 
-This proposal tries to keep it simple by letting the room admin mandate the
-retention behaviour for a room.  However, we could alternatively have a negotiation
-between the client and its server to determine the viable retention for a room.
-Or we could have the servers negotiate together to decide the retention for a room.
-Both seem overengineered, however.
+This proposal specifies that the lifetime of an event is defined by the latest
+retention policy in the room, rather than the one in effect when the event was
+sent. This might be controversial as, in Matrix, the state that an event is
+subject to is usually the state of the room at the time it was sent. However,
+there are a few issues with using the retention that was in effect at the time
+the event was sent:
 
-It also doesn't solve specifying storage quotas per room (i.e. "store the last
-500 messages in this room"), to avoid scope creep.  This can be handled by an
-MSC for configuring resource quotas per room (or per user) in general.
+* it would create holes in the DAG of a room which would complexify the
+  server-side handling of the room's history
+* malicious servers could potentially make an event evade retention policies by
+  selecting their event's `prev_events` and `auth_events` so that the event is
+  on a portion of the DAG where the policy does not exist
+* it would be difficult to translate the configuration of retention policies
+  into a clear and easy to use UX (especially considering server-side
+  configuration applies to the whole history of the room)
+* it would not allow room administrators to retroactively update the lifetime of
+  events that have already been sent (e.g. if the context of a room administered
+  by an organisation which requirements for data retention change over time)
 
-It also doesn't solve per-message retention behaviour - this has been split out
-into a seperate MSC.
+This proposal does not cover per-message retention (i.e. the ability to set
+different lifetimes to different messages). This has been split out into
+[MSC2228](https://github.com/matrix-org/matrix-spec-proposals/pull/2228) to
+simplify this proposal.
 
-We don't announce room retention settings within a room per-server.  The
-advantage would be full flexibility in terms of servers announcing their
-different policies for a room (and possibly letting users know how likely
-history is to be retained, or conversely letting servers know if they need to
-step up to retain history).  The disadvantage is that it could make for very
-complex UX for end-users: "Warning, some servers in this room have overridden
-history retention to conflict with your preferences" etc.
-
-We let servers specify a default `m.room.retention` for rooms created on their
-servers as a coarse way to encourage users to not suck up disk space (although
-it's not recommended).  This is also how we force E2E encryption on, but it
-feels quite fragmentory to have magical presets which do different things
-depending on which server you're on.  The alternative would be some kind of
-federation-aware negotiation where a server refuses to participate in a room
-unless it gets its way on retention settings, however this feels unnecessarily
-draconian and complex.
+This proposal does also not cover the case where a room's administrator wishes
+to only restrict the lifetime of a specific section of the room's history. This
+is left to be covered by a separate MSC, possibly built on top of MSC2228.
 
 ## Security considerations
 
-It's always a gentlemen's agreement for servers and clients alike to actually
-uphold the requested retention behaviour; users should never rely on deletion
-actually having happened.
+In a context of open federation, it is worth keeping in mind the possibility
+that not all servers in a room will enforce its retention policy. Similarly,
+different servers will likely enforce different server-side configuration, and
+as a result calculate different lifetimes for a given event. This proposal aims
+at trying to compromise between finding an absolute consensus on an event's
+lifetime and working within the constraints of a server's operator in terms of
+data retention.
 
-## Conclusion
+In a kind of contradictory way with the previous paragraph, a server may keep an
+expired event in its database for some time after its expiration, while not
+sharing it with clients and federating servers. This is in order to prevent
+abusers from using low lifetime values in a room's retention policy in order to
+erase any proof of such abuse and avoid being investigated.
 
-Previous attempts to solve this have got stuck by trying to combine together too many
-disparate problems (e.g. reclaiming diskspace; aiding user data privacy; self-destructing
-messages; mega-redaction; clearing history on specific devices; etc) - see
-https://github.com/matrix-org/matrix-doc/issues/440 and https://github.com/matrix-org/matrix-doc/issues/447
-for the history.
+Basing the expiration time of an event on its `origin_server_ts` is not ideal as
+this field can be falsified by the sending server. However, there currently
+isn't a more reliable way to certify the send time of an event.
 
-This proposal attempts to simplify things to strictly considering the question of
-how long servers (and clients) should persist events for.
+As mentioned previously in this proposal, servers might store expired events for
+longer than their lifetime allows, either for performance reason or to mitigate
+abuse. This is considered acceptable as long as:
+
+* an expired event is not kept permanently
+* an expired event is not shared with clients and federated servers
+
+## Unstable prefixes
+
+While this proposal is under review, the `m.room.retention` event type should be
+replaced by the `org.matrix.msc1763.retention` type.
+
+Similarly, the `/_matrix/client/v3/retention/configuration` path should be replaced with `/_matrix/client/unstable/org.matrix.msc1763/retention/configuration`.
