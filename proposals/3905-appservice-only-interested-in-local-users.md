@@ -29,6 +29,17 @@ behavior mismatch between remote and local users.
 Therefore the proposal is that the `users` namespace regex should only be applied
 against local users of the homeserver.
 
+A basic implementation of this would look like:
+
+```js
+const isLocalUser = sender.endsWith(":" + homeserver.domain);
+const isInterestingUser = isLocalUser && sender.matches(regex);
+```
+
+```js
+const localRoomMembers = getLocalRoomMembers(roomId);
+const interestingUsers = localRoomMembers.filter((localRoomMember) => localRoomMember.matches(regex));
+```
 
 
 ## Potential issues
