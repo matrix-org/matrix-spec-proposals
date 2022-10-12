@@ -41,6 +41,12 @@ const localRoomMembers = getLocalRoomMembers(roomId);
 const interestingUsers = localRoomMembers.filter((localRoomMember) => localRoomMember.matches(regex));
 ```
 
+---
+
+To avoid confusion, please note that the `rooms` and `aliases` namesapces are not
+affected. You can still match whatever rooms and aliases to listen to all events
+that occur in them.
+
 
 ## Potential issues
 
