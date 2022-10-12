@@ -1,5 +1,9 @@
 # MSC3901: Deleting State
 
+## Introduction
+
+### Why delete state?
+
 Matrix rooms have an ever-growing list of state, caused by real-world events
 like someone joining a room or sharing their live location.
 
@@ -23,6 +27,8 @@ solution to "clean" an affected room is desirable.
 
 TODO: refer to relevant MSCs: live location, and also the owned state ones.
 
+### How this came about
+
 Over several months in 2022 some interested people got together and discussed
 how to address this situation. There was much discussion of how to structure
 the room graph to allow "forgetting" old state, and not all ideas were fully
@@ -35,6 +41,8 @@ seamless, in the hope that they will become good enough to allow "cleaning"
 rooms of unimportant state.
 
 TODO: link to room upgrades in spec.
+
+### Improving room upgrades will help
 
 We propose improving room upgrades in various ways, and offering an "Optimise
 Room" function in clients that allows room administators to "upgrade" a room
@@ -53,14 +61,120 @@ a) improvements to room upgrades may eventually lead to a process that is so
 b) improvements to room upgrades will bring benefits Matrix even if they don't
    turn out to be the right way to solve the deleting state problem.
 
-## Proposal
+### Also, reduce state sent to clients
 
-## Potential issues
+In addition to improving room upgrades, we think we can improve the situation
+by excluding the state that is sent to clients on initial sync. This should
+reduce unnecessary bandwidth use, and reduce storage use within clients.
 
-## Alternatives
+### Structure of this document
 
-## Security considerations
+This MSC will probably eventually be split into several MSCs, but they are
+gathered together for now to ensure we keep their shared purpose in mind:
+reducing the burden of uninteresting state.
 
-## Unstable prefix
+Additionally, this document contains a definition of "deleted" state, which
+is referenced in several of the sub-proposals.
 
-## Dependencies
+The sub-proposals are all believed to be independent[1], but they are listed in
+an order that we think makes sense to use, since those listed earlier will
+probably be simpler and help us think more clearly about the later ones.
+
+[1] Although 3 (auto-accept invites) does not make a lot of sense without 2
+    (create invites).
+
+## Definition of deleted state
+
+### Purpose of this definition
+
+If we can define clearly what state we consider to be "deleted", we can make
+decisions about what to do with it, including not sending it to clients on an
+initial sync, and not copying it across when a room is upgraded.
+
+### Motivation for the definition
+
+Loosely, "deleted" state is state that is not useful for understanding the state
+of the room at this point.  For example, knowing that someone shared their
+location in the past is of historical interest, but is not useful for displaying
+a live indication of who is sharing now. Similarly, knowing that someone left
+the room is not useful for displaying a list of current room members.
+
+Removing a piece of "deleted" state does not materially change the actual
+condition of the room (again, speaking loosely).
+
+### Formal definition
+
+* TODO: Decide between these 2 options:
+    1. An event with a state key and "content": null
+    2. An event with state key and "deleted": true (sibling of content?)
+    * 2 is more flexible (you can keep useful information in the content, and
+      you could retro-fit so even membership events could add this key)
+    * 1 prevents cruft being left in deleted state
+
+* TODO: membership events where the person has left
+* TODO: someone stopped sharing live location? (Or propose to change that MSC?)
+* TODO: others?
+
+## Sub-proposal 1: Hide deleted state from clients on initial sync
+### Proposal
+
+Based on our definition of "deleted" state, when sending room state to clients
+for an initial sync, do not include deleted state.
+
+TODO: specific spec wording change
+
+### Potential issues
+### Alternatives
+
+We could simply not do this, and hope that the measures we will take to reduce
+the load of state on the server will also be enough to help clients.
+
+However, this seems a relatively easy proposal, and we hope that implementing
+it will help us understand what we really mean by "deleted" state, and flush
+out problems we have not yet considered.
+
+### Security considerations
+### Unstable prefix
+### Dependencies
+
+## Sub-proposal 2: Invite users to an upgraded room
+
+Currently, when an invite-only room is upgraded, all the users must be
+re-invited to the new room.
+
+We propose to invite all users as part of the room upgrade process.
+
+### Proposal
+
+TODO: specific spec wording change
+TODO: consider a bulk-invite event, either as part of this MSC or a separate one
+
+### Potential issues
+### Alternatives
+### Security considerations
+### Unstable prefix
+### Dependencies
+
+## Sub-proposal 3: Auto-accept invitations to upgraded rooms
+### Proposal
+### Potential issues
+### Alternatives
+### Security considerations
+### Unstable prefix
+### Dependencies
+
+## Sub-proposal 4: Copy more state to upgraded rooms
+### Proposal
+### Potential issues
+### Alternatives
+### Security considerations
+### Unstable prefix
+### Dependencies
+
+## Sub-proposal 5: Upgraded rooms have the same room ID
+### Proposal
+### Potential issues
+### Alternatives
+### Security considerations
+### Unstable prefix
+### Dependencies
