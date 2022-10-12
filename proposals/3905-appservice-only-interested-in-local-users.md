@@ -22,8 +22,6 @@ receive events in rooms that are shared with a local user. This leaves us with a
 behavior mismatch between remote and local users.
 
 
-
-
 ## Proposal
 
 Therefore the proposal is that the `users` namespace regex should only be applied
@@ -70,6 +68,24 @@ considerations introduced.
 
 With this MSC, an application service will be receiving less events than before.
 
+
+## Historical context
+
+According to @turt2live (SCT member), "the spec intended to [originally] say the
+namespace can make an appservice interested in remote users, though there's obviously no
+ability for the server to call `/user` on remote users (it's not like the appservice can
+create them)." (https://github.com/matrix-org/synapse/pull/13958#discussion_r988369446)
+
+This intention goes back further than `r0` (or `v1.0` in marketing versions speak) but
+this history is lost to time since there isn't really anything concrete to point to
+beyond the original spec
+[issue](https://github.com/matrix-org/matrix-spec-proposals/issues/1307) and
+[PR](https://github.com/matrix-org/matrix-spec-proposals/pull/1533) which don't mention
+these details.
+
+Since we're unable to come up with any valid use cases nowadays, it's unclear to
+outsiders from that time whether the original intention is actually true. In any case,
+we're clarifying it here and making an MSC to change it explicitly.
 
 
 ## Unstable prefix
