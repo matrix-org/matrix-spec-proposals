@@ -19,7 +19,7 @@ language and even what Synapse does.
 But matching against remote users is merely a footgun because an application service may
 assume that it'll receive all events sent by that remote user, even though it will only
 receive events in rooms that are shared with a local user. This leaves us with a
-behaivor mismatch between remote and local users.
+behavior mismatch between remote and local users.
 
 
 
