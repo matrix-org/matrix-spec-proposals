@@ -6,43 +6,50 @@ As covered in in MSC_POLICY_MUTE currently in matrix mutes are done via powerlev
 This MSC has the simple purpose of defining a path forward that alleviates this problem. Yes it does
 require a room version bump but this MSC will explain why this is an acceptable compromise.
 
-To achieve Mutes via membership a new membership state is proposed of `muted`. It would allow you to
+To achieve Mutes via membership a new membership state is proposed of `mute`. It would allow you to
 exclusively send EDUs and no PDUs.
 
 ## Proposal
 
-This proposal defines the `muted` membership type. If a user has this membership type in a room they
-are restricted to exclusively sending the read marker EDUs and nothing more.
+This proposal defines the `mute` membership type. If a user has this membership type in a room they
+are restricted to exclusively sending the read marker EDUs and nothing more except leaving via setting
+their membership to `ban` as defined later.
 
-The legal transitions for the `muted` membership type based on Room version 10 would be
-`join` -> `muted` -> `ban`,`join`
+The legal transitions for the `mute` membership type based on Room version 10 would be
+`join` -> `mute` -> `ban`, `join`, `leave`(Exclusively via kick)
 
-When a users membership is `muted` they may leave the room by setting their own membership to `ban`
+When a users membership is `mute` they may leave the room by setting their own membership to `ban`
 this transition ignores power levels and instead behaves as if it was a leave. But if the person tries to
-re-join the room they will be banned the same way as anyone else. The reason for going this way is simple.
-It preserves your ability to leave a room while your muted but you cant return without the moderators of the
-room desiring you to have the ability to return.
+re-join the room they will be banned the same way they would be if someone else sent a valid ban. 
+The reason for going this way is simple. It preserves your ability to leave a room while your muted 
+but you cant return without the moderators of the room desiring you to have the ability to return.
 
 This also solves the issue of forcing implementations to break the matrix tradition and evaluate not just
 the previous membership state but 2 membership states back to determine if its legal or not that would have been
 required to enable leaves.
 
-An exception to the earlier mentioned restriction that you cant send PDUs and EDUs except read markers
-is that you can send a membership event that changes your membership from `mute` to `ban`.
 
+### Authorisation rules.
+
+To be written. Contributions welcome.
 ## Potential issues
 
-_Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
-and they should be documented here. There should be some explanation for why the disadvantage is
-acceptable, however - just like in this example._
+On the potential issue that this MSC requires rooms that want to employ it to be created after the room version
+its included in becomes default or their homeserver makes it default or they manually select it for an upgrade is
+deemed acceptable. The reason this is deemed acceptable is because as has been made clear in discussions with
+community moderation teams for multiple communities not all communities want to use mutes in their toolkit and therefore
+not all communities will feel the need to upgrade their room version to gain access to this feature. 
 
-Someone is going to have to spend the time to figure out what the template should actually have in it.
-It could be a document with just a few headers or a supplementary document to the process explanation,
-however more detail should be included. A template that actually proposes something should be considered
-because it not only gives an opportunity to show what a basic proposal looks like, it also means that
-explanations for each section can be described. Spending the time to work out the content of the template
-is beneficial and not considered a significant problem because it will lead to a document that everyone
-can follow.
+Room version upgrades them self's are being worked upon making more smooth. There is work in the area of deleting state
+for example that requires better room version upgrade mechanics. There is also history importing work being done as
+another avenue of lessening the impact of room version upgrades in the future. 
+
+The authors of this MSC believes that communities that desire to use this MSC to its full potential are perfectly happy
+to accept the compromises involved in a room version bump. This MSCs purpose can be achieved via powerlevels 
+in earlier room versions. This comes at the cost of a skyrocketing state resolution complexity but this is always
+an option for communities that don't want to upgrade their room version or if this MSC fails.
+
+The authors of this MSC are not aware of any other potential issues that have not been covered elsewhere in this MSC.
 
 ## Alternatives
 
@@ -55,7 +62,7 @@ a perfect world be able to be implemented quite quickly in a vacuum that is not 
 
 ## Security considerations
 
-The `muted` membership type is going to be yet another thing that you can mess up implementing and that is
+The `mute` membership type is going to be yet another thing that you can mess up implementing and that is
 recognised as an ok. The authors of this MSC believes that is an acceptable compromise since we avoid
 the PL churn of current mute implementations. We also believe that the potential issue of being trapped in
 rooms is mitigated by making self bans an option to mitigate the potential to bypass a mute fully by leaving
@@ -63,13 +70,12 @@ the room.
 
 ## Unstable prefix
 
-_If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal._
+This MSC is not recommended to be implemented before Authorisation rules are properly specified but if implemented.
+Please use the version string of `support.feline.mute.mscAAAA.v0`
+
+Once Authorisation rules are specified its expected that the unstable version after that is v1. This is because the
+pre authorisation rules properly written down version cant be trusted to interoperate and this is why its NOT recommended 
+to implement a version that is based on this MSC before that section is written. 
 
 ## Dependencies
 
