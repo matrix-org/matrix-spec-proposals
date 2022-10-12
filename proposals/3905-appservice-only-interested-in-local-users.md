@@ -1,4 +1,4 @@
-# MSC0000: Application Service should only be interested in local users
+# MSC3905: Application Service should only be interested in local users
 
 Application services receive events that they are "interested" in.
 
