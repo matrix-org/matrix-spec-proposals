@@ -90,7 +90,9 @@ we're clarifying it here and making an MSC to change it explicitly.
 
 ## Unstable prefix
 
-If a homeserver wants to implement this functionality before this MSC merges, since it
-only affects application services local to the server, it can be implemented although it
-will be technically unspecced behavior until this MSC is merged. Also consider a config
-option for maximal compatibility with existing application services people may be using.
+While this MSC is not considered stable, appservices can opt-in to this behaviour in
+either of two ways:
+
+ 1. Specifying a regex which includes the local homeserver's domain in the regex (eg:
+    `@_irc.*:example.org`)
+ 1. Adding `"org.matrix.msc3905": true` to the root level of their registration file
