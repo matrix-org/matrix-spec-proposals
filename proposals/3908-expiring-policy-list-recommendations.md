@@ -1,4 +1,4 @@
-# MSC0000: Expiring Policy List Recommendations
+# MSC3908: Expiring Policy List Recommendations
 
 ## Introduction
 
@@ -12,7 +12,7 @@ removing policies after the expiry date.
 The means of getting to this goal are simple. The use of a new `"expiry"` key. This key will define
 the point in time the recommendation is considered expired.
 
-By letting entries expire we easily enable features like making temp bans, making a mute from MSC_POLICY_MUTE
+By letting entries expire we easily enable features like making temp bans, making a mute from MSC3907
 temporary and other future policy recommendations can also be temporary.
 
 ## Proposal
@@ -28,7 +28,7 @@ While we expect that there won't be much disagreement about when a date has been
 it is still somewhat likely disagreement can occur between clients, bots, server modules
 about whether the date has been met, especially around the boundary of the date.
 
-Below is an example recommendation to mute the user `@evil:example.com` with the help of MSC_POLICY_MUTE
+Below is an example recommendation to mute the user `@evil:example.com` with the help of MSC3907
 this recommendation expires 1 hour after it was sent. The mute was sent at 2000000000. Now please note that the
 only timestamp that matters is the expiry timestamp.
 
@@ -94,10 +94,10 @@ During the time this MSC is unstable `expiry` key is replaced with `support.feli
 
 ## Dependencies
 
-This MSC builds on MSC_DAG_MUTE, MSC_POLICY_MUTE and MSC3784 (which at the time of writing have not yet been accepted
+This MSC builds on MSC3909, MSC3907 and MSC3784 (which at the time of writing have not yet been accepted
 into the spec).
 
 It does not require any of these MSCs to be implemented but it works best when implemented together with the rest of these MSCs.
 
-MSC_DAG_MUTE to heavily improve upon mutes, MSC_POLICY_MUTE to make mute via policy list an option
+MSC3909 to heavily improve upon mutes, MSC3907 to make mute via policy list an option
 and MSC3784 to help enable building better user experiences interacting with policy lists.
