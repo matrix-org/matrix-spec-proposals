@@ -1,6 +1,6 @@
 # MSC3886: Simple client rendezvous capability
 
-In MSCyyyy (to be published) a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
+In [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906) a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
 QR code.
 
 In order to facilitate this the two devices need some bi-directional communication channel which they can use to exchange
@@ -12,7 +12,7 @@ information such as:
 - device ID for end-to-end encryption
 - device keys for end-to-end encryption
 
-To enable MSCyyyy and support any future proposals this MSC proposes a simple HTTP based protocol that can be used to
+To enable [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906) and support any future proposals this MSC proposes a simple HTTP based protocol that can be used to
 establish a direct communication channel between two IP connected devices.
 
 It will work with devices behind NAT. It doesn't require homeserver administrators to deploy a separate server.
@@ -246,7 +246,7 @@ following:
 
 ## Dependencies
 
-None.
+None, although it's intended to be used with [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906).
 
 ## Credits
 
