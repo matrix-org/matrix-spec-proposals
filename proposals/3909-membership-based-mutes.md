@@ -16,7 +16,7 @@ are restricted to exclusively sending the read marker EDUs and nothing more exce
 their membership to `ban` as defined later.
 
 The legal transitions for the `mute` membership type based on Room version 10 would be
-`join` -> `mute` -> `ban`, `join`, `leave`(Exclusively via kick)
+`join` -> `mute` -> `ban`, `join`(Requires sufficient PL to set membership to `mute`), `leave`(Exclusively via kick)
 
 When a users membership is `mute` they may leave the room by setting their own membership to `ban`
 this transition ignores power levels and instead behaves as if it was a leave. But if the person tries to
