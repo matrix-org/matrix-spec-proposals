@@ -41,7 +41,7 @@ const interestingUsers = localRoomMembers.filter((localRoomMember) => localRoomM
 
 ---
 
-To avoid confusion, please note that the `rooms` and `aliases` namesapces are not
+To avoid confusion, please note that the `rooms` and `aliases` namespaces are not
 affected. You can still match whatever rooms and aliases to listen to all events
 that occur in them.
 
@@ -49,14 +49,14 @@ that occur in them.
 ## Potential issues
 
 There are use cases like moderation where an application service wants to hear all
-messages from remote users in rooms but these are are also covered by the `rooms`
+messages from remote users in rooms but these are also covered by the `rooms`
 namespace where all events in a matched room are considered "interesting".
 
 
 
 ## Alternatives
 
-The alternative is clarify that the `users` namespace should be matched against all
+The alternative is to clarify that the `users` namespace should be matched against all
 users (local and remote). This still leaves us with the behavior-difference footgun.
 
 
