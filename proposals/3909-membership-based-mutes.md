@@ -1,8 +1,8 @@
-# MSC0000: Membership based mutes WORKING TITLE
+# MSC3909: Membership based mutes
 
 ## Introduction
 
-As covered in in MSC_POLICY_MUTE currently in matrix mutes are done via powerlevel manipulation.
+As covered in in MSC3907 currently in matrix mutes are done via powerlevel manipulation.
 This MSC has the simple purpose of defining a path forward that alleviates this problem. Yes it does
 require a room version bump but this MSC will explain why this is an acceptable compromise.
 
@@ -71,7 +71,7 @@ the room.
 ## Unstable prefix
 
 This MSC is not recommended to be implemented before Authorisation rules are properly specified but if implemented.
-Please use the version string of `support.feline.mute.mscAAAA.v0`
+Please use the version string of `support.feline.mute.msc3909.v0`
 
 Once Authorisation rules are specified its expected that the unstable version after that is v1. This is because the
 pre authorisation rules properly written down version cant be trusted to interoperate and this is why its NOT recommended 
@@ -79,5 +79,10 @@ to implement a version that is based on this MSC before that section is written.
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
+This MSC builds on MSC3907, MSC3908 and MSC3784 (which at the time of writing have not yet been accepted
 into the spec).
+
+It does not require any of these MSCs to be implemented but it works best when implemented together with the rest of these MSCs.
+
+MSC3907 to cordinate mutes via policy list, MSC3908 to make temporary mutes an option when cordinated via policy lists
+and MSC3784 to help enable building better user experiences interacting with policy lists.
