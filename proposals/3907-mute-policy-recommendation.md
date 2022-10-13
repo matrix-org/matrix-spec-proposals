@@ -1,4 +1,4 @@
-# MSC0000: Mute Policy Recommendation
+# MSC3907: Mute Policy Recommendation
 
 ## Introduction
 
@@ -16,17 +16,17 @@ On top of this, the process has to be repeated in each room that they wish to mu
 Granted, some of this can be alleviated with use of a script/bot, but we believe a mute policy
 recommendation would enable for a standard user expeirance for muting participants.
 The mute recommendation would also open the door for the implementation of mute to be
-changed transparently, and we will be introducing another MSC_DAG_MUTE that does this.
+changed transparently, and we will be introducing another MSC3909 that does this.
 
 Mutes will become less clumsy to use if they can be applied as policy. Especially when used together with
-MSC_EXPIRY to make them be able to expire on their own. MSC_DAG_MUTE will in the future also make them even better
+MSC3907 to make them be able to expire on their own. MSC3909 will in the future also make them even better
 by making them a membership state if that MSC is implemented. This MSC is technically fully independent
 of these 2 MSCs.
 
 ## Proposal
 
 This MSC will create a new Policy List recommendation of `m.mute`. Below is an example event for this MSC
-that displays how it would be used in conjunction with MSC_EXPIRY.
+that displays how it would be used in conjunction with MSC3907.
 
 ```
 {
@@ -96,7 +96,7 @@ The most important (and main motivation)
 of these recommendations is when a `user` rule is applied to a `room`.
 
 It should be noted that the current recommendation for a `user` rule applied to a `room`
-can come at the cost of rapid PL churn if used frequently. We hope that MSC_DAG_MUTE can address this.
+can come at the cost of rapid PL churn if used frequently. We hope that MSC3909 can address this.
 
 ## Potential issues
 
@@ -107,18 +107,18 @@ can come at the cost of rapid PL churn if used frequently. We hope that MSC_DAG_
 
 There are few if any viable alternatives to doing this via Policy lists to achieve the goals of the MSC.
 
-But the way this MSC recommends applying a mute is straight up inferior to MSC_DAG_MUTE way of doing it.
+But the way this MSC recommends applying a mute is straight up inferior to MSC3909 way of doing it.
 The MSCs in this MSC package are all not dependent on each other but are greatly enhanced by each other.
 
-Now as for how to practically implement a mute the merits of preferring the approach taken in MSC_DAG_MUTE
+Now as for how to practically implement a mute the merits of preferring the approach taken in MSC3909
 are going to be discussed in that MSC.
 
 ## Security considerations
 
 This MSC has no new security considerations for policy lists. But applying this MSC without the use of
-MSC_DAG_MUTE will require that the applying party in the case of applying at a room level against a user
+MSC3909 will require that the applying party in the case of applying at a room level against a user
 the issuance of new power level events. This is problematic due to the effects it has on the room state.
-This is elaborated on in MSC_DAG_MUTE
+This is elaborated on in MSC3909
 
 ## Unstable prefix
 
@@ -126,10 +126,10 @@ During the time this MSC is unstable `m.mute` is replaced with `support.feline.p
 
 ## Dependencies
 
-This MSC builds on MSC_DAG_MUTE, MSC_EXPIRY and MSC3784 (which at the time of writing have not yet been accepted
+This MSC builds on MSC3909, MSC3908 and MSC3784 (which at the time of writing have not yet been accepted
 into the spec).
 
 It does not require any of these MSCs to be implemented but it works best when implemented together with the rest of these MSCs.
 
-MSC_DAG_MUTE to heavily improve upon mutes, MSC_EXPIRY to make temporary mutes an option
+MSC3909 to heavily improve upon mutes, MSC3908 to make temporary mutes an option
 and MSC3784 to help enable building better user experiences interacting with policy lists.
