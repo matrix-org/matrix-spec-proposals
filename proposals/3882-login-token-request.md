@@ -1,6 +1,6 @@
 # MSC3882: Allow an existing session to sign in a new session
 
-In MSCyyyy (to be published) a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
+In [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906) a proposal is made to allow a user to login on a new device using an existing device by means of scanning a
 QR code.
 
 In order to support the above proposal a mechanism is needed where by the new device can obtain a new access token that it can use with the Client-Server API.
