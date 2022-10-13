@@ -1,4 +1,4 @@
-# MSCyyyy: Protocol to use an existing Matrix client session to complete login and setup of E2EE via QR code
+# MSC3906: Protocol to use an existing Matrix client session to complete login and setup of E2EE via QR code
 
 This MSC proposes a method to allow an existing Matrix authenticated client/device to sign in a new device and handle
 E2EE set up (mutual device verification; setup of cross-signing if used; connecting to room key backups if used).
