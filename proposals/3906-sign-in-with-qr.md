@@ -49,7 +49,7 @@ sequenceDiagram
 Note over A,B: Devices establish secure rendezvous and derive<br> confirmation code from shared key. e.g. 1234-5678-9012<br>The intention of the initiator (generator of the scanned code) was encoded in the scanned code
 
     alt Code was scanned on new device
-        rect rgb(240,240,240)
+        rect rgba(240,240,240,0.5)
             Note over A,B: These are from MSC3886
             B->>A: Rendezvous set up and ECDH public key encoded in QR
             A->>B: New device responds with ECDH public key
@@ -60,7 +60,7 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
             A->>A: Cancel rendezvous
         end
     else Code was scanned on existing device
-        rect rgb(240,240,240)
+        rect rgba(240,240,240,0.5)
             Note over A,B: These are from MSC3886
             A->>B: Rendezvous set up and ECDH public key encoded in QR
             B->>A: New device responds with ECDH public key
@@ -328,7 +328,7 @@ sequenceDiagram
     participant B as Existing device <br>already signed in
     participant OP as OIDC Provider
     participant HS as Homeserver
-    rect rgb(240,240,240,0.5)
+    rect rgba(240,240,240,0.5)
         Note over A,B: These steps are same as login.token flow
         alt Code was scanned on new device
             B->>A: Rendezvous set up and ECDH public key encoded in QR
@@ -398,7 +398,7 @@ sequenceDiagram
             end
         and
             Note over B: Device opens verification_url_complete in native browser:
-            rect rgb(240,240,240,0.5)
+            rect rgba(240,240,240,0.5)
                 B->>OP: GET https://id.matrix.org/device/abcde
                 OP->>B: <html> consent screen including the user_code
                 B->>OP: POST /allow or /deny
