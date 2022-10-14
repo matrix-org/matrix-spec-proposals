@@ -333,8 +333,6 @@ cleanup of certain media items.
   This reduces the metadata leak, but means that none of the automated media
   removal functionality works.
 
-## Prior art
-
 ## Security considerations
 
 * Letting servers track the relationship between events and media is a metadata
@@ -347,3 +345,22 @@ TODO
 ## Dependencies
 
 None at present.
+
+## Prior art
+
+* [MSC~~701~~3796](https://github.com/matrix-org/matrix-spec-proposals/issues/3796):
+  a predecessor of this proposal
+
+* [MSC2461](https://github.com/matrix-org/matrix-spec-proposals/pull/2461):
+  adds per-user authentication but does not attempt to restrict access to
+  individual items of media.
+
+* [MSC2278](https://github.com/matrix-org/matrix-spec-proposals/pull/2278):
+  Deleting attachments for expired and redacted messages
+
+* [MSC1902](https://github.com/matrix-org/matrix-spec-proposals/pull/1902):
+  Split the media repo into s2s and c2s parts
+
+* [MSC2846](https://github.com/matrix-org/matrix-spec-proposals/pull/2846):
+  (https://github.com/matrix-org/matrix-spec-proposals/pull/2846):
+  
