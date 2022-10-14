@@ -362,5 +362,6 @@ None at present.
   Split the media repo into s2s and c2s parts
 
 * [MSC2846](https://github.com/matrix-org/matrix-spec-proposals/pull/2846):
-  (https://github.com/matrix-org/matrix-spec-proposals/pull/2846):
+  Decentralizing media through CIDs
+  
   
