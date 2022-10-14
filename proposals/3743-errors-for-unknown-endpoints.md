@@ -56,9 +56,28 @@ problem a bit, but does not propose a concrete solution. [^0]
 
 ### Homeserver API
 
-Tested by querying for `GET /_matrix/client/v4/login` and `GET /_matrix/federation/unknown`.
+Tested by querying for:
+
+* Unprefixed: `GET /_matrix/unknown`
+* Client-Server: `GET /_matrix/client/v4/login`,
+* Server-Server: `GET /_matrix/federation/unknown`.
+* Media: `GET /_matrix/media/unknown`
+* Keys: `GET /_matrix/keys/unknown`
+
+Tested incorrect method via:
+
+* `PUT /_matrix/client/v3/login`
+* `PUT /_matrix/federation/v1/version`
+* `PUT /_matrix/media/v3/upload`
+* `PUT /_matrix/v3/keys/upload`
+
+If the below doesn't include differences for an incorrect method, assume it is
+identical to the behavior of an unknown endpoint.
+
+----
 
 * Synapse:
+  * Unprefixed, and Keys: 404 error with an HTML body
   * Client-Server:
     * < 1.53.0: 404 error with an HTML body
     * \>= 1.53.0: 400 error with a JSON body [^1]
@@ -69,40 +88,70 @@ Tested by querying for `GET /_matrix/client/v4/login` and `GET /_matrix/federati
     ```json
     {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
     ```
-* Dendrite:
-  * Client-Server:
-    * < 0.10.0: 404 error with a text body of `404 page not found`
-    * \>= 0.10.0: 404 error with a JSON body [^2]
+  * Media:
+    * 404 error with an HTML body
+    * Incorrect method: 400 error with a JSON body:
       ```json
       {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
       ```
-  * Server-Server: 404 error with a text body of `404 page not found`
-* Conduit (both Client-Server and Server-Server):
-  * < 0.4.0: 404 error with no body
-  * == 0.4.0: 404 error with a JSON body [^3]
+* Dendrite:
+  * Unprefixed and Server-Server:
+    * 404 error with a text body of `404 page not found`
+    * Incorrect method: 405 error with no body
+  * Client-Server:
+    * < 0.10.0: 404 error with a text body of `404 page not found`
+    * \>= 0.10.0: 404 error with a JSON body (but a `text/plain` content type) [^2]
+      ```json
+      {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
+      ```
+  * Media:
+    * 404 error with a text body of `404 page not found`
+    * Incorrect method: 405 error with a text body of `405 PUT not allowed on this endpoint`
+  * Keys: 404 error with a text body of `404 page not found`
+* Conduit:
+  * Unprefied, Client-Server, Server-Server, and Media:
+    * < 0.4.0: 404 error with no body
+    * == 0.4.0: 404 error with a JSON body [^3]
+      ```json
+      {"errcode": "M_NOT_FOUND", "error": "M_NOT_FOUND: Unknown or unimplemented route"}
+      ```
+    * \> 0.4.0: 404 error with a JSON body [^4]
+      ```json
+      {"errcode": "M_UNRECOGNIZED", "error": "M_UNRECOGNIZED: Unrecognized request"}
+      ```
+    * Incorrect method: 405 error with no body
+  * Keys: handled as unknown endpoints as above -- unimplemented?
+* matrix-media-repo (Media-only):
+  * 404 error with a JSON body:
     ```json
-    {"errcode": "M_NOT_FOUND", "error": "M_NOT_FOUND: Unknown or unimplemented route"}
+    {"errcode": "M_NOT_FOUND", "error": "Not found", "mr_errcode": "M_NOT_FOUND"}
     ```
-  * > 0.4.0: 404 error with a JSON body [^4]
+  * Incorrect method: 405 error with a JSON body:
     ```json
-    {"errcode": "M_UNRECOGNIZED", "error": "M_UNRECOGNIZED: Unrecognized request"}
+    {"errcode": "M_UNKNOWN", "error": "Method Not Allowed", "mr_errcode": "M_METHOD_NOT_ALLOWED"}
     ```
 
 ### Application Service API
 
-Untested
+Tested by querying for `GET /_matrix/app/unknown`
+
+Untested, but anecdotally been told this is poorly handled.
 
 ### Identity Service API,
 
-Tested by querying for `GET /_matrix/identity/unknown`
+Tested by querying for `GET /_matrix/identity/unknown`.
 
-* Sydent: 404 with an HTML body
+* Sydent:
+  * 404 with an HTML body
+  * Incorrect method: 405 with an HTML body
 
 ### Push Gateway
 
-Tested by querying for `GET /_matrix/push/unknown`
+Tested by querying for `GET /_matrix/push/unknown`.
 
-* Sygnal: 404 with an HTML body
+* Sygnal:
+  * 404 with an HTML body
+  * Incorrect method: 405 with an HTML body
 
 ## Dependencies
 
