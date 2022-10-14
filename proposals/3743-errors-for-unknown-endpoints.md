@@ -41,6 +41,19 @@ of each other server it is interacting with.
 It is seen as being more narrowly applicable (only to the Server-Server API),
 while also being more complicated to implement.
 
+It could be proposed to only handle the known prefixes under `/_matrix`:
+
+* `/_matrix/client/`
+* `/_matrix/federation/`
+* `/_matrix/media/`
+* `/_matrix/keys/`
+* `/_matrix/push/`
+* `/_matrix/identity/`
+* `/_matrix/app/`
+
+But it is more future-proof to include the entire `/_matrix` prefix in case
+additional services are added to the Matrix ecosystem.
+
 ## Security considerations
 
 None.
@@ -76,60 +89,67 @@ identical to the behavior of an unknown endpoint.
 
 ----
 
-* Synapse:
-  * Unprefixed, and Keys: 404 error with an HTML body
-  * Client-Server:
-    * < 1.53.0: 404 error with an HTML body
-    * \>= 1.53.0: 400 error with a JSON body [^1]
-      ```json
-      {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
-      ```
-  * Server-Server: 400 error with a JSON body
+#### Synapse:
+
+* Unprefixed, and Keys: 404 error with an HTML body
+* Client-Server:
+  * < 1.53.0: 404 error with an HTML body
+  * \>= 1.53.0: 400 error with a JSON body [^1]
     ```json
     {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
     ```
-  * Media:
-    * 404 error with an HTML body
-    * Incorrect method: 400 error with a JSON body:
-      ```json
-      {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
-      ```
-* Dendrite:
-  * Unprefixed and Server-Server:
-    * 404 error with a text body of `404 page not found`
-    * Incorrect method: 405 error with no body
-  * Client-Server:
-    * < 0.10.0: 404 error with a text body of `404 page not found`
-    * \>= 0.10.0: 404 error with a JSON body (but a `text/plain` content type) [^2]
-      ```json
-      {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
-      ```
-  * Media:
-    * 404 error with a text body of `404 page not found`
-    * Incorrect method: 405 error with a text body of `405 PUT not allowed on this endpoint`
-  * Keys: 404 error with a text body of `404 page not found`
-* Conduit:
-  * Unprefied, Client-Server, Server-Server, and Media:
-    * < 0.4.0: 404 error with no body
-    * == 0.4.0: 404 error with a JSON body [^3]
-      ```json
-      {"errcode": "M_NOT_FOUND", "error": "M_NOT_FOUND: Unknown or unimplemented route"}
-      ```
-    * \> 0.4.0: 404 error with a JSON body [^4]
-      ```json
-      {"errcode": "M_UNRECOGNIZED", "error": "M_UNRECOGNIZED: Unrecognized request"}
-      ```
-    * Incorrect method: 405 error with no body
-  * Keys: handled as unknown endpoints as above -- unimplemented?
-* matrix-media-repo (Media-only):
-  * 404 error with a JSON body:
+* Server-Server: 400 error with a JSON body
+  ```json
+  {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
+  ```
+* Media:
+  * 404 error with an HTML body
+  * Incorrect method: 400 error with a JSON body:
     ```json
-    {"errcode": "M_NOT_FOUND", "error": "Not found", "mr_errcode": "M_NOT_FOUND"}
+    {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
     ```
-  * Incorrect method: 405 error with a JSON body:
+
+#### Dendrite:
+
+* Unprefixed and Server-Server:
+  * 404 error with a text body of `404 page not found`
+  * Incorrect method: 405 error with no body
+* Client-Server:
+  * < 0.10.0: 404 error with a text body of `404 page not found`
+  * \>= 0.10.0: 404 error with a JSON body (but a `text/plain` content type) [^2]
     ```json
-    {"errcode": "M_UNKNOWN", "error": "Method Not Allowed", "mr_errcode": "M_METHOD_NOT_ALLOWED"}
+    {"errcode": "M_UNRECOGNIZED", "error": "Unrecognized request"}
     ```
+* Media:
+  * 404 error with a text body of `404 page not found`
+  * Incorrect method: 405 error with a text body of `405 PUT not allowed on this endpoint`
+* Keys: 404 error with a text body of `404 page not found`
+
+#### Conduit:
+
+* Unprefied, Client-Server, Server-Server, and Media:
+  * < 0.4.0: 404 error with no body
+  * == 0.4.0: 404 error with a JSON body [^3]
+    ```json
+    {"errcode": "M_NOT_FOUND", "error": "M_NOT_FOUND: Unknown or unimplemented route"}
+    ```
+  * \> 0.4.0: 404 error with a JSON body [^4]
+    ```json
+    {"errcode": "M_UNRECOGNIZED", "error": "M_UNRECOGNIZED: Unrecognized request"}
+    ```
+  * Incorrect method: 405 error with no body
+* Keys: handled as unknown endpoints as above -- unimplemented?
+
+#### matrix-media-repo (Media-only):
+
+* 404 error with a JSON body:
+  ```json
+  {"errcode": "M_NOT_FOUND", "error": "Not found", "mr_errcode": "M_NOT_FOUND"}
+  ```
+* Incorrect method: 405 error with a JSON body:
+  ```json
+  {"errcode": "M_UNKNOWN", "error": "Method Not Allowed", "mr_errcode": "M_METHOD_NOT_ALLOWED"}
+  ```
 
 ### Application Service API
 
