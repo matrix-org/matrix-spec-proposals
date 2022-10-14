@@ -83,7 +83,7 @@ Tested by querying for `GET /_matrix/client/v4/login` and `GET /_matrix/federati
     ```json
     {"errcode": "M_NOT_FOUND", "error": "M_NOT_FOUND: Unknown or unimplemented route"}
     ```
-  * >= 0.4.0: 404 error with a JSON body [^4]
+  * > 0.4.0: 404 error with a JSON body [^4]
     ```json
     {"errcode": "M_UNRECOGNIZED", "error": "M_UNRECOGNIZED: Unrecognized request"}
     ```
