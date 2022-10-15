@@ -40,10 +40,9 @@ deemed acceptable. The reason this is deemed acceptable is because as has been m
 community moderation teams for multiple communities not all communities want to use mutes in their toolkit and therefore
 not all communities will feel the need to upgrade their room version to gain access to this feature. 
 
-Room version upgrades themselves are being worked upon making more smooth. There is work in the area of deleting state
-
-for example that requires better room version upgrade mechanics. There is also history importing work being done as
-another avenue of lessening the impact of room version upgrades in the future. 
+The UX around room version upgrades is being worked upon to make them less disruptive. There is work in 
+the area of deleting state for example that requires better room version upgrade mechanics. There is also history importing 
+work being done as another avenue of lessening the impact of room version upgrades in the future. 
 
 The authors of this MSC believes that communities that desire to use this MSC to its full potential are perfectly happy
 to accept the compromises involved in a room version bump. This MSCs purpose can be achieved via powerlevels 
