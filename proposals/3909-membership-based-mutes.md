@@ -40,7 +40,8 @@ deemed acceptable. The reason this is deemed acceptable is because as has been m
 community moderation teams for multiple communities not all communities want to use mutes in their toolkit and therefore
 not all communities will feel the need to upgrade their room version to gain access to this feature. 
 
-Room version upgrades them self's are being worked upon making more smooth. There is work in the area of deleting state
+Room version upgrades themselves are being worked upon making more smooth. There is work in the area of deleting state
+
 for example that requires better room version upgrade mechanics. There is also history importing work being done as
 another avenue of lessening the impact of room version upgrades in the future. 
 
