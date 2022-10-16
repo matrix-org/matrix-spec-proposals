@@ -39,12 +39,12 @@ to a user if the user can see the corresponding event.
 2. Attaching media
 
    * The methods for sending events
-     ([`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey})
-     and [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
+     ([`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
+     and [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid))
      are extended to take a query parameter `attach_media`, whose value must be a complete `mxc:` URI.
 
      The `attach_media` parameter may be used several times to attach several
-     pieces of media to the same event. The maximium number of pieces of media
+     pieces of media to the same event. The maximum number of pieces of media
      that can be attached to a single event is implementation-defined by servers.
 
      If any of the `attach_media` parameters do not correspond to known
@@ -62,7 +62,7 @@ to a user if the user can see the corresponding event.
      (with the original event ID) even though the media has already been attached.
 
    * Alternatively, if a restricted media item is referenced in a call to
-     [`PUT /_matrix/client/v3/profile/{userId}/avatar_url`](PUT /_matrix/client/v3/profile/{userId}/avatar_url),
+     [`PUT /_matrix/client/v3/profile/{userId}/avatar_url`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3profileuseridavatar_url)
      it is instead attached to the user's profile. 
 
      Again, if the media is already attached, the server responds with a 400 error with
@@ -83,8 +83,8 @@ to a user if the user can see the corresponding event.
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3downloadservernamemediaid) | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}` | N/A                                                                 |
    | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | `GET /_matrix/federation/v1/media/thumbnail/{serverName}/{mediaId}` |
 
-   [Question: should we move `/config`, and `/preview_url` while
-   we're at it, per [MSC1902](https://github.com/matrix-org/matrix-spec-proposals/pull/1902)?]
+   [TODO: we should probably move `/config`, and `/preview_url` while
+   we're at it]
 
    None of the new endpoints take an `allow_remote` query parameter. (For
    `/_matrix/client`, servers should always attempt to request remote
@@ -104,7 +104,7 @@ to a user if the user can see the corresponding event.
      the corresponding original endpoints.
 
    * For the new `/_matrix/federation` endpoints, the response is
-     [`multipart/mixed`]https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)
+     [`multipart/mixed`](https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)
      content with two parts: the first must be a JSON object
      (and should have a `Content-type: application/json` header), and the second
      is the media item as per the original endpoints. The json object may have
@@ -291,9 +291,6 @@ media without attaching it to anything.
 
 ## Alternatives
 
-* Use some sort of "content token" for each piece of media, and require clients to
-  provide it, per [MSC3910](https://github.com/matrix-org/matrix-spec-proposals/pull/3910).
-
 * Allow clients to upload media which does not require authentication (for
   example via a `public=true` query parameter). This might be particularly
   useful for IRC/XMPP bridges, which could upload any media they encounter to
@@ -308,6 +305,14 @@ media without attaching it to anything.
   "send" endpoint in place of the `mxc` uri. It's hard to see what advantage
   this gives, beyond the fact a nonce could be smaller so marginally fewer
   bytes to send.
+
+* Rather than messing with multiplart content, have a separate endpoint for
+  servers to get the access controls for a media item. That would mean two
+  requests, but might make more sense than both `/thumbnail` and `/download`
+  providing the info.
+
+* Use some sort of "content token" for each piece of media, and require clients to
+  provide it, per [MSC3910](https://github.com/matrix-org/matrix-spec-proposals/pull/3910).
 
 ## Security considerations
 
