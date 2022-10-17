@@ -13,13 +13,17 @@ based on heuristics.
 ## Proposal
 
 The Client-Server API, Server-Server API, Application Service API, Identity Service API,
-and Push Gateway shall respond with a `404` HTTP error response with an error code
-of `M_UNRECOGNIZED`. This is required for all paths under the `/_matrix` prefix.
+and Push Gateway shall respond with the following for all paths under the `/_matrix` prefix:
 
-This applies if a server receives a request to an unknown path or if an invalid method is
-used for a known path, i.e. whenever the request cannot be routed to business logic.
+* `404` HTTP error response with an error code of `M_UNRECOGNIZED` if a request to an unknown
+  path is received.
+* `405` HTTP error response with an error code of `M_UNRECOGNIZED` if an invalid method for a
+  known path is received.
 
-The major homeserver implementations have recently settled on using `M_UNRECOGNIZED`,
+Both of these can be treated the same from the client making the request and represent that
+the request cannot be routed to business logic.
+
+Note that the major homeserver implementations have recently settled on using `M_UNRECOGNIZED`,
 so it seems reasonable to specify this formally.
 
 ## Potential issues
