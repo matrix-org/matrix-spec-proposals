@@ -462,7 +462,7 @@ Please also refer to the dependent MSCs.
 
 ## Unstable prefix
 
-It probably makes sense to use an unstable protocol name like `org.matrix.mscYYYY.login_token`.
+Whilst in development the unstable protocol name of `org.matrix.msc3906.login_token` should be used.
 
 ## Dependencies
 
