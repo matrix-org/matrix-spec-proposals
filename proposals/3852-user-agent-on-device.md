@@ -10,8 +10,8 @@ sessions. This gives users  more confidence in removing stale or suspicious sess
 ## Proposal
 Homeservers already record the user agent per session today to expose it in the admin API [GET
 /_matrix/client/v3/admin/whois/{userId}](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3adminwhoisuserid).
-This MSC proposes optionally exposing the latest recorded user agent as `last_seen_user_agent` on the `Device` model returned by
-Client-Server API endpoints [GET
+This MSC proposes optionally exposing the latest recorded user agent as `last_seen_user_agent` on the `Device` model
+returned by Client-Server API endpoints [GET
 /_matrix/client/v3/devices](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3devices) and [GET
 /_matrix/client/v3/devices/{deviceId}](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3devices). If
 the user agent is not available, or the server chooses not to expose it, the value should be omitted from the response. 
