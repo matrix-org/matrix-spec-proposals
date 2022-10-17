@@ -8,7 +8,7 @@ By exposing more detailed and up to date session information, users will be able
 sessions. This gives users  more confidence in removing stale or suspicious sessions.
 
 ## Proposal
-Home servers already record the user agent per session today to expose it in the admin API [GET
+Homeservers already record the user agent per session today to expose it in the admin API [GET
 /_matrix/client/v3/admin/whois/{userId}](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv3adminwhoisuserid).
 This MSC proposes exposing the latest recorded user agent as `last_seen_user_agent` on the `Device` model returned by
 Client-Server API endpoints [GET
