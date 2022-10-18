@@ -11,12 +11,15 @@ this would allow clients significant usability improvements with threads.
 
 ## Proposal
 
-### Allow filtering the `/messages` API to not include threaded messages
+### Allow filtering the `/messages` API by event relation type
 
-This proposal recommends extending the existing [Event filters] are extended with a new filter, named `not_rel_types`.
-If this filter is specified, only messages which match none of the given relation types will be returned.
+This proposal recommends extending the existing [Event filters] are extended with new filters, named `not_rel_types` and
+`rel_types`.  If the `rel_types` filter is specified, messages which match any of the given relation types will be
+returned. If the `not_rel_types` filter is specified, only messages which match none of the given relation types will be
+returned.
 
-This means, if this filter is specified, only message which match none of the given relation types will be returned.
+If a relation type is present in both of these fields, `not_rel_types` takes precedence and messages with this type will
+not be returned.
 
 ```
 GET /_matrix/client/v3/rooms/!room_id:domain/messages?filter=...
@@ -28,7 +31,8 @@ formatted for legibility:
 ```jsonc
 {
   "types": ["m.room.message"],
-  "not_rel_types": ["m.thread"]
+  "not_rel_types": ["m.thread"],
+  "rel_types": ["m.edit"]
 }
 ```
 
@@ -42,10 +46,20 @@ following events in a room:
 Using a filter of `"not_rel_types": ["m.thread"]` would return only events `A` and `B` as they do not have a relation of
 `m.thread` in them. Thread roots are returned in the same way as messages which are not part of threads at all.
 
-### Server capabilities
+## Potential issues
 
-Threads might have sporadic support across servers, to simplify feature detections for clients, a homeserver must
-advertise unstable support for threads as part of the `/versions` API:
+This proposal moves the loading and processing of these hidden events onto the server. Depending on the server’s
+architecture, this may have a non-negligible performance impact. 
+
+## Limitations
+
+While the client can effectively filter out noisy threads, it's not as easy to filter out events adjacent to threads
+such as reactions. A more performant implementation is best left for a future MSC.
+
+## Unstable prefix and versioning
+
+Relation filters might have sporadic support across servers, to simplify feature detections for clients, a homeserver
+must advertise unstable support for these filters as part of the `/versions` API:
 
 ```jsonc
 {
@@ -56,20 +70,18 @@ advertise unstable support for threads as part of the `/versions` API:
 }
 ```
 
-## Potential issues
+Unstable implementations should prefix the filter attributes with `org.matrix.msc3874`, e.g.,
 
-This proposal moves the loading and processing of these hidden events onto the server. Depending on the server’s
-architecture, this may have a non-negligible performance impact. 
-
-## Limitations
-
-This proposal only considers events which have a direct relationship with the thread itself. Events such as reactions
-don’t, so they won’t be able to be filtered by this proposal.
-
-## Alternatives
-
-- A suitable workaround, depending on the ratio of thread-messages compared to main timeline messages in a room, may be 
-  an increase of the page size
+```http request
+GET /_matrix/client/v3/rooms/!room_id:domain/messages?filter=...
+```
+In this example, the URL encoded JSON is presented unencoded and formatted for legibility:
+```jsonc
+{
+  "types": ["m.room.message"],
+  "org.matrix.msc3874.not_rel_types": ["m.thread"]
+}
+```
 
 ## Dependencies
 
