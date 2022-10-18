@@ -80,7 +80,7 @@ PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$a/foo
 
 Causes events `$a` and `$b` to both get redacted.
 
-If the `with_relations` property is absent from the request body, only the event refered to by the `{eventId}` parameter (`$a` in the example above) is redacted. Same goes if `with_relations` is an empty list.
+If the `with_relations` property is absent from the request body, only the event referred to by the `{eventId}` parameter (`$a` in the example above) is redacted. Same goes if `with_relations` is an empty list.
 
 If an event that matches the redaction criteria (i.e. relates to the event
 that's being redacted with one of the relation types specified in the request)
