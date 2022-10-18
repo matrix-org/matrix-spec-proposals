@@ -1,4 +1,4 @@
-# MSCXXXX: Relation-based redaction
+# MSC3912: Relation-based redaction
 
 There are cases where, when redacting an event, it would make sense to also
 redact all events that relate to it in a certain way. A few examples of this
@@ -98,7 +98,7 @@ of the redaction request's sender.
 ### Unstable feature in `/version`
 
 Homeservers which support this MSC should indicate it by adding
-`org.matrix.mscXXXX` and `org.matrix.mscXXXX.stable` in the response to `GET
+`org.matrix.msc3912` and `org.matrix.msc3912.stable` in the response to `GET
 /_matrix/client/versions` requests.
 
 
@@ -113,5 +113,5 @@ shortly afterwards that cannot be redacted.
 
 ## Unstable prefixes
 
-Until this proposal is stabilised, `org.matrix.mscXXXX.with_relations` should be
+Until this proposal is stabilised, `org.matrix.msc3912.with_relations` should be
 used instead of `with_relations`.
