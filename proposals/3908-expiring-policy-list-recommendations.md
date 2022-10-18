@@ -53,10 +53,10 @@ only timestamp that matters is the expiry timestamp.
 ##### Effects of federation lag
 
 It is possible that the duration for which a policy is in effect can be reduced by the time taken
-to propogate the event to servers (and their clients) in the policy room, from the perspective
+to propagate the event to servers (and their clients) in the policy room, from the perspective
 of the client which sent it.
 In an exaggerated example, a policy with a recommendation to mute an entity sent at 12:00 with the intention
-to mute a participant for 15 minutes may take 1 minute to propogate to all of their moderation tooling.
+to mute a participant for 15 minutes may take 1 minute to propagate to all of their moderation tooling.
 This could mean that the policy only in effect for 14 minutes.
 
 
