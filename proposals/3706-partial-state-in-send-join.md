@@ -23,7 +23,8 @@ following changes.
 ### New query parameter
 
 `partial_state` is added as a new query parameter. This can take the values
-`true` or `false`; other values should be rejected with an HTTP 400 error.
+`true` or `false`; other values should be rejected with an HTTP 400 error with
+matrix error code `M_INVALID_PARAM`.
 
 Calling servers use this parameter to indicate support for partial state in
 `send_join`. If it is not set to `true`, receiving servers continue to behave
@@ -41,8 +42,9 @@ The following changes are made to the response:
    to `false` or omitted.
 
  * `state`: if partial state is being returned, then state events with event
-   type `m.room.member` are omitted from the response. (All other room state is
-   returned as normal.)
+   type `m.room.member` are omitted from the response. All other room state is
+   returned as normal. (See 'Alternatives' for discussion on why only
+   `m.room.member` events are omitted.)
  
  * `auth_chain`: The spec currently defines this as "The auth chain for the
    entire current room state". We instead rephrase this as:
@@ -80,8 +82,15 @@ None at present.
 ## Alternatives
 
  * In future, the list of event types to omit could be expanded. (Some rooms
-   may have large numbers of other state events). For now, this has been
-   descoped, but could be revisited in future MSCs.
+   may have large numbers of other state events).
+   
+   Currently, `m.room.member` events are by far the biggest problem. For
+   example, a `/send_join` request for Matrix HQ returns approximately 85000
+   events in `state`, of which all but 44 are `m.room.member`. 
+
+   In order to reduce the scope of the change, we have therefore decided to
+   focus on `m.room.member` events for now. Future MSCs might provde a
+   mechanism for omitting other event types.
  
 ## Security considerations
 
