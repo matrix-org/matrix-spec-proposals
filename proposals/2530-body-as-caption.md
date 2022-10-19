@@ -50,11 +50,11 @@ However, fully switching to extensible events requires significantly more
 implementation work, and it may take years for the necessary time to be
 allocated for that.
 
-### Security considerations
+## Security considerations
 
 This proposal doesn't involve any security-sensitive components.
 
-### Unstable prefix
+## Unstable prefix
 
 The fields being added already exist in other msgtypes, so unstable prefixes
 don't seem necessary. Additionally, using `body` as a caption could already be
