@@ -1,48 +1,62 @@
 # Body field as media caption
 
-This is an alternative to [MSC2529](https://github.com/matrix-org/matrix-doc/pull/2529).
-
 ## Proposal
 
-This proposal defines a new field `filename` and allows the `format` and
-`formatted_body` fields (from `m.text`) for all media msgtypes (`m.image`,
+This proposal allows the `filename` field from `m.file`, and the `format` and
+`formatted_body` fields from `m.text` for all media msgtypes (`m.image`,
 `m.audio`, `m.video`, `m.file`).
 
 If the `filename` field is present in a media message, clients should treat
-`body` as a caption instead of a file name. The `formatted_body` field should
-also be supported and work the same way as they do in `m.text` messages.
+`body` as a caption instead of a file name. The `format`/`formatted_body`
+fields should also be supported and work the same way as they do in `m.text`
+messages.
 
-The current spec is inconsistent with how `body` should be handled, but in
-practice, clients (or at least Riot) use it as the file name. Therefore, this
-proposal suggests that clients should treat `body` as the file name if the
-`filename` field is not present.
+The current spec is somewhat ambiguous as to how `body` should be handled and
+the definition varies across different message types. In practice, clients
+(or at least Element) use it as the file name. As a part of adding captions,
+the `body` field for all message types is explicitly defined to be used as the
+file name when the `filename` field is not present.
 
-## Comparison to MSC2529
-
-While this approach isn't backwards-compatible like MSC2529, it's simpler to
-implement as it doesn't require handling relations.
-
-Implementing relation-based captions would be especially difficult for bridges.
-It would require either waiting a predefined amount of time for the caption to
-come through, or editing the message on the target platform (if edits are
-supported).
-
-Additionally, some clients already render the body (as a file name), so the
-new-style caption would already be visible in those cases.
-
-The format proposed by MSC2529 would also make it technically possible to use
-other message types without changing the format of the events, which is not
-possible with this proposal.
+For `m.file` messages, the current spec confusingly defines both `filename` and
+`body` as the file name. In order to avoid (old) messages with both fields from
+being misinterpreted as having captions, the `body` field should not be used as
+a caption when it's equal to `filename`.
 
 ## Potential issues
 
-The spec for `m.file` already defines a `filename` field, but the spec also
-says `body` should contain the file name. This means old `m.file` messages
-could be misinterpreted to contain a caption, even though it's just the file
-name. To avoid this problem, we could require that `body` and `filename` must
-be different for `body` to be interpreted as a caption.
+In clients that don't show the file name anywhere, the caption would not be
+visible at all. However, extensible events would run into the same issue.
+Clients having captions implemented beforehand may even help eventually
+implementing extensible events.
 
-Like MSC2529, this would be obsoleted by [extensible events](https://github.com/matrix-org/matrix-doc/pull/1767).
-In my opinion, unless extensible events are planned to be pushed through in the
-near future, we shouldn't block basic features like captions on extensible
-events hopefully eventually happening.
+## Alternatives
+
+### [MSC2529](https://github.com/matrix-org/matrix-spec-proposals/pull/2529)
+
+MSC2529 would allow existing clients to render captions without any changes,
+but the use of relations makes implementation more difficult, especially for
+bridges. It would require either waiting a predefined amount of time for the
+caption to come through, or editing the message on the target platform (if
+edits are supported).
+
+The format proposed by MSC2529 would also make it technically possible to use
+other message types as captions without changing the format of the events,
+which is not possible with this proposal.
+
+### Extensible events
+
+Like MSC2529, this would be obsoleted by [extensible events](https://github.com/matrix-org/matrix-spec-proposals/pull/3552).
+However, fully switching to extensible events requires significantly more
+implementation work, and it may take years for the necessary time to be
+allocated for that.
+
+### Security considerations
+
+This proposal doesn't involve any security-sensitive components.
+
+### Unstable prefix
+
+The fields being added already exist in other msgtypes, so unstable prefixes
+don't seem necessary. Additionally, using `body` as a caption could already be
+considered spec-compliant due to the ambiguous definition of the field, and
+only adding unstable prefixes for the other fields would be silly.
