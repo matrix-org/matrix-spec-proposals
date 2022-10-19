@@ -191,6 +191,38 @@ this plays with `/messages?from={paginationToken}&to={paginationToken}` which
 also determines what part of the timeline to query.
 
 
+### Return the closest event in any direction
+
+The question you may be asking is "What's the rationale for including a `dir`? Can't we
+just return the closest/nearest event regardless of direction?" Or at least add a
+`dir=c` for the option to find the closest event.
+
+For clients, it doesn't make that much of a difference because you can always compare
+the timestamp you made the request with to the `origin_server_ts` that was returned to
+see what direction you need to paginate further in. And it's a
+[toss-up](https://github.com/matrix-org/matrix-spec-proposals/pull/3030#discussion_r851544627)
+in the amount of client complexity for various use cases on the extra logic (some will
+require more and others won't depending on the approach we pick).
+
+But the `dir` parameter does help us be a little more efficient on the homeserver.
+Without `dir`, the homeserver has to check for a gap both forwards and backwards on
+every request. If we include the `dir` parameter, we only have to check in one
+direction. And then in both cases, the client still decides which direction they want
+paginate further in. (this optimization is kind of a "who cares" point though)
+
+For the archive use case where we only care about showing the messages that happened on
+a specific day, the `dir` parameter helps narrow down specifically on what we
+specifically care about [without extra
+logic](https://github.com/matrix-org/matrix-spec-proposals/pull/3030#discussion_r851544627).
+This applies to a similar use case for fetching windows of time (e.g. Jan 1 (dir = f) -
+Jan 5 (dir = b)).
+
+For the messaging client use case, the user might care more about the closest event
+regardless of direction. But since the closest event could be some unrenderable message
+(like a reaction), the client still needs to find a suitable nearby event anyways making
+the closest event a bit pointless.
+
+
 ### New `destination_server_ts` field
 
 Add a new field and index on messages called `destination_server_ts` which
