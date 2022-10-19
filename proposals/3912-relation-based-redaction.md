@@ -110,6 +110,14 @@ could lead to confusing user experience, wherein the server responds by telling
 the client all events could be redacted, but another event comes down federation
 shortly afterwards that cannot be redacted.
 
+An alternative proposal would be specifying a static list of relation types to
+consider when redacting a message. However, this would not work well with more
+generic ones such as `m.reference`, and would restrict clients in the UX they
+offer to users (e.g. a client might want to show a checkbox to a user offering
+them to redact a whole thread when redacting the thread's root, if this user is
+a room moderator). This could still be helpful for some relation types (e.g.
+`m.replaces`) but clients are likely better positioned to make this decision
+given they have more control over feature UX.
 
 ## Unstable prefixes
 
