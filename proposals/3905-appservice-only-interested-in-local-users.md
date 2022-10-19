@@ -2,7 +2,8 @@
 
 Application services receive events that they are "interested" in.
 
-The current language in the spec describes it like this:
+The [current language in the spec](https://spec.matrix.org/v1.4/application-service-api/#registration)
+describes it like this:
 
 > An application service is said to be "interested" in a given event if one of the IDs
 > in the event match the regular expression provided by the application service
