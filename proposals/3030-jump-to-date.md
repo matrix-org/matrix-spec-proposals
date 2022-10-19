@@ -58,8 +58,8 @@ try to backfill this event via the federation `/event/<event_id>` endpoint so th
 available to query with `/context` from a client in order to get a pagination token.
 
 The heuristics for deciding when to ask another homeserver for a closer event if
-your homeserver doesn't have something close, is left up to the homeserver
-implementation. Although the heuristics will probably be based on whether the
+your homeserver doesn't have something close, are left up to the homeserver
+implementation, although the heuristics will probably be based on whether the
 closest event is a forward/backward extremity indicating it's next to a gap of
 events which are potentially closer.
 
