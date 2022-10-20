@@ -103,11 +103,14 @@ of the redaction request's sender.
 Servers may wish to copy the `with_relations` property into the
 `m.room.redaction` event's `unsigned` object in order to facilitate watching for
 new events to redact once the redaction request has completed. Servers must
-ignore `with_relations` properties in the `unsigned` object of redaction events that were not sent by a local user.
+ignore `with_relations` properties in the `unsigned` object of redaction events
+that were not sent by a local user.
 
 Since the response format to the `PUT
 /_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}` does not change as a
-result of this proposal, servers may respond to the request once the event referenced to by the `{eventId}` parameter is redacted, and redact events that relate to it in the background.
+result of this proposal, servers may respond to the request once the event
+referenced to by the `{eventId}` parameter is redacted, and redact events that
+relate to it in the background.
 
 
 ### Unstable feature in `/version`
