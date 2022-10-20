@@ -132,11 +132,15 @@ after that date is on January 27th."
 
 ### Abusing the `/timestamp_to_event` API to get the `m.room.create` event 
 
-Clients could abuse this new API for getting the `m.room.create` event, so
-servers might want to put extra care into optimizing whatever lookups they do.
-The create event contains quite a lot of information that a client needs in
-order to operate, so it is frequently requested by said clients. For example,
-the room type and room version (for displaying warnings about stability).
+Although it's possible to jump to the start of the room and get the first event in the
+room (`m.room.create`) with `/timestamp_to_event?dir=f&ts=0`, clients should still use
+`GET /_matrix/client/v3/rooms/{roomId}/state/m.room.create/` to get the room creation
+event.
+
+In the future, with things like importing history via
+[MSC2716](https://github.com/matrix-org/matrix-spec-proposals/pull/2716), the first
+event you encounter with `/timestamp_to_event?dir=f&ts=0` could be an imported event before
+the room was created.
 
 
 ## Alternatives
