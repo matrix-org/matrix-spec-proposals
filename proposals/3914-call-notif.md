@@ -1,4 +1,4 @@
-# MSC0000: Matrix native group call push rule
+# MSC3914: Matrix native group call push rule
 
 [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) defines
 how group calls can happen over Matrix. It adds a an `m.call` state event with
@@ -59,6 +59,6 @@ need to receive push notifications.
 
 ## Unstable prefix
 
-During development, `.org.matrix.msc000.rule.room.call` and
-`org.matrix.msc0000.call_started` is to be used instead of `.m.rule.room.call`
+During development, `.org.matrix.msc3914.rule.room.call` and
+`org.matrix.msc3914.call_started` is to be used instead of `.m.rule.room.call`
 and `call_started` respectively.
