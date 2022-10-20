@@ -82,7 +82,7 @@ Causes events `$a` and `$b` to both get redacted.
 
 A server may wish to leverage
 [MSC2244](https://github.com/matrix-org/matrix-doc/pull/2244) (mass redactions)
-to redact all events targetted by the redaction request if supports it, however this is not a
+to redact all events targeted by the redaction request if supports it, however this is not a
 requirement.
 
 If the `with_relations` property is absent from the request body, only the event referred to by the `{eventId}` parameter (`$a` in the example above) is redacted. Same goes if `with_relations` is an empty list.
