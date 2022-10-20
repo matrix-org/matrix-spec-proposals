@@ -51,6 +51,8 @@ DELETE /_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}
 
 These, respectively, remove account-wide account data, and room-scoped account data.
 
+For idempotency reasons, these endpoints always return `200 OK`, with an empty JSON body `{}`.
+
 #### Deleted account data responses
 
 Furthermore, when a client deletes account data, it must expect `/account_data/` to return a 404 on
