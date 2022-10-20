@@ -80,6 +80,11 @@ PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$a/foo
 
 Causes events `$a` and `$b` to both get redacted.
 
+A server may wish to leverage
+[MSC2244](https://github.com/matrix-org/matrix-doc/pull/2244) (mass redactions)
+to redact all events targetted by the redaction request if supports it, however this is not a
+requirement.
+
 If the `with_relations` property is absent from the request body, only the event referred to by the `{eventId}` parameter (`$a` in the example above) is redacted. Same goes if `with_relations` is an empty list.
 
 If an event that matches the redaction criteria (i.e. relates to the event
@@ -94,6 +99,16 @@ delete other users' events) and display a warning to the user in this case.
 If an event that matches the redaction criteria comes down federation after
 redaction requests has completed, the server must attempt to redact it on behalf
 of the redaction request's sender.
+
+Servers may wish to copy the `with_relations` property into the
+`m.room.redaction` event's `unsigned` object in order to facilitate watching for
+new events to redact once the redaction request has completed. Servers must
+ignore `with_relations` properties in the `unsigned` object of redaction events that were not sent by a local user.
+
+Since the response format to the `PUT
+/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}` does not change as a
+result of this proposal, servers may respond to the request once the event referenced to by the `{eventId}` parameter is redacted, and redact events that relate to it in the background.
+
 
 ### Unstable feature in `/version`
 
