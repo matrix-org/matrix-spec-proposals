@@ -362,7 +362,7 @@ This is the response for the `m.login.publickey.ethereum` type:
   "params": {
     "m.login.publickey.ethereum": {
       "version": 1,
-      "chain_ids": [1]
+      "chain_id": 1
     }
   },
   "session": "xxxxxx"
@@ -378,11 +378,11 @@ where
 - `params."m.login.publickey.ethereum".version` -- the version of this spec that the server is willing to support. See
   [version number](#version-number).
 
-- `params."m.login.publickey.ethereum".chain_ids` -- [blockchain network IDs](https://chainlist.org/) that the server
-  will allow. Server is configured (via its configuration file) to allow login from a list of blockchain networks. For
-  example, the server can have a production config that specifies chain ID `1` for the Ethereum mainnet; a development
-  server can have a test config that specifies chain ID `4` for the Rinkeby test network. Server should reject login
-  attempts for any chain IDs that is not listed in the params.
+- `params."m.login.publickey.ethereum".chain_id` -- [blockchain network ID](https://chainlist.org/) that the server
+  will allow. Server is configured (via its configuration file) to allow login from a single blockchain network. For
+  example, the server can have a production config that specifies chain ID `1` for the Ethereum mainnet; a separate development
+  server can have a test config that specifies chain ID `5` for the Goerli test network. Server should reject login
+  attempts for any chain ID that is not listed in the params.
 
 ## Client creates message to sign
 
@@ -741,7 +741,7 @@ This is the response for the `m.login.publickey.ethereum` type:
   "params": {
     "m.login.publickey.ethereum": {
       "version": 1,
-      "chain_ids": [1]
+      "chain_id": 1
     }
   },
   "session": "xxxxxx"
@@ -760,10 +760,10 @@ where
 - `params."m.login.publickey.ethereum".version` -- the version of this spec that the server is willing to support.
   See [version number](#version-number).
 
-- `params."m.login.publickey.ethereum".chain_ids` -- [blockchain network IDs](https://chainlist.org/) that the server
-  will allow. Server is configured (via its configuration file) to allow login from a list of blockchain networks. For
-  example, the production config allows chain ID `1` for the Ethereum mainnet; the test config allows chain ID `4`
-  for the Rinkeby test network. Server should reject login attempts for any chain IDs that are not listed in the params.
+- `params."m.login.publickey.ethereum".chain_id` -- [blockchain network ID](https://chainlist.org/) that the server
+  will allow. Server is configured (via its configuration file) to allow login from a single blockchain network. For
+  example, the production config allows chain ID `1` for the Ethereum mainnet; the test server's config allows chain ID `5`
+  for the Goerli test network. Server should reject login attempts for any chain ID that is not listed in the params.
 
 ## Client sends registration request with authentication data
 
