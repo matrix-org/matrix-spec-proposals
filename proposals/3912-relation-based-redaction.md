@@ -100,14 +100,8 @@ If an event that matches the redaction criteria comes down federation after
 redaction requests has completed, the server must attempt to redact it on behalf
 of the redaction request's sender.
 
-Servers may wish to copy the `with_relations` property into the
-`m.room.redaction` event's `unsigned` object in order to facilitate watching for
-new events to redact once the redaction request has completed. Servers must
-ignore `with_relations` properties in the `unsigned` object of redaction events
-that were not sent by a local user.
-
-Since the response format to the `PUT
-/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}` does not change as a
+Since the response format to `PUT
+/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}` requests does not change as a
 result of this proposal, servers may respond to the request once the event
 referenced to by the `{eventId}` parameter is redacted, and redact events that
 relate to it in the background.
@@ -118,6 +112,17 @@ relate to it in the background.
 Homeservers which support this MSC should indicate it by adding
 `org.matrix.msc3912` and `org.matrix.msc3912.stable` in the response to `GET
 /_matrix/client/versions` requests.
+
+
+## Potential issues
+
+Since all the redactions are sent on behalf of the user who sent the original
+`PUT /_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}` request, if
+this user leaves the room the server is no longer able to send redactions on
+their behalf. However, the author considers this a small edge case which is
+unlikely to happen in practice, and can be worked around by another user (with
+permissions to delete the new events) sending another `PUT
+/_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}`.
 
 
 ## Alternatives
