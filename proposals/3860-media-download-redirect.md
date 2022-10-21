@@ -7,7 +7,7 @@ tell clients/servers to pull data direct from the source, eg. a CDN.
 
 ## Proposal
 
-This MSC simply proposes that a 307 redirect code is allowed and followed according to the `Location`
+This MSC proposes that a 307 redirect code is allowed and followed according to the `Location`
 header. It is possible some clients would already follow these which needs to be confirmed. Specifc
 endpoints in question:
 
@@ -15,15 +15,17 @@ endpoints in question:
 + `/_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`
 + `/_matrix/media/v3/thumbnail/{serverName}/{mediaId}`
 
-The media repo already conforms to standard HTTP practices so this may already work as expected. The
-MSC is proposing to add redirects to the list of possible HTTP responses for the above endpoints in
-the Matrix Specifiction. Implementation would be confirming that this works in all the major clients.
+To prevent breaking clients that don't properly follow the redirect response this functionality will
+be enabled by a query string flag `allow_redirect=true`. So specifically in the above cases if a
+client respects redirect responses it can make requests like so to the media endpoints:
+
++ `/_matrix/media/v3/download/{serverName}/{mediaId}?allow_redirect=true`
++ `/_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}?allow_redirect=true`
++ `/_matrix/media/v3/thumbnail/{serverName}/{mediaId}?allow_redirect=true`
 
 ## Potential Issues
 
-There may be clients that don't follow redirect responses properly, in which case they would fail
-to retrieve the media. One possible workaround for this is utilising an opt-in query string parameter
-to allow redirects, e.g `?allow-redirect=true`.
+None, as opt-in functionality this change is 100% backwards compatible.
 
 ## Alternatives
 
@@ -40,5 +42,5 @@ No need for an unstable prefix for redirects as it stands. If a query string was
 enable this functionality this could use the following unstable prefix:
 
 ```
-?com.beeper.msc3860.allow-redirects=true
+?com.beeper.msc3860.allow_redirect=true
 ```
