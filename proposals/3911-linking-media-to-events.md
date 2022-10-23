@@ -17,6 +17,11 @@ Currently, access to media in Matrix has the following problems:
 * If a user requests GDPR erasure, their media remains visible to all.
 * When all users leave a room, their media is not deleted from the server.
 
+This proposal builds on
+[MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916) (which
+adds authentication to media download), to require that the authenticated
+user is *authorised* to access the requested media.
+
 ## Proposal
 
 ### Overview
@@ -40,7 +45,7 @@ to a user if the user can see the corresponding event.
 
    * The methods for sending events
      ([`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
-     and [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid))
+     and [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid))
      are extended to take a query parameter `attach_media`, whose value must be a complete `mxc:` URI.
 
      The `attach_media` parameter may be used several times to attach several
@@ -72,83 +77,59 @@ to a user if the user can see the corresponding event.
    (say, ten minutes), then the server is free to assume that the user has changed their
    mind (or the client has gone offline), and may clean up the uploaded media.
 
-4. New download endpoints
-     
-   The existing download endpoints are to be deprecated, and replaced with new
-   endpoints specific to client-server or federation requests:
-     
-   | Old                                                                                                                                                              | Client-Server                                                             | Federation                                                          |
-   | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-   | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3downloadservernamemediaid)            | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`            | `GET /_matrix/federation/v1/media/download/{serverName}/{mediaId}`  |
-   | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3downloadservernamemediaid) | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}` | N/A                                                                 |
-   | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | `GET /_matrix/federation/v1/media/thumbnail/{serverName}/{mediaId}` |
+3. Additional checks on `/download` and `/thumbnail` endpoints
 
-   [TODO: we should probably move `/config`, and `/preview_url` while
-   we're at it]
+   The new `/download` and `/thumbnail` endpoints added in
+   [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916) are
+   updated the server must check if the requesting user or server has
+   permission to see the corresponding event.  If not, the server responds with
+   a 403 error and `M_UNAUTHORIZED`.
 
-   None of the new endpoints take an `allow_remote` query parameter. (For
-   `/_matrix/client`, servers should always attempt to request remote
-   media. For `/_matrix/federation`, servers should never attempt to request
-   remote media they do not already have cached.)
+4. Federation API returns a `restrictions` property
 
-   All of the new endpoints require an `Authorization` header, which must be
-   set in the same way as for any other CSAPI or federation request (ie,
-   `Bearer {accessToken}` for `/_matrix/client`, or the signature for
-   `/_matrix/federation`).
+   The `/_matrix/federation/v1/media/download` and `/_matrix/federation/v1/media/thumbnail`
+   endpoints specified by [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916)
+   are extended: the returned json object may have a property `restrictions`.
 
-   When handling a request to the new endpoints, the server must check if the
-   requesting user or server has permission to see the corresponding event.
-   If not, the server responds with a 403 error and `M_UNAUTHORIZED`.
+   If there is no `restrictions` property, the media is a legacy "unrestricted"
+   media. Otherwise, `restrictions` should be a JSON object with one
+   of the following properties:
 
-   * For the new `/_matrix/client` endpoints, the response format is the same as
-     the corresponding original endpoints.
+   * `event_id`: the event id of the event to which the media is attached.
+   * `profile_user_id`: the user id of the user to whose profile the media is attached.
 
-   * For the new `/_matrix/federation` endpoints, the response is
-     [`multipart/mixed`](https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)
-     content with two parts: the first must be a JSON object
-     (and should have a `Content-type: application/json` header), and the second
-     is the media item as per the original endpoints. The json object may have
-     a property `restrictions`.
+   It is invalid for both `event_id` and `profile_user_id` to be set.
 
-     If there is no `restrictions` property, the media is a legacy "unrestricted"
-     media. Otherwise, `restrictions` should be a JSON object with one
-     of the following properties:
+   The requesting server must check the restrictions list, and only return
+   the requested media to users who have permission to view the relevant
+   event or profile. If the requesting server caches the media, it must also
+   cache the restrictions list.
 
-     * `event_id`: the event id of the event to which the media is attached.
-     * `profile_user_id`: the user id of the user to whose profile the media is attached.
+   If neither `event_id` nor `profile_user_id` are present, the requesting
+   user should assume that an unknown restriction is present, and not allow access
+   to any user.
 
-     It is invalid for both `event_id` and `profile_user_id` to be set.
+   An example response:
 
-     The requesting server must check the restrictions list, and only return
-     the requested media to users who have permission to view the relevant
-     event or profile. If the requesting server caches the media, it must also
-     cache the restrictions list.
+   ```
+   Content-Type: multipart/mixed; boundary=gc0p4Jq0M2Yt08jU534c0p
 
-     If neither `event_id` nor `profile_user_id` are present, the requesting
-     user should assume that an unknown restriction is present, and not allow access
-     to any user.
+   --gc0p4Jq0M2Yt08jU534c0p
+   Content-Type: application/json
 
-     An example response:
+   { "restrictions": {
+       "event_id": "$Rqnc-F-dvnEYJTyHq_iKxU2bZ1CI92-kuZq3a5lr5Zg"
+   }}
 
-     ```
-     Content-Type: multipart/mixed; boundary=gc0p4Jq0M2Yt08jU534c0p
+   --gc0p4Jq0M2Yt08jU534c0p
+   Content-Type: text/plain
 
-     --gc0p4Jq0M2Yt08jU534c0p
-     Content-Type: application/json
+   This media is plain text. Maybe somebody used it as a paste bin.
 
-     { "restrictions": {
-         "event_id": "$Rqnc-F-dvnEYJTyHq_iKxU2bZ1CI92-kuZq3a5lr5Zg"
-     }}
+   --gc0p4Jq0M2Yt08jU534c0p
+   ```
 
-     --gc0p4Jq0M2Yt08jU534c0p
-     Content-Type: text/plain
-
-     This media is plain text. Maybe somebody used it as a paste bin.
-
-     --gc0p4Jq0M2Yt08jU534c0p
-     ```     
-
-4. New "media copy" API
+5. New "media copy" API
 
    A new endpoint is defined: `POST
    /_matrix/client/v1/media/copy/{serverName}/{mediaId}`. The body of the
@@ -175,18 +156,13 @@ to a user if the user can see the corresponding event.
    Such events must each use a different copy of the media item, in the same
    way as the "media copy" API described above.
 
-5. Backwards compatibility mechanisms
+6. Backwards compatibility mechanisms
 
-   a. Backwards compatibility with older servers: if a client or requesting
-   server receives a 404 error with a non-JSON response, or a 400 error with
-   `{"errcode": "M_UNRECOGNIZED"}`, in response to a request to one of the new
-   endpoints, they may retry the request using the original endpoint.
-   
-   b. Backwards compatibility with older clients and federating servers:
+   For backwards compatibility with older clients and requesting servers:
    servers may for a short time choose to allow unauthenticated access via the
-   deprecated endpoints, even for restricted media.
+   deprecated `/_matrix/media/v3` endpoints, even for restricted media.
 
-6. URL preview
+7. URL preview
 
    The
    [`/preview_url`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3preview_url)
@@ -206,41 +182,28 @@ implementations, and how the proposal will facilitate future extensions.
 
 #### IRC/XMPP bridges
 
-Possibly the largest impact will be on IRC and XMPP bridges.  Since IRC and
-XMPP have no media repository of their own, these bridges currently transform
-`mxc:` URIs into `https://<server>/_matrix/media/v3/download/` URIs and forward
-those links to the remote platform. This will no longer be a viable option.
+These bridges have previously been discussed in [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916), however this proposal adds a new problem.
 
-This is largely a problem to be solved by the bridge implementations, but one
-potential solution is for the bridges to provide a proxy.
+These bridges currently use the content repository as a paste-bin: large text
+messages are uploaded as plain-text media, and a link is then sent to the
+remote network. This will become problematic, because servers are entitled
+to remove any media that does not get linked to an event.
 
-In this scenario, the bridge would have a secret HMAC key. When it
-receives a matrix event referencing a piece of media, it should create a new URI
-referencing the media, include an HMAC to prevent tampering. For example:
+Solutions might include:
+ * the bridge hosting its own content repository for this usecase
+ * using an external service
+ * special-casing the bridge AS user to permit it to upload media without
+   expiry.
 
-```
-https://<bridge_server>/media/{originServerName}/{mediaId}?mac={hmac}
-```
+#### Icons for "social login" flows
 
-When the bridge later receives a request to that URI, it checks the hmac,
-and proxies the request to the homeserver, using its AS access
-token in the `Authorization` header.
+These likewise were previously discussed in
+[MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916).
 
-This mechanism also works for a secondary use of the content repository in
-bridges: as a paste-bin. In this case, the bridge simply generates a link
-referencing its own media.
-
-The bridge might also choose to embed information such as the room that
-referenced the media, and the time that the link was generated, in the URL.
-This could be used to help control access to the media.
-
-Such mechanisms would allow the bridge to impose controls such as:
-
-* Limiting the time a media link is valid for. Doing so would help prevent
-  visibility to users who weren't participating in the chat.
-
-* Rate-limiting the amount of media being shared in a particular room (in other
-  words, avoiding the use of Matrix as a Warez distribution system).
+We need to ensure that the icons are not deleted from the content
+repository even though they have not been attached to any event or profile. It
+would be wise for servers to provide administrators with a mechanism to upload
+media without attaching it to anything.
 
 #### Redacting events
 
@@ -257,59 +220,17 @@ extend to deleting the media.
 
 Fixes [synapse#1263](https://github.com/matrix-org/synapse/issues/1263).
 
-#### Icons for "social login" flows
-
-When a server supports multiple login providers, it provides the client with
-icons for the login providers as `mxc:` media URIs. These must be accessible
-without authentication (because the client has no access token at the time the
-icons are displayed).
-
-This remains a somewhat unsolved problem. Possibly the clients can continue
-to call the legacy `/_matrix/media/v3/download` URI for now: ultimately this
-problem will be solved by the transition to OIDC. Alternatively, we may need
-to provide an alternative `/_matrix/client/v3/login/sso/icon/{idpId}` API
-specifically for access to these icon.
-
-We also need to ensure that the icons are not deleted from the content
-repository even though they have not been attached to any event or profile. It
-would be wise for servers to provide administrators with a mechanism to upload
-media without attaching it to anything.
-
-(This was previously discussed in
-[MSC2858](https://github.com/matrix-org/matrix-spec-proposals/pull/2858#discussion_r543513811).)
-
 ## Potential issues
-
-* Setting the `Authorization` header is going to be annoying for web clients. Service workers
-  might be needed.
-
-* Users will be unable to copy links to media from web clients to share out of
-  band. This is considered a feature, not a bug.
 
 * Since each `m.room.member` references the avatar separately, changing your
   avatar will cause an even bigger traffic storm if you're in a lot of rooms.
 
 ## Alternatives
 
-* Allow clients to upload media which does not require authentication (for
-  example via a `public=true` query parameter). This might be particularly
-  useful for IRC/XMPP bridges, which could upload any media they encounter to
-  the homeserver's repository.
-
-  The danger with this is that is that there's little stopping clients
-  continuing to upload media as "public", negating all of the benefits in this
-  MSC. It might be ok if media upload it was restricted to certain privileged
-  users.
-
 * Have the "upload" endpoint return a nonce, which can then be used in the
   "send" endpoint in place of the `mxc` uri. It's hard to see what advantage
   this gives, beyond the fact a nonce could be smaller so marginally fewer
   bytes to send.
-
-* Rather than messing with multiplart content, have a separate endpoint for
-  servers to get the access controls for a media item. That would mean two
-  requests, but might make more sense than both `/thumbnail` and `/download`
-  providing the info.
 
 * Use some sort of "content token" for each piece of media, and require clients to
   provide it, per [MSC3910](https://github.com/matrix-org/matrix-spec-proposals/pull/3910).
@@ -325,11 +246,11 @@ TODO
 
 ## Dependencies
 
-None at present.
+[MSC3916](https://github.com/matrix-org/matrix-spec-proposals/issues/3916) "Authentication for media access, and new endpoint names".
 
 ## Prior art
 
-* Credit: this is based on ideas from @jcgruenhage and @anoadragon453 at
+* Credit: this proposal is based on ideas from @jcgruenhage and @anoadragon453 at
   https://cryptpad.fr/code/#/2/code/view/oWjZciD9N1aWTr1IL6GRZ0k1i+dm7wJQ7juLf4tJRoo/
 
 * [MSC~~701~~3796](https://github.com/matrix-org/matrix-spec-proposals/issues/3796):
