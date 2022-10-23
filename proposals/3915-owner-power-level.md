@@ -20,7 +20,7 @@ confusing it with PL50).  Moreover, you can't apply the workaround in retrospect
 whole new room with the correct permissions or anticipate the problem before you accidentally assign a user to PL100.
 
 This closes the embarassingly long-standing https://github.com/matrix-org/matrix-spec/issues/165 spec issue, and
-replaces the previous flawed [MSC3501](https://github.com/matrix-org/matrix-spec-proposals/pull/3510) proposal.
+replaces the previous flawed [MSC3510](https://github.com/matrix-org/matrix-spec-proposals/pull/3510) proposal.
 
 ## Proposal
 
