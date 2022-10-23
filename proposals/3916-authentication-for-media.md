@@ -22,7 +22,7 @@ requirements to address the problems mentioned above. (See, for example,
 [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911) which
 builds on top of this MSC.)
 
-This proposal supercedes [MSC1902](https://github.com/matrix-org/matrix-spec-proposals/pull/1902).
+This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-proposals/pull/1902).
 
 ## Proposal
 
@@ -44,22 +44,25 @@ This proposal supercedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
 
    **Note**: [`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.4/client-server-api/#post_matrixmediav3upload)
    is **not** modified by this MSC: it is intended that it be brought into line with the other
-   endpoints by a future MSC, such as [[MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
+   endpoints by a future MSC, such as [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
 
 2. Removal of `allow_remote` parameter from `/download`
 
-   The current `/download` and `/thumbnail` enpoints take an `allow_remote`
-   query parameter, indicating whether the server should request remote media
-   from other servers. This is redundant with the new endpoints, so will not be
-   supported.
+   The current
+   [`/download`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3downloadservernamemediaid)
+   and
+   [`/thumbnail`]((https://spec.matrix.org/v1.4/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)
+   endpoints take an `allow_remote` query parameter, indicating whether the
+   server should request remote media from other servers. This is redundant
+   with the new endpoints, so will not be supported.
 
    Servers should never return remote media from `GET
    /_matrix/federation/v1/media/download` or `GET
    /_matrix/federation/v1/media/thumbnail`; indeed, the `serverName` is
    included in the URI only for consistency with the CS-API.
 
-   `/_matrix/client/v1/media/download/` and
-   `/_matrix/client/v1/media/thumnbnail` should return remote media as normal.
+   `/_matrix/client/v1/media/download` and
+   `/_matrix/client/v1/media/thumbnail` should return remote media as normal.
    
 3. Authentication on all endpoints
 
@@ -211,13 +214,13 @@ specifically for access to these icon.
 
 While this proposal is in development, the new endpoints should be named as follows:
 
-* GET /_matrix/client/unstable/org.matrix.msc3916/media/preview_url
-* GET /_matrix/client/unstable/org.matrix.msc3916/media/config
-* GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}
-* GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}/{fileName}
-* GET /_matrix/client/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}
-* GET /_matrix/federation/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}
-* GET /_matrix/federation/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}
+* `GET /_matrix/client/unstable/org.matrix.msc3916/media/preview_url`
+* `GET /_matrix/client/unstable/org.matrix.msc3916/media/config`
+* `GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}`
+* `GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}/{fileName}`
+* `GET /_matrix/client/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`
+* `GET /_matrix/federation/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}`
+* `GET /_matrix/federation/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`
 
 ## Dependencies
 
