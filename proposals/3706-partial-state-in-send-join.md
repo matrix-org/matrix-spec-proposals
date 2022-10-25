@@ -16,7 +16,7 @@ on a specific aspect of those suggestions by proposing specific changes to the
 
 ## Proposal
 
-[`PUT /_matrix/federation/v2/send_join/{roomId}/{eventId}/send_join`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
+[`PUT /_matrix/federation/v2/send_join/{roomId}/{eventId}`](https://spec.matrix.org/v1.2/server-server-api/#put_matrixfederationv2send_joinroomideventid)
 is extended to support "partial state" in its responses. This involves the
 following changes.
 
@@ -89,7 +89,7 @@ None at present.
    events in `state`, of which all but 44 are `m.room.member`. 
 
    In order to reduce the scope of the change, we have therefore decided to
-   focus on `m.room.member` events for now. Future MSCs might provde a
+   focus on `m.room.member` events for now. Future MSCs might provide a
    mechanism for omitting other event types.
  
 ## Security considerations
