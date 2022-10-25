@@ -50,32 +50,49 @@ Name | Type | Description | required
 
 key | type | value | description | required
 --- | --- | --- | --- | ---
-`next_to_event_id` | string | Event ID | The event ID that the homeserver is missing where the gap begins | yes
+`next_to_event_id` | string | Event ID | The event ID indicating the position in the `/messages` `"chunk"` response where the gap starts after that position. This field can be `null` or completely omitted to indicate that the gap is at the start of the `/messages` `"chunk"` | no
 `pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG after the missing `gap_start_event_id`. Useful when retrying to fetch the missing part of the timeline again via `/messages?dir=b&from=<pagination_token>` | yes
 
-Pagination tokens are positions between events. This already an established
-concept but to illustrate this better, see the following diagram:
-```
-                                   pagination_token
-                                   |
-<oldest-in-time> [0]<--[1]<-- <gap>▼ <--[4 (next_to_event_id)]<--[5]<--[6] <newest-in-time>
+
+### `/messages` response examples
+
+The following mermaid diagram represents the room DAG snapshot used for the following
+`/messages` responses. The slightly transparent events with no background are events
+that the homeserver does not have and are in the gap.
+
+Pagination tokens are positions between events. This already an established concept but
+to illustrate this better, see the following `tX` pagination tokens in the following
+diagram.
+
+```mermaid
+flowchart RL
+    after[newest events...]:::gap-event -->|t10| fred -->|t9| waldo:::gap-event -->|t8| garply -->|t7| grault:::gap-event -->|t6| corge -->|t5| qux:::gap-event -->|t4| baz -->|t3| bar:::gap-event -->|t2| foo -->|t1| before[oldest events...]:::gap-event
+
+    classDef gap-event opacity:0.8,fill:transparent;
 ```
 
 The idea is to be able to keep paginating from `pagination_token` in the same
 direction of the request to fill in the gap.
 
 
-### `/messages` response examples
-
 #### `/messages?dir=b`
 
+`/messages?dir=b` response example with gaps (`chunk` has events in
+reverse-chronoligcal order since we're paginating backwards):
 
-`/messages?dir=b` response example with a gap (`chunk` has events in
-reverse-chronoligcal order):
-
+`/messages?dir=b&from=t6`
 ```json5
 {
   "chunk": [
+    // there is no gap from `t6` to `$corge` as expected
+    {
+      "event_id": "$corge",
+      "type": "m.room.message",
+      "content": {
+        "body": "corge",
+      }
+    },
+    // <the first `GapEntry` indicates a gap here>
     {
       "event_id": "$baz",
       "type": "m.room.message",
@@ -83,7 +100,7 @@ reverse-chronoligcal order):
         "body": "baz",
       }
     },
-    // <the `GapEntry` indicates a gap here>
+    // <the second `GapEntry` indicates a gap here>
     {
       "event_id": "$foo",
       "type": "m.room.message",
@@ -91,60 +108,68 @@ reverse-chronoligcal order):
         "body": "foo",
       }
     }
+    // <the third `GapEntry` indicates a gap here>
   ]
   "gaps": [
         {
+          "next_to_event_id": "$corge",
+          "pagination_token": "t5",
+        },
+        {
           "next_to_event_id": "$baz",
-          "pagination_token": "t47403-4357353_219380_26003_2265",
+          "pagination_token": "t3",
+        },
+        {
+          "next_to_event_id": "$foo",
+          "pagination_token": "t1",
         }
   ]
 }
-```
-
-```
-                               pagination_token
-                               |
-<oldest-in-time> [foo]<-- <gap>▼ <--[baz (next_to_event_id)] <newest-in-time>
 ```
 
 
 #### `/messages?dir=f`
 
-`/messages?dir=f` response example with a gap (`chunk` has events in
-chronoligcal order):
+`/messages?dir=f` response example with gaps (`chunk` has events in
+chronoligcal order since we're paginating forwards):
 
+`/messages?dir=f&from=t6`
 ```json5
 {
   "chunk": [
+    // <the first `GapEntry` indicates a gap here>
     {
-      "event_id": "$foo",
+      "event_id": "$garply",
       "type": "m.room.message",
       "content": {
-        "body": "foo",
+        "body": "garply",
       }
     },
-    // <the `GapEntry` indicates a gap here>
+    // <the second `GapEntry` indicates a gap here>
     {
-      "event_id": "$baz",
+      "event_id": "$fred",
       "type": "m.room.message",
       "content": {
-        "body": "baz",
+        "body": "fred",
       }
     },
+    // <the third`GapEntry` indicates a gap here>
   ]
   "gaps": [
         {
-          "next_to_event_id": "$foo",
-          "pagination_token": "t47402-4357353_219380_26003_2265",
+          "next_to_event_id": null,
+          "pagination_token": "t6",
+        },
+        {
+          "next_to_event_id": "$garply",
+          "pagination_token": "t8",
+        },
+        {
+          "next_to_event_id": "$fred",
+          "pagination_token": "t10",
         }
   ]
 }
-```
-
-```
-                                             pagination_token
-                                             |
-<oldest-in-time> [foo (next_to_event_id)]<-- ▼<gap> <--[baz] <newest-in-time>
 ```
 
 
