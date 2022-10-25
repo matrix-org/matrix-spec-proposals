@@ -101,10 +101,16 @@ token directly in another MSC ⏩
 
 ### Receiving a rogue random delayed event ID
 
+Since `origin_server_ts` is not enforcably accurate, we can only hope that an event's
+`origin_server_ts` is relevant enough to its `prev_events` and descendants.
+
 If you ask for "the message with `origin_server_ts` closest to Jan 1st 2018" you
 might actually get a rogue random delayed one that was backfilled from a
 federated server, but the human can figure that out by trying again with a
 slight variation on the date or something.
+
+Since there isn't a good or fool-proof way to combat this, it's probably best to just go
+with `origin_server_ts` and not let perfect be the enemy of good.
 
 
 ### Receiving an unrenderable event ID
