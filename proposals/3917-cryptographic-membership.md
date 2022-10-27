@@ -115,7 +115,7 @@ holding cryptographic signatures and related metadata:
   "state_key": "",
   ...
   "event_id": "$OSorlEHbz-xyfIaoy200IxyJAI2oTdOYFubheGwNr7c",
-  "room_id": "!sDZXVmfbIBPhukEQDm:example.com"
+  "room_id": "!_ZK6paR-wBkKcazPx2xijn_0g-m2KCRqdCUZ6agzaaE"
 }
 ```
 
