@@ -52,9 +52,8 @@ messages.
     that have a relation of type `rel_type`.
 - `pattern` (optional): The glob-style pattern to match against.
 
-`key` and `pattern` have exactly the same meaning as in `event_match`
-conditions. See https://github.com/matrix-org/matrix-doc/issues/2637 for a
-clarification of their behaviour.
+`key` and `pattern` have exactly the same meaning as in 
+[`event_match` conditions](https://spec.matrix.org/unstable/client-server-api/#conditions-1).
 
 `key` and `pattern` are optional to allow you to enable or suppress all
 notifications for a specific relation type. For example one could suppress
@@ -80,8 +79,8 @@ two conditions:
 Without a `key` and `pattern` the push rule can be evaluated without fetching
 the related to event. If one of those two fields is missing, a server should
 prevent those rules from being added with the appropriate error code. (A client
-wouldn't have a choice but to ignore those keys if the server failed to prevent
-the rule from being added.)
+which sees a `related_event_match` condition with one, but not both, of `key` and `pattern` should
+ignore the `key`/`pattern` property.
 
 A client can check for the `related_event_match` condition being supported by
 testing for an existing `.m.rule.reply` in the default rules.
@@ -149,7 +148,7 @@ risk of missing notifications for replies to very old messages and similar
 relations.
 
 [Threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
-[as a fallback](https://github.com/matrix-org/matrix-doc/pull/3440/files#diff-113727ce0257b4dc0ad6f1087b6402f2cfcb6ff93272757b947bf1ce444056aeR82).
+[as a fallback](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#backwards-compatibility).
 This would cause a notification with the new `.m.rule.reply` rule. To prevent
 that this MSC adds the `include_fallbacks` key to the rule, so that reply
 relations only added as a fallback are ignored. (Currently `is_falling_back` key
