@@ -141,11 +141,11 @@ rule may be delayed or fail completely. For most rules this should not be an
 issue. You can assume the event was not sent by a user on your server if the
 event is not present on your server.  In general clients and servers should do
 their best to evaluate the condition. If they fail to do so (possibly because
-they can't look up the event asynchronously) in a timely manner, the condition
-may be ignored/evaluated to false. This should affect only a subset of events,
-because in general relations happen to events in close proximity. There is a
-risk of missing notifications for replies to very old messages and similar
-relations.
+they can't look up the event asynchronously) in a timely manner, the rule
+may be ignored/the condition evaluated to false. This should affect only a
+subset of events, because in general relations happen to events in close
+proximity. There is a risk of missing notifications for replies to very old
+messages and similar relations.
 
 [Threads](https://github.com/matrix-org/matrix-doc/pull/3440) use replies
 [as a fallback](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#backwards-compatibility).
