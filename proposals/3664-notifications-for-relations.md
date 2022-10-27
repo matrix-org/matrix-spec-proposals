@@ -197,3 +197,7 @@ While this proposal is still in progress, implementations should use the
 unstable prefix `im.nheko.msc3664` for the `related_event_match` condition. As
 a result it should be called `im.nheko.msc3664.related_event_match`.
 
+Clients can check the capabilities for `im.nheko.msc3664.related_event_match` to
+see if this MSC is implemented and enabled on the homeserver until this MSC is
+included in a spec release.
+
