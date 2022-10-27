@@ -42,7 +42,8 @@ messages.
     should be matched as if they were sent in the relation format from
     [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) with a
     `rel_type` of `m.in_reply_to`. If the event has any relation of this type,
-    the related event should be matched using `pattern` and `key`.
+    the related event should be matched using `pattern` and `key` as if matching
+    that related event using an event_match rule.
 - `include_fallbacks` decides if the relation should be followed even for
     fallbacks (i.e. relations with the `is_falling_back` property set to `true`
     like for [threads](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3440-threading-via-relations.md#backwards-compatibility).
