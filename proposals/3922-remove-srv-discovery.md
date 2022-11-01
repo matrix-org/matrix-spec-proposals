@@ -1,4 +1,4 @@
-# MSC0000: Removing SRV records from homeserver discovery
+# MSC3922: Removing SRV records from homeserver discovery
 
 Currently when [resolving server names](https://spec.matrix.org/v1.4/server-server-api/#resolving-server-names),
 homeservers (or any implementation trying to locate a server, such as integration managers or widgets
