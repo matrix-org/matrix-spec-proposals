@@ -59,8 +59,8 @@ messages.
 `key` and `pattern` are optional to allow you to enable or suppress all
 notifications for a specific relation type. For example one could suppress
 notifications for all events with a relation from
-[threads](https://github.com/matrix-org/matrix-doc/pull/3440) and all
-[edits](https://github.com/matrix-org/matrix-doc/pull/2676) with the following
+[threads](https://spec.matrix.org/v1.4/client-server-api/#threading) and all
+[edits](https://spec.matrix.org/v1.4/client-server-api/#event-replacements) with the following
 two conditions:
 
 ```json5
