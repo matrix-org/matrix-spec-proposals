@@ -76,7 +76,7 @@ that the new media object can only be accessed via the new API.
 
 
 ### Granting a Room access to Media
-
+The client sends an empty JSON body to
 * `PUT /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
 
 The server must verify that
@@ -85,14 +85,15 @@ The server must verify that
 
 Note: This operation only grants permission for the room to access the media.
 For other users to see the media, it must still be posted in some event in 
-the room, e.g. a room message of type `m.image` or `m.video` etc.
+the room, e.g. a room message of type `m.image` or `m.video`, or set as the
+room avatar.
 
 The media object can then be referenced as
 
 `mxc://{serverName}/room/{roomId}/{mediaId}`
 
 Clients should grant permission to the room before sending the room message,
-in case one of the requests fails.
+in case the request to grant acccess fails.
 
 If media id's are content id's, then this operation is idempotent.
 It is OK if multiple users upload identical content and grant the same room access to it.
@@ -102,7 +103,7 @@ and the homeserver must take care when revoking access -- see below.
 
 ### Downloading Media from a Room
 
-Downloading a single media object
+To download a single media object, the client sends
 
 * `GET /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
 
@@ -112,8 +113,18 @@ file sharing capability.
 
 ### Listing the media for a room
 
+The client can get a list of all media in the room by sending
 * `GET /_matrix/client/{version}/rooms/{roomId}/media`
 * `GET /_matrix/client/{version}/rooms/{roomId}/media/{serverName}`
+
+The server should reply with a JSON object containing a single element,
+`media_ids`, an array if `media_id` strings.
+
+```json
+{
+    "media_ids": ["abc", "def", "xyz"]
+}
+```
 
 ### Revoking a Room's Access to Media
 
@@ -121,10 +132,11 @@ To revoke a room's access to media, the client calls
 
 * `DELETE /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}`
 
-The server MUST verify that the user owns the given media.
-(FIXME: Or that the user is an admin in the room?)
+The server MUST verify that the user owns the given media, or that the user
+is an admin in the room.
 
-Then the server revokes any access granted to the given room by the user making the request.
+Then, if the user is the one who granted access, then the server revokes any
+access granted to the given room by that user.
 Note that other users may have also granted the room access to identical content
 having the same media id; in this case, the server should only revoke the room's
 access to the content if the requesting user is the only remaining user who had
@@ -132,10 +144,12 @@ granted access.
 (In other words, the server needs to keep a list of all users who have granted
 access to a given media id.)
 
+If the user is an admin, then the server revokes all access for the room to
+the given media.
+
 ### Granting Media Access to your User Profile
 
-The client-server API endpoint URL is unchanged:
-
+The client-server API endpoint URL is unchanged.  The client sends a request to
 * `PUT /_matrix/client/{version}/profile/{userId}/avatar_url`
 
 The server
@@ -144,7 +158,7 @@ The server
 
 The server returns an MXC URL of the form
 
-`mxc://{server}/profile/{userId}/{mediaId}`
+* `mxc://{server}/profile/{userId}/{mediaId}`
 
 ### Downloading Media from a User Profile
 
@@ -154,18 +168,19 @@ The client first looks up the user's avatar URL, as before.
 
 The server responds with a URL of the form
 
-`mxc://{server}/profile/{userId}/{mediaId}`
+* `mxc://{server}/profile/{userId}/{mediaId}`
 
 which is translated into the request
 
-`GET /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
+* `GET /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
 
 The domain part of the user id serves as the server id here.
-Media for a local user must be local media.
-Media for a remote user must reside on that user's homeserver.
+* Media for a local user must be local media.
+* Media for a remote user must reside on that user's homeserver.
 
 ### Revoking Access for an Avatar Image
 
+The client sends a request to
 * `DELETE /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
 
 ### Purging Unused Media
@@ -176,24 +191,26 @@ Servers MAY remove any local media that is both
 
 ### Listing Media owned by the current User
 
+To get a list of all the media uploaded by the current user, the client
+sends a request to
 * `GET /_matrix/client/{version}/users/{userId}/media`
+
+The server verifies that the user making the request is the same as the
+user id in the requested URL.
 
 ### Deactivating the current user Account
 
 The client sends a request to
-
-`POST /_matrix/client/v3/account/deactivate`
+* `POST /_matrix/client/v3/account/deactivate`
 
 We add one new member to the JSON request body:
-
-`delete_media: bool` (defaults to `false`)
+* `delete_media: bool` (defaults to `false`)
 
 
 ### Deleting Media
 
 The owner of a media object can revoke all access to it by calling
-
-`DELETE /_matrix/client/{version}/users/{userId}/media/{mediaId}`
+* `DELETE /_matrix/client/{version}/users/{userId}/media/{mediaId}`
 
 The server should revoke any access to the given media that was granted
 by the user to all rooms as well as to the user's profile.
