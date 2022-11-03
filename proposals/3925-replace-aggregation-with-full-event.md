@@ -1,4 +1,4 @@
-# MSC0000: m.replace aggregation with full event
+# MSC3925: m.replace aggregation with full event
 
 The Matrix DAG has immutable PDUs forming an auth chain. The client representation of this PDUs are simply called events.
 While this events also have been immutable until v1.3, since v1.4 they aren't.
