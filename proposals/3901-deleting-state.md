@@ -132,6 +132,8 @@ in that specific case it would need to be considered whether `deleted` makes the
 If a state event has `deleted: false` or no `deleted` property at all, it is not
 deleted.
 
+TODO: should it be `m.deleted`?
+
 No event should ever have a `deleted` property with any other value (other than
 `true` or `false`.
 
