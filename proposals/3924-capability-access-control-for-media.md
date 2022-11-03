@@ -117,7 +117,7 @@ The client can get a list of all media in the room by sending
 * `GET /_matrix/client/{version}/rooms/{roomId}/media/{serverName}`
 
 The server should reply with a JSON object containing a single element,
-`media_ids`, an array if `media_id` strings.
+`media_ids`, an array of `media_id` strings.
 
 ```json
 {
