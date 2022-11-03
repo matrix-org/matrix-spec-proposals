@@ -104,16 +104,103 @@ condition of the room (again, speaking loosely).
 
 ### Formal definition
 
-* TODO: Decide between these 2 options:
-    1. An event with a state key and "content": null
-    2. An event with state key and "deleted": true (sibling of content?)
-    * 2 is more flexible (you can keep useful information in the content, and
-      you could retro-fit so even membership events could add this key)
-    * 1 prevents cruft being left in deleted state
+A **deleted** state event is a state event that has `deleted: true` at the top
+level of its `content`.
 
-* TODO: membership events where the person has left
-* TODO: someone stopped sharing live location? (Or propose to change that MSC?)
-* TODO: others?
+For example, this event is a deleted state event:
+
+```json
+{
+  "type": "m.beacon_info",
+  "state_key": "@matthew:matrix.org_46583241",
+  "content": {
+    "description": "Matthew's other phone",
+    "live": false,
+    "deleted": true,
+    "m.ts": 1436829458432,
+    "timeout": 86400000,
+    "m.asset": { "type": "m.self" }
+  }
+}
+```
+
+(This example is from
+[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489), and
+in that specific case it would need to be considered whether `deleted` makes the
+`live` property redundant.)
+
+If a state event has `deleted: false` or no `deleted` property at all, it is not
+deleted.
+
+No event should ever have a `deleted` property with any other value (other than
+`true` or `false`.
+
+To mark some state as deleted, a client sends a state event with `deleted: true`
+in its content. To "undelete" some state later, the client sends another state
+event with no `deleted` property (or with `deleted: false`).
+
+### Concerns
+
+This would effectively prevent anyone from using a `deleted` property for some
+other purpose in their event content definition, and would clash with anyone who
+has already defined their events in this way.
+
+### Redacted state events are deleted too
+
+* TODO: redaction of deleted state events
+  https://spec.matrix.org/v1.4/rooms/v10/#redactions
+  Maybe defined deleted as `content: {}`?
+  (Or change redaction algorithm in new room version)
+
+### Encrypted deleted state events
+
+Currently, state events are not encrypted, but
+[MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
+proposes allowing them to be encrypted.
+
+If MSC3414 goes ahead, a deleted encrypted state event should contain
+`deleted: true` in its unencrypted content, as a sibling of e.g. `algorithm`
+and `ciphertext`.
+
+When the ciphertext is decrypted, the `content` in the plaintext JSON
+should also contain `deleted: true`.
+
+### Alternative definitions
+
+#### content: null
+
+We considered defining a deleted event as an event with a state_key and null
+content.
+
+However, some existing deleted events such as leaving events (membership events
+indicating that someone left the room) contain useful content, and there is no
+reason to assume that future ones won't also want to do something similar.
+
+#### deleted as a sibling of content
+
+We could say that the `deleted` property is not inside `content`, but alongside
+it.
+
+This has the advantage that it cannot clash with any existing event definitions
+that include a `deleted` key, and it might make it easier for servers to find
+and index deleted state.
+
+However, it would require us to provide a special mechanism (e.g. a new
+endpoint) to allow clients to mark events as deleted, making the implementation
+burden of this proposal much greater for both clients and servers.
+
+#### Avoiding a new room version by adding special cases
+
+Some state is already, loosely speaking, "deleted" in the sense that new members
+don't really care about it. For example, leaving events.
+
+It might be possible to define deleted state as including these special cases,
+and this might allow us to avoid needing a new room version.
+
+However, we believe that we need to change the rules around redacted events,
+meaning that we can't avoid a new room version. Since we need a new room version
+anyway, we have gone for a simpler definition of deleted state with no special
+cases.
 
 ## Sub-proposal 1: Hide deleted state from clients on initial sync
 ### Proposal
