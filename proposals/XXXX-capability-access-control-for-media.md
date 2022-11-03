@@ -27,8 +27,6 @@ This leads to a number of issues, which MSC3910 and MSC3911 describe succinctly:
 
 ## Proposal
 
-### Overview
-
 In this proposal, we borrow an idea from capability-based access control
 systems: "No ambient authority."
 Instead, every request for a resource must include a "reason" for why
@@ -67,7 +65,7 @@ without room id or user id can be deprecated and eventually removed.
 
 The request is unchanged from the previous system
 
-* `POST /_matrix/media/{version}/upload`
+`POST /_matrix/media/{version}/upload`
 
 However the returned MXC URL must be different, to indicate to clients
 that the new media object can only be accessed via the new API.
@@ -77,7 +75,8 @@ that the new media object can only be accessed via the new API.
 
 ### Granting a Room access to Media
 The client sends an empty JSON body to
-* `PUT /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
+
+`PUT /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
 
 The server must verify that
 1. The given media id exists
@@ -105,7 +104,7 @@ and the homeserver must take care when revoking access -- see below.
 
 To download a single media object, the client sends
 
-* `GET /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
+`GET /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
 
 Note: Here the server name was put last so that it might be made optional
 in the future, e.g. if the Matrix federation protocol gains some new P2P
@@ -130,7 +129,7 @@ The server should reply with a JSON object containing a single element,
 
 To revoke a room's access to media, the client calls
 
-* `DELETE /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}`
+`DELETE /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}`
 
 The server MUST verify that the user owns the given media, or that the user
 is an admin in the room.
@@ -150,7 +149,8 @@ the given media.
 ### Granting Media Access to your User Profile
 
 The client-server API endpoint URL is unchanged.  The client sends a request to
-* `PUT /_matrix/client/{version}/profile/{userId}/avatar_url`
+
+`PUT /_matrix/client/{version}/profile/{userId}/avatar_url`
 
 The server
 1. Verifies that the user making the request is the owner of the given media id
@@ -158,21 +158,21 @@ The server
 
 The server returns an MXC URL of the form
 
-* `mxc://{server}/profile/{userId}/{mediaId}`
+`mxc://{server}/profile/{userId}/{mediaId}`
 
 ### Downloading Media from a User Profile
 
 The client first looks up the user's avatar URL, as before.
 
-* `GET /_matrix/client/{version}/profile/{userId}/avatar_url`
+`GET /_matrix/client/{version}/profile/{userId}/avatar_url`
 
 The server responds with a URL of the form
 
-* `mxc://{server}/profile/{userId}/{mediaId}`
+`mxc://{server}/profile/{userId}/{mediaId}`
 
 which is translated into the request
 
-* `GET /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
+`GET /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
 
 The domain part of the user id serves as the server id here.
 * Media for a local user must be local media.
@@ -181,7 +181,8 @@ The domain part of the user id serves as the server id here.
 ### Revoking Access for an Avatar Image
 
 The client sends a request to
-* `DELETE /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
+
+`DELETE /_matrix/client/{version}/profile/{userId}/media/{mediaId}`
 
 ### Purging Unused Media
 
@@ -193,7 +194,8 @@ Servers MAY remove any local media that is both
 
 To get a list of all the media uploaded by the current user, the client
 sends a request to
-* `GET /_matrix/client/{version}/users/{userId}/media`
+
+`GET /_matrix/client/{version}/users/{userId}/media`
 
 The server verifies that the user making the request is the same as the
 user id in the requested URL.
@@ -201,16 +203,19 @@ user id in the requested URL.
 ### Deactivating the current user Account
 
 The client sends a request to
-* `POST /_matrix/client/v3/account/deactivate`
+
+`POST /_matrix/client/v3/account/deactivate`
 
 We add one new member to the JSON request body:
-* `delete_media: bool` (defaults to `false`)
+
+`delete_media: bool` (defaults to `false`)
 
 
 ### Deleting Media
 
 The owner of a media object can revoke all access to it by calling
-* `DELETE /_matrix/client/{version}/users/{userId}/media/{mediaId}`
+
+`DELETE /_matrix/client/{version}/users/{userId}/media/{mediaId}`
 
 The server should revoke any access to the given media that was granted
 by the user to all rooms as well as to the user's profile.
@@ -261,16 +266,16 @@ and the user has access to the event, then the user is allowed access to
 that media.
 
 ### Granting Access to an Event
-* `PUT /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media/{mediaId}`
+`PUT /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media/{mediaId}`
 
 ### Listing the media associated with an Event
-* `GET /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media`
+`GET /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media`
 
 ### Downloading Media, authorized by an event
-* `GET /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media/{mediaId}`
+`GET /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media/{mediaId}`
 
 ### Revoking Access from an Event
-* `DELETE /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media/{mediaId}`
+`DELETE /_matrix/client/{version}/rooms/{roomId}/event/{eventId}/media/{mediaId}`
 
 ## Alternatives
 
