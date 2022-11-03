@@ -1,6 +1,8 @@
 # MSC3924: Capability-Style Access Control for Media
 
-(An alternative to [MSC3910](https://github.com/matrix-org/matrix-spec-proposals/pull/3910), [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911), and [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916).)
+(An alternative to [MSC3910](https://github.com/matrix-org/matrix-spec-proposals/pull/3910),
+[MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911), and
+[MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916).)
 
 ## Motivation
 
