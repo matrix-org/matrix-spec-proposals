@@ -3,7 +3,11 @@
 (An alternative to [MSC3910](https://github.com/matrix-org/matrix-spec-proposals/pull/3910), [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911), and [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916).)
 
 ## Motivation
-MSC3910 and MSC3911 describe the issues succinctly:
+
+In Matrix, "everything happens in a room," yet media exists outside of rooms.
+Anyone who knows the `media_id` for a media object can request (and receive)
+that object from the homeserver.
+This leads to a number of issues, which MSC3910 and MSC3911 describe succinctly:
 
 > Currently, access to media in Matrix has the following problems:
 > 
@@ -25,29 +29,35 @@ MSC3910 and MSC3911 describe the issues succinctly:
 
 ### Overview
 
-In Matrix, "everything happens in a room," yet media exists outside of rooms.
-Anyone who knows the `media_id` for a media object can request (and receive)
-that object from the homeserver.
-
 In this proposal, we borrow an idea from capability-based access control
 systems: "No ambient authority."
 Instead, every request for a resource must include a "reason" for why
 the request should be granted.
 
 We begin with the observation that there are only two legitimate reasons for
-downloading a Matrix media object: either
-(1) it is part of a room, or
-(2) it is the avatar image for some user's profile.
+downloading a Matrix media object:
+1. The media object is part of a room, either as part of a message sent to
+  the room, or as the avatar image for the room.
+2. The media object is the avatar image for some user's profile.
 
-Therefore in the proposed system, access to media is granted through rooms
-and user profiles, and media cannot be downloaded apart from these two use
-cases.
+Therefore in the proposed system, user grant access to their media to rooms
+or to their user profile, and media uploaded under the new system cannot be
+downloaded without specifying the room or the user profile that justifies
+the access.
 (See below for an alternative approach, where access to media is granted on
 individual events, rather than on rooms.)
 
-The proposed approach is to change the URL path for `GET /media/media_id`
--style requests to include either the room id or, for user avatars, the
-user id, that motivated the request.
+In brief, the proposed approach is to change the URL path for `GET /media/media_id`
+requests to include either the room id or, for user avatars, the user id,
+that motivated the request.
+
+To download media that was shared with a room:
+
+`GET /_matrix/client/{version}/rooms/{roomId}/media/{mediaId}/{serverName}`
+
+To download media that was shared via the user's profile:
+
+`GET /matrix/client/{version}/profile/{userId}/media/{mediaId}`
 
 Once clients transition to using the new URL paths, the "legacy" URLs
 without room id or user id can be deprecated and eventually removed.
@@ -77,7 +87,9 @@ Note: This operation only grants permission for the room to access the media.
 For other users to see the media, it must still be posted in some event in 
 the room, e.g. a room message of type `m.image` or `m.video` etc.
 
-The media object can then be referenced as `mxc://{serverName}/room/{roomId}/{mediaId}`
+The media object can then be referenced as
+
+`mxc://{serverName}/room/{roomId}/{mediaId}`
 
 Clients should grant permission to the room before sending the room message,
 in case one of the requests fails.
