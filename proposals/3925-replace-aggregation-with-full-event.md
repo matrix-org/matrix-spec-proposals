@@ -17,19 +17,14 @@ There are some issues with this requirement:
 
 ## Proposal
 
-Instead of replacing the original content of an event, servers should use the
-aggregation feature for it.
-In fact it
-is [already used](https://spec.matrix.org/v1.4/client-server-api/#server-side-aggregation-of-mreplace-relationships),
-but only `event_id`, `origin_server_ts` and `sender` are included.
-Theoretically this is enough to get the replacing content, but when the event
-with the `event_id` cannot be found locally it needs to be fetched from the
-server.
-To prevent this additional call to the server, the `m.replace` aggregation
-should just contain the complete replacing event.
-
-The additional server call is already needed for encrypted events and would be
-saved by this proposal too.
+The following two changes are proposed:
+1. The [server-side aggregation of `m.replace` relationships](https://spec.matrix.org/v1.4/client-server-api/#server-side-aggregation-of-mreplace-relationships)
+   is extended to be the entire content of the most recent replacement event, formatted
+   as described in [Room Event Format](https://spec.matrix.org/v1.4/client-server-api/#room-event-format).
+   This ensures that the client will always have the most recent edit without having to
+   fetch it from the server.
+2. Servers should no longer replace the original content of an event as described 
+   at https://spec.matrix.org/v1.4/client-server-api/#server-side-replacement-of-content.
 
 For an original event:
 
