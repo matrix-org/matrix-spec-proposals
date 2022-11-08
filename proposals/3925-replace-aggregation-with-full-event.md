@@ -34,4 +34,4 @@ The additional server call is already needed for encrypted events and would be s
 
 ## Unstable prefix
 
-I'm not sure, if we need an unstable prefix, because the aggregation would just be extended by additional fields.
+I'm not sure if we need an unstable prefix, because the aggregation would just be extended by additional fields.
