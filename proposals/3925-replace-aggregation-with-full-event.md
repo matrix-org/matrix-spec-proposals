@@ -1,6 +1,5 @@
 # MSC3925: m.replace aggregation with full event
 
-The Matrix DAG has immutable PDUs forming an auth chain. The client representation of this PDUs are simply called events.
 While these events also have been immutable until v1.3, since v1.4 they aren't.
 When a client sends a `m.replace` relation, [the server should replace the content of the original event](https://spec.matrix.org/v1.4/client-server-api/#server-side-replacement-of-content).
 
