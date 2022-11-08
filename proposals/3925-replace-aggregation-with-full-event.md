@@ -5,7 +5,7 @@ relation, [the server should replace the content of the original event](https://
 
 There are some issues with this requirement:
 
-* Changing the fundamental concept of immutable events is confusing. The server
+* Changing the fundamental concept of mostly immutable events is confusing. The server
   can respond with different event contents for the same `event_id`.
 * If an event with `m.replace` relation is redacted, the client would need to
   detect, if the original content was replaced and possibly needs to fetch the
@@ -13,8 +13,8 @@ There are some issues with this requirement:
 * Server cannot replace the original event content for encrypted events (because the
   replacement content is inside the encrypted body).
   See [matrix-spec#1299](https://github.com/matrix-org/matrix-spec/issues/1299).
-* There are also some other issues with this spec paragraph, which are
-  discussed [here](https://github.com/matrix-org/matrix-spec/issues/1299)
+
+There is a discussion about this spec paragraph [here](https://github.com/matrix-org/matrix-spec/issues/1299).
 
 ## Proposal
 
