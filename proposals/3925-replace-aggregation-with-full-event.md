@@ -31,6 +31,84 @@ should just contain the complete replacing event.
 The additional server call is already needed for encrypted events and would be
 saved by this proposal too.
 
+For an original event:
+
+```json
+{
+  "event_id": "$original_event",
+  "type": "m.room.message",
+  "content": {
+    "body": "I really like cake",
+    "msgtype": "m.text",
+    "formatted_body": "I really like cake"
+  }
+  // irrelevant fields not shown
+}
+
+```
+
+With a replacing event:
+
+```json
+{
+  "event_id": "$edit_event",
+  "type": "m.room.message",
+  "content": {
+    "body": "* I really like *chocolate* cake",
+    "msgtype": "m.text",
+    "m.new_content": {
+      "body": "I really like *chocolate* cake",
+      "msgtype": "m.text",
+      "com.example.extension_property": "chocolate"
+    },
+    "m.relates_to": {
+      "rel_type": "m.replace",
+      "event_id": "$original_event_id"
+    }
+  }
+  // irrelevant fields not shown
+}
+
+```
+
+This is how the original event would look like after the replacement:
+
+```json
+{
+  "event_id": "$original_event",
+  "type": "m.room.message",
+  "content": {
+    "body": "I really like cake",
+    "msgtype": "m.text",
+    "formatted_body": "I really like cake"
+  },
+  "unsigned": {
+    "m.relations": {
+      "m.replace": {
+        "event_id": "$edit_event",
+        "type": "m.room.message",
+        "content": {
+          "body": "* I really like *chocolate* cake",
+          "msgtype": "m.text",
+          "m.new_content": {
+            "body": "I really like *chocolate* cake",
+            "msgtype": "m.text",
+            "com.example.extension_property": "chocolate"
+          },
+          "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$original_event_id"
+          }
+        }
+        // irrelevant fields not shown
+      }
+    }
+  }
+  // irrelevant fields not shown
+}
+
+```
+
 ## Potential issues
 
 * There could be clients which rely on the current behavior.
@@ -46,7 +124,8 @@ We could flip the event stack on it's head and have the outer event
 be the edit and then in unsigned have the base event being edited. Currently, it
 is the inverse where we have the original event and then in unsigned the newer
 event sits. That way, if someone doesn't care about edits (because not
-implemented) then they see the right thing, and when someone does care about them, they
+implemented) then they see the right thing, and when someone does care about
+them, they
 can just inspect unsigned to present the "edits" dialog.
 
 ## Security considerations
