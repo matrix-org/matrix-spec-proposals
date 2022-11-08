@@ -3,12 +3,12 @@
 Matrix users are configured [with predefined notification rules](https://spec.matrix.org/v1.4/client-server-api/#predefined-rules)
 when they register an account. This applies to both regular Matrix users, but also application service and bot user accounts.
 
-In the case of the latter two, it is not useful to calculate notifications because the majority of
+In the case of the latter two, it's not useful to calculate notifications because the majority of
 application services and bots do not read notifications.
 
-Notifications are cleared when a read receipt is sent into the room, but neither bots or application
-services send read receipts in all cases. This can very easily lead to a lot of wasted space in some
-implementations, as they being to accumulate many unread notifications.
+Notifications are "cleared" when a read receipt is sent into the room, but neither bots or application
+services send read receipts in all cases. This can very easily lead to a lot of wasted disk space in some
+implementations.
 
 There is also the case that each notitification rule will take some amount of CPU time to process, which
 is entirely wasted if the account doesn't check notifications.
@@ -16,16 +16,13 @@ is entirely wasted if the account doesn't check notifications.
 Ultimately for these reasons, we should allow bots and appservices to opt-out of server-side notifications
 upon registration.
 
-In all but the 0.01% of cases, appservice users generally don't need to receive notifications at all, so we could save everyone some computational cost by disabling server-default notification rules by default if the user was registered with a `type` of `m.login.application_service`.
-
 ## Proposal
 
-A new field `enable_predefined_push_rules` will be introduced to [`GET /_matrix/client/v3/register`](https://spec.matrix.org/v1.4/client-server-api/#post_matrixclientv3register)
+A new body field `enable_predefined_push_rules` will be introduced to [`GET /_matrix/client/v3/register`](https://spec.matrix.org/v1.4/client-server-api/#post_matrixclientv3register),
 which will allow users to opt-out of default notifications.
 
 When set, the homeserver MUST disable all rules defined in [predefined-rules](https://spec.matrix.org/v1.4/client-server-api/#predefined-rules),
-effectively thereby disabling the calculation of notifications for this user. The user will still be
-able to enable these notification rules if they so wish.
+effectively thereby disabling the calculation of notifications. The user will still be able to enable these notification rules if they so wish.
 
 When the `type` of registration is `m.login.application_service`, the default value of `enable_predefined_push_rules`
 will be `false`.
