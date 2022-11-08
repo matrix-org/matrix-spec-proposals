@@ -245,8 +245,8 @@ should only display UI for sending DTMF during a call if the other party adverti
 capability (boolean value `true`).
 
 ### Specify exact grammar for VoIP IDs
-`call_id`s and the newly introduced `party_id` are explicitly defined to be up to 32 characters
-from the set of `A-Z` `a-z` `0-9` `.-_`.
+`call_id`s and the newly introduced `party_id` are explicitly defined to be in the grammar of
+'opaque IDs' from [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/blob/rav/proposals/id_grammar/proposals/1597-id-grammar.md#opaque-ids).
 
 ### Specify behaviour on room leave
 If the client sees the party it is in a call with leave the room, the client should treat this
