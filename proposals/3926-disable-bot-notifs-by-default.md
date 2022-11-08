@@ -46,12 +46,12 @@ application service implementation, rather than a spec concern.
 Instead of adding a flag, the homeserver could instead only start tracking notifications when the user
 /syncs. This might help with cases where users are registered but never used. It would also help with 
 application services where users never sync. However, this would still cause notifications to be calculated
-for traditional `/sync`ing bots. Overall an explicit option at registration time seems more preferrable.
+for traditional `/sync`ing bots. Overall an explicit option at registration time seems more preferable.
 
 ### Bots and Appservices could explicitly disable notifications
 
 Bots and integrations could instead explicitly disable all rules on signup, rather than expecting the
-homeserver to complete this for them. However, the *defaults* set by the spec are sufficent enough of a
+homeserver to complete this for them. However, the *defaults* set by the spec are sufficient enough of a
 "footgun" that it's easy for developers to forget this setting and allow their homeserver to accumulate
 notifications.
 
@@ -69,7 +69,7 @@ None. The decision to enable or disable notifications is left up to the register
 While this MSC is unstable, `enable_predefined_push_rules` should be called `org.matrix.mscXXXX.enable_predefined_push_rules`.
 
 To avoid breaking existing functionality. The *default* setting for both application services and regular users will
-be `true`. Developers will be expected to be explict with their choice until this MSC is merged and the
+be `true`. Developers will be expected to be explicit with their choice until this MSC is merged and the
 defaults given in the [proposal](##Proposal) are used.
 
 ## Dependencies
