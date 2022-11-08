@@ -42,6 +42,13 @@ saved by this proposal too.
 
 ## Alternatives
 
+We could flip the event stack on it's head and have the outer event
+be the edit and then in unsigned have the base event being edited. Currently, it
+is the inverse where we have the original event and then in unsigned the newer
+event sits. That way, if someone doesn't care about edits (because not
+implemented) then they see the right thing, and when someone does care about them, they
+can just inspect unsigned to present the "edits" dialog.
+
 ## Security considerations
 
 ## Unstable prefix
