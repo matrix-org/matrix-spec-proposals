@@ -175,8 +175,10 @@ considered officially part of the spec. Congratulations!
 
 Clients and servers can now start using the change, even though at this stage
 it still needs to be transcribed into the spec document. This happens over in
-https://github.com/matrix-org/matrix-spec/ and is typically handled by the Spec
-Core Team themselves.
+https://github.com/matrix-org/matrix-spec/ and you are very welcome to do it
+yourself! Otherwise it will be handled by a Spec Core Team member. If you would
+like help with writing spec PRs, feel free to join and ask questions in the
+[Matrix Spec and Docs Authoring Room on Matrix](https://matrix.to/#/#matrix-docs:matrix.org).
 
 ### Other useful information
 
