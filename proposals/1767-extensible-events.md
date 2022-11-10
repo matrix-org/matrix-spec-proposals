@@ -90,14 +90,15 @@ a minimum, a `m.markup` content block:
 ```
 
 `m.markup` has the following definitions associated with it:
-* An ordered array of mimetypes and applicable string content to represent a single
+* An *unordered* array of mimetypes and applicable string content to represent a single
   marked-up blob of text. Each element is known as a representation.
 * `body` in a representation is required, and must be a string.
 * `mimetype` is optional in a representation, and defaults to `text/plain`.
 * Zero representations are permitted, however senders should aim to always specify
   at least one.
 * Invalid representations are skipped by clients (missing `body`, not an object, etc).
-* The first representation a renderer understands should be used.
+* The client can choose which representation fits its purpose best, though generally
+  the preferred representations should appear first in the array.
 * Senders are strongly encouraged to always include a plaintext representation,
   however are equally permitted to send an HTML representation instead.
 * The `mimetype` of a representation determines its `body` - no effort is made to
