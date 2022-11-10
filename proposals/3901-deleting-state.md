@@ -1,5 +1,7 @@
 # MSC3901: Deleting State
 
+TODO: rename to "obsolete" (or "useless" or "marked for deletion")?
+
 ## Introduction
 
 ### Why delete state?
@@ -24,6 +26,11 @@ create state events. If these proposals are accepted, it will be easier for
 malicious or spammy users to flood a room with undeletable state, potentially
 mounting a denial of service attack against involved homeservers. So, some
 solution to "clean" an affected room is desirable.
+
+Note that throughout this document we are only concerned with state
+events[^and-redactions], other events are not relevant to this problem.
+
+[^and-redactions] (and of course, events that redact state events.)
 
 TODO: refer to relevant MSCs: live location, and also the owned state ones.
 
@@ -58,8 +65,8 @@ but we were unable to design one, and we hope that:
 a) improvements to room upgrades may eventually lead to a process that is so
    smooth it can be automatic, or at least very easy, and
 
-b) improvements to room upgrades will bring benefits Matrix even if they don't
-   turn out to be the right way to solve the deleting state problem.
+b) improvements to room upgrades will bring benefits to Matrix even if they
+don't turn out to be the right way to solve the deleting state problem.
 
 ### Also, reduce state sent to clients
 
@@ -147,12 +154,19 @@ This would effectively prevent anyone from using a `deleted` property for some
 other purpose in their event content definition, and would clash with anyone who
 has already defined their events in this way.
 
-### Redacted state events are deleted too
+### Redacted state events are deleted
 
-* TODO: redaction of deleted state events
-  https://spec.matrix.org/v1.4/rooms/v10/#redactions
-  Maybe defined deleted as `content: {}`?
-  (Or change redaction algorithm in new room version)
+We propose to update the definition of event redaction[^spec-redactions] to
+specify that all redacted events contain `deleted: true` in their content.
+
+[^spec-redactions] https://spec.matrix.org/v1.4/rooms/v10/#redactions
+
+### Leave events are deleted
+
+We propose to update the definition of membership events so that events saying
+a member has left contain `deleted: true` in theit content.
+
+TODO: link to membership events in the spec
 
 ### Encrypted deleted state events
 
@@ -171,12 +185,12 @@ should also contain `deleted: true`.
 
 #### content: null
 
-We considered defining a deleted event as an event with a state_key and null
-content.
+We considered defining a deleted state event as an event with a state_key and
+null content.
 
-However, some existing deleted events such as leaving events (membership events
-indicating that someone left the room) contain useful content, and there is no
-reason to assume that future ones won't also want to do something similar.
+However, some existing deleted state events such as leaving events (membership
+events indicating that someone left the room) contain useful content, and there
+is no reason to assume that future ones won't also want to do something similar.
 
 #### deleted as a sibling of content
 
@@ -213,6 +227,18 @@ for an initial sync, do not include deleted state.
 TODO: specific spec wording change
 
 ### Potential issues
+
+If clients actually need deleted state to render properly, this would imply
+that events have been marked as deleted when they should not have been. (Note:
+we are discussing room state here, not state events. Deleted state events
+should be returned as normal when the events timeline is requested. This allows
+users to explore historical events.)
+
+The only time when a deleted state event is needed to update room state is when
+a client has already received non-deleted state for this `event_key`. Since
+this proposal only affects initial sync, clients have not received any state,
+so this does not apply.
+
 ### Alternatives
 
 We could simply not do this, and hope that the measures we will take to reduce
@@ -225,6 +251,9 @@ out problems we have not yet considered.
 ### Security considerations
 ### Unstable prefix
 ### Dependencies
+
+As soon as we can agree on a definition of deleted state, we believe this
+proposal can be implemented.
 
 ## Sub-proposal 2: Invite users to an upgraded room
 
@@ -245,16 +274,47 @@ TODO: consider a bulk-invite event, either as part of this MSC or a separate one
 ### Dependencies
 
 ## Sub-proposal 3: Auto-accept invitations to upgraded rooms
+
+Currently, when a room is upgraded, users do not join them until their client
+follows the room link in the tombstone event. Some clients require users to
+perform this step manually, and others do it automatically.
+
+This makes room upgrades clunky, and prevents users from receiving events for
+upgraded rooms until their client triggers the upgrade. This can cause users
+to miss important messages.
+
+We propose to specify how servers can evaluate suggested room upgrades, and
+if they consider them valid, automatically join users from the old room to the
+upgraded one.
+
 ### Proposal
 ### Potential issues
 ### Alternatives
 ### Security considerations
+
+TODO: obviously, doing something on behalf of the user is a potential abuse
+vector.
+
 ### Unstable prefix
 ### Dependencies
 
 ## Sub-proposal 4: Copy more state to upgraded rooms
+
+Currently, when a room is upgraded, the new room is only somewhat similar to
+the old one.
+
+We propose to expand the definition of a room upgrade to copy all useful
+information from the old to the new room.
+
+This involves copying all non-deleted, non-user-scoped room state by creating
+state events in the upgraded room.
+
 ### Proposal
 ### Potential issues
+
+TODO: this could cause too much state to be copied, or bad or abusive state to
+be copied.
+
 ### Alternatives
 ### Security considerations
 ### Unstable prefix
