@@ -14,7 +14,6 @@ There are some issues with this requirement:
   replacement content is inside the encrypted body).
   See [matrix-spec#1299](https://github.com/matrix-org/matrix-spec/issues/1299).
 
-There is a discussion about this spec paragraph [here](https://github.com/matrix-org/matrix-spec/issues/1299).
 
 ## Proposal
 
