@@ -1,7 +1,8 @@
 # MSC3925: m.replace aggregation with full event
 
-When a client sends a `m.replace`
-relation, [the server should replace the content of the original event](https://spec.matrix.org/v1.4/client-server-api/#server-side-replacement-of-content).
+As [currently specified](https://spec.matrix.org/v1.4/client-server-api/#server-side-replacement-of-content),
+servers should replace the content of events that have been replaced via an `m.replace`
+relation.
 
 There are some issues with this requirement:
 
