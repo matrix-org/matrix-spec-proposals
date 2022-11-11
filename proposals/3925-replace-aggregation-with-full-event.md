@@ -8,8 +8,8 @@ There are some issues with this requirement:
 
 * Changing the fundamental concept of mostly immutable events is confusing. The server
   can respond with different event contents for the same `event_id`.
-* If an event with `m.replace` relation is redacted, the client would need to
-  detect, if the original content was replaced and possibly needs to fetch the
+* If an event with `m.replace` relation is redacted, clients need to
+  detect if the original content was replaced, and possibly need to fetch the
   original content.
 * Servers cannot replace the original event content for encrypted events (because the
   replacement content is inside the encrypted body).
