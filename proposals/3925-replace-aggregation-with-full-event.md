@@ -121,13 +121,9 @@ This is how the original event would look like after the replacement:
 
 ## Alternatives
 
-We could flip the event stack on it's head and have the outer event
-be the edit and then in unsigned have the base event being edited. Currently, it
-is the inverse where we have the original event and then in unsigned the newer
-event sits. That way, if someone doesn't care about edits (because not
-implemented) then they see the right thing, and when someone does care about
-them, they
-can just inspect unsigned to present the "edits" dialog.
+One [suggestion](https://github.com/matrix-org/matrix-spec/issues/1299#issuecomment-1290332433) is
+to have the server return the complete replacement event instead of the original event. However, that would
+break compatibility with existing clients and is a more invasive change.
 
 ## Security considerations
 
