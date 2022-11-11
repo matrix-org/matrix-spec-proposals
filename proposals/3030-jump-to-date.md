@@ -136,7 +136,7 @@ were unable to find an event to display on January 1st, 2022. The closest event
 after that date is on January 27th."
 
 
-### Abusing the `/timestamp_to_event` API to get the `m.room.create` event 
+### Abusing the `/timestamp_to_event` API to get the `m.room.create` event
 
 Although it's possible to jump to the start of the room and get the first event in the
 room (`m.room.create`) with `/timestamp_to_event?dir=f&ts=0`, clients should still use
@@ -183,7 +183,7 @@ be impossible to distinguish from  a timestamp.
 A related alternative is to use `/messages` with a `from_time`/`to_time` (or
 `from_ts`/`to_ts`) query parameters that only accept timestamps which solves the
 confusion and disambigution problem of trying to re-use the existing `from`/`to`
-query paramters. Re-using `/messages` would reduce the number of round-trips and
+query parameters. Re-using `/messages` would reduce the number of round-trips and
 potentially client-side implementations for the use case where you want to fetch
 a window of messages from a given time. But has the same round-trip problem if
 you want to use the returned `event_id` with `/context` or another endpoint
