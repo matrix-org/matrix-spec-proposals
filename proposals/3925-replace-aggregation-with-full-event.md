@@ -29,7 +29,7 @@ The following two changes are proposed:
 
 For an original event:
 
-```json
+```json5
 {
   "event_id": "$original_event",
   "type": "m.room.message",
@@ -45,7 +45,7 @@ For an original event:
 
 With a replacing event:
 
-```json
+```json5
 {
   "event_id": "$edit_event",
   "type": "m.room.message",
@@ -69,7 +69,7 @@ With a replacing event:
 
 This is how the original event would look like after the replacement:
 
-```json
+```json5
 {
   "event_id": "$original_event",
   "type": "m.room.message",
@@ -108,11 +108,16 @@ This is how the original event would look like after the replacement:
 ## Potential issues
 
 * There could be clients which rely on the current behavior.
-* It will be harder for clients to get the current content of an event: currently
-  they can just looking at `content.body`. While this is true, it
-  is also a relatively inconsistent behavior. Future replacements of the event
-  would be rendered as "* new content". So the event with the replaced event
-  does look different (without "*") despite the fact, that it is also replaced.
+* It will be harder for clients, which do not support replacing events to get
+  the current content of an event: currently they can just look at `content.body`.
+  However, this leads to a relatively inconsistent behavior:
+
+  Assuming that we have an event A with the body `1`, which is first replaced by
+  the event A' with the new body `2` and then by the event A'' with the new body
+  `3`. The sync has been done right after A' und A''. Then the timeline
+  would look like this: `2` -> `*3` instead of `1` -> `*2` -> `*3`. Although `2`
+  is a replaced body, it does not have a `*`, which looks to the user as it has 
+  not been replaced.
 
 ## Alternatives
 
