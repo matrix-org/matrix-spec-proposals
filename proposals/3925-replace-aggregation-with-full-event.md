@@ -10,7 +10,7 @@ There are some issues with this requirement:
 * If an event with `m.replace` relation is redacted, the client would need to
   detect, if the original content was replaced and possibly needs to fetch the
   original content.
-* Server cannot replace the original event content for encrypted events (because the
+* Servers cannot replace the original event content for encrypted events (because the
   replacement content is inside the encrypted body).
   See [matrix-spec#1299](https://github.com/matrix-org/matrix-spec/issues/1299).
 
