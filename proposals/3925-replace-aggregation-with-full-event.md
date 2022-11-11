@@ -126,6 +126,8 @@ can just inspect unsigned to present the "edits" dialog.
 
 ## Security considerations
 
+None currently foreseen.
+
 ## Unstable prefix
 
 I'm not sure if we need an unstable prefix, because the aggregation would just
