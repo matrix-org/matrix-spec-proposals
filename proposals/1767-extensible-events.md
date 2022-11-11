@@ -320,12 +320,12 @@ that there are `m.room.message` events flying around to denote "messages" which 
 keyword/mention-style alerts. With extensible events, the same might not be possible as it
 relies on understanding how/when the client will render the event to cause notifications.
 
-For simplicity, the `content.body` condition now looks for an `m.markup` block's `text/plain`
-representation (implied or explicit) in room versions supporting extensible events. This is
-not an easy condition to represent in the existing push rules schema, and this MSC has no
-interest in designing a better schema. Note that other conditions applied to push notifications,
-such as an event type check, are not affected by this: clients/servers will have to alter
-applicable push rules to handle the new event types.
+For simplicity, when `content.body` is used in an `event_match` condition, it now looks for
+an `m.markup` block's `text/plain` representation (implied or explicit) in room versions
+supporting extensible events. This is not an easy rule to represent in the existing push
+rules schema, and this MSC has no interest in designing a better schema. Note that other
+conditions applied to push notifications, such as an event type check, are not affected by
+this: clients/servers will have to alter applicable push rules to handle the new event types.
 
 A future MSC is expected to address the default push rules having a hardcoded event type.
 
