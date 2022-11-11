@@ -108,8 +108,8 @@ This is how the original event would look like after the replacement:
 ## Potential issues
 
 * There could be clients which rely on the current behavior.
-* It is not as easy for clients like as in the current spec to get the current
-  content of an event by just looking into `content.body`. While this is true, it
+* It will be harder for clients to get the current content of an event: currently
+  they can just looking at `content.body`. While this is true, it
   is also a relatively inconsistent behavior. Future replacements of the event
   would be rendered as "* new content". So the event with the replaced event
   does look different (without "*") despite the fact, that it is also replaced.
