@@ -18,8 +18,8 @@ condition to be met the following conditions have to be met:
 This is a new push condition since the current push-rule system is not flexible
 enough for this to be built out of existing rules.
 
-A new [default override
-rule](https://spec.matrix.org/v1.2/client-server-api/#default-override-rules) is
+A new [default underride
+rule](https://spec.matrix.org/v1.2/client-server-api/#default-underride-rules) is
 to be added:
 
 ```json
@@ -44,7 +44,7 @@ to be added:
 }
 ```
 
-This new push rule is inserted immediately after `.m.rule.tombstone`.
+This new push rule is inserted immediately after `.m.rule.call`.
 
 ## Potential issues
 
