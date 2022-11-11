@@ -82,8 +82,8 @@ a minimum, a `m.markup` content block:
     "type": "m.message",
     "content": {
         "m.markup": [
-            { "body": "Hello world" },
-            { "body": "<i>Hello world</i>", "mimetype": "text/html" }
+            { "body": "<i>Hello world</i>", "mimetype": "text/html" },
+            { "body": "Hello world" }
         ]
     }
 }
