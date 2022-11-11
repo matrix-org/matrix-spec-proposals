@@ -130,5 +130,4 @@ None currently foreseen.
 
 ## Unstable prefix
 
-I'm not sure if we need an unstable prefix, because the aggregation would just
-be extended by additional fields.
+No unstable prefix is currently proposed.
