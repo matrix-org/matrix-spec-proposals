@@ -103,7 +103,9 @@ a minimum, a `m.markup` content block:
   however are equally permitted to send an HTML representation instead.
 * The `mimetype` of a representation determines its `body` - no effort is made to
   limit what is allowed in the `body` (ie: we don't specify what is allowable HTML),
-  therefore it is the client's responsibility to validate/sanitize the content further.
+  therefore it is the client's responsibility to validate/sanitize the content further,
+  such as by using the [existing spec](https://spec.matrix.org/v1.4/client-server-api/#mroommessage-msgtypes)
+  for recommended allowable HTML.
 * Custom markups in a representation are specified by a suitably custom `mimetype`.
   For example, extending HTML or XML or an all-new format. This can be used to create
   bridge-compatible clients where the destination network's markup is first in the
@@ -144,9 +146,9 @@ In a hypothetical scenario, a temperature event might look as such:
     "type": "org.example.temperature",
     "content": {
         "m.markup": [{"body": "It is 22 degrees at Home"}],
-        "org.exmaple.probe_value": {
+        "org.example.probe_value": {
             "label": "Home",
-            "units": "org.exmaple.celsius",
+            "units": "org.example.celsius",
             "value": 22
         }
     }
@@ -225,9 +227,9 @@ or `m.notice` event:
         "m.notice": {
             "m.markup": [{"body": "It is 22 degrees at Home"}]
         },
-        "org.exmaple.probe_value": {
+        "org.example.probe_value": {
             "label": "Home",
-            "units": "org.exmaple.celsius",
+            "units": "org.example.celsius",
             "value": 22
         }
     }
@@ -276,6 +278,11 @@ State events MUST make use of content blocks, noting that values like `join_rule
 in `content` today are implicitly legal content blocks, however are not required to offer "sensible"
 fallback options for rendering.
 
+Clients are not required to render state events as extensible events, though clients which do should
+take care to ensure the events get rendered as applicable events and *not* with any existing state
+event styling. As a specific example, Element Web *should not* render state events with `m.markup`
+fallback as inline system messages, but rather as text messages (as though the user said the words).
+
 ### Encryption
 
 Like `m.room.message`, `m.room.encrypted` is also deprecated in favour of a new `m.encrypted` event
@@ -302,6 +309,9 @@ an `m.room.encrypted` event:
 ```
 
 This allows the `m.encrypted` content block to be reused by other event types, if required.
+
+For clarity, this is *not* intended to allow unencrypted fallback on an encrypted event - doing
+so would be extraordinarily dangerous and is explicitly discouraged.
 
 ### Notifications
 
@@ -374,8 +384,8 @@ While this MSC is not considered stable by the specification, implementations *m
 `org.matrix.msc1767` as a prefix to denote the unstable functionality. For example, sending
 an `m.message` event would mean sending an `org.matrix.msc1767.message` event instead.
 
-Implementations wishing to trial the migration ahead of this MSC's inclusion in the spec would
-use the unstable prefix mentioned above. A fallen back `m.room.message` example event becomes:
+Implementations looking to mix extensible events with past events, per elsewhere in this
+proposal, would do something like the following (in the case of `m.room.message`, at least):
 
 ```json5
 {
@@ -385,8 +395,10 @@ use the unstable prefix mentioned above. A fallen back `m.room.message` example 
         "body": "Hello World",
         "format": "org.matrix.custom.html",
         "formatted_body": "<b>Hello</b> World",
-        "org.matrix.msc1767.text": "Hello World",
-        "org.matrix.msc1767.html": "<b>Hello</b> World"
+        "org.matrix.msc1767.markup": [
+            {"body": "Hello World"},
+            {"body": "<b>Hello</b> World", "mimetype": "text/html"}
+        ]
     }
 }
 ```
