@@ -72,7 +72,8 @@ Together with content blocks from other proposals, an `m.file` is described as:
 * **Required** - An `m.file` to describe the actual file.
 
 The above describes the minimum requirements for sending an `m.file` event. Senders can add additional
-blocks, however as per the extensible events system, receivers should not honour them.
+blocks, however as per the extensible events system, receivers which understand file events should not
+honour them.
 
 ## Potential issues
 
