@@ -7,15 +7,17 @@ to recipients.
 More information about voice messages and what they can be used for can be found on
 [MSC2516 - Voice messages via msgtype](https://github.com/matrix-org/matrix-doc/pull/2516). This
 MSC inherits a lot of the beliefs and usecases of that MSC, but instead packages the event contents
-a bit differently. Specifically, this makes use of
-[MSC1767 - Extensible Events](https://github.com/matrix-org/matrix-doc/pull/1767).
+a bit differently. Specifically, this makes use of [MSC1767 - Extensible Events](https://github.com/matrix-org/matrix-doc/pull/1767).
+
+This MSC additionally relies upon [MSC0001](https://github.com/matrix-org/matrix-doc/pull/0001) and
+[MSC3551](https://github.com/matrix-org/matrix-doc/pull/3551).
 
 ## Proposal
 
 Much like MSC2516, voice messages are defined as OGG files, encoded with Opus, using relatively sane
 settings for voice recordings. This proposal does not define specific settings for clients to use,
 but does strongly recommend reducing file size without losing audio quality as much as possible. Some
-sample settings are:
+suggested default settings are:
 
 * Sample rate: 48kHz
 * Bitrate: 24kbps
@@ -34,52 +36,60 @@ No maximum duration is specified, however clients are encouraged not to send lon
 as they might be rejected/ignored on the receiving end for file size reasons. Typically, this should
 be less than 5 minutes worth of audio.
 
-MSC1767 is used to package the voice message up in an annotated event format. Readers of this proposal
-are encouraged to [read the MSC](https://github.com/matrix-org/matrix-doc/pull/1767) prior to commenting
-or parsing this MSC's use of Extensible Events.
+Using [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)'s system, a new `m.voice` event
+type is introduced.
 
-An example voice message would be:
+An example is:
 
 ```json5
 {
   "type": "m.voice",
   "content": {
-    "m.text": "Voice message",
+    "m.markup": [
+      // Format of the fallback is not defined, but should have enough information for a text-only
+      // client to do something with the voice message, just like with plain file uploads.
+      //
+      // Another option might be to include speech-to-text conversion here, so text-only clients can
+      // "see" the contents without having to download them.
+      {"body": "Voice Message (8 KB, 1:30) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
+    ],
     "m.file": {
-      "size": 7992,
-      "name": "Voice message.ogg",
       "mimetype": "audio/ogg",
-      "url": "mxc://example.org/abcdef"
+      "url": "mxc://example.org/abcdef",
+      "name": "Voice message.ogg",
+      "size": 7992
     },
-    "m.audio": {
-      "duration": 6541,
+    "m.audio_details": {
+      "duration": 90,
       "waveform": [0, 256, /*...*/ 1024] // https://github.com/matrix-org/matrix-doc/pull/3246
-    },
-    "m.voice": {}
-  },
-  // other fields required by the spec, but not important here
+    }
+  }
 }
 ```
 
-Of particular note is that the `m.voice` event definition is empty. This is because fundamentally the event
-is an audio event, which means looking at the `m.audio` and `m.file` event bodies for relevant information
-about the audio clip. The `m.voice` type is simply used to annotate the event for clients which would like
-to render voice messages differently to regular audio files. Clients which don't do anything special for
-voice messages can treat `m.voice` as effectively unknown during rendering, likely falling on the `m.audio`
-definition instead.
+No new content blocks are introduced in this MSC.
 
-This proposal suggests that the textual fallback be "Voice message" for moderately sensical push/desktop/email
-notifications. Note that MSC1767 supports internationalization, which clients should make use of as needed.
-Text-to-speech and similar capabilities for voice messages would be covered by a future MSC, if desired.
+Together with content blocks from other proposals, an `m.voice` is described as:
+
+* **Required** - An `m.markup` block to act as a fallback for clients which can't process voice messages.
+* **Required** - An `m.file` block to contain the audio itself. Clients use this to represent the voice
+  message. Per above, it MUST be in the file format described by this MSC.
+* **Required** - An `m.audio_details` block to describe any audio-specific metadata, such as duration.
+  * Under this MSC, the `waveform` is required in this usage. `duration` is already required.
+
+The above describes the minimum requirements for sending an `m.voice` event. Senders can add additional
+blocks, however as per the extensible events system, receivers which understand voice messages should not
+honour them.
+
+Note that `m.file` supports encryption and therefore it's possible to encrypt audio too.
+
+If a client does not support rendering voice messages inline, the client would instead typically represent
+the event as a regular audio file, then plain file upload, and finally plain text message.
 
 ## Potential issues
 
-The `m.voice` identifier could probably conflict, and `m.audio` could conflict as well. We may be interested in
-discussing `m.message.voice` or similar instead, though likely at MSC1767 rather than this proposal.
-
-This also annotates events with an empty object and potentially a lot of extra information. This is considered
-to be an issue for MSC1767 to consider rather than this MSC, as this MSC is simply saying to create audio events
-with some sort of voice message type.
+The schema duplicates some of the information into the text fallback, though this is unavoidable
+and intentional for fallback considerations.
 
 ## Alternatives
 
@@ -102,97 +112,26 @@ outside the control of Matrix: users are cautioned to not send voice messages to
 public rooms or unknown individuals.
 
 As with all media events, clients should be wary that the contained file is actually an audio file. Playing JPEGs
-or executables over the user's speakers are unlikely to go down very well.
+or executables over the user's speakers are unlikely to go very well.
 
 Voice messages are likely best used in encrypted rooms due to the high likelihood that the members of the room are
 trusted, and the user's voice is not uploaded plainly to the media repo. Typically, this will be DMs or other
 forms of private chats in most clients.
 
-## Transitional event format
-
-As mentioned on MSC1767, the Extensible Events format can be mixed in with the existing specification for message
-events. For as long as MSC1767's transitional period is in place, the following would represent a voice message:
-
-```json5
-{
-  "type": "m.room.message",  // Changed!
-  "content": {
-    "body": "Voice message",
-    "msgtype": "m.audio", // To preserve semantic meaning
-    "url": "mxc://example.org/abcdef",
-    "info": {
-      "duration": 6541,
-      "mimetype": "audio/ogg",
-      "size": 7992
-    },
-
-    // All of this is otherwise unchanged.
-    "m.text": "Voice message",
-    "m.file": {
-      "size": 7992,
-      "name": "Voice message.ogg",
-      "url": "mxc://example.org/abcdef",
-      "mimetype": "audio/ogg"
-    },
-    "m.audio": {
-      "duration": 6541,
-      "waveform": [0, 256, /*...*/ 1024]
-    },
-
-    // This can still be used to identify an audio message from a voice message,
-    // even with the fallback of `msgtype: m.audio`
-    "m.voice": {}
-  },
-  // other fields required by the spec, but not important here
-}
-```
-
 ## Unstable prefix
 
-While this MSC is not considered stable implementations should use the following guidelines:
+While this MSC is not considerede stable, implementations should use `org.matrix.msc3245.voice.v2` in place
+of the `m.voice` event type, additionally using any applicable prefixes for content blocks and similar.
 
-* Use MSC1767's unstable prefix and migration strategy where possible.
-* Use `org.matrix.msc3245` in place of `m.voice`.
-* Carefully send events which match the example given below. This is to make other implementations easier to
-  write.
+As this is a new event type and clients would not be massively impacted by seeing the event, clients are
+specifically permitted to send this event type into rooms which *don't* support extensible events: clients
+which understand voice messages should be parsing the event as such, and clients which understand extensible
+events but not voice messages should *not* attempt to represent the event (unless it's in an applicable room
+version).
 
-Example event (using all the unstable prefixing rules):
-
-```json5
-{
-  "type": "m.room.message",
-  "content": {
-    "body": "Voice message",
-    "msgtype": "m.audio",
-    "url": "mxc://example.org/abcdef",
-    "info": {
-      "duration": 6541,
-      "mimetype": "audio/ogg",
-      "size": 7992
-    },
-    "org.matrix.msc1767.text": "Voice message",
-    "org.matrix.msc1767.file": {
-      "size": 7992,
-      "name": "Voice message.ogg",
-      "url": "mxc://example.org/abcdef",
-      "mimetype": "audio/ogg"
-    },
-    "org.matrix.msc1767.audio": {
-      "duration": 6541,
-      "waveform": [0, 256, /*...*/ 1024]
-    },
-
-    // This can still be used to identify an audio message from a voice message,
-    // even with the fallback of `msgtype: m.audio`
-    "org.matrix.msc3245.voice": {}
-  },
-  // other fields required by the spec, but not important here
-}
-```
-
-Client implementations should note that instead of `org.matrix.msc3245.voice` there are wild events using
-`org.matrix.msc2516.voice` as a precursor experiment to this MSC. The MSC2516 namespace is not considered
-correct, though clients may wish to handle it the same.
+**Note**: We use a "v2" event here because a prior draft of this MSC was implemented in the wild. The MSC's
+version history represents that possible schema, which used `m.room.message` and an older version of extensible
+events instead. This version of the proposal does not describe that schema.
 
 ## Dependent MSCs
 
