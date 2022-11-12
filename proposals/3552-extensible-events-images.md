@@ -45,7 +45,7 @@ An example is:
           "mimetype": "image/jpeg",
           "size": 123
 
-          // "name" is optional on a file and not relevant here.
+          // "name" is optional in this scenario
         },
         "m.image_details": {
           "width": 160,
@@ -76,6 +76,7 @@ With consideration for extensible events, the following content blocks are defin
   * Multiple thumbnail formats may be supplied (webp, webm, jpeg, etc) with the same dimensions.
     Clients should ensure they are capable of rendering the type before picking that thumbnail.
   * `m.file`'s `mimetype` is a required field in this block.
+  * `m.file`'s `name` is optional in this block.
 * `m.caption` - A message to place above or below the rendered content (in this case, an image).
   Currently requires an `m.markup` content block to be nested within it.
 * `m.alt_text` - Alternative text for the content, for accessibility considerations. Currently
