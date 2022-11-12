@@ -66,8 +66,8 @@ An example is:
 
 With consideration for extensible events, the following content blocks are defined:
 
-* `m.image_details` - Currently records width and height (both required), but in future could
-  additionally supply other image details such as colour space.
+* `m.image_details` - Currently records width and height (both required, in pixels), but in
+  future could additionally supply other image details such as colour space.
 * `m.thumbnail` - An array of (usually) smaller images the client can use to show in place of
   the event's image for bandwidth or size considerations. Currently requires two other content
   blocks nested under it: `m.file` and `m.image_details`.
@@ -105,7 +105,8 @@ Together with content blocks from other proposals, an `m.image` is described as:
   of an `img` node in HTML.
 
 The above describes the minimum requirements for sending an `m.image` event. Senders can add additional
-blocks, however as per the extensible events system, receivers should not honour them.
+blocks, however as per the extensible events system, receivers which understand image events should not
+honour them.
 
 To represent stickers, we instead use a mixin on `m.image_details`. A new (optional) boolean field
 called `m.sticker` is added if the client is intended to render the image as a sticker. When rendering
@@ -132,7 +133,7 @@ No significant alternatives known.
 
 ## Security considerations
 
-The same considerations which currently apply to files, images, stickers and extensible events also
+The same considerations which currently apply to files, images, stickers, and extensible events also
 apply here. For example, bounds on image size, assuming sender-provided details about the file are
 false, etc.
 
