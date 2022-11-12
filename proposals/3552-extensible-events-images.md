@@ -77,8 +77,6 @@ With consideration for extensible events, the following content blocks are defin
     Clients should ensure they are capable of rendering the type before picking that thumbnail.
   * `m.file`'s `mimetype` is a required field in this block.
   * `m.file`'s `name` is optional in this block.
-* `m.caption` - A message to place above or below the rendered content (in this case, an image).
-  Currently requires an `m.markup` content block to be nested within it.
 * `m.alt_text` - Alternative text for the content, for accessibility considerations. Currently
   requires an `m.markup` content block to be nested within it, however senders should only
   specify a plain text body for ease of parsing.
