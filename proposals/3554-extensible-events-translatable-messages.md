@@ -1,17 +1,33 @@
 # MSC3554: Extensible Events - Translatable Messages
 
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) describes Extensible Events in detail,
-though deliberately does not include schemas for non-text messaging types. This MSC covers only support
-for translations on the `m.message` type.
+though deliberately does not include schemas for some messaging types. This MSC covers translations
+on `m.markup` content blocks specifically.
 
 *Rationale*: Splitting the MSCs down into individual parts makes it easier to implement and review in
 stages without blocking other pieces of the overall idea. For example, an issue with the way images
 are represented should not block the overall schema from going through.
 
+**Note**: As a second priority MSC in the Extensible Events series, this MSC is not proposed to be a
+blocker on extensible events entering the specification - this can mean that when extensible events
+are available, translations might not be (in stable form). Readers should consider the unstable prefix
+section for early support of this MSC.
+
 ## Proposal
 
-A new field is added to the `m.message` type definition to denote which language is being represented
-by the `body`: `lang`.
+As defined by MSC1767, `m.markup` currently specifies an array with "representations" for the text
+on the event. Clients are expected to find the first representation they can render based on mimetype,
+which can be implicit.
+
+Sender-provided translations can be useful in contexts where the sender knows multiple languages are
+used in a room, such as announcements or other prepared communications. Less common in instant messaging
+(at least without a translation service on the sender's side), the receiving client can use the message
+which matches the user's preferred language.
+
+This MSC adds an additional key, `lang`, to the `m.markup` representation schema and adjusts how a
+client decides upon a representation to include the language in that consideration. The array overall
+is still ordered, which means the sender should also supply the language which fits the scenario best
+as the first item.
 
 An example:
 
@@ -19,7 +35,7 @@ An example:
 {
     "type": "m.message",
     "content": {
-        "m.message": [
+        "m.markup": [
             {
                 "body": "Je suis un poisson",
                 "lang": "fr"
@@ -33,12 +49,8 @@ An example:
 }
 ```
 
-*Note*: `m.message`'s support for `mimetype` has been excluded from the example for brevity. It is still
+*Note*: `m.markup`'s support for `mimetype` has been excluded from the example for brevity. It is still
 supported in events.
-
-As already covered by Extensible Events, the first element in the array would be the representation that
-unaware clients would use, which in the example above would be French. Clients which are aware of language
-support might end up picking the English version instead.
 
 By default, messages are assumed to be sent in English (`en`).
 
@@ -53,8 +65,9 @@ translation, bots with internationalization support, and possibly some bridges.
 The language code spec might not encompass all of the possible language code combinations, but should cover
 plenty given its popularity in HTML.
 
-This does not apply to `m.text` or `m.html`, necessitating the use of the longer form `m.message` when sending
-translated messages.
+If a sending client supports several languages, receiving clients could spend extra time attempting to find
+a suitable representation to render. This is considered a non-issue, though clients should consider how to
+efficiently search an array.
 
 ## Alternatives
 
@@ -66,5 +79,7 @@ No specific considerations are required for this proposal.
 
 ## Unstable prefix
 
-This MSC does not introduce anything which should conflict with stable usage. Implementations are encouraged
-to review [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)'s unstable prefixing approach.
+While this MSC is not considered stable, implementations should use `org.matrix.msc3554.lang` instead of `lang`
+when sending events.
+
+Note that extensible events should only be used in an appropriate room version as well.
