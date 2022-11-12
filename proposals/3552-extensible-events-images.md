@@ -1,7 +1,7 @@
 # MSC3552: Extensible Events - Images and Stickers
 
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) describes Extensible Events in detail,
-though deliberately does not include schemas for non-text messaging types. This MSC covers only images
+though deliberately does not include schemas for some messaging types. This MSC covers only images
 and stickers.
 
 *Rationale*: Splitting the MSCs down into individual parts makes it easier to implement and review in
@@ -12,11 +12,9 @@ This MSC additionally relies upon [MSC3551](https://github.com/matrix-org/matrix
 
 ## Proposal
 
-Using [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)'s system, two new primary event types
-are introduced to describe their related functionality: `m.image` and `m.sticker`.
-
-`m.image` is simply an image upload, akin to the now-legacy
-[`m.image` `msgtype` from `m.room.message`](https://spec.matrix.org/v1.1/client-server-api/#mimage).
+Using [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)'s system, a new event type
+is introduced to describe applicable functionality: `m.image`. This event type is simply an image
+upload, akin to the now-legacy [`m.image` `msgtype` from `m.room.message`](https://spec.matrix.org/v1.1/client-server-api/#mimage).
 
 An example is:
 
@@ -24,98 +22,108 @@ An example is:
 {
   "type": "m.image",
   "content": {
-    "m.text": "Upload: matrix.png (12 KB)", // or other m.message-like event
+    "m.markup": [
+      // Format of the fallback is not defined, but should have enough information for a text-only
+      // client to do something with the image, just like with plain file uploads.
+      {"body": "matrix.png (12 KB) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
+    ],
     "m.file": {
       "url": "mxc://example.org/abcd1234",
       "name": "matrix.png",
       "mimetype": "image/png",
       "size": 12345
     },
-    "m.image": {
-        "width": 640,
-        "height": 480
+    "m.image_details": { // optional
+      "width": 640,
+      "height": 480
     },
-    "m.thumbnail": [
-        {
-            // an inline m.file, minus `name`
-            "url": "mxc://example.org/efgh5678",
-            "mimetype": "image/jpeg",
-            "size": 123,
+    "m.thumbnail": [ // optional
+      {
+        // A thumbnail is an m.file+m.image, or a small image
+        "m.file": {
+          "url": "mxc://exmaple.org/efgh5678",
+          "mimetype": "image/jpeg",
+          "size": 123
 
-            // an inline m.image
-            "width": 160,
-            "height": 120
+          // "name" is optional on a file and not relevant here.
         },
-        // ...
+        "m.image_details": {
+          "width": 160,
+          "height": 120
+        }
+      },
+      // ...
     ],
-    "m.caption": [
-        // array of m.message objects
-        { "m.text": "matrix logo" },
-        { "body": "<b>matrix</b> logo", "mimetype": "text/html" }
-    ]
+    "m.caption": { // optional - goes above/below image
+      "m.markup": [{"body": "Look at this cool Matrix logo"}]
+    },
+    "m.alt_text": { // optional - accessibility consideration for image
+      "m.markup": [{"body": "matrix logo"}]
+    }
   }
 }
 ```
 
-Under the extensible events format, the `m.thumbnail` and `m.caption` arrays are ordered by most preferred
-first. Any number of captions and thumbnails can be provided, however it's expected that most cases will
-always have at most 1 or 2 representations.
+With consideration for extensible events, the following content blocks are defined:
 
-Note that `m.thumbnail` and `m.caption` must always be an array, even if containing a single element. This
-is to make parsing easier/more predictable on the client side.
+* `m.image_details` - Currently records width and height (both required), but in future could
+  additionally supply other image details such as colour space.
+* `m.thumbnail` - An array of (usually) smaller images the client can use to show in place of
+  the event's image for bandwidth or size considerations. Currently requires two other content
+  blocks nested under it: `m.file` and `m.image_details`.
+  * Clients should find the thumbnail most suitable for them - the array is not ordered, but
+    encouraged to have smaller images (by byte size) first.
+  * Multiple thumbnail formats may be supplied (webp, webm, jpeg, etc) with the same dimensions.
+    Clients should ensure they are capable of rendering the type before picking that thumbnail.
+  * `m.file`'s `mimetype` is a required field in this block.
+* `m.caption` - A message to place above or below the rendered content (in this case, an image).
+  Currently requires an `m.markup` content block to be nested within it.
+* `m.alt_text` - Alternative text for the content, for accessibility considerations. Currently
+  requires an `m.markup` content block to be nested within it, however senders should only
+  specify a plain text body for ease of parsing.
+  * *Note*: We use the full capability of `m.markup` here not for mimetype, but future support
+    for translations and other text-based extensions.
 
-The remainder of the fallback deliberately uses [MSC3551](https://github.com/matrix-org/matrix-doc/pull/3551)
-and its inherited behaviour for textual fallback to represent the image upload.
+Together with content blocks from other proposals, an `m.image` is described as:
 
-Stickers are modified to match the `m.image` schema above, replacing the current primary type for
-[`m.sticker`](https://spec.matrix.org/v1.1/client-server-api/#msticker):
+* **Required** - An `m.markup` block to act as a fallback for clients which can't process images.
+* **Required** - An `m.file` block to contain the image itself. Clients use this to show the image.
+* **Optional** - An `m.image_details` block to describe any image-specific metadata, such as dimensions.
+  Like with existing `m.room.message` events today, clients should keep images within a set of
+  reasonable bounds, regardless of sender-supplied values. For example, keeping images at a minimum
+  size and within a maximum size.
+* **Optional** - An `m.thumbnail` block (array) to describe any thumbnails for the image.
+* **Optional** - An `m.caption` block to represent any text that should be shown above or below the
+  image. Currently this MSC does not describe a way to pick whether the text goes above or below,
+  leaving this as an implementation detail. A future MSC may investigate ways of representing this,
+  if needed.
+* **Optional** - An `m.alt_text` block to represent alternative/descriptive text for the image. This
+  is used as an accessibility feature, and per the block's definition above should only contain a plain
+  text representation at the moment. Clients are encouraged to assume there is no alt text if no plain
+  text representations are present. For clarity, this value would be supplied to the `alt` attribute
+  of an `img` node in HTML.
 
-```json5
-{
-  "type": "m.sticker",
-  "content": {
-    "m.text": "Happyface", // or other m.message-like event
-    "m.file": {
-      "url": "mxc://example.org/abcd1234",
-      "name": "happy_sticker.png",
-      "mimetype": "image/png",
-      "size": 12345
-    },
-    "m.image": {
-        "width": 640,
-        "height": 480
-    },
-    "m.thumbnail": [
-        {
-            // an inline m.file, minus `name`
-            "url": "mxc://example.org/efgh5678",
-            "mimetype": "image/jpeg",
-            "size": 123,
+The above describes the minimum requirements for sending an `m.image` event. Senders can add additional
+blocks, however as per the extensible events system, receivers should not honour them.
 
-            // an inline m.image
-            "width": 160,
-            "height": 120
-        },
-        // ...
-    ],
-    "m.caption": [
-        // array of m.message objects
-        { "m.text": "Happyface" }
-    ]
-  }
-}
-```
+To represent stickers, we instead use a mixin on `m.image_details`. A new (optional) boolean field
+called `m.sticker` is added if the client is intended to render the image as a sticker. When rendering
+as a sticker, the `m.caption` can be shown as a tooltip (or similar) rather than inline with the image
+itself. `m.sticker` defaults to `false`.
 
-Note that there is no `m.sticker` event in the content: this is because the primary type accurately
-describes the event and no further metadata is needed. In future, if the specification requires
-sticker-specific metadata to be added (like which pack it came from), this would likely appear under
-an `m.sticker` object in the event content.
+The [`m.sticker` event type](https://spec.matrix.org/v1.1/client-server-api/#msticker) is deprecated
+and removed, like `m.room.message` in MSC1767.
 
-Note that stickers, images, and thumbnails can all be encrypted using the same approach as `m.file`.
+Note that `m.file` supports encryption and therefore it's possible to encrypt thumbnails and images
+too.
+
+If a client does not support rendering images inline, the client would instead typically represent
+the event as a plain file upload, then fall further back to a plain text message.
 
 ## Potential issues
 
-The schema duplicates some of the information into the text fallback, though this is unavoidable.
+The schema duplicates some of the information into the text fallback, though this is unavoidable
+and intentional for fallback considerations.
 
 ## Alternatives
 
@@ -124,69 +132,8 @@ No significant alternatives known.
 ## Security considerations
 
 The same considerations which currently apply to files, images, stickers and extensible events also
-apply here.
-
-## Transition
-
-The same transition introduced by extensible events is also applied here:
-
-```json5
-{
-  "type": "m.room.message",
-  "content": {
-    "body": "image.png",
-    "msgtype": "m.image",
-    "url": "mxc://example.org/9af6bae1ae9cacc93058ae386028c52f28e41d35",
-    "info": {
-      "mimetype": "image/png",
-      "size": 2386,
-      "w": 301,
-      "h": 287,
-      "thumbnail_url": "mxc://example.org/elsewhere",
-      "thumbnail_info": {
-          "size": 238,
-          "mimetype": "image/jpeg",
-          "w": 30,
-          "h": 28
-      }
-    },
-
-    // Extensible Events
-    "m.text": "image.png", // or other m.message-like event
-    "m.file": {
-      "url": "mxc://example.org/9af6bae1ae9cacc93058ae386028c52f28e41d35",
-      "name": "image.png",
-      "mimetype": "image/png",
-      "size": 2386
-    },
-    "m.image": {
-        "width": 301,
-        "height": 287
-    },
-    "m.thumbnail": [
-        {
-            "url": "mxc://example.org/elsewhere",
-            "mimetype": "image/jpeg",
-            "size": 238,
-            "width": 30,
-            "height": 28
-        },
-        // ...
-    ],
-    "m.caption": [
-        // array of m.message objects
-        { "m.text": "Screenshot of something cool" }
-    ]
-  }
-}
-```
-
-The event details are copied and quite verbose, however this is best to ensure compatibility with the
-extensible events format.
-
-For stickers, the same transition plan as `m.room.message` is taken into effect, though with the legacy
-schema being deprecated rather than the whole event type. Similarly, the idea is to smash the two schemas
-together much like images above.
+apply here. For example, bounds on image size, assuming sender-provided details about the file are
+false, etc.
 
 ## Unstable prefix
 
@@ -194,39 +141,4 @@ While this MSC is not considered stable, implementations should use `org.matrix.
 place of `m.*` throughout this proposal. Note that this uses the namespace of the parent MSC rather than
 the namespace of this MSC - this is deliberate.
 
-Example:
-```json5
-{
-  "type": "org.matrix.msc1767.image",
-  "content": {
-    "org.matrix.msc1767.text": "Happyface", // or other m.message-like event
-    "org.matrix.msc1767.file": {
-      "url": "mxc://example.org/abcd1234",
-      "name": "happy_sticker.png",
-      "mimetype": "image/png",
-      "size": 12345
-    },
-    "org.matrix.msc1767.image": {
-        "width": 640,
-        "height": 480
-    },
-    "org.matrix.msc1767.thumbnail": [
-        {
-            // an inline m.file, minus `name`
-            "url": "mxc://example.org/efgh5678",
-            "mimetype": "image/jpeg",
-            "size": 123,
-
-            // an inline m.image
-            "width": 160,
-            "height": 120
-        },
-        // ...
-    ],
-    "org.matrix.msc1767.caption": [
-        // array of m.message objects
-        { "org.matrix.msc1767.text": "Happyface" }
-    ]
-  }
-}
-```
+Note that extensible events should only be used in an appropriate room version as well.
