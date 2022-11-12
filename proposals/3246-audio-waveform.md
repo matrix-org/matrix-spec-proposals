@@ -1,36 +1,41 @@
 # MSC3246: Audio waveforms (extensible events)
 
-This is largely a placeholder MSC to describe how audio waveforms/events could work in an extensible
-events world.
+Some audio events might wish to have a waveform to represent a "thumbnail" of the audio clip the user
+is about to receive. Most applicable to voice messages (like [MSC3245](https://github.com/matrix-org/matrix-doc/pull/3245)),
+this proposal introduces a definition for the waveform in a larger [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)
+(Extensible Events) context.
 
-Proposals like [MSC3245 - Voice messages using extensible events](https://github.com/matrix-org/matrix-doc/pull/3245)
-would make best use of this.
+This MSC additionally relies upon [MSC0001](https://github.com/matrix-org/matrix-doc/pull/0001).
 
 ## Proposal
 
-A `waveform` property is added to the `m.audio` event definition as an array of numbers to denote
-amplitudes for the audio file. The array should have no less than 30 elements and no more than 120.
-Clients might have to resample for their use case, and are encouraged to only use the information
-as placeholder until the real waveform can be determined.
-
-Due to floats not being allowed in events, the waveform should be rescaled to a range of integers
-between zero and 1024, inclusive. This should allow for enough resolution to be maintained for
-preview purposes. Values larger/smaller than those should be clamped.
-
-The waveform is optional.
+Under the `m.audio_details` content block, a new optional field named `waveform` is added. It is
+an array of (non-floating) numbers to represent the amplitude of the audio over time. Because
+floating point numbers are not allowed in Matrix events, integers should be between 0 and 1024,
+inclusive. Though there is no limit to the number of entries in the array, senders should aim to
+have at least 30 and not more than 120.
 
 ## Potential issues
 
-TBD
+This extension can be difficult to rationalize outside the context of voice messages, potentially
+making it unused by clients at render-time, or not populated due to effort by senders. MSCs which
+need or want this functionality are encouraged to put hard blockers on this proposal.
 
 ## Alternatives
 
-TBD
+No applicable alternatives.
 
 ## Security considerations
 
-TBD
+Senders can specify too many or too few elements in the waveform, or the waveform could be a false
+representation of the audio - receiving clients are encouraged to adjust the array size to fit their
+purposes (downsample/upsample), and to not trust that the waveform is accurate. Once the audio file
+has been downloaded, the client should generate its own waveform to replace the "thumbnail".
 
 ## Unstable prefix
 
-TBD (not currently needed)
+While this MSC is not considered stable, implementations should use `org.matrix.msc3246.waveform`
+instead of `waveform` when sending events.
+
+Note that extensible events should only be used in an appropriate room version as well.
+
