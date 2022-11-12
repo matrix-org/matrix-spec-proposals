@@ -44,6 +44,9 @@ An example is:
       },
       "v": "v2"
     },
+    "m.caption": { // optional - goes above/below file
+      "m.markup": [{"body": "Look at this cool Matrix document"}]
+    },
   }
 }
 ```
@@ -66,10 +69,19 @@ If the file is encrypted, the following fields additionally apply. All fields ar
 This structure covers the existing [`m.file`](https://spec.matrix.org/v1.1/client-server-api/#mfile)
 `msgtype` (minus the spurious thumbnail schema).
 
+Additionally, the following content blocks are defined:
+
+* `m.caption` - A message to place above or below the rendered content (in this case, a file).
+  Currently requires an `m.markup` content block to be nested within it.
+
 Together with content blocks from other proposals, an `m.file` is described as:
 
 * **Required** - An `m.markup` block to act as a fallback for clients which can't process files.
 * **Required** - An `m.file` to describe the actual file.
+* **Optional** - An `m.caption` block to represent any text that should be shown above or below the
+  file. Currently this MSC does not describe a way to pick whether the text goes above or below,
+  leaving this as an implementation detail. A future MSC may investigate ways of representing this,
+  if needed.
 
 The above describes the minimum requirements for sending an `m.file` event. Senders can add additional
 blocks, however as per the extensible events system, receivers which understand file events should not
