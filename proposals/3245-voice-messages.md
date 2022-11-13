@@ -9,7 +9,7 @@ More information about voice messages and what they can be used for can be found
 MSC inherits a lot of the beliefs and usecases of that MSC, but instead packages the event contents
 a bit differently. Specifically, this makes use of [MSC1767 - Extensible Events](https://github.com/matrix-org/matrix-doc/pull/1767).
 
-This MSC additionally relies upon [MSC0001](https://github.com/matrix-org/matrix-doc/pull/0001) and
+This MSC additionally relies upon [MSC3927](https://github.com/matrix-org/matrix-doc/pull/3927) and
 [MSC3551](https://github.com/matrix-org/matrix-doc/pull/3551).
 
 ## Proposal
