@@ -5,7 +5,7 @@ is about to receive. Most applicable to voice messages (like [MSC3245](https://g
 this proposal introduces a definition for the waveform in a larger [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)
 (Extensible Events) context.
 
-This MSC additionally relies upon [MSC0001](https://github.com/matrix-org/matrix-doc/pull/0001).
+This MSC additionally relies upon [MSC3927](https://github.com/matrix-org/matrix-doc/pull/3927).
 
 ## Proposal
 
