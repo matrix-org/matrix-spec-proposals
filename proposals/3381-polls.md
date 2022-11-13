@@ -11,47 +11,53 @@ MSC's approach is discussed at length in the alternatives section for why it is 
 
 ## Proposal
 
-Polls are to be handled completely client-side and encrypted when possible in a given room. They are
-simply started by sending an appropriate event, responded to with more events, and closed (eventually)
-by the sender. Servers have no added requirements in order to support this MSC: they simply need to
-be able to send arbitrary event types, which they already should be capable of.
+Polls are intended to be handled completely client-side and encrypted when possible in a given room.
+They are started by sending an event, responded to using events, and closed using more events - all
+without involving the server (beyond being the natural vessel for sending the events). Other MSCs
+related to polls might require changes from servers, however this MSC is intentionally scoped so that
+it does not need server-side involvement.
 
-The events in this MSC make heavy use of [MSC1767: Extensible Events](https://github.com/matrix-org/matrix-doc/pull/1767).
+The events in this MSC make use of the following functionality:
 
-A poll can be started by sending an `m.poll.start` room event, similar to the following:
+* [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) (extensible events & `m.markup`)
+* [Event relationships](https://spec.matrix.org/v1.4/client-server-api/#forming-relationships-between-events)
+* [Reference relations](https://github.com/matrix-org/matrix-spec/pull/1206) (**TODO:** Link to final spec)
+
+To start a poll, a user sends an `m.poll` event into the room. An example being:
 
 ```json5
 {
-  "type": "m.poll.start",
+  "type": "m.poll",
   "sender": "@alice:example.org",
   "content": {
-    "m.poll.start": {
-      "question": {
-        "m.text": "What should we order for the party?"
-      },
-      "kind": "m.poll.disclosed",
-      "max_selections": 1,
-      "answers": [
-        { "id": "pizza", "m.text": "Pizza 🍕" },
-        { "id": "poutine", "m.text": "Poutine 🍟" },
-        { "id": "italian", "m.text": "Italian 🍝" },
-        { "id": "wings", "m.text": "Wings 🔥" }
-      ]
-    },
-    "m.message": [
+    "m.markup": [
+      // Markup is used as a fallback for text-only clients which don't understand polls. Specific formatting is
+      // not specified, however something like the following is likely best.
       {
         "mimetype": "text/plain",
         "body": "What should we order for the party?\n1. Pizza 🍕\n2. Poutine 🍟\n3. Italian 🍝\n4. Wings 🔥"
-      },
-      {
-        "mimetype": "text/html",
-        "body": "<b>What should we order for the party?</b><ol><li>1. Pizza 🍕</li><li>2. Poutine 🍟</li><li>3. Italian 🍝</li><li>4. Wings 🔥</li></ol>"
       }
-    ]
-  },
-  // other fields that aren't relevant here
+    ],
+    "m.poll": {
+      "kind": "m.disclosed",
+      "max_selections": 1,
+      "question": {
+        "m.markup": [{"body": "What should we order for the party?"}]
+      },
+      "answers": [
+        {"m.id": "pizza", "m.markup": [{"body": "Pizza 🍕"}]},
+        {"m.id": "poutine", "m.markup": [{"body": "Poutine 🍟"}]},
+        {"m.id": "italian", "m.markup": [{"body": "Italian 🍝"}]},
+        {"m.id": "wings", "m.markup": [{"body": "Wings 🔥"}]},
+      ]
+    }
+  }
 }
 ```
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!! TODO: EDIT BEYOND THIS LINE                                                              !!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 As mentioned above, this is already making use of Extensible Events: The fallback for clients which don't
 know how to render polls is to just post the message to the chat. Some of the properties also make use of
