@@ -1,4 +1,4 @@
-# MSC3552: Extensible Events - Audio
+# MSC3927: Extensible Events - Audio
 
 [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) describes Extensible Events in detail,
 though deliberately does not include schemas for some messaging types. This MSC covers only audio.
