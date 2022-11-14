@@ -87,7 +87,7 @@ To clarify:
 ### Specific examples outside of the client-server API
 
 There are some instances where a change might be made outside of the client-server API,
-which is where much of this proposal is targetted. The general spirit of the process
+which is where much of this proposal is targeted. The general spirit of the process
 should be followed where possible, if implementations decide to work ahead of spec releases.
 
 #### Room versions

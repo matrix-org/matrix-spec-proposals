@@ -11,9 +11,11 @@ assignees: ''
 
 ### Pull Request Checklist
 
-<!-- Please read CONTRIBUTING.rst before submitting your pull request -->
+<!-- Please read CONTRIBUTING.md before submitting your pull request -->
 
-* [ ] Pull request includes a [changelog file](https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst#adding-to-the-changelog)
-* [ ] Pull request includes a [sign off](https://github.com/matrix-org/matrix-doc/blob/master/CONTRIBUTING.rst#sign-off)
-* [ ] Pull request includes ['Rendered' link](https://matrix.org/docs/spec/proposals#process) above.
-* [ ] Pull request title and file name include this PR's number as the MSC number.
+* [ ] Pull request includes a [sign off](https://github.com/matrix-org/matrix-spec-proposals/blob/master/CONTRIBUTING.md#sign-off)
+* [ ] Update the title and file name of your proposal to match this PR's number (after opening).
+* [ ] Pull request includes a ['Rendered' link](https://matrix.org/docs/spec/proposals#process) above.
+* [ ] Ask in
+      [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org) to
+      get feedback on this PR.
