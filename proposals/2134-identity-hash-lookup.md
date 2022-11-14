@@ -107,7 +107,7 @@ GET /_matrix/identity/v2/hash_details
 The name `lookup_pepper` was chosen in order to account for pepper values
 being returned for other endpoints in the future. The contents of
 `lookup_pepper` MUST match the regular expression `[a-zA-Z0-9]+`, whether
-hashing is being performed or not. When no hashing is occuring, a valid
+hashing is being performed or not. When no hashing is occurring, a valid
 pepper value of at least length 1 is still required.
 
 If hashing, the client appends the pepper to the end of the 3PID string,

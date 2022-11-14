@@ -95,3 +95,9 @@ happen:
 In short, I consider it important for the elegance of the Matrix protocol that
 we do not add unnecessary properties to the list of those to be preserved by
 redaction.
+
+## Unstable prefix
+
+Implementations should use `org.matrix.msc2176` for the room version containing
+this change until assigned to a specified room version. That room version should
+use room version 6 as a base.

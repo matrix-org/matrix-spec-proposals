@@ -11,7 +11,7 @@ Managers.
 Requirements for this proposal are:
  * ISes and IMs should be able to give multiple documents a user must agree to
    abide by
- * Each document shoud be versioned
+ * Each document should be versioned
  * ISes and IMs must, for each request that they handle, know that the user
    making the request has agreed to their data being used. This need not be
    absolute proof (we will always have to trust that the client actually

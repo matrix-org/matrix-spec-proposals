@@ -5,7 +5,7 @@ for a favicon-like experience. This proposal introduces such a concept.
 
 ## Proposal
 
-A new optional paramater named `avatar_url` is added to the widget definition. This parameter is
+A new optional parameter named `avatar_url` is added to the widget definition. This parameter is
 an MXC URI to an image clients can use to associate with the widget, likely alongside the `name`
 and/or `title`.
 
