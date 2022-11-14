@@ -90,7 +90,7 @@ too.
 
 If a client does not support rendering videos inline, the client would instead typically represent
 the event as a plain file upload, then fall further back to a plain text message. An image fallback
-is not neccessarily possible, despite all the required blocks being possible. This is due to the file
+is not necessarily possible, despite all the required blocks being possible. This is due to the file
 having a video mimetype, hopefully indicating to the client that an `<img />` (or similar) is not
 appropriate for this event.
 
