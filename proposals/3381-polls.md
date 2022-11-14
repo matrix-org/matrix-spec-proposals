@@ -21,13 +21,13 @@ The events in this MSC make use of the following functionality:
 
 * [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) (extensible events & `m.markup`)
 * [Event relationships](https://spec.matrix.org/v1.4/client-server-api/#forming-relationships-between-events)
-* [Reference relations](https://github.com/matrix-org/matrix-spec/pull/1206) (**TODO:** Link to final spec)
+* [Reference relations](https://github.com/matrix-org/matrix-spec/pull/1206) (**TODO:** Link to final spec here & below)
 
-To start a poll, a user sends an `m.poll` event into the room. An example being:
+To start a poll, a user sends an `m.poll.start` event into the room. An example being:
 
 ```json5
 {
-  "type": "m.poll",
+  "type": "m.poll.start",
   "sender": "@alice:example.org",
   "content": {
     "m.markup": [
@@ -55,136 +55,133 @@ To start a poll, a user sends an `m.poll` event into the room. An example being:
 }
 ```
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!!!! TODO: EDIT BEYOND THIS LINE                                                              !!!!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+With consideration for extensible events, a new `m.poll` content block is defined:
 
-As mentioned above, this is already making use of Extensible Events: The fallback for clients which don't
-know how to render polls is to just post the message to the chat. Some of the properties also make use of
-extensible events within them, such as the `question` and the elements of `answers`: these are essentially
-nested events themselves. For example, the following can represent the same `question`:
+* `kind` - An optional namespaced string to represent a poll's general approach. Currently specified
+  values being `m.disclosed` and `m.undisclosed`. Clients which don't understand the `kind` should
+  assume `m.undisclosed` for maximum compatibility. The definitions for these values are specified
+  later in this proposal.
+* `max_selections` - An optional integer to represent how many answers the user is allowed to select
+  from the poll. Must be greater than or equal to `1`, and defaults to `1`.
+* `question` - A required object to represent the question being posed by the poll. Takes an `m.markup`
+  content block within. More blocks might be added in the future. Clients should treat this similar
+  to how they would an `m.message` event.
+* `answers` - Array of options users can select. Each entry is an object with an `m.markup` content
+  block, similar to `question`, and an opaque string field `m.id` for use in response events. More
+  blocks might be added in the future. Clients should treat each entry similar to how they would an
+  `m.message` event. The array is truncated to 20 maximum options.
 
-```json
-{
-  "question": {
-    "m.text": "How are you?"
-  }
-}
-```
-```json5
-{
-  "question": {
-    // a plaintext format is always required
-    "m.text": "How are you?",
-    "m.html": "<b>How are you?</b>"
-  }
-}
-```
-```json5
-{
-  "question": {
-    "m.message": [
-      // a plaintext format is always required
-      {"body": "How are you?", "mimetype": "text/plain"},
-      {"body": "<b>How are you?</b>", "mimetype": "text/html"},
-    ]
-  }
-}
-```
+Together with content blocks from other proposals, an `m.poll.start` is described as:
 
-The `kind` refers to whether the poll's votes are disclosed while the poll is still open. `m.poll.undisclosed`
-means the results are revealed once the poll is closed. `m.poll.disclosed` is the opposite: the votes are
-visible up until and including when the poll is closed. Custom values are permitted using the standardized
-naming convention are supported. Unknown values are to be treated as `m.poll.undisclosed` for maximum
-compatibility with theoretical values. More specific detail as to the difference between two polls come up
-later in this MSC.
+* **Required** - An `m.markup` block to act as a fallback for clients which can't process polls.
+* **Required** - An `m.poll` block to describe the poll itself. Clients use this to show the poll.
 
-`answers` must be an array with at least 1 option and are truncated to 20 options. Polls with fewer than 1
-option should not rendered, and only the first 20 options are considered for rendering. Most polls are
-expected to have 2-8 options. The answer `id` is an arbitrary string used within the poll events. Clients
-should not attempt to parse or understand the `id`.
+The above describes the minimum requirements for sending an `m.poll.start` event. Senders can add additional
+blocks, however as per the extensible events system, receivers which understand poll events should not
+honour them.
 
-`max_selections` is optional and denotes the maximum number of responses a user is able to select. Users
-can select fewer options, but not more. This defaults to `1`. Cannot be less than 1.
+If a client does not support rendering polls inline, the client would instead typically represent
+the event as a plain text message. This would allow users of such clients to participate in the poll,
+even if they can not vote properly on it (ie: by using text messages or reactions).
 
-The `m.message` fallback should be representative of the poll, but is not required and has no mandatory
-format. Clients are encouraged to be inspired by the example above when sending poll events.
-
-To respond to a poll, the following event is sent:
+To respond or vote in a poll, a user sends an `m.poll.response` event into the room. An example being:
 
 ```json5
 {
   "type": "m.poll.response",
   "sender": "@bob:example.org",
   "content": {
-    "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
-      "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
-      "event_id": "$poll"
+    // Reference relationship formed per spec
+    // https://github.com/matrix-org/matrix-spec/pull/1206
+    // TODO: Link to reference relationship spec
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$poll_start_event_id"
     },
-    "m.poll.response": {
-      "answers": ["poutine"]
-    }
-  },
-  // other fields that aren't relevant here
+    "m.selections": ["poutine"]
+  }
 }
 ```
 
-Like `m.poll.start`, this `m.poll.response` event supports Extensible Events. However, it is strongly discouraged
-for clients to include renderable types like `m.text` and `m.message` which could impact the usability of
-the room (particularly for large rooms with lots of responses).
+With consideration for extensible events, a new `m.selections` content block is defined:
 
-The response event forms a reference relationship with the poll start event. This kind of relationship doesn't
-easily allow for server-side aggregation, however the alternatives section goes into detail as to why this
-isn't a requirement for Polls.
+* An array of string identifiers to denote a user's selection. Can be empty to denote "no selection".
+  Identifiers are determined by the surrounding event type context, if available.
 
-Only a user's latest response event (by `origin_server_ts`) will be considered by clients. If that response
-is after the poll has closed, the user is considered to have not voted. Votes are accepted until the poll
-is closed (according to the `origin_server_ts` on the end/closure event).
+Together with content blocks from other proposals, an `m.poll.response` is described as:
 
-The `answers` array in the response is the user's selection(s) for the poll. The array length is truncated
-to `max_selections` length during processing. The entries are the `id` of each answer from the original poll
-start event. If *any* of the supplied answers is unknown, or the field is otherwise invalid, then the user's
-vote is spoiled. Spoiled votes are also how users can "un-vote" from a poll - redacting, or setting `answers`
-to an empty array, will spoil that user's vote.
+* **Required** - An `m.relates_to` block to form a reference relationship to the poll start event.
+* **Required** - An `m.selections` block to list the user's preferred selections in the poll. Clients
+  must truncate this array to `max_selections` during processing. Each entry is the `m.id` of a poll
+  answer option from the poll start event. If *any* of the supplied answers is unknown, the sender's
+  vote is spoiled (as if they didn't make a selection).
 
-Votes are accepted until the poll is closed according to timestamp: servers/clients which receive votes
-which are timestamped before the close event's timestamp (or, when no close event has been sent) are valid.
-Late votes should be ignored. Early votes (from before the start event) are considered to be valid for the
-sake of handling clock drift as gracefully as possible.
+The above describes the minimum requirements for sending an `m.poll.response` event. Senders can add
+additional blocks, however as per the extensible events system, receivers which understand poll events
+should not honour them.
 
-Only the poll creator or anyone with a suitable power level for redactions can close the poll. The rationale
-for using the redaction power level is to help aid moderation efforts: while moderators can just redact the
-original poll and invalidate it entirely, they might prefer to just close it and leave it on the historical
-record.
+There is deliberately no textual or renderable fallback on poll responses: the intention is that clients
+which don't understand how to process these events will hide/ignore them.
 
-Closure events which are sent by users without appropriate permission are ignored. A poll is considered
-closed once the first valid closure event is received - repeated closures are ignored.
+Only a user's most recent vote (by `origin_server_ts`) is accepted, even if that event is invalid or
+redacted. Votes with timestamps after the poll has closed are ignored, as if they never happened.
 
-Closing a poll is done as follows:
+To close a poll, a user sends an `m.poll.end` event into the room. An example being:
 
 ```json5
 {
   "type": "m.poll.end",
-  "sender": "@bob:example.org",
+  "sender": "@alice:example.org",
   "content": {
+    // Reference relationship formed per spec
+    // https://github.com/matrix-org/matrix-spec/pull/1206
+    // TODO: Link to reference relationship spec
     "m.relates_to": {
-      "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
-      "event_id": "$poll"
+      "rel_type": "m.reference",
+      "event_id": "$poll_start_event_id"
     },
-    "m.poll.end": {},
-    "m.text": "The poll has ended. Top answer: Poutine 🍟"
   },
-  // other fields that aren't relevant here
+  "m.markup": [{
+    // Markup is used as a fallback for text-only clients which don't understand polls. Specific formatting is
+    // not specified, however something like the following is likely best.
+    "body": "The poll has closed. Top answer: Poutine 🍟"
+  }],
+  "m.poll.results": { // optional
+    "pizza": 5,
+    "poutine": 8,
+    "italian": 7,
+    "wings": 6
+  }
 }
 ```
 
-Once again, Extensible Events make an appearance here. There's nothing in particular metadata wise that
-needs to appear in the `m.poll.end` property of `content`, though it is included for future capability. The
-backup `m.text` representation is for fallback purposes and is completely optional with no strict format
-requirements: the example above is just that, an example of what a client *could* do. Clients should be
-careful to include a "top answer" in the end event as server lag might allow a few more responses to get
-through while the closure is sent. Votes sent on or before the end event's timestamp are valid votes - all
-others must be disregarded by clients.
+With consideration for extensible events, a new `m.poll.results` content block is defined:
+
+* A dictionary object keyed by answer ID (`m.id` from the poll start event) and value being the integer
+  number of votes for that option as seen by the sender's client. Note that these values might not be
+  accurate, however other clients can easily validate the counts by retrieving all relations from the
+  server.
+  * User IDs which voted for each option are deliberately not included for brevity: clients requiring
+    more information about the poll are required to gather the relations themselves.
+
+Together with content blocks from other proposals, an `m.poll.end` is described as:
+
+* **Required** - An `m.relates_to` block to form a reference relationship to the poll start event.
+* **Required** - An `m.markup` block to act as a fallback for clients which can't process polls.
+* **Optional** - An `m.poll.results` block to show the sender's perspective of the vote results.
+
+The above describes the minimum requirements for sending an `m.poll.end` event. Senders can add additional
+blocks, however as per the extensible events system, receivers which understand poll events should not
+honour them.
+
+If a client does not support rendering polls (generally speaking), the client would instead typically
+represent the poll start event as text (per above), and thus would likely do the same for the closure
+event, keeping users in the loop with what is going on.
+
+If a `m.poll.end` event is received from someone other than the poll creator or user with permission to
+redact other's messages in the room, the event must be ignored by clients due to being invalid. The
+redaction power level is chosen to support moderation: while moderators can just remove the poll from the
+timeline entirely, they may also wish to simply close it to keep context visible.
 
 **Rationale**: Although clock drift is possible, as is clock manipulation, it is not anticipated that
 polls will be closed while they are still receiving high traffic. There are some cases where clients might
@@ -195,10 +192,32 @@ poll was closed, but timestamped for when it was open, the server is violating a
 will be facing a ban from the room. This MSC does not propose a mitigation strategy beyond telling people
 not to ruin the fun. Also, don't use polls for things that are important.
 
-Clients should disable voting interactions with polls once they are closed. Events which claim to close
-the poll from senders other than the creator are to be treated as invalid and thus ignored.
+The `m.poll.end`'s `origin_server_ts` determines when the poll closes exactly: if no valid end event
+is received, the poll is still open. If the poll is closed, only votes sent on or before that timestamp
+are considered, even if those votes are from before the start event. This is to handle clock drift over
+federation as gracefully as possible.
 
-### Disclosed versus undisclosed polls
+Repeated end events are ignored - only the first (valid) closure event by `origin_server_ts` is counted.
+Clients should disable voting interactions with polls once they are closed.
+
+### Poll kinds
+
+This proposal defines an `m.poll` content block with a `kind` field accepting namespaced strings, with
+`m.disclosed` and `m.undisclosed` being mentioned (`m.undisclosed` being the default), however it does
+not describe what these values represent.
+
+In short, `m.disclosed` means the votes for poll are shown to users while the poll is still open. An
+`m.undisclosed` poll would only show results when the poll is closed.
+
+**Note**: because poll responses are sent into the room, non-compliant clients or curious users could
+tally up results regardless of the poll being explicitly disclosed or not. This proposal acknowledges
+the issue, but does not fix it.
+
+Custom poll kinds are possible using the [standardized namespace grammar](https://spec.matrix.org/v1.4/appendices/#common-namespaced-identifier-grammar),
+and clients which do not recognize the kind are to assume `m.undisclosed` for maximum compatibility
+with other poll kinds.
+
+#### Disclosed versus undisclosed polls
 
 Disclosed polls are most similar to what is seen on Twitch and often Twitter: members of the room are able
 to see the results and vote accordingly. Clients are welcome to hide the poll results until after the user
@@ -215,13 +234,12 @@ disclosing who voted for what in an undisclosed poll, though this MSC leaves tha
 
 ### Client implementation notes
 
-Clients should rely on [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) and
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) for handling limited ("gappy") syncs. The
-relations endpoint can give (paginated) information about which results have been selected and when the
-poll has closed, overriding any stale local state the client might have.
+Clients can rely on the [`/relations`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixclientv1roomsroomidrelationseventidreltype)
+API to find votes which might have been received during limited ("gappy") syncs, or whenever they become
+descynchronized and need to recalculate events.
 
-For clarity: clients using [MSC3523](https://github.com/matrix-org/matrix-doc/pull/3523) should use the
-time-based shape of the endpoint, not the event ID shape, in order to honour the poll rules.
+This MSC does not describe an aggregation approach for poll events, hence the need for the client to retrieve
+all referenced events rather than simply relying on bundles.
 
 ### Notifications
 
@@ -319,21 +337,6 @@ Limiting polls to client-side enforcement could be problematic if the MSC was in
 or provable votes, however as a chat feature this should reasonably be able to achieve user expectations.
 Bolt-on support for signing, verification, validity, etc can be accomplished as well in the future.
 
-The fallback support relies on clients already knowing about extensible events, which might not be
-the case. Bridges (as of writing) do not have support for extensible events, for example, which can
-mean that polls are lost in transit. This is perceived to be a similar amount of data loss when a Matrix
-user reacts to an IRC user's message: the IRC user has no idea what happened on Matrix. Bridges, and
-other clients, can trivially add message parsing support as described by extensible events to work
-around this. The recommendations of this MSC specifically avoid the vote spam from being bridged, but
-the start of poll and end of poll (results) would be bridged. There's an argument to be made for
-surrounding conversation context being enough to communicate the results without extensible events,
-though this is slightly less reliable.
-
-Though more important for Extensible Events, clients might get confused about what they should do
-with the `m.message` parts of the events. For absolute clarity: if a client has support for polls,
-it can outright ignore any irrelevant data from the events such as the message fallback or other
-representations that senders stick onto the event (like thumbnails, captions, attachments, etc).
-
 The push rules for this feature are complex and not ideal. The author believes that it solves a short
 term need while other MSCs work on improving the notifications system. Most importantly, the author
 believes future MSCs which aim to fix notifications for extensible events in general will be a more
@@ -348,7 +351,7 @@ based around `m.room.message` events, using `msgtype` to differentiate between t
 is an awful experience on clients which do not support polls properly, leaving an irritating amount of
 contextless messages in the timeline. Though not directly mentioned on that thread, polls also cannot be
 closed under that MSC which leads to people picking options hours or even days after the poll has "ended".
-This MSC instead proposed to only supply fallback on the start and end of a poll, leading to enough context
+This MSC instead proposes to only supply fallback on the start and end of a poll, leading to enough context
 for unsupporting clients without flooding the room with messages.
 
 Originally, MSC2192 was intended to propose polls as a sort of widget with access to timeline events
@@ -429,80 +432,18 @@ to solve:
 ## Other notes
 
 If a client/user wishes to make a poll statically visible, they should check out
-[pinned messages](https://matrix.org/docs/spec/client_server/r0.6.1#m-room-pinned-events).
+[pinned messages](https://spec.matrix.org/v1.4/client-server-api/#mroompinned_events).
 
 ## Unstable prefix
 
-While this MSC is not eligible for stable usage, the `org.matrix.msc3381.` prefix can be used in place
-of `m.`. Note that extensible events has a different unstable prefix for those fields.
+While this MSC is not considered stable, implementations should use `org.matrix.msc3381.v2.*` as a prefix
+in place of `m.*` throughout this proposal. Note that extensible events and content blocks might have their
+own prefixing requirements.
 
-The 3 examples above can be rewritten as:
+Normally extensible events would only be permitted in a specific room version, however as a known-lossy chat
+feature, this proposal's events are permitted in any room version, provided they are of the unstable variety.
+The stable event types must only be sent in a room version which supports extensible events.
 
-```json5
-{
-  "type": "org.matrix.msc3381.poll.start",
-  "sender": "@alice:example.org",
-  "content": {
-    "org.matrix.msc3381.poll.start": {
-      "question": {
-        "org.matrix.msc1767.text": "What should we order for the party?"
-      },
-      "kind": "org.matrix.msc3381.poll.disclosed",
-      "answers": [
-        { "id": "pizza", "org.matrix.msc1767.text": "Pizza 🍕" },
-        { "id": "poutine", "org.matrix.msc1767.text": "Poutine 🍟" },
-        { "id": "italian", "org.matrix.msc1767.text": "Italian 🍝" },
-        { "id": "wings", "org.matrix.msc1767.text": "Wings 🔥" }
-      ]
-    },
-    "org.matrix.msc1767.message": [
-      {
-        "mimetype": "text/plain",
-        "body": "What should we order for the party?\n1. Pizza 🍕\n2. Poutine 🍟\n3. Italian 🍝\n4. Wings 🔥"
-      },
-      {
-        "mimetype": "text/html",
-        "body": "<b>What should we order for the party?</b><ol><li>1. Pizza 🍕</li><li>2. Poutine 🍟</li><li>3. Italian 🍝</li><li>4. Wings 🔥</li></ol>"
-      }
-    ]
-  },
-  // other fields that aren't relevant here
-}
-```
-
-```json5
-{
-  "type": "org.matrix.msc3381.poll.response",
-  "sender": "@bob:example.org",
-  "content": {
-    "m.relates_to": { // from MSC2674: https://github.com/matrix-org/matrix-doc/pull/2674
-      "rel_type": "m.reference", // from MSC3267: https://github.com/matrix-org/matrix-doc/pull/3267
-      "event_id": "$poll"
-    },
-    "org.matrix.msc3381.poll.response": {
-      "answers": ["poutine"]
-    }
-  },
-  // other fields that aren't relevant here
-}
-```
-
-```json5
-{
-  "type": "org.matrix.msc3381.poll.end",
-  "sender": "@bob:example.org",
-  "content": {
-    "m.relates_to": {
-      "rel_type": "m.reference",
-      "event_id": "$poll"
-    },
-    "org.matrix.msc3381.poll.end": {},
-    "org.matrix.msc1767.text": "The poll has ended. Top answer: Poutine 🍟"
-  },
-  // other fields that aren't relevant here
-}
-```
-
-Note that the extensible event fallbacks did not fall back to `m.room.message` in this MSC: this
-is deliberate to ensure polls are treated as first-class citizens. Client authors not willing/able
-to support polls are encouraged to instead support Extensible Events for better fallbacks.
+Client implementations should note that a previous draft of this proposal had a different format and some of
+those events might be found in the wild, hence the `v2` portion of the unstable prefix. Clients interested in
+this older format should review older drafts of this proposal.
