@@ -41,7 +41,7 @@ browsing the Client-Server API.
 
 {{% boxes/note %}}
 As of June 10th 2019, the Matrix specification is considered out of beta
--indicating that all currently released APIs are considered stable and
+- indicating that all currently released APIs are considered stable and
 secure to the best of our knowledge, and the spec should contain the
 complete information necessary to develop production-grade
 implementations of Matrix without the need for external reference.
@@ -328,7 +328,7 @@ Federation maintains *shared data structures* per-room between multiple
 homeservers. The data is split into `message events` and `state events`.
 
 Message events:
-These describe transient 'once-off' activity in a room such as an
+These describe transient 'one-off' activity in a room such as an
 instant messages, VoIP call setups, file transfers, etc. They generally
 describe communication activity.
 

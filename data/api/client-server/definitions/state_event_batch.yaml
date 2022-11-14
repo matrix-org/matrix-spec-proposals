@@ -26,3 +26,4 @@ properties:
       - state_key
     type: array
 type: object
+title: StateEventBatch

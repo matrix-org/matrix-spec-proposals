@@ -47,6 +47,7 @@ paths:
       parameters:
         - in: body
           name: body
+          required: true
           schema:
             type: object
             properties:
@@ -95,6 +96,7 @@ paths:
                       description: The display name of the user, if one exists.
                     avatar_url:
                       type: string
+                      format: uri
                       example: "mxc://bar.com/foo"
                       description: The avatar url, as an MXC, if one exists.
               limited:
@@ -105,4 +107,4 @@ paths:
           schema:
             "$ref": "definitions/errors/rate_limited.yaml"
       tags:
-        - User data
+        - User directory
