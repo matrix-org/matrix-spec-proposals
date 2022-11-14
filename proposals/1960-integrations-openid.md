@@ -22,7 +22,7 @@ the integration manager which might be running it.
 The protocol sequence defined here is based upon the previous discussion in the Element Web
 issue tracker: https://github.com/vector-im/element-web/issues/7153
 
-It is proposed that after the capabilities negotation, the widget can ask the client for
+It is proposed that after the capabilities negotiation, the widget can ask the client for
 an OpenID Connect credential object so it can pass it along to its backend for validation.
 The request SHOULD result in the user being prompted to confirm that the widget can have
 their information. Because of this user interaction, it's not always possible for the user
@@ -174,7 +174,7 @@ Prior to this proposal, widgets could use an undocumented `scalar_token` paramet
 send it to the widget. Clients typically chose to send it if the widget's URL matched a whitelist for URLs
 the client trusts. With the widget specification as written, widgets cannot rely on this behaviour.
 
-Widgets may wish to look into cookies and other storage techniques to avoid continously requesting
+Widgets may wish to look into cookies and other storage techniques to avoid continuously requesting
 credentials. Widgets should also look into [MSC1961](https://github.com/matrix-org/matrix-doc/pull/1961)
 for information on how to properly verify the OpenID Connect credentials it will be receiving. The
 widget is ultimately responsible for how it deals with the credentials, though the author recommends

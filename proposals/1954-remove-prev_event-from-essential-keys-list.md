@@ -73,5 +73,5 @@ precedent that the federation can deviate from the spec.
 
 ## Conclusions
 Removing ```prev_content``` is pragmatic response to the current situation. It
-alligns the federation and the spec, and does so in a way that removes
-unecessary overhead.
+aligns the federation and the spec, and does so in a way that removes
+unnecessary overhead.
