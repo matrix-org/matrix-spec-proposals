@@ -1,5 +1,5 @@
 
-# MSC0000: Polls push rules/notifications
+# MSC3930: Polls push rules/notifications
 
 [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/pull/3381) describes how chat polls can work,
 though deliberately leaves out details on how push rules or notifications could work for such a feature.
@@ -99,5 +99,5 @@ None applicable - no new considerations need to be made with this proposal.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use `org.matrix.msc0000.*` as a prefix
+While this MSC is not considered stable, implementations should use `org.matrix.msc3930.*` as a prefix
 in place of `m.*`.
