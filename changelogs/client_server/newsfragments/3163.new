@@ -1,0 +1,1 @@
+`/login/sso/redirect/{idpId}` has been added as per [MSC2858](https://github.com/matrix-org/matrix-doc/pull/2858).

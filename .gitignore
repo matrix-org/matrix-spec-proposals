@@ -1,5 +1,4 @@
 /api/node_modules
-/assets
 /assets.tar.gz
 /data/msc
 /env*
@@ -18,3 +17,4 @@
 _rendered.rst
 /.vscode/
 /.idea/
+/spec/

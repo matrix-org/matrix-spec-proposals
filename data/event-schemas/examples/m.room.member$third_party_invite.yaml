@@ -1,5 +1,5 @@
 {
-  "$ref": "m.room.member",
+  "$ref": "m.room.member.yaml",
   "content": {
     "membership": "invite",
     "avatar_url": "mxc://example.org/SEsfnsuifSDFSSEF",

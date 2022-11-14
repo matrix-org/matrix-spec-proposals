@@ -36,7 +36,7 @@ paths:
 
         This endpoint was deprecated in r0 of this specification. Clients
         should instead call the [`/sync`](/client-server-api/#get_matrixclientr0sync)
-        API with a `since` parameter. See
+        endpoint with a `since` parameter. See
         the [migration guide](https://matrix.org/docs/guides/migrating-from-client-server-api-v-1#deprecated-endpoints).
       operationId: getEvents
       security:
@@ -73,12 +73,12 @@ paths:
               start:
                 type: string
                 description: |-
-                  A token which correlates to the first value in `chunk`. This
+                  A token which correlates to the start of `chunk`. This
                   is usually the same token supplied to `from=`.
               end:
                 type: string
                 description: |-
-                  A token which correlates to the last value in `chunk`. This
+                  A token which correlates to the end of `chunk`. This
                   token should be used in the next request to `/events`.
               chunk:
                 type: array
@@ -102,7 +102,7 @@ paths:
 
         This endpoint was deprecated in r0 of this specification. Clients
         should instead call the [`/sync`](/client-server-api/#get_matrixclientr0sync)
-        API with no `since` parameter. See
+        endpoint with no `since` parameter. See
         the [migration guide](https://matrix.org/docs/guides/migrating-from-client-server-api-v-1#deprecated-endpoints).
       operationId: initialSync
       security:
@@ -199,8 +199,8 @@ paths:
               end:
                 type: string
                 description: |-
-                  A token which correlates to the last value in `chunk`. This
-                  token should be used with the `/events` API to listen for new
+                  A token which correlates to the end of the timelines returned. This
+                  token should be used with the `/events` endpoint to listen for new
                   events.
               presence:
                 type: array
@@ -237,13 +237,20 @@ paths:
                         start:
                           type: string
                           description: |-
-                            A token which correlates to the first value in `chunk`.
-                            Used for pagination.
+                            A token which correlates to the start of `chunk`.
+                            Can be passed to
+                            [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+                            to retrieve earlier events.
+
+                            If no earlier events are available, this property may be omitted from
+                            the response.
                         end:
                           type: string
                           description: |-
-                            A token which correlates to the last value in `chunk`.
-                            Used for pagination.
+                            A token which correlates to the end of `chunk`.
+                            Can be passed to
+                            [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+                            to retrieve later events.
                         chunk:
                           type: array
                           description: |-
@@ -257,7 +264,7 @@ paths:
                             title: RoomEvent
                             allOf:
                               - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
-                      required: ["start", "end", "chunk"]
+                      required: ["end", "chunk"]
                     state:
                       type: array
                       description: |-

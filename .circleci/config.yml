@@ -1,9 +1,3 @@
-genlegacydoc: &genlegacydoc
-  name: Generate the legacy docs
-  command: |
-    source /env/bin/activate
-    scripts/gendoc.py
-
 gendoc: &gendoc
   name: Generate the docs
   # Note: Node dependencies are required for the hugo build.
@@ -54,12 +48,6 @@ buildspeculator: &buildspeculator
     cd scripts/speculator
     go build -v
 
-buildcontinuserv: &buildcontinuserv
-  name: Build Continuserv
-  command: |
-    cd scripts/continuserv
-    go build -v
-
 version: 2
 jobs:
   validate-docs:
@@ -74,17 +62,6 @@ jobs:
     steps:
       - checkout
       - run: *checkexamples
-  build-legacy-docs:
-    docker:
-      - image: uhoreg/matrix-doc-build
-    steps:
-      - checkout
-      - run: *genlegacydoc
-      - store_artifacts:
-          path: scripts/gen
-      - run:
-          name: "Legacy doc build is available at:"
-          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/gen/index.html"; echo $DOCS_URL
   build-docs:
     docker:
       - image: alpine
@@ -121,8 +98,6 @@ jobs:
           name: Install Dependencies
           command: |
             go get -v github.com/hashicorp/golang-lru
-            go get -v gopkg.in/fsnotify/fsnotify.v1
-      - run: *buildcontinuserv
       - run: *buildspeculator
 
 workflows:
@@ -130,7 +105,6 @@ workflows:
 
   build-spec:
     jobs:
-      - build-legacy-docs
       - build-docs
       - build-swagger
       - check-docs

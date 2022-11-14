@@ -10,3 +10,4 @@ weight: 60
 * [Room Version 4](v4)
 * [Room Version 5](v5)
 * [Room Version 6](v6)
+* [Room Version 7](v7)

@@ -1,0 +1,1 @@
+Multiple SSO providers are possible through `m.login.sso` as per [MSC2858](https://github.com/matrix-org/matrix-doc/pull/2858).

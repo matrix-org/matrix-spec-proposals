@@ -199,7 +199,7 @@ contain this information:
   "aliases": [
     "#murrays:cheese.bar"
   ],
-  "avatar_url": "mxc://bleeker.street/CHEDDARandBRIE",
+  "avatar_url": "mxc://bleecker.street/CHEDDARandBRIE",
   "guest_can_join": false,
   "name": "CHEESE",
   "num_joined_members": 37,

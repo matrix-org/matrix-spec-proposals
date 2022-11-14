@@ -1,7 +1,0 @@
-{
-  "$ref": "core/room_edu.json",
-  "type": "m.typing",
-  "content": {
-    "user_ids": ["@alice:matrix.org", "@bob:example.com"]
-  }
-}

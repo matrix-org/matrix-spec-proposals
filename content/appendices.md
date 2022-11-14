@@ -47,6 +47,27 @@ When decoding Base64, implementations SHOULD accept input with or
 without padding characters wherever possible, to ensure maximum
 interoperability.
 
+## Binary data
+
+In some cases it is necessary to encapsulate binary data, for example,
+public keys or signatures. Given that JSON cannot safely represent raw
+binary data, all binary values should be encoded and represented in
+JSON as unpadded Base64 strings as described above.
+
+In cases where the Matrix specification refers to either opaque byte
+or opaque Base64 values, the value is considered to be opaque AFTER
+Base64 decoding, rather than the encoded representation itself.
+
+It is safe for a client or homeserver implementation to check for
+correctness of a Base64-encoded value at any point, and to altogether
+reject a value which is not encoded properly. However, this is optional
+and is considered to be an implementation detail.
+
+Special consideration is given for future protocol transformations,
+such as those which do not use JSON, where Base64 encoding may not be
+necessary in order to represent a binary value safely. In these cases,
+Base64 encoding of binary values may be skipped altogether.
+
 ## Signing JSON
 
 Various points in the Matrix specification require JSON objects to be
@@ -590,32 +611,6 @@ Event IDs and Room IDs are case-sensitive. They are not meant to be
 human-readable. They are intended to be treated as fully opaque strings
 by clients.
 
-#### Group Identifiers
-
-Groups within Matrix are uniquely identified by their group ID. The
-group ID is namespaced to the group server which hosts this group and
-has the form:
-
-    +localpart:domain
-
-The `localpart` of a group ID is an opaque identifier for that group. It
-MUST NOT be empty, and MUST contain only the characters `a-z`, `0-9`,
-`.`, `_`, `=`, `-`, and `/`.
-
-The `domain` of a group ID is the [server name](#server-name) of the
-group server which hosts this group.
-
-The length of a group ID, including the `+` sigil and the domain, MUST
-NOT exceed 255 characters.
-
-The complete grammar for a legal group ID is:
-
-    group_id = "+" group_id_localpart ":" server_name
-    group_id_localpart = 1*group_id_char
-    group_id_char = DIGIT
-                 / %x61-7A                   ; a-z
-                 / "-" / "." / "=" / "_" / "/"
-
 #### Room Aliases
 
 A room may have zero or more aliases. A room alias has the format:
@@ -674,7 +669,6 @@ Examples of matrix.to URIs are:
 -   Permalink by room alias:
     `https://matrix.to/#/%23somewhere:example.org/%24event%3Aexample.org`
 -   User: `https://matrix.to/#/%40alice%3Aexample.org`
--   Group: `https://matrix.to/#/%2Bexample%3Aexample.org`
 
 {{% boxes/note %}}
 Historically, clients have not produced URIs which are fully encoded.
@@ -688,6 +682,16 @@ Clients should be aware that decoding a matrix.to URI may result in
 extra slashes appearing due to some [room
 versions](/#room-versions). These slashes should normally be
 encoded when producing matrix.to URIs, however.
+{{% /boxes/note %}}
+
+{{% boxes/note %}}
+<!-- TODO: @@TravisR: Make "Spaces" a link when that specification exists -->
+In prior versions of this specification, a concept of "groups" were mentioned
+to organize rooms. This functionality did not properly get introduced into
+the specification and is subsequently replaced with "Spaces". Historical
+matrix.to URIs pointing to groups might still exist: they take the form
+`https://matrix.to/#/%2Bexample%3Aexample.org` (where the `+` sigil may or
+may not be encoded).
 {{% /boxes/note %}}
 
 ##### Routing
@@ -771,6 +775,13 @@ Medium: `email`
 Represents E-Mail addresses. The `address` is the raw email address in
 `user@domain` form with the domain in lowercase. It must not contain
 other text such as real name, angle brackets or a mailto: prefix.
+
+In addition to lowercasing the domain component of an email address,
+implementations are expected to apply the unicode case-folding algorithm
+as described under "Caseless Matching" in
+[chapter 5 of the unicode standard](https://www.unicode.org/versions/Unicode13.0.0/ch05.pdf#G21790).
+For example, `Strauß@Example.com` must be considered to be `strauss@example.com`
+while processing the email address.
 
 ### PSTN Phone numbers
 
@@ -1049,3 +1060,48 @@ The event signing algorithm should emit the following signed event:
     }
 }
 ```
+
+## Conventions for Matrix APIs
+
+This section is intended primarily to guide API designers when adding to Matrix,
+setting guidelines to follow for how those APIs should work. This is important to
+maintain consistency with the Matrix protocol, and thus improve developer
+experience.
+
+### HTTP endpoint and JSON property naming
+
+The names of the API endpoints for the HTTP transport follow a convention of
+using underscores to separate words (for example `/delete_devices`).
+
+The key names in JSON objects passed over the API also follow this convention.
+
+{{% boxes/note %}}
+There are a few historical exceptions to this rule, such as `/createRoom`.
+These inconsistencies may be addressed in future versions of this specification.
+{{% /boxes/note %}}
+
+### Pagination
+
+REST API endpoints which can return multiple "pages" of results should adopt the
+following conventions.
+
+ * If more results are available, the endpoint should return a property named
+   `next_batch`. The value should be a string token which can be passed into
+   a subsequent call to the endpoint to retrieve the next page of results.
+
+   If no more results are available, this is indicated by *omitting* the
+   `next_batch` property from the results.
+
+ * The endpoint should accept a query-parameter named `from` which the client
+   is expected to set to the value of a previous `next_batch`.
+
+ * Some endpoints might support pagination in two directions (example:
+   `/messages`, which can be used to move forward or backwards in the timeline
+   from a known point). In this case, the endpoint should return a `prev_batch`
+   property which can be passed into `from` to receive the previous page of
+   results.
+
+   Avoid having a separate "direction" parameter, which is generally redundant:
+   the tokens returned by `next_batch` and `prev_batch` should contain enough
+   information for subsequent calls to the API to know which page of results
+   they should return.

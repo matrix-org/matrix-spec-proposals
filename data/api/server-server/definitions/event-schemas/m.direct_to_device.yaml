@@ -35,7 +35,7 @@ allOf:
           sender:
             type: string
             description: User ID of the sender.
-            example: "john@example.com"
+            example: "@john:example.com"
           type:
             type: string
             description: Event type for the message.
@@ -59,7 +59,7 @@ allOf:
                 title: Device Message Contents
                 properties: {}
             example: {
-              "alice@example.org": {
+              "@alice:example.org": {
                 "IWHQUZUIAH": {
                   "algorithm": "m.megolm.v1.aes-sha2",
                   "room_id": "!Cuyf34gef24t:localhost",

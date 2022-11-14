@@ -117,6 +117,11 @@ def check_example_dir(exampledir, schemadir):
             schemapath = examplepath.replace(exampledir, schemadir)
             if schemapath.find("$") >= 0:
                 schemapath = schemapath[:schemapath.find("$")]
+            # Automatically correct for file extension being stripped off
+            if not schemapath.endswith(".yaml"):
+                schemapath += ".yaml"
+            if not examplepath.endswith(".yaml"):
+                examplepath += ".yaml"
             try:
                 check_example_file(examplepath, schemapath)
             except Exception as e:
@@ -132,8 +137,8 @@ if __name__ == '__main__':
     script_directory = os.path.dirname(os.path.realpath(__file__))
 
     # Resolve the directories to check, relative to the script path
-    examples_directory = os.path.join(script_directory, "../event-schemas/examples")
-    schema_directory = os.path.join(script_directory, "../event-schemas/schema")
+    examples_directory = os.path.join(script_directory, "../data/event-schemas/examples")
+    schema_directory = os.path.join(script_directory, "../data/event-schemas/schema")
 
     try:
         check_example_dir(examples_directory, schema_directory)

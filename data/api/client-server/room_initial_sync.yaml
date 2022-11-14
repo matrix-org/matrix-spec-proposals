@@ -98,13 +98,18 @@ paths:
                   start:
                     type: string
                     description: |-
-                      A token which correlates to the first value in `chunk`.
-                      Used for pagination.
+                      A token which correlates to the start of `chunk`. Can be passed to
+                      [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+                      to retrieve earlier events.
+
+                      If no earlier events are available, this property may be omitted from
+                      the response.
                   end:
                     type: string
                     description: |-
-                      A token which correlates to the last value in `chunk`.
-                      Used for pagination.
+                      A token which correlates to the end of `chunk`. Can be passed to
+                      [`/rooms/<room_id>/messages`](#get_matrixclientr0roomsroomidmessages)
+                      to retrieve later events.
                   chunk:
                     type: array
                     description: |-
@@ -118,7 +123,7 @@ paths:
                       title: RoomEvent
                       allOf:
                         - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
-                required: ["start", "end", "chunk"]
+                required: ["end", "chunk"]
               state:
                 type: array
                 description: |-
