@@ -241,85 +241,6 @@ descynchronized and need to recalculate events.
 This MSC does not describe an aggregation approach for poll events, hence the need for the client to retrieve
 all referenced events rather than simply relying on bundles.
 
-### Notifications
-
-In order to have polls behave similar to message events, the following underride push rules are defined.
-Note that the push rules are mirrored from those available to `m.room.message` events.
-
-```json
-{
-  "rule_id": ".m.rule.poll_start_one_to_one",
-  "default": true,
-  "enabled": true,
-  "conditions": [
-    {"kind": "room_member_count", "is": "2"},
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.start"}
-  ],
-  "actions": [
-    "notify",
-    {"set_tweak": "sound", "value": "default"}
-  ]
-}
-```
-
-```json
-{
-  "rule_id": ".m.rule.poll_start",
-  "default": true,
-  "enabled": true,
-  "conditions": [
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.start"}
-  ],
-  "actions": [
-    "notify"
-  ]
-}
-```
-
-```json
-{
-  "rule_id": ".m.rule.poll_end_one_to_one",
-  "default": true,
-  "enabled": true,
-  "conditions": [
-    {"kind": "room_member_count", "is": "2"},
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.end"}
-  ],
-  "actions": [
-    "notify",
-    {"set_tweak": "sound", "value": "default"}
-  ]
-}
-```
-
-```json
-{
-  "rule_id": ".m.rule.poll_end",
-  "default": true,
-  "enabled": true,
-  "conditions": [
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.end"}
-  ],
-  "actions": [
-    "notify"
-  ]
-}
-```
-
-Servers should keep these rules in sync with the `m.room.message` rules they are based upon. For
-example, if the `m.room.message` rule gets muted in a room then the associated rules for polls would
-also get muted. Similarly, if either of the two poll rules were to be muted in a room then the other
-poll rule and the `m.room.message` rule would be muted as well.
-
-Clients are expected to not require any specific change in order to support these rules. Their user
-experience typically already considers an entry for "messages in the room", which is what a typical
-user would expect to control notifications caused by polls.
-
-The server-side syncing of the rules additionally means that clients won't have to manually add support
-for the new rules. Servers as part of implementation will update and incorporate the rules on behalf
-of the users and simply send them down `/sync` per normal - clients which parse the push rules manually
-shouldn't have to do anything as the rule will execute normally.
-
 ## Potential issues
 
 As mentioned, poll responses are sent to the room regardless of the kind of poll. For open polls this
@@ -336,11 +257,6 @@ from TravisR, Matthew, and Alice" before the user casts their own vote.
 Limiting polls to client-side enforcement could be problematic if the MSC was interested in reliable
 or provable votes, however as a chat feature this should reasonably be able to achieve user expectations.
 Bolt-on support for signing, verification, validity, etc can be accomplished as well in the future.
-
-The push rules for this feature are complex and not ideal. The author believes that it solves a short
-term need while other MSCs work on improving the notifications system. Most importantly, the author
-believes future MSCs which aim to fix notifications for extensible events in general will be a more
-preferred approach over this MSC's (hopefully) short-term solution.
 
 ## Alternatives
 
@@ -433,6 +349,8 @@ to solve:
 
 If a client/user wishes to make a poll statically visible, they should check out
 [pinned messages](https://spec.matrix.org/v1.4/client-server-api/#mroompinned_events).
+
+Notifications support for polls have been moved to [MSC3930](https://github.com/matrix-org/matrix-spec-proposals/pull/3930).
 
 ## Unstable prefix
 
