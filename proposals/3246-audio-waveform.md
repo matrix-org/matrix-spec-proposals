@@ -11,7 +11,7 @@ This MSC additionally relies upon [MSC3927](https://github.com/matrix-org/matrix
 
 Under the `m.audio_details` content block, a new optional field named `waveform` is added. It is
 an array of (non-floating) numbers to represent the amplitude of the audio over time. Because
-floating point numbers are not allowed in Matrix events, integers should be between 0 and 1024,
+floating point numbers are not allowed in Matrix events, integers should be between 0 and 256,
 inclusive. Though there is no limit to the number of entries in the array, senders should aim to
 have at least 30 and not more than 120.
 
@@ -39,3 +39,5 @@ instead of `waveform` when sending events.
 
 Note that extensible events should only be used in an appropriate room version as well.
 
+Implementations should note that this MSC previously had a range of 0-1024, inclusive. This was
+changed to 256.
