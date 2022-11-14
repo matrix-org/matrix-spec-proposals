@@ -1,5 +1,0 @@
-# When serving the documentation via CircleCI, we need to use '/path/index.html' URLs instead
-# of hugo's default of prettier '/path/' URLs. This is because CircleCI's artifacts webserver
-# does not resolve '/path/' to '/path/index.html' like webservers often do.
-# CircleCI discussion: https://discuss.circleci.com/t/circle-artifacts-com-not-using-index-html/320/3
-uglyURLs = true
