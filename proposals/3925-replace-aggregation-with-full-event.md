@@ -14,6 +14,18 @@ There are some issues with this requirement:
 * Servers cannot replace the original event content for encrypted events (because the
   replacement content is inside the encrypted body).
   See [matrix-spec#1299](https://github.com/matrix-org/matrix-spec/issues/1299).
+* Replacing the content can lead to inconsistent behavior on clients which don't
+  support replacing events.
+  Assume that we have this timeline on the server:
+    - `{"event_id": "E1", "content": {"body": "1"}}`
+    - `{"event_id": "E2", "content": {"body": "* 2", "m.new_content": {"body": "2"}}` // replaces `E1`
+
+  A `/sync` is done after `E2`. We will have this timeline on a client:
+    - `{"event_id": "E1", "content": {"body": "2"}}`
+    - `{"event_id": "E2", "content": {"body": "* 2"}`
+
+  Although `2` is a replaced body it does not have a `*`. This looks to the
+  user as if it is the original content of the event.
 
 
 ## Proposal
@@ -110,14 +122,8 @@ This is how the original event would look like after the replacement:
 * There could be clients which rely on the current behavior.
 * It will be harder for clients which do not support replacing events to get
   the current content of an event: currently they can just look at `content.body`.
-  However, this leads to a relatively inconsistent behavior:
-
-  Assume that we have an event A with the body `1`, which is first replaced by
-  the event A' with the new body `2` and then by the event A'' with the new body
-  `3`. A `/sync` is done right after A' and A''. Then the timeline
-  would look like this: `2` -> `*3` instead of `1` -> `*2` -> `*3`. Although `2`
-  is a replaced body, it does not have a `*`, which looks to the user as it has 
-  not been replaced.
+  However, there is an inconsistent behavior for clients that do not support 
+  replacing events (see above).
 
 ## Alternatives
 
