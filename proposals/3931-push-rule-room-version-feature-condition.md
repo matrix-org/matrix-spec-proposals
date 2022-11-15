@@ -13,7 +13,7 @@ in them.
 
 This proposal introduces "feature flags" in the context of a new push rule condition to better check
 what is possible in a given room version. An example implementation of this, for extensible events,
-is [MSC0001](https://github.com/matrix-org/matrix-spec-proposals/pull/0001).
+is [MSC3932](https://github.com/matrix-org/matrix-spec-proposals/pull/3932).
 
 ## Proposal
 
