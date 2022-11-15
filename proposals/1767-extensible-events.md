@@ -25,7 +25,7 @@ With text being the simplest form of representation for events today, this MSC a
 specifies a relatively basic text schema for room messages that can be reused in other
 events. Other building block types are specified by other MSCs:
 
-* [MSC3246 - Audio (non-voice)](https://github.com/matrix-org/matrix-doc/pull/3246)
+* [MSC3927 - Audio](https://github.com/matrix-org/matrix-doc/pull/3927)
 * [MSC3551 - Files](https://github.com/matrix-org/matrix-doc/pull/3551)
 * [MSC3552 - Images and Stickers](https://github.com/matrix-org/matrix-doc/pull/3552)
 * [MSC3553 - Videos](https://github.com/matrix-org/matrix-doc/pull/3553)
@@ -36,6 +36,8 @@ Some examples of new features/events using extensible events are:
 * [MSC3488 - Location data](https://github.com/matrix-org/matrix-doc/pull/3488)
 * [MSC3381 - Polls](https://github.com/matrix-org/matrix-doc/pull/3381)
 * [MSC3245 - Voice messages](https://github.com/matrix-org/matrix-doc/pull/3245)
+* [MSC2192 - Inline widgets](https://github.com/matrix-org/matrix-doc/pull/2192)
+* [MSC3765 - Rich text topics](https://github.com/matrix-org/matrix-doc/pull/3765)
 
 **Note**: Readers might find [Andy's blog](https://www.artificialworlds.net/blog/2022/03/08/comparison-of-matrix-events-before-and-after-extensible-events/)
 useful for understanding the problem space, however please be aware that it's
