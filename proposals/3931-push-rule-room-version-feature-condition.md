@@ -1,4 +1,4 @@
-# MSC0000: Push rule condition for room version features
+# MSC3931: Push rule condition for room version features
 
 Currently it is not possible to have per-room-version push rules, making it potentially difficult
 to roll out push rules which rely on events being in a specific room version. An example of this
@@ -83,5 +83,5 @@ No new considerations are relevant.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `org.matrix.msc0000.room_version_suppports`
+While this proposal is not considered stable, implementations should use `org.matrix.msc3931.room_version_suppports`
 as the `kind`.
