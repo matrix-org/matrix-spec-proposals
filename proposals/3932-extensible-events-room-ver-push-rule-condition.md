@@ -1,4 +1,4 @@
-# MSC0000: Extensible events room version push rule feature flag
+# MSC3932: Extensible events room version push rule feature flag
 
 As defined by [MSC3931](https://github.com/matrix-org/matrix-spec-proposals/pull/3931), push rules
 can be disabled or enabled based on what the room version itself supports feature-wise. This MSC
@@ -46,5 +46,5 @@ No new considerations apply.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use `org.matrix.msc0000.*` in place of
+While this MSC is not considered stable, implementations should use `org.matrix.msc3932.*` in place of
 `m.*` throughout this proposal.
