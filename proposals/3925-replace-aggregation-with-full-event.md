@@ -112,7 +112,7 @@ This is how the original event would look like after the replacement:
   the current content of an event: currently they can just look at `content.body`.
   However, this leads to a relatively inconsistent behavior:
 
-  Assuming that we have an event A with the body `1`, which is first replaced by
+  Assume that we have an event A with the body `1`, which is first replaced by
   the event A' with the new body `2` and then by the event A'' with the new body
   `3`. The sync has been done right after A' und A''. Then the timeline
   would look like this: `2` -> `*3` instead of `1` -> `*2` -> `*3`. Although `2`
