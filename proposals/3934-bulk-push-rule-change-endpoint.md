@@ -1,4 +1,4 @@
-# MSC0000: Bulk push rules change endpoint
+# MSC3934: Bulk push rules change endpoint
 
 Currently if a client wants to internally link several push rules to a single toggle they must coordinate
 calls to the server to enable/disable or change the actions of those rules. This can cause the client
@@ -70,5 +70,5 @@ No new considerations apply.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use `/_matrix/client/unstable/org.matrix.msc0000/pushrules_bulk/*`
+While this MSC is not considered stable, implementations should use `/_matrix/client/unstable/org.matrix.msc3934/pushrules_bulk/*`
 instead.
