@@ -83,5 +83,5 @@ No new considerations are relevant.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `org.matrix.msc3931.room_version_suppports`
+While this proposal is not considered stable, implementations should use `org.matrix.msc3931.room_version_supports`
 as the `kind`.
