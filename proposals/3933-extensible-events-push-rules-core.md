@@ -1,4 +1,4 @@
-# MSC0000: Core push rules for Extensible Events
+# MSC3933: Core push rules for Extensible Events
 
 [MSC1767](https://github.com/matrix-org/matrix-spec-proposals/pull/1767) covers a system for extending
 events with alternative representations for maximally compatible content in Matrix, however does not
@@ -242,5 +242,5 @@ similar instead.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `org.matrix.msc0000.*` in place
+While this proposal is not considered stable, implementations should use `org.matrix.msc3933.*` in place
 of `m.*`, noting that the event types themselves in the conditions might use a different unstable prefix.
