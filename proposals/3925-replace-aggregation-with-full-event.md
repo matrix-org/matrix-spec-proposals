@@ -108,7 +108,7 @@ This is how the original event would look like after the replacement:
 ## Potential issues
 
 * There could be clients which rely on the current behavior.
-* It will be harder for clients, which do not support replacing events to get
+* It will be harder for clients which do not support replacing events to get
   the current content of an event: currently they can just look at `content.body`.
   However, this leads to a relatively inconsistent behavior:
 
