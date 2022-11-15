@@ -237,7 +237,7 @@ No new security considerations as this simply takes existing rules and splits th
 events. However, server implementations may wish to relax rate limits on some push rule endpoints, like
 [`PUT /enabled`](https://spec.matrix.org/v1.4/client-server-api/#put_matrixclientv3pushrulesscopekindruleidenabled)
 and others used by clients to enable/alter push rules for bulk operations. An alternative to relaxing
-rate limiting is to use [MSC0002](https://github.com/matrix-org/matrix-spec-proposals/pull/0002) or
+rate limiting is to use [MSC3934](https://github.com/matrix-org/matrix-spec-proposals/pull/3934) or
 similar instead.
 
 ## Unstable prefix
