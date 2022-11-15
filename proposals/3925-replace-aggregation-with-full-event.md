@@ -114,7 +114,7 @@ This is how the original event would look like after the replacement:
 
   Assume that we have an event A with the body `1`, which is first replaced by
   the event A' with the new body `2` and then by the event A'' with the new body
-  `3`. The sync has been done right after A' und A''. Then the timeline
+  `3`. A `/sync` is done right after A' and A''. Then the timeline
   would look like this: `2` -> `*3` instead of `1` -> `*2` -> `*3`. Although `2`
   is a replaced body, it does not have a `*`, which looks to the user as it has 
   not been replaced.
