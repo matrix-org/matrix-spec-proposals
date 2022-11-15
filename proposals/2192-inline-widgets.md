@@ -1,60 +1,69 @@
-# Proposal for inline widgets
+# MSC2192: Inline widgets
 
-We already have widgets for rooms (stored in room state) and account-specific widgets
-(stored in account data), however we do not have a way for widgets which are only
-relevant for as long as the message is visible. Inline widgets would be an option
-for rich embedding of content within the timeline, such as video embeds.
+Widgets are embedded applications that usually reside within the context of a room or
+account to add useful functionality, such as a collaborative whiteboard, stickers,
+dashboards, and conferencing. Currently, this feature doesn't extend into the timeline
+itself for rich embeds of content, like videos and other sharable content.
 
-**Note**: Polls were originally part of this MSC, but have been moved out to
-[MSC3381](https://github.com/matrix-org/matrix-doc/pull/3381) instead.
+This MSC proposes "inline widgets" as a mechanism for sharing embeddable content within
+a room, primarily intended to cover video (YouTube, etc) embeds but able to cover a
+wide range of use cases.
 
-**Note**: Bot buttons were previously part of this proposal, but have been removed.
+To achieve this, we use [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) to
+define a new event type and suitable "content blocks" for supporting widgets and embeds
+within a room.
+
+For reference, the original Widget API is defined as [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236).
 
 ## Proposal
 
-This proposal is heavily insipired by:
-* [MSC1236](https://github.com/matrix-org/matrix-doc/issues/1236) - Original Widget API
-* [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) - Extensible Events
+Using [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)'s system, we define
+an `m.embed` event type with suitable content blocks to cover a web-based embedded
+application in the timeline.
 
-MSC1236 is largely untouched by this proposal, however this proposal borrows the structure
-and behaviour of widgets to better define what an inline widget does.
-
-MSC1849 is used to define the relationship of a button press to an event, similar to how
-MSC1485 did the relationship but instead using MSC1849's topology for the linking.
-
-Inline widgets are rendered in the timeline just like any other message, and have a structure
-very similar to room widgets. An inline widget is an `m.widget` event, using Extensible Events:
+An example is:
 
 ```json5
 {
-    "type": "m.widget",
-    "content": {
-        "m.text": "https://www.youtube.com/watch?v=a4L94Rsg_nM",
-        "m.widget": {
-            "url": "https://www.youtube.com/embed/a4L94Rsg_nM",
-            "waitForIframeLoad": true,
-            "type": "m.video",
-            "name": "YouTube",
-            "data": {
-                "title": "Matrix Live S03E25",
-                "url": "https://www.youtube.com/watch?v=a4L94Rsg_nM"
-            }
-        }
+  "type": "m.embed",
+  "content": {
+    "m.markup": [
+       // Format of the fallback is not defined, but should have enough information for a text-only
+       // client to do something with the widget.
+       {"body": "https://www.youtube.com/watch?v=Vn-NZvMcujc"}
+    ],
+    "m.widget": {
+      "url": "https://www.youtube.com/embed/Vn-NZvMcujc",
+      "waitForIframeLoad": true,
+      "type": "
     }
+  }
 }
 ```
 
-Note that the `creatorUserId` and `id` fields from room/account widgets are not
-included - these can be easily inferred from the `sender` and `event_id` of the event
-itself.
+With consideration for extensible events, the following content blocks are defined:
 
-Just like room/account widgets, inline widgets support templating. Inline widgets
-should also not rely on the `$matrix_user_id` being trusted and instead should seek
-to authenticate the user somehow else.
+* `m.widget` - The same fields as a widget event in room state, minus `creatorUserId`
+  and `id`. Instead, implementations should use the `sender` as the creator and `event_id`
+  as widget ID.
 
-Still like room/account widgets, inline widgets have access to the same Widget API
-from MSC1236. They also should be sandboxed, and prevented from manipulating the
-client outside of the client's control.
+Together with content blocks from other proposals, an `m.embed` is described as:
+
+* **Required** - An `m.markup` block to act as a fallback for clients which can't process
+  inline widgets.
+* **Required** - An `m.widget` block to describe the widget itself. Clients use this to show
+  the widget.
+
+The above describes the minimum requirements for sending an `m.embed` event. Senders can add
+additional blocks, however as per the extensible events system, receivers which understand
+inline widget events should not honour them.
+
+If a client does not support rendering inline widgets, the client would instead typically
+represent the event as a plain text message.
+
+When rendering the inline widget's iframe, all the normal widget options apply, including
+availability of the Widget API. Further, templating on the URL is also supported, and
+widgets should still *not* rely on `$matrix_user_id` being trusted.
 
 Clients SHOULD limit the maximum height and width of inline widgets to prevent
 large portions of the timeline being inaccessible to users. Scrollbars are encouraged
@@ -67,44 +76,19 @@ which could then be used to render polls and similar functionality without the i
 asking the question requiring a web server. The complexity with that approach was that
 it relied on HTML, which some clients cannot or will not support. The approach additionally
 opened up the client to several XSS and similar security vulnerabilities due to the complex
-nature of untrusted user-provided HTML being rendered in the client
+nature of untrusted user-provided HTML being rendered in the client.
 
 ## Security considerations
 
 Allowing arbitrary embeds opens up a spam vector for auto-playing videos, scare content,
 and similar spam. Clients should do their best to avoid these kinds of attacks, such as
-by blocking the widget from loading until the user accepts the widget.
+by blocking the widget from loading until the user accepts the widget or otherwise has
+trust in the sender (where "trust" is left as an implementation detail).
 
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use `org.matrix.msc2192.`
 in place of `m.`. For example, `m.widget` becomes `org.matrix.msc2192.widget`
-
-For maximum compatibility, clients may be interested in utilizing the benefit of extensible
-events:
-
-```json5
-{
-    "type": "m.room.message",
-    "content": {
-        "body": "https://www.youtube.com/watch?v=a4L94Rsg_nM",
-        "msgtype": "m.text",
-
-        // The presence of this field would indicate it should be rendered as a widget
-        // instead of a text message.
-        "org.matrix.msc2192": {
-            "url": "https://www.youtube.com/embed/a4L94Rsg_nM",
-            "waitForIframeLoad": true,
-            "type": "m.video",
-            "name": "YouTube",
-            "data": {
-                "title": "Matrix Live S03E25",
-                "url": "https://www.youtube.com/watch?v=a4L94Rsg_nM"
-            }
-        }
-    }
-}
-```
 
 ## Alternative solutions
 
