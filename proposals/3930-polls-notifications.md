@@ -1,4 +1,3 @@
-
 # MSC3930: Polls push rules/notifications
 
 [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/pull/3381) describes how chat polls can work,
