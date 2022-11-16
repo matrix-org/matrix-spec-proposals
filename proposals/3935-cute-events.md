@@ -1,4 +1,4 @@
-# MSCXXXX: Cute Events against social distancing
+# MSC3935: Cute Events against social distancing
 
 *Many people suffer from social isolation, distancing and from their friends
 being far away. This MSC aims to give Matrix the capability to overcome
