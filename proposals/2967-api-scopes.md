@@ -38,6 +38,7 @@ To support existing, pre-MSC2964 use cases the following scopes are assigned:
 
 | Scope | Purpose | Implementation notes |
 | - | - | - |
+| `urn:matrix:client:api:guest` | Grants access as a guest to endpoints in the Client-Server API | The OP can issue a refresh token for grants with this scope. |
 | `urn:matrix:client:api:*` | Grants full access to the Client-Server API (excluding UIA endpoints) | The OP can issue a refresh token for grants with this scope. |
 | `urn:matrix:client:uia:*` | Grants full access to all UIA protected endpoints in the Client-Server API | The client should only request this when needed for a specific user operation. The OP should only issue a short-lived (e.g. 30 seconds) access token without a refresh token. |
 
@@ -96,13 +97,34 @@ Content-Type: application/json
 
 {
   "errcode": "M_FORBIDDEN",
-  "error": "Insufficient privilege"
+  "error": "Insufficient scope"
+}
+```
+
+### User Interactive Auth
+
+Before calling an API endpoint protected by user interactive authentication the client can check that they already have the scope `urn:matrix:client:uia:*`.
+
+If they don't have it then they can pre-emptively acquire it ahead of making the API call.
+
+The Homeserver should enforce the presence of the `urn:matrix:client:uia:*` scope and if not then it would return a response as follows:
+
+```http
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Bearer error="insufficient_scope", scope="urn:matrix:client:uia:*"
+Content-Type: application/json
+
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "Insufficient scope"
 }
 ```
 
 ## Potential issues
 
 The Device ID handling involves a change in where device IDs are generated. This is discussed in MSC2964. On the OIDC Provider side the device ID proposal requires the use of dynamic scopes. That is, the specific scope is a templated form rather than being static. This is not currently supported by some OIDC Providers (e.g. Okta and Auth0).
+
+The requirement that the UIA scope should only be made available for a limited time is likely non-standard for some OPs as well.
 
 The addition of the `WWW-Authenticate` header could cause issue with some clients.
 
