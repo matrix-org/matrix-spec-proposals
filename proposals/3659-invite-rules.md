@@ -15,11 +15,8 @@ are processed by their homeserver.
 ### `m.invite_rules`
 
 An invite rules state contains one required key.
-- `"rules"`: An Array of `RuleItem`s. The Array should contain no more than 127 entries.
-
-*Homeservers may wish to implement a smaller maximum, if so that maximum should be no smaller than 8*
-
-*Homeservers may also wish to exceed the defined maximum, doing so is allowed, but at their own peril.*
+- `"rules"`: An Array of `RuleItem`s. The Array must contain no more than the number of rules the homeserver is
+willing to process.
 
 #### `RuleItemAction`
 A String-Enum that defines an action that the ruleset evaluator is to perform.
@@ -56,12 +53,11 @@ Validation depends on the value of `room_type`.
   - `"room_type": "is-space"`: Rule evaluates as True if the target room's `m.room.create` `type` is `"m.space"`
   - `"room_type": "is-room"`: Rule evaluates as True if the target room is not a direct room or a space.
 
-#### `InviteRule`
-A String-Enum.
-* `"any"`: Always evaluates as True.
-* `"has-shared-room"`: Evaluates as True if the Inviter shares at least one room with the Invitee.
-* `"has-direct-room"`: Evaluates as True if the Inviter has an active room defined in the Invitee's `m.direct` account data state. *Active is defined as "if both the Invitee and Inviter are present".*
-* `"none"`: Always evaluates as False.
+##### `m.compare`
+Compares information about the Invitee and Inviter. Behaviour depends on the value of `compare_type`
+- `"compare_type"`: Required String-Enum.
+  - `"compare_type": "has-shared-room"`: Evaluates as True if the Inviter shares at least one room with the Invitee.
+  - `"compare_type": "has-direct-room"`: Evaluates as True if the Inviter has an active room defined in the Invitee's `m.direct` account data state. *Active is defined as "if both the Invitee and Inviter are present".*
 
 #### Evaluation
 
@@ -82,6 +78,19 @@ Implementations may wish to utilise result caching where applicable to improve p
 
 #### Invite Rejection
 If an invite is to be rejected, the homeserver *should* respond with M_FORBIDDEN, and the error message: "This user is not permitted to send invites to this server/user"
+
+#### Capabilities
+Invite Rules requires an additional capability entry at `client/r0/capabilities` to signal to clients how many rules
+the homeserver is willing to process. The suggested maximum is 128. Homeservers are free to set their own maximum
+
+```js
+{
+    "m.invite_rules": {
+        "enabled": true,
+        "maximum_rules": Integer
+    }
+}
+```
 
 #### Example
 The following example will allow any invites from `@bob:example.com` or members of `!a:example.com`, deny any invites from `@alice:example.com`, and allow direct invites from any user who shares at least one room with the Invitee.
@@ -110,8 +119,8 @@ The following example will allow any invites from `@bob:example.com` or members 
                 "fail": "continue"
             },
             {
-                "type": "m.invite_rule",
-                "rule": "has-shared-room",
+                "type": "m.compare",
+                "compare_type": "has-shared-room",
                 "pass": "continue",
                 "fail": "deny"
             },
@@ -132,9 +141,7 @@ Currently, there is no way outside of homeserver-wide restrictions (mjolnir, ant
 ## Potential Issues
 There is a potential denial of service for the `has-shared-room` and `has-direct-room` invite rules, as they require searching through all rooms a user is in, which could be a lot. This heavily depends on the homeserver's internals of course.
 
-The `"rules"` Array's defined maximum may not be suitable for resource-strained, or particularly large homeservers. Homeservers should make the maximum rules configurable for the homeserver admin.
-
-As homeservers may set a custom rule limit, clients currently have no reliable way of knowing that limit. Some way of signalling the limit to the client should be looked into
+The `"rules"` Array's suggested maximum may not be suitable for resource-strained, or particularly large homeservers. Homeservers should make the maximum rules configurable for the homeserver admin.
 
 ## Unstable prefix
 While this MSC is in development, implementations of this MSC should use the state type `org.matrix.msc3659.invite_rules`
