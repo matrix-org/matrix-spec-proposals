@@ -25,7 +25,7 @@ An example is:
   "content": {
     "m.markup": [
       // Format of the fallback is not defined, but should have enough information for a text-only
-      // client to do something with the image, just like with plain file uploads.
+      // client to do something with the audio, just like with plain file uploads.
       {"body": "matrix.mp3 (12 KB, 1:30) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
     ],
     "m.file": {
