@@ -38,28 +38,26 @@ A RuleItem defines a Rule that can test against an invite request.
 - `"fail":` A required `RuleItemAction` that will be performed if the rule evaluates as False
 
 ##### `m.user`
-Validates as True if the Inviter MXID is equal to the defined `"user_id"`
+Validates as True if the Inviter MXID is equal to the defined `"user_id"`.
 - `"user_id"`: Required String, a valid user id.
 
 ##### `m.shared_room`
 Validates as True if the Inviter and Invitee are in the defined `"room_id"`.
 - `"room_id"`: Required String, a valid room id.
 
-##### `m.target_room`
-Validation depends on the keys defined. Either `"room_id"` or `"room_type"` must be defined.
-- `"room_id"`: Optional String, a valid room id. Rule evaluates as True if the target room id is equal to the defined `room_id`.
-- `"room_type"`: Optional String-Enum.
+##### `m.target_room_id`
+Validates as True if the target room id is equal to the defined `room_id`.
+- `"room_id"`: Required String, a valid room id.
+
+##### `m.target_room_type`
+Validation depends on the value of `room_type`.
+- `"room_type"`: Required String-Enum.
   - `"room_type": "is-direct-room"`: Rule evaluates as True if the Invitee's membership state in the target room has `"is_direct"` set to True.
   - `"room_type": "is-space"`: Rule evaluates as True if the target room's `m.room.create` `type` is `"m.space"`
   - `"room_type": "is-room"`: Rule evaluates as True if the target room is not a direct room or a space.
 
-##### `m.invite_rule`
-Evaluation is dependant on the defined `"rule"`.
-* `"rule"`: An `InviteRule`.
-
 #### `InviteRule`
 A String-Enum.
-
 * `"any"`: Always evaluates as True.
 * `"has-shared-room"`: Evaluates as True if the Inviter shares at least one room with the Invitee.
 * `"has-direct-room"`: Evaluates as True if the Inviter has an active room defined in the Invitee's `m.direct` account data state. *Active is defined as "if both the Invitee and Inviter are present".*
@@ -118,7 +116,7 @@ The following example will allow any invites from `@bob:example.com` or members 
                 "fail": "deny"
             },
             {
-                "type": "m.target_room",
+                "type": "m.target_room_type",
                 "room_type": "is-direct-room",
                 "pass": "allow",
                 "fail": "deny"
