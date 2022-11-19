@@ -57,7 +57,7 @@ Compares information about the Invitee and Inviter. Behaviour depends on the val
 
 #### Evaluation
 Ruleset evaluation is performed before an invite request is acknowledged by the homeserver, invite rejection refers to rejecting the invite request in the form of returning a HTTP error to the Inviter's homeserver. Not to reject an invite request which has already been acknowledged (visible to the Invitee) by the homeserver.
-Homeservers may choose to skip ruleset evaluation entirely if the Invitee is a homeserver admin.
+Homeservers may choose to skip ruleset evaluation entirely if the Inviter is a homeserver admin.
 
 - The Invitee's homeserver receives an invite request from the Inviter:
   - If the `"m.invite_rules"` account data state exists, then:
