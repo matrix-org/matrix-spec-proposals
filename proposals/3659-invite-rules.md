@@ -3,8 +3,6 @@
 This MSC proposes the creation of an optional account data state which allows users to control how invites directed at them
 are processed by their homeserver.
 
-*Homeservers may choose to ignore an Invitee's invite rules *if* the Inviter is a homeserver admin.*
-
 ## Proposal
 
 ### Glossery
@@ -21,11 +19,9 @@ willing to process.
 #### `RuleItemAction`
 A String-Enum that defines an action that the ruleset evaluator is to perform.
 
-* `"allow"`: Allow the invite request, breaks from ruleset evaluation.
-* `"deny"`: Reject the invite request.
-* `"continue"`: Do not take any action and continue ruleset evaluation.
-
-*Ruleset evaluation is performed before an invite request is acknowledged by the homeserver, invite rejection here refers to rejecting the invite request in the form of returning a HTTP error to the Inviter's homeserver. Not to reject an invite request which has already been acknowledged (visible to the Invitee) by the homeserver.*
+- `"allow"`: Allow the invite request, breaks from ruleset evaluation.
+- `"deny"`: Reject the invite request.
+- `"continue"`: Do not take any action and continue ruleset evaluation.
 
 #### `RuleItem`
 A RuleItem defines a Rule that can test against an invite request.
@@ -36,15 +32,15 @@ A RuleItem defines a Rule that can test against an invite request.
 
 ##### `m.user`
 Validates as True if the Inviter MXID is equal to the defined `"user_id"`.
-- `"user_id"`: Required String, a valid user id.
+- `"user_id"`: Required String, a valid user id. This value may also be a glob
 
 ##### `m.shared_room`
 Validates as True if the Inviter and Invitee are in the defined `"room_id"`.
-- `"room_id"`: Required String, a valid room id.
+- `"room_id"`: Required String, a valid room id. This value may also be a glob
 
 ##### `m.target_room_id`
 Validates as True if the target room id is equal to the defined `room_id`.
-- `"room_id"`: Required String, a valid room id.
+- `"room_id"`: Required String, a valid room id. This value may also be a glob
 
 ##### `m.target_room_type`
 Validation depends on the value of `room_type`.
@@ -60,15 +56,17 @@ Compares information about the Invitee and Inviter. Behaviour depends on the val
   - `"compare_type": "has-direct-room"`: Evaluates as True if the Inviter has an active room defined in the Invitee's `m.direct` account data state. *Active is defined as "if both the Invitee and Inviter are present".*
 
 #### Evaluation
+Ruleset evaluation is performed before an invite request is acknowledged by the homeserver, invite rejection refers to rejecting the invite request in the form of returning a HTTP error to the Inviter's homeserver. Not to reject an invite request which has already been acknowledged (visible to the Invitee) by the homeserver.
+Homeservers may choose to skip ruleset evaluation entirely if the Invitee is a homeserver admin.
 
-* The Invitee's homeserver receives an invite request from the Inviter:
-  * If the `"m.invite_rules"` account data state exists, then:
-    * If `"rules"` is defined, then for each `RuleItem`:
-      * Evaluate the `RuleItem` and save either the `"pass"` or `"fail"` `RuleItemAction` depending on the result.
-      * If the `RuleItemAction` is:
-        * `"allow"`, then: Break from the invite rules loop.
-        * `"deny"`, then: Respond with `M_FORBIDDEN`.
-        * `"continue"`, then: Continue for each.
+- The Invitee's homeserver receives an invite request from the Inviter:
+  - If the `"m.invite_rules"` account data state exists, then:
+    - If `"rules"` is defined, then for each `RuleItem`:
+      - Evaluate the `RuleItem` and save either the `"pass"` or `"fail"` `RuleItemAction` depending on the result.
+      - If the `RuleItemAction` is:
+        - `"allow"`, then: Break from the invite rules loop.
+        - `"deny"`, then: Respond with `M_FORBIDDEN`.
+        - `"continue"`, then: Continue for each.
 
 *If the rules loop is iterated through without any action taken, it is treated as `"allow"`.*
 
@@ -93,13 +91,30 @@ the homeserver is willing to process. The suggested maximum is 128. Homeservers 
 ```
 
 #### Example
-The following example will allow any invites from `@bob:example.com` or members of `!a:example.com`, deny any invites from `@alice:example.com`, and allow direct invites from any user who shares at least one room with the Invitee.
+The following example will enforce the following:
+- Any invites from `badguys.com` will be blocked.
+- Invites from `@bob:example.com` will be allowed.
+- Invites from `@alice:example.com` will be blocked.
+- Invites from any user who is also in `!a:example.com` will be allowed.
+- Invites from any user who shares a room with the Invitee will be allowed on the condition they are inviting them into a direct message room.
 
 ```js
 {
     "type": "m.invite_rules",
     "content": {
         "rules": [
+            {
+                "type": "m.user",
+                "user_id": "*:badguys.com",
+                "pass": "deny",
+                "fail": "continue"
+            },
+            {
+                "type": "m.user",
+                "user_id": "*.badguys.com",
+                "pass": "deny",
+                "fail": "continue"
+            },
             {
                 "type": "m.user",
                 "user_id": "@bob:example.com",
