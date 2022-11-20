@@ -1,8 +1,8 @@
 # MSC3890: Remotely silence local notifications
 Some clients (eg Element Web) do not use http pushers for notifications, but rather generate their own notifications in
 the client based on the `/sync` response. Users should be able to remotely toggle on and off these notifications (as
-well as [push notifications (MSC3881)](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)) to control interruptions
-and reachability in private and professional contexts.
+well as [push notifications (MSC3881)](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)) to control
+interruptions and reachability in private and professional contexts.
 
 To allow these clients to silence notifications remotely we will use account data and client-side notification
 filtering.
@@ -32,10 +32,12 @@ During client-side notification generation:
   trigger a system notification or sound.
 
 During server-side removal of devices:
-- When devices are removed servers should delete any
-`m.local_notification_settings.<device-id>` account_data events for the given device, and communicate these changes to
-clients as described in [MSC3391](https://github.com/matrix-org/matrix-spec-proposals/pull/3391).
+- When devices are removed servers should delete any `m.local_notification_settings.<device-id>` account_data events for
+the given device, and communicate these changes to clients as described in
+[MSC3391](https://github.com/matrix-org/matrix-spec-proposals/pull/3391).
 
+A server is to clean up deleted device account data when able to do so, such as with [MSC3391: Removing account
+data.](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
 
 #### Support
 Clients that implement `m.local_notification_settings.<device-id>` notification filtering should ensure a
@@ -57,10 +59,6 @@ control of notifications for clients using http-pushers and local notification g
 
 ## Security considerations
 N/A
-
-## Dependencies
-Communication of deletion of account data to clients is enabled by [MSC3391: Removing account
-data.](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
 
 ## Unstable prefix
 While this MSC is not included in the spec `m.local_notification_settings.<device-id>` should use the unstable prefix
