@@ -1,7 +1,7 @@
 # MSC3890: Remotely silence local notifications
 Some clients (eg Element Web) do not use http pushers for notifications, but rather generate their own notifications in
 the client based on the `/sync` response. Users should be able to remotely toggle on and off these notifications (as
-well as [push notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)) to control interruptions
+well as [push notifications (MSC3881)](https://github.com/matrix-org/matrix-spec-proposals/pull/3881)) to control interruptions
 and reachability in private and professional contexts.
 
 To allow these clients to silence notifications remotely we will use account data and client-side notification
