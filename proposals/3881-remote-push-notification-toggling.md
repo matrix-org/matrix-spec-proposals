@@ -46,7 +46,7 @@ A new optional field `device_id` is added to the `Pusher` model as returned from
 | `device_id` | string | **Optional** The device_id of the session that registered the pusher
 
 
-To be able to remove Pushers when sessions are deleted some home servers have some existing way to link a session to
+To be able to remove Pushers when sessions are deleted some homeservers have some existing way to link a session to
 pusher, so exposing the `device_id` on http pushers should be trivial. (Synapse, for instance, stores the [access
 token](https://github.com/matrix-org/synapse/blob/3d201151152ca8ba9b9aae8da5b76a26044cc85f/synapse/storage/databases/main/pusher.py#L487)
 when adding a pusher, which is usually associated with a device)
