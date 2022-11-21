@@ -73,6 +73,33 @@ federated. Servers MUST NOT send receipts of `receiptType` `m.read.private` to
 any other user than the sender. Servers also MUST NOT send receipts of
 `receiptType` `m.read.private` to any server over federation.
 
+As implied by adding a new `receiptType`, `m.read.private` receipts are echoed
+back to clients through [`m.receipt`](https://spec.matrix.org/v1.3/client-server-api/#mreceipt).
+The structure is the same as `m.read`. For example:
+
+```json
+{
+    "type": "m.receipt",
+    "content": {
+        "$event": {
+            "m.read": {
+                "@public_user:example.org": {
+                    "ts": 1661385089714
+                }
+            },
+            "m.read.private": {
+                "@self:example.org": {
+                    "ts": 1661385103450
+                }
+            }
+        }
+    }
+}
+```
+
+Due to the nature of private read receipts, the `m.read.private` map in `m.receipt`
+should only ever have the user's own ID.
+
 ## Security considerations
 
 Servers could act as if `m.read.private` is the same as `m.read` so the user

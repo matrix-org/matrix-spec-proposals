@@ -3,21 +3,10 @@ Contributing to `matrix-spec-proposals`
 
 Thank you for taking the time to contribute to Matrix!
 
-This repository is for proposals to changes to the Matrix protocol. The process
-for submitting a proposal is spelt out in detail at
-https://spec.matrix.org/unstable/proposals (in particular,
-https://spec.matrix.org/unstable/proposals/#process).
-
-However, in brief, it amounts to:
-
- 1. Create a [pull request][1] adding a new file to the
-    [`proposals`](./proposals) directory, expaining what you think should be
-    changed, and why. (Ideally, the file should be numbered according to the
-    pull request number, which normally means you need to rename it once you've
-    opened the PR.)
-
- 2. Seek feedback on your proposal, for example in
-    [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org).
+This repository is for proposals for changes to the Matrix protocol. The process
+for submitting a proposal is described in
+[this repository's README](README.md#the-matrix-spec-process) or in further detail at
+https://spec.matrix.org/proposals/#process.
 
 Sign off
 --------
