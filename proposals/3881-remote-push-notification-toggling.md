@@ -11,7 +11,10 @@ This is limiting because it means that push notifications can only be en- or dis
 them. When the latter isn't currently at hand, this can become a point of frustration.
 
 The current proposal solves this problem by making the connection between HTTP pushers and Matrix devices explicit and
-assigning an enabled state to every pusher.
+assigning an enabled state to every pusher. This enables clients to remotely silence (and un-silence) notifications for
+other devices. For users with multiple active devices, this means they can avoid unwanted interruptions or duplicate
+pings without having to switch context and physically retrieve each device to change settings. A common example is
+silencing a mobile device once you sit down at your desktop.
 
 ## Proposal
 
