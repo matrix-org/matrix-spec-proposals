@@ -61,7 +61,7 @@ MSC.
 Home servers should indicate their support of this MSC by adding `org.matrix.msc3881` and `org.matrix.msc3881.stable` in
 the response of `/_matrix/client/versions`.
 
-Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `enabled` value
+Clients that connect to a homeserver that doesn't yet support this proposal should interpret a missing `enabled` value
 as `true`.
 
 Home servers should migrate pushers that were registered before this proposal so that `enabled` is `true`
