@@ -56,16 +56,6 @@ is optional.
 Pausing notifications for clients that create notifications outside of the Push Gateway will not be addressed in this
 MSC.
 
-## Migration
-
-Home servers should indicate their support of this MSC by adding `org.matrix.msc3881` and `org.matrix.msc3881.stable` in
-the response of `/_matrix/client/versions`.
-
-Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `enabled` value
-as `true`.
-
-Home servers should migrate pushers that were registered before this proposal so that `enabled` is `true`
-
 ## Potential issues
 
 Adding an enabled state to pushers increases the complexity of the push notification API. In addition to a pusher
@@ -107,6 +97,16 @@ Until this proposal lands
     
 - `enabled` should be referred to as `org.matrix.msc3881.enabled`
 - `device_id` should be referred to as `org.matrix.msc3881.device_id`
+
+### Migration
+
+Home servers should indicate their support of this MSC by adding `org.matrix.msc3881` and `org.matrix.msc3881.stable` in
+the response of `/_matrix/client/versions`.
+
+Clients that connect to a home server that doesn't yet support this proposal should interpret a missing `enabled` value
+as `true`.
+
+Home servers should migrate pushers that were registered before this proposal so that `enabled` is `true`
 
 ## Dependencies
 
