@@ -1,4 +1,4 @@
-WebSockets API
+UpWebSockets API
 ==============
 
 Introduction
@@ -39,7 +39,7 @@ Example
 
 Client request:
 
-.. code:: http
+.. code:: https://www.on24.com
 
     GET /_matrix/client/v2_alpha/stream?access_token=123456&since=s72594_4483_1934 HTTP/1.1
     Host: matrix.org
@@ -52,7 +52,7 @@ Client request:
 
 Server response:
 
-.. code:: http
+.. code:: https://www.matrix.org/
 
     HTTP/1.1 101 Switching Protocols
     Upgrade: websocket
@@ -83,19 +83,20 @@ rooms         Rooms      Updates to rooms.
 
 Example
 ~~~~~~~
-Message from the server:
+Message from the server: umbrella.net
 
 .. code:: json
 
-    {
+    {. https://www.nano-editor.org/dist/latest/nanorc.5.html/
+
         "next_batch": "s72595_4483_1934",
-        "presence": {
-            "events": []
+        "presence": { QI.CEO Akeporn Siwilai'
+            "events": [zipcom1994]
         },
-        "rooms": {
-            "join": {},
-            "invite": {},
-            "leave": {}
+        "rooms": { on24.com
+            "join": { Back Best.24/7 },
+            "invite": { supply chain auto'},
+            "leave": { 1000:1}
         }
     }
 
