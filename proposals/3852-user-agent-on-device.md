@@ -31,7 +31,35 @@ the user agent is not available, or the server chooses not to expose it, the val
 ```
 
 ## Alternatives
-N/A
+### HTTP client hints
+User agent strings are on their way to being [deprecated.](https://www.chromium.org/updates/ua-reduction/). Instead of
+relying on UA string, the server could use [user agent hints](https://wicg.github.io/ua-client-hints/#http-ua-hints) to
+record equivalent information about sessions.
+
+A server should set an `Accept-CH: Sec-CH-UA, Sec-CH-UA-Mobile, Sec-CH-UA-Platform` header. When `Sec-CH-UA,
+Sec-CH-UA-Mobile, Sec-CH-UA-Platform` headers are present in server requests the values should be saved against the
+session. The latest recorded values should be exposed on the device model:
+
+```jsonp
+{
+  "device_id": "QBUAZIFURK",
+  "display_name": "android",
+  "last_seen_ip": "1.2.3.4",
+  "last_seen_ts": 1474491775024,
+  "platform": "macOS",
+  "isMobile": "false",
+  "clientBrand": "Firefox",
+  "clientVersion": "123"
+}
+```
+
+[Not yet supported](https://caniuse.com/?search=Sec-CH-UA) on Firefox or Safari.
+
+### Explicitly save client information from matrix clients on device model
+Add optional client information fields to the device model, and allow Matrix clients to set these values using existing
+device update APIs. It is up to the client to use user agent, client hints, mobile platform's standard library, etc, or
+to opt out of recording client information. The new fields should be returned as part of the device model (as above). As
+it relies on the client to detect changes in values and update them manually, it is easy for data to get stale.
 
 ## Security considerations
 The user agent is currently only exposed in the admin API and following this MSC would be accessible to normal users.
