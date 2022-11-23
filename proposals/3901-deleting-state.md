@@ -1,6 +1,19 @@
 # MSC3901: Deleting State
 
-TODO: rename to "obsolete" (or "useless" or "marked for deletion")?
+TODO:
+
+- [x] Create document
+- [x] Intro and motivation
+- [x] History
+- [x] Room upgrades will help
+- [x] Definition of obsolete state
+- [x] Rename to "obsolete"
+- [ ] Brief summary of each sub-proposal
+- [ ] Consider changing "definition of obsolete state" into a sub-proposal
+- [ ] Go through the meeting notes and transfer ideas into sub-proposals
+- [ ] Complete TODOs scattered through the doc
+- [ ] Complete detailed definition of sub-proposals
+- [ ] Request review
 
 ## Introduction
 
@@ -28,7 +41,7 @@ mounting a denial of service attack against involved homeservers. So, some
 solution to "clean" an affected room is desirable.
 
 Note that throughout this document we are only concerned with state
-events[^and-redactions], other events are not relevant to this problem.
+events[^and-redactions]: other events are not relevant to this problem.
 
 [^and-redactions] (and of course, events that redact state events.)
 
@@ -71,7 +84,7 @@ don't turn out to be the right way to solve the deleting state problem.
 ### Also, reduce state sent to clients
 
 In addition to improving room upgrades, we think we can improve the situation
-by excluding the state that is sent to clients on initial sync. This should
+by shrinking the state that is sent to clients on initial sync. This should
 reduce unnecessary bandwidth use, and reduce storage use within clients.
 
 ### Structure of this document
@@ -80,7 +93,7 @@ This MSC will probably eventually be split into several MSCs, but they are
 gathered together for now to ensure we keep their shared purpose in mind:
 reducing the burden of uninteresting state.
 
-Additionally, this document contains a definition of "deleted" state, which
+Additionally, this document contains a definition of "obsolete" state, which
 is referenced in several of the sub-proposals.
 
 The sub-proposals are all believed to be independent[1], but they are listed in
@@ -90,31 +103,31 @@ probably be simpler and help us think more clearly about the later ones.
 [1] Although 3 (auto-accept invites) does not make a lot of sense without 2
     (create invites).
 
-## Definition of deleted state
+## Definition of obsolete state
 
 ### Purpose of this definition
 
-If we can define clearly what state we consider to be "deleted", we can make
+If we can define clearly what state we consider to be "obsolete", we can make
 decisions about what to do with it, including not sending it to clients on an
 initial sync, and not copying it across when a room is upgraded.
 
 ### Motivation for the definition
 
-Loosely, "deleted" state is state that is not useful for understanding the state
-of the room at this point.  For example, knowing that someone shared their
+Loosely, "obsolete" state is state that is not useful for understanding the
+state of the room at this point.  For example, knowing that someone shared their
 location in the past is of historical interest, but is not useful for displaying
 a live indication of who is sharing now. Similarly, knowing that someone left
 the room is not useful for displaying a list of current room members.
 
-Removing a piece of "deleted" state does not materially change the actual
+Removing a piece of "obsolete" state does not materially change the actual
 condition of the room (again, speaking loosely).
 
 ### Formal definition
 
-A **deleted** state event is a state event that has `deleted: true` at the top
-level of its `content`.
+An **obsolete** state event is a state event that has `m.obsolete: true` at the
+top level of its `content`.
 
-For example, this event is a deleted state event:
+For example, this event is an obsolete state event:
 
 ```json
 {
@@ -123,7 +136,7 @@ For example, this event is a deleted state event:
   "content": {
     "description": "Matthew's other phone",
     "live": false,
-    "deleted": true,
+    "m.obsolete": true,
     "m.ts": 1436829458432,
     "timeout": 86400000,
     "m.asset": { "type": "m.self" }
@@ -133,111 +146,105 @@ For example, this event is a deleted state event:
 
 (This example is from
 [MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489), and
-in that specific case it would need to be considered whether `deleted` makes the
-`live` property redundant.)
+in that specific case it would need to be considered whether `m.obsolete` makes
+the `live` property redundant.)
 
-If a state event has `deleted: false` or no `deleted` property at all, it is not
-deleted.
+If a state event has `m.obsolete: false` or no `m.obsolete` property at all, it
+is not obsolete.
 
-TODO: should it be `m.deleted`?
+No event should ever have an `m.obsolete` property with any other value (other
+than `true` or `false`.
 
-No event should ever have a `deleted` property with any other value (other than
-`true` or `false`.
+To mark some state as obsolete, a client sends a state event with
+`m.obsolete: true` in its content. To "unobsolete" some state later, the client
+sends another state event with no `m.obsolete` property (or with
+`m.obsolete: false`).
 
-To mark some state as deleted, a client sends a state event with `deleted: true`
-in its content. To "undelete" some state later, the client sends another state
-event with no `deleted` property (or with `deleted: false`).
-
-### Concerns
-
-This would effectively prevent anyone from using a `deleted` property for some
-other purpose in their event content definition, and would clash with anyone who
-has already defined their events in this way.
-
-### Redacted state events are deleted
+### Redacted state events are obsolete
 
 We propose to update the definition of event redaction[^spec-redactions] to
-specify that all redacted events contain `deleted: true` in their content.
+specify that all redacted state events contain `m.obsolete: true` in their
+content.
 
 [^spec-redactions] https://spec.matrix.org/v1.4/rooms/v10/#redactions
 
-### Leave events are deleted
+TODO: should this be "all redacted events" or "all redacted STATE events"?
+
+### Leave events are obsolete
 
 We propose to update the definition of membership events so that events saying
-a member has left contain `deleted: true` in theit content.
+a member has left contain `m.obsolete: true` in their content.
 
 TODO: link to membership events in the spec
 
-### Encrypted deleted state events
+### Encrypted obsolete state events
 
 Currently, state events are not encrypted, but
 [MSC3414](https://github.com/matrix-org/matrix-spec-proposals/pull/3414)
 proposes allowing them to be encrypted.
 
-If MSC3414 goes ahead, a deleted encrypted state event should contain
-`deleted: true` in its unencrypted content, as a sibling of e.g. `algorithm`
+If MSC3414 goes ahead, an obsolete encrypted state event should contain
+`m.obsolete: true` in its unencrypted content, as a sibling of e.g. `algorithm`
 and `ciphertext`.
 
 When the ciphertext is decrypted, the `content` in the plaintext JSON
-should also contain `deleted: true`.
+should also contain `m.obsolete: true`.
 
 ### Alternative definitions
 
 #### content: null
 
-We considered defining a deleted state event as an event with a state_key and
+We considered defining an obsolete state event as an event with a state_key and
 null content.
 
-However, some existing deleted state events such as leaving events (membership
+However, some existing obsolete state events such as leaving events (membership
 events indicating that someone left the room) contain useful content, and there
 is no reason to assume that future ones won't also want to do something similar.
 
-#### deleted as a sibling of content
+#### m.obsolete as a sibling of content
 
-We could say that the `deleted` property is not inside `content`, but alongside
-it.
+We could say that the `m.obsolete` property is not inside `content`, but
+alongside it.
 
-This has the advantage that it cannot clash with any existing event definitions
-that include a `deleted` key, and it might make it easier for servers to find
-and index deleted state.
+This might make it easier for servers to find and index obsolete state.
 
 However, it would require us to provide a special mechanism (e.g. a new
-endpoint) to allow clients to mark events as deleted, making the implementation
+endpoint) to allow clients to mark events as obsolete, making the implementation
 burden of this proposal much greater for both clients and servers.
 
 #### Avoiding a new room version by adding special cases
 
-Some state is already, loosely speaking, "deleted" in the sense that new members
-don't really care about it. For example, leaving events.
+Some state is already, loosely speaking, "obsolete" in the sense that new
+members don't really care about it. For example, leaving events.
 
-It might be possible to define deleted state as including these special cases,
+It might be possible to define obsolete state as including these special cases,
 and this might allow us to avoid needing a new room version.
 
 However, we believe that we need to change the rules around redacted events,
 meaning that we can't avoid a new room version. Since we need a new room version
-anyway, we have gone for a simpler definition of deleted state with no special
+anyway, we have gone for a simpler definition of obsolete state with no special
 cases.
 
-## Sub-proposal 1: Hide deleted state from clients on initial sync
+## Sub-proposal 1: Hide obsolete state from clients on initial sync
 ### Proposal
 
-Based on our definition of "deleted" state, when sending room state to clients
-for an initial sync, do not include deleted state.
+Based on our definition of "obsolete" state, when sending room state to clients
+for an initial sync, do not include obsolete state.
 
 TODO: specific spec wording change
 
 ### Potential issues
 
-If clients actually need deleted state to render properly, this would imply
-that events have been marked as deleted when they should not have been. (Note:
-we are discussing room state here, not state events. Deleted state events
+If clients actually need obsolete state to render properly, this would imply
+that events have been marked as obsolete when they should not have been. (Note:
+we are discussing room state here, not state events. Obsolete state events
 should be returned as normal when the events timeline is requested. This allows
 users to explore historical events.)
 
-The only time when a deleted state event is needed to update room state is when
-a client has already received non-deleted state for this `event_key`. Since
-this proposal only affects initial sync, clients have not received any state,
-so this does not apply.
+The only time when an obsolete state event is needed to update room state is
+when a client has already received non-obsolete state for this `event_key`.
+Since this proposal only affects initial sync, clients have not received any
+state, so this does not apply.
 
 ### Alternatives
 
@@ -245,14 +252,14 @@ We could simply not do this, and hope that the measures we will take to reduce
 the load of state on the server will also be enough to help clients.
 
 However, this seems a relatively easy proposal, and we hope that implementing
-it will help us understand what we really mean by "deleted" state, and flush
+it will help us understand what we really mean by "obsolete" state, and flush
 out problems we have not yet considered.
 
 ### Security considerations
 ### Unstable prefix
 ### Dependencies
 
-As soon as we can agree on a definition of deleted state, we believe this
+As soon as we can agree on a definition of obsolete state, we believe this
 proposal can be implemented.
 
 ## Sub-proposal 2: Invite users to an upgraded room
@@ -306,7 +313,7 @@ the old one.
 We propose to expand the definition of a room upgrade to copy all useful
 information from the old to the new room.
 
-This involves copying all non-deleted, non-user-scoped room state by creating
+This involves copying all non-obsolete, non-user-scoped room state by creating
 state events in the upgraded room.
 
 ### Proposal
