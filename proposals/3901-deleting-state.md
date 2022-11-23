@@ -329,7 +329,30 @@ be copied.
 
 ## Sub-proposal 5: Upgraded rooms have the same room ID
 ### Proposal
+
+After a room is upgraded, links to the room still point at the old ID.
+
+For example:
+
+- room aliases point at the old room ID
+- bot integrations refer to the old room ID
+
+We propose to make upgraded rooms keep the same room ID as the old version, by
+introducing a server-only sub-ID that represents the version of the room.
+
+Clients and external systems continue to use the existing room ID, and servers
+use room ID + room version to identify the real actual room.
+
+When a client talks to a server using just room ID, the server automatically
+picks the most recent version of that room.
+
+TODO: much more specific here.
+
 ### Potential issues
+
+If servers disagree on which version is most recent, and which version exists,
+split brain situations could occur.
+
 ### Alternatives
 ### Security considerations
 ### Unstable prefix
