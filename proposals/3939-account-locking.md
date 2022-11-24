@@ -1,4 +1,4 @@
-# MSCXXXX: Account locking
+# MSC3939: Account locking
 
 There are legitimate cases where server administrators might want the ability to
 temporarily lock users out of their account. For example, server administrators
@@ -11,11 +11,6 @@ to prevent a user from accessing their account is to deactivate it. However,
 this is a pretty destructive operation. Ideally, a locked account could be
 unlocked without any visible impact on the account itself (joined rooms,
 associated 3PIDs, etc).
-
-Note that
-[MSC3823](https://github.com/matrix-org/matrix-spec-proposals/pull/3823)
-addresses a similar concept coming from a moderation perspective. However,
-locking and suspending an account are semantically different.
 
 ## Proposal
 
@@ -52,4 +47,4 @@ two distincts error codes.
 ## Unstable prefix
 
 Until this proposal is accepted, implementations must use
-`ORG_MATRIX_MSCXXXX_USER_LOCKED` instead of `M_USER_LOCKED`.
+`ORG_MATRIX_MSC3939_USER_LOCKED` instead of `M_USER_LOCKED`.
