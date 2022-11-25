@@ -55,7 +55,7 @@ For idempotency reasons, these endpoints always return `200 OK`, with an empty J
 
 #### Deleted account data responses
 
-Furthermore, when a client deletes account data, it must expect `/account_data/` to return a 404 on
+Furthermore, when a client deletes account data, it must expect the `GET` methods above to return a 404 on
 the next request.
 
 #### Backwards Compatibility
