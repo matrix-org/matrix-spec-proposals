@@ -197,6 +197,8 @@ Clients should do their best to ensure that calls in `m.call.member` state are r
 
 ### Call setup
 
+In a full mesh call, for any two participants, the one with the lexicographically lower user ID is responsible for calling the other. If two participants share the same user ID (that is, if a user has joined the call from multiple devices), then the one with the lexicographically lower device ID is responsible for calling the other.
+
 Call setup then uses the normal `m.call.*` events, except they are sent over to-device messages to the relevant devices (encrypted via Olm).  This means:
 
  * When initiating a 1:1 call, the `m.call.invite` is sent to the devices listed in `m.call.member` event's `m.devices` array using the `device_id` field.
