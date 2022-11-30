@@ -40,10 +40,9 @@ Some examples of new features/events using extensible events are:
 * [MSC3765 - Rich text topics](https://github.com/matrix-org/matrix-doc/pull/3765)
 
 **Note**: Readers might find [Andy's blog](https://www.artificialworlds.net/blog/2022/03/08/comparison-of-matrix-events-before-and-after-extensible-events/)
-useful for understanding the problem space, however please be aware that it's
-based on an earlier draft of this proposal (as of writing). Unfortunately, for
-those who need to understand the changes to the protocol/specification, the only
-option is to read this proposal.
+useful for understanding the problem space. Unfortunately, for those who need to 
+understand the changes to the protocol/specification, the only option is to read 
+this proposal.
 
 ## Proposal
 
