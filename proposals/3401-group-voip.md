@@ -101,11 +101,7 @@ We mandate at most one call per room at any given point to avoid UX nightmares -
 
 ### Call participation
 
-Users who want to participate in the call declare this by publishing a `m.call.member` state event using their matrix ID as the state key (thus ensuring other users cannot edit it).  The event contains a timestamp named `m.expires_ts` describing when this data should be considered stale, and an array `m.calls` of objects describing which calls the user is participating in within that room.  This array must contain one item (for now).
-
-When sending an `m.call.member` event, clients should choose a reasonable value for `m.expires_ts` in case they go offline unexpectedly. If the user stays connected for longer than this time, the client must actively update the state event with a new expiration timestamp.
-
-`m.call.member` state events must be ignored if the `m.expires_ts` field indicates they have expired, or if their user's `m.room.member` event's membership field is not `join`.
+Users who want to participate in the call declare this by publishing a `m.call.member` state event using their matrix ID as the state key (thus ensuring other users cannot edit it).  The event contains an array `m.calls` of objects describing which calls the user is participating in within that room.  This array must contain one item (for now).
 
 The fields within the item in the `m.calls` contents are:
 
@@ -113,6 +109,7 @@ The fields within the item in the `m.calls` contents are:
  * `m.devices` - The list of the member's active devices in the call. A member may join from one or more devices at a time, but they may not have two active sessions from the same device. Each device contains the following properties:
    * `device_id` - The device id to use for to-device messages when establishing a call
    * `session_id` - A unique identifier used for resolving duplicate sessions from a given device. When the `session_id` field changes from an incoming `m.call.member` event, any existing calls from this device in this call should be terminated. `session_id` should be generated once per client session on application load.
+   * `expires_ts` -  A timestamp describing when this device data should be considered stale. When updating their own device state, clients should choose a reasonable value for `expires_ts` in case they go offline unexpectedly. If the user stays connected for longer than this time, the client must actively update the state event with a new expiration timestamp. A device must be ignored if the `expires_ts` field indicates it has expired, or if the user's `m.room.member` event's membership field is not `join`.
    * `feeds` - Contains an array of feeds the member is sharing and the opponent member may reference when setting up their WebRTC connection.
      * `purpose` - Either `m.usermedia` or `m.screenshare` otherwise the feed should be ignored.
 
@@ -130,6 +127,7 @@ For instance:
                     {
                         "device_id": "ASDUHDGFYUW", // Used to target to-device messages
                         "session_id": "GHKJFKLJLJ", // Used to resolve duplicate calls from a device
+                        "expires_ts": 1654616071686,
                         "feeds": [
                             {
                                 "purpose": "m.usermedia",
@@ -183,7 +181,6 @@ For instance:
                 ]
             }
         ],
-        "m.expires_ts":  1654616071686
     }
 }
 ```
