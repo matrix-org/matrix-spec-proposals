@@ -43,7 +43,7 @@ When serving a partial join, if the room to be joined has no `m.room.name` or `m
 
 ## Potential issues
 
-This enlarges the `state` and the `auth\_chain` returned in a partial state response. The effect on `state` is limited as there are at most 5 heroes in any given room. The `auth\_chain` for the heroes' membership events may be arbitrarily long.
+This enlarges the `state` and the `auth_chain` returned in a partial state response. The effect on `state` is limited as there are at most 5 heroes in any given room. The `auth_chain` for the heroes' membership events may be arbitrarily long.
 
 ## Alternatives
 
