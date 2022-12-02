@@ -1,4 +1,4 @@
-# MSCABCD: Partial joins to nameless rooms should include heroes' memberships.
+# MSC3943: Partial joins to nameless rooms should include heroes' memberships.
 
 This is an addendum to [MSC3706](https://github.com/matrix-org/matrix-spec-proposals/pull/3706) which ensures that partial-joining a nameless room has a reasonable client UX.
 
