@@ -201,14 +201,21 @@ In a full mesh call, for any two participants, the one with the lexicographicall
 
 Call setup then uses the normal `m.call.*` events, except they are sent over to-device messages to the relevant devices (encrypted via Olm).  This means:
 
- * When initiating a 1:1 call, the `m.call.invite` is sent to the devices listed in `m.call.member` event's `m.devices` array using the `device_id` field.
- * `m.call.*` events sent via to-device messages should also include the following properties in their content:
-   * `conf_id` - The group call id listed in `m.call`
-   * `dest_session_id` - The recipient's session id. Incoming messages with a `dest_session_id` that doesn't match your current session id should be discarded.
- * In addition to the fields above `m.call.invite` events sent via to-device messages should include the following properties  :
-   * `device_id` - The message sender's device id. Used by the opponent member to send response to-device signalling messages even if the `m.call.member` event has not been received yet.
-   * `sender_session_id` - Like the `device_id` the `sender_session_id` is used by the opponent member to filter out messages unrelated to the sender's session even if the `m.call.member` event has not been received yet.
- * For 1:1 calls, we might want to let the to-device messages flow and cause the client to ring even before the `m.call` event propagates, to minimise latency.  Therefore we'll need to include an `m.intent` on the `m.call.invite` too.
+* When initiating a 1:1 call, the `m.call.invite` is sent to the devices listed in `m.call.member` event's `m.devices` array using the `device_id` field.
+* `m.call.*` events sent via to-device messages should also include the following properties in their content:
+  * `conf_id` - The group call id listed in `m.call`
+  * `dest_session_id` - The recipient's session id. Incoming messages with a
+    `dest_session_id` that doesn't match your current session id should be
+    discarded.
+  * `seq` - The sequence number of the to-device message. This is done since the
+    order of to-device messages is not guaranteed. With each new to-device
+    message this number gets incremented by `1` and it starts at `0`
+* In addition to the fields above `m.call.invite` events sent via to-device messages should include the following properties  :
+  * `device_id` - The message sender's device id. Used by the opponent member to send response to-device signalling messages even if the `m.call.member` event has not been received yet.
+  * `sender_session_id` - Like the `device_id` the `sender_session_id` is used
+     by the opponent member to filter out messages unrelated to the sender's
+     session even if the `m.call.member` event has not been received yet.
+* For 1:1 calls, we might want to let the to-device messages flow and cause the client to ring even before the `m.call` event propagates, to minimise latency.  Therefore we'll need to include an `m.intent` on the `m.call.invite` too.
 
 ## Example Diagrams
 
