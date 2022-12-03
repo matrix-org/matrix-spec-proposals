@@ -219,7 +219,7 @@ Call setup then uses the normal `m.call.*` events, except they are sent over to-
 
 ## Example Diagrams
 
-**Legend**
+### Legend
 
 | Arrow Style | Description |
 |-------------|-------------|
