@@ -9,11 +9,19 @@ avoid making this MSC too large.
 VoIP signalling in Matrix is currently conducted via timeline events in a 1:1 room.
 This has some limitations, especially if you try to broaden the approach to multiparty VoIP calls:
 
- * VoIP signalling can generate a lot of events as candidates are incrementally discovered, and for rapid call setup these need to be relayed as rapidly as possible.
-   * Putting these into the room timeline means that if the client has a gappy sync, for VoIP to be reliable it will need to go back and fill in the gap before it can process any VoIP events, slowing things down badly.
-   * Timeline events are (currently) subject to harsh rate limiting, as they are assumed to be a spam vector.
- * VoIP signalling leaks IP addresses.  There is no reason to keep these around for posterity, and they should only be exposed to the devices which care about them.
- * Candidates are ephemeral data, and there is no reason to keep them around for posterity - they're just clogging up the DAG.
+* VoIP signalling can generate a lot of events as candidates are incrementally
+  discovered, and for rapid call setup these need to be relayed as rapidly as
+  possible.
+  * Putting these into the room timeline means that if the client has a gappy
+    sync, for VoIP to be reliable it will need to go back and fill in the gap
+    before it can process any VoIP events, slowing things down badly.
+  * Timeline events are (currently) subject to harsh rate limiting, as they are
+    assumed to be a spam vector.
+* VoIP signalling leaks IP addresses.  There is no reason to keep these around
+  for posterity, and they should only be exposed to the devices which care about
+  them.
+* Candidates are ephemeral data, and there is no reason to keep them around for
+  posterity - they're just clogging up the DAG.
 
 Meanwhile we have no native signalling for group calls at all, forcing you to instead embed a separate system such as Jitsi, which has its own dependencies and doesn't directly leverage any of Matrix's encryption, decentralisation, access control or data model.
 
@@ -27,15 +35,17 @@ the early flawed sketch at
 
 This does not immediately replace the current 1:1 call signalling, but may in future provide a migration path to unified signalling for 1:1 and group calls.
 
-Diagramatically, this looks like:
+Diagrammatically, this looks like:
 
 1:1:
-```
+
+```diagram
           A -------- B
 ```
 
 Full mesh between clients
-```
+
+```diagram
           A -------- B
            \       /
             \     /
@@ -45,7 +55,8 @@ Full mesh between clients
 ```
 
 SFU (aka Focus):
-```
+
+```diagram
           A __    __ B
               \  /   
                F 
@@ -56,7 +67,8 @@ Where F is an SFU focus
 ```
 
 Cascaded decentralised SFU:
-```
+
+```diagram
      A1 --.           .-- B1
      A2 ---Fa ----- Fb--- B2
            \       /
@@ -74,14 +86,28 @@ Where Fa, Fb and Fc are SFU foci, one per homeserver, each with two clients.
 
 The user who wants to initiate a call sends a `m.call` state event into the room to inform the room participants that a call is happening in the room. This effectively becomes the placeholder event in the timeline which clients would use to display the call in their scrollback (including duration and termination reason using `m.terminated`). Its body has the following fields:
 
- * `m.intent` to describe the intended UX for handling the call.  One of:
-     * `m.ring` if the call is meant to cause the room participants devices to ring (e.g. 1:1 call or group call)
-     * `m.prompt` is the call should be presented as a conference call which users in the room are prompted to connect to
-     * `m.room` if the call should be presented as a voice/video channel in which the user is immediately immersed on selecting the room.
- * `m.type` to say whether the initial type of call is voice only (`m.voice`) or video (`m.video`).  This signals the intent of the user when placing the call to the participants (i.e. "i want to have a voice call with you" or "i want to have a video call with you") and warns the receiver whether they may be expected to view video or not, and provide suitable initial UX for displaying that type of call... even if it later gets upgraded to a video call.
- * `m.terminated` if this event indicates that the call in question has finished, including the reason why. (A voice/video room will never terminate.) (do we need a duration, or can we figure that out from the previous state event?).  
- * `m.name` as an optional human-visible label for the call (e.g. "Conference call").
- * The State key is a unique ID for that call. (We can't use the event ID, given `m.type` and `m.terminated` is mutable).  If there are multiple non-terminated conf ID state events in the room, the client should display the most recently edited event.
+* `m.intent` to describe the intended UX for handling the call.  One of:
+  * `m.ring` if the call is meant to cause the room participants devices to ring
+    (e.g. 1:1 call or group call)
+  * `m.prompt` is the call should be presented as a conference call which users
+    in the room are prompted to connect to
+  * `m.room` if the call should be presented as a voice/video channel in which
+    the user is immediately immersed on selecting the room.
+* `m.type` to say whether the initial type of call is voice only (`m.voice`) or
+  video (`m.video`).  This signals the intent of the user when placing the call
+  to the participants (i.e. "i want to have a voice call with you" or "i want to
+  have a video call with you") and warns the receiver whether they may be
+  expected to view video or not, and provide suitable initial UX for displaying
+  that type of call... even if it later gets upgraded to a video call.
+* `m.terminated` if this event indicates that the call in question has finished,
+  including the reason why. (A voice/video room will never terminate.) (do we
+  need a duration, or can we figure that out from the previous state event?).  
+* `m.name` as an optional human-visible label for the call (e.g. "Conference
+  call").
+* The State key is a unique ID for that call. (We can't use the event ID, given
+  `m.type` and `m.terminated` is mutable).  If there are multiple non-terminated
+  conf ID state events in the room, the client should display the most recently
+  edited event.
 
 For instance:
 
@@ -105,13 +131,30 @@ Users who want to participate in the call declare this by publishing a `m.call.m
 
 The fields within the item in the `m.calls` contents are:
 
- * `m.call_id` - the ID of the conference the user is claiming to participate in.  If this doesn't match an unterminated `m.call` event, it should be ignored.
- * `m.devices` - The list of the member's active devices in the call. A member may join from one or more devices at a time, but they may not have two active sessions from the same device. Each device contains the following properties:
-   * `device_id` - The device id to use for to-device messages when establishing a call
-   * `session_id` - A unique identifier used for resolving duplicate sessions from a given device. When the `session_id` field changes from an incoming `m.call.member` event, any existing calls from this device in this call should be terminated. `session_id` should be generated once per client session on application load.
-   * `expires_ts` - A POSIX timestamp in milliseconds describing when this device data should be considered stale. When updating their own device state, clients should choose a reasonable value for `expires_ts` in case they go offline unexpectedly. If the user stays connected for longer than this time, the client must actively update the state event with a new expiration timestamp. A device must be ignored if the `expires_ts` field indicates it has expired, or if the user's `m.room.member` event's membership field is not `join`.
-   * `feeds` - Contains an array of feeds the member is sharing and the opponent member may reference when setting up their WebRTC connection.
-     * `purpose` - Either `m.usermedia` or `m.screenshare` otherwise the feed should be ignored.
+* `m.call_id` - the ID of the conference the user is claiming to participate in.
+  If this doesn't match an unterminated `m.call` event, it should be ignored.
+* `m.devices` - The list of the member's active devices in the call. A member
+  may join from one or more devices at a time, but they may not have two active
+  sessions from the same device. Each device contains the following properties:
+  * `device_id` - The device id to use for to-device messages when establishing
+    a call
+  * `session_id` - A unique identifier used for resolving duplicate sessions
+    from a given device. When the `session_id` field changes from an incoming
+    `m.call.member` event, any existing calls from this device in this call
+    should be terminated. `session_id` should be generated once per client
+    session on application load.
+  * `expires_ts` - A POSIX timestamp in milliseconds describing when this device
+    data should be considered stale. When updating their own device state,
+    clients should choose a reasonable value for `expires_ts` in case they go
+    offline unexpectedly. If the user stays connected for longer than this time,
+    the client must actively update the state event with a new expiration
+    timestamp. A device must be ignored if the `expires_ts` field indicates it
+    has expired, or if the user's `m.room.member` event's membership field is
+    not `join`.
+  * `feeds` - Contains an array of feeds the member is sharing and the opponent
+    member may reference when setting up their WebRTC connection.
+    * `purpose` - Either `m.usermedia` or `m.screenshare` otherwise the feed
+      should be ignored.
 
 For instance:
 
@@ -187,11 +230,9 @@ For instance:
 
 This builds on [MSC3077](https://github.com/matrix-org/matrix-spec-proposals/pull/3077), which describes streams in `m.call.*` events via a `sdp_stream_metadata` field.
 
-** TODO: Do we need all of this data? Why would we need it? **
-** TODO: This doesn't follow the MSC3077 format very well - can we do something
-about that? **
-** TODO: Add tracks field **
-** TODO: Add bitrate/format fields **
+**TODO: Do we need all of this data? Why would we need it?** **TODO: This
+doesn't follow the MSC3077 format very well - can we do something about that?**
+**TODO: Add tracks field** **TODO: Add bitrate/format fields**
 
 Clients should do their best to ensure that calls in `m.call.member` state are removed when the member leaves the call. However, there will be cases where the device loses network connectivity, power, the application is forced closed, or it crashes. If the `m.call.member` state has stale device data the call setup will fail. Clients should re-attempt invites up to 3 times before giving up on calling a member.
 
