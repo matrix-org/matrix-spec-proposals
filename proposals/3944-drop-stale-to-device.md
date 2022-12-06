@@ -39,6 +39,11 @@ Servers may drop the following to-device messages from a device's inbox:
   `transaction_id` and sender for some time, so that it can also drop the
   `m.key.verification.cancel` message with the same `transaction_id` and
   sender, if such a message gets sent.
+- `m.room_key_request`, `m.secret.request`, or `m.key.verification.request`
+  messages (along with any corresponding cancellation messages, if any), where
+  the `requesting_device_id` (in the case of `m.room_key_request` and
+  `m.secret.request`), or `device_id` (in the case of
+  `m.key.verification.request`) refers to a device that no longer exists.
 
 ## Potential issues
 
