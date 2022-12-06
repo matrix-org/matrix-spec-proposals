@@ -22,7 +22,7 @@ following changes.
 
 ### New query parameter
 
-`omit_member_events` is added as a new query parameter. This can take the values
+`omit_members` is added as a new query parameter. This can take the values
 `true` or `false`; other values should be rejected with an HTTP 400 error with
 matrix error code `M_INVALID_PARAM`.
 
@@ -37,7 +37,7 @@ free to support it for some rooms and not others.
 
 The following changes are made to the response:
 
- * `member_events_omitted`: a new boolean field is added. This should be set to `true`
+ * `members_omitted`: a new boolean field is added. This should be set to `true`
    to indicate that `m.room.member` events have been omitted from the response.
    It must otherwise be set to `false` or omitted.
 
@@ -55,7 +55,7 @@ The following changes are made to the response:
    (Note that in the case that full state is being returned, the two
    definitions are equivalent.)
 
- * If the `omit_member_events` query parameter was set, we make a further
+ * If the `omit_members` query parameter was set, we make a further
    optimisation to `auth_chain`:
 
    > Any events returned within `state` can be omitted from `auth_chain`.
@@ -64,7 +64,7 @@ The following changes are made to the response:
    must be included in `state`. However, it also forms part of the auth chain
    for all of the returned events, so in the current spec, must *also* be
    included in `auth_chain`. However, this is redundant, so we should omit it
-   for calling servers which opt into that via the `omit_member_events` query param.
+   for calling servers which opt into that via the `omit_members` query param.
 
  * `servers_in_room`: A new field of type `[string]`, listing the servers
    active in the room (ie, those with joined members) before the join.
@@ -72,7 +72,7 @@ The following changes are made to the response:
    This is to be used by the joining server to send outgoing federation
    transactions while it synchronises the full state, as outlined in [MSC3902](https://github.com/matrix-org/matrix-spec-proposals/pull/3902).
 
-   This field is **required** if the `member_events_omitted` response field is true; it
+   This field is **required** if the `members_omitted` response field is true; it
    is otherwise optional.
 
 ## Potential issues
@@ -113,8 +113,8 @@ development:
 
 Proposed final identifier | Purpose         | Development identifier
 ------------------------- | --------------- | ----
-`omit_member_events`      | query parameter | `org.matrix.msc3706.partial_state`
-`member_events_omitted`   | response field  | `org.matrix.msc3706.partial_state`
+`omit_members`            | query parameter | `org.matrix.msc3706.partial_state`
+`members_omitted`         | response field  | `org.matrix.msc3706.partial_state`
 `servers_in_room`         | response field  | `org.matrix.msc3706.servers_in_room`
 
 ## Dependencies
