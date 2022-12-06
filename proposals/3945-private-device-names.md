@@ -1,4 +1,4 @@
-# MSCxxxx: Private device names
+# MSC3945: Private device names
 
 Currently, a device's `display_name` is public; users can see other users'
 devices' display names as part of the result of a `POST /keys/query` request.
