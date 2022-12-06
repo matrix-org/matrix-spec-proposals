@@ -1,4 +1,4 @@
-# MSCxxxx: Dropping stale send-to-device messages
+# MSC3944: Dropping stale send-to-device messages
 
 Matrix allows devices to send messages [directly to other
 devices](https://spec.matrix.org/unstable/client-server-api/#send-to-device-messaging).
