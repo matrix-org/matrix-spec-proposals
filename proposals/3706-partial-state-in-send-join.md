@@ -70,7 +70,7 @@ The following changes are made to the response:
    active in the room (ie, those with joined members) before the join.
 
    This is to be used by the joining server to send outgoing federation
-   transactions while it synchronises the full state.
+   transactions while it synchronises the full state, as outlined in [MSC3902](https://github.com/matrix-org/matrix-spec-proposals/pull/3902).
 
    This field is **required** if the `partial_state` response field is true; it
    is otherwise optional.
