@@ -8,7 +8,7 @@ TODO:
 - [x] Room upgrades will help
 - [x] Definition of obsolete state
 - [x] Rename to "obsolete"
-- [ ] Brief summary of each sub-proposal
+- [x] Brief summary of each sub-proposal
 - [ ] Consider changing "definition of obsolete state" into a sub-proposal
 - [ ] Go through the meeting notes and transfer ideas into sub-proposals
 - [ ] Complete TODOs scattered through the doc
@@ -232,6 +232,11 @@ Based on our definition of "obsolete" state, when sending room state to clients
 for an initial sync, do not include obsolete state.
 
 TODO: specific spec wording change
+
+### New room version
+
+Since this depends on the definition of obsolete state, which requires changes
+to redaction logic, this proposal requires a new room version.
 
 ### Potential issues
 
