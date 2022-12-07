@@ -9,11 +9,14 @@ TODO:
 - [x] Definition of obsolete state
 - [x] Rename to "obsolete"
 - [x] Brief summary of each sub-proposal
-- [ ] Consider changing "definition of obsolete state" into a sub-proposal
-- [ ] Go through the meeting notes and transfer ideas into sub-proposals
+- [x] Consider changing "definition of obsolete state" into a sub-proposal
+    - No, I think it is part of sub-proposal 1
+- [x] Go through the meeting notes and transfer ideas into sub-proposals
 - [ ] Complete TODOs scattered through the doc
-- [ ] Complete detailed definition of sub-proposals
+- [ ] Complete detailed definition of sub-proposals, with help from people who
+      know about each area
 - [ ] Request review
+- [ ] Ask whether we can speed up faster remote joins by omitting obsolete state
 
 ## Introduction
 
@@ -267,6 +270,14 @@ out problems we have not yet considered.
 As soon as we can agree on a definition of obsolete state, we believe this
 proposal can be implemented.
 
+We will want to adapt existing and proposed behaviour to mark obsolete events as
+such. (Examples: leave events, stopping live location sharing, ending a video
+call.) However, this does not need to be done at the same time as implementing
+the behaviour of not sending obsolete state to clients: we can create the
+behaviour first and gradually adapt events to fit with it later.
+
+TODO: look up MSC and spec references for above.
+
 ## Sub-proposal 2: Invite users to an upgraded room
 
 Currently, when an invite-only room is upgraded, all the users must be
@@ -324,6 +335,9 @@ state events in the upgraded room.
 ### Proposal
 ### Potential issues
 
+Homeservers cannot impersonate users from other homeservers, so no one
+homeserver can copy the required state.
+
 TODO: this could cause too much state to be copied, or bad or abusive state to
 be copied.
 
@@ -340,7 +354,12 @@ After a room is upgraded, links to the room still point at the old ID.
 For example:
 
 - room aliases point at the old room ID
-- bot integrations refer to the old room ID
+- bot integrations (including moderation bots) refer to the old room ID
+- space hierarchies depend on room ID to represent parent/child space
+  relationships
+- push rules refer to room IDs
+- sync filters are based on room IDs
+- 3PID invitations include room ID
 
 We propose to make upgraded rooms keep the same room ID as the old version, by
 introducing a server-only sub-ID that represents the version of the room.
