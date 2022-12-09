@@ -21,8 +21,8 @@ note that history import is more than just
 [MSC2716](https://github.com/matrix-org/matrix-spec-proposals/pull/2716) since people
 can use [MSC3316 timestamp
 massaging](https://github.com/matrix-org/matrix-spec-proposals/pull/3316) `?ts=123`
-query parameter to send messages back in time, in general servers can craft events at
-any time which are accepted over federation.
+query parameter to send messages back in time and in general servers can craft events to
+appear as being sent at any timestamp which are accepted over federation.
 
 Replacing the predecessor of a room is also nice if you make a mistake in the import
 process and only notice after the fact. You can easily create a new historical room with
