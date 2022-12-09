@@ -1,4 +1,4 @@
-# MSC0000: Dynamic room predecessor
+# MSC3946: Dynamic room predecessor
 
 Currently, the only way to specify the predecessor of a room is during room creation in
 the `m.room.create` state event which can't be changed after the room is created
@@ -78,7 +78,7 @@ a way to change the predecessor of where people should point to instead.
 ## Unstable prefix
 
 While this feature is in development, the `m.room.predecessor` state event can be used
-as `org.matrix.msc0000.room_predecessor`.
+as `org.matrix.msc3946.room_predecessor`.
 
 Clients can choose to honor the unstable event type at their discretion.
 
