@@ -43,7 +43,7 @@ key | type | value | description | required
 --- | --- | --- | --- | ---
 `predecessor_room_id` | string | Room ID | A reference to the room that came before and was replaced by this room | yes
 
-The presense of `m.room.predecessor` state in the room should take priority over the
+The presence of `m.room.predecessor` state in the room should take priority over the
 `predecessor` specified in the `m.room.create` event.
 
 
