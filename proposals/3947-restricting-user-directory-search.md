@@ -1,4 +1,4 @@
-# MSC0000: Allow Clients to Request Searching the User Directory Constrained to Only Homeserver-Local Users
+# MSC3947: Allow Clients to Request Searching the User Directory Constrained to Only Homeserver-Local Users
 
 Searching for local users is an extremely common task for users on
 organization-owned homeservers. Currently, the client-server protocol does not
