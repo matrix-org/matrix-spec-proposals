@@ -14,7 +14,7 @@ only.
 ### Proposed Protocol Extension
 
 Extend the
-[`client/v3/user_directory/search`](https://matrix.org/docs/api/#post-/_matrix/client/v3/user_directory/search)
+[`client/v3/user_directory/search`](https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3user_directorysearch)
 endpoint to take an optional argument that specifies whether search should be
 constrained to local users, federated users, or both.
 
