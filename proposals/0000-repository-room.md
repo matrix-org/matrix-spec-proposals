@@ -25,7 +25,7 @@ A scene can be submitted by the user using `msc0000.repository_room.scene` messa
 
 ```json
 {
-  "type": "tr.repository_room.scene",
+  "type": "msc0000.repository_room.scene",
   "content": {
     "scene": {
       "url": "mxc:abc",
@@ -48,7 +48,7 @@ Admin can feature a scene by sending `msc0000.repository_room.featured_scene` st
 
 ```json
 {
-  "type": "tr.repository_room.featured_scene",
+  "type": "msc0000.repository_room.featured_scene",
   "state_key": "scene_message_event_id",
   "content": {
     "scene": {
@@ -93,7 +93,7 @@ A [World](https://github.com/matrix-org/matrix-spec-proposals/pull/3815) can be 
 
 ```json
 {
-  "type": "tr.repository_room.featured_world",
+  "type": "msc0000.repository_room.featured_world",
   "state_key": "world_id",
   "content": {
     "suggested": false,
@@ -109,7 +109,7 @@ This state event is same as `msc0000.repository_room.featured_world` but for fea
 
 ```json
 {
-  "type": "tr.repository_room.featured_room",
+  "type": "msc0000.repository_room.featured_room",
   "state_key": "room_id",
   "content": {
     "suggested": false,
