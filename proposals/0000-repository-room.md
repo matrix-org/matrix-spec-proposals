@@ -89,7 +89,7 @@ A user can create a 3D [World](https://github.com/matrix-org/matrix-spec-proposa
 
 ### Featuring world with `msc0000.repository_room.featured_world` state event
 
-A Public [World](https://github.com/matrix-org/matrix-spec-proposals/pull/3815) can be featured by sending `msc0000.repository_room.featured_world` state event with `"state_key"` as `room_id` of the World. `"content"` of this event is same as [`m.space.child`](https://spec.matrix.org/v1.5/client-server-api/#mspacechild). Client can use [MSC3266: Room summary API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266) to display world to user.
+A public [World](https://github.com/matrix-org/matrix-spec-proposals/pull/3815) can be featured by sending `msc0000.repository_room.featured_world` state event with `"state_key"` as `room_id` of the World. `"content"` of this event is same as [`m.space.child`](https://spec.matrix.org/v1.5/client-server-api/#mspacechild). Client can use [MSC3266: Room summary API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266) to display world to user.
 
 ```json
 {
@@ -125,5 +125,5 @@ This state event is same as `msc0000.repository_room.featured_world` but for fea
 
 ## Dependencies
 
-[MSC3815: 3D Worlds](https://github.com/matrix-org/matrix-spec-proposals/pull/3815)
-[MSC3266: Room summary API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266)
+* [MSC3815: 3D Worlds](https://github.com/matrix-org/matrix-spec-proposals/pull/3815)
+* [MSC3266: Room summary API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266)
