@@ -1,4 +1,4 @@
-### MSC0000 Power Level Tags
+### MSC3949 Power Level Tags
 
 Currently permissions in a certain room are handle via `m.room.power_levels`. A power level is an integer value, bigger the integer bigger the power. When we assign power level to a user we gave them power represented as integer value. This integer value is abstract and does not tell what kind of power it represent. Currently spec only suggest mapping abstract integer value to idea as: 0 - 49 to User, 50 - 99 to Moderator - 100 to Admin. This suggestion limits the wide range of power level integers to only three idea's.
 
