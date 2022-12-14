@@ -119,9 +119,9 @@ For symmetry the `room_version` and `encryption` fields are also added to the
 
 ### Server-Server API
 
-For the
+For the server side the federation API of the 
 [`/hierarchy`](https://spec.matrix.org/v1.3/server-server-api/#get_matrixfederationv1hierarchyroomid)
-federation API is reused. This provides (with a few changes) all the information
+endpoint is reused. This provides (with a few changes) all the information
 needed in this MSC, but it also provides a few additional fields and one level
 of children of this room.
 
