@@ -6,30 +6,30 @@ matrix rooms.
 
 ## Proposal
 
-### `msc3948.repository_room` room type
+### `m.repository_room` room type
 
-Repository room can be distinguished by the `"type": "msc3948.repository_room"` key value pair
+Repository room can be distinguished by the `"type": "m.repository_room"` key value pair
 present in `m.room.create` state event content.
 
 ```json
 {
   "type": "m.room.create",
   "content": {
-    "type": "msc3948.repository_room",
+    "type": "m.repository_room",
     "creator": "@example:example.org",
     "m.federate": true,
   }
 }
 ```
 
-### Submitting scene with `msc3948.repository_room.scene` message event
+### Submitting scene with `m.repository_room.scene` message event
 
-A scene can be submitted by the user using `msc3948.repository_room.scene` message event. Other then
+A scene can be submitted by the user using `m.repository_room.scene` message event. Other then
 `author_url` & `source_url` all properties specified below are required to describe a scene.
 
 ```json
 {
-  "type": "msc3948.repository_room.scene",
+  "type": "m.repository_room.scene",
   "content": {
     "scene": {
       "url": "mxc:abc",
@@ -46,9 +46,9 @@ A scene can be submitted by the user using `msc3948.repository_room.scene` messa
 }
 ```
 
-### Featuring scene with `msc3948.repository_room.featured_scene` state event
+### Featuring scene with `m.repository_room.featured_scene` state event
 
-Admin can feature a scene by sending `msc3948.repository_room.featured_scene` state event with
+Admin can feature a scene by sending `m.repository_room.featured_scene` state event with
 `state_key` set to the `event_id` of original scene message event. Original message `"scene"`
 properties can be copied to this event. An additional `order` key is same as specified in spec to
 [order space
@@ -57,7 +57,7 @@ is used to order the featured scene.
 
 ```json
 {
-  "type": "msc3948.repository_room.featured_scene",
+  "type": "m.repository_room.featured_scene",
   "state_key": "scene_message_event_id",
   "content": {
     "scene": {
@@ -99,10 +99,10 @@ can check and prompt an admin for future featured scene updates.
 }
 ```
 
-### Featuring world with `msc3948.repository_room.featured_world` state event
+### Featuring world with `m.repository_room.featured_world` state event
 
 A public [World](https://github.com/matrix-org/matrix-spec-proposals/pull/3815) can be featured by
-sending `msc3948.repository_room.featured_world` state event with `"state_key"` as `room_id` of the
+sending `m.repository_room.featured_world` state event with `"state_key"` as `room_id` of the
 World. `"content"` of this event is same as
 [`m.space.child`](https://spec.matrix.org/v1.5/client-server-api/#mspacechild). Client can use
 [MSC3266: Room summary API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266) to
@@ -110,7 +110,7 @@ display world to user.
 
 ```json
 {
-  "type": "msc3948.repository_room.featured_world",
+  "type": "m.repository_room.featured_world",
   "state_key": "world_id",
   "content": {
     "suggested": false,
@@ -120,14 +120,14 @@ display world to user.
 }
 ```
 
-### Featuring room with  `msc3948.repository_room.featured_room` state event
+### Featuring room with  `m.repository_room.featured_room` state event
 
-This state event is same as `msc3948.repository_room.featured_world` but for featuring normal matrix
+This state event is same as `m.repository_room.featured_world` but for featuring normal matrix
 chat room.
 
 ```json
 {
-  "type": "msc3948.repository_room.featured_room",
+  "type": "m.repository_room.featured_room",
   "state_key": "room_id",
   "content": {
     "suggested": false,
@@ -142,6 +142,13 @@ chat room.
 * A featured World/room can not be joined if room owner made them invite only. Client should not
   display such rooms by looking at the `join_rule` return by [MSC3266: Room summary
   API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266)
+
+## Unstable prefix
+* `msc3948.repository_room` - Repository room type
+* `msc3948.repository_room.scene` - Scene message event type
+* `msc3948.repository_room.featured_scene` - Featured scene state event type
+* `msc3948.repository_room.featured_world` - Featured world state event type
+* `msc3948.repository_room.featured_room` - Featured room state event type
 
 ## Dependencies
 
