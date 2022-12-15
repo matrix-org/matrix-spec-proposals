@@ -1,4 +1,4 @@
-# MSC3948: Repository Room
+# MSC3948: Repository Room for Thirdroom
 
 This spec defines state events that can be used to store and distribute 3D assets (such as scenes
 and avatar), [World](https://github.com/matrix-org/matrix-spec-proposals/pull/3815) and normal
