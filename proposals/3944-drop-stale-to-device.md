@@ -23,8 +23,22 @@ Servers may drop the following to-device messages from a device's inbox:
 
 - `m.room_key_request` with `action: request`, if there is a corresponding
   `m.room_key_request` message with `action: request_cancellation` and the same
-  `request_id` and `requesting_device_id` fields, sent by the same user.  If
-  the request message is dropped, the cancellation message is dropped as well.
+  `request_id` and `requesting_device_id` fields, sent by the same user after
+  the request was made.  If the request message is dropped, the cancellation
+  message is dropped as well.  Room key requests can use the same transaction
+  ID if they are requesting the same room key, so a request could be made, then
+  cancelled, and then re-requested.  Thus the request(s) sent before the
+  cancellation should be dropped, but the request (if any) sent after the
+  cancellation should be kept.
+- `m.room_key_request` with `action: request`, if there are other identical
+  requests that are currently in the devices inbox, sent before this request.
+  Room key requests can use the same transaction ID if they are requesting the
+  same room key.  This can happen, for example, if a key gets requested, and
+  later re-requested.  However, if a device was offline during the initial
+  request and has not received it yet, it is redundant for it to receive both
+  requests.  The server only needs to keep the most recent copy (unless it has
+  been cancelled - see above - in which case it does not need to keep any
+  copy).
 - `m.secret.request` with `action: request`, if there is a corresponding
   `m.secret.request` with `action: request_cancellation` and the same
   `request_id` and `requesting_device_id` fields, sent by the same user.  If
