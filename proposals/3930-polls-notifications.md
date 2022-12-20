@@ -74,7 +74,7 @@ Note that the push rules are mirrored from those available to `m.room.message` e
 }
 ```
 
-Additionally, a new override rule is defined to supress poll responses by default:
+Additionally, a new override rule is defined to suppress poll responses by default:
 
 ```json
 {
