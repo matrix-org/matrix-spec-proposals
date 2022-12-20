@@ -6,6 +6,9 @@ This proposal aims to address that specific feature gap.
 
 Readers should review MSC3381 to better understand how polls are intended to operate in a room.
 
+Push rules are currently defined [here](https://spec.matrix.org/v1.5/client-server-api/#push-rules) in
+specification.
+
 ## Proposal
 
 In order to have polls behave similar to message events, the following underride push rules are defined.
@@ -71,19 +74,34 @@ Note that the push rules are mirrored from those available to `m.room.message` e
 }
 ```
 
-Servers should keep these rules in sync with the `m.room.message` rules they are based upon. For
-example, if the `m.room.message` rule gets muted in a room then the associated rules for polls would
-also get muted. Similarly, if either of the two poll rules were to be muted in a room then the other
-poll rule and the `m.room.message` rule would be muted as well.
+Additionally, a new override rule is defined to supress poll responses by default:
 
-Clients are expected to not require any specific change in order to support these rules. Their user
-experience typically already considers an entry for "messages in the room", which is what a typical
-user would expect to control notifications caused by polls.
+```json
+{
+  "rule_id": ".m.rule.poll_response",
+  "default": true,
+  "enabled": true,
+  "conditions": [
+    {"kind": "event_match", "key": "type", "pattern": "m.poll.response"}
+  ],
+  "actions": []
+}
+```
 
-The server-side syncing of the rules additionally means that clients won't have to manually add support
-for the new rules. Servers as part of implementation will update and incorporate the rules on behalf
-of the users and simply send them down `/sync` per normal - clients which parse the push rules manually
-shouldn't have to do anything as the rule will execute normally.
+*Note*: Lack of `actions` means "don't do anything with matching events", or "don't notify".
+
+Typically these rules would be kept in sync with the `m.room.message` rules they are based upon,
+however there is no requirement to do so. A client's approach might be to only keep them in sync
+while setting the values, rather than monitoring for changes to push rules.
+
+Clients might find [MSC3934](https://github.com/matrix-org/matrix-spec-proposals/pull/3934) of value
+for keeping the rules in sync, though this MSC does not require MSC3934.
+
+For the purposes of [MSC3932](https://github.com/matrix-org/matrix-spec-proposals/pull/3932), the
+push rules defined in this proposal are *not* affected by the room version limitations. This is due
+to polls not inherently being room version-specific, unlike other extensible event structures. For
+clarity, this means the push rules described here are treated the same as `.m.rule.master` (for
+example) - they always apply, regardless of room version.
 
 ## Potential issues
 
