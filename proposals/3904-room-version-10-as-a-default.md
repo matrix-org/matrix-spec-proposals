@@ -36,9 +36,9 @@ For completeness, some links:
 
 * Tracking issue: N/A
 * Library support: https://github.com/ruma/ruma/pull/1213
-* Release: N/A
+* Release: v0.5.0
 * Testing: N/A
-* Update Progress Source: https://matrix.to/#/!NasysSDfxKxZBzJJoE:matrix.org/$jiDPeEk2ELXVIzPCWF9Z7z780TrNL0I4DdCPFHi-GVs?via=matrix.org&via=libera.chat&via=element.io
+* Update Progress Source: https://gitlab.com/famedly/conduit/-/merge_requests/444/diffs?commit_id=1e1a144dfa98429ef9f02d16045796b73013830d
 
 ## Alternatives
 
