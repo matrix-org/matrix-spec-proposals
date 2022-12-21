@@ -49,7 +49,8 @@ When a room key is marked as having been used for shared history:
     }
   }
   ```
-  - the [`SessionData` type](https://spec.matrix.org/unstable/client-server-api/#definition-sessiondata)
+
+- the [`SessionData` type](https://spec.matrix.org/unstable/client-server-api/#definition-sessiondata)
   in key backups (that is, the plaintext object that gets encrypted into the
   `session_data` field) of this key has a `shared_history` property set to
   `true` in the decrypted JSON structure e.g.
