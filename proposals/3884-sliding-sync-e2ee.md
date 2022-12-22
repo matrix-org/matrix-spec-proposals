@@ -31,6 +31,9 @@ the `e2ee` extension response:
 }
 ```
 
+All keys are optional and clients MUST check if they exist prior to use. If there are zero changes to
+every field then the server MAY omit sending back an `e2ee` extension entirely.
+
 The semantics of these fields is exactly the same as the current `/sync` implementation, as implemented
 in v1.3 of the Client-Server Specification. `device_lists` may be omitted if there are no users who
 have changed/left.
