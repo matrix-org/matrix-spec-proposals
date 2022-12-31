@@ -190,7 +190,7 @@ events, since those are not included in the stripped state of a room. (A client
 can call `/joined_members` to receive those if needed. It may still make sense
 to include heroes so that clients could construct a human-friendly room display
 name in case both the name and the canonical alias are absent; but solving the
-security implications with that may better be left to a separate MSC.
+security implications with that may better be left to a separate MSC.)
 
 ### The `/state` API
 
