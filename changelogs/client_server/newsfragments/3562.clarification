@@ -1,1 +1,0 @@
-Clarify that `base_url` in client `well_known` may or may not include trailing slash.

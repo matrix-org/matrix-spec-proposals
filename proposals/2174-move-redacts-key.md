@@ -15,3 +15,9 @@ when serving such events over the Client-Server API.
 For improved compatibility with *newer* clients, servers should add a `redacts`
 property to the `content` of `m.room.redaction` events in *older* room versions
 when serving such events over the Client-Server API.
+
+## Unstable prefix
+
+Implementations should use `org.matrix.msc2174` for the room version containing
+this change until assigned to a specified room version. That room version should
+use room version 6 as a base.

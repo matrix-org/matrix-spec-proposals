@@ -1,8 +1,0 @@
-{{ $ver := .Params.v }}
-{{ $this := .Params.this }}
-
-{{ if $this }}
-  <span>**[New in this version]**</span>
-{{ else }}
-  <span>**[Added in `v{{ $ver }}`]**</span>
-{{ end }} {{/* Do not leave an empty line at the end of this file otherwise the inline behaviour breaks. */}}
