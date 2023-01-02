@@ -10,21 +10,16 @@ a compatibility between the different social media projects.
 
 This MSC tries to cover those following social media cases:
 
-* **'Regular'** social media like Circuli or MinesTRIX
+* **'Regular'** social media like Circles or MinesTRIX
 * **'Art'** social media like Matrix Art
 
 ## The proposal
 
-
 To cover those use case, we will separate our proposal in two part.
 
 * **Room types**: the container which will store the events.
-* **Special events types**: dedicated to the social media use cased
-which will be filtered depending on the client type/UI.
-(displaying a feed or a grid of pictures...).
+* **Special events types**: to differentiate post and comment from room messages.
 
-It is up to the client to filter the room event's and display only
-the one which are relevant on the client purpose.
 
 ### Room
 
@@ -39,8 +34,9 @@ Therefore, we propose two room types. Types are defined according to
 * `m.social.profile`
 * `m.social.group`
 
-Those two rooms will act as a container for events of different
-types, which will be displayed only on a specific client. The type is used to set the general purpose of the room.
+Those two rooms will act as a container for events of different types, which
+will be displayed only on a specific client. The type is used to set the
+general purpose of the room.
 
 #### Social media : The user profile
 
@@ -63,7 +59,7 @@ This MSC remains voluntarily open as user may want to configure the room as he w
 
 Clients should notify the user that encryption shouldn't be enabled
 on 'big / public room'. On a side note, enabling end-to-end encrypted
-rooms with a very large number of participants don't have a lot of sence. 
+rooms with a very large number of participants don't have a lot of sense. 
 
 **UI considerations :**
 
@@ -96,231 +92,75 @@ Group is just a regular profile room `m.social.feed` but with a
 slightly different UI as there is no single owner of the room.
 
 
-### Room content
+### Sending posts
 
-Require
+We propose to define a custom type for posts.
 
-* [MSC1767 - Extensible event types & fallback in Matrix (v2)](https://github.com/matrix-org/matrix-doc/pull/1767)
-
-We propose two events type to categorize the content of the event.
-
-**Why ?**
-
-As the room is displayed alongside the user's regular chats rooms we need
-to make it clear to the user that it's a specific room.
-Thus, we need to avoid that a user end up "spamming" his room thinking
-the room is a regular chat room.
-
-The solution is to separate the regular messaging from the social 
-media posts. Thus, defining special events different from the regular
-messaging events.
-
-It will still be possible to send room message. But those should not
-be displayed on the user wall / in the group.
-
-**Types:**
-
-* `m.social.post`
-* `m.social.pictures`
-
-
-#### Base event
-
-The structure of the event should just be extensible events.
-
-#### Social: Post
 ```
 m.social.post
 ```
 
-A type for general content. It's structure is of type:
+**Why ?**
+
+As the room is displayed alongside the user's regular chats rooms, we need
+to make it clear to the user that it's a specific room.
+Thus, we need to avoid that a user end up "spamming" his room thinking
+the room is a regular chat room.
+
+Therefore, we use different event type to separate the regular messaging
+from the social media posts. It will still be possible to send room message.
+However, those should not be displayed on the user wall / group.
+
+**NB:** An initial version of the proposal was using extensible events but
+we decided to fall back to regular event while waiting for the extensible events
+proposal to stabilize.
+
+
+A type for general content. Its structure is of type:
 
 ```json
 {
   "type": "m.social.post", 
   "content": {
-    "msgtype": "m.text",
-    "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...</p><a href='...'>Read full post</a>",
-    "m.social.post": [
-      {
-        "m.text": "The first part of full text of story, located before image.",
-      }
-    ],
-    "m.social.image-ref": [
+    "body": "The content of the post, can be Markdown",
+    "m.social.image-ref": [ // optional
       "$<event_id>",
     ]
   }
 }
 ```
 
-If we want to embed images in the post, we should first send a `m.social.image` event and then it's event id in the `m.social.image-ref` attribute of the post content. This, to allow user to allow a user to comment an image individually or to reuse it in different posts. This allow us also to display more easily all the images who have been posted in the room.
+#### Embedding images in the post
 
-**TODO:**
+If we want to embed images in the post, we should first send the image as a regular
+event and then put the image event id in the `m.social.image-ref` attribute of the
+post content. This, to allow user to allow a user to comment an image individually
+or to reuse it in different posts. This allows us also to display more easily all
+the images who have been posted in the room.
 
-Define what base events the clients supporting those events
-should be able to display.
-
-#### Social: Image
-
-Base : [MSC3552 - Extensible Events - Images and Stickers](https://github.com/matrix-org/matrix-doc/blob/travis/msc/extev/images/proposals/3552-extensible-events-images.md)
-
-```
-m.social.image
-```
-
-Events adapted to client like Matrix Art to build pictures only
-social media.
-
-UI could be a grid or a list view of pictures.
-
-**Why defining a specific m.social.pictures event ?**
-
-When sending events, we want to be sure that the other users will
-be able to see our posts. Thus, it might be problematic with image
-only social media if we send a post with only text and then want to
-display it in a image only social media or is not able to render
-a fraction of the post (like a post with text, video, image).
-This becomes problematic when the user start making reference
-to previously sent post.
-
-> We define separate types to make sure the app displaying them
-is able to support all the content of this specific event type and
-make sure image only and regular feeds don't mix.
-
-See the later point for regular room message fallback. 
-
-**Required content:**
-
-The list of arguments that should be part of event["content"]
-
-// TODO
-
-like :
-
-* m.image
-
-**Example:**
-
-```json
-{
-  "type": "m.social.image",
-  "content": {
-    "m.social.image": [
-      {
-        "m.caption": [
-            {
-                "m.text": "Tramline in Berlin"
-            },
-            {
-                "body": "Tramline in Berlin",
-                "mimetype": "text/html"
-            }
-        ],
-        "m.file": {
-            "mimetype": "image/jpeg",
-            "name": "_MG_0641.jpg",
-            "size": 10158773,
-            "url": "mxc://"
-        },
-        "m.image": {
-          "height": 3456,
-          "width": 5184
-        },
-        "m.text": "Tramline Berlin",
-        "m.thumbnail": [
-          {
-              "height": 533,
-              "mimetype": "image/jpeg",
-              "size": 215496,
-              "url": "mxc://nordgedanken.dev/",
-              "width": 800
-          }
-        ]
-      }
-    ]
-  },   
-}
-```
-
-#### Linking posts/pictures to the regular chat
-
-One may want to advertise the room that he posted a specific content
-(only visible in a social media client) that may be of interest to user
-and provide a link to it.
-
-This should be up to the user. The client could display a 'advertise in the chat room' button.
-
-A [solution adapted from the one proposed by @MurzNN](https://github.com/matrix-org/matrix-doc/pull/1767#issuecomment-787431678)
-is to define events like this one
-
-```json
-{
-  "type": "m.room.message", // will be m.text in the future. According to extensible events
-  "content": {
-    "msgtype": "m.text",
-    "body": "<h1>The awesome story</h1><p>A long time ago in a galaxy far, far away...
-      </p><a href='...'>Read the full post in your favorite social matrix client</a>",
-    "m.social.post": [
-      {
-        "m.text": "The first part of full text of story, located before image.",
-      },
-      {
-         "m.file": {
-            "mimetype": "image/jpeg",
-            "name": "_MG_0641.jpg",
-            "size": 10158773,
-            "url": "mxc://"
-        },
-        "m.image": {
-          "height": 3456,
-          "width": 5184
-        },
-      },
-      {
-        "m.text": "The ending text of full story after image.",
-      }
-    ]
-  }
-}
-```
-
-On a regular chat client like element, it should render as a simple link.
-
-Another solution is to just send two events, one `m.social.post` or `m.social.image`
-and a summary in the form of a room message.
-
-##### Todo
-
-Some client may not be web pages, thus a `href=""` may not make sense.
-A text fall back, `Open in xxx to see the whole post` could make sense.
 
 ### Reactions
 
-* Emoji reaction will use the regular event.
+* Emoji reactions are standard matrix reactions.
 * However, comments on posts will be threads.
 
-For rooms where only the user can write, it could be interesting to
-allow other users to have a comment only permission.
-See [MSC3394 -  new auth rule that only allows someone to post a message in relation to another message](https://github.com/frandavid100/matrix-doc/blob/threaded-replies/proposals/3394-new-auth-rule-that-only-allows-someone-to-post-a-message-in-relation-to-another-message.md)
-for such a proposal.
+Comments will have the same structure as post but will have the 'm.social.comment'
+type to allow the owner of the room to allow commenting but preventing the other users
+to send posts on this group. As said, comment need to have a thread relation to a post
+event. Failing to do so will have no impact, but the event shouldn't be displayed.
 
-Another way to achieve this could be to use a different event type for comment so we can prevent people to send a post in a group but still allow them to comment.
+**Example:**
 
-### Tagging
-
-We could add a `tags` entry in the event content. The content of those
-tags could be 'hashtags'.
-
-This will be useful for art social media. But we could also see an
-implementation in regular social media like to tag other person.
-
-```json
+```
 {
-  "m.social.post": [/* the post content */],
-  "m.social.tag": [
-    "@mxid",
-    "my chair"
-  ]
+  "type": "org.matrix.msc3639.social.comment",
+  "content": {
+    "body": "ok",
+    "m.relates_to": {
+      "rel_type": "m.thread",
+      "event_id": "$GKhFi7r_7bFx4pWUPfPox8nbCM27aqRkFHwK0PG-Avw"
+    }
+  }
 }
 ```
 
@@ -330,7 +170,7 @@ There has been some discussion about whether we should restrict the
 room to a specific type of content (i.e. the type of the room define
 the UI and how the content should be treated). Here is some consideration about the alternative proposal.
 
-### Advantage of this approach (the main one)
+### Advantage of this approach 
 
 * flexibility
 
@@ -341,7 +181,6 @@ type to this room.
 It will help as we have all our followers in the same room.
 
 ### Disadvantages of this approach
-
 
 #### Complexity / room size
 
@@ -369,19 +208,6 @@ in it.)
 to moderate the room as the user could write event using an event
 type that we don't use. Means longer time before removing those events.
 
-### Alternative proposal
-
-Instead of filtering the room events according to their types,
-we could filter the room directly according to his type.
-Thus defining how the room UI.
-
-We could define
-
-* m.social.feed : for regular social media
-* m.social.image : for image social media
-
-This solution solve the main disadvantages of the previous solution
-but lacks the flexibility.
 
 ## Privacy
 
@@ -398,8 +224,8 @@ m.room.power_levels
 * It must be clear to the user if the actual room is private or not.
 * It must be clear to the user if the actual room is end-to-end encrypted.
 * The user should be able to restrict the users able to write in his room.
-
 * The user should be that all the followers can see each others.
+
 
 
 ## Unstable prefix
@@ -407,12 +233,61 @@ m.room.power_levels
 The following mapping will be used for identifiers in this MSC during development:
 
 
-| Proposed final identifier | Purpose                                                    | Development identifier              |
-| ------------------------- | ---------------------------------------------------------- | ----------------------------------- |
-| `m.social.profile`        | Profile room                                               | `org.matrix.msc3639.social.profile` |
-| `m.social.group`          | Group room                                                 | `org.matrix.msc3639.social.group`   |
-| `m.social.post`           | Post event                                                 | `org.matrix.msc3639.social.post`    |
-| `m.social.image`          | Image event                                                | `org.matrix.msc3639.social.image`   |
-| `m.social.image-ref` | Link to an image event | `org.matrix.msc3639.social.image-ref` |
-| `m.social.tags`           | Tags property of `m.social.post` or `m.social.image` event | `org.matrix.msc3639.social.tag`     |
+| Proposed final identifier | Purpose                 | Development identifier                |
+| ------------------------- | ----------------------- | ------------------------------------- |
+| `m.social.profile`        | Profile room            | `org.matrix.msc3639.social.profile`   |
+| `m.social.group`          | Group room              | `org.matrix.msc3639.social.group`     |
+| `m.social.post`           | Post event              | `org.matrix.msc3639.social.post`      |
+| `m.social.comment`        | Comment on a post event | `org.matrix.msc3639.social.comment`   |
+| `m.social.image-ref`      | Link to an image event  | `org.matrix.msc3639.social.image-ref` |
+
+
+
+## Further idea
+
+### Image post
+
+An earlier version of the proposal allowed to define custom events for 
+
+### Alternative proposal
+
+Instead of filtering the room events according to their types,
+we could filter the room directly according to his type.
+Thus defining how the room UI.
+
+We could define
+
+* m.social.feed : for regular social media
+* m.social.image : for image social media
+
+This solution solve the main disadvantages of the previous solution
+but lacks the flexibility.
+
+
+### Idea: Tagging
+
+*NB:* This is only an idea
+
+We could add a `tags` entry in the event content. The content of those
+tags could be 'hashtags'.
+
+This will be useful for art social media. But we could also see an
+implementation in regular social media like to tag other person.
+
+```json
+{
+  "m.social.post": [/* the post content */],
+  "m.social.tag": [
+    "@mxid",
+    "my chair"
+  ]
+}
+```
+### Unstable prefix
+
+| Proposed final identifier | Purpose                                                          | Development identifier            |
+| ------------------------- | ---------------------------------------------------------------- | --------------------------------- |
+| `m.social.image`          | Image event (deprecated, could be restored in a further version) | `org.matrix.msc3639.social.image` |
+| `m.social.tags`           | Tags property of `m.social.post` or `m.social.image` event       | `org.matrix.msc3639.social.tag`   |
+
 
