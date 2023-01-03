@@ -1,7 +1,8 @@
 # MSC3783: Fixed base64 for SAS verification
 
-libolm's original implementation for calculating the MAC for SAS-based device
-verification [encoded the base64 output
+libolm's original implementation for calculating the
+[MAC](https://spec.matrix.org/v1.5/client-server-api/#mkeyverificationmac) for
+SAS-based device verification [encoded the base64 output
 incorrectly](https://gitlab.matrix.org/matrix-org/olm/-/merge_requests/16).
 Thus other implementations that use a correct base64 encoding are not
 compatible, and must instead [re-implement libolm's incorrect
@@ -16,8 +17,19 @@ method will be deprecated.
 ## Proposal
 
 A new message authentication code identifier `hkdf-hmac-sha256.v2` is
-introduced.  Clients that implement SAS verification are required to implement
-this method.  When the two clients that are verifying each other agree to use
+introduced.  This identifier is used in the `message_authentication_codes`
+property of the
+[`m.key.verification.start`](https://spec.matrix.org/v1.5/client-server-api/#mkeyverificationstartmsasv1)
+event, and the `message_authentication_code` property of the
+[`m.key.verification.accept`](https://spec.matrix.org/v1.5/client-server-api/#mkeyverificationaccept)
+event.  Clients that implement SAS verification are required to implement this
+method.  The `message_authentication_codes` parameter for the
+[`m.key.verification.start`](https://spec.matrix.org/v1.5/client-server-api/#mkeyverificationstartmsasv1)
+event will require clients to include `hkdf-hmac-sha256.v2`.  Clients are no
+longer required to include `hkdf-hmac-sha256`, but should still do so for
+compatibility with older clients.
+
+When the two clients that are verifying each other agree to use
 this method, the MAC is calculated in the same way as `hkdf-hmac-sha256`, but
 is encoded to base64 correctly.
 
