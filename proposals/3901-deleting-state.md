@@ -26,29 +26,31 @@ Matrix rooms have an ever-growing list of state, caused by real-world events
 like someone joining a room or sharing their live location.
 
 Even when this state is potentially of little interest (e.g a person left the
-room a long time ago, or they stopped sharing their location), servers and
-clients must continue processing and passing around the state: once a
-`state_key` has been created it will always exist in a room.
-
-TODO: refer to live location sharing MSC
+room a long time ago, or they stopped sharing their
+[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489)
+location), servers and clients must continue processing and passing around the
+state: once a `state_key` has been created it will always exist in a room.
 
 This ever-increasing list of state causes load on servers and clients in terms
 of CPU, memory, disk and bandwidth. Since some of this state is of little
 interest to users, it would be good to reduce this load.
 
 Further, some more recent spec proposals attempt to increase the number of state
-events in use, and give permission by default for less-privileged users to
-create state events. If these proposals are accepted, it will be easier for
-malicious or spammy users to flood a room with undeletable state, potentially
-mounting a denial of service attack against involved homeservers. So, some
-solution to "clean" an affected room is desirable.
+events in use (e.g.
+[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401),
+[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489)), and
+give permission by default for less-privileged users to create state events
+(e.g. [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757),
+[MSC3779](https://github.com/matrix-org/matrix-spec-proposals/pull/3779)). If
+these proposals are accepted, it will be easier for malicious or spammy users to
+flood a room with undeletable state, potentially mounting a denial of service
+attack against involved homeservers. So, some solution to "clean" an affected
+room is desirable.
 
 Note that throughout this document we are only concerned with state
 events[^and-redactions]: other events are not relevant to this problem.
 
 [^and-redactions] (and of course, events that redact state events.)
-
-TODO: refer to relevant MSCs: live location, and also the owned state ones.
 
 ### How this came about
 
@@ -58,12 +60,11 @@ the room graph to allow "forgetting" old state, and not all ideas were fully
 explored, but all added complexity, and most ended up with some idea of a new
 root node, similar in character to a `m.room.create` event.
 
-We already have a mechanism to start a new room based on an old one: room
-upgrades. So, we agreed to explore ideas about how to make room upgrades more
-seamless, in the hope that they will become good enough to allow "cleaning"
-rooms of unimportant state.
-
-TODO: link to room upgrades in spec.
+We already have a mechanism to start a new room based on an old one: [room
+upgrades](https://spec.matrix.org/v1.5/client-server-api/#room-upgrades). So, we
+agreed to explore ideas about how to make room upgrades more seamless, in the
+hope that they will become good enough to allow "cleaning" rooms of unimportant
+state.
 
 ### Improving room upgrades will help
 
@@ -171,14 +172,15 @@ content.
 
 [^spec-redactions] https://spec.matrix.org/v1.4/rooms/v10/#redactions
 
-TODO: should this be "all redacted events" or "all redacted STATE events"?
-
 ### Leave events are obsolete
 
-We propose to update the definition of membership events so that events saying
-a member has left contain `m.obsolete: true` in their content.
+We propose to update the definition of [membership
+events](https://spec.matrix.org/v1.5/client-server-api/#mroommember) so that
+every event with `membership: "leave"` must also have `m.obsolete: true` in its
+content.
 
-TODO: link to membership events in the spec
+Note: `membership: "ban"` events are not considered obsolete since this
+information is needed in future to prevent bad actors from re-entering a room.
 
 ### Encrypted obsolete state events
 
@@ -271,12 +273,14 @@ As soon as we can agree on a definition of obsolete state, we believe this
 proposal can be implemented.
 
 We will want to adapt existing and proposed behaviour to mark obsolete events as
-such. (Examples: leave events, stopping live location sharing, ending a video
-call.) However, this does not need to be done at the same time as implementing
-the behaviour of not sending obsolete state to clients: we can create the
-behaviour first and gradually adapt events to fit with it later.
-
-TODO: look up MSC and spec references for above.
+such. (Examples: [leave
+events](https://spec.matrix.org/v1.5/client-server-api/#mroommember), stopping
+[live location
+sharing](https://github.com/matrix-org/matrix-spec-proposals/pull/3489), ending
+a [video call](https://github.com/matrix-org/matrix-spec-proposals/pull/3401).)
+However, this does not need to be done at the same time as implementing the
+behaviour of not sending obsolete state to clients: we can create the behaviour
+first and gradually adapt events to fit with it later.
 
 ## Sub-proposal 2: Invite users to an upgraded room
 
