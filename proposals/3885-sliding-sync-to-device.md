@@ -34,6 +34,9 @@ the `to_device` extension response:
 }
 ```
 
+The client MUST persist the `next_batch` value to persistent storage between requests in case the client is
+killed by the OS.
+
 The semantics of the `events` field is exactly the same as the current `/sync` implementation, as implemented
 in v1.3 of the Client-Server Specification. The server MUST NOT send more than `limit` events: it may send
 less than `limit` events if the value provided was too large.
