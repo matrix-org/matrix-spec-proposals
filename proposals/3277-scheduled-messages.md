@@ -51,7 +51,7 @@ The sender's clients will want to track the unsent scheduled messages in its
 various rooms, such that the sender can cancel them by redacting them, or
 edit them (optionally redacting earlier versions <sup id="a1">[1]
 (#f1)</sup>, providing private drafting).  We propose using the same
-mechanism as for tracking 'starred'(aka 'favourited' or 'flagged') messages,
+mechanism as for tracking 'starred' (aka 'favourited' or 'flagged') messages,
 to avoid sprouting two different APIs for almost identical functionality.
 This is deferred to a future MSC.
 
