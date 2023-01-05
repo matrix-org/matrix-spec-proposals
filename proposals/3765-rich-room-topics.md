@@ -13,18 +13,18 @@ options.
 
 ## Proposal
 
-To enrich `m.room.topic` events, we build upon extensible events as
-defined in [MSC1767] and define a new `m.topic` event in `content`.
-The latter contains a list of renderings in the same format that
-[MSC1767] uses for `m.message` events.
+Drawing from extensible events as described in [MSC1767],
+`m.room.topic` is formally deprecated and replaced with a new `m.topic`
+event type. The latter contains an `m.markup` content block representing
+the room topic in different mime types.
 
-```json5
+``` json5
 {
-    "type": "m.room.topic",
+    "type": "m.topic",
     "state_key": "",
     "content": {
-        "m.topic": [{
-            "mimetype": "text/html", // optional, default text/plain
+        "m.markup": [{
+            "mimetype": "text/html",
             "body": "All about <b>pizza</b> | <a href=\"https://recipes.pizza.net\">Recipes</a>"
         }, {
             "mimetype": "text/plain",
@@ -35,12 +35,15 @@ The latter contains a list of renderings in the same format that
 }
 ```
 
+Details of how `m.markup` works may be found in [MSC1767] and are not
+repeated here.
+
 While the content of `m.topic` is currently identical to `m.message`, a
 dedicated event type allows the two to diverge in the future.
 
 A change to `/_matrix/client/v3/createRoom` is not necessary. The
 endpoint has a plain text `topic` parameter but also allows to specify a
-full `m.room.topic` event in `initial_state`.
+full `m.topic` event in `initial_state`.
 
 Room topics also occur as part of the `PublicRoomsChunk` object in the
 responses of `/_matrix/client/v3/publicRooms` and
@@ -51,20 +54,47 @@ the same need for rich room topics as users who are inside the room.
 
 ## Transition
 
-Similar to [MSC1767] a time-constrained transition period is proposed.
-Upon being included in a released version of the specification, the
-following happens:
+The same transition mechanism as in [MSC1767] is proposed. In
+particular, this means a new room version N is introduced. Starting from
+N clients are not permitted to send `m.room.topic` events anymore and
+MUST treat `m.room.topic` as an invalid event type. Instead the new
+`m.topic` event type is to be used.
 
--   The `topic` field in the content of `m.room.topic` events is
-    deprecated
--   Clients continue to include `topic` in outgoing events as a fallback
--   Clients prefer the new `m.topic` format in events which include it
--   A 1 year timer begins for clients to implement the above conditions
-    -   This can be shortened if the ecosystem adopts the format sooner
-    -   After the (potentially shortened) timer, an MSC is introduced to
-        remove the deprecated `topic` field. Once accepted under the
-        relevant process, clients stop including the field in outgoing
-        events.
+Similarly, servers use the `m.topic` event type instead of
+`m.room.topic` when creating rooms with a room version greater or equal
+to N.
+
+Specific care should be taken when rooms are upgraded via
+[`/rooms/{roomId}/upgrade`]. If the new room version is greater or
+equal to N, an existing `m.room.topic` event in the old room
+
+``` json5
+{
+    "type": "m.room.topic",
+    "state_key": "",
+    "content": {
+        "topic": "All about pizza"
+    },
+    ...
+}
+```
+
+should be migrated to an `m.topic` event with a single plain-text markup
+in the new room
+
+``` json5
+{
+    "type": "m.topic",
+    "state_key": "",
+    "content": {
+        "m.markup": [{
+            "mimetype": "text/plain",
+            "body": "All about pizza"
+        }],
+    },
+    ...
+}
+```
 
 ## Potential issues
 
@@ -74,8 +104,8 @@ None.
 
 The combination of `format` and `formatted_body` currently utilised to
 enable HTML in `m.room.message` events could be generalised to
-`m.room.topic` events. However, this would only allow for a single
-format in addition to plain text and is a weaker form of reuse as
+`m.topic` events. However, this would only allow for a single
+format in addition to plain text and is a weaker form of reuse than
 described in the introductory section of [MSC1767].
 
 ## Security considerations
@@ -85,12 +115,13 @@ considerations that apply to HTML in room messages.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, `m.topic` should be referred
-to as `org.matrix.msc3765.topic`.
+While this MSC is not considered stable, `m.topic` should be referred to
+as `org.matrix.msc3765.topic`.
 
 ## Dependencies
 
--   [MSC1767]
+- [MSC1767]
 
   [plain text]: https://spec.matrix.org/v1.2/client-server-api/#mroomtopic
   [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+  [`/rooms/{roomId}/upgrade`]: https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3roomsroomidupgrade
