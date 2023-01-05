@@ -38,6 +38,12 @@ the room topic in different mime types.
 Details of how `m.markup` works may be found in [MSC1767] and are not
 repeated here.
 
+In order to prevent formatting abuse in room topics, clients are
+encouraged to treat the first two lines as the shorthand topic and the
+remainder as additional information. Specifically, this means that
+things like headings and enumerations should be ignored (or formatted
+as regular text) unless they occur after the second line.
+
 While the content of `m.topic` is currently identical to `m.message`, a
 dedicated event type allows the two to diverge in the future.
 
