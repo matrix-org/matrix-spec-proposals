@@ -1,12 +1,13 @@
-# MSC0000: Replacing power levels with capabilities.
+# MSC0000: Server capability DAG
 
 ## The authority of homeservers
 
 Within Matrix, homeservers inherit any authority that any of its users has because of the power to
 impersonate users. This is especially true when a user on a homserver posses the the power level to
-change `m.room.power_levels`, as this means the server can then transfer power to any of its users.
+change `m.room.power_levels`, as this means the server can then also transfer power
+it posses to any other user or server.
 
-Homeserver also have the authority to generate any number of `m.room.member` state events for any
+Homeservers also have the authority to generate any number of `m.room.member` state events for any
 Matrix room where the `m.room.join_rules` is `public`. On top of this, if we want to restrict who
 can generate joins, the `m.room.server_acl` event has to anticipate the existance of any malicious
 server (if the allow rule is `*`) and is an entirely reactive measure.
@@ -19,13 +20,15 @@ any new user the ability to post a message without restriction. This is because
 you increasce the depth of the auth dag which is a recognised risk for increasing the
 chance of experiencing a state reset.
 A single Matrix event is also just not practical for special casing the capabilities of thousands of
-users.
+users, given the size limits of events.
 
 We recognize there is some hesitancy to acknowledge the role of the homeserver within Matrix,
-because it poses questions about how distributed vs decentralised Matrix is.
-We also worry what recognizing the authority of homeservers would do for plans to "make Matrix p2p".
-As far as we are aware, attempts to "make Matrix p2p" merely provide a homeserver with the client.
-So we do not see a cause for conflict.
+because it canonicalises Matrix as decentralised rather than distributed.
+We are also aware what recognizing the authority of homeservers may conflict with plans to
+"make Matrix p2p".
+We are not certain, but we assume attempts to "make Matrix p2p" merely embed a homeserver within
+a client, and also require a Matrix-Matrix bridge to interop with existing Matrix room versions.
+As such, we do not think there will be a technical conflict, only a conflict of priorities.
 
 ## Reshaping event authorization to canonicalise and manage the authority of homeservers.
 
@@ -34,42 +37,37 @@ So we do not see a cause for conflict.
 Currently the authority of homeservers within Matrix has to be inferred from which users have
 power in the room, and the homeservers that they are on. As we discussed earlier,
 homeservers have the power to impersonate users to make changes on their behalf, as well
-as to join any new user to the room should the `m.room.join_rule` be `public`
+as to join any new user to the room should the `m.room.join_rule` be `public`,
 or they have a user which posses the power level to `invite`.
-This means that apart from a few special cases, membership is entirely (a word,
-that's like transparent, but basically it isn't relevant to a homserver once it already
-has a user that is in the room). Yet it remains part of the auth dag.
+This means that apart from a few special cases, and particularly for public rooms,
+user membership can be considered already entirely virtual, yet it remains
+a key part of the authorization dag.
 
 ### So?
 
 Instead we propose that membership of users be forgoed entirely and that instead server
-membership is the only part of membership that is relevant to event authorization
-(I believe this idea has been discussed by Kegan and Till before but I got the idea from Kegan).
+membership is the only part of room membership that is relevant to event authorization.[^1]
+
+[^1]: I believe this idea was originally discussed by Kegan and Till before but I got the idea from Kegan. Not
+sure that either will be thrilled by me appropriating it in this way.
 
 If we take this view, then what happens to user membership?
-In order to keep users out of the auth dag, their membership has to be treated as entirely
-[well, it's not ephemeral and it's not cosmetic].
-Servers who are members who have the capability to send events have the authority
-to send these events with any sender local part.
+In order to keep users out of the auth dag, their membership has to be treated as entirely virtual.
+Servers that possess membership, and also possess the capability to send events therefore will
+also have the authority to send events with any sender local part.
+The same would also apply for the use of any capability, a server can use them under any localpart.
 
 There is somewhat of a precedent for this within Matrix already in the form of application
-services that provide bridging capability. Though currently these must first generate member events.
-
-As far as we are aware, this is already the reality for the overwhelming majority of public
-Matrix rooms, there just are no restrictions in place to control the provisioning of new users
-by homeservers. I would like to reiterate that the reason for canonicalising this relationship
+services that provide bridging for third party users.
+Though currently application services must first generate member events for the virtual users before
+being able to use them in a room. However, the requirement to do so (as mentioned before)
+in the majority of cases provides no barrier. As this is already the reality for the overwhelming
+majority of public Matrix rooms, there just are no restrictions in place to control the provisioning
+of new users by homeservers.
+I would like to reiterate that the reason for canonicalising this relationship
 is so that we can control and restrict that. Ignoring, obscuring, delaying and
-kicking the relationshihp down the road doesn't.
+kicking the relationshihp down the road simply prolongs disaster.
 
-### A note about join conditions
-
-FIXME
-
-We basically want to allow join conditions to be deferred to client logic by
-taking away capabilities on join.
-
-Wait isn't joining without capabilities just knocking? Kinda tbh.
-Though knocking is much more inflexible.
 
 ## Proposal
 
@@ -77,46 +75,42 @@ Though knocking is much more inflexible.
 
 - Server Membership, Kicks, Bans and Invites
 - Server Capabilities
-- Auhorization
-- User Membership and Profiles
-- User capabilities
+- Authorization
+- User Membership, Profiles and Capabilities
 
-### Server membership
+While we entertain some discussion about user membership, profiles and capabilities,
+we do not provide a specific proposal within this MSC.
+We expect there to be competing follow up proposals or an edit to this MSC
+once the main implications of the server capability DAG have been discussed and are understood.
+
+### Server Membership, Kicks, Bans and Invites
 
 Server membership
 
+We inherit all of the states from `m.room.member`,
 `m.room.server_capability.member` has membership `join`, `invite`, `knock`, `leave`, and `ban`.
 
-#### `m.room.server_capability.member`
+```json
+{
+  "content": {
+    "membership": "join"
+  },
+  "state_key": "matrix.org",
+  "sender": "@gnuxie:matrix.org",
+  "type": "m.room.server_capability.member"
+}
+```
 
-Instead `m.room.member` is replaced by `m.room.server_capability.member`
+The `state_key` names the server name that the membership applies to, the
+sender shows which user on the server was responsible for the membership.
 
-. o O ( should membership be tracked serpetley from.-- NO membership IS a capability)
-
-. o O ( Capabilities are all bound by membership though? )
-
-. o O ( capability and not capabilities bc less depth = easier )
-
-. o O ( history visability being a capability is surely better than
-....... relying on membership for that, right? not asserting that yet though )
-
-The state key is the server name.
-
-
-### Capabilities
-
-
-#### `m.room.user_capability.member`
-
-Not part of the auth dag since the authority is based entirely on the server even in current DAG.
-Is always a subset of the capabilities granted to a server.
+### Server Capabilities
 
 #### Events
 
-##### `m.room.base_capabilities` state_key mxid or server name
+##### `m.room.base_capabilities` state_key: server name
 
-If it's an mxid, then it's not an auth event.
-If it's a server name, then it is an auth event.
+This event describes the capabilities that a server possess.
 
 Example below can give servers invite and any of its existing capabilities.
 
@@ -146,53 +140,224 @@ posses to be able to send them.
 `state_default`: true if any state event not named in `events` should be sendable by an entity
 posessing `m.room.server_capability.state_default`.
 
-### Authorization rules
 
-4. 4. If the `sender` possess the capability for `invite`.
+### Authorization
 
-5. 4. If the sender has the capability for `kick` and the target user
+These are amendments that must be made to the authorization rules, room version 10.
 
-### Replacing Reverse topological power ordering
+#### Terminology
 
-so instead of using power levels on tie breaks i'm gonna use origin_server_ts of the capability and
-capabilities can't be granted to yourself only removed so this should be ok, also make it illegal
-for auth chain origin_server_ts to be less than the event before it.
+A connected capability is an event that is directly linked via a reference in
+the event's `auth_events` that is of the same type and also possesses the same capability.
+If a connected capability A is connected to another capability B, which is connected to another
+capability C, then the capabilities A & B, B & C and A & C can all be considered connected.
 
-### Handling redactions
+#### Rule 4, Membership
 
-### Last member with a given capability problem.
+4.  If type is `m.room.server_capability.member`:
+    1.  If there is no `state_key` property, or no `membership` property in
+        `content`, reject.
+    2.  If the `origin_server_ts` of the event granting the sender's membership
+        is greater than the `origin_server_ts` of this event, reject.
+    3.  If `content` has a `join_authorised_via_users_server`
+        key:
+        1.  If the event is not validly signed by the homeserver of the user ID denoted
+            by the key, reject.
+    4.  If `membership` is `join`:
+        1.  If the only previous event is an `m.room.create` and the
+            `state_key` is the creator, allow.
+        2.  If the domain of the server of the user id in `sender` does not match `state_key`, reject.
+        3.  If the server is banned, reject.
+        4.  If the `join_rule` is `invite` or `knock` then allow if
+            membership state is `invite` or `join`.
+        5.  If the `join_rule` is `restricted` or `knock_restricted`:
+            1.  If membership state is `join` or `invite`, allow.
+            2.  If the `join_authorised_via_users_server` key in `content`
+                is not a user with sufficient permission to invite other
+                users, reject.
+            3.  Otherwise, allow.
+        6.  If the `join_rule` is `public`, allow.
+        7.  Otherwise, reject.
+    5.  If `membership` is `invite`:
+        1.  If the `sender`'s server's current membership state is not `join`,
+            reject.
+        2.  If *target server*'s membership state is `join` or
+            `ban`, reject.
+        3.  If the `sender`'s server posses `invite` in their respective `m.room.base_capabilities`
+			event, allow.
+        4.  Otherwise, reject.
+    6.  If `membership` is `leave`:
+        1.  If the `sender`'s server matches `state_key`, allow if and only if
+            that server's current membership state is `invite`, `join`,
+            or `knock`.
+        2.  If the `sender`'s server membership state is not `join`,
+            reject.
+        3.  If the *target server*'s server membership state is `ban`,
+            and the `sender`'s server does not possess `ban` within the servers's respective
+			`m.room.base_capabilities` event, reject.
+        4.  If the `sender` server's first *connected* `m.room.base_capabilities`'s
+			`origin_server_ts` is less than the *target server*'s first *connected*
+			`m.room.base_capabilities`'s `origin_server_ts` that both possess `kick`, allow.
+        5.  Otherwise, reject.
+    7.  If `membership` is `ban`:
+        1.  If the `sender`'s current membership state is not `join`,
+            reject.
+        2.  If the `sender`' server's first *connected* `m.room.base_capabilities`'s
+			`origin_server_ts` is less than the *target server*'s first *connected*
+			`m.room.base_capabilities`'s `origin_server_ts` that both possess `ban`, allow.
+        3.  Otherwise, reject.
+    8. If `membership` is `knock`:
+        1.  If the `join_rule` is anything other than `knock` or
+            `knock_restricted`, reject.
+        2.  If `sender's server` does not match `state_key`, reject.
+        3.  If the `sender`'s current membership is not `ban` or `join`, allow.
+        4.  Otherwise, reject.
+    9.  Otherwise, the membership is unknown. Reject.
 
-if you're the last member to have a capability, if iti s taken away from you
-it must be taken away from the server surely?
+#### Rule 9, `m.room.base_capabilities`
 
-### Custom capabilities
+9. If type is `m.room.base_capabilities`:
+    1.  If the `origin_server_ts` of the event granting the sender's capability
+		is greater than the `origin_server_ts` of this event, reject.
+    2.  If any of the properties `events_default`, `state_default`,
+        `ban`, `redact`, `kick`, or `invite` in `content` are present and
+        not a boolean, reject.
+    3.  If the property of `events` or `notifications` in `content` is not an array with values
+		that are strings, reject.
+    4.  If there is no other `m.room.base_capabilities` event in the room,
+	    with any state key, allow.
+    5.  For the properties `events_default`, `state_default`,
+        `ban`, `redact`, `kick`, `invite`, `notifications` and `events` check if they were added,
+        changed or removed. For each found alteration:
+        1.  If the capability is being attenuated or granted when the `sender` does not possess
+            the capability, reject.
+        2.  If the capability is possessed by the target and the sender, and they are not the same,
+            and the target has a respective connected capability with a lower `origin_server_ts`
+			than the sender, reject.
+    6. Otherwise, allow.
+10. Otherwise, allow.
 
-custom caps have to be referenced by an auth event. The way to cheese this is to have an auth event
-called `m.room.capability_description` with state key of the event type of the new custom entity e.g.
-`org.matrix.mjolnir.command_me` then you can use your custom capability event type with a state key
-that's an mxid or server id (`org.matrix.mjolnir.command_me`, `@meow:matrix.org`)
+#### Replacing Reverse topological power ordering
+
+In order to replace power levels on tie breaks, we propose using the `origin_server_ts` of the
+capability. This works so long as it is illegal to grant a capability with an `origin_server_ts`
+that is less than the `origin_server_ts` of the granting server's own respective
+capability and capabilities can only be granted to a different server (not itself).
+
+#### Mainline ordering
+
+WARNING: I did the find and replace job to see if it made sense, I only think that it does.
+
+Let *B* = *B*<sub>0</sub> be an `m.room.base_capabilities` event.
+Starting with *i* = 0, repeatedly fetch *B*<sub>*i*+1</sub>, the
+`m.room.base_capabilities` event in the `auth_events` of *B<sub>i</sub>*.
+Increment *i* and repeat until *B<sub>i</sub>* has no `m.room.base_capabilities`
+event in its `auth_events`.
+The *mainline of B*<sub>0</sub> is the list of events
+    [*B*<sub>0</sub> , *B*<sub>1</sub>, ... , *B<sub>n</sub>*],
+fetched in this way.
+
+Let *e* = *e<sub>0</sub>* be another event (possibly another
+`m.room.base_capabilities` event). We can compute a similar list of events
+    [*e*<sub>1</sub>, ..., *e<sub>m</sub>*],
+where *e*<sub>*j*+1</sub> is the `m.room.base_capabilities` event in the
+`auth_events` of *e<sub>j</sub>* and where *e<sub>m</sub>* has no
+`m.room.base_capabilities` event in its `auth_events`. (Note that the event we
+started with, *e<sub>0</sub>*, is not included in this list. Also note that it
+may be empty, because *e* may not cite an `m.room.base_capabilities` event in its
+`auth_events` at all.)
+
+Now compare these two lists as follows.
+* Find the smallest index *j* ≥ 1 for which *e<sub>j</sub>* belongs to the
+   mainline of *B*.
+* If such a *j* exists, then *e<sub>j</sub>* = *B<sub>i</sub>* for some unique
+  index *i* ≥ 0. Otherwise set *i* = ∞, where ∞ is a sentinel value greater
+  than any integer.
+* In both cases, the *mainline position* of *e* is *i*.
+
+Given mainline positions calculated from *B*, the *mainline ordering based on* *B*
+of a set of events is the ordering,
+from smallest to largest, using the following comparison relation on
+events: for events *x* and *y*, *x* &lt; *y* if
+
+1.  the mainline position of *x* is **greater** than
+    the mainline position of *y* (i.e. the auth chain of
+    *x* is based on an earlier event in the mainline than *y*); or
+2.  the mainline positions of the events are the same, but *x*'s
+    `origin_server_ts` is *less* than *y*'s `origin_server_ts`; or
+3.  the mainline positions of the events are the same and the events have the
+    same `origin_server_ts`, but *x*'s `event_id` is *less* than *y*'s
+    `event_id`.
+
+
+### User Membership, Profiles and Capabilities
+
+We discuss several ways that membershp, profiles and capabilities could be modeled
+for Matrix users.
+
+#### Unchecked room state
+
+One option would be to keep user membershp events `m.room.member` and introduce
+a copy of `m.room.base_capabilities` for users. However, we believe this will be problematic
+as it will be impossible for a server to check that there is an associated
+`m.room.member` event for each remote user without also bringing these checks into
+authorization rules, which undermines the entire proposal.
+Therefore there would have to be the possibility for inconsistencies between
+which users have capabilities and the actions that the server has taken on their behalf.
+The most obvious example is that a server can generate events in a room for a user without
+an associated `m.room.member` event existing.
+
+#### Out of DAG API
+
+Given that the membership of users is entirely a the authority of the server,
+it makes more sense to take the oppertunity for profile, membership and use specific capability
+lookups to happen via an API that is out of channel (ie this information should not
+be encoded as room state at all). This would make sense, until an associated server
+disappears from the room. If profile information is not part of the room state,
+then the hisotry of that information is lost forever. This could be considered an acceptable
+compromise, if state events continue to have a problem with scaling.
+
+#### Limited auth rules for users with attenuated capabilities
+
+One way to solve a problem where a server could deliberately ignore a member ban
+or the attenuation of one of its users capabilities (compared to the server)
+is to include member specific check into the auth only when the member's capabilities
+(through `base_capabilities` or `membership`) differ from their server's.
+
+This would probably require the introduction of an event representing `base_capabilities`
+for all users on the server by default, which are checked for any event that doesn't match
+a member specific `base_capabilities`.
+
+You would also need to consider whether a member ban was applicable in the first place,
+member bans might just need to be replaced with a reference to an `m.policy.rule.user`.
+
+
+#### Other options
+
+One thing to learn from these different options is that servers need
+the ability to infer membership, profiles and capabilities of remote users
+in circumstances where a remote server isn't providing consistent information,
+and room administrators must be given the oppertunity to ban servers that continue
+to provide inconsistent information about their users.
 
 ## Potential issues
 
-### Mate, how to keep servers in check.
+We are sure they exist, and welcome suggestions but have not listed them yet.
 
-There actually is nothing in place to keep servers in check already in regards
-to joined users and things like a server sharing history or refusing to ban a user.
-
-Well, that's not entirely true. In cases of kick, mute, ban, if the server does
-ignore those, the other servers won't see it. We're moving to a system
-where we don't check that at all.
-But we can just ban the server i guess. That's something that
-the current dag doesn't effectively allow.
-
-Maybe members become part of the auth dag when their capabilities differ from the server.
-That includes being banned.
-
+- Additional checks may be required to ensure the server is representing its user's presence
+  in the room consistently
+- We don't provide clear semantics for user level bans or attenuation of their capabilities
 
 ## Alternatives
 
+We are sure they exist, and welcome suggestions but have not listed them yet.
 
 ## Security considerations
+
+- What impact does this have on smaller rooms such as DMs? It is already undestood that
+  a server can invite any other member to a DM in current room versions,
+  but there may be even more possibilities under this proposal.
+
 
 ## Unstable prefix
 
