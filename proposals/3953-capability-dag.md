@@ -312,6 +312,17 @@ Therefore there would have to be the possibility for inconsistencies between
 which users have capabilities and the actions that the server has taken on their behalf.
 The most obvious example is that a server can generate events in a room for a user without
 an associated `m.room.member` event existing.
+Another example with more severe consequences is a server simply ignoring
+a ban that was sent for a local user by a remote user.
+While this my appear concerning, tools such as [Mjolnir](https://github.com/matrix-org/mjolnir)
+already routinely check every member event within a room and compare them against
+a list of bans, in a linear way without needing to perform these checks during
+state resolution and authorization, only afterwards when the changes become
+visible to client via `/sync` or otherwise.[^linear-checks]
+
+[^linear-checks] Is there a special term for a check that is done after event authorization to
+ensure a consistency that is irrelevant to the DAG, but relevant to end user concerns?
+This could be the key to everything.
 
 #### Out of DAG API
 
