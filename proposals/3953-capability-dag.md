@@ -160,8 +160,9 @@ capability C, then the capabilities A & B, B & C and A & C can all be considered
 4.  If type is `m.room.server_capability.member`:
     1.  If there is no `state_key` property, or no `membership` property in
         `content`, reject.
-    2.  If the `origin_server_ts` of the event granting the sender's membership
-        is greater than the `origin_server_ts` of this event, reject.
+    2.  If the sending server has an existing `m.room.server_capability.member` event granting
+		the sender membership, and the `origin_server_ts` of the event granting the sender's
+		membership is greater than or equal to the `origin_server_ts` of this event, reject.
     3.  If `content` has a `join_authorised_via_users_server`
         key:
         1.  If the event is not validly signed by the homeserver of the user ID denoted
@@ -220,8 +221,9 @@ capability C, then the capabilities A & B, B & C and A & C can all be considered
 #### Rule 9, `m.room.base_capabilities`
 
 9. If type is `m.room.base_capabilities`:
-    1.  If the `origin_server_ts` of the event granting the sender's capability
-		is greater than the `origin_server_ts` of this event, reject.
+    1.  If the sending server has an existing `m.room.base_capabilities` event and the
+		`origin_server_ts` of the event granting the sender's capability
+		is greater or equal than the `origin_server_ts` of this event, reject.
     2.  If any of the properties `events_default`, `state_default`,
         `ban`, `redact`, `kick`, or `invite` in `content` are present and
         not a boolean, reject.
