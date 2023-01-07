@@ -1,4 +1,4 @@
-# MSC0000: Server capability DAG
+# MSC3953: Server capability DAG
 
 ## The authority of homeservers
 
@@ -10,7 +10,7 @@ the user posses to any other user or server.
 
 Homeservers also have the authority to generate any number of `m.room.member` state events for any
 Matrix room where the `m.room.join_rules` is `public`. On top of this, if we want to restrict who
-can generate joins, the `m.room.server_acl` event has to anticipate the existance of any malicious
+can generate joins, the `m.room.server_acl` event has to anticipate the existence of any malicious
 server (if the allow rule is `*`) and is an entirely reactive measure
 (unless the room operates on an `allow` only basis, which very few do).
 On top of this there is also a limit to the servers that can be allowed and denied in the
@@ -141,7 +141,7 @@ posses to be able to send them.
 `events_default`: true if any event not named in `events` should be sendable by an entity possesing
 `m.room.server_capability.events_default`.
 `state_default`: true if any state event not named in `events` should be sendable by an entity
-posessing `m.room.server_capability.state_default`.
+possessing `m.room.server_capability.state_default`.
 
 
 ### Authorization
@@ -314,7 +314,7 @@ an associated `m.room.member` event existing.
 #### Out of DAG API
 
 Given that the membership of users is entirely a the authority of the server,
-it makes more sense to take the oppertunity for profile, membership and use specific capability
+it makes more sense to take the opportunity for profile, membership and use specific capability
 lookups to happen via an API that is out of channel (ie this information should not
 be encoded as room state at all). This would make sense, until an associated server
 disappears from the room. If profile information is not part of the room state,
@@ -353,7 +353,7 @@ Otherwise `m.room.user_default_capabilities` is used.
 One thing to learn from these different options is that servers need
 the ability to infer membership, profiles and capabilities of remote users
 in circumstances where a remote server isn't providing consistent information,
-and room administrators must be given the oppertunity to ban servers that continue
+and room administrators must be given the opportunity to ban servers that continue
 to provide inconsistent information about their users.
 
 ## Potential issues
@@ -374,7 +374,7 @@ We are sure they exist, and welcome suggestions but have not listed them yet.
 
 ## Security considerations
 
-- What impact does this have on smaller rooms such as DMs? It is already undestood that
+- What impact does this have on smaller rooms such as DMs? It is already understood that
   a server can invite any other member to a DM in current room versions,
   but there may be even more possibilities under this proposal.
 
