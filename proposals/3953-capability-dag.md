@@ -379,6 +379,13 @@ We are sure they exist, and welcome suggestions but have not listed them yet.
 - What impact does this have on smaller rooms such as DMs? It is already understood that
   a server can invite any other member to a DM in current room versions,
   but there may be even more possibilities under this proposal.
+- What on earth are you doing with the `origin_server_ts`?
+  This is a good question. Since we no longer have power levels,
+  We need to have a way of tie breaking when two servers have the same capabilities,
+  and one moves to remove the other. Now the idea is that if you
+  have had the capability the "longest", then you should come out on top.
+  It's not clear yet whether `origin_server_ts` is the best way to encode this.
+  Especially if these can be subject to an overflow attack?
 
 
 ## Unstable prefix
