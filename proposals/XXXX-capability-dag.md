@@ -139,9 +139,12 @@ Example below can give servers invite and any of its existing capabilities.
 }
 ```
 By default, events are not sendable.
-`events`: Names events that should have dedicated capabilities that entities (servers, users) most posses to be able to send them.
-`events_default`: true if any event not named in `events` should be sendable by an entity possesing `m.room.server_capability.events_default`.
-`state_default`: true if any state event not named in `events` should be sendable by an entity posessing `m.room.server_capability.state_default`.
+`events`: Names events that should have dedicated capabilities that entities (servers, users) must
+posses to be able to send them.
+`events_default`: true if any event not named in `events` should be sendable by an entity possesing
+`m.room.server_capability.events_default`.
+`state_default`: true if any state event not named in `events` should be sendable by an entity
+posessing `m.room.server_capability.state_default`.
 
 ### Authorization rules
 
