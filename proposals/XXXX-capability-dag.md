@@ -2,31 +2,34 @@
 
 ## The authority of homeservers
 
-Within Matrix, homeservers inherit any authority that any of its users has because of the power to
-impersonate users. This is especially true when a user on a homserver posses the the power level to
-change `m.room.power_levels`, as this means the server can then also transfer power
-it posses to any other user or server.
+Within Matrix, homeservers inherit any authority that any of the server's users has because of the
+ability a server has to impersonate users.
+This is especially true when a user on a homserver posses the the power level to
+change `m.room.power_levels`, as this means the server can then transfer power
+the user posses to any other user or server.
 
 Homeservers also have the authority to generate any number of `m.room.member` state events for any
 Matrix room where the `m.room.join_rules` is `public`. On top of this, if we want to restrict who
 can generate joins, the `m.room.server_acl` event has to anticipate the existance of any malicious
-server (if the allow rule is `*`) and is an entirely reactive measure.
+server (if the allow rule is `*`) and is an entirely reactive measure
+(unless the room operates on an `allow` only basis, which very few do).
 On top of this there is also a limit to the servers that can be allowed and denied in the
 `m.room.server_acl` event.
 
-It is also the norm on Matrix for `events_default` and `users_default` to both be 0, giving
+It is also the norm on Matrix for `events_default` and `users_default` to both be `0`, giving
 any new user the ability to post a message without restriction. This is because
-`m.room.power_levels` is very inflexible and it is known that by changing it frequently,
-you increasce the depth of the auth dag which is a recognised risk for increasing the
-chance of experiencing a state reset.
+`m.room.power_levels` is very inflexible and it is known that by changing `m.room.power_levels`
+frequently, the depth of the auth dag is increased. Unfortunately
+the depth of an auth dag is a recognised risk for increasing the chance of
+a room experiencing a state reset.
 A single Matrix event is also just not practical for special casing the capabilities of thousands of
 users, given the size limits of events.
 
 We recognize there is some hesitancy to acknowledge the role of the homeserver within Matrix,
-because it canonicalises Matrix as decentralised rather than distributed.
-We are also aware what recognizing the authority of homeservers may conflict with plans to
+because this canonicalises Matrix as decentralised rather than distributed.
+We are also aware that recognizing the authority of homeservers may conflict with plans to
 "make Matrix p2p".
-We are not certain, but we assume attempts to "make Matrix p2p" merely embed a homeserver within
+We are not certain, but we also assume attempts to "make Matrix p2p" merely embed a homeserver within
 a client, and also require a Matrix-Matrix bridge to interop with existing Matrix room versions.
 As such, we do not think there will be a technical conflict, only a conflict of priorities.
 
@@ -35,8 +38,8 @@ As such, we do not think there will be a technical conflict, only a conflict of 
 ### What's going on now
 
 Currently the authority of homeservers within Matrix has to be inferred from which users have
-power in the room, and the homeservers that they are on. As we discussed earlier,
-homeservers have the power to impersonate users to make changes on their behalf, as well
+power in the room, and the homeservers that they reside on. As we discussed earlier,
+homeservers have the power to impersonate their own users to make changes on their behalf, as well
 as to join any new user to the room should the `m.room.join_rule` be `public`,
 or they have a user which posses the power level to `invite`.
 This means that apart from a few special cases, and particularly for public rooms,
@@ -79,7 +82,7 @@ kicking the relationshihp down the road simply prolongs disaster.
 - User Membership, Profiles and Capabilities
 
 While we entertain some discussion about user membership, profiles and capabilities,
-we do not provide a specific proposal within this MSC.
+we do not yet provide a specific proposal within this MSC.
 We expect there to be competing follow up proposals or an edit to this MSC
 once the main implications of the server capability DAG have been discussed and are understood.
 
@@ -294,6 +297,7 @@ events: for events *x* and *y*, *x* &lt; *y* if
 
 We discuss several ways that membershp, profiles and capabilities could be modeled
 for Matrix users.
+This section is much more informal than the rest as most of this is design work and WIP.
 
 #### Unchecked room state
 
@@ -331,6 +335,18 @@ a member specific `base_capabilities`.
 You would also need to consider whether a member ban was applicable in the first place,
 member bans might just need to be replaced with a reference to an `m.policy.rule.user`.
 
+##### Something that would work
+
+In addition to the `m.room.base_capabilities` representing the authority of the server.
+We extend `m.room.base_capabilities`, using an mxid as the `state_key` for
+user specific capabilities.
+We extend `m.room.base_capabilities` for a new event `m.room.user_default_capabilities`
+with the state key of the server.
+
+Then any event sent from a server will first have its sender used to search for
+an entry to `m.room.base_capabilities`. If there is an entry, then the event
+is authorized against that.
+Otherwise `m.room.user_default_capabilities` is used.
 
 #### Other options
 
@@ -347,6 +363,10 @@ We are sure they exist, and welcome suggestions but have not listed them yet.
 - Additional checks may be required to ensure the server is representing its user's presence
   in the room consistently
 - We don't provide clear semantics for user level bans or attenuation of their capabilities
+- What is the process for transferring a capability to a user via a server from the perspective
+  of a client?
+- This is a pretty big breaking change, no client is equipped to deal with this,
+  even if a legacy DAG is emulated somehow.
 
 ## Alternatives
 
