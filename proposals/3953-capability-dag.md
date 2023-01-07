@@ -138,7 +138,7 @@ Example below can give servers invite and any of its existing capabilities.
 By default, events are not sendable.
 `events`: Names events that should have dedicated capabilities that entities (servers, users) must
 posses to be able to send them.
-`events_default`: true if any event not named in `events` should be sendable by an entity possesing
+`events_default`: true if any event not named in `events` should be sendable by an entity possessing
 `m.room.server_capability.events_default`.
 `state_default`: true if any state event not named in `events` should be sendable by an entity
 possessing `m.room.server_capability.state_default`.
@@ -320,7 +320,7 @@ a list of bans, in a linear way without needing to perform these checks during
 state resolution and authorization, only afterwards when the changes become
 visible to client via `/sync` or otherwise.[^linear-checks]
 
-[^linear-checks] Is there a special term for a check that is done after event authorization to
+[^linear-checks]: Is there a special term for a check that is done after event authorization to
 ensure a consistency that is irrelevant to the DAG, but relevant to end user concerns?
 This could be the key to everything.
 
