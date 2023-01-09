@@ -140,7 +140,7 @@ An example matching event is provided below:
 
 ### Backwards compatibility
 
-The the [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
+The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
 and [`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules)
 push rules are both deprecated. To avoid the unintentional mentions they are both
 modified to only apply when the `mentions` field is missing. As this is for
