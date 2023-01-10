@@ -160,8 +160,9 @@ will also match. It is postulated that this will not cause issues in most cases.
 ### Abuse potential
 
 This proposal makes it trivial to "hide" mentions since it does not require the
-mentioned Matrix IDs to be part of the displayed text. This is not seen as
-worse than what is possible today.
+mentioned Matrix IDs to be part of the displayed text. Depending on the use this
+can be a feature (similar to CCing a user on an e-mail) or an abuse vector. Overall,
+this MSC does not enable additional malicious behavior than what is possible today.
 
 From discussions and research while writing this MSC there are some benefits to
 using a separate field for mentions:
@@ -182,8 +183,10 @@ tools to combat potential abuse. For example, a client might show a tooltip:
 >
 > Block `@alice:example.org` from sending you messages? `[Yes]` `[No]`
 
-It could also be worth exposing user interface for moderators to see messages
-which mention many users.
+It could also be worth exposing user interface showing all of the mentions in a
+message, especially if those users are not included in the message body. One way
+to do this could be a deemphasized "CC" list. Additionally, it would be useful for
+moderators to quickly find messages which mention many users.
 
 A future MSC might wish to explore features for trusted contacts or soft-ignores
 to give users more control over who can generate notifications.
