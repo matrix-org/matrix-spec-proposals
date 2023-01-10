@@ -142,10 +142,32 @@ An example matching event is provided below:
 
 The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
 and [`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules)
-push rules are both deprecated. To avoid the unintentional mentions they are both
+push rules are both marked for removal. To avoid unintentional mentions both rules are
 modified to only apply when the `mentions` field is missing. As this is for
 backwards-compatibility it is not implemented using a generic mechanism, but
 behavior specific to those push rules with those IDs.
+
+If users wish to continue to be notified of messages containing their display name
+it is recommended that clients create a specific keyword rule for this, e.g. a
+`content` rule of the form:
+
+```json
+{
+  "actions": [
+    "notify",
+    {
+      "set_tweak": "sound",
+      "value": "default"
+    },
+    {
+      "set_tweak": "highlight"
+    }
+  ],
+  "pattern": "alice",
+  "rule_id": "alice",
+  "enabled": true
+}
+```
 
 While this is being deployed there will be a mismatch for legacy clients which
 implement the deprecated `.m.rule.contains_display_name` and `.m.rule.contains_user_name`
