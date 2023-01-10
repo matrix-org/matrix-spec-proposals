@@ -11,7 +11,7 @@ Some situations that result in unintentional mentions include:
 
 * Replying to a message will re-issue pings from the initial message due to
   [fallback replies](https://spec.matrix.org/v1.5/client-server-api/#fallbacks-for-rich-replies). [^1]
-* Each time a message is edited the new version will be re-evaluated for mentions.
+* Each time a message is edited the new version will be re-evaluated for mentions. [^2]
 * Mentions occurring [in spoiler contents](https://github.com/matrix-org/matrix-spec/issues/16)
   or [code blocks](https://github.com/matrix-org/matrix-spec/issues/15) are
   evaluated.
@@ -61,7 +61,7 @@ of the message should be colored differently:
 ## Proposal
 
 Instead of searching a message's `body` for the user's display name or the localpart
-of their Matrix ID, it is proposed to use a field specific to mentions,[^2] and
+of their Matrix ID, it is proposed to use a field specific to mentions,[^3] and
 augment the push rules to search for the current user's Matrix ID.
 
 ### New event field
@@ -109,7 +109,7 @@ A new push rule condition and a new default push rule will be added:
 }
 ```
 
-The `is_mention` push condition is defined as[^3]:
+The `is_mention` push condition is defined as[^4]:
 
 > This matches messages where the `content.mentions` is an array containing the
 > owner’s Matrix ID in the first 10 entries. This condition has no parameters.
@@ -262,7 +262,10 @@ proposes removing reply fallbacks which would solve it. Although as noted in
 may require landing [MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664)
 in order to receive notifications of replies.
 
-[^2]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
+[^2]: Note that this MSC does not attempt to solve the problem of issues generating
+spurious notifications.
 
-[^3]: A new push condition is necessary since none of the current push conditions
+[^3]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
+
+[^4]: A new push condition is necessary since none of the current push conditions
 (e.g. `event_match`) can process arrays.
