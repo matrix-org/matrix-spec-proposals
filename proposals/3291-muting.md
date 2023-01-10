@@ -32,10 +32,7 @@ thing as `sdp_stream_metadata`  in `m.call.negotiate`, `m.call.invite` and
 changed but no negotiation is required (e.g. the user mutes their
 camera/microphone).
 
-If a client sends an event with some of the fields missing the previous state
-should be assumed. If there is no previous state all tracks should be assumed as
-*not* muted. If a track is missing from a stream that track should be considered
-muted.
+All tracks should be assumed unmuted unless specified otherwise.
 
 ### Example
 
