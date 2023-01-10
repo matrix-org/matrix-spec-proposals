@@ -2,7 +2,7 @@
 
 Currently, the only way to specify the predecessor of a room is during room creation in
 the `m.room.create` state event which can't be changed after the room is created
-(the `m.room.create` event is immutable and can't be changed retrospectively).
+(the `m.room.create` event is immutable and can't be changed retroactively).
 
 This is in contrast to specifying the successor of a room via the `m.room.tombstone`
 state event in the `replacement_room` content field which can be sent at any time to
