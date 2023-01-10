@@ -28,6 +28,12 @@ Replacing the predecessor of a room is also nice if you make a mistake in the im
 process and only notice after the fact. You can easily create a new historical room with
 the mistake corrected and splice it into the predecessor/successor chain as necessary.
 
+For the Gitter import case specifically (personal use case), we're using the single
+`/send?ts=123` endpoint with timestamp massaging. We're creating a separate historical
+room, importing the message history one by one, tombstoning to point to the "live" room
+and want to use this MSC to have the "live" room's predecessor point back to the
+historical room.
+
 
 ## Proposal
 
