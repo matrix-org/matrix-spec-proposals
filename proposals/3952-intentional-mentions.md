@@ -69,16 +69,18 @@ augment the push rules to search for the current user's Matrix ID.
 ### New event field
 
 A new `mentions` field is added to the event content, it is an array of strings
-consistent of Matrix IDs.
+consistent of Matrix IDs or the special value: `"@room"`.
 
 To limit the potential for abuse, only the first 10 items in the array should be
 considered. It is recommended that homeservers reject locally created events with
 more than 10 mentions with an error with a status code of `400` and an errcode of
-`M_INVALID_PARAM`.
+`M_INVALID_PARAM`. It is valid to include specific users in addition to the
+`"@room"` value.
 
 Clients should add a Matrix ID to this array whenever composing a message which
 includes an intentional [user mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
-(often called a "pill"). Clients may also add them at other times when it is
+(often called a "pill"). Clients should add the `"@room"` value when making a
+room-wide announcement. Clients may also add them at other times when it is
 obvious the user intends to explicitly mention a user.
 
 If a user generates a message with more than 10 mentions, the client may wish to
@@ -93,16 +95,33 @@ and battery savings.
 
 ### New push rules
 
-A new push rule condition and a new default push rule will be added:
+Two new push rule conditions and corresponding default push rule are proposed:
+
+The `is_user_mention` push condition is defined as[^4]:
+
+> This matches messages where the `content.mentions` is an array containing the
+> owner’s Matrix ID in the first 10 entries. This condition has no parameters.
+> If the `mentions` key is absent or not an array then the rule does not match;
+> any array entries which are not strings are ignored, but count against the limit.
+
+The `is_room_mention` push condition is defined as[^4]:
+
+> This matches messages where the `content.mentions` is an array containing the
+> string `"@room"` in the first 10 entries. This condition has no parameters.
+> If the `mentions` key is absent or not an array then the rule does not match;
+> any array entries which are not strings are ignored, but count against the limit.
+
+The proposed `.m.rule.is_user_mention` override push rule would appear directly
+before the `.m.rule.contains_display_name` push rule:
 
 ```json
 {
-    "rule_id": ".m.rule.user_is_mentioned",
+    "rule_id": ".m.rule.is_user_mention",
     "default": true,
     "enabled": true,
     "conditions": [
         {
-            "kind": "is_mention"
+            "kind": "is_user_mention"
         }
     ],
     "actions": [
@@ -118,14 +137,38 @@ A new push rule condition and a new default push rule will be added:
 }
 ```
 
-The `is_mention` push condition is defined as[^4]:
+The proposed `.m.rule.is_room_mention` override push rule would appear directly
+before the `.m.rule.roomnotif` push rule:
 
-> This matches messages where the `content.mentions` is an array containing the
-> owner’s Matrix ID in the first 10 entries. This condition has no parameters.
-> If the `mentions` key is absent or not an array then the rule does not match;
-> any array entries which are not strings are ignored, but count against the limit.
+```json
+{
+    "rule_id": ".m.rule.is_room_mention",
+    "default": true,
+    "enabled": true,
+    "conditions": [
+        {
+            "kind": "is_room_mention"
+        },
+        {
+            "kind": "sender_notification_permission",
+            "key": "room"
+        }
+    ],
+    "actions": [
+        "notify",
+        {
+            "set_tweak": "sound",
+            "value": "default"
+        },
+        {
+            "set_tweak": "highlight"
+        }
+    ]
+}
+```
 
-An example matching event is provided below:
+An example event matching both `.m.rule.is_user_mention` (for `@alice:example.org`)
+and `.m.rule.is_room_mention` is provided below:
 
 ```json
 {
@@ -134,7 +177,7 @@ An example matching event is provided below:
         "format": "org.matrix.custom.html",
         "formatted_body": "<b>This is an example mention</b> <a href='https://matrix.to/#/@alice:example.org'>Alice</a>",
         "msgtype": "m.text",
-        "mentions": ["@alice:example.org"]
+        "mentions": ["@alice:example.org", "@room"]
     },
     "event_id": "$143273582443PhrSn:example.org",
     "origin_server_ts": 1432735824653,
@@ -149,12 +192,13 @@ An example matching event is provided below:
 
 ### Backwards compatibility
 
-The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
-and [`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules)
-push rules are both marked for removal. To avoid unintentional mentions both rules are
+The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules),
+[`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules),
+and [`.m.rule.roomnotif`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
+push rules are to be removed. To avoid unintentional mentions these rules are
 modified to only apply when the `mentions` field is missing. As this is for
 backwards-compatibility it is not implemented using a generic mechanism, but
-behavior specific to those push rules with those IDs.
+behavior specific to these push rules.
 
 If users wish to continue to be notified of messages containing their display name
 it is recommended that clients create a specific keyword rule for this, e.g. a
@@ -178,16 +222,13 @@ it is recommended that clients create a specific keyword rule for this, e.g. a
 }
 ```
 
-After acceptance, it is likely for different clients and homeservers to disagree
-about which push rules are implemented: legacy clients and homeservers may not
-yet have deprecated the `.m.rule.contains_display_name` and `.m.rule.contains_user_name`
+After acceptance, it is likely for some disagreement about which push rules are
+implemented: legacy clients and homeservers may not yet have deprecated the
+`.m.rule.contains_display_name`, `.m.rule.contains_user_name`, and `.m.rule.roomnotif`
 push rules, while up-to-date clients and homeservers will support the
-`.m.rule.user_is_mentioned` push rule.
-
-It is expected that this will usually take the form of some of the current behavior
-(documented in the preamble) since most messages which contain a mention will also
-[contain the user's display name](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
-in the message `body` and match the `.m.rule.contains_user_name` push rule.
+`.m.rule.is_user_mention` and `.m.rule.is_room_mention` push rules. It is expected
+that both sets of push rules will need to be supported for a period of time, but
+at worst case should simply result in the current behavior (documented in the preamble).
 
 ## Potential issues
 
@@ -245,6 +286,12 @@ push rule. This is particularly useful for large (encrypted) rooms where you wou
 like to receive push notifications for mentions *only*. It is imperative for
 the homeserver to be able to send a push in this case since some mobile platforms,
 e.g. iOS, do not sync regularly in the background.
+
+### Pillifying `@room`
+
+Some clients attempt to create a "pill" out of `@room` mentions, but this is not
+a requirement of the Matrix specification. The current [user and rooms mentions](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
+section could be expanded for this situation.
 
 ## Alternatives
 
