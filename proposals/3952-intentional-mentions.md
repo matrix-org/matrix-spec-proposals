@@ -32,7 +32,7 @@ This results in some unexpected behavior and bugs:
   (or display name).
 * Since the relation between `body` and `formatted_body` is ill-defined and
   ["pills" are converted to display names](https://github.com/matrix-org/matrix-spec/issues/714),
-  this can result in missed messages. [^B]
+  this can result in missed messages. [^3]
 
 There is also some other related bugs:
 
@@ -63,7 +63,7 @@ of the message should be colored differently:
 ## Proposal
 
 Instead of searching a message's `body` for the user's display name or the localpart
-of their Matrix ID, it is proposed to use a field specific to mentions,[^3] and
+of their Matrix ID, it is proposed to use a field specific to mentions,[^4] and
 augment the push rules to search for the current user's Matrix ID.
 
 ### New event field
@@ -97,14 +97,14 @@ and battery savings.
 
 Two new push rule conditions and corresponding default push rule are proposed:
 
-The `is_user_mention` push condition is defined as[^4]:
+The `is_user_mention` push condition is defined as[^5]:
 
 > This matches messages where the `content.mentions` is an array containing the
 > owner’s Matrix ID in the first 10 entries. This condition has no parameters.
 > If the `mentions` key is absent or not an array then the rule does not match;
 > any array entries which are not strings are ignored, but count against the limit.
 
-The `is_room_mention` push condition is defined as[^4]:
+The `is_room_mention` push condition is defined as[^5]:
 
 > This matches messages where the `content.mentions` is an array containing the
 > string `"@room"` in the first 10 entries. This condition has no parameters.
@@ -411,7 +411,7 @@ in order to receive notifications of replies.
 [^2]: Note that this MSC does not attempt to solve the problem of issues generating
 spurious notifications.
 
-[^B]: The `body` is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes):
+[^3]: The `body` is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes):
 
 > When [the `format` field is set to `org.matrix.custom.html`], a formatted_body
 > with the HTML must be provided. The plain text version of the HTML should be
@@ -421,7 +421,7 @@ But there is no particular algorithm to convert from HTML to plain text *except*
 when converting mentions, where the
 [plain text version uses the text, not the link](https://spec.matrix.org/v1.5/client-server-api/#client-behaviour-26).
 
-[^3]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
+[^4]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
 
-[^4]: A new push condition is necessary since none of the current push conditions
+[^5]: A new push condition is necessary since none of the current push conditions
 (e.g. `event_match`) can process arrays.
