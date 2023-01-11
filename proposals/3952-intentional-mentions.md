@@ -85,8 +85,11 @@ If a user generates a message with more than 10 mentions, the client may wish to
 show a warning message to the user; it may silently limit the number sent in the
 message to 10 or force the user to remove some mentions.
 
-The `mentions` field is part of the plaintext event body and should be encrypted
-into the ciphertext for encrypted events.
+The `mentions` field is part of the cleartext event body and should **not** be
+encrypted into the ciphertext for encrypted events. This expoes slightly more
+metadata to homeservers, but allows mentions to work properly via push notifications
+(which is a requirement for a usable chat application) and should result in bandwidth
+and battery savings.
 
 ### New push rules
 
@@ -226,12 +229,22 @@ Overall the proposal does not seem to increase the potential for malicious behav
 
 ## Future extensions
 
+### Configurable mentions limits
+
 It maybe desirable for room administrators to configure the number of allowed
 mentions in a message, e.g. a conference may want to mention 50 people at once
 or it may be appropriate for a kudos room to mention the 15 people on your team.
 Since it is easy enough to work around the limit of 10 mentions in socially
 appropriate situations (by sending multiple messages) it does not seem worth
 the technical complexity of allowing this number to be configurable.
+
+### Muted except for mentions push rules
+
+By leaving the mentions array unencrypted it allows for a "muted-except-for-mentions"
+push rule. This is particularly useful for large (encrypted) rooms where you would
+like to receive push notifications for mentions *only*. It is imperative for
+the homeserver to be able to send a push in this case since some mobile platforms,
+e.g. iOS, do not sync regularly in the background.
 
 ## Alternatives
 
@@ -287,9 +300,38 @@ for extensible events. This does not seem like a good fit since room versions ar
 not usually interested in non-state events. It would additionally require a stable
 room version before use, which would unnecessarily delay usage.
 
+### Encrypting the `mentions` array
+
+Encrypting the `mentions` array would solve some unintentional mentions, but
+will not help with???.
+
+Allowing an encrypted `mentions` array on a per-message basis could allow users
+to choose, but would result in inconsistencies and complications:
+
+* What happens if the cleartext `mentions` field does not match the plaintext
+  `mentions` field?
+* Do push rules get processed on both the cleartext and plaintext message?
+
+It may be argued that clients need to decrypt all messages anyway to handle
+user-specific keywords, the process for doing this is costly (either receiving
+every message via push notifications or backpaginating every room fully, in case
+of a gappy sync) in terms of bandwidth, CPU, and battery.
+
+It is asserted that the use-cases for custom keywords and mentions are sufficiently
+different that having different solutions, and different urgencies to receiving
+those notifications, is reasonable. In particular, custom keywords is more of a
+power-user feature while user mentions working properly (and promptly) is a table-stakes
+feature for a messaging application.
+
 ## Security considerations
 
-None foreseen.
+Including the mentioned users in cleartext is a small metadata leak, but the tradeoff
+of mentions working properly and the savings in bandwidth and battery makes it worthwhile.
+
+The additional metadata leaked is minor since the homeserver already knows the
+room members, how often users are sending messages, when users are receiving messages
+(via read receipts, read markers, and sync), etc. Exposing explicit mentions does not
+significantly increase metadata leakage.
 
 ## Unstable prefix
 
