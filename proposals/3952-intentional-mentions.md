@@ -23,23 +23,25 @@ Some situations that result in unintentional mentions include:
   is replied to).
 
 As a sender you do not know if including the user's display name or Matrix ID would
-even be interpreting as a mention (see [issue 353](https://github.com/matrix-org/matrix-spec/issues/353)).
-
-This also results in some unexpected behavior and bugs:
+even be interpreted as a mention (see [issue 353](https://github.com/matrix-org/matrix-spec/issues/353)).
+This results in some unexpected behavior and bugs:
 
 * Matrix users use "leetspeak" when sending messages to avoid mentions (e.g.
   referring to M4tthew instead of Matthew).
-* Matrix users will append emoji or other unique text in their display names to
-  avoid unintentional pings.
 * It is impossible to ping one out of multiple people with the same localpart
   (or display name).
 * Since the relation between `body` and `formatted_body` is ill-defined and
   ["pills" are converted to display names](https://github.com/matrix-org/matrix-spec/issues/714),
-  this can result in missed messages.
+  this can result in missed messages. [^B]
+
+There is also some other related bugs:
+
+* Matrix users will append emoji or other unique text in their display names to
+  avoid unintentional pings.
 * Bridges [must use display names](https://github.com/matrix-org/matrix-spec/issues/353#issuecomment-1055809364)
   as a trick to get pings to work.
-* If a user changes their display name in a room than whether or not they are
-  mentioned changes unless you use historical display names to process push rules.
+* If a user changes their display name in a room, they might not be mentioned
+  unless the historical display name is used while processing push rules.
   (TODO I think there's an issue about this?)
 
 ## Background
@@ -78,6 +80,10 @@ Clients should add a Matrix ID to this array whenever composing a message which
 includes an intentional [user mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
 (often called a "pill"). Clients may also add them at other times when it is
 obvious the user intends to explicitly mention a user.
+
+If a user generates a message with more than 10 mentions, the client may wish to
+show a warning message to the user; it may silently limit the number sent in the
+message to 10 or force the user to remove some mentions.
 
 The `mentions` field is part of the plaintext event body and should be encrypted
 into the ciphertext for encrypted events.
@@ -169,13 +175,16 @@ it is recommended that clients create a specific keyword rule for this, e.g. a
 }
 ```
 
-While this is being deployed there will be a mismatch for legacy clients which
-implement the deprecated `.m.rule.contains_display_name` and `.m.rule.contains_user_name`
-push rules locally while the `.m.rule.user_is_mentioned` push rule is used on
-the homeserver; as messages which
-[mention the user should also include the user's localpart](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
-in the message `body` it is likely that the `.m.rule.contains_user_name`
-will also match. It is postulated that this will not cause issues in most cases.
+After acceptance, it is likely for different clients and homeservers to disagree
+about which push rules are implemented: legacy clients and homeservers may not
+yet have deprecated the `.m.rule.contains_display_name` and `.m.rule.contains_user_name`
+push rules, while up-to-date clients and homeservers will support the
+`.m.rule.user_is_mentioned` push rule.
+
+It is expected that this will usually take the form of some of the current behavior
+(documented in the preamble) since most messages which contain a mention will also
+[contain the user's display name](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
+in the message `body` and match the `.m.rule.contains_user_name` push rule.
 
 ## Potential issues
 
@@ -215,12 +224,23 @@ to give users more control over who can generate notifications.
 
 Overall the proposal does not seem to increase the potential for malicious behavior.
 
+## Future extensions
+
+It maybe desirable for room administrators to configure the number of allowed
+mentions in a message, e.g. a conference may want to mention 50 people at once
+or it may be appropriate for a kudos room to mention the 15 people on your team.
+Since it is easy enough to work around the limit of 10 mentions in socially
+appropriate situations (by sending multiple messages) it does not seem worth
+the technical complexity of allowing this number to be configurable.
+
 ## Alternatives
 
 ### Prior proposals
 
 There's a few prior proposals which tackle subsets of the above problem:
 
+* [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796):
+  extremely similar to the proposal in this MSC, but limited to encrypted events.
 * [MSC2463](https://github.com/matrix-org/matrix-spec-proposals/pull/2463):
   excludes searching inside a Matrix ID for localparts / display names of other
   users.
@@ -230,10 +250,10 @@ There's a few prior proposals which tackle subsets of the above problem:
 * [Custom push rules](https://o.librepush.net/aux/matrix_reitools/pill_mention_rules.html)
   to search for matrix.to links instead of display name / localpart.
 
-  <summary>
+  <details>
 
-  This generates a new push rule to replace `.m.rule.contains_display_name` and
-  `.m.rule.contains_user_name`:
+  The above generates a new push rule to replace `.m.rule.contains_display_name`
+  and `.m.rule.contains_user_name`:
 
   ```json
   {
@@ -257,7 +277,7 @@ There's a few prior proposals which tackle subsets of the above problem:
   }
   ```
 
-  </summary>
+  </details>
 
 ### Room version for backwards compatibility
 
@@ -289,6 +309,16 @@ in order to receive notifications of replies.
 
 [^2]: Note that this MSC does not attempt to solve the problem of issues generating
 spurious notifications.
+
+[^B]: The `body` is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes):
+
+> When [the `format` field is set to `org.matrix.custom.html`], a formatted_body
+> with the HTML must be provided. The plain text version of the HTML should be
+> provided in the `body`.
+
+But there is no particular algorithm to convert from HTML to plain text *except*
+when converting mentions, where the
+[plain text version uses the text, not the link](https://spec.matrix.org/v1.5/client-server-api/#client-behaviour-26).
 
 [^3]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
 
