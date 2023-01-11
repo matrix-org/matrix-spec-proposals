@@ -195,10 +195,11 @@ and `.m.rule.is_room_mention` is provided below:
 The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules),
 [`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules),
 and [`.m.rule.roomnotif`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
-push rules are to be removed. To avoid unintentional mentions these rules are
-modified to only apply when the `mentions` field is missing. As this is for
-backwards-compatibility it is not implemented using a generic mechanism, but
-behavior specific to these push rules.
+push rules are to be removed.
+
+To avoid unintentional mentions these rules are modified to only apply when the
+`mentions` field is missing and clients should provide the `mentions` field on
+every message to avoid the unintentional mentions discussed above.
 
 If users wish to continue to be notified of messages containing their display name
 it is recommended that clients create a specific keyword rule for this, e.g. a
@@ -382,9 +383,20 @@ significantly increase metadata leakage.
 
 ## Unstable prefix
 
-During development the `.org.matrix.msc3952.is_user_mentioned` push rule will be
-used. If a client sees this rule available it should apply the custom logic discussed
+During development the following mapping will be used:
+
+| What                | Stable                    | Unstable                              |
+|---------------------|---------------------------|---------------------------------------|
+| Push rule ID        | `.m.rule.*`               | `.org.matrix.msc3952.*`               |
+| Push condition kind | `is_user_mention`         | `org.matrix.msc3952.is_user_mention`  |
+| Push condition kind | `is_room_mention`         | `org.matrix.msc3952.is_room_mention`  |
+
+
+If a client sees this rule available it can choose to apply the custom logic discussed
 in the [backwards compatibility](#backwards-compatibility) section.
+
+If a client sees the *stable* identifiers available, they should apply the new
+logic and start creating events with the `mentions` array.
 
 ## Dependencies
 
