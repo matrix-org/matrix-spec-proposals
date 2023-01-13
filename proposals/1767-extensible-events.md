@@ -285,6 +285,18 @@ MSC3955 does by allowing events to be flagged as "automated". Previously it was 
 to flag a text message as an `m.notice` event, however with MSC3955 any event could become
 described as sent by a bot, thus reducing feedback loops.
 
+### Uses of HTML & text throughout the spec
+
+For an abundance of clarity, all functionality not explicitly called out in this MSC which
+relies on the `formatted_body` of an `m.room.message` is expected to transition to using
+an appropriate `m.markup` representation instead. For example, the HTML representation of
+a [mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions) will
+now appear under `m.markup`'s `text/html` representation (adding one if required).
+
+A similar condition is applied to `body` in `m.room.message`: all existing functionality
+will instead use the `text/plain` representation within `m.markup`, if not explicitly
+called out by this MSC.
+
 ## Potential issues
 
 It's a bit ugly to not know whether a given key in `content` will take a string, object,
