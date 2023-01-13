@@ -47,7 +47,7 @@ This enlarges the `state` and the `auth_chain` returned in a partial state respo
 
 ## Alternatives
 
-- Have the resident server compute a dummy room name and express this as a new field in the `/send\_join` response. This is hard to internationalise and complicates the data model for minimal gain.a
+- Have the resident server compute a dummy room name and express this as a new field in the `/send\_join` response. This is hard to internationalise and complicates the data model for minimal gain.
 - Require clients to use the room ID or alias which initiated the join as a room displayname.
   - What if the join was actioned by a different client device, or by the server directly?
 - Change the spec's display name rules to fallback to the room ID if there are no membership events available.
