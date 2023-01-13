@@ -25,6 +25,9 @@ With text being the simplest form of representation for events today, this MSC a
 specifies a relatively basic text schema for room messages that can be reused in other
 events. Other building block types are specified by other MSCs:
 
+* [MSC3954 - Emotes](https://github.com/matrix-org/matrix-doc/pull/3954)
+* [MSC3955 - Notices / automated events](https://github.com/matrix-org/matrix-doc/pull/3955)
+* [MSC3956 - Encryption](https://github.com/matrix-org/matrix-doc/pull/3956)
 * [MSC3927 - Audio](https://github.com/matrix-org/matrix-doc/pull/3927)
 * [MSC3551 - Files](https://github.com/matrix-org/matrix-doc/pull/3551)
 * [MSC3552 - Images and Stickers](https://github.com/matrix-org/matrix-doc/pull/3552)
@@ -40,42 +43,50 @@ Some examples of new features/events using extensible events are:
 * [MSC3765 - Rich text topics](https://github.com/matrix-org/matrix-doc/pull/3765)
 
 **Note**: Readers might find [Andy's blog](https://www.artificialworlds.net/blog/2022/03/08/comparison-of-matrix-events-before-and-after-extensible-events/)
-useful for understanding the problem space. Unfortunately, for those who need to 
-understand the changes to the protocol/specification, the only option is to read 
+useful for understanding the problem space. Unfortunately, for those who need to
+understand the changes to the protocol/specification, the best option is to read
 this proposal.
 
 ## Proposal
 
 In a new room version (why is described later in this proposal), events are declared
 to be represented by their extensible form, as described by this MSC. `m.room.message`
-is formally deprecated by this MSC, with "removal" happening as part of the room
-version adoption. Clients are expected to use extensible events only in rooms versions
-which explicitly declare such support.
+is formally deprecated by this MSC, with removal from the specification happening as
+part of a room version adopting the feature. Clients are expected to use extensible
+events only  in rooms versions which explicitly declare such support (in both unstable
+and stable settings).
 
 An extensible event is made up of two critical parts: an event type and zero or more
-content blocks. The event type describes the information being carried in the event,
-and the content blocks describe how to render that information (whether the client
-understands the event type or not).
+content blocks. The event type defines which content blocks a receiver can expect,
+and the content blocks carry the information needed to render the event (whether the
+client understands the event type or not).
 
 Content blocks are simply any top-level key in `content` on the event. They can have
-any value type, and are namespaced using the
+any value type (that is also legal in an event generally: string, integer, etc), and
+are namespaced using the
 [Matrix conventions for namespacing](https://spec.matrix.org/v1.4/appendices/#common-namespaced-identifier-grammar).
 
-Unlike previous iterations of this proposal, it is not expected that content block
-types (the key in `content`) have a suitably defined event type schema to go along
-with them: instead, content blocks can be invented independent of event types if the
-need arises. For clarity, in previous drafts, this proposal suggested that a "primary"
-event type also have a "reusable" event type in `content`, implying it was possible
-to send a standalone `m.caption` event (for example) - this is not the case in this
-iteration. Instead, an `m.caption` content block can be defined *without* specifying
-an `m.caption` event type. However, event types and content block types can be named
-the same way: they must not be interpretted to be the same logical type.
+Content blocks can be invented independent of event types and *should* be reusable
+in nature. For example, this proposal introduces an `m.markup` content block which
+can be reused by other event types to represent textual fallback.
+
+When a client encounters an extensible event (any event sent in a supported room
+version) that it does *not* understand, the client begins searching for a best match
+based on event type schemas it *does* know. For example, a client might attempt to
+parse the event as a video event first, then try parsing it as audio, then as an
+image, then as a file, and finally as a plain text message. If all of the client's
+options are exhausted, the event is unrenderable by that client (as it would be
+prior to extensible events even existing).
+
+Note that a "client" in an extensible events sense will typically mean an application
+using the Client-Server API, however in reality a client will be anything which needs
+to parse and understand event contents (servers for some functions like push rules,
+application services, etc).
 
 Per the introduction, text is the baseline format that most/all Matrix clients support
 today, often through use of HTML and `m.room.message`. Instead of using `m.room.message`
 to represent this content, clients would instead use an `m.message` event with, at
 a minimum, a `m.markup` content block:
-
 
 ```json5
 {
@@ -118,23 +129,26 @@ Of course, senders are welcome to send even more blocks which aren't specified i
 schema for an event type, however clients which understand that event type might not
 consider them at all.
 
-In `m.message`'s case, `m.markup` is the only required content block and it is required.
-The `m.markup` block can be reused by other events to include a text-like markup for
-the event, such as a text fallback for clients which do not understand how to render
-a custom event type.
+In `m.message`'s case, `m.markup` is the only required content block. The `m.markup`
+block can be reused by other events to include a text-like markup for the event, such
+as a text fallback for clients which do not understand how to render a custom event
+type.
 
-When a client encounters an unknown event type, it first tries to see which, if any,
-content blocks it can use to render it. If it finds a suitable block, it simply uses
-that block to render the event as best it can. The client is permitted to use multiple
-blocks to try and render the event, such as combining image and caption blocks for
-a fallback. It is deliberately left as an implementation detail to decide which
-content blocks to look for, in what order, and what to combine them with (if anything).
+To reiterate, when a client encounters an unknown event type it first tries to see
+if there's a set of content blocks present that it can associate with a known event
+type. If it finds suitable content blocks, it parses the event as though the event
+were of the known type. If it doesn't find anything useful, the event is left as
+unrenderable, just as it likely would today.
 
-If a client is unable to find a suitable content block, or combination of blocks,
-the message is unrenderable and treated as such. For most clients, this will mean
-simply not showing the event at all. To avoid this situation happening too often,
-clients are encouraged to add support for at least `m.markup` to allow all events
-to have a terse fallback option.
+It is left as a deliberate client implementation detail to decide which content blocks
+to search for, and in what order/combination. For example, a client might decide that
+although it understands how to parse an `org.example.type` event, it will deliberately
+not try to "cast" unknown events into that type.
+
+To avoid a situation where events end up being unrenderable, it is strongly
+recommended that all event types support at least an `m.markup` content block in
+their schema, thus allowing all events to theoretically be rendered as message
+events (in a worst case scenario).
 
 ### Worked example: Custom temperature event
 
@@ -186,136 +200,58 @@ Clients should be cautious and avoid reusing too many unspecified types as it ca
 opportunities for confusion and inconsistency. There should always be an effort to get
 useful event types into the Matrix spec for others to benefit from.
 
-### Emotes and notices
-
-Though regular text messages cover a lot of cases, `m.room.message` also supports emote
-and notice as possible message types. Under extensible events, the `m.emote` event type
-replaces the `m.emote` msgtype, as does `m.notice` for notice events, as shown:
-
-```json5
-{
-    // irrelevant fields not shown
-    "type": "m.emote",
-    "content": {
-        "m.markup": [{"body": "says hi"}]
-    }
-}
-```
-
-```json5
-{
-    // irrelevant fields not shown
-    "type": "m.notice",
-    "content": {
-        "m.markup": [{"body": "this is a bot message"}]
-    }
-}
-```
-
-These event types do not define any additional content blocks, instead reusing the markup
-block from earlier in this proposal. `m.markup` is a required block for these event types.
-
-To support event types which may need an emote or notice fallback, `m.emote` and `m.notice`
-are defined as content blocks with an object containing the `content` of a normal `m.emote`
-or `m.notice` event:
-
-```json5
-{
-    // irrelevant fields not shown
-    "type": "org.example.temperature",
-    "content": {
-        "m.notice": {
-            "m.markup": [{"body": "It is 22 degrees at Home"}]
-        },
-        "org.example.probe_value": {
-            "label": "Home",
-            "units": "org.example.celsius",
-            "value": 22
-        }
-    }
-}
-```
-
-While technically possible to include an `m.notice`/`m.emote` content block on an `m.message`
-event, doing so wouldn't really do much: as most clients are expected to understand `m.message`
-events, they would ignore `m.notice` or `m.emote` blocks. Adding the block does *not* turn the
-event into a notice/emote - it is still a regular text message, and the sender probably should
-have used the `m.notice` or `m.emote` event type specifically.
-
 ### Room version
 
-This MSC requires a room version to make the transition process clear and coordinated. In previous
-drafts of this proposal, a timeline was set out for when the ecosystem moves forward: while this
-sort of timeline does work for some features, it is not necessarily the best way to push for a
-whole new event format and gain adoption in a reasonable timeframe.
+This MSC requires a room version to make the transition process clear and coordinated.
+Normally for a feature such as this, an effort would be made to attempt to support
+backwards compatibility for a duration of time, however for a feature that requires
+significant overhaul of clients, servers, and Matrix as a whole it feels more important
+to bias towards a clear switch between legacy and modern (extensible) events.
 
-In that room version, clients MUST only send extensible events. Deprecated event types (to be
-enumerated at the time of making the room version) MUST NOT be sent into rooms of that version,
-or based on that room version, and clients MUST treat those event types as invalid (unrenderable).
-At a minimum, this means clients will NOT send `m.room.message` events in that room version anymore,
-and clients MUST treat `m.room.message` as an invalid event type.
+**Note**: A previous draft of this proposal (codenamed "v1 extensible events") did attempt
+to describe a timeline-based approach, allowing for event types to mix concepts of content
+blocks and legacy fields, however that approach did not give sufficient reason for clients
+to fully adopt the extensible events changes.
 
-While enforcement of this restriction is not possible, servers are encouraged to block client-server
-API requests for sending known-banned event types into applicable rooms. This obviously does not
-help when the room is encrypted though, which is why clients MUST treat the deprecated event types
-as invalid in the room.
+In room versions supporting extensible events, clients MUST only send extensible events.
+Deprecated event types (to be enumerated at the time of making the room version) MUST NOT
+be sent into extensible event-supporting room versions, and clients MUST treat deprecated
+event types as unrenderable by force. For example, if a client sees an `m.room.message` in
+an extensible event-supporting room version, it must not render it, even if it knows how
+to render that type.
 
-The Spec Core Team (SCT) will be responsible for determining when it is reasonable to include extensible
-events in a published room version.
+While full enforcement of this restriction is not feasible, servers are encouraged to block
+Client-Server API requests for sending known-banned event types into applicable rooms. This
+obviously does not help when the room is encrypted, or the client is sending custom events
+in a non-extensible form, hence the requirement that clients treat the events as invalid too.
 
-Meanwhile, client authors can send mixed support for extensible events if they prefer, however SHOULD
-NOT send largely-unknown event types into room versions which do not support extensible events. For
-example, a client might send `m.room.message` events with `m.markup` content blocks, but should not
-send the new `m.message` event type into that same room.
+The Spec Core Team (SCT) will be responsible for determining when it is reasonable to include
+extensible events in a published (stable) room version.
+
+Meanwhile, clients can send mixed support for extensible events if they prefer (such as by
+mixing in `m.markup` onto `m.room.message`), however should avoid sending largely-unknown
+extensible event types into room versions which don't support extensible events. Some event
+types declare explicit support for what would normally be an unsupported room version - client
+authors should check the applicable MSC or specification for the feature to determine if they
+are allowed to do this. Such examples include MSC3381 Polls and MSC3245 Voice Messages.
 
 ### State events
 
-State events typically contain metadata about the room and are not rendered themselves, however there
-are some cases where rendering the state event change might be useful. For example, it might be desirable
-to render a bridge state change with `m.markup` to clearly indicate a bridge was added/edited.
+Unknown state event types generally should not be parsed by clients. This is to prevent situations
+where the sender overly masks a state change as some other, non-state, event. For example, even
+if a state event has an `m.markup` content block, it should not be treated as a room message.
 
-State events MUST make use of content blocks, noting that values like `join_rule` and `membership` found
-in `content` today are implicitly legal content blocks, however are not required to offer "sensible"
-fallback options for rendering.
-
-Clients are not required to render state events as extensible events, though clients which do should
-take care to ensure the events get rendered as applicable events and *not* with any existing state
-event styling. As a specific example, Element Web *should not* render state events with `m.markup`
-fallback as inline system messages, but rather as text messages (as though the user said the words).
-
-### Encryption
-
-Like `m.room.message`, `m.room.encrypted` is also deprecated in favour of a new `m.encrypted` event
-type. `m.encrypted` expects an `m.encrypted` content block, which is the current `content` schema for
-an `m.room.encrypted` event:
-
-```json5
-{
-    // irrelevant fields not shown
-    "type": "m.encrypted",
-    "content": {
-        "m.encrypted": {
-            "algorithm": "m.olm.v1.curve25519-aes-sha2",
-            "sender_key": "<sender_curve25519_key>",
-            "ciphertext": {
-                "<device_curve25519_key>": {
-                    "type": 0,
-                    "body": "<encrypted_payload_base_64>"
-                }
-            }
-        }
-    }
-}
-```
-
-This allows the `m.encrypted` content block to be reused by other event types, if required.
-
-For clarity, this is *not* intended to allow unencrypted fallback on an encrypted event - doing
-so would be extraordinarily dangerous and is explicitly discouraged.
+Note that state events MUST still make use of content blocks in applicable room versions, and that
+any top-level key in `content` is defined as a content block under this proposal. As such, this
+MSC implicitly promotes all existing content fields of `m.*` state events to indepdent content
+blocks as needed. Other MSCs may override this decision on a per-event type basis (ie: redeclaring
+how room topics work to support content blocks, deprecating the existing `m.room.topic` event in
+the process). Unlike most content blocks, these promoted-to-content-blocks are not realistically
+meant to be reused: it is simply a formality given this MSC's scope.
 
 ### Notifications
 
-Currently [push notifications](https://spec.matrix.org/v1.3/client-server-api/#push-notifications)
+Currently [push notifications](https://spec.matrix.org/v1.5/client-server-api/#push-notifications)
 describe how an event can cause a notification to the user, though it makes the assumption
 that there are `m.room.message` events flying around to denote "messages" which can trigger
 keyword/mention-style alerts. With extensible events, the same might not be possible as it
@@ -326,13 +262,8 @@ an `m.markup` block's `text/plain` representation (implied or explicit) in room 
 supporting extensible events. This is not an easy rule to represent in the existing push
 rules schema, and this MSC has no interest in designing a better schema. Note that other
 conditions applied to push notifications, such as an event type check, are not affected by
-this: clients/servers will have to alter applicable push rules to handle the new event types.
-
-A future MSC is expected to address the default push rules having a hardcoded event type.
-
-A future MSC is also expected to introduce a better system for handling push notifications
-on extensible events. This MSC aims for basic compatibility with the shortest turnaround
-rather than getting riled in discussion about a notifications system structure.
+this: clients/servers will have to alter applicable push rules to handle the new event types
+(see also: [MSC3933](https://github.com/matrix-org/matrix-spec-proposals/pull/3933) and friends).
 
 ### Power levels
 
@@ -346,11 +277,20 @@ As of writing, most rooms fit into two categories: any event type is possible to
 specific cherry-picked event types are allowed (announcement rooms: reactions & redactions).
 Extensible events don't materially change the situation implied by this power levels structure.
 
+### Mixins specifically allowed
+
+Mixins are content blocks which add semantic meaning to an event without materially changing
+the rendering of that event. Though this MSC does not describe any such mixins itself,
+MSC3955 does by allowing events to be flagged as "automated". Previously it was only possible
+to flag a text message as an `m.notice` event, however with MSC3955 any event could become
+described as sent by a bot, thus reducing feedback loops.
+
 ## Potential issues
 
-It's a bit ugly to not know whether a given key in `content` will take a string, object or array.
+It's a bit ugly to not know whether a given key in `content` will take a string, object,
+boolean, integer, or array.
 
-It's a bit arbitrary as to which fields are allowed lists of fallbacks (eg image thumbnails).
+It's a bit ugly to not know at a glance if a content block is a mixin or not.
 
 It's a bit ugly that you have to look over the keys of contents to see what blocks
 are present, but better than duplicating this into an explicit `blocks` list within the
@@ -377,6 +317,19 @@ this is complicated with features like HTML and arbitrary custom markup (markdow
 showing up in the plaintext or in tertiary formats on the events. Historically, room
 moderators have been pretty good about removing these malicious senders from their rooms
 when other users point out (quite quickly) that the event is appearing funky to them.
+
+## Note about spec process
+
+Extensible events as a spec feature requires dozens of different MSCs, with this MSC being
+the structure definition and text baseline. It is *not* expected that this MSC will be
+written into spec once it has passed FCP. Instead, it is expected that all of the "core"
+extensible events MSCs will pass FCP and extensible events be assigned a stable room version
+before any spec authoring begins. Thus, this particular MSC should be anticipated to sit
+in accepted-but-not-merged (stable, not formal spec yet) for a while, and that's okay.
+
+The Spec Core Team (SCT) has decision making power over what is considered core for extensible
+events, though the recommendation is to ensure replacements for all non-state `m.room.*` types
+have accepted (successful FCP) MSCs to replace them.
 
 ## Unstable prefix
 
@@ -429,14 +382,5 @@ send stable identifiers at all.
 * Fix push rules in the most basic sense, deferring to a future MSC on better support.
 * Explicitly make no changes to power levels, deferring to a future MSC on better support.
 * Drop timeline for transition in favour of an explicit room version.
-
-## MSC Dependencies
-
-This proposal mentions that some functionality is left for a future MSC, and some of that
-functionality might seem like a reasonable blocker for this proposal entering FCP. Specifically,
-while this MSC lays the groundwork for extensible events and deprecates `m.room.message`, it
-does not have an immediate answer to all of the existing `msgtype` options: it is a goal to
-land this proposal as a nod towards the system working, with other MSCs being accepted at their
-own pace to build a complete system. Once enough of a system is defined (ie: all `msgtype` options
-covered), it is expected that "Extensible Events" as a system enters the specification - not
-in pieces.
+* Move most push rule changes and such into their own/future MSCs.
+* Move emotes, notices, and encryption out to their own dedicated MSCs.
