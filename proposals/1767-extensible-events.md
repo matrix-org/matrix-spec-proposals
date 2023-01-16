@@ -150,6 +150,22 @@ recommended that all event types support at least an `m.markup` content block in
 their schema, thus allowing all events to theoretically be rendered as message
 events (in a worst case scenario).
 
+For clarity, events are not able to specify *how* they are handled when the receiver
+doesn't know how to render the event type: the sender simply includes all possible or
+feasible representations for the data, hoping the receiver will pick the richest form
+for the user. As an example, a special medical imaging event type might also be
+represented as a video, static image, or text (URL to some healthcare platform): the
+sender includes all 3 fallbacks by specifying the needed content blocks, and the
+receiver may pick the video, image, or text depending on its own rules.
+
+Events must still only represent a single logical piece of information, thus encouraging
+sensible fallback options in the form of content blocks. The information being represented
+is described by the event type, as it always has been before this MSC. It is explicitly
+not permitted to represent two or more pieces of information in a single event, such
+as a livestream reference and poll: senders should look into
+[relationships](https://spec.matrix.org/v1.5/client-server-api/#forming-relationships-between-events)
+instead.
+
 ### Worked example: Custom temperature event
 
 In a hypothetical scenario, a temperature event might look as such:
