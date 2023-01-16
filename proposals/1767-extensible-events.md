@@ -279,8 +279,8 @@ Extensible events don't materially change the situation implied by this power le
 
 ### Mixins specifically allowed
 
-Mixins are content blocks which add semantic meaning to an event without materially changing
-the rendering of that event. Though this MSC does not describe any such mixins itself,
+[Mixins](https://en.wikipedia.org/wiki/Mixin) are supported by Extensible Events through
+dedicated content blocks. Though this MSC does not describe any such mixins itself,
 MSC3955 does by allowing events to be flagged as "automated". Previously it was only possible
 to flag a text message as an `m.notice` event, however with MSC3955 any event could become
 described as sent by a bot, thus reducing feedback loops.
