@@ -146,11 +146,6 @@ type. If it finds suitable content blocks, it parses the event as though the eve
 were of the known type. If it doesn't find anything useful, the event is left as
 unrenderable, just as it likely would today.
 
-It is left as a deliberate client implementation detail to decide which content blocks
-to search for, and in what order/combination. For example, a client might decide that
-although it understands how to parse an `org.example.type` event, it will deliberately
-not try to "cast" unknown events into that type.
-
 To avoid a situation where events end up being unrenderable, it is strongly
 recommended that all event types support at least an `m.markup` content block in
 their schema, thus allowing all events to theoretically be rendered as message
