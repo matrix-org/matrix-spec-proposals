@@ -300,6 +300,10 @@ how an event is processed. All mixins are content blocks, and content blocks whi
 mixins will be called out as such in the spec. Mixins are meant to be purely additive,
 thus all event types MUST support being rendered/processed *without* the use of mixins.
 
+Note that mixins differ from optional content blocks in an event type's schema: a mixin
+is able to be applied to *any* event type sensibly while optional content blocks are
+generally only valuable to the applicable event types.
+
 Though this MSC does not describe any such mixins itself,
 [MSC3955](https://github.com/matrix-org/matrix-spec-proposals/pull/3955) does by allowing any
 event to be flagged as "automated" - a strictly additive annotation on events.
