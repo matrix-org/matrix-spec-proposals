@@ -293,11 +293,19 @@ Extensible events don't materially change the situation implied by this power le
 
 ### Mixins specifically allowed
 
-[Mixins](https://en.wikipedia.org/wiki/Mixin) are supported by Extensible Events through
-dedicated content blocks. Though this MSC does not describe any such mixins itself,
-MSC3955 does by allowing events to be flagged as "automated". Previously it was only possible
-to flag a text message as an `m.notice` event, however with MSC3955 any event could become
-described as sent by a bot, thus reducing feedback loops.
+[Mixins](https://en.wikipedia.org/wiki/Mixin) are supported by Extensible Events to change
+how an event is processed. All mixins are content blocks, and content blocks which are
+mixins will be called out as such in the spec. Mixins are meant to be purely additive,
+thus all event types MUST support being rendered/processed *without* the use of mixins.
+
+Though this MSC does not describe any such mixins itself, MSC3955 does by allowing any
+event to be flagged as "automated" - a strictly additive annotation on events.
+
+Another possible mixin would be `m.relates_to` (not described by this MSC). Currently,
+some features like the [key verification framework](https://spec.matrix.org/v1.5/client-server-api/#key-verification-framework)
+rely on relationships as part of making the feature work. The expectectation is that
+these features would be adapted to meet the "purely additive" condition (assuming
+`m.relates_to` does actually end up being a mixin).
 
 ### Uses of HTML & text throughout the spec
 
