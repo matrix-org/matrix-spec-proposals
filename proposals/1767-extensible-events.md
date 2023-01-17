@@ -110,8 +110,7 @@ a minimum, a `m.markup` content block:
   at least one.
 * Invalid representations are skipped by clients (missing `body`, not an object, etc).
 * The first representation a renderer understands should be used.
-* Senders are strongly encouraged to always include a plaintext representation,
-  however are equally permitted to send an HTML representation instead.
+* Senders are strongly encouraged to always include a plaintext representation.
 * The `mimetype` of a representation determines its `body` - no effort is made to
   limit what is allowed in the `body` (ie: we don't specify what is allowable HTML),
   therefore it is the client's responsibility to validate/sanitize the content further,
