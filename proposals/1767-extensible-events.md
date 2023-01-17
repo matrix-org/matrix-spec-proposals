@@ -53,7 +53,7 @@ In a new room version (why is described later in this proposal), events are decl
 to be represented by their extensible form, as described by this MSC. `m.room.message`
 is formally deprecated by this MSC, with removal from the specification happening as
 part of a room version adopting the feature. Clients are expected to use extensible
-events only  in rooms versions which explicitly declare such support (in both unstable
+events only in rooms versions which explicitly declare such support (in both unstable
 and stable settings).
 
 An extensible event is made up of two critical parts: an event type and zero or more
