@@ -240,15 +240,14 @@ Client-Server API requests for sending known-banned event types into applicable 
 obviously does not help when the room is encrypted, or the client is sending custom events
 in a non-extensible form, hence the requirement that clients treat the events as invalid too.
 
-The Spec Core Team (SCT) will be responsible for determining when it is reasonable to include
-extensible events in a published (stable) room version.
+Using the usual MSC process, the Spec Core Team (SCT) will be responsible for determining
+the minimum scope of extensible events in a published (stable) room version.
 
-Meanwhile, clients can send mixed support for extensible events if they prefer (such as by
-mixing in `m.markup` onto `m.room.message`), however should avoid sending largely-unknown
-extensible event types into room versions which don't support extensible events. Some event
-types declare explicit support for what would normally be an unsupported room version - client
-authors should check the applicable MSC or specification for the feature to determine if they
-are allowed to do this. Such examples include MSC3381 Polls and MSC3245 Voice Messages.
+Meanwhile, clients are welcome to use the unstable implementations of extensible event-supporting
+features, provided they are in an appropriate room version. Some event type MSCs declare
+explicit support for what would normally be an unsupported room version - client authors
+should check the applicable MSC or specification for the feature to determine if they are
+allowed to do this. Such examples include MSC3381 Polls and MSC3245 Voice Messages.
 
 ### State events
 
@@ -363,25 +362,6 @@ have accepted (successful FCP) MSCs to replace them.
 While this MSC is not considered stable by the specification, implementations *must* use
 `org.matrix.msc1767` as a prefix to denote the unstable functionality. For example, sending
 an `m.message` event would mean sending an `org.matrix.msc1767.message` event instead.
-
-Implementations looking to mix extensible events with past events, per elsewhere in this
-proposal, would do something like the following (in the case of `m.room.message`, at least):
-
-```json5
-{
-    "type": "m.room.message",
-    "content": {
-        "msgtype": "m.text",
-        "body": "Hello World",
-        "format": "org.matrix.custom.html",
-        "formatted_body": "<b>Hello</b> World",
-        "org.matrix.msc1767.markup": [
-            {"body": "Hello World"},
-            {"body": "<b>Hello</b> World", "mimetype": "text/html"}
-        ]
-    }
-}
-```
 
 For purposes of testing, implementations can use a dynamically-assigned unstable room version
 `org.matrix.msc1767.<version>` to use extensible events within. For example, `org.matrix.msc1767.10`
