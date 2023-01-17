@@ -54,7 +54,7 @@ to be represented by their extensible form, as described by this MSC. `m.room.me
 is formally deprecated by this MSC, with removal from the specification happening as
 part of a room version adopting the feature. Clients are expected to use extensible
 events only in rooms versions which explicitly declare such support (in both unstable
-and stable settings).
+and stable settings), except where noted later in this proposal.
 
 An extensible event is made up of two critical parts: an event type and zero or more
 content blocks. The event type defines which content blocks a receiver can expect,
