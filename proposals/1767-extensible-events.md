@@ -72,11 +72,16 @@ can be reused by other event types to represent textual fallback.
 
 When a client encounters an extensible event (any event sent in a supported room
 version) that it does *not* understand, the client begins searching for a best match
-based on event type schemas it *does* know. For example, a client might attempt to
-parse the event as a video event first, then try parsing it as audio, then as an
-image, then as a file, and finally as a plain text message. If all of the client's
-options are exhausted, the event is unrenderable by that client (as it would be
-prior to extensible events even existing).
+based on event type schemas it *does* know. This may mean combining multiple different
+content blocks to match a suitable schema, such as in the case of MSC3553 video events.
+It is left as a deliberate implementation detail for which schemas to try, and in what
+order. A client might decide to try parsing the event as a video, then image, then file,
+then text message, for example.
+
+It is generally not expected that a single content block will describe an entire event,
+except in the exceedingly trivial cases (like text messages in this proposal). Multiple
+content blocks will usually fully describe the information in the event, and mixins
+(described later) can further change how an event is represented or processed.
 
 Note that a "client" in an extensible events sense will typically mean an application
 using the Client-Server API, however in reality a client will be anything which needs
