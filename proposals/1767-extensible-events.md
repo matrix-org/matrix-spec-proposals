@@ -73,7 +73,7 @@ can be reused by other event types to represent textual fallback.
 When a client encounters an extensible event (any event sent in a supported room
 version) that it does *not* understand, the client begins searching for a best match
 based on event type schemas it *does* know. This may mean combining multiple different
-content blocks to match a suitable schema, such as in the case of MSC3553 video events.
+content blocks to match a suitable schema, such as in the case of [MSC3553](https://github.com/matrix-org/matrix-doc/pull/3553) video events.
 It is left as a deliberate implementation detail for which schemas to try, and in what
 order. A client might decide to try parsing the event as a video, then image, then file,
 then text message, for example.
@@ -122,7 +122,7 @@ a minimum, a `m.markup` content block:
   such as by using the [existing spec](https://spec.matrix.org/v1.4/client-server-api/#mroommessage-msgtypes)
   for recommended allowable HTML.
 * Custom markups in a representation are specified by a suitably custom `mimetype`.
-  For example, extending HTML or XML or an all-new format. This can be used to create
+  For example, a representation might use a markup format extending HTML or XML, or an all-new format. This can be used to create
   bridge-compatible clients where the destination network's markup is first in the
   array, followed by more common HTML and text formats.
 
@@ -257,12 +257,12 @@ allowed to do this. Such examples include MSC3381 Polls and MSC3245 Voice Messag
 ### State events
 
 Unknown state event types generally should not be parsed by clients. This is to prevent situations
-where the sender overly masks a state change as some other, non-state, event. For example, even
+where the sender masks a state change as some other, non-state, event. For example, even
 if a state event has an `m.markup` content block, it should not be treated as a room message.
 
 Note that state events MUST still make use of content blocks in applicable room versions, and that
 any top-level key in `content` is defined as a content block under this proposal. As such, this
-MSC implicitly promotes all existing content fields of `m.*` state events to indepdent content
+MSC implicitly promotes all existing content fields of `m.*` state events to independent content
 blocks as needed. Other MSCs may override this decision on a per-event type basis (ie: redeclaring
 how room topics work to support content blocks, deprecating the existing `m.room.topic` event in
 the process). Unlike most content blocks, these promoted-to-content-blocks are not realistically
@@ -303,7 +303,7 @@ how an event is processed. All mixins are content blocks, and content blocks whi
 mixins will be called out as such in the spec. Mixins are meant to be purely additive,
 thus all event types MUST support being rendered/processed *without* the use of mixins.
 
-Though this MSC does not describe any such mixins itself, MSC3955 does by allowing any
+Though this MSC does not describe any such mixins itself, [MSC3955](https://github.com/matrix-org/matrix-spec-proposals/pull/3955) does by allowing any
 event to be flagged as "automated" - a strictly additive annotation on events.
 
 Another possible mixin would be `m.relates_to` (not described by this MSC). Currently,
