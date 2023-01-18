@@ -75,9 +75,9 @@ version) that it does *not* understand, the client begins searching for a best m
 based on event type schemas it *does* know. This may mean combining multiple different
 content blocks to match a suitable schema, such as in the case of
 [MSC3553](https://github.com/matrix-org/matrix-doc/pull/3553) video events.
-It is left as a deliberate implementation detail for which schemas to try, and in what
-order. A client might decide to try parsing the event as a video, then image, then file,
-then text message, for example.
+Which schemas to try, and in what order, is left as a deliberate implementation detail.
+A client might decide to try parsing the event as a video, then image, then file, then 
+text message, for example.
 
 It is generally not expected that a single content block will describe an entire event,
 except in the exceedingly trivial cases (like text messages in this proposal). Multiple
@@ -295,10 +295,12 @@ Extensible events don't materially change the situation implied by this power le
 
 ### Mixins specifically allowed
 
-[Mixins](https://en.wikipedia.org/wiki/Mixin) are supported by Extensible Events to change
-how an event is processed. All mixins are content blocks, and content blocks which are
+A **mixin** is a specific type of content block which can be added to any type of event to
+change how that event is processed. Content blocks which are
 mixins will be called out as such in the spec. Mixins are meant to be purely additive,
 thus all event types MUST support being rendered/processed *without* the use of mixins.
+
+See also the [Wikipedia entry on mixins](https://en.wikipedia.org/wiki/Mixin).
 
 Note that mixins differ from optional content blocks in an event type's schema: a mixin
 is able to be applied to *any* event type sensibly while optional content blocks are
