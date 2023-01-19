@@ -236,7 +236,39 @@ cases.
 Based on our definition of "obsolete" state, when sending room state to clients
 for an initial sync, do not include obsolete state.
 
-TODO: specific spec wording change
+### Proposed spec wording change
+
+In [GET
+/_matrix/client/v3/sync](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync),
+under "Responses", "Joined Room", in the Description of "state", should be
+updated to read:
+
+> Updates to the state in the form of state events. Only includes events that
+> occurred before the events provided in `timeline`.
+
+> If since is not provided, or full_state is true, this includes one event for
+> each non-obsolete state key that was updated before the start of the events
+
+> Updates to the state, between the time indicated by the since parameter, and
+> the start of the timeline (or all state up to the start of the timeline, if
+> since is not given, or full_state is true).
+
+> N.B. state updates for m.room.member events will be incomplete if
+> lazy_load_members is enabled in the /sync filter, and only return the member
+> events required to display the senders of the timeline events in this
+> response.
+
+For reference, the current wording is:
+
+> Updates to the state, between the time indicated by the since parameter, and
+> the start of the timeline (or all state up to the start of the timeline, if
+> since is not given, or full_state is true).
+
+> N.B. state updates for m.room.member events will be incomplete if
+> lazy_load_members is enabled in the /sync filter, and only return the member
+> events required to display the senders of the timeline events in this
+> response.
+
 
 ### New room version
 
