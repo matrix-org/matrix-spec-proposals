@@ -69,7 +69,7 @@ augment the push rules to search for the current user's Matrix ID.
 ### New event field
 
 A new `mentions` field is added to the event content, it is an array of strings
-consistent of Matrix IDs or the special value: `"@room"`.
+consisting of Matrix IDs or the special value: `"@room"`.
 
 To limit the potential for abuse, only the first 10 items in the array should be
 considered. It is recommended that homeservers reject locally created events with
@@ -88,7 +88,7 @@ show a warning message to the user; it may silently limit the number sent in the
 message to 10 or force the user to remove some mentions.
 
 The `mentions` field is part of the cleartext event body and should **not** be
-encrypted into the ciphertext for encrypted events. This expoes slightly more
+encrypted into the ciphertext for encrypted events. This exposes slightly more
 metadata to homeservers, but allows mentions to work properly via push notifications
 (which is a requirement for a usable chat application) and should result in bandwidth
 and battery savings.
