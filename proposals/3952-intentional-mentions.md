@@ -436,7 +436,7 @@ proposes removing reply fallbacks which would solve it. Although as noted in
 may require landing [MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664)
 in order to receive notifications of replies.
 
-[^2]: Note that this MSC does not attempt to solve the problem of issues generating
+[^2]: Note that this MSC does not attempt to solve the problem of edits generating
 spurious notifications.
 
 [^3]: The `body` is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes):
