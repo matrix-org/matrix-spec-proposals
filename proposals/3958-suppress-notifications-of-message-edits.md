@@ -1,4 +1,4 @@
-# MSC3958: Suppress notifications of message edits
+# MSC3958: Suppress notifications from message edits
 
 [Event replacement](https://spec.matrix.org/v1.5/client-server-api/#event-replacements)
 (more commonly known as message edits) signals that a message is intended to
