@@ -68,30 +68,39 @@ augment the push rules to search for the current user's Matrix ID.
 
 ### New event field
 
-A new `mentions` field is added to the event content, it is an array of strings
-consisting of Matrix IDs or the special value: `"@room"`.
+A new `m.mentions` field is added to the event content, it is an object with two
+optional fields:
+
+* `user_ids`: an array of strings consisting of Matrix IDs to mention.
+* `room`: a boolean, true indicates an "@room" mention. Any other value or the
+  field missing is interpreted as not an "@room" mention.  
+
+It is valid to include both the `user_ids` and `room` fields.
 
 To limit the potential for abuse, only the first 10 items in the array should be
 considered. It is recommended that homeservers reject locally created events with
 more than 10 mentions with an error with a status code of `400` and an errcode of
-`M_INVALID_PARAM`. It is valid to include specific users in addition to the
-`"@room"` value.
+`M_INVALID_PARAM`.
 
-Clients should add a Matrix ID to this array whenever composing a message which
+Clients should add a Matrix ID to the `user_ids` array whenever composing a message which
 includes an intentional [user mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
-(often called a "pill"). Clients should add the `"@room"` value when making a
-room-wide announcement. Clients may also add them at other times when it is
+(often called a "pill"). Clients should set the `room` value to `true` when making a
+room-wide announcement. Clients may also set these values at other times when it is
 obvious the user intends to explicitly mention a user.
 
 If a user generates a message with more than 10 mentions, the client may wish to
 show a warning message to the user; it may silently limit the number sent in the
 message to 10 or force the user to remove some mentions.
 
-The `mentions` field is part of the cleartext event body and should **not** be
+The `m.mentions` field is part of the cleartext event body and should **not** be
 encrypted into the ciphertext for encrypted events. This exposes slightly more
-metadata to homeservers, but allows mentions to work properly via push notifications
-(which is a requirement for a usable chat application) and should result in bandwidth
-and battery savings.
+metadata to homeservers, but allows mentions to work properly. It allows the
+server to properly handle push notifications (which is a requirement for a usable
+chat application) and could result in bandwidth and battery savings (see the
+[future extensions](#muted-except-for-mentions-push-rules) section). Additionally,
+it may be useful for the homeserver to filter or prioritize rooms based on whether
+the user has been mentioned in them, e.g. for an extension to
+[MSC3575 (sliding sync)](https://github.com/matrix-org/matrix-spec-proposals/pull/3575).
 
 ### New push rules
 
@@ -99,17 +108,19 @@ Two new push rule conditions and corresponding default push rule are proposed:
 
 The `is_user_mention` push condition is defined as[^5]:
 
-> This matches messages where the `content.mentions` is an array containing the
-> owner’s Matrix ID in the first 10 entries. This condition has no parameters.
-> If the `mentions` key is absent or not an array then the rule does not match;
-> any array entries which are not strings are ignored, but count against the limit.
+> This matches messages where the `m.mentions` field of the `content` contains a
+> field `user_ids` which is an array containing the owner’s Matrix ID in the first
+> 10 entries. This condition has no parameters. If the `m.mentions` key is absent
+> or not an object or does not contain a `user_ids` field (or contains it, but it
+> is not an array) then the rule does not match; any array entries which are not
+> strings are ignored, but count against the limit. Duplicate entries are ignored.
 
 The `is_room_mention` push condition is defined as[^5]:
 
-> This matches messages where the `content.mentions` is an array containing the
-> string `"@room"` in the first 10 entries. This condition has no parameters.
-> If the `mentions` key is absent or not an array then the rule does not match;
-> any array entries which are not strings are ignored, but count against the limit.
+> This matches messages where the `m.mentions` field of the `content` contains
+> a field `room` set to `true`. This condition has no parameters. If the
+> `m.mentions` key is absent or not an object or does not contain a `room` field
+> (or contains it, but it  is not an boolean value) then the rule does not match.
 
 The proposed `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
@@ -177,7 +188,10 @@ and `.m.rule.is_room_mention` is provided below:
         "format": "org.matrix.custom.html",
         "formatted_body": "<b>This is an example mention</b> <a href='https://matrix.to/#/@alice:example.org'>Alice</a>",
         "msgtype": "m.text",
-        "mentions": ["@alice:example.org", "@room"]
+        "m.mentions": {
+            "user_ids": ["@alice:example.org"],
+            "room": true
+        }
     },
     "event_id": "$143273582443PhrSn:example.org",
     "origin_server_ts": 1432735824653,
@@ -198,7 +212,7 @@ and [`.m.rule.roomnotif`](https://spec.matrix.org/v1.5/client-server-api/#defaul
 push rules are to be removed.
 
 To avoid unintentional mentions these rules are modified to only apply when the
-`mentions` field is missing and clients should provide the `mentions` field on
+`m.mentions` field is missing; clients should provide the `m.mentions` field on
 every message to avoid the unintentional mentions discussed above.
 
 If users wish to continue to be notified of messages containing their display name
@@ -223,7 +237,7 @@ it is recommended that clients create a specific keyword rule for this, e.g. a
 }
 ```
 
-After acceptance, it is likely for some disagreement about which push rules are
+After acceptance, it is likely for there to be disagreement about which push rules are
 implemented: legacy clients and homeservers may not yet have deprecated the
 `.m.rule.contains_display_name`, `.m.rule.contains_user_name`, and `.m.rule.roomnotif`
 push rules, while up-to-date clients and homeservers will support the
@@ -236,40 +250,44 @@ at worst case should simply result in the current behavior (documented in the pr
 ### Abuse potential
 
 This proposal makes it trivial to "hide" mentions since it does not require the
-mentioned Matrix IDs to be part of the displayed text. Depending on the use this
-can be a feature (similar to CCing a user on an e-mail) or an abuse vector. Overall,
-this MSC does not enable additional malicious behavior than what is possible today.
+mentioned Matrix IDs to be part of the displayed text. This is only a limitation
+for current clients: mentions could be exposed in the user interface directly.
+For example, a de-emphasized "notified" list could be shown on messages, similar
+to CCing users on an e-mail.
 
-From discussions and research while writing this MSC there are some benefits to
-using a separate field for mentions:
+Although not including mentions in the displayed text could be used as an abuse
+vector, it does not enable additional malicious behavior than what is possible
+today. From discussions and research while writing this MSC there are moderation
+benefits to using a separate field for mentions:
 
-* The number of mentions is trivially limited.
+* The number of mentions is trivially limited by moderation tooling.
 * Various forms of "mention bombing" are no longer possible.
-* It is simpler to collect data on how many users are being mentioned (without
-  having to process the textual `body` for every user's display name and local
+* It is simpler to collect metrics on how mentions are being used (it is no longer
+  necessary to process the textual `body` for every user's display name and local
   part).
 
-Nonetheless, the conversations did result in some ideas to combat the potential
-for abuse, many of which apply regardless of whether this proposal is implemented.
+Overall this proposal seems to be neutral or positive in the ability to combat
+malicious behavior.
 
-Clients could expose *why* an event has caused a notification and give users inline
-tools to combat potential abuse. For example, a client might show a tooltip:
+## Future extensions
+
+### Combating abuse
+
+Some ideas for combating abuse came from our discussion and research which are
+worth sharing. These ideas are not part of this MSC, but also do not depend on it.
+
+It was recommended that clients could expose *why* an event has caused a notification
+and give users inline tools to combat abuse. For example, a client might show a tooltip:
 
 > The sender of the message (`@alice:example.org`) mentioned you in this event.
 >
 > Block `@alice:example.org` from sending you messages? `[Yes]` `[No]`
 
-It could also be worth exposing user interface showing all of the mentions in a
-message, especially if those users are not included in the message body. One way
-to do this could be a deemphasized "CC" list. Additionally, it would be useful for
-moderators to quickly find messages which mention many users.
+Additionally, tooling to for moderators to quickly find messages which mention
+many users would be useful. 
 
 A future MSC might wish to explore features for trusted contacts or soft-ignores
 to give users more control over who can generate notifications.
-
-Overall the proposal does not seem to increase the potential for malicious behavior.
-
-## Future extensions
 
 ### Configurable mentions limits
 
@@ -293,6 +311,18 @@ e.g. iOS, do not sync regularly in the background.
 Some clients attempt to create a "pill" out of `@room` mentions, but this is not
 a requirement of the Matrix specification. The current [user and rooms mentions](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
 section could be expanded for this situation.
+
+### Extensible events
+
+The `m.mentions` field can be considered a "mixin" as part of extensible events
+([MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)) with no needed
+changes.
+
+### Role mentions
+
+It is possible to add additional fields to the `m.mentions` object, e.g. a foreseeable
+usecase would be a `roles` field which could include values such as `admins` or
+`mods`. Defining this in detail is left to a future MSC.
 
 ## Alternatives
 
@@ -340,6 +370,16 @@ There's a few prior proposals which tackle subsets of the above problem:
 
   </details>
 
+The last two proposals use a similar idea of attempting to find "pills" in the
+`formatted_body`, this has some downsides though:
+
+* It doesn't allow for hidden mentions, which can be useful in some situations.
+* It does not work for event types other than `m.room.message`.
+
+It also adds significant implementation complexity since the HTML messages must
+now be parsed for notifications. This is expensive and introduces potential
+security issues.
+
 ### Room version for backwards compatibility
 
 Alternative backwards compatibility suggestions included using a new room version,
@@ -348,16 +388,16 @@ for extensible events. This does not seem like a good fit since room versions ar
 not usually interested in non-state events. It would additionally require a stable
 room version before use, which would unnecessarily delay usage.
 
-### Encrypting the `mentions` array
+### Encrypting the `m.mentions` field
 
-Encrypting the `mentions` array would solve some unintentional mentions, but
+Encrypting the `m.mentions` field would solve some unintentional mentions, but
 will not help with???.
 
-Allowing an encrypted `mentions` array on a per-message basis could allow users
+Allowing an encrypted `m.mentions` field on a per-message basis could allow users
 to choose, but would result in inconsistencies and complications:
 
-* What happens if the cleartext `mentions` field does not match the plaintext
-  `mentions` field?
+* What happens if the cleartext `m.mentions` field does not match the plaintext
+  `m.mentions` field?
 * Do push rules get processed on both the cleartext and plaintext message?
 
 It may be argued that clients need to decrypt all messages anyway to handle
@@ -385,18 +425,18 @@ significantly increase metadata leakage.
 
 During development the following mapping will be used:
 
-| What                | Stable                    | Unstable                              |
-|---------------------|---------------------------|---------------------------------------|
-| Push rule ID        | `.m.rule.*`               | `.org.matrix.msc3952.*`               |
-| Push condition kind | `is_user_mention`         | `org.matrix.msc3952.is_user_mention`  |
-| Push condition kind | `is_room_mention`         | `org.matrix.msc3952.is_room_mention`  |
-
+| What                | Stable            | Unstable                             |
+|---------------------|-------------------|--------------------------------------|
+| Event field         | `m.mentions`      | `org.matrix.msc3952.mentions`        |
+| Push rule ID        | `.m.rule.*`       | `.org.matrix.msc3952.*`              |
+| Push condition kind | `is_user_mention` | `org.matrix.msc3952.is_user_mention` |
+| Push condition kind | `is_room_mention` | `org.matrix.msc3952.is_room_mention` |
 
 If a client sees this rule available it can choose to apply the custom logic discussed
 in the [backwards compatibility](#backwards-compatibility) section.
 
 If a client sees the *stable* identifiers available, they should apply the new
-logic and start creating events with the `mentions` array.
+logic and start creating events with the `m.mentions` field.
 
 ## Dependencies
 
