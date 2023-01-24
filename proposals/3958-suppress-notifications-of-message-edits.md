@@ -58,7 +58,7 @@ portion of the spec:
 Some users may be depending on notifications of edits. If a user would like to
 revert to the old behavior they can disable the `.m.rule.suppress_edits` push rule.
 
-If the message edits were alloewd by other senders than it would be useful to
+If the message edits were allowed by other senders than it would be useful to
 know that your own message was edited, but this
 [is not currently allowed](https://spec.matrix.org/v1.5/client-server-api/#validity-of-replacement-events).
 
