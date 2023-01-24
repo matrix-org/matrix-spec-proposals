@@ -77,9 +77,8 @@ optional fields:
 
 It is valid to include both the `user_ids` and `room` fields.
 
-To limit the potential for abuse, only the first 10 items in the array should be
-considered. It is recommended that homeservers reject locally created events with
-more than 10 mentions with an error with a status code of `400` and an errcode of
+It is recommended that homeservers reject locally created events with an invalid
+`m.mentions` field with an error with a status code of `400` and an errcode of
 `M_INVALID_PARAM`.
 
 Clients should add a Matrix ID to the `user_ids` array whenever composing a message which
@@ -87,10 +86,6 @@ includes an intentional [user mention](https://spec.matrix.org/v1.5/client-serve
 (often called a "pill"). Clients should set the `room` value to `true` when making a
 room-wide announcement. Clients may also set these values at other times when it is
 obvious the user intends to explicitly mention a user.
-
-If a user generates a message with more than 10 mentions, the client may wish to
-show a warning message to the user; it may silently limit the number sent in the
-message to 10 or force the user to remove some mentions.
 
 The `m.mentions` field is part of the cleartext event body and should **not** be
 encrypted into the ciphertext for encrypted events. This exposes slightly more
@@ -109,18 +104,18 @@ Two new push rule conditions and corresponding default push rule are proposed:
 The `is_user_mention` push condition is defined as[^5]:
 
 > This matches messages where the `m.mentions` field of the `content` contains a
-> field `user_ids` which is an array containing the owner’s Matrix ID in the first
-> 10 entries. This condition has no parameters. If the `m.mentions` key is absent
-> or not an object or does not contain a `user_ids` field (or contains it, but it
-> is not an array) then the rule does not match; any array entries which are not
-> strings are ignored, but count against the limit. Duplicate entries are ignored.
+> field `user_ids` which is an array containing the owner’s Matrix ID. This
+> condition has no parameters. If the `m.mentions` key is absent; not an object;
+> does not contain a `user_ids` field; or contains a non-array `user_ids` field
+> then the rule does not match. Any non-string array entries are ignored and
+> duplicate entries are ignored.
 
 The `is_room_mention` push condition is defined as[^5]:
 
 > This matches messages where the `m.mentions` field of the `content` contains
-> a field `room` set to `true`. This condition has no parameters. If the
-> `m.mentions` key is absent or not an object or does not contain a `room` field
-> (or contains it, but it  is not an boolean value) then the rule does not match.
+> a `room` field set to `true`. This condition has no parameters. If the
+> `m.mentions` key is absent; not an object; does not contain a `room` field;
+> or contains a non-boolean `room` field then the rule does not match.
 
 The proposed `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
@@ -260,7 +255,9 @@ vector, it does not enable additional malicious behavior than what is possible
 today. From discussions and research while writing this MSC there are moderation
 benefits to using a separate field for mentions:
 
-* The number of mentions is trivially limited by moderation tooling.
+* The number of mentions is trivially limited by moderation tooling, e.g. it may
+  be appropriate for a community room to only allow 10 mentions. Events not abiding
+  by this could be rejected automatically (or users could be banned automatically).
 * Various forms of "mention bombing" are no longer possible.
 * It is simpler to collect metrics on how mentions are being used (it is no longer
   necessary to process the textual `body` for every user's display name and local
@@ -288,15 +285,6 @@ many users would be useful.
 
 A future MSC might wish to explore features for trusted contacts or soft-ignores
 to give users more control over who can generate notifications.
-
-### Configurable mentions limits
-
-It maybe desirable for room administrators to configure the number of allowed
-mentions in a message, e.g. a conference may want to mention 50 people at once
-or it may be appropriate for a kudos room to mention the 15 people on your team.
-Since it is easy enough to work around the limit of 10 mentions in socially
-appropriate situations (by sending multiple messages) it does not seem worth
-the technical complexity of allowing this number to be configurable.
 
 ### Muted except for mentions push rules
 
