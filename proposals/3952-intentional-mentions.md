@@ -439,15 +439,11 @@ in order to receive notifications of replies.
 [^2]: Note that this MSC does not attempt to solve the problem of edits generating
 spurious notifications.
 
-[^3]: The `body` is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes):
-
-> When [the `format` field is set to `org.matrix.custom.html`], a formatted_body
-> with the HTML must be provided. The plain text version of the HTML should be
-> provided in the `body`.
-
-But there is no particular algorithm to convert from HTML to plain text *except*
+[^3]: It is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes)
+the the "plain text version of the HTML [`formatted_body`] should be provided in the `body`",
+but there is no particular algorithm to convert from HTML to plain text *except*
 when converting mentions, where the
-[plain text version uses the text, not the link](https://spec.matrix.org/v1.5/client-server-api/#client-behaviour-26).
+[plain text version uses the link anchor, not the link](https://spec.matrix.org/v1.5/client-server-api/#client-behaviour-26).
 
 [^4]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
 
