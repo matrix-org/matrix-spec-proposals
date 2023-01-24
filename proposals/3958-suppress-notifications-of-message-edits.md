@@ -4,10 +4,11 @@
 (more commonly known as message edits) signals that a message is intended to
 be replaced with new content.
 
-This works well for fixing typos or correcting information, but tends to cause
-spurious notifications if the event mentions a user. This contributes to notification
-fatigue as the additional notifications contain no new information.
-
+This works well for fixing typos or other minor correction, but can cause
+spurious notifications if the event mentions a user's display name / localpart or
+if it includes `@room` (which is particularly bad in large rooms as every user
+is re-notified). This contributes to notification fatigue as the additional
+notifications contain no new information.
 
 ## Proposal
 
