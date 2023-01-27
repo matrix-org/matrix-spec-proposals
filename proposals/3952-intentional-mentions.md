@@ -399,6 +399,22 @@ those notifications, is reasonable. In particular, custom keywords is more of a
 power-user feature while user mentions working properly (and promptly) is a table-stakes
 feature for a messaging application.
 
+### For the `is_room_mention` condition
+
+The `is_room_mention` could be replaced with the `exact_event_match` condition
+from [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758)
+(or the changes to `event_match` in [MSC3862](https://github.com/matrix-org/matrix-spec-proposals/pull/3862)),
+although either of those would potentially run into ambiguity in the `key`,
+as described in [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873):
+
+```json
+{
+  "kind": "exact_event_match",
+  "key": "m.mentions.room",
+  "value": true
+}
+```
+
 ## Security considerations
 
 Including the mentioned users in cleartext is a small metadata leak, but the tradeoff
