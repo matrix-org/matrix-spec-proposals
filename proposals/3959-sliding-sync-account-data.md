@@ -1,4 +1,4 @@
-# MSCXXXX: Sliding Sync Extension: Account Data
+# MSC3959: Sliding Sync Extension: Account Data
 
 This MSC is an extension to [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575)
 which includes support for global and room account data in the `/sync` response.
