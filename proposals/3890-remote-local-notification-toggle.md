@@ -24,14 +24,37 @@ Add a new account data event `m.local_notification_settings.<device-id>` with co
     is_silenced: boolean
 }
 ```
-During client-side notification generation:
+
+#####During client-side notification generation:
+
+- While a registered pusher exists for the current device any `local_notification_settings` event should be ignored and
+  events should trigger system notifications as normal. For servers that support
+  [MSC3381](https://github.com/matrix-org/matrix-doc/pull/3881), the `local_notification_settings` is ignored and local
+  notifications are triggered based on the `enabled` setting of the registered pusher.
 - While no `local_notification_settings` event exists for the current device, or a `local_notification_settings` event
   exists where `is_silenced` is falsy, events should be processed as normal and trigger system notifications and sounds
   where necessary.
 - While a `local_notification_settings` event exists for the current device where `is_silenced` is true, no event should
   trigger a system notification or sound.
 
-During server-side removal of devices:
+#####Displaying notification settings:
+
+Clients should endeavour to display notification settings that reflect the rules above.
+
+- While a registered pusher exists for a device, notifications should be displayed as enabled. While the client has the
+  ability to register/remove pushers for the device, toggling this setting should register or remove the pusher. For
+  servers that support [MSC3381](https://github.com/matrix-org/matrix-doc/pull/3881), notifications should be displayed
+  as enabled according to the the `enabled` setting of the pusher. Changing this setting should update the `enabled`
+  field of the pusher.
+- While the client does not have the ability to register a pusher and a `local_notification_settings` event exists,
+  notifications should be displayed as `enabled` when the event's `is_silenced` field is falsy. Updating the setting
+  should change the event's `is_silenced` field.
+- While the client does not have the ability to register a pusher and no `local_notification_settings` event exists,
+    notifications should be displayed as disabled. The setting should not be editable.
+  
+
+#####During server-side removal of devices:
+
 - When devices are removed servers should delete any `m.local_notification_settings.<device-id>` account_data events for
 the given device, and communicate these changes to clients as described in
 [MSC3391](https://github.com/matrix-org/matrix-spec-proposals/pull/3391).
