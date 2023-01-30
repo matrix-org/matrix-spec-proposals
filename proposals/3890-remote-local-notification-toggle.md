@@ -44,7 +44,7 @@ Clients should endeavour to display notification settings that reflect the rules
 - While a registered pusher exists for a device, notifications should be displayed as enabled. While the client has the
   ability to register/remove pushers for the device, toggling this setting should register or remove the pusher. For
   servers that support [MSC3381](https://github.com/matrix-org/matrix-doc/pull/3881), notifications should be displayed
-  as enabled according to the the `enabled` setting of the pusher. Changing this setting should update the `enabled`
+  as enabled according to the `enabled` setting of the pusher. Changing this setting should update the `enabled`
   field of the pusher.
 - While the client does not have the ability to register a pusher and a `local_notification_settings` event exists,
   notifications should be displayed as `enabled` when the event's `is_silenced` field is falsy. Updating the setting
