@@ -33,9 +33,10 @@ The `m.receipt` event in this response is the same event that would appear in th
 `rooms.join["!foo:bar"].ephemeral.events` under `/sync`. This includes the `m.read.private` key in the
 receipt EDU for private read receipts.
 
-Receipts MUST only be sent for rooms returned in the sliding sync response. Receipts MUST only be
-returned for events sent in the `timeline` section for each room of the sliding sync response. Delta
-tokens MUST be ignored when calculating the events in the `timeline`, or else additional read receipts
+Receipts MUST only be sent for rooms returned in the sliding sync response. Receipts MUST be
+returned for events sent in the `timeline` section for each room of the sliding sync response. In addition,
+public and private receipts sent by the client MUST be returned, even if the events in question are not in the `timeline`.
+Delta tokens MUST be ignored when calculating the events in the `timeline`, or else additional read receipts
 for the same event would never be returned to the client. The receipts themeselves MAY be subject to
 delta tokens such that only read receipt deltas are returned to the client.
 
