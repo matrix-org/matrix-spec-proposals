@@ -312,7 +312,7 @@ event to be flagged as "automated" - a strictly additive annotation on events.
 
 Another possible mixin would be `m.relates_to` (not described by this MSC). Currently,
 some features like the [key verification framework](https://spec.matrix.org/v1.5/client-server-api/#key-verification-framework)
-rely on relationships as part of making the feature work. The expectectation is that
+rely on relationships as part of making the feature work. The expectation is that
 these features would be adapted to meet the "purely additive" condition (assuming
 `m.relates_to` does actually end up being a mixin).
 
