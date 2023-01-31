@@ -392,7 +392,6 @@ send stable identifiers at all.
 
 * converted from googledoc to MD, and to be a single PR rather than split PR/Issue.
 * simplifies it by removing displayhints (for now - deferred to a future MSC).
-* removes all references to mixins, as the term was scaring people and making it feel far too type-theoretic.
 * replaces the clunky m.text.1 idea with lists for types which support fallbacks.
 * removes the concept of optional compact form for m.text by instead having m.text always in compact form.
 * tries to accomodate most of the feedback on GH and Google Docs from MSC1225.
