@@ -385,9 +385,9 @@ to choose, but would result in inconsistencies and complications:
 * Do push rules get processed on both the cleartext and plaintext message?
 
 It may be argued that clients need to decrypt all messages anyway to handle
-user-specific keywords, the process for doing this is costly (either receiving
-every message via push notifications or backpaginating every room fully, in case
-of a gappy sync) in terms of bandwidth, CPU, and battery.
+user-specific keywords. This is a costly process in terms of bandwidth, CPU, and
+battery since the client must either receive every message via push notifications
+or backpaginate every room fully, in case of a gappy sync.
 
 It is asserted that the use-cases for custom keywords and mentions are sufficiently
 different that having different solutions, and different urgencies to receiving
