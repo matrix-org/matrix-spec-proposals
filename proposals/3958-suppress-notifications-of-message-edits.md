@@ -30,7 +30,8 @@ A new default push rule is added to suppress notifications [due to edits](https:
 }
 ```
 
-This rule should be placed as the [first override rule](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules).
+This rule should be placed before the [`.m.rule.suppress_notices` rule](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
+as the first non-master, non-user added override rule.
 
 It would match events such as those given in [event replacements](https://spec.matrix.org/v1.5/client-server-api/#event-replacements)
 portion of the spec:
