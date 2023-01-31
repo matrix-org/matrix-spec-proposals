@@ -262,8 +262,9 @@ any top-level key in `content` is defined as a content block under this proposal
 MSC implicitly promotes all existing content fields of `m.*` state events to independent content
 blocks as needed. Other MSCs may override this decision on a per-event type basis (ie: redeclaring
 how room topics work to support content blocks, deprecating the existing `m.room.topic` event in
-the process). Unlike most content blocks, these promoted-to-content-blocks are not realistically
-meant to be reused: it is simply a formality given this MSC's scope.
+the process, like in [MSC3765](https://github.com/matrix-org/matrix-spec-proposals/pull/3765)).
+Unlike most content blocks, these promoted-to-content-blocks are not realistically meant to be
+reused: it is simply a formality given this MSC's scope.
 
 ### Notifications
 
