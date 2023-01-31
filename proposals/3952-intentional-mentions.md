@@ -163,10 +163,6 @@ before the `.m.rule.roomnotif` push rule:
     "actions": [
         "notify",
         {
-            "set_tweak": "sound",
-            "value": "default"
-        },
-        {
             "set_tweak": "highlight"
         }
     ]
