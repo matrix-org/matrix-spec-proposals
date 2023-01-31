@@ -67,7 +67,7 @@ are namespaced using the
 [Matrix conventions for namespacing](https://spec.matrix.org/v1.4/appendices/#common-namespaced-identifier-grammar).
 
 Content blocks can be invented independent of event types and *should* be reusable
-in nature. For example, this proposal introduces an `m.markup` content block which
+in nature. For example, this proposal introduces an `m.text` content block which
 can be reused by other event types to represent textual fallback.
 
 When a client encounters an extensible event (any event sent in a supported room
@@ -92,14 +92,14 @@ application services, etc).
 Per the introduction, text is the baseline format that most/all Matrix clients support
 today, often through use of HTML and `m.room.message`. Instead of using `m.room.message`
 to represent this content, clients would instead use an `m.message` event with, at
-a minimum, a `m.markup` content block:
+a minimum, a `m.text` content block:
 
 ```json5
 {
     // irrelevant fields not shown
     "type": "m.message",
     "content": {
-        "m.markup": [
+        "m.text": [
             { "body": "<i>Hello world</i>", "mimetype": "text/html" },
             { "body": "Hello world" }
         ]
@@ -107,7 +107,7 @@ a minimum, a `m.markup` content block:
 }
 ```
 
-`m.markup` has the following definitions associated with it:
+`m.text` has the following definitions associated with it:
 * An ordered array of mimetypes and applicable string content to represent a single
   marked-up blob of text. Each element is known as a representation.
 * `body` in a representation is required, and must be a string.
@@ -122,21 +122,21 @@ a minimum, a `m.markup` content block:
   to validate/sanitize the content further, like in the
   [existing spec](https://spec.matrix.org/v1.4/client-server-api/#mroommessage-msgtypes)
   for HTML.
-* Custom markups in a representation are specified by a suitably custom `mimetype`.
-  For example, a representation might use a markup format extending HTML or XML, or an
-  all-new format. This can be used to create bridge-compatible clients where the
+* Custom text formats in a representation are specified by a suitably custom `mimetype`.
+  For example, a representation might use a text format extending HTML or XML, or an
+  all-new markup. This can be used to create bridge-compatible clients where the
   destination network's markup is first in the array, followed by more common HTML
   and text formats.
 
 Like with the event described above, all event types now describe which content blocks
 they expect to see on their events. These content blocks could be required, as is the
-case of `m.markup` in `m.message`, or they could be optional depending on the situation.
+case of `m.text` in `m.message`, or they could be optional depending on the situation.
 Of course, senders are welcome to send even more blocks which aren't specified in the
 schema for an event type, however clients which understand that event type might not
 consider them at all.
 
-In `m.message`'s case, `m.markup` is the only required content block. The `m.markup`
-block can be reused by other events to include a text-like markup for the event, such
+In `m.message`'s case, `m.text` is the only required content block. The `m.text`
+block can be reused by other events to include a text-like format for the event, such
 as a text fallback for clients which do not understand how to render a custom event
 type.
 
@@ -147,7 +147,7 @@ were of the known type. If it doesn't find anything useful, the event is left as
 unrenderable, just as it likely would today.
 
 To avoid a situation where events end up being unrenderable, it is strongly
-recommended that all event types support at least an `m.markup` content block in
+recommended that all event types support at least an `m.text` content block in
 their schema, thus allowing all events to theoretically be rendered as message
 events (in a worst case scenario).
 
@@ -176,7 +176,7 @@ In a hypothetical scenario, a temperature event might look as such:
     // irrelevant fields not shown
     "type": "org.example.temperature",
     "content": {
-        "m.markup": [{"body": "It is 22 degrees at Home"}],
+        "m.text": [{"body": "It is 22 degrees at Home"}],
         "org.example.probe_value": {
             "label": "Home",
             "units": "org.example.celsius",
@@ -188,7 +188,7 @@ In a hypothetical scenario, a temperature event might look as such:
 
 In this scenario, clients which understand how to render an `org.example.temperature`
 event might use the information in `org.example.probe_value` exclusively, leaving the
-`m.markup` block for clients which *don't* understand the temperature event type.
+`m.text` block for clients which *don't* understand the temperature event type.
 
 Another event type might find inspiration and use the probe value block for their
 event as well. Such an example might be in a more industrial control application:
@@ -198,7 +198,7 @@ event as well. Such an example might be in a more industrial control application
     // irrelevant fields not shown
     "type": "org.example.tank.level",
     "content": {
-        "m.markup": [{"body": "[Danger] The water tank is 90% full."}],
+        "m.text": [{"body": "[Danger] The water tank is 90% full."}],
         "org.example.probe_value": {
             "label": "Tank 3",
             "units": "org.example.litres",
@@ -255,7 +255,7 @@ allowed to do this. Such examples include MSC3381 Polls and MSC3245 Voice Messag
 
 Unknown state event types generally should not be parsed by clients. This is to prevent situations
 where the sender masks a state change as some other, non-state, event. For example, even
-if a state event has an `m.markup` content block, it should not be treated as a room message.
+if a state event has an `m.text` content block, it should not be treated as a room message.
 
 Note that state events MUST still make use of content blocks in applicable room versions, and that
 any top-level key in `content` is defined as a content block under this proposal. As such, this
@@ -275,7 +275,7 @@ keyword/mention-style alerts. With extensible events, the same might not be poss
 relies on understanding how/when the client will render the event to cause notifications.
 
 For simplicity, when `content.body` is used in an `event_match` condition, it now looks for
-an `m.markup` block's `text/plain` representation (implied or explicit) in room versions
+an `m.text` block's `text/plain` representation (implied or explicit) in room versions
 supporting extensible events. This is not an easy rule to represent in the existing push
 rules schema, and this MSC has no interest in designing a better schema. Note that other
 conditions applied to push notifications, such as an event type check, are not affected by
@@ -321,12 +321,12 @@ these features would be adapted to meet the "purely additive" condition (assumin
 
 For an abundance of clarity, all functionality not explicitly called out in this MSC which
 relies on the `formatted_body` of an `m.room.message` is expected to transition to using
-an appropriate `m.markup` representation instead. For example, the HTML representation of
+an appropriate `m.text` representation instead. For example, the HTML representation of
 a [mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions) will
-now appear under `m.markup`'s `text/html` representation (adding one if required).
+now appear under `m.text`'s `text/html` representation (adding one if required).
 
 A similar condition is applied to `body` in `m.room.message`: all existing functionality
-will instead use the `text/plain` representation within `m.markup`, if not explicitly
+will instead use the `text/plain` representation within `m.text`, if not explicitly
 called out by this MSC.
 
 ## Potential issues
@@ -394,7 +394,7 @@ send stable identifiers at all.
 * converted from googledoc to MD, and to be a single PR rather than split PR/Issue.
 * simplifies it by removing displayhints (for now - deferred to a future MSC).
 * replaces the clunky m.text.1 idea with lists for types which support fallbacks.
-* removes the concept of optional compact form for m.text by instead having m.text always in compact form.
+* removes the concept of optional compact form for m.text by instead having m.text always in expanded form.
 * tries to accomodate most of the feedback on GH and Google Docs from MSC1225.
 
 ## Historical changes
