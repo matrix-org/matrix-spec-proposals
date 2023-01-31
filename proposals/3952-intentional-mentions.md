@@ -47,7 +47,7 @@ There are also some other related bugs:
 ## Background
 
 Mentions are powered by two of the default push rules that search an event's
-`content.body` field for the current user's display name
+`content.body` property for the current user's display name
 ([`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules))
 or the localpart of their Matrix ID ([`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules)).
 
@@ -63,22 +63,22 @@ of the message should be colored differently:
 ## Proposal
 
 Instead of searching a message's `body` for the user's display name or the localpart
-of their Matrix ID, it is proposed to use a field specific to mentions,[^4] and
+of their Matrix ID, it is proposed to use a property specific to mentions,[^4] and
 augment the push rules to search for the current user's Matrix ID.
 
-### New event field
+### New event property
 
-A new `m.mentions` field is added to the event content; it is an object with two
-optional fields:
+A new `m.mentions` property is added to the event content; it is an object with two
+optional properties:
 
 * `user_ids`: an array of strings consisting of Matrix IDs to mention.
 * `room`: a boolean, true indicates an "@room" mention. Any other value or the
-  field missing is interpreted as not an "@room" mention.  
+  property missing is interpreted as not an "@room" mention.  
 
-It is valid to include both the `user_ids` and `room` fields.
+It is valid to include both the `user_ids` and `room` properties.
 
 It is recommended that homeservers reject locally created events with an invalid
-`m.mentions` field with an error with a status code of `400` and an errcode of
+`m.mentions` property with an error with a status code of `400` and an errcode of
 `M_INVALID_PARAM`.
 
 Clients should add a Matrix ID to the `user_ids` array whenever composing a message which
@@ -87,7 +87,7 @@ includes an intentional [user mention](https://spec.matrix.org/v1.5/client-serve
 room-wide announcement. Clients may also set these values at other times when it is
 obvious the user intends to explicitly mention a user.
 
-The `m.mentions` field is part of the cleartext event body and should **not** be
+The `m.mentions` property is part of the cleartext event body and should **not** be
 encrypted into the ciphertext for encrypted events. This exposes slightly more
 metadata to homeservers, but allows mentions to work properly. It allows the
 server to properly handle push notifications (which is a requirement for a usable
@@ -103,19 +103,19 @@ Two new push rule conditions and corresponding default push rule are proposed:
 
 The `is_user_mention` push condition is defined as[^5]:
 
-> This matches messages where the `m.mentions` field of the `content` contains a
-> field `user_ids` which is an array containing the owner’s Matrix ID. This
+> This matches messages where the `m.mentions` property of the `content` contains a
+> property `user_ids` which is an array containing the owner’s Matrix ID. This
 > condition has no parameters. If the `m.mentions` key is absent; not an object;
-> does not contain a `user_ids` field; or contains a non-array `user_ids` field
+> does not contain a `user_ids` property; or contains a non-array `user_ids` property
 > then the rule does not match. Any non-string array entries are ignored and
 > duplicate entries are ignored.
 
 The `is_room_mention` push condition is defined as[^5]:
 
-> This matches messages where the `m.mentions` field of the `content` contains
-> a `room` field set to `true`. This condition has no parameters. If the
-> `m.mentions` key is absent; not an object; does not contain a `room` field;
-> or contains a non-boolean `room` field then the rule does not match.
+> This matches messages where the `m.mentions` property of the `content` contains
+> a `room` property set to `true`. This condition has no parameters. If the
+> `m.mentions` key is absent; not an object; does not contain a `room` property;
+> or contains a non-boolean `room` property then the rule does not match.
 
 The proposed `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
@@ -207,7 +207,7 @@ and [`.m.rule.roomnotif`](https://spec.matrix.org/v1.5/client-server-api/#defaul
 push rules are to be removed.
 
 To avoid unintentional mentions these rules are modified to only apply when the
-`m.mentions` field is missing; clients should provide the `m.mentions` field on
+`m.mentions` property is missing; clients should provide the `m.mentions` property on
 every message to avoid the unintentional mentions discussed above.
 
 If users wish to continue to be notified of messages containing their display name
@@ -253,7 +253,7 @@ to CCing users on an e-mail.
 Although not including mentions in the displayed text could be used as an abuse
 vector, it does not enable additional malicious behavior than what is possible
 today. From discussions and research while writing this MSC there are moderation
-benefits to using a separate field for mentions:
+benefits to using a separate property for mentions:
 
 * The number of mentions is trivially limited by moderation tooling, e.g. it may
   be appropriate for a community room to only allow 10 mentions. Events not abiding
@@ -302,14 +302,14 @@ section could be expanded for this situation.
 
 ### Extensible events
 
-The `m.mentions` field can be considered a "mixin" as part of extensible events
+The `m.mentions` property can be considered a "mixin" as part of extensible events
 ([MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)) with no needed
 changes.
 
 ### Role mentions
 
-It is possible to add additional fields to the `m.mentions` object, e.g. a foreseeable
-usecase would be a `roles` field which could include values such as `admins` or
+It is possible to add additional properties to the `m.mentions` object, e.g. a foreseeable
+usecase would be a `roles` property which could include values such as `admins` or
 `mods`. Defining this in detail is left to a future MSC.
 
 ## Alternatives
@@ -325,7 +325,7 @@ There are a few prior proposals which tackle subsets of the above problem:
   users.
 * [MSC3517](https://github.com/matrix-org/matrix-spec-proposals/pull/3517):
   searches for Matrix IDs (instead of display name / localpart) and only searches
-  specific event types & fields.
+  specific event types & properties.
 * [Custom push rules](https://o.librepush.net/aux/matrix_reitools/pill_mention_rules.html)
   to search for matrix.to links instead of display name / localpart.
 
@@ -376,16 +376,16 @@ for extensible events. This does not seem like a good fit since room versions ar
 not usually interested in non-state events. It would additionally require a stable
 room version before use, which would unnecessarily delay usage.
 
-### Encrypting the `m.mentions` field
+### Encrypting the `m.mentions` property
 
-Encrypting the `m.mentions` field would solve some unintentional mentions, but
+Encrypting the `m.mentions` property would solve some unintentional mentions, but
 will not help with???.
 
-Allowing an encrypted `m.mentions` field on a per-message basis could allow users
+Allowing an encrypted `m.mentions` property on a per-message basis could allow users
 to choose, but would result in inconsistencies and complications:
 
-* What happens if the cleartext `m.mentions` field does not match the plaintext
-  `m.mentions` field?
+* What happens if the cleartext `m.mentions` property does not match the plaintext
+  `m.mentions` property?
 * Do push rules get processed on both the cleartext and plaintext message?
 
 It may be argued that clients need to decrypt all messages anyway to handle
@@ -431,7 +431,7 @@ During development the following mapping will be used:
 
 | What                | Stable            | Unstable                             |
 |---------------------|-------------------|--------------------------------------|
-| Event field         | `m.mentions`      | `org.matrix.msc3952.mentions`        |
+| Event property         | `m.mentions`      | `org.matrix.msc3952.mentions`        |
 | Push rule ID        | `.m.rule.*`       | `.org.matrix.msc3952.*`              |
 | Push condition kind | `is_user_mention` | `org.matrix.msc3952.is_user_mention` |
 | Push condition kind | `is_room_mention` | `org.matrix.msc3952.is_room_mention` |
@@ -440,7 +440,7 @@ If a client sees this rule available it can choose to apply the custom logic dis
 in the [backwards compatibility](#backwards-compatibility) section.
 
 If a client sees the *stable* identifiers available, they should apply the new
-logic and start creating events with the `m.mentions` field.
+logic and start creating events with the `m.mentions` property.
 
 ## Dependencies
 
