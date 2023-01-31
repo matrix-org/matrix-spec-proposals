@@ -34,7 +34,7 @@ This results in some unexpected behavior and bugs:
   ["pills" are converted to display names](https://github.com/matrix-org/matrix-spec/issues/714),
   this can result in missed messages. [^3]
 
-There is also some other related bugs:
+There are also some other related bugs:
 
 * Matrix users will append emoji or other unique text in their display names to
   avoid unintentional pings.
@@ -68,7 +68,7 @@ augment the push rules to search for the current user's Matrix ID.
 
 ### New event field
 
-A new `m.mentions` field is added to the event content, it is an object with two
+A new `m.mentions` field is added to the event content; it is an object with two
 optional fields:
 
 * `user_ids`: an array of strings consisting of Matrix IDs to mention.
@@ -316,7 +316,7 @@ usecase would be a `roles` field which could include values such as `admins` or
 
 ### Prior proposals
 
-There's a few prior proposals which tackle subsets of the above problem:
+There are a few prior proposals which tackle subsets of the above problem:
 
 * [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796):
   extremely similar to the proposal in this MSC, but limited to encrypted events.
@@ -417,7 +417,7 @@ as described in [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pu
 
 ## Security considerations
 
-Including the mentioned users in cleartext is a small metadata leak, but the tradeoff
+Including the mentioned users in cleartext is a small metadata leak, but we consider that the tradeoff
 of mentions working properly and the savings in bandwidth and battery makes it worthwhile.
 
 The additional metadata leaked is minor since the homeserver already knows the
