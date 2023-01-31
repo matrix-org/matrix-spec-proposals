@@ -343,10 +343,10 @@ We're skipping over defining rules for which fallback combinations to display
 (i.e. "display hints") for now; these can be added in a future MSC if needed.
 [MSC1225](https://github.com/matrix-org/matrix-doc/issues/1225) contains a proposal for this.
 
-Placing content blocks at the top level of `content` is a bit unfortunate, particularly
-when mixing in `m.room.message` compatibility, though mixes nicely thanks to namespacing.
-Potentially conflicting cases in the wild would be namespaced fields, which would get
-translated as unknown event types, and thus skipped by the rendering machinery.
+Placing content blocks at the top level of `content` is a bit unfortunate, though mixes
+nicely thanks to namespacing. Potentially conflicting cases in the wild would be
+namespaced fields, which would get translated as unrenderable events if the value type
+doesn't meet the client's known schema.
 
 This MSC does not rewrite or redefine all possible events in the specification: this is
 deliberately left as an exercise for several future MSCs.
