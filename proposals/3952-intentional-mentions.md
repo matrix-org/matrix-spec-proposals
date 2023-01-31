@@ -379,7 +379,7 @@ room version before use, which would unnecessarily delay usage.
 ### Encrypting the `m.mentions` property
 
 Encrypting the `m.mentions` property would solve some unintentional mentions, but
-will not help with???.
+leaving it unencrypted allows for solving a wider range of issues.
 
 Allowing an encrypted `m.mentions` property on a per-message basis could allow users
 to choose, but would result in inconsistencies and complications:
