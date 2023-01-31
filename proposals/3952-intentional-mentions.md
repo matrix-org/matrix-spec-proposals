@@ -410,7 +410,7 @@ as described in [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pu
 ```json
 {
   "kind": "exact_event_match",
-  "key": "m.mentions.room",
+  "key": "content.m.mentions.room",
   "value": true
 }
 ```
