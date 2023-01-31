@@ -76,7 +76,7 @@ based on event type schemas it *does* know. This may mean combining multiple dif
 content blocks to match a suitable schema, such as in the case of
 [MSC3553](https://github.com/matrix-org/matrix-doc/pull/3553) video events.
 Which schemas to try, and in what order, is left as a deliberate implementation detail.
-A client might decide to try parsing the event as a video, then image, then file, then 
+A client might decide to try parsing the event as a video, then image, then file, then
 text message, for example.
 
 It is generally not expected that a single content block will describe an entire event,
@@ -118,10 +118,10 @@ a minimum, a `m.markup` content block:
 * The first representation a renderer understands should be used.
 * Senders are strongly encouraged to always include a plaintext representation.
 * The `mimetype` of a representation determines its `body` - no effort is made to
-  limit what is allowed in the `body` (ie: we don't specify what is allowable HTML),
-  therefore it is the client's responsibility to validate/sanitize the content further,
-  such as by using the [existing spec](https://spec.matrix.org/v1.4/client-server-api/#mroommessage-msgtypes)
-  for recommended allowable HTML.
+  limit what is allowed in the `body`, however clients are still strongly encouraged
+  to validate/sanitize the content further, like in the
+  [existing spec](https://spec.matrix.org/v1.4/client-server-api/#mroommessage-msgtypes)
+  for HTML.
 * Custom markups in a representation are specified by a suitably custom `mimetype`.
   For example, a representation might use a markup format extending HTML or XML, or an
   all-new format. This can be used to create bridge-compatible clients where the
