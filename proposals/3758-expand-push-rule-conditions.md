@@ -2,7 +2,7 @@
 
 Currently the only condition used to match event content for push rules is the `event_match` kind.
 This compares a glob-style string against a string value within the event dictionary. The event
-dictionary is flattened before conditions are checked to enable mathing nested values.
+dictionary is flattened before conditions are checked to enable matching nested values.
 
 This approach is currently limited to only checking for string values within the event dictionary
 (at any level). This MSC proposes a new exact match type for event content that works with all
