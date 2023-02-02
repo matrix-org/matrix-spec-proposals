@@ -1,0 +1,1154 @@
+# MSC3963: Oblivious Matrix over HTTPS
+
+## Deanonymization Threat Modelling
+
+Some aspects of the security of the Matrix protocol is built upon the assumption
+that a user reasonably trusts the homeserver which they choose to use. Although
+the existing scheme of peer-to-peer encrypted rooms via Megolm is sufficient for
+ensuring the confidentiality and integrity of messages when a homeserver which
+has access to a room's history is malicious or compromised, the metadata within
+the unencrypted portions of events, combined with the user's device history and
+potentially any connection logs stored by the homeserver, poses a nontrivial
+threat of deanonymization by a resourceful adversary.
+
+Metadata accessible to any homeserver which an encrypted room's history is
+synced to includes:
+ * Matrix IDs of users participating, or have participated in the room
+ * Device ID used to send an event (and user-friendly name of device, if added)
+ * Timestamps of all events
+ * Approximate size of plaintext
+
+In addition, metadata also accessible to a user's own homeserver includes:
+ * List of all rooms that the user participates in
+ * Email address and phone number of the user (if added)
+ * Connecting IP address and last seen times of all devices (if implemented)
+ * Metadata of all incoming connections (if logged)
+
+Of these, the data accessible only to the user's homeserver is of particular
+interest. Anonymization of a user's origin on the internet, whether proxied or
+not, is lacking and relies too much on trust placed on the homeserver. Should
+the homeserver be ever compromised, or legally compelled to disclose data,
+an adversary may be able to trivially correlate the physical identity of a user
+with their activities on Matrix, even if the user uses encrypted rooms and
+follows best practices to validate device sessions.
+
+(Note that of course Matrix by design does not offer plausible deniability of
+data within events themselves; this is implemented by an overlaying application
+layer such as OTR if required.)
+
+At the moment, the threat model of Matrix may consider this to be an acceptable
+risk, as anonymity-aware users will take measures to hide their physical IP from
+their homeserver anyways, such as through proxies or Tor. However, there are
+several arguments which could be made against the sustainability of such a
+status quo:
+ * As a homeserver grows, traffic from popular proxies or Tor exit relays may be
+   rate-limited, making authentication and registration more difficult.
+ * Certain users may not have the technical knowledge to use these tools while
+   following best practices for security. Bad security is worse than no security.
+ * Configuring native Matrix clients to *safely* use a proxy or Tor can be
+   difficult, be not supported at all, or in the worst case leak traffic through
+   insecure channels, which only creates an illusion of security. As an example,
+   currently on the native Element client for Windows, macOS, and Linux,
+   configuring a SOCKS proxy via command-line argument may [silently fail](https://github.com/vector-im/element-web/issues/3320).
+   * Due to this, most anonymous users may opt to use web-based Matrix clients
+     exclusively. As verifying the integrity of web client mirrors is far more
+     difficult compared to native source code, this can cause them to become
+     central points of failure which mostly concerns anonymity-aware users!
+ * Some users may live in locations where access to such tools is restricted or
+   unavailable (internet censorship).
+   * Some users may also require plausible deniability for their internet
+     traffic being associated with anonymity services.
+ * If users are forced to create their own solutions to anonymizing Matrix
+   client traffic, the non-uniformity of such solutions presents additional
+   potential vectors for fingerprinting. (For example, a malicious homeserver
+   may prioritize analyzing traffic from Tor users, simply due to the fact that
+   most of these users must have some reason to pay special attention to their
+   privacy.)
+
+Although it can be argued that it is not within the scope of the Matrix protocol
+itself to implement measures to defeat such a theoretical adversary, the Matrix
+protocol itself is placed in the best position to offer a solution to the
+deanonymization problem. As the Matrix network grows, more and more attacks will
+be directed at homeservers and Matrix users, so an ideal solution would offer
+some level of "future-proofing" against costly leaks that might undermine the
+confidence of the typical user in the reliability of Matrix for sensitive
+applications.
+
+### Theoretical Examples
+
+ * Alice is a whistleblower. Through her work, she discovers evidence related to
+   a major scandal in the local government, which she forwards through an
+   encrypted Matrix room to another independent journalist Bob to be published.
+   Here, Alice used an identity on Homeserver A to send it to Bob, who has an
+   identity on Homeserver B. The authorities obtains a search warrant for the
+   organization operating Homeserver B that Bob uses, which through event
+   metadata reveals that an account which ostensibly belongs to Alice sent a
+   large attachment to Bob some time before Bob had published his article
+   relating to the evidence provided by Alice. Through a second search warrant
+   to Homeserver A which the account resides on, the IP addresses associated to
+   Alice's devices are revealed, and Alice is prosecuted despite following best
+   practices for security on Matrix.
+   * Alice may have avoided deanonymization by utilizing a proxy or Tor when
+     connecting to Homeserver A at all times. However, this may have been
+     impractical for reasons highlighted earlier. Additionally, Alice may not
+     have been aware that her homeserver did not protect or encrypt her physical
+     identity, or was misled by an idea that all activities were encrypted and
+     thus protected when messaging with Matrix.
+
+ * Carol is an online activist. Some comments they've made online has attracted
+   threats from certain hate groups on the internet, so they maintain a
+   pseudonymous identity online, while using a Matrix identity on Homeserver A
+   for instant messaging. Later on, a data leak occurs at Homeserver A,
+   resulting in all plaintext data stored on Homeserver A being dumped and made
+   publicly available. A member of a hate group then uses the leaked data to
+   trace an IP address back to Carol through device sessions and doxxes them.
+   * Carol may also have avoided deanonymization by utilizing a proxy or Tor,
+     but the same considerations from before also apply. This case also differs
+     in that Carol was the target of an implicitly illegal activity, but one
+     which is usually difficult to prosecute due to criminals hiding their own
+     identities online.
+
+In both cases, responsibility of protecting user anonymity is upheld purely by
+the integrity of the user's homeserver. Although, again, protection against such
+threats may not be within scope for the Matrix protocol in general as of yet, it
+is still a significant aspect for any anonymity-minded users to consider, and
+mitigation solutions offered by the Matrix protocol itself allows less
+tech-savvy users to take confidence in knowing that their anonymity can also be
+protected when using Matrix.
+
+## Proposal
+
+**Oblivious MoH** (Matrix over HTTPS, or OMoH) is inspired by Oblivious DoH
+(DNS over HTTPS, see also [RFC9230](https://www.rfc-editor.org/rfc/rfc9230)).
+
+Oblivious MoH creates a first layer of protection for anonymity-minded users, by
+relaying their Matrix traffic through a secondary homeserver first, thus never
+exposing both the user's physical IP address and the user's Matrix identity to a
+single party at any given time.
+
+Oblivious MoH is a relatively novel concept as it is integrated directly into an
+instant messaging platform, as opposed to existing as network level software.
+As the Matrix network expands and matures, it will begin to benefit immensely
+from the decentralized and diverse nature of homeserver federation(s), allowing
+users to route sensitive Matrix traffic through anonymous, ephemeral paths via
+existing Matrix homeservers around the world directly from the client, with some
+level of plausible deniability for using OMoH by default (see
+[OMoH Threat Model](#oblivious-moh-threat-model)).
+
+Integration of Oblivious MoH would in theory place Matrix far ahead of many
+other competing instant messaging platforms with core privacy and security
+focuses, such as Signal, Telegram, Whatsapp, XMPP etc., by also isolating the
+user's physical identity from any trusted "central server" (the user's
+homeserver in the case of Matrix). Matrix would uniquely become the first IM
+protocol and ecosystem to support minimal configuration anonymity
+*out-of-the-box*, while also supporting feature-rich instant messaging and
+other application integrations.
+
+Oblivious MoH is also optional for homeservers to implement and/or use.
+Homeservers which are not OMoH-aware by default reject requests gracefully
+(404). Furthermore, a homeserver can choose to only relay OMoH traffic, to only
+accept incoming OMoH traffic (in addition to normal Matrix traffic), or both at
+once. A relay also does not necessarily need to implement the Matrix protocol at
+all, and can theoretically operate standalone.
+
+More technically speaking, Oblivious MoH is an optional Module for the Matrix
+protocol specification. It does not create a new custom data protocol, but
+instead is implemented as new stateless HTTP APIs which makes it easy to
+integrate into existing client and homeserver implementations:
+
+ * `/.well-known/matrix/moh` (GET, Returns server MoH capabilities; extensible)
+ * `/_matrix/client/r0/obliviousMoh/`
+   * `/relay` (POST, Relay a Matrix request to another homeserver)
+   * `/getCapabilities` (GET, Retrieves well-known MoH capabilities from another
+     homeserver on the client's behalf, as well as TLS certificate info)
+ * `/_matrix/server/r0/obliviousMoh/`
+   * `/incoming` (POST, Receives a OMoH request from another homeserver)
+
+Typical usage flow of Oblivious MoH:
+1. A client has an identity on Homeserver A, but would like to connect through
+   Homeserver B. It knows the domain name of both.
+2. The client first needs to initialize OMoH by obtaining a trusted private key
+   from Homeserver A.
+   * First, as a sanity check the client will query Homeserver B for its OMoH
+     capabilities.
+     `GET /.well-known/matrix/moh` -> `200 OK; application/json`
+   * Verifying that Homeserver B declares support for both the `/relay` and
+     `/getCapabilities` endpoint, the client requests Homeserver B to fetch OMoH
+     capabilities from Homeserver A. This also includes Homeserver A's TLS
+     certificate.
+     `GET /_matrix/client/r0/obliviousMoh/getCapabilities` ->
+     `200 OK; application/json`
+   * The client verifies that the TLS certificate is valid and does match
+     Homeserver A's domain, and caches the public key contained within.
+3. The client initializes a OMoH request by encapsulating a regular Matrix API
+   request inside a JSON container which details the nature of the HTTP request
+   (method, MIME, path). It then genereates an ephemeral asymmetric keypair of
+   its own, and attaches the public key and ciphersuite string to the container.
+   The container is then encrypted using Homeserver A's public key, and
+   forwarded to Homeserver B's OMoH relay endpoint as a blob. The client
+   specifies Homeserver A's domain as the target homeserver in a HTTP header,
+   "Target".
+   `POST /_matrix/client/r0/obliviousMoh/relay;`
+   `application/oblivious-moh-request`
+   * Homeserver B now decides whether the request should be forwarded. It first
+     checks a cached list of homeservers recently queried via `/getCapabilities`
+     for a valid match, and failing that, queries the target homeserver directly
+     for its well-known MoH capabilities before proceeding. It will forward the
+     request only if the target homeserver validly declares support for the
+     `/incoming` endpoint; otherwise the request is dropped and a 502 Bad
+     Gateway is returned.
+   * Homeserver B now relays the OMoH request to Homeserver A.
+     `POST /_matrix/server/r0/obliviousMoh/incoming;`
+     `application/oblivious-moh-request`
+4. Homeserver A has now received an anonymous OMoH request and attempts to
+   decrypt it via its TLS private key. It then validates that the content is
+   indeed valid JSON, and converts the container back to a normal HTTP request.
+   The request is then looped back into the destination API endpoint.
+5. The endpoint returns a response to the request, which is then encapsulated
+   inside a JSON container similar to before, and encrypted using the private
+   key and ciphersuite requested by the client. The homeserver returns the
+   encrypted blob as a response to Homeserver B's OMoH request.
+   `200 OK; application/oblivious-moh-request`
+6. Homeserver B passes the response back to the client.
+   `200 OK; application/oblivious-moh-request`
+7. The client decrypts the blob using its ephemeral private key, and converts
+   the container back to a normal HTTP response, which is then transparently
+   returned to the function or program which initiated the request.
+
+The OMoH endpoints are stateless throughout. One to two requests occur when a
+client attempts OMoH connection to a homeserver domain which it does not have
+the TLS certificate for. Afterwards, all Matrix client requests are translated
+transparently into OMoH requests, which makes a client using OMoH functionally
+almost indistinguishable compared to a client using the relay homeserver
+directly without Oblivious MoH.
+
+```
+|Alice              |                   |
+|(a user)           |Homeserver B       |
+|                   |(a relay HS)       |Homeserver A
+|                   |                   |(Alice's actual HS, the "remote" HS)
+|[Alice openes her  |                   |
+| Matrix client, and|                   |
+| chooses to enable |                   |
+| Oblivious MoH.]   |                   |
+|                   |                   |
+|[Alice chooses     |                   |
+| Homeserver B as   |                   |
+| her OMoH relay.]  |                   |
+|                   |                   |
+|                   |                   |
+|                   |                   |
+|-HTTPS 1.1 GET---->|                   |
+|/.well-known/matrix/moh                |
+|                   |                   |
+|<-----------200 OK-|                   |
+|MIME application/json                  |
+|{                                      |
+|  "capabilities": {                    |
+|    "specs": {                         |
+|       "r0": {                         |
+|        "oblivious_moh": {             |
+|          "relay": true                |
+|          "incoming": true             |
+|          "getCapabilities": true      |
+|        }                              |
+|      }                                |
+|    },                                 |
+|    "base_url": "matrix.homeserver-..",|
+|    "ephemeral_key": {                 |
+|      "keys": {                        |
+|        "MOH_RSA_AES...": "Ki0YT07cS.."|
+|      },                               |
+|      "expires": 2147483648            |
+|    }                                  |
+|  },                                   |
+|  "signature": "xnO0EgRWzCB5ZQJGPSJ.." |
+|}                                      |
+|                   |                   |
+|                   |                   |
+|                   |                   |
+|-HTTPS 1.1 GET---->|                   |
+|/_matrix/client/r0/obliviousMoh/getCapabilities
+|Target: matrix.homeserver-a.example    |
+|                   |                   |
+|                   |-HTTPS 1.1 GET---->|
+|                   |/.well-known/matrix/moh
+|                   |                   |
+|                   |<-----------200 OK-|
+|                   |MIME application/json
+|                   |                   |
+|                   |<- Encodes TLS info|
+|                   |   into json       |
+|                   |                   |
+|<-----------200 OK-|                   |
+|MIME application/json                  |
+|{                                      |
+|  "certificate": "LS0tLS1CRUdJTiBDR.." |
+|  "capabilities": {                    |
+|    "versions": {...},                 |
+|    "base_url": "matrix.homeserver-..",|
+|    "ephemeral_key": {...}             |
+|  },                                   |
+|  "signature": "+XvM68ws913g+E0FcsC.." |
+|}                                      |
+|                   |                   |
+|                   |                   |
+|                   |                   |
+|[Matrix client     |[HS B can now cache|
+| verifies through  | the cert, public  |
+| cert that the key | key, and capab. of|
+| does belong to    | HS A until expiry]|
+| HS A]             |                   |
+|                   |                   |
+|[Matrix client     |                   |
+| generates request]|                   |
+|                   |                   |
+|                   |                   |
+|                   |                   |
+|-> GET             |                   |
+|/_matrix/client/v3/sync                |
+|MIME application/json                  |
+|{                                      |
+|  "since": "s72595_4483_1934",         |
+|  "full_state": true                   |
+|}                                      |
+|      \/           |                   |
+| Encode HTTP,      |                   |
+| attach an         |                   |
+| ephemeral public  |                   |
+| key and nonce for |                   |
+| server response   |                   |
+|      \/                               |
+|{                                      |
+|  "path": "/_matrix/client/v3/sync",   |
+|  "method": "GET",                     |
+|  "response_key": "H1idSnzxPiKRuoP/..",|
+|  "response_nonce": "9C4d0GFwwtyyqt..",|
+|  "response_cipher": "MOH_RSA_AES25..",|
+|  "headers": {                         |
+|    "Authorization": "Bearer foo_12..",|
+|    "Content-Type": "application/json" |
+|  },                                   |
+|  "payload": {                         |
+|    "since": "s72595_4483_1934",       |
+|    "full_state": true                 |
+|  }                                    |
+|}                                      |
+|      \/           |                   |
+| Encrypt with HS   |                   |
+| A's TLS public key|                   |
+|      \/           |                   |
+|97e62d2f522112a0d1a|                   |
+|5403b1a5b05cef570..|                   |
+|      \/           |                   |
+|<- Relay request   |                   |
+|                   |                   |
+|-HTTPS 1.1 POST--->|                   |
+|/_matrix/client/r0/obliviousMoh/relay  |
+|MIME application/oblivious-moh-request |
+|Target: matrix.homeserver-a.example    |
+|Nonce: hOCBvgGrWMSQj81OzGIukQ          |
+|Scheme: MOH_RSA_AES256_GCM_SHA256      |
+|97e62d2f522112a0d1a|                   |
+|5403b1a5b05cef570..|                   |
+|                   |                   |
+|                   |-HTTPS 1.1 POST--->|
+|                   |/_matrix/server/r0/obliviousMoh/incoming
+|                   |MIME application/oblivious-moh-request
+|                   |Nonce: hOCBvgGrWMSQj81OzGIukQ
+|                   |Scheme: MOH_RSA_AES256_GCM_SHA256
+|                   |97e62d2f522112a0d1a|
+|                   |5403b1a5b05cef570..|
+|                   |                   |
+|                   |                   |-> Decrypt json via TLS private key
+|                   |                   |      \/
+|                   |                   |{
+|                   |                   |  "path": "/_matrix/client/v3/sync",
+|                   |                   |  "method": "GET",
+|                   |                   |  "response_key": "H1idSnzxPiKRuoP...",
+|                   |                   |  "response_nonce": "9C4d0GFwwtyyq...",
+|                   |                   |  "response_cipher": "MOH_RSA_AES2...",
+|                   |                   |  "headers": {                         
+|                   |                   |    "Authorization": "Bearer foo_12..",
+|                   |                   |    "Content-Type": "application/json"
+|                   |                   |  },
+|                   |                   |  "payload": {
+|                   |                   |    "since": "s72595_4483_1934",
+|                   |                   |    "full_state": true
+|                   |                   |  }
+|                   |                   |}
+|                   |                   |      \/
+|                   |                   |<- Forward to endpoint
+|                   |                   |
+|                   |                   |<- GET
+|                   |                   |/_matrix/client/v3/sync
+|                   |                   |MIME application/json
+|                   |                   |
+|                   |                   |[Endpoint processes request as normal]
+|                   |                   |
+|                   |                   |[Endpoint returns response]
+|                   |                   |-> 200 OK
+|                   |                   |MIME application/json
+|                   |                   |
+|                   |                   |-> Encrypt json using response_key
+|                   |                   |      \/
+|                   |                   |{
+|                   |                   |  "status": 200,
+|                   |                   |  "headers": {
+|                   |                   |    "Content-Type": "application/json"
+|                   |                   |  },
+|                   |                   |  "payload": {
+|                   |                   |    "account_data": {...},
+|                   |                   |    "next_batch": {...},
+|                   |                   |    "presence": {...},
+|                   |                   |    "rooms": {...},
+|                   |                   |    ...
+|                   |                   |  }
+|                   |                   |}
+|                   |                   |      \/
+|                   |                   |13d01e6a31b910f89c8
+|                   |                   |08f771a0e9a4f6653be
+|                   |                   |f3743b84107bd2817..
+|                   |                   |      \/
+|                   |                   |<- Relay response
+|                   |                   |
+|                   |<-----------200 OK-|
+|                   |MIME application/oblivious-moh-request
+|                   |Nonce: qxIX4kuOaWdv1IIr/4Yn/w
+|                   |13d01e6a31b910f89c8|
+|                   |08f771a0e9a4f6653be|
+|                   |f3743b84107bd2817..|
+|                   |[HS B now forgets  |
+|                   | about Alice as    |
+|                   | request succeeded]|
+|                   |                   |
+|<-----------200 OK-|                   |
+|MIME application/oblivious-moh-request |
+|Nonce: qxIX4kuOaWdv1IIr/4Yn/w          |
+|13d01e6a31b910f89c8|                   |
+|08f771a0e9a4f6653be|                   |
+|f3743b84107bd2817..|                   |
+|                   |                   |
+|-> Decrypt json    |                   |
+|      \/           |                   |
+|{                                      |
+|  "status": 200,                       |
+|  "headers": {                         |
+|    "Content-Type": "application/json" |  
+|  },                                   |
+|  "payload": {                         |
+|    "account_data": {...},             |
+|    "next_batch": {...},               |
+|    "presence": {...},                 |
+|    "rooms": {...},                    |
+|    ...                                |
+|  }                                    |
+|}                                      |
+|      \/           |                   |
+| Translate back to |                   |
+| HTTP for client   |                   |
+| SDK usage         |                   |
+|      \/           |                   |
+|<- 200 OK          |                   |
+|MIME application/json                  |
+|{                                      |
+|  "account_data": {...},               |
+|  "next_batch": {...},                 |
+|  "presence": {...},                   |
+|  "rooms": {...},                      |
+|  ...                                  |
+|}                                      |
+```
+
+## Oblivious MoH Threat Model
+
+Oblivious MoH is designed to:
+ * Hinder deanonymization of the user, by restricting identifiable information
+   accessible to any singular party at any given time;
+ * Hinder adversaries from determining that the user is using Oblivious MoH;
+ * Hinder adversaries from disrupting the user's ability to reach the greater
+   Matrix federation network;
+ * Hinder adversaries from abusing Oblivious MoH to attack other aspects of the
+   threat model of the Matrix protocol;
+ * Synergize with other anonymity solutions such as proxies or Tor, when
+   properly implemented, for defense-in-depth.
+
+Oblivious MoH is **NOT** designed to:
+ * Directly protect VoIP traffic (yet);
+ * Prevent adversaries from identifying that the user is using Matrix;
+ * Prevent deanonymization of the user when the adversary controls both the
+   relay and remote homeservers;
+ * Prevent deanonymization of the user when the adversary can view and correlate
+   events within publicly available rooms with the user's traffic;
+ * Fully defend against deanonymization of the user when the adversary has the
+   means to implement an effective, large scale timing attack;
+ * Protect the user when a client which does not implement Oblivious MoH
+   properly is used.
+
+Oblivious MoH is designed to reasonably protect against:
+ * Client adversaries (malicious Matrix users)
+ * Network adversaries (malicious Matrix homeservers and OMoH relays)
+ * Local adversaries (insecure networks, cybercriminals, ISPs)
+ * Global adversaries (intelligence agencies and other state-level adversaries;)
+
+Oblivious MoH cannot protect against adversaries which can compromise your
+Matrix client. **It is possible, but not recommended to use Oblivious MoH with a**
+**web Matrix client. Use a native, open-source client whenever possible.**
+
+The Oblivious MoH threat model may partially change with future specifications.
+
+## API Specification
+
+### GET `/.well-known/matrix/moh`
+
+Returns information about the local homeserver's Matrix over HTTPS capabilities.
+
+ * 200 OK: The request succeeded, and a capabilities JSON is returned.
+ * 404 Not Found: This homeserver does not implement Matrix over HTTPS.
+
+| 200 Response
+| Name           | Type         | Description                                                          |
+| -------------- | ------------ | -------------------------------------------------------------------- |
+| `capabilities` | Capabilities | MoH capabilities of the server.                                      |
+| `signature`    | string       | Cryptographic signature of `capabilities` object, encoded in base64. |
+
+| Capabilities                                                                                          |
+| Name            | Type           | Description                                                        |
+| --------------- | -------------- | ------------------------------------------------------------------ |
+| `specs`         | Specifications | The specs supported by the server.                                 |
+| `base_url`      | string         | Base URL to use for MoH endpoints.                                 |
+| `ephemeral_key` | Ephemeral Key  | Rotating ephemeral public key to be used for MoH requests.         |
+
+| Specifications (r0)                                                    |
+| Name            | Type              | Description                      |
+| --------------- | ----------------- | -------------------------------- |
+| `oblivious_moh` | OMoH Capabilities | OMoH capabilities of the server. |
+
+| OMoH Capabilities                                                                                                            |
+| Name              | Type    | Description                                                                                    |
+| ----------------- | ------- | ---------------------------------------------------------------------------------------------- |
+| `relay`           | boolean | True if the server supports relaying OMoH requests.                                            |
+| `incoming`        | boolean | True if the server supports receiving OMoH requests.                                           |
+| `getCapabilities` | boolean | True if the server supports requesting this endpoint of another server on the client's behalf. |
+
+| Ephemeral Key                                                                                              |
+| Name            | Type    | Description                                                                    |
+| --------------- | ------- | ------------------------------------------------------------------------------ |
+| `key`           | object  | Most current ephemeral public keys. See [Blob Encryption](#blob-encryption). |
+| `expires`       | number  | Timestamp for when the current `keys` are no longer accepted by the server.    |
+
+A client attempting to use Oblivious MoH **MUST** not continue if it does not
+support any specifications which the server declares support for.
+
+`signature` should be derived from the X.509 TLS certificate used by the
+homeserver. A client attempting to use Oblivious MoH **MUST** not continue, and
+discard the capabilities specified in the response, if the signature of the
+`capabilities` object cannot be verified to match a valid TLS certificate
+bearing the domain of the server.
+
+A specification-compliant server which implements `relay` **MUST** also
+implement `getCapabilities`.
+
+When using a version string which ends in `-relay`, clients *should* not attempt
+to use the server for any Matrix endpoints, other than the Oblivious MoH
+endpoints. (A server probably should not also need to declare both a normal and
+a relay spec version at the same time.)
+
+The Specifications object can be adapted by any other specification which
+implements Matrix over HTTPS.
+
+The `/moh` endpoint **MUST** not implement HTTP caching, due to serving the
+rotating ephemeral public key used by Matrix over HTTPS.
+
+> Oblivious MoH uses a "versionless" `/.well-known/` endpoint to declare its
+capabilities. This slightly reduces fingerprintable vectors of OMoH users, by
+simulating an initial request to `/.well-known/matrix/client`, against potential
+middlemen in the user's network connection.
+
+```json
+{
+  "capabilities": {
+    "specs": {
+      "r0": {
+        "oblivious_moh": {
+          "relay": true,
+          "incoming": true,
+          "getCapabilities": true
+        }
+      },
+      "r0-relay-only": {
+        "oblivious_moh": {
+          "relay": true,
+          "incoming": false,
+          "getCapabilities": true
+        }
+      },
+      "msc3962": {
+        "oblivious_moh": {
+          "relay": true,
+          "incoming": true,
+          "getCapabilities": true
+        },
+        "experimental_parameter": "foo_bar"
+      }
+    },
+    "base_url": "https://matrix-client.matrix.org",
+    "ephemeral_key": {
+      "keys":{
+        "MOH_ED25519_AES256_GCM_SHA256": "Ki0YT07cS2myJzQnqLmY/4TU1/AK..."
+      },
+      "expires": 2147483648
+    }
+  },
+  "signature": "TL2gUN7PP+PCixyDp0NLI7REUELZPvYC2tTIELsRcBylixd6HsHVfM1+1Vm..."
+}
+```
+
+
+### POST `/_matrix/client/r0/obliviousMoh/relay`
+
+Requests the server to forward an Oblivious MoH request to another homeserver.
+Request body **MUST** be an encrypted blob of MIME Content-Type
+`application/oblivious-moh-request`.
+
+The HTTP request header "Target" is the domain name of the remote homeserver to
+receive the request.
+
+The HTTP request header "Nonce" is the cryptographic nonce associated with the
+encrypted blob. This **MUST** be included in the `/incoming` request verbatim.
+
+ * 200 OK: The request succeeded, and the encrypted blob from the remote
+   homeserver is returned.
+ * 404 Not Found: This server does not implement OMoH relaying.
+ * 502 Bad Gateway: The remote homeserver does not implement OMoH receiving, or
+   the remote homeserver returned an error. If the remote homeserver included a
+   response, it is returned as the response body.
+ * 504 Gateway Timeout: The remote homeserver did not respond in a timely manner.
+ * 429 Too Many Requests: Rate-limited by either this server or the remote
+   homeserver.
+
+The plaintext of the encrypted blob should be well-formed JSON.
+
+| Plaintext                                                                                                                                             |
+| Name              | Type   | Description                                                                                                              |
+| ----------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `path`            | string | URL of the destination API endpoint.                                                                                     |
+| `method`          | enum   | HTTP method of the request. One of ["GET", "POST", "PUT", "HEAD", "OPTIONS", "DELETE"].                                  |
+| `response_key`    | string | Cryptographic public key which the remote homeserver can use to encrypt its response.                                    |
+| `response_nonce`  | string | One-time nonce which the remote homeserver should use in response encryption, encoded in base64.                         |
+| `response_cipher` | string | Cryptographic ciphersuite which the remote homeserver should use to encrypt its response, encoded in base64.             |
+| `headers`         | object | HTTP headers associated with the request. Each JSON key corresponds to a header key. Includes "Content-Type" by default. |
+| `payload`         | object | HTTP body associated with the request. Usually a JSON object, or a JSON key containing a base64 encoding of the payload. |
+
+The `payload` object should be a simple JSON object representing the original
+JSON request when the `Content-Type` header is `application/json`. For any other
+`Content-Type`, `payload` will be a Base64 encoding of the request body.
+
+`response_cipher` may request a different ciphersuite than the one which was
+used for the request. Clients *should* not use different ciphersuites as this
+adds additional fingerprintable entropy for the Oblivious MoH route. How
+homeservers handle this is up to the specific implementation.
+
+```json
+{
+  "path": "/_matrix/client/v3/sync",
+  "method": "GET",
+  "response_key": "wBSKhd0c3ciHe3xGVmizMSN5wJdbh6B+Xn26kWk02Ao=",
+  "response_nonce": "qxIX4kuOaWdv1IIr/4Yn/w",
+  "response_cipher": "MOH_RSA_AES256_GCM_SHA256",
+  "headers": {
+    "Authorization": "Bearer foo_1234567890",
+    "Content-Type": "application/json"
+  },
+  "payload": {
+    "since": "s72595_4483_1934",
+    "full_state": true
+  }
+}
+```
+
+| 200 Response (Plaintext)                                                                                                                      |
+| Name      | Type   | Description                                                                                                              |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `status`  | number | HTTP response code associated with the request.                                                                          |
+| `headers` | object | HTTP headers associated with the request. Each JSON key corresponds to a header key. Includes "Content-Type" by default. |
+| `payload` | object | HTTP body associated with the request. Usually a JSON object, or a JSON key containing a base64 encoding of the payload. |
+
+For specifications on how to encrypt the JSON container, see [Blob Encryption](#blob-encryption).
+
+### POST `/_matrix/server/r0/obliviousMoh/incoming`
+
+Requests the server to accept an Oblivious MoH request from another homeserver.
+Request body **MUST** be an encrypted blob of MIME Content-Type
+`application/oblivious-moh-request`.
+
+The HTTP request header "Nonce" is the cryptographic nonce associated with the
+encrypted blob, randomly generated by the client.
+
+ * 200 OK: The request succeeded, and the destination API endpoint's response as
+   an encrypted blob is returned. Returned even if the requested API endpoint
+   returns any errors, except for 429.
+ * 404 Not Found: This server does not implement OMoH receiving.
+ * 422 Unprocessable Entity: The server could not decode well-formed JSON from
+   the request body, likely due to a cryptographic error.
+ * 429 Too Many Requests: Rate-limited.
+
+For request JSON specification, see [/relay](#post-/_matrix/client/r0/obliviousmoh/relay).
+
+In this version of Oblivious MoH, homeservers **MUST** also reject any requests
+destined for any OMoH relay endpoint via its `path` JSON key (e.g.
+`/obliviousMoh/relay`), using 422 Unprocessable Entity, to avoid creating OMoH
+routes with more than 1 relay.
+
+### GET `/_matrix/client/r0/obliviousMoh/getCapabilities`
+
+Requests the server to fetch another server's `/.well-known/matrix/moh` on
+behalf of the client, alongside the TLS certificate and public key it provides.
+If the homeserver's base URL resides on a different domain, it attempts to fetch
+`/.well-known/matrix/moh` from that base URL instead.
+
+The HTTP request header "Target" is the domain name of the remote homeserver to
+query.
+
+ * 200 OK: The request succeeded, and the capabilities JSON of the remote
+   homeserver is returned.
+ * 404 Not Found: The server does not implement delegated OMoH capabilities
+   fetching.
+ * 502 Bad Gateway: The remote homeserver did not return a success code. If the
+   remote homeserver included a response, it is returned as the response body.
+   Usually this means that the remote homeserver does not implement MoH.
+ * 508 Loop Detected: The remote homeserver's `base_url` resulted in a redirect
+   chain which was too lengthy.
+
+A client attempting to use Oblivious MoH **MUST** not continue if it does not
+support any versions which the server declares support for.
+
+A client attempting to use Oblivious MoH **MUST** not continue, and discard the
+capabilities specified in the response, if the signature of the `capabilities`
+object cannot be verified to match a valid TLS certificate bearing the domain of
+the remote homeserver.
+
+| 200 Response                                                                                        |
+| Name            | Type          | Description                                                       |
+| --------------- | ------------- | ----------------------------------------------------------------- |
+| `certificate`   | string        | TLS certificate used by the remote homeserver, encoded in base64. |
+| `capabilities`  | Capabilities  | Forwarded from the remote homeserver's JSON response.             |
+| `signature`     | string        | Forwarded from the remote homeserver's JSON response.             |
+
+```json
+{
+  "certificate": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlGTWpDQ0JObWdBd...",
+  "capabilities": {
+    "specs": {
+      "r0": {
+        "oblivious_moh": {
+          "relay": true,
+          "incoming": true,
+          "getCapabilities": true
+        }
+      }
+    },
+    "base_url": "https://matrix-client.matrix.org",
+    "ephemeral_key": {
+      "keys":{
+        "MOH_ED25519_AES256_GCM_SHA256": "Ki0YT07cS2myJzQnqLmY/4TU1/AK"
+      },
+      "expires": 2147483648
+    }
+  },
+  "signature": "+XvM68ws913g+E0FcsCNpWm1UZ2H0g7xjhobJQMa2GWyFN33NOuVRQyykwm..."
+}
+```
+
+## Blob Encryption
+
+Due to the risky nature of custom cryptography implementations, the following
+draft should currently be treated as a recommendation rather than an actual
+specification. Before the MSC is merged into the stable spec, it is **highly**
+**recommended** for an independent audit to be conducted on the security of the
+proposed encryption scheme.
+
+The communication model of Oblivious MoH poses severe constraints on the design
+of a secure encryption scheme between the user and the remote homeserver.
+ * The scheme is (almost) stateless throughout. The user's client and remote
+   homeserver only need to keep track of the intermediate public keys.
+ * The scheme involves minimal exchange of traffic between the user and remote
+   homeserver. Requests and responses are one-to-one and no additional
+   negotiation can occur. This immediately rules out many key exchange schemes.
+   * Existing schemes used within Matrix such as *Double Ratchet* (Olm) are thus
+     unusable, especially considering that the client is always unauthenticated.
+ * The client can obtain an intermediate trusted public key from the remote
+   homeserver signed by its TLS certificate.
+
+It may be beneficial to draw an analogy to PGP which operates off of a very
+similar communication scheme (known public key, encrypt and forget), though in
+this case the concept of a web of trust is ignored and trust within the remote
+homeserver's Certificate Authority is assumed by default. Additionally, the
+remote homeserver cannot obtain a public key of the *user* until they send their
+first request, and even then the remote homeserver cannot retain it for future
+communications as it is ephemeral.
+
+It should also be noted that encryption of the JSON container is solely used for
+defeating a network adversary of a malicious relay server. As the Oblivious MoH
+requests happen fully over TLS, it is not expected for theoretical weaknesses
+within this encryption scheme to affect client, local, and global adversaries
+significantly.
+
+In the interest of simplicity of implementation, the first version of Oblivious
+MoH will only feature **Weak (eventual) Forward Secrecy**, due to the complex
+nature of non-interactive forward secrecy. Certain novel techniques such as
+puncturable encryption may be implemented in future versions of Oblivious MoH to
+guarantee Perfect Forward Secrecy (see [Future Work & Extensions](#future-work-&-extensions)).
+
+### Rotating Ephemeral Public Key
+
+To achieve weak forward secrecy, a homeserver which implements the `/incoming`
+endpoint issues rotating MoH public keys on a cycle. The remote homeserver
+*should* only accept the current key, as well as one or two keys immediately
+before it; any expired keypairs must be discarded as soon as possible. When
+implemented correctly, an adversary which compromises the homeserver can only
+decrypt past messages within a reasonably small time window. Messages which were
+encrypted with keypairs which were already discarded should theoretically become
+permanently undecryptable (until a plaintext recovery attack becomes feasible
+against the ciphersuite used).
+
+The most current ephemeral key is provided by the `keys` object from the
+`/.well-known/matrix/moh` endpoint. Each JSON key bears the ciphersuite string
+as its name, and the public key encoded in Base64 as its value:
+
+```json
+{
+  "keys":{
+    "MOH_ED25519_AES256_GCM_SHA256": "Ki0YT07cS2myJzQnqLmY/4TU1/AKXo0JdelIC...",
+    "MOH_ECDSA_AES256_GCM_SHA256": "yC9TwIb7qkfXQK4UCMph381luV1VNhrXlu9FL5O...",
+    "MOH_RSA_AES256_GCM_SHA256": "l3apK+KV4q0H6VyDWsLPhLWjcnMnMrjiWnUOtGbFi...",
+    "MOH_SOME_OTHER_CIPHERSUITE": "a1ujSIEJPU79Z9+d33rrDRd7L123INk3q3o63B+u..."
+  },
+  "expires": 2147483648
+}
+```
+
+`expires` is the Unix timestamp of the expiry time of the public keys, in
+seconds since 00:00:00 UTC, January 1st, 1970.
+
+Homeservers **MUST** be aware of at least 2 public keys per ciphersuite which
+have not expired at any given time, and also not issue any more keys if there
+are at least 4 valid keys already issued. Keys **MUST** expire at least 200
+seconds and no more than 300 seconds after they are first issued, and this
+duration **MUST** also be randomly determined at time of issue. A new key **MUST**
+be issued 60 seconds before the oldest one expires, unless this would exceed the
+limit of 3 keys. Expired private keys **MUST** be immediately purged by the
+homeserver.
+
+A client **MUST** request a new key via `/getCapabilities`, randomly between 100
+to 50 seconds before the current one expires. If a client has more than 1 valid
+key available, it **MUST** use the oldest one until 30 seconds before it
+expires, when it should switch to the second oldest one. If a client receives
+
+Servers **MUST** ensure that the time is synced at least to second-level
+precision before issuing any keys. If the time on the server changes, the server
+**MUST** immediately issue a new key (and invalidate the oldest one if this
+would exceed the key limit). Clients *should* ensure that time is synced at
+least to second-level precision before establishing an Oblivious MoH route, to
+improve homogeneity between clients as keys rotate.
+
+MSC3962 does not enforce using any particular cryptographic scheme, but the
+following is a sample specification for a scheme
+"`MOH_RSA_AES256_GCM_SHA256`".
+
+(**To reiterate with emphasis**, this sample implementation is a draft and may
+not yet follow all best security practices. Ensure that the scheme is well-
+audited before using in production implementations.)
+
+### MOH_RSA_AES256_GCM_SHA256
+
+This sample scheme implements RSA for the message header, and AES-256 in Galois/
+Counter Mode for the message content, using SHA3-256 for hash operations.
+
+Cryptographic Primitives:
+ * [RSA](https://dl.acm.org/doi/10.1145/359340.359342)
+ * [AES-256 GCM](https://csrc.nist.gov/publications/detail/sp/800-38d/final)
+ * [SHA3-256](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf)
+
+The client first generates the Initialization Vector (IV) to be used for the GCM
+encrypt operation. In this scheme, part of it is the nonce sent in plaintext via
+HTTP header (see [/relay](#post-/_matrix/client/r0/obliviousMoh/relay)).
+Then, the client generates the symmetric encryption key (K) for the encrypt
+operation.
+
+PIV **MUST** be 16 bytes long, generated via a cryptograpically suitable
+randomness source by the client, hashed via SHA-256 and truncated to 16 bytes.
+The truncated 16 bytes is used as Nonce.
+
+K **MUST** be 32 bytes long, generated via a cryptographically suitable
+randomness source by the client, hashed via SHA-256.
+
+The message content JSON or data is then encrypted via AES-256 GCM using
+PIV+Nonce (PIV with Nonce appended, for 32 bytes) as its Initialization Vector,
+and K as its encryption key.
+
+The client then generates the *plaintext header* as follows:
+
+| Bytes | 1 | 1  | 1  | *  | 1 | 16  | 32 | 8 | *  |
+| ----- | - | -- | -- | -- | - | --- | -- | - | -- |
+| Data  | R | LA | LB | PA | C | PIV | K  | L | PB |
+
+ * `R`  : Random Pad. 1 byte, randomly generated by the client.
+ * `LA` : Padding A Length. 1 byte, randomly generated by client.
+ * `LB` : Padding B Length. 1 byte, randomly generated by client.
+ * `PA` : Padding A. Zero **bits**, length specified by `LA`. **MUST** be within
+          range `20` to `FF`.
+ * `C`  : Version constant. 1 byte, always `01`.
+ * `PIV`: Partial IV. 16 bytes.
+ * `K`  : AES Key. 32 bytes.
+ * `L`  : Length of payload. 8 bytes, length of payload data in bytes.
+ * `PB` : Padding B. Zero **bits**, length specified by `LB`. **MUST** be within
+          range `20` to `FF`.
+
+> Beware that `PA` and `PB` have lengths of __bits__ and padded data will often
+  be misaligned!
+
+The client then encrypts the header using the server's ephemeral public key via
+RSA, and appends the encrypted payload to it, thus generating the complete
+*Oblivious MoH request ciphertext*, or "encrypted blob". It is then forwarded
+to the remote server, and the client *should* discard all data used during
+generation as soon as possible, *including* PIV, Nonce, and K.
+
+Before decryption, the server **MUST** fail the request immediately if the Nonce
+was used by any Oblivious MoH request which was used for a request which it
+successfully decrypted using a ephemeral keypair which is *still* valid.
+
+> One way of implementing this is keeping a list of Nonces already used for each
+  keypair, and discarding that list whenever the keypair expires. This method
+  could present unknown security risks however, by introducing additional logged
+  fingerprintable entropy to incoming Oblivious MoH connections.
+
+To decrypt the header, the server first decrypts the starting 512 bit block of
+the encrypted blob using every ephemeral private key it currently recognizes.
+The blob is considered valid if all of the following are true of the plaintext:
+ * All bits, starting from `0x003`, of length given by value `0x001`, are `00`;
+ * The byte at `0x003` + bit offset `0x001` is `01`;
+ * All bits, starting from `0x03C` + value `0x001`, of length given by value
+   `0x002`,  are `00`.
+
+The server then decrypts the header of length 480 + value `0x001` + value
+`0x002` bits, and attempts to decrypt the payload appended after the header
+length, using PIV+Nonce (PIV with Nonce appended) as Initialization Vector and K
+as key for AES-256 GCM.
+
+If the payload is valid JSON, the server processes it as requested.
+
+When the server encrypts its response to be forwarded back to the client, it
+uses the same header format, with the following changes:
+ * PIV is substituted by the `response_nonce` requested by the client,
+ * K is substituted by the `response_key` requested by the client.
+
+The client thus decrypts the encrypted blob response from the server similarly
+to before, using the `response_nonce` and `response_key` that it generated when
+creating the initial JSON container.
+
+## Security Considerations
+
+### Choosing Relay and Remote Homeservers
+
+Users **MUST** take every precaution to ensure that both the relay server and
+the remote homeserver that they choose are not controlled by one party, and that
+an adversary will need considerable effort to compromise both at once.
+Otherwise, colluding homeservers can trivially correlate the user's relay and
+actual Matrix traffic, and associate the user's physical IP address with the
+user's Matrix identity, thereby defeating Oblivious MoH entirely.
+
+Ideally, Matrix clients which implement Oblivious MoH securely *should* also
+implement behaviour that allows users to identify approximate geographical
+locations of servers they choose (e.g. via a local GeoIP database), and warn
+against picking servers located within the same country or general legal
+jurisdiction.
+
+Clients *should* also strongly warn against picking servers which reside on the
+same /24 IPv4 subnet.
+
+In the future, Oblivious MoH specifications should include a way for server
+operators to declare other homeservers or OMoH relays that they control, and
+specification-compliant clients **MUST** not use any OMoH route that includes
+servers which both reference one another in this declaration (similar to Tor's
+`MyFamily` relay configuration).
+
+### Rate Limiting
+
+Oblivious MoH presents a new potential vector for Denial of Service (DoS)
+attacks against homeservers, using OMoH relays to blend in with normal anonymous
+users. In general, it may be very well impossible to rate-limit requests from
+Oblivious MoH relays in a satisfactory manner, due to the inherent anonymous
+nature of the traffic.
+
+Oblivious MoH relays may receive 422 Too Many Request responses in plaintext.
+In these cases, the relay *should* temporarily block `/relay` requests from the
+client's IP until the specified time indicated within the response is reached.
+Individual blocks **MUST** be limited to 1 hour or less to minimize data
+retention.
+
+Homeservers which implement Oblivious MoH `/incoming` *should* ideally first
+rate-limit users by their `Authorization` token whenever available. For
+unauthenticated users, the receiving homeserver *should* send back 422 Too Many
+Request in plaintext, but not actually block the IP of the Oblivious MoH relay.
+Only when a relay sends excessive traffic which should already be rate-limited
+should it be temporarily blocked. Specific implementation is left to the
+homeserver.
+
+### User Education
+
+It is important for Matrix users to understand the limitations of Oblivious MoH,
+and not to grow to rely on it as a "catch-all" privacy solution. The following
+best practices are recommended when utilizing Oblivious MoH:
+
+ * Oblivious MoH does not magically make you completely anonymous. It should be
+   treated as a first line of defense for your anonymity at best, and it only
+   works if you follow the necessary precautions while using it:
+ * Avoid giving personally identifiable information to your homeserver unless
+   it's encrypted (encrypted rooms, or Secrets). This includes username, display
+   name, profile image, and email or phone associated with an identity server.
+ * Avoid sending messages containing personally identifiable information to
+   unencrypted rooms, or to peers that you don't trust.
+ * Do not mix between using Matrix with Oblivious MoH and using Matrix normally
+   over a single identity. Either connect anonymously or not; a single login
+   request may make a malicious homeserver aware of your physical IP address.
+ * Do not use VoIP over Oblivious MoH yet as it is not implemented.
+ * Don't use an identity server as this may make your data available to more
+   parties.
+ * Do not rotate relays excessively; this makes it probabilistically easier for
+   an adversary to become your Oblivious MoH relay at some point, and can make
+   local adversaries suspicious of your traffic. Ideally, a single relay should
+   be retained for at least several weeks at a time.
+ * Ensure that your Oblivious MoH relay and your remote homeserver are most
+   certainly controlled by different parties, ideally in different countries,
+   and best if also in politically distinct jurisdictions, to minimize the
+   chances of a global adversary being able to compromise both at the same time.
+ * Use distinct identities for using Matrix for instant messaging, and using
+   Matrix for third-party applications.
+ * It is best to implement defense-in-depth. Consider using OMoH over a proxy or
+   Tor if you are knowledgeable enough to configure it securely.
+ * Avoid using Oblivious MoH over a web client, as it is significantly more
+   difficult to verify the integrity of a web client compared to a native one.
+
+### Server Network Logging
+
+Many homeservers current keep logs of incoming connections to Matrix endpoints,
+and sometimes may associate them with authenticated Matrix identities.
+
+Although Oblivious MoH by design defeats deanonymization through such traffic
+analytics, it is wise for homeservers to minimize logs they keep on Oblivious
+MoH connections regardless, as this can provide additional fingerprintable
+vectors of Oblivious MoH users should the homeserver's network logs be
+compromised.
+
+### Deep Packet Inspection Fingerprinting Resistance
+
+Oblivious MoH by design blends in with regular Matrix requests to the relay
+server, to fool intelligent firewalls controlled by network adversaries. There
+are some challenges to this approach associated with the current specification:
+
+ * Requests are always slightly inflated in size due to additional overhead from
+   JSON encapsulation. This may be impossible to optimize without breaking the
+   "oblivious-ness" of Oblivious MoH, unless a custom data protocol is
+   implemented which compresses the necessary HTTP parameters.
+ * Requests are always slightly slower than normal Matrix requests, due to
+   increased latency from relaying.
+ * The initial setup phase of obtaining a server's TLS certificate, public key,
+   and canonical homeserver domain triggers 1 or 2 more requests compared to
+   normal Matrix clients.
+
+These vectors could theoretically provide additional entropy for a local or
+global adversary with access to powerful network analytics to identify Oblivious
+MoH users. This could prove problematic in the future for users who reside in
+regions with strong internet censorship, such as China (especially with its new
+[machine-learning based approach to internet censorship](https://github.com/net4people/bbs/issues/129)).
+
+### DNS Domain Mismatch
+
+In rare cases the relay server may not resolve the hostname of the remote
+homeserver properly, due to various DNS issues or attacks, which will often
+cause a mismatch between the domain name that the client expects, and the domain
+name specified by TLS certificate served by the remote homeserver, resulting in
+Oblivious MoH failing to initialize. It may be possible to instead target the
+remote homeserver via its IP address directly, but the action of resolving the
+remote homeserver's domain from the client may reveal to a local or global
+adversary that the user may be using Oblivious MoH.
+
+For now, it is assumed that the relay server has good DNS resolution, as
+otherwise it would also fail to connect to many members of the Matrix homeserver
+federation. This may be a point to address in the future, using solutions such
+as Distributed Hash Tables.
+
+## Limitations
+
+Existing major limitations of Oblivious MoH:
+ * No VoIP. Calls must be routed peer-to-peer, or via the remote homeserver's
+   TURN server directly.
+ * No automatic discovery of relays. Users must manually choose an OMoH relay
+   by its domain, obtained from an out-of-band source.
+ * Only 1 hop. The probability of both servers maliciously colluding is
+   nontrivial.
+
+These problems are addressed in [Extensions & Future Work](#extensions-&-future-work).
+
+## Future Work & Extensions
+
+### VoIP over Oblivious MoH
+
+VoIP is a major feature of Matrix, and rendering it inaccessible over Oblivious
+MoH would greatly hinder many of its use cases. A future version of Oblivious
+MoH should allow for OMoH relays to act as anonymous TURN servers, though this
+approach has its own issues associated with deanonymization through in-depth
+traffic analysis, as well as denial of service attacks.
+
+### Relay Discovery
+
+To improve the homogeneity of Oblivious MoH users, it may be wise to implement a
+decentralized system for discovery of OMoH relays, similar to the directory
+authority consensus implemented in Tor.
+
+### Longer OMoH Routes
+
+Implementing routes with more hops through Oblivious MoH relays can improve
+anonymity, at an approximate exponentially growing cost to the complexity of the
+protocol, complexity of client and server implementation, and by extension, the
+number of potential security and usability issues within Oblivious MoH. As OMoH
+begins to offer anonymity levels closer to onion routers and other similar
+services, users will grow to rely on it for many aspects of privacy and
+security, thus making a watertight specification and implementation much more
+important.
+
+### Non-Interactive Immediate Perfect Forward Secrecy
+
+Future implementations can use novel techniques such as [puncturable encryption](https://en.wikipedia.org/wiki/Forward_secrecy#Non-interactive_forward_secrecy)
+to achieve immediate perfect forward secrecy. The current blob encryption scheme
+offers weak forward secrecy only, by regularly rotating the intermediate
+ephemeral keypair signed by the remote homeserver, which is probably somewhat
+insufficient for the threat model which Oblivious MoH adopts.
+
+### Extensions: Non-Anonymous Matrix over HTTPS
+
+The `/.well-known/matrix/moh` endpoint is designed to be extensible for
+accommodating a variety of relayed traffic over Matrix, not just for Oblivious
+MoH. Future MSCs can take advantage of the existing frameworks laid out by OMoH.
+For example, a new MSC can add endpoints which allows for authenticated Matrix
+over HTTPS traffic, for controlling authorized access to an isolated Matrix
+network via "edge" homeservers.
+
+### Extensions: Other Traffic over OMoH / MoH
+
+It may be possible to send other types of traffic through Matrix homeservers for
+custom applications. These will likely not make it into the standard Matrix spec
+due to security considerations, but implementations for customized use cases
+will likely appear in the wild.
+
+## Unstable Prefix
+
+During the MSC stage, all endpoints *except* for `/.well-known/matrix/moh` will
+use the unstable version prefix `/unstable/org.matrix.msc3962`. The Oblivious
+MoH version shall be `msc3962`.
+
+MSC Endpoints:
+ * `/_matrix/client/unstable/org.matrix.msc3962/obliviousMoh/relay`
+ * `/_matrix/server/unstable/org.matrix.msc3962/obliviousMoh/incoming`
+ * `/_matrix/client/unstable/org.matrix.msc3962/obliviousMoh/getCapabilities`
