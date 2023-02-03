@@ -862,7 +862,14 @@ homeserver.
 A client **MUST** request a new key via `/getCapabilities`, randomly between 100
 to 50 seconds before the current one expires. If a client has more than 1 valid
 key available, it **MUST** use the oldest one until 30 seconds before it
-expires, when it should switch to the second oldest one. If a client receives
+expires, when it should switch to the second oldest one. If a client receives a
+422 Unprocessable Entity indicating a decryption failure, it should try a newer
+key if it already has one available; otherwise, it should stop making requests
+until the next public key fetch is scheduled.
+
+> Although this may result in service interruption if the private keys on the
+  remote homeserver update suddenly, adversarial control over the client's key
+  usage and traffic patterns is hopefully minimized.
 
 Servers **MUST** ensure that the time is synced at least to second-level
 precision before issuing any keys. If the time on the server changes, the server
