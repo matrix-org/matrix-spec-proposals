@@ -507,35 +507,35 @@ Returns information about the local homeserver's Matrix over HTTPS capabilities.
  * 200 OK: The request succeeded, and a capabilities JSON is returned.
  * 404 Not Found: This homeserver does not implement Matrix over HTTPS.
 
-| 200 Response
+#### 200 Response
 | Name           | Type         | Description                                                          |
 | -------------- | ------------ | -------------------------------------------------------------------- |
 | `capabilities` | Capabilities | MoH capabilities of the server.                                      |
 | `signature`    | string       | Cryptographic signature of `capabilities` object, encoded in base64. |
 
-| Capabilities                                                                                          |
+#### Capabilities
 | Name            | Type           | Description                                                        |
 | --------------- | -------------- | ------------------------------------------------------------------ |
 | `specs`         | Specifications | The specs supported by the server.                                 |
 | `base_url`      | string         | Base URL to use for MoH endpoints.                                 |
 | `ephemeral_key` | Ephemeral Key  | Rotating ephemeral public key to be used for MoH requests.         |
 
-| Specifications (r0)                                                    |
+#### Specification (r0)
 | Name            | Type              | Description                      |
 | --------------- | ----------------- | -------------------------------- |
 | `oblivious_moh` | OMoH Capabilities | OMoH capabilities of the server. |
 
-| OMoH Capabilities                                                                                                            |
+#### OMoH Capabilities
 | Name              | Type    | Description                                                                                    |
 | ----------------- | ------- | ---------------------------------------------------------------------------------------------- |
 | `relay`           | boolean | True if the server supports relaying OMoH requests.                                            |
 | `incoming`        | boolean | True if the server supports receiving OMoH requests.                                           |
 | `getCapabilities` | boolean | True if the server supports requesting this endpoint of another server on the client's behalf. |
 
-| Ephemeral Key                                                                                              |
+#### Ephemeral Key
 | Name            | Type    | Description                                                                    |
 | --------------- | ------- | ------------------------------------------------------------------------------ |
-| `key`           | object  | Most current ephemeral public keys. See [Blob Encryption](#blob-encryption).   |
+| `keys`          | object  | Most current ephemeral public keys. See [Blob Encryption](#blob-encryption).   |
 | `expires`       | number  | Timestamp for when the current `keys` are no longer accepted by the server.    |
 
 A client attempting to use Oblivious MoH **MUST** not continue if it does not
