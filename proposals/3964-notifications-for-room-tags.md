@@ -1,4 +1,4 @@
-# MSCxxxx: Notifications for room tags
+# MSC3964: Notifications for room tags
 
 Users expect that a [room's tag](https://spec.matrix.org/v1.5/client-server-api/#room-tagging)
 has an impact on its notification settings. [^1]
@@ -121,10 +121,10 @@ N/A
 
 ## Unstable prefix
 
-`org.matrix.mscxxx.room_tag` should be used instead of `room_tag` for the push
+`org.matrix.msc3964.room_tag` should be used instead of `room_tag` for the push
 rule condition.
 
-`.org.matrix.mscxxx.suppress_lowpriority` push rule ID should be replace the new
+`.org.matrix.msc3964.suppress_lowpriority` push rule ID should replace the new
 `.m.rule.suppress_lowpriority` default push rule.
 
 ## Dependencies
