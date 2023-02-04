@@ -937,8 +937,8 @@ The client then generates the *plaintext header* as follows:
 > Beware that `PA` and `PB` have lengths of __bits__ and padded data will often
   be misaligned!
 
-> As `L` is only 10 bytes long, ensure that the payload does not exceed 16777216 
-  bytes (approximately 16.7 megabytes) before encryption. 
+> As `L` is only 10 bytes long, ensure that the payload does not exceed 
+  1073741824 bytes (approximately 1 gigabyte) before encryption. 
 
 The client then encrypts the header using the server's ephemeral public key via
 RSA, and appends the encrypted payload to it, thus generating the complete
