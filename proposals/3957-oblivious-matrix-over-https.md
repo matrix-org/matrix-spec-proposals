@@ -961,10 +961,10 @@ The blob is considered valid if all of the following are true of the plaintext:
  * All bits, starting from `0x003`, of length given by value `0x001`, are 
    `0x00`;
  * The byte at `0x003` + bit offset from value `0x001` is `0x01`;
- * All bits, starting from `0x03C` + value `0x001`, of length given by value
+ * All bits, starting from `0x03E` + value `0x001`, of length given by value
    `0x002`,  are `0x00`.
 
-The server then decrypts the header of length 480 + value `0x001` + value
+The server then decrypts the header of length 482 + value `0x001` + value
 `0x002` bits, and attempts to decrypt the payload appended after the header
 length, using PIV+Nonce (PIV with Nonce appended) as Initialization Vector and K
 as key for AES-256 GCM.
