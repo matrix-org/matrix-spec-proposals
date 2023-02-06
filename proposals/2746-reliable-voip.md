@@ -68,7 +68,7 @@ they can no longer ignore events from their own user. This field also identifies
 by different clients to an invite, and matches `m.call.candidate` events to their respective answer/invite.
 
 A client implementation may choose to use the device ID used in end-to-end cryptography for this purpose,
-or it may choose, for example, to use a different one for each call to avoid lekaing information on which
+or it may choose, for example, to use a different one for each call to avoid leaking information on which
 devices were used in a call (in an unencrypted room) or if a single device (ie. access token were used to
 send signalling for more than one call party.
 
