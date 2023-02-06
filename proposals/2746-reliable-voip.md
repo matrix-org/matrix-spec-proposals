@@ -51,7 +51,7 @@ such streams and tracks is undefined.
 
 This follows the existing known implementations of v0 VoIP.
 
-### Add `invitee` field to `m.call.invite`
+### Add `invitee` field to [`m.call.invite`](https://spec.matrix.org/v1.5/client-server-api/#mcallinvite)
 This allows for the following use cases:
  * Placing a call to a specifc user in a room where other users are also present.
  * Placing a call to oneself.
