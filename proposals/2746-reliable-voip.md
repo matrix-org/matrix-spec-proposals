@@ -56,9 +56,11 @@ This allows for the following use cases:
  * Placing a call to a specifc user in a room where other users are also present.
  * Placing a call to oneself.
 
-The field should be added for all invites where the target is a specific user. Invites without an `invitee`
-field are defined to be intended for any member of the room other than the sender of the event. Clients
-should consider an incoming call if they see a non-expired invite event where the `invitee` field is either
+The field should be added for all invites where the target is a specific user, and should be set
+to the Matrix user ID of that user. Invites without an `invitee`
+field are defined to be intended for any member of the room other than the sender of the event. 
+
+Clients should consider an incoming call if they see a non-expired invite event where the `invitee` field is either
 absent or equal to their user's Matrix ID, however they should evaluate whether or not to ring based on their
 user's trust relationship with the callers and/or where the call was placed. As a starting point, it is
 suggested that clients ignore call invites from users in public rooms. It is strongly recommended that
@@ -82,6 +84,8 @@ A client implementation may choose to use the device ID used in end-to-end crypt
 or it may choose, for example, to use a different one for each call to avoid leaking information on which
 devices were used in a call (in an unencrypted room) or if a single device (ie. access token were used to
 send signalling for more than one call party.
+
+A grammar for `party_id` is defined [below](#specify-exact-grammar-for-voip-ids).
 
 ### Introduce `m.call.select_answer`
 This event is sent by the caller's client once it has chosen an answer. Its
