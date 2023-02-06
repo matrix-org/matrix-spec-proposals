@@ -62,10 +62,11 @@ both generating an answer at the same time generating the same party ID is vanis
 lowercase alphanumeric characters is recommended. Parties in the call are identified by the tuple of
 `(user_id, party_id)`.
 
-The client  adds a `party_id` field containing this ID alongside the `user_id` field to all VoIP events it sends on the
-call. Clients use this to identify remote echo of their own events, since a user may now call themselves,
-they can no longer ignore events from their own user. This field also identifies different answers sent
-by different clients to an invite, and matches `m.call.candidate` events to their respective answer/invite.
+The client  adds a `party_id` field containing this ID alongside the `user_id` field to all VoIP events
+it sends on the call, including `m.call.inbite`. . Clients use this to identify remote echo of their own
+events, since a user may now call themselves, they can no longer ignore events from their own user. This
+field also identifies different answers sent by different clients to an invite, and matches `m.call.candidate`
+events to their respective answer/invite.
 
 A client implementation may choose to use the device ID used in end-to-end cryptography for this purpose,
 or it may choose, for example, to use a different one for each call to avoid leaking information on which
