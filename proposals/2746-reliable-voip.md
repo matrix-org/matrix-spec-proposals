@@ -157,7 +157,7 @@ If both the invite event and the accepted answer event have `version` equal to `
 send `m.call.negotiate` with a `description` field to offer new SDP to the other party. This event has
 `call_id` with the ID of the call and `party_id` equal to the client's party ID for that call.
 The caller ignores any negotiate events with `party_id` + `user_id` tuple not equal to that of the
-answer it accepted. Clients should use the `party_id` field to ignore the remote echo of their
+answer it accepted and the callee ignores any negotiate events with `party_id` + `user_id` tuple not equal to that of the caller. Clients should use the `party_id` field to ignore the remote echo of their
 own negotiate events.
 
 This has a `lifetime` field as in `m.call.invite`, after which the sender of the negotiate event
