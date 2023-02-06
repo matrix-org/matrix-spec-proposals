@@ -36,7 +36,9 @@ be for it to simply use a separate set of event types.
 
 ### Define the configurations of WebRTC streams and tracks
 
-Clients are expected to send one stream with one track of kind `audio` (creating
+The [spec](https://spec.matrix.org/v1.5/client-server-api/#voice-over-ip) does not currently define
+the WebRTC streams and tracks that should be sent. Under this proposal,
+clients are expected to send one stream with one track of kind `audio` (creating a
 voice call). They can optionally send a second track in the same stream of kind
 `video` (creating a video call).
 
