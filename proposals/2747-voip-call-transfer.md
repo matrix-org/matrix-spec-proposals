@@ -135,7 +135,7 @@ the transfer.
 
 ### Capability Advertisment
 This proposal also introduces a field on `m.call.invite` and `m.call.answer` events at the top
-level with the key `capabilities`, whose value is an object. This object has one recognised key,
+level with the key `capabilities`, whose value is an object. We define the key,
 `m.call.transferee` which, if set to true, states that the sender of the event supports the
 `m.call.replaces` event and therefore supports being transferred to another destination.
 For example:
@@ -163,6 +163,9 @@ If this key is absent or set to anything other than the boolean, `true`, or if
 the `capabilities` object is missing altogether, it should be assumed that the
 sender of the invite or answer does not support call transfers and clients should
 reflect this in the UI accordingly.
+
+We also define a capability called `m.call.dtmf`. Clients should only display UI for sending
+DTMF during a call if the other party advertises this capability (boolean value `true`).
 
 ## Potential issues
 A call transfer is fairly complex and involves a lot of round-trips and state on clients, and
