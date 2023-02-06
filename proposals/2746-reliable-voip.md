@@ -103,7 +103,8 @@ Example:
    `party_id` just like an answer, and the caller sends a `select_answer` for it just like an
    answer. If the other client that had already sent an answer sees the caller select the
    reject response instead of its answer, it ends the call.
- * If the `m.call.invite` event has `version` `0`, the callee sends an `m.call.hangup` event before.
+ * If the `m.call.invite` event has `version` `0`, the callee sends an `m.call.hangup` event
+   as in spec version 0.
 
 Example:
 ```
