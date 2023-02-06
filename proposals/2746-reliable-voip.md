@@ -246,7 +246,7 @@ Clients should aim to send a small number of candidate events, with guidelines:
    anyway after the invite whilst the client waits for the user to accept it).
 
 ### Mandate the end-of-candidates candidate
-Mandate that an ICE candidate whose value is the empty string must be sent in an m.call.candidates
+Define that an ICE candidate whose value is the empty string must be sent in an m.call.candidates
 message to signal that no more ICE candidates will be sent. The WebRTC spec requires browsers to
 generate such a candidate, however note that at time of writing, not all browsers do (Chrome does
 not, but does generate an `icegatheringstatechange` event). The client should send any remaining
