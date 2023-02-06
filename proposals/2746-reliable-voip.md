@@ -137,8 +137,8 @@ The client may:
    an ICE renegotiation, a client should be sure to send `ice_timeout` rather than `ice_failed` if
    media had previously been received successfully, even if the ICE renegotiation itself failed.
  * `user_hangup`: Clients must now send this code when the user chooses to end the call, although
-   for backwards compatability, a clients should treat an absence of the `reason` field as
-   `user_hangup`.
+   for backwards compatability with version 0, a clients should treat an absence of the `reason`
+   field as `user_hangup`.
  * `user_media_failed`: The client was unable to start capturing media in such a way as it is unable
    to continue the call.
  * `user_busy`: The user is busy. Note that this exists primarily for bridging to other networks such
