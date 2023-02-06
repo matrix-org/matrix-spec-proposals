@@ -64,7 +64,7 @@ Clients should consider an incoming call if they see a non-expired invite event 
 absent or equal to their user's Matrix ID, however they should evaluate whether or not to ring based on their
 user's trust relationship with the callers and/or where the call was placed. As a starting point, it is
 suggested that clients ignore call invites from users in public rooms. It is strongly recommended that
-when clients do not ring for an incoming call invite, they still display the invite in the room and
+when clients do not ring for an incoming call invite, they still display the call invite in the room and
 annotate that it was ignored.
 
 ### Add `party_id` to all VoIP events
