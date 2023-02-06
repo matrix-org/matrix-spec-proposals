@@ -260,11 +260,6 @@ Add that Matrix clients can send DTMF as specified by WebRTC. The WebRTC standar
 2020 does not support receiving DTMF but a Matrix client can receive and interpret the DTMF sent
 in the RTP payload.
 
-We also add a capability to the `capabilities` section of invites and answers (detailed in
-[MSC2747](https://github.com/matrix-org/matrix-doc/pull/2747)) called `m.call.dtmf`. Clients
-should only display UI for sending DTMF during a call if the other party advertises this
-capability (boolean value `true`).
-
 ### Specify exact grammar for VoIP IDs
 `call_id`s and the newly introduced `party_id` are explicitly defined to be between 1 
 and 255 characters long, consisting of the characters `[0-9a-zA-Z._~-]`. 
