@@ -50,10 +50,10 @@ The field should be added for all invites where the target is a specific user. I
 field are defined to be intended for any member of the room other than the sender of the event. Clients
 should consider an incoming call if they see a non-expired invite event where the `invitee` field is either
 absent or equal to their user's Matrix ID, however they should evaluate whether or not to ring based on their
-user's trust relationship with the caller, eg. ignoring call invites from users in public rooms that they have
-no other connection with. As a starting point, it is suggested that clients ring for any call invite from a user
-that they have a direct message room with. It is strongly recommended that when clients do not ring for an
-incoming call invite, they still display the invite in the room and annotate that it was ignored.
+user's trust relationship with the callers and/or where the call was placed. As a starting point, it is
+suggested that clients ignore call invites from users in public rooms. It is strongly recommended that
+when clients do not ring for an incoming call invite, they still display the invite in the room and
+annotate that it was ignored.
 
 ### Add `party_id` to all VoIP events
 Whenever a client first participates in a new call, it generates a `party_id` for itself to use for the
