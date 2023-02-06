@@ -138,15 +138,15 @@ as previously.
 
 ### Clarify what actions a client may take in response to an invite
 The client may:
- * Attempt to accept the call by sending an answer
- * Actively reject the call everywhere: reject the call as per above, which will stop the call from
+ * Attempt to accept the call by sending an `m.call.answer`.
+ * Actively reject the call everywhere: send an `m.call.reject` as per above, which will stop the call from
    ringing on all the user's devices and the caller's client will inform them that the user has
    rejected their call.
  * Ignore the call: send no events, but stop alerting the user about the call. The user's other
    devices will continue to ring, and the caller's device will continue to indicate that the call
    is ringing, and will time the call out in the normal way if no other device responds.
 
-### Introduce more reason codes to `m.call.hangup`
+### Introduce more reason codes to [`m.call.hangup`](https://spec.matrix.org/v1.5/client-server-api/#mcallhangup)
  * `ice_timeout`: The connection failed after some media was exchanged (as opposed to current
    `ice_failed` which means no media connection could be established). Note that, in the case of
    an ICE renegotiation, a client should be sure to send `ice_timeout` rather than `ice_failed` if
@@ -154,7 +154,7 @@ The client may:
  * `user_hangup`: Clients must now send this code when the user chooses to end the call, although
    for backwards compatability with version 0, a clients should treat an absence of the `reason`
    field as `user_hangup`.
- * `user_media_failed`: The client was unable to start capturing media in such a way as it is unable
+ * `user_media_failed`: The client was unable to start capturing media in such a way that it is unable
    to continue the call.
  * `user_busy`: The user is busy. Note that this exists primarily for bridging to other networks such
    as the PSTN. A Matrix client that receives a call whilst already in a call would not generally reject
@@ -220,7 +220,7 @@ time since it received the event from the homeserver to determine whether the in
 The use of the `age` field ensures that incorrect clocks on client devices don't break calls.
 If the invite is still valid *and will remain valid for long enough for the user to accept the call*,
 it should signal an incoming call. The amount of time allowed for the user to accept the call may
-vary between clients, for example, it may be longer on a locked mobile device than on an unlocked
+vary between clients. For example, it may be longer on a locked mobile device than on an unlocked
 desktop device.
 
 The client should only signal an incoming call in a given room once it has completed processing the
@@ -261,7 +261,7 @@ Add that Matrix clients can send DTMF as specified by WebRTC. The WebRTC standar
 in the RTP payload.
 
 We also add a capability to the `capabilities` section of invites and answers (detailed in
-[MSC2747](https://github.com/matrix-org/matrix-doc/pull/2747) called `m.call.dtmf`. Clients
+[MSC2747](https://github.com/matrix-org/matrix-doc/pull/2747)) called `m.call.dtmf`. Clients
 should only display UI for sending DTMF during a call if the other party advertises this
 capability (boolean value `true`).
 
@@ -270,7 +270,7 @@ capability (boolean value `true`).
 'opaque IDs' from [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/blob/rav/proposals/id_grammar/proposals/1597-id-grammar.md#opaque-ids).
 
 ### Specify behaviour on room leave
-If the client sees the party it is in a call with leave the room, the client should treat this
+If the client sees the user it is in a call with leave the room, the client should treat this
 as a hangup event for any calls that are in progress. No specific requirement is given for the
 situation where a client has sent an invite and the invitee leaves the room, but the client may
 wish to treat it as a rejection if there are no more users in the room who could answer the call
