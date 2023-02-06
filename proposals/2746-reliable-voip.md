@@ -16,10 +16,15 @@ Historically, Matrix has basic support for signalling 1:1 WebRTC calls which suf
 
 ## Proposal
 ### Change the `version` field in all VoIP events to `"1"`
-This will be used to determine whether devices support this new version of the protocol.
-If clients see events with `version` other than `0` or `"1"`, they should treat these the same as if they had
-`version` == `"1"`. In addition, clients must accept either the number `0` or a string for the value of the `version`
-field, in order to allow for namespaced versions in the future.
+This will be used to determine whether devices support this new version of the protocol. For example,
+clients can use this field to know whether to expect an `m.call.select_answer` event from their
+opponent. If clients see events with `version` other than `0` or `"1"`, they should treat these the
+same as if they had `version` == `"1"`. In addition, clients must accept either the number `0` or a
+string for the value of the `version` field, in order to allow for namespaced versions in the future.
+
+Note that this implies any and all future versions of VoIP events should be backwards-compatible.
+If it does become necessary to introduce a non backwards-compatible VoIP spec, the intention would
+be for it to simply use a separate set of event types.
 
 ### Define the configurations of WebRTC streams and tracks
 
