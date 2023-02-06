@@ -16,6 +16,13 @@ Historically, Matrix has basic support for signalling 1:1 WebRTC calls which suf
 
 ## Proposal
 ### Change the `version` field in all VoIP events to `"1"`
+The version property is changed to `"`1`" in all existing VoIP events
+([`m.call.answer`](https://spec.matrix.org/v1.5/client-server-api/#mcallanswer),
+[`m.call.candidates`](https://spec.matrix.org/v1.5/client-server-api/#mcallcandidates),
+[`m.call.hangup`](https://spec.matrix.org/v1.5/client-server-api/#mcallhangup)
+[`m.call.invite`](https://spec.matrix.org/v1.5/client-server-api/#mcallinvite)).
+This will be used to determine whether devices support this new version of the protocol.
+
 This will be used to determine whether devices support this new version of the protocol. For example,
 clients can use this field to know whether to expect an `m.call.select_answer` event from their
 opponent. If clients see events with `version` other than `0` or `"1"`, they should treat these the
