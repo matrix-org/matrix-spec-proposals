@@ -106,7 +106,7 @@ Example:
         "call_id": "12345",
         "party_id": "67890",
         "selected_party_id": "111213",
-    },
+    }
 }
 ```
 
@@ -114,9 +114,9 @@ Example:
 
  * If the `m.call.invite` event has `version` `"1"`, a client wishing to reject the call
    sends an `m.call.reject` event. This rejects the call on all devices, but if the calling
-   device sees an accept, it disregards the reject event and carries on. The reject has a
+   device sees an `answer` before the `reject`, it disregards the reject event and carries on. The reject has a
    `party_id` just like an answer, and the caller sends a `select_answer` for it just like an
-   answer. If the other client that had already sent an answer sees the caller select the
+   answer. If another client had already sent an answer and sees the caller select the
    reject response instead of its answer, it ends the call.
  * If the `m.call.invite` event has `version` `0`, the callee sends an `m.call.hangup` event
    as in spec version 0.
