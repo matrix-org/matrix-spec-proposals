@@ -64,7 +64,7 @@ If the message edits were allowed by other senders than it would be useful to
 know that your own message was edited, but this
 [is not currently allowed](https://spec.matrix.org/v1.5/client-server-api/#validity-of-replacement-events).
 
-The rule is ambiguous (see [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873)
+The rule is ambiguous (see [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873))
 due to the `.` in `m.relates_to` and could also match other, unrelated, events:
 
 ```json5
