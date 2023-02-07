@@ -12,7 +12,7 @@ notifications contain no new information.
 
 ## Proposal
 
-A new default push rule is added to suppress notifications [due to edits](https://spec.matrix.org/v1.5/client-server-api/#event-replacements).
+A new default push rule is added to suppress notifications due to [edits](https://spec.matrix.org/v1.5/client-server-api/#event-replacements).
 
 ```json
 {
