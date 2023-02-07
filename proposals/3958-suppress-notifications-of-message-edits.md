@@ -90,6 +90,13 @@ due to the `.` in `m.relates_to` and could also match other, unrelated, events:
 
 (Note that `relates_to` being embedded inside of the `m`.)
 
+Another issues is that mobile clients would no longer receive push notifications for
+message edits, which are currently used to update the text of on-screen notifications
+to show the updated content. The proposed push rule would mean that mobile clients would
+no longer receive this update, but showing slightly outdated text on a notification screen
+is only a minor impact and it would be better to separate when (& why) we send pushes vs.
+when we generate notifications.
+
 ## Alternatives
 
 None explored.
