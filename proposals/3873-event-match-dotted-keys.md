@@ -30,6 +30,14 @@ ambiguity by leveraging the existing solution for the same problem used by the
 > will include the ‘body’ field of the ‘content’ object. A literal ‘.’ character
 > in a field name may be escaped using a ‘\’.
 
+This ambiguity is blocking other MSCs which all attempt to create rules on fields
+with dots in them, such as:
+
+* [MSC3952] Intentional Mentions
+* [MSC3958] Suppress notifications from message edits
+
+And likely any push rule for keywords using extensible events.
+
 ## Proposal
 
 The dot (`.`) character in the `key` parameter is changed to be exclusively
@@ -95,6 +103,8 @@ None.
   [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
   [#648]: https://github.com/matrix-org/matrix-spec/issues/648
   [matrix-org/matrix-js-sdk#1454]: https://github.com/matrix-org/matrix-js-sdk/issues/1454
+  [MSC3952]: https://github.com/matrix-org/matrix-spec-proposals/pull/3952
+  [MSC3958]: https://github.com/matrix-org/matrix-spec-proposals/pull/3958
   [filters]: https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3useruseridfilter
   [JSON pointers]: https://www.rfc-editor.org/rfc/rfc6901
   [JSONPath]: https://goessner.net/articles/JsonPath/
