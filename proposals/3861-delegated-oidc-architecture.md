@@ -77,8 +77,8 @@ Due to the complexity of this proposal it has been broken down into a number of 
 
 | Ref | Purpose |
 | - | - |
-| [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) | Describes how homeservers can delegate auth to an OIDC Provider |
-| [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965) | Describes how participants in the Matrix ecosystem can discover the available capabilities of OIDC-enabled Homeservers and OIDC Providers |
+| [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) | Describes how homeservers can delegate auth to an OpenID Provider |
+| [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965) | Describes how participants in the Matrix ecosystem can discover the available capabilities of OIDC-enabled Homeservers and OpenID Providers |
 | [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966) | Describes how OAuth 2.0 Dynamic Client Registration can be used to facilitate interoperability and openness of clients whilst promoting trust |
 | [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967) | Defines the namespace for a set of API scopes that can can expanded in future to allow for finer grained permissioning |
 | [MSC3824](https://github.com/matrix-org/matrix-doc/pull/3824) | Proposes some minor changes to the C-S API to allow Matrix clients that are not fully OIDC-native to work best with an OIDC enabled homeserver that has is serving a compatibility layer |
