@@ -171,7 +171,6 @@ Because responsibility for registration, authentication and off-boarding of user
 | `POST /logout`<br>`POST /logout/all`<br>`POST /delete_devices`<br>`DELETE /devices/{deviceId}`                                                                            | The client can still initiate a logout, but responsibility for completing it is down to the OP.                         |
 | `POST /account/password`<br>`POST /password/email/requestToken`<br>`POST /password/msisdn/requestToken`                                                                   | More generally the OP becomes responsible for account recovery in the case of credential loss.                          |
 | `POST /account/deactivate`                                                                                                                                                | Where provided by the OP, the client could link out to a My Account web interface to complete this operation            |
-| [`POST /user/{userId}/openid/request_token`](https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3useruseridopenidrequest_token)                            | If a client needs an ID Token then it can get one directly from the OP instead.                                         |
 
 Additionally, the following proposed endpoints would no longer be needed:
 
