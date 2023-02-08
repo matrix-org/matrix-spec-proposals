@@ -8,7 +8,7 @@ Currently Matrix uses a custom authentication protocol baked in to the Client-Se
 
 In a overly simplified form it looks a bit like this:
 
-![](https://i.imgur.com/wZfIzr5.png)
+![](./images/3861-existing-architecture.png)
 
 - Matrix Clients are required (and trusted) to show the UI for login and registration.
 - Matrix Homeservers are responsible for authenticating users and issuing access tokens.
@@ -41,7 +41,7 @@ That decoupling would be achieved by adopting an existing open authentication pr
 
 It would look something like this:
 
-![](https://i.imgur.com/JIM8cGA.png)
+![](./images/3861-delegated-architecture.png)
 
 Some of the benefits of this are:
 
@@ -61,7 +61,7 @@ It also allows the work of the Matrix community around auth to benefit other com
 
 Specifically it is proposed that the OpenID Connect (OIDC) protocol is chosen to support the Matrix ecosystem.
 
-![](https://i.imgur.com/NMqiFSl.png)
+![](./images/3861-proposed-architecture.png)
 
 There are six proposed action points:
 
