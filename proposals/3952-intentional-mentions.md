@@ -99,7 +99,7 @@ the user has been mentioned in them, e.g. for an extension to
 
 ### New push rules
 
-Two new push rule conditions and corresponding default push rule are proposed:
+A new push rule condition and two new default push rule are proposed:
 
 The `is_user_mention` push condition is defined as[^5]:
 
@@ -109,13 +109,6 @@ The `is_user_mention` push condition is defined as[^5]:
 > does not contain a `user_ids` property; or contains a non-array `user_ids` property
 > then the rule does not match. Any non-string array entries are ignored and
 > duplicate entries are ignored.
-
-The `is_room_mention` push condition is defined as[^5]:
-
-> This matches messages where the `m.mentions` property of the `content` contains
-> a `room` property set to `true`. This condition has no parameters. If the
-> `m.mentions` key is absent; not an object; does not contain a `room` property;
-> or contains a non-boolean `room` property then the rule does not match.
 
 The proposed `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
@@ -153,7 +146,9 @@ before the `.m.rule.roomnotif` push rule:
     "enabled": true,
     "conditions": [
         {
-            "kind": "is_room_mention"
+            "kind": "exact_event_match",
+            "key": "content.m\\.mentions.room",
+            "value": true
         },
         {
             "kind": "sender_notification_permission",
@@ -395,22 +390,6 @@ those notifications, is reasonable. In particular, custom keywords is more of a
 power-user feature while user mentions working properly (and promptly) is a table-stakes
 feature for a messaging application.
 
-### For the `is_room_mention` condition
-
-The `is_room_mention` could be replaced with the `exact_event_match` condition
-from [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758)
-(or the changes to `event_match` in [MSC3862](https://github.com/matrix-org/matrix-spec-proposals/pull/3862)),
-although either of those would potentially run into ambiguity in the `key`,
-as described in [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873):
-
-```json
-{
-  "kind": "exact_event_match",
-  "key": "content.m.mentions.room",
-  "value": true
-}
-```
-
 ## Security considerations
 
 Including the mentioned users in cleartext is a small metadata leak, but we consider that the tradeoff
@@ -440,7 +419,11 @@ logic and start creating events with the `m.mentions` property.
 
 ## Dependencies
 
-N/A
+This depends on two MSCs which, at the time of writing, have not yet been accepted
+into the specification:
+
+* [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758): Add `exact_event_match` push rule condition kind
+* [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873): event_match dotted keys
 
 [^1]: This MSC does not attempt to solve this problem, but [MSC2781](https://github.com/matrix-org/matrix-spec-proposals/pull/2781)
 proposes removing reply fallbacks which would solve it. Although as noted in
