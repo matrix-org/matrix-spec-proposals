@@ -181,6 +181,29 @@ Additionally, the following proposed endpoints would no longer be needed:
 | `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OP would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
 | `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OP by means of My Account functionality. |
 
+### Equivalence of existing flows
+
+#### Direct replacement to the `m.login.password`
+
+If a Matrix client and homeserver wishes to mimic the current `m.login.password` flow where the client is trusted to manage the login screen, this can be implemented using the [Resource Owner Password Credentials Grant](https://www.rfc-editor.org/rfc/rfc6749#section-4.3).
+
+However, it is worth noting that the [OAuth 2.0 Security Best Current Practice](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#name-resource-owner-password-cre) recommends against using this flow and [OAuth 2.1](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1-07) omits this flow entirely.
+
+#### Authentication for devices without a browser
+
+The [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628) is designed for devices that do not have a browser, such as a smart TV, a set-top box or a CLI.
+
+An example of a CLI login flow built using the device authorization grant is shown below:
+![](./images/2964-github-cli-auth.gif)
+
+Alternatively, an OP may provide a mechanism by which a long-lived personal access token can be obtained by the user, which can then be entered into the client and used to authenticate with the homeserver.
+
+#### Sign in with QR code
+
+[MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906) proposes a QR code based flow to sign in and set up E2EE on an additional device.
+
+The existing proposal can be extended to make use of the [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628) in place of the [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) `m.login.token` based approach so that it will work with homeservers delegating auth via OIDC.
+
 ## Potential issues
 
 There are still open questions that need to be addressed in future MSCs.
@@ -198,7 +221,7 @@ One requirement for a smooth migration is to adopt [MSC2918](https://github.com/
 
 ## Alternatives
 
-For a discussion on alternatives please see [MSC3861]*https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
+For a discussion on alternatives please see [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
 ## Security considerations
 
