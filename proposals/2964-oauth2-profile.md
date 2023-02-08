@@ -1,10 +1,10 @@
-# MSC2964: Delegation of auth from homeserver to OIDC Provider
+# MSC2964: Delegation of auth from homeserver to OpenID Provider
 
 This proposal is part of the broader [MSC3861: Matrix architecture change to delegate authentication via OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
-A fundamental change is that access tokens will no longer be issued by the homeserver and instead will be issued by an auth server (OIDC Provider) directly to the Matrix client.
+A fundamental change is that access tokens will no longer be issued by the homeserver and instead will be issued by an auth server (OpenID Provider) directly to the Matrix client.
 
-This MSC in particular defines how clients should authenticate with the OIDC Provider to obtain the access token used to access the Matrix Client-to-Server API.
+This MSC in particular defines how clients should authenticate with the OpenID Provider to obtain the access token used to access the Matrix Client-to-Server API.
 
 ## Proposal
 
@@ -14,7 +14,7 @@ This MSC in particular defines how clients should authenticate with the OIDC Pro
 
 **OpenID Connect** is a set of specifications defining a standard auth system built on top of OAuth2. Often abbreviated OIDC. Specs to know about: OIDC Core defines the actual auth system, OIDC Discovery defines the discovery of OP metadata, OIDC Registration allows clients to register themselves dynamically.
 
-An **Authorization/Authentication Server** (AS - as this acronym is already used to refer to Application Service in Matrix we will avoid it) or **OIDC Provider** (OP) in the context of OIDC is the service that fulfills an authentication request. In the context of Matrix, it is either the homeserver itself acting as the OP or an external one like Keycloak, Auth0, etc.
+An **OpenID Provider** (OP) in the context of OIDC is the service that fulfills an authentication request. In the context of Matrix, it is either the homeserver itself acting as the OP or an external one like Keycloak, Auth0, etc.
 
 A **Resource Server** (RS) is a protected service that requires authentication. In the context of Matrix, the homeserver is a RS.
 
@@ -26,10 +26,10 @@ A **User-Agent** (UA) is a thing that hosts client applications, like a web brow
 
 ### Assumptions and existing specifications
 
-This proposal assumes the client (RP) knows what OIDC Provider (OP) it should use.
+This proposal assumes the client (RP) knows what OpenID Provider (OP) it should use.
 The OP discovery is defined in [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
 
-It also assumes the client (RP) is already known by the OIDC Provider (OP).
+It also assumes the client (RP) is already known by the OpenID Provider (OP).
 Clients may be "statically" registered with the OP or can make use of the "dynamic" client registration process defined in [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966).
 
 The goal of this MSC is not to explain how OAuth 2.0 works but rather what mechanisms of OAuth 2.0 the homeserver (RS), client (RP) and OP are expected to implement.
@@ -40,7 +40,7 @@ This is done to ensure interoperability between Matrix clients and Homeservers w
 #### Native and browser-based clients
 
 This client type applies to clients that are running directly on the user-agent.
-These clients are either browser-based or are capable of interacting with a separate web browser to have the user interact with the authentication server.
+These clients are either browser-based or are capable of interacting with a separate web browser to have the user interact with the OpenID Provider.
 
 Those clients must use the authorization code flow by directing the user to the authorization endpoint to obtain authorization.
 After the user authenticated and authorized the client, the user's web browser is redirected to a URI hosted by the client with an authorization code.
@@ -53,10 +53,10 @@ The authorization must issue refresh tokens for those type of clients if request
 #### Server-based clients
 
 This client type applies to hosted clients.
-These clients must be capable to redirect the user to have them interact with the authentication server.
+These clients must be capable to redirect the user to have them interact with the OpenID Provider.
 
 As with native and public browser-based clients, they must use the authorization code flow to obtain authorization.
-Those clients are confidential and must authenticate their requests to the authorization server with their client credentials.
+Those clients are confidential and must authenticate their requests to the OpenID Provider with their client credentials.
 
 The authorization must issue refresh tokens for those type of clients if requested by them.
 
@@ -140,16 +140,16 @@ The current authentication mechanism can have multiple stages allowing to ask us
 - agree to terms of services and privacy policies (`m.login.terms`, [MSC1692](https://github.com/matrix-org/matrix-doc/pull/1692))
 - TOTP/2FA (`m.login.totp`, [MSC2271](https://github.com/matrix-org/matrix-doc/pull/2271))
 
-All of this can be done by the authentication server without any modification to the specification.
+All of this can be done by the OpenID Provider without any modification to the specification.
 
 ### Replacement of UIA
 
 Some API endpoints use User-Interactive Authentication to perform some higher-privileged operations, like deleting a device or adding a 3PID.
 An equivalent behaviour can be achieved by temporarily upgrade the client authorization with additional scopes.
 
-Whenever the client ask for a token (either with a refresh token or by initiating a authorization code flow) the authentication server returns the list of scopes for which the token is valid.
+Whenever the client ask for a token (either with a refresh token or by initiating a authorization code flow) the OP returns the list of scopes for which the token is valid.
 This helps client track what scopes they currently have access to, and let them upgrade temporarily a token with additional scopes to perform privileged actions.
-The authorization server can also downgrade the scopes of a session after a certain time by returning a reduced list of scopes when refreshing the token.
+The OP can also downgrade the scopes of a session after a certain time by returning a reduced list of scopes when refreshing the token.
 The scope definitions are out of scope of this MSC and are defined in [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967).
 
 ### User registration
@@ -162,24 +162,24 @@ TBD. [OIDC Front-channel logout](https://openid.net/specs/openid-connect-frontch
 
 ### Removal of endpoints
 
-Because responsibility for registration, authentication and off-boarding of users is moved to the OIDC provider, the following Client-Server API endpoints are no longer within the scope of the Matrix spec and so should be removed:
+Because responsibility for registration, authentication and off-boarding of users is moved to the OP, the following Client-Server API endpoints are no longer within the scope of the Matrix spec and so should be removed:
 
 | Endpoint(s)                                                                                                                                                               | Notes                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /register`<br>`POST /register`<br>`POST /register/email/requestToken`<br>`POST /register/msisdn/requestToken`<br>`GET /register/m.login.registration_token/validity` | The user would interact directly with the OIDC Provider to complete registration.                                                  |
-| `GET /login`<br>`POST /login`<br>`GET /login/sso/redirect`                                                                                                                | The user would interact directly with the OIDC Provider to complete log in.                                                        |
-| `POST /logout`<br>`POST /logout/all`<br>`POST /delete_devices`<br>`DELETE /devices/{deviceId}`                                                                            | The client can still initiate a logout, but responsibility for completing it is down to the OIDC Provider.                         |
-| `POST /account/password`<br>`POST /password/email/requestToken`<br>`POST /password/msisdn/requestToken`                                                                   | More generally the OIDC provider becomes responsible for account recovery in the case of credential loss.                          |
-| `POST /account/deactivate`                                                                                                                                                | Where provided by the OIDC Provider, the client could link out to a My Account web interface to complete this operation            |
-| [`POST /user/{userId}/openid/request_token`](https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3useruseridopenidrequest_token)                            | If a client needs an ID Token then it can get one directly from the OIDC Provider instead.                                         |
+| `GET /register`<br>`POST /register`<br>`POST /register/email/requestToken`<br>`POST /register/msisdn/requestToken`<br>`GET /register/m.login.registration_token/validity` | The user would interact directly with the OP to complete registration.                                                  |
+| `GET /login`<br>`POST /login`<br>`GET /login/sso/redirect`                                                                                                                | The user would interact directly with the OP to complete log in.                                                        |
+| `POST /logout`<br>`POST /logout/all`<br>`POST /delete_devices`<br>`DELETE /devices/{deviceId}`                                                                            | The client can still initiate a logout, but responsibility for completing it is down to the OP.                         |
+| `POST /account/password`<br>`POST /password/email/requestToken`<br>`POST /password/msisdn/requestToken`                                                                   | More generally the OP becomes responsible for account recovery in the case of credential loss.                          |
+| `POST /account/deactivate`                                                                                                                                                | Where provided by the OP, the client could link out to a My Account web interface to complete this operation            |
+| [`POST /user/{userId}/openid/request_token`](https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3useruseridopenidrequest_token)                            | If a client needs an ID Token then it can get one directly from the OP instead.                                         |
 
 Additionally, the following proposed endpoints would no longer be needed:
 
-| Endpoint(s)                                                                                     | MSC                                                                      | Notes                                                                                                                                 |
-| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /login/token`                                                                             | [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) | Instead the Device Authorization Grant can be used.                                                                                    |
-| `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OIDC Provider would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
-| `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OIDC Provider by means of My Account functionality.                         |
+| Endpoint(s)                                                                                     | MSC                                                                      | Notes                                                                                                                        |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login/token`                                                                             | [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) | Instead the Device Authorization Grant can be used.                                                                          |
+| `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OP would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
+| `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OP by means of My Account functionality. |
 
 ## Potential issues
 
