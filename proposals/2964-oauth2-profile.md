@@ -1,8 +1,8 @@
 # MSC2964: Delegation of auth from homeserver to OIDC Provider
 
-The current authentication mechanisms in Matrix looks a lot like OAuth 2.0 without most of its security hardening mechanisms.
+This proposal is part of the broader [MSC3861: Matrix architecture change to delegate authentication via OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
-This MSC is part of an architectural change to replace the existing Matrix authentication mechanisms with OAuth 2.0. A fundamental change is that access tokens will no longer be issued by the homeserver and instead will be issued by an auth server (OIDC Provider) directly to the Matrix client.
+A fundamental change is that access tokens will no longer be issued by the homeserver and instead will be issued by an auth server (OIDC Provider) directly to the Matrix client.
 
 This MSC in particular defines how clients should authenticate with the OIDC Provider to obtain the access token used to access the Matrix Client-to-Server API.
 
@@ -26,13 +26,13 @@ A **User-Agent** (UA) is a thing that hosts client applications, like a web brow
 
 ### Assumptions and existing specifications
 
-This change assumes the client (RP) knows what OIDC Provider (OP) it should use.
+This proposal assumes the client (RP) knows what OIDC Provider (OP) it should use.
 The OP discovery is defined in [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
 
 It also assumes the client (RP) is already known by the OIDC Provider (OP).
-The client registration process is defined in [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966).
+Clients may be "statically" registered with the OP or can make use of the "dynamic" client registration process defined in [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966).
 
-The goal of this MSC is not to explain how OAuth 2.0 works but rather what mechanisms of OAuth 2.0 RP and OP are expected to implement.
+The goal of this MSC is not to explain how OAuth 2.0 works but rather what mechanisms of OAuth 2.0 the homeserver (RS), client (RP) and OP are expected to implement.
 This is done to ensure interoperability between Matrix clients and Homeservers while ensuring that the login flow is secure.
 
 ### Client profiles
@@ -162,7 +162,7 @@ TBD. [OIDC Front-channel logout](https://openid.net/specs/openid-connect-frontch
 
 ### Removal of endpoints
 
-Because responsibility for registration, authentication and off-boarding of users is moved to the OIDC provider, the following endpoints are no longer needed and would be removed as no longer within the scope of the Matrix spec:
+Because responsibility for registration, authentication and off-boarding of users is moved to the OIDC provider, the following Client-Server API endpoints are no longer within the scope of the Matrix spec and so should be removed:
 
 | Endpoint(s)                                                                                                                                                               | Notes                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -183,8 +183,8 @@ Additionally, the following proposed endpoints would no longer be needed:
 
 ## Potential issues
 
-There are still many open questions that need to be addressed in future MSCs.
-This includes:
+There are still open questions that need to be addressed in future MSCs.
+These include:
 
 - using OAuth 2.0 to authenticate application services
 - account management, including active session management
@@ -195,11 +195,10 @@ This includes:
 The current authentication mechanism will be deprecated later on, but a migration period where the two authentication mechanisms cohabit needs to exist.
 This is doable in clients but harder to do in servers.
 One requirement for a smooth migration is to adopt [MSC2918](https://github.com/matrix-org/matrix-doc/pull/2918).
-The migration path and the deprecation of the current APIs will be done in a separate MSC.
 
 ## Alternatives
 
-None relevant.
+For a discussion on alternatives please see [MSC3861]*https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
 ## Security considerations
 
@@ -209,4 +208,11 @@ The [OAuth 2.0 Security Best Practice](https://tools.ietf.org/html/draft-ietf-oa
 
 ## Unstable prefix
 
-None relevant.
+None as part of this MSC.
+
+## Dependencies
+
+- [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964)
+- [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965)
+- [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966)
+- [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967)
