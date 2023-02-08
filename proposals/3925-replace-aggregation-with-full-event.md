@@ -117,7 +117,9 @@ This is how the original event would look like after the replacement:
 
 ## Potential issues
 
-* There could be clients which rely on the current behavior.
+* There could be clients which rely on the current behavior:
+  * element-web relied on it until [matrix-org/matrix-js-sdk#3045](https://github.com/matrix-org/matrix-js-sdk/pull/3045)
+  * The failure mode is: suppose we have an event E, which was subsequently replaced by an event E'. Now, if jumped back to a bit of timeline that contains E but not E', then clients unaware of this change will show the original event E rather than the edited content E'. But: That is an edge-case and it already happens for events other than `m.room.message` (including encrypted events) due to [matrix-org/synapse#12503](https://github.com/matrix-org/synapse/issues/12503).
 * It will be harder for clients which do not support replacing events to get
   the current content of an event: currently they can just look at `content.body`.
   However, there is an inconsistent behavior for clients that do not support 
