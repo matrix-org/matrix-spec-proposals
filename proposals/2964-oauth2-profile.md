@@ -173,6 +173,14 @@ Because responsibility for registration, authentication and off-boarding of user
 | `POST /account/deactivate`                                                                                                                                                | Where provided by the OIDC Provider, the client could link out to a My Account web interface to complete this operation            |
 | [`POST /user/{userId}/openid/request_token`](https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3useruseridopenidrequest_token)                            | If a client needs an ID Token then it can get one directly from the OIDC Provider instead.                                         |
 
+Additionally, the following proposed endpoints would no longer be needed:
+
+| Endpoint(s)                                                                                     | MSC                                                                      | Notes                                                                                                                                 |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /login/token`                                                                             | [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) | Instead the Device Authorization Grant can be used.                                                                                    |
+| `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OIDC Provider would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
+| `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OIDC Provider by means of My Account functionality.                         |
+
 ## Potential issues
 
 There are still many open questions that need to be addressed in future MSCs.
