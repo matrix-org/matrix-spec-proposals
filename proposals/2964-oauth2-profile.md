@@ -10,7 +10,7 @@ This MSC in particular defines how clients should authenticate with the OpenID P
 
 ### Terminology
 
-**OAuth 2.0** is an authentication framework. Authentication systems are built on top of OAuth2. It is based on numerous RFCs by the IETF.
+**OAuth 2.0** is an authorization framework. Authentication systems are built on top of OAuth2. It is based on numerous RFCs by the IETF.
 
 **OpenID Connect** is a set of specifications defining a standard auth system built on top of OAuth2. Often abbreviated OIDC. Specs to know about: OIDC Core defines the actual auth system, OIDC Discovery defines the discovery of OP metadata, OIDC Registration allows clients to register themselves dynamically.
 
