@@ -69,10 +69,10 @@ The details of those are still TBD.
 
 ### Requests to the authorization endpoint
 
-When making a request to the authorization endpoint, clients must provide an unpredicatble value for the `state` parameter and validate it when returning to the redirect URI.
+When making a request to the authorization endpoint, clients must provide an unpredictable value for the `state` parameter and validate it when returning to the redirect URI.
 They must ensure the `state` value is securely tied to the current session.
 
-The redirect URIs used by the clients must match exactly with the ones registered to prevent open redirection attaks.
+The redirect URIs used by the clients must match exactly with the ones registered to prevent open redirection attacks.
 The full redirect URI must be included in the authorization request.
 
 The client might include a login hint to what MXID the user is trying to use.
@@ -133,8 +133,7 @@ The access token must be short-lived and should be refreshed using the `refresh_
 
 ### Existing authentication types equivalence
 
-The current authentication mechanism can have multiple stages allowing to ask users to perform certains actions.
-This includes:
+The current authentication mechanism can have multiple stages allowing to ask users to perform certain actions. These include:
 
 - social login (`m.login.sso`), with multiple providers ([MSC2858](https://github.com/matrix-org/matrix-doc/pull/2858))
 - complete a CAPTCHA (`m.login.recaptcha`)
@@ -159,7 +158,7 @@ User can register themselves by initiating a authorization code flow with the `p
 
 ### Logging out
 
-TBD. [OIDC Frontchannel logout](https://openid.net/specs/openid-connect-frontchannel-1_0.html) might be helpful.
+TBD. [OIDC Front-channel logout](https://openid.net/specs/openid-connect-frontchannel-1_0.html) might be helpful.
 
 ### Removal of endpoints
 
@@ -176,7 +175,7 @@ Because responsibility for registration, authentication and off-boarding of user
 
 ## Potential issues
 
-There are still many open questions that need to be adressed in future MSCs.
+There are still many open questions that need to be addressed in future MSCs.
 This includes:
 
 - using OAuth 2.0 to authenticate application services
@@ -196,9 +195,9 @@ None relevant.
 
 ## Security considerations
 
-Since this touches one of the most sensitive part of the API, there a lot of security considerations to have.
-The [OAuth 2.0 Security Best Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-16) IETF draft has many attack scenarios.
-Many of those scenarios are mitigated by the choices enforced in the client profiles outlined in this MSC.
+Since this touches one of the most sensitive part of the API, there are a lot of security considerations to have.
+
+The [OAuth 2.0 Security Best Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-16) IETF draft has many attack scenarios. Many of those scenarios are mitigated by the choices enforced in the client profiles outlined in this MSC.
 
 ## Unstable prefix
 
