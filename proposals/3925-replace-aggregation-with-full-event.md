@@ -66,8 +66,7 @@ With a replacing event:
     "msgtype": "m.text",
     "m.new_content": {
       "body": "I really like *chocolate* cake",
-      "msgtype": "m.text",
-      "com.example.extension_property": "chocolate"
+      "msgtype": "m.text"
     },
     "m.relates_to": {
       "rel_type": "m.replace",
@@ -100,8 +99,7 @@ This is how the original event would look like after the replacement:
           "msgtype": "m.text",
           "m.new_content": {
             "body": "I really like *chocolate* cake",
-            "msgtype": "m.text",
-            "com.example.extension_property": "chocolate"
+            "msgtype": "m.text"
           },
           "m.relates_to": {
             "rel_type": "m.replace",
