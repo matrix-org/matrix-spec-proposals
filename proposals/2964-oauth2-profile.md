@@ -161,6 +161,19 @@ User can register themselves by initiating a authorization code flow with the `p
 
 TBD. [OIDC Frontchannel logout](https://openid.net/specs/openid-connect-frontchannel-1_0.html) might be helpful.
 
+### Removal of endpoints
+
+Because responsibility for registration, authentication and off-boarding of users is moved to the OIDC provider, the following endpoints are no longer needed and would be removed as no longer within the scope of the Matrix spec:
+
+| Endpoint(s)                                                                                                                                                               | Notes                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /register`<br>`POST /register`<br>`POST /register/email/requestToken`<br>`POST /register/msisdn/requestToken`<br>`GET /register/m.login.registration_token/validity` | The user would interact directly with the OIDC Provider to complete registration.                                                  |
+| `GET /login`<br>`POST /login`<br>`GET /login/sso/redirect`                                                                                                                | The user would interact directly with the OIDC Provider to complete log in.                                                        |
+| `POST /logout`<br>`POST /logout/all`<br>`POST /delete_devices`<br>`DELETE /devices/{deviceId}`                                                                            | The client can still initiate a logout, but responsibility for completing it is down to the OIDC Provider.                         |
+| `POST /account/password`<br>`POST /password/email/requestToken`<br>`POST /password/msisdn/requestToken`                                                                   | More generally the OIDC provider becomes responsible for account recovery in the case of credential loss.                          |
+| `POST /account/deactivate`                                                                                                                                                | Where provided by the OIDC Provider, the client could link out to a My Account web interface to complete this operation            |
+| [`POST /user/{userId}/openid/request_token`](https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3useruseridopenidrequest_token)                            | If a client needs an ID Token then it can get one directly from the OIDC Provider instead.                                         |
+
 ## Potential issues
 
 There are still many open questions that need to be adressed in future MSCs.
