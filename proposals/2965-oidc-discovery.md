@@ -1,6 +1,6 @@
 # MSC2965: OIDC Provider discovery
 
-This proposal is part of the broader [MSC3861: Matrix architecture change to delegate authentication via OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/2967).
+This proposal is part of the broader [MSC3861: Matrix architecture change to delegate authentication via OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
 To be able to initiate an OAuth 2.0 login flow to use a Matrix server, the client needs to know the location of the authentication server in use.
 
