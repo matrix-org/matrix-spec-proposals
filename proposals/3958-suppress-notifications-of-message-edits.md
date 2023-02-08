@@ -55,14 +55,21 @@ portion of the spec:
 }
 ```
 
-## Potential issues
-
 Some users may be depending on notifications of edits. If a user would like to
 revert to the old behavior they can disable the `.m.rule.suppress_edits` push rule.
 
-If the message edits were allowed by other senders than it would be useful to
-know that your own message was edited, but this
-[is not currently allowed](https://spec.matrix.org/v1.5/client-server-api/#validity-of-replacement-events).
+## Potential issues
+
+### Editing mentions
+
+With this MSC it would no longer possible to edit a message to change who is going
+to be notified. For instance, if you write a message and then edit it to put another
+user pill in it, in this case the user would not be notified. Socially it seems more
+likely for the sender to send another message instead of editing:
+
+> @alice:example.com see above ^
+
+### Rule Ambiguity
 
 The rule is ambiguous (see [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873))
 due to the `.` in `m.relates_to` and could also match other, unrelated, events:
@@ -90,6 +97,8 @@ due to the `.` in `m.relates_to` and could also match other, unrelated, events:
 
 (Note that `relates_to` being embedded inside of the `m`.)
 
+### Keeping notifications up-to-date
+
 Another issues is that mobile clients would no longer receive push notifications for
 message edits, which are currently used to update the text of on-screen notifications
 to show the updated content. The proposed push rule would mean that mobile clients would
@@ -99,11 +108,27 @@ when we generate notifications.
 
 ## Alternatives
 
-None explored.
+An alternative solution would be to add a push rule with no actions and a condition to
+check whether a notification should have been generated for the user in the original
+message.
+
+This should be placed as an override rule before the `.m.rule.contains_display_name`
+and the `.m.rule.roomnotif` [push rules](https://spec.matrix.org/v1.5/client-server-api/#push-rules).
+
+This would suppress duplicate notifications, while still allow for new notifications due
+to new mentions or keywords changing.
 
 ## Security considerations
 
 None forseen.
+
+## Future extensions
+
+If message edits by other senders were allowed than it would be useful to
+know when your own message was edited, but this
+[is not currently allowed](https://spec.matrix.org/v1.5/client-server-api/#validity-of-replacement-events).
+A future MSC to define this behavior should take into account notifying
+users in this situation.
 
 ## Unstable prefix
 
