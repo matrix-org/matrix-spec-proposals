@@ -16,8 +16,10 @@ JSON types.
 We propose a new type of condition, `exact_event_match`. Similar to  the current `event_match`
 ([link to spec](https://spec.matrix.org/v1.3/client-server-api/#conditions-1)), this condition
 takes two parameters: `value` and `key`. The exact match compares the `value` to the event data
-associated with `key` exactly. Both type and content (when a string) should be identical. This allows
-for matching all valid JSON types `null`, `true`, `false` and numbers. This also provides a simpler
+associated with `key` exactly. Both type and content (when a string) should be identical
+(include case). This allows for matching all non-compound JSON types allowed by
+[canonical JSON](https://spec.matrix.org/v1.5/appendices/#canonical-json):
+i.e. strings, `null`, `true`, `false` and integers. This also provides a simpler
 exact string matching mechanism (and any associated performance gains on implementation side without
 globbing).
 
@@ -40,6 +42,15 @@ solution by converting non-string JSON objects to strings in the `event_match` c
 ## Security considerations
 
 None.
+
+## Future extensions
+
+A future MSC may wish to define the behavior of `exact_event_match` when
+used with a JSON object or array.
+
+[MSC3887](https://github.com/matrix-org/matrix-spec-proposals/pull/3887) is a
+related MSC which attempts to define behavior for searching for a value inside of
+an array.
 
 ## Unstable prefix
 
