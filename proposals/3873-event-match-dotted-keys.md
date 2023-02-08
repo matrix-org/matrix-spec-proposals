@@ -6,7 +6,7 @@ The current specification of [`event_match`] describes the parameter
 > `key`: The dot-separated path of the property of the event to match,
 > e.g. `content.body`.
 
-It does, however, not clarify how to handle collisions such as in
+It does not, however, clarify how to handle collisions such as in
 
     {
       "m": { "foo": "bar" },
@@ -16,9 +16,9 @@ It does, however, not clarify how to handle collisions such as in
 where it is unclear which field the dot-separated path `m.foo` should
 match ([#648]).
 
-Previously collions are not often a practical problem, but as dotted-field names
+Previously collisions are not often a practical problem, but as dotted-field names
 have become more common in Matrix, e.g. `m.relates_to` or [MSC1767]-style
-extensible events ,this ambiguity is no longer satisfactory.
+extensible events, this ambiguity is no longer satisfactory.
 
 The ambiguity in the specification leads to incompatible implementations as
 evidenced by [matrix-org/matrix-js-sdk#1454]. The current proposal resolves the
