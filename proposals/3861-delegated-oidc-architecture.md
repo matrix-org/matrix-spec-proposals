@@ -93,10 +93,11 @@ For existing Homeserver deployments we will need to work out migration paths and
 
 ## Alternatives
 
-The primary alternative is to continue to build out the auth capabilities within the Client Server API.
+The primary alternative is to continue to build out the auth capabilities within the Client-Server API.
+
+For example, UIA (User-Interactive Auth) could be added to the `/login` endpoint and additional capabilities/flows added to UIA.
 
 Examples of existing proposals include:
-
 
 | Proposals | Comments |
 | - | - |
