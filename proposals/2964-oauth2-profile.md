@@ -218,6 +218,20 @@ The current authentication mechanism will be deprecated later on, but a migratio
 This is doable in clients but harder to do in servers.
 One requirement for a smooth migration is to adopt [MSC2918](https://github.com/matrix-org/matrix-doc/pull/2918).
 
+### Confusion with existing `m.login.sso` OIDC capabilities
+
+Care is needed to ensure that the OIDC capabilities are not confused with the existing `m.login.sso` OIDC capabilities. A general (non-homeserver implementation specific) migration guide may be appropriate to help with this. Furthermore, each homeserver implementation may wish to provide a migration guide specific to their implementation.
+
+### Confusion with OpenID ID Token capabilities used for federated auth
+
+Again, some care is needed to ensure that the OIDC capabilities are not confused with the existing OpenID token generation capabilities used for federated auth.
+
+References to OpenID within the spec include:
+
+- [Client-Server API](https://spec.matrix.org/v1.5/client-server-api/#openid)
+- [Server-Server API](https://spec.matrix.org/v1.5/server-server-api/#openid)
+- [Identity Service API](https://spec.matrix.org/v1.5/identity-service-api/#authentication)
+
 ## Alternatives
 
 For a discussion on alternatives please see [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
