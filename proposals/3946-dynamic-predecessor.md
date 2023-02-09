@@ -53,6 +53,10 @@ key | type | value | description | required
 The presence of `m.room.predecessor` state in the room should take priority over the
 `predecessor` specified in the `m.room.create` event.
 
+An additional note is that since via servers are not specified alongside the
+`predecessor` in a `m.room.create` event, the `m.room.create` usage should probably be
+phased out in favor of this new event.
+
 
 ## Potential issues
 
