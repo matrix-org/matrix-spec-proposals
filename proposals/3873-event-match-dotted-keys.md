@@ -16,7 +16,7 @@ It does not, however, clarify how to handle collisions such as in
 where it is unclear which field the dot-separated path `m.foo` should
 match ([#648]).
 
-Previously collisions are not often a practical problem, but as dotted-field names
+Previously collisions were not often a practical problem, but as dotted-field names
 have become more common in Matrix, e.g. `m.relates_to` or [MSC1767]-style
 extensible events, this ambiguity is no longer satisfactory.
 
