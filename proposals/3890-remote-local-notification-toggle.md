@@ -52,7 +52,6 @@ Clients should endeavour to display notification settings that reflect the rules
 - While the client does not have the ability to register a pusher and no `local_notification_settings` event exists,
     notifications should be displayed as disabled. The setting should not be editable.
   
-
 ##### During server-side removal of devices:
 
 - When devices are removed servers should delete any `m.local_notification_settings.<device-id>` account_data events for
@@ -68,6 +67,14 @@ Clients that implement `m.local_notification_settings.<device-id>` notification 
 only expose local notification silencing controls for devices that have indicated their support.
 
 ## Alternatives
+
+#### Per device account data
+To enable easier retrieval and management of device-scoped account data events a new per-device account data could be
+introduced. This would behave similarly to per-room account data. Per-device account data events would be removed by the
+server during device removal.
+With per-device account data, the event type could be
+simplified to `m.local_notification_settings`
+
 #### Push rules with profile tags
 The spec allows for pushers to be assigned a
 [`profile_tag`](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset) which can be used to
