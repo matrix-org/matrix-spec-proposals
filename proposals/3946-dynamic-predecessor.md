@@ -55,7 +55,10 @@ The presence of `m.room.predecessor` state in the room should take priority over
 
 An additional note is that since via servers are not specified alongside the
 `predecessor` in a `m.room.create` event, the `m.room.create` usage should probably be
-phased out in favor of this new event.
+phased out in favor of this new event. Even if the via servers were specified in the
+`m.room.create` event, they'd quickly go out of date, as the `m.room.create` event is
+immutable. Whenever via servers change, the dynamic room predecessor event can be
+updated with new via information
 
 
 ## Potential issues
