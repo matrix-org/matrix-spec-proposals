@@ -25,7 +25,7 @@ Add a new account data event `m.local_notification_settings.<device-id>` with co
 }
 ```
 
-#####During client-side notification generation:
+##### During client-side notification generation:
 
 - While a registered pusher exists for the current device any `local_notification_settings` event should be ignored and
   events should trigger system notifications as normal. For servers that support
@@ -37,7 +37,7 @@ Add a new account data event `m.local_notification_settings.<device-id>` with co
 - While a `local_notification_settings` event exists for the current device where `is_silenced` is true, no event should
   trigger a system notification or sound.
 
-#####Displaying notification settings:
+##### Displaying notification settings:
 
 Clients should endeavour to display notification settings that reflect the rules above.
 
@@ -53,7 +53,7 @@ Clients should endeavour to display notification settings that reflect the rules
     notifications should be displayed as disabled. The setting should not be editable.
   
 
-#####During server-side removal of devices:
+##### During server-side removal of devices:
 
 - When devices are removed servers should delete any `m.local_notification_settings.<device-id>` account_data events for
 the given device, and communicate these changes to clients as described in
