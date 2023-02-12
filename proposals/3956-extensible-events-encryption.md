@@ -23,14 +23,12 @@ an `m.room.encrypted` event:
     "type": "m.encrypted",
     "content": {
         "m.encrypted": {
-            "algorithm": "m.olm.v1.curve25519-aes-sha2",
+            "algorithm": "m.megolm.v1.aes-sha2",
             "sender_key": "<sender_curve25519_key>",
-            "ciphertext": {
-                "<device_curve25519_key>": {
-                    "type": 0,
-                    "body": "<encrypted_payload_base_64>"
-                }
-            }
+            "device_id": "<sender_device_id>",
+            "session_id": "<outbound_group_session_id>",
+            "ciphertext": "<encrypted_payload_base_64>"
+            "
         }
     }
 }
