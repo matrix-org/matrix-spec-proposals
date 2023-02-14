@@ -462,7 +462,7 @@ Please also refer to the dependent MSCs.
 
 ## Unstable prefix
 
-Whilst in development the unstable protocol name of `org.matrix.msc3906.login_token` should be used.
+Whilst in development the unstable protocol name of `org.matrix.msc3906.login_token` and the unstable transport type of `org.matrix.msc3886.http.v1` should be used.
 
 ## Dependencies
 
