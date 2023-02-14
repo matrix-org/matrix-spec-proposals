@@ -4,19 +4,33 @@ Users sometimes wish to respond to a message using emojis.  When such responses
 are grouped visually below the message being reacted to, this provides a
 (visually) light-weight way for users to react to messages.
 
-This proposal is one in a series of proposals that defines a mechanism for
-events to relate to each other.  Together, these proposals replace
-[MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
+This proposal was originally part of [MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849).
 
-* [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674) defines a
-  standard shape for indicating events which relate to other events.
-* [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) defines APIs to
-  let the server calculate the aggregations on behalf of the client, and so
-  bundle the related events with the original event where appropriate.
-* [MSC2676](https://github.com/matrix-org/matrix-doc/pull/2676) defines how
-  users can edit messages using this mechanism.
-* This proposal defines how users can annotate events, such as reacting to
-  events with emoji, using this mechanism.
+## Background
+
+As with [message
+edits](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2676-message-editing.md#background),
+support for reactions were landed in the Element clients and Synapse in May
+2019, following the proposals of
+[MSC1849](https://github.com/matrix-org/matrix-doc/pull/1849) and then
+presented as being "production-ready", despite them not yet having been adopted
+into the Matrix specification.
+
+Again as with edits, the current situation is therefore that client or server
+implementations hoping to interact with Element users must simply follow the
+examples of that implementation.
+
+To rectify the situation, this MSC therefore seeks primarily to formalise the
+status quo. Although there is plenty of scope for improvement, we consider
+that better done in *future* MSCs, based on a shared understanding of the
+*current* implementation.
+
+In short, this MSC prefers fidelity to the current implementations over
+elegance of design.
+
+On the positive side: this MSC is the last part of the former MSC1849 to be
+formalised, and is by far the most significant feature implemented by the
+Element clients which has yet to be specified.
 
 ## Proposal
 
