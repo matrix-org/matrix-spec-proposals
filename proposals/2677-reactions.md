@@ -34,26 +34,43 @@ Element clients which has yet to be specified.
 
 ## Proposal
 
-A new `rel_type` of `m.annotation` is defined for use with the `m.relates_to`
-field as defined in
-[MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674).  This `rel_type`
-is intended primarily for handling emoji reactions, these let you define an
-event which annotates an existing event.  The annotations are typically
-presented alongside the event in the timeline.  When used, the `m.relates_to`
-field also contains a `key` that indicates the annotation being applied.  For
-example, when reacting with emojis, the `key` contains the emoji being used.
-When aggregated (as in
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675)), it groups
-events together based on their `key` and returns a `count`.  Another
-usage of an annotation is e.g. for bots, who could use annotations to report
-the success/failure or progress of a command.
+### `m.annotation` event relationship type
 
-The `type` of the annotating event is not taken into account when aggregating
-as that would prevent accurate server aggregation in end-to-end encrypted rooms.
+A new [event relationship type](https://spec.matrix.org/v1.6/client-server-api/#relationship-types)
+with a `rel_type` of `m.annotation`.
 
-Given this, annotations of any event type should be accepted as a valid reaction,
-but a new message type `m.reaction` is suggested to indicate that a user is reacting
-to a message.
+This relationship type is intended primarily for handling emoji reactions, allowing clients to
+send an event which annotates an existing event.
+
+Another potential usage of annotations is for bots, which could use them to
+report the success/failure or progress of a command.
+
+The annotations are typically presented alongside the event in the timeline.
+
+Along with the normal properties `event_id` and `rel_type`, the
+[`m.relates_to`](https://spec.matrix.org/v1.6/client-server-api/#definition-mrelates_to)
+property should contains a `key` that indicates the annotation being
+applied. For example, when reacting with emojis, the `key` contains the emoji
+being used.
+
+An event annotating another with the thumbs-up emoji would therefore have the following `m.relates_to` propperty:
+
+```json
+"m.relates_to": {
+    "rel_type": "m.annotation",
+    "event_id": "$some_event_id",
+    "key": "👍"
+}
+```
+
+When sending emoji reactions, the `key` property should include the colourful
+variation-16 when applicable.
+
+### `m.reaction` event type
+
+A new message type `m.reaction` is proposed to indicate that a user is reacting
+to a message. No `content` properties are defined for this event type: it serves
+only to hold a relationship to another event.
 
 For example, an `m.reaction` event which annotates an existing event with a 👍
 looks like:
@@ -71,13 +88,11 @@ looks like:
 }
 ```
 
-When sending emoji reactions, the `key` field should include the colourful
-variation-16 when applicable.
-
 ### Push rules
 
 Since reactions are considered "metadata" that annotate an existing event, they
-should not by default trigger notifications.  Thus a new default override rule
+should not by default trigger notifications.  Thus a new [default override
+rule](https://spec.matrix.org/v1.6/client-server-api/#default-override-rules)
 is to be added that ignores reaction events:
 
 ```json
@@ -96,77 +111,64 @@ is to be added that ignores reaction events:
 }
 ```
 
+The rule is added between `.m.rule.tombstone` and `.m.rule.room.server_acl`.
+
+(Synapse implementation: [base_rules.rs](https://github.com/matrix-org/synapse/blob/157c571f3e9d3d09cd763405b6a9eb967f2807e7/rust/src/push/base_rules.rs#L216-L229))
+
 ### Server support
 
-When an annotation event is sent to clients via `/sync`, a new field
-`annotation_count` is provided in the `unsigned` field of the event, calculated
-by the server to provide the current absolute count of the given annotation key
-as of that point of the event, to avoid the client having to accurately track
-the absolute value itself.
+#### Server-side aggregation of `m.annotation` relationships
 
-  XXX: is this implemented in Synapse yet?
+Homeservers should
+[aggregate](https://spec.matrix.org/v1.6/client-server-api/#aggregations)
+events with an `m.annotation` relationship to a given event.
 
-For instance, an incremental sync might include the following:
-
-```json
-{
-    "type": "m.reaction",
-    "sender": "@matthew:matrix.org",
-    "content": {
-        "m.relates_to": {
-            "rel_type": "m.annotation",
-            "event_id": "$some_event_id",
-            "key": "👍"
-        }
-    },
-    "unsigned": {
-        "annotation_count": 1234,
-    }
-}
-```
-
-...to indicate that Matthew just thumbsupped a given event, bringing the current
-total to 1234 thumbsups.
-
-#### Bundled relations
-
-When annotations are bundled according to the [Bundled relations section of
-MSC2675](https://github.com/uhoreg/matrix-doc/blob/aggregations-helpers/proposals/2675-aggregations-server.md#bundled-relations),
-the aggregated value in the bundle provides the `type` of the relation event,
-the aggregation `key`, the `origin_server_ts` of the first reaction to that
-event, and the `count` of the number of annotations of that `type` and `key`
-which reference that event.
-
-For instance, the below example shows an event with five bundled relations:
-three thumbsup reaction annotations, and two thumbsdown reaction annotations.
+When aggregating `m.annotation` events, homeservers should group events
+together based on their event `type` and `key`, and count the number of each
+distinct `type`/`key`. An example aggregation is as follows:
 
 ```json
 {
-    ...,
+    "event_id": "$original_event_id",
+    // irrelevant fields not shown
     "unsigned": {
         "m.relations": {
             "m.annotation": {
                 "chunk": [
                   {
+                      "type": "m.reaction",
                       "key": "👍",
-                      "origin_server_ts": 1562763768320,
                       "count": 3
                   },
                   {
+                      "type": "example.com.test",
+                      "key": "👍",
+                      "count": 1
+                  },
+                  {
+                      "type": "m.reaction",
                       "key": "👎",
-                      "origin_server_ts": 1562763768320,
                       "count": 2
                   }
-                ],
-                "limited": false,
-                "count": 2
+                ]
             }
         }
     }
 }
 ```
 
-  XXX: is the example correct?
+This event has received three thumbsup reactions, two thumbsdown reactions, and
+a thumbsup annotation with an event type of `example.com.test` (which will be
+ignored by clients which don't understand the `example.com.test` event type).
+
+As the example shows, the aggregation format has a `chunk` property at the top
+level. (This is indended to allow pagination of reactions in a future
+extension, though that is not currently specified.) Each entry in the `chunk` is
+an object with properties:
+
+ * `type`: the event `type` of the aggregated events.
+ * `key`: the `key` from the `m.relates_to` properties of the aggregated events.
+ * `count`: the number of unredacted events with this event `type` and annotation `key`.
 
 ### Redactions
 
