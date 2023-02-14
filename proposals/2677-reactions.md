@@ -159,6 +159,19 @@ The rule is added between `.m.rule.tombstone` and `.m.rule.room.server_acl`.
 
 ### Server support
 
+#### Avoiding duplicate annotations
+
+Homeservers should prevent users from sending a second annotation for a given
+event with identical event `type` and annotation `key` (unless the first event
+has been redacted).
+
+Attempts to send such an annotation should be rejected with a 400 error and an
+error code of `M_DUPLICATE_ANNOTATION`.
+
+Note that this does not guarantee that duplicate annotations will not arrive
+over federation. Clients and servers are responsible for deduplicating received
+annotations when [counting annotations](#counting-annotations).
+
 #### Server-side aggregation of `m.annotation` relationships
 
 Homeservers should
@@ -216,13 +229,6 @@ When evaluating `count`, servers should respect the guidelines above about
 [counting annotations](#counting-annotations).
 
 ## Edge Cases
-
-How do you stop people reacting more than once with the same key?
- 1. You error with 400 (M_INVALID_REL_TYPE) if they try to react twice with the same key, locally
- 2. You flatten duplicate reactions received over federation from the same user
-    when calculating your local aggregations
- 3. You don't pass duplicate reactions received over federation to your local user.
- 4. XXX: does synapse do 2 & 3 yet?
 
 Which message types are reactable?
  * Any. But perhaps we should provide some UI best practice guidelines:
