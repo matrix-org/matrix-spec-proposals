@@ -61,8 +61,11 @@ An event annotating another with the thumbs-up emoji would therefore have the fo
 }
 ```
 
-When sending emoji reactions, the `key` property should include the colourful
-variation-16 when applicable.
+When sending emoji reactions, the `key` property should include the unicode
+[emoji presentation
+selector](https://www.unicode.org/reports/tr51/#def_emoji_presentation_selector)
+(`\uFE0F`) for codepoints which allow it (see the [emoji variation sequences
+list](https://www.unicode.org/Public/UCD/latest/ucd/emoji/emoji-variation-sequences.txt)).
 
 Any `type` of event is eligible for an annotation, though note that, since
 state events do not currently receive bundled aggregations (see
