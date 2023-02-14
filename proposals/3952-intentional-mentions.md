@@ -99,16 +99,7 @@ the user has been mentioned in them, e.g. for an extension to
 
 ### New push rules
 
-A new push rule condition and two new default push rule are proposed:
-
-The `is_user_mention` push condition is defined as[^5]:
-
-> This matches messages where the `m.mentions` property of the `content` contains a
-> property `user_ids` which is an array containing the owner’s Matrix ID. This
-> condition has no parameters. If the `m.mentions` key is absent; not an object;
-> does not contain a `user_ids` property; or contains a non-array `user_ids` property
-> then the rule does not match. Any non-string array entries are ignored and
-> duplicate entries are ignored.
+Two new default push rule are proposed:
 
 The proposed `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
@@ -120,7 +111,9 @@ before the `.m.rule.contains_display_name` push rule:
     "enabled": true,
     "conditions": [
         {
-            "kind": "is_user_mention"
+            "kind": "exact_event_property_contains",
+            "key": "content.m\\.mentions.user_ids",
+            "value": "[the user's Matrix ID]"
         }
     ],
     "actions": [
@@ -406,10 +399,8 @@ During development the following mapping will be used:
 
 | What                | Stable            | Unstable                             |
 |---------------------|-------------------|--------------------------------------|
-| Event property         | `m.mentions`      | `org.matrix.msc3952.mentions`        |
+| Event property      | `m.mentions`      | `org.matrix.msc3952.mentions`        |
 | Push rule ID        | `.m.rule.*`       | `.org.matrix.msc3952.*`              |
-| Push condition kind | `is_user_mention` | `org.matrix.msc3952.is_user_mention` |
-| Push condition kind | `is_room_mention` | `org.matrix.msc3952.is_room_mention` |
 
 If a client sees this rule available it can choose to apply the custom logic discussed
 in the [backwards compatibility](#backwards-compatibility) section.
@@ -424,6 +415,7 @@ into the specification:
 
 * [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758): Add `exact_event_match` push rule condition kind
 * [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873): event_match dotted keys
+* [MSC3966](https://github.com/matrix-org/matrix-spec-proposals/pull/3966): `exact_event_property_contains` push rule condition
 
 [^1]: This MSC does not attempt to solve this problem, but [MSC2781](https://github.com/matrix-org/matrix-spec-proposals/pull/2781)
 proposes removing reply fallbacks which would solve it. Although as noted in
