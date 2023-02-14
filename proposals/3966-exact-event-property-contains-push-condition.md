@@ -42,8 +42,8 @@ None foreseen.
 ## Alternatives
 
 [MSC3887](https://github.com/matrix-org/matrix-spec-proposals/pull/3887) is an
-unfinished alternative which suggests allowing [`event_match`]() to search
-in arrays without other changes.
+unfinished alternative which suggests allowing [`event_match`](https://spec.matrix.org/v1.5/client-server-api/#conditions-1)
+to search in arrays without other changes.
 
 ## Security considerations
 
