@@ -43,7 +43,7 @@ None foreseen.
 
 [MSC3887](https://github.com/matrix-org/matrix-spec-proposals/pull/3887) is an
 unfinished alternative which suggests allowing [`event_match`]() to search
-in arrays without over changes.
+in arrays without other changes.
 
 ## Security considerations
 
