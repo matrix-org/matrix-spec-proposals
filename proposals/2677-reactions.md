@@ -64,6 +64,11 @@ An event annotating another with the thumbs-up emoji would therefore have the fo
 When sending emoji reactions, the `key` property should include the colourful
 variation-16 when applicable.
 
+Any `type` of event is eligible for an annotation, though note that, since
+state events do not currently receive bundled aggregations (see
+[aggregations](https://spec.matrix.org/v1.6/client-server-api/#aggregations)),
+the results of annotating a state event may be inconsistent.
+
 ### `m.reaction` event type
 
 A new message type `m.reaction` is proposed to indicate that a user is reacting
@@ -90,7 +95,9 @@ looks like:
 
 It is not considered valid to send an annotation for a [replacement
 event](https://spec.matrix.org/v1.6/client-server-api/#event-replacements)
-(i.e., a message edit event): any reactions should refer to the original event.
+(i.e., a message edit event): any reactions should refer to the original
+event. Annotations of replacement events will be ignored according to the rules
+for [counting annotations](#counting-annotations).
 
 As an aside, note that it is not possible to edit a reaction, since replacement
 events do not change `m.relates_to` (see [Applying
@@ -117,7 +124,7 @@ When performing this count:
    separately. Clients will normally choose to do so to though this is an
    implementation decision.
 
- * Events sent by [ignored users](https://spec.matrix.org/v1.6/client-server-api/#ignoring-users)
+ * Annotation events sent by [ignored users](https://spec.matrix.org/v1.6/client-server-api/#ignoring-users)
    should be excluded from the count.
 
  * Multiple identical annotations (i.e., with the same event `type` and
@@ -227,14 +234,6 @@ an object with properties:
 
 When evaluating `count`, servers should respect the guidelines above about
 [counting annotations](#counting-annotations).
-
-## Edge Cases
-
-Which message types are reactable?
- * Any. But perhaps we should provide some UI best practice guidelines:
-  * `m.room.message` must be reactable
-  * `m.sticker` too
-  * ...but anything else may not be rendered.
 
 ## Alternatives
 
