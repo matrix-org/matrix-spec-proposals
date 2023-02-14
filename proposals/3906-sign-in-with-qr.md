@@ -21,7 +21,7 @@ By way of example this is what the QR for an X25519 based rendezvous via HTTP lo
 ```json
 {
     "rendezvous": {
-        "algorithm": "m.rendezvous.v1.curve25519-aes-sha256",
+        "algorithm": "m.rendezvous.v2.curve25519-aes-sha256",
         "key": "2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws=",
         "transport": {
             "type": "http.v1",
