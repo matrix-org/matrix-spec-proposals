@@ -45,8 +45,6 @@ send an event which annotates an existing event.
 Another potential usage of annotations is for bots, which could use them to
 report the success/failure or progress of a command.
 
-The annotations are typically presented alongside the event in the timeline.
-
 Along with the normal properties `event_id` and `rel_type`, the
 [`m.relates_to`](https://spec.matrix.org/v1.6/client-server-api/#definition-mrelates_to)
 property should contains a `key` that indicates the annotation being
@@ -87,6 +85,50 @@ looks like:
     }
 }
 ```
+
+### Interation with edited events
+
+It is not considered valid to send an annotation for a [replacement
+event](https://spec.matrix.org/v1.6/client-server-api/#event-replacements)
+(i.e., a message edit event): any reactions should refer to the original event.
+
+As an aside, note that it is not possible to edit a reaction, since replacement
+events do not change `m.relates_to` (see [Applying
+`m.new_content`](https://spec.matrix.org/v1.6/client-server-api/#applying-mnew_content)),
+and there is no other meaningful content within `m.reaction`.  If a user wishes
+to change their reaction, the original reaction should be redacted and a new
+one sent in its place.
+
+### Counting annotations
+
+The intention of annotations is that they are counted up, rather than being displayed individually.
+
+Clients must keep count of the number of annotations with a given event `type`
+and annotation `key` they observe for each event; these counts are typically
+presented alongside the event in the timeline.
+
+Servers must perform a similar operation to calculate the relationship
+aggregation (see
+[below](#server-side-aggregation-of-mannotation-relationships)).
+
+When performing this count:
+
+ * Servers must count each event `type` and annotation `key`
+   separately. Clients will normally choose to do so to though this is an
+   implementation decision.
+
+ * Events sent by [ignored users](https://spec.matrix.org/v1.6/client-server-api/#ignoring-users)
+   should be excluded from the count.
+
+ * Multiple identical annotations (i.e., with the same event `type` and
+   annotation `key`) from the same user (i.e., events with the same `sender`) should
+   be treated as a single annotation.
+
+ * It is not considered valid to annotate an event which itself has an
+   `m.relates_to` with `rel_type: m.annotation` or `rel_type:
+   m.replace`. Implementations should ignore any such annotation events.
+
+ * When an annotation is redacted, it is removed from the count.
 
 ### Push rules
 
@@ -170,10 +212,8 @@ an object with properties:
  * `key`: the `key` from the `m.relates_to` properties of the aggregated events.
  * `count`: the number of unredacted events with this event `type` and annotation `key`.
 
-### Redactions
-
-When a message using a `rel_type` of `m.annotation` is redacted, this removes
-the annotation from the message.
+When evaluating `count`, servers should respect the guidelines above about
+[counting annotations](#counting-annotations).
 
 ## Edge Cases
 
@@ -183,24 +223,6 @@ How do you stop people reacting more than once with the same key?
     when calculating your local aggregations
  3. You don't pass duplicate reactions received over federation to your local user.
  4. XXX: does synapse do 2 & 3 yet?
-
-Can you [edit](https://github.com/matrix-org-matrix-doc/pull/2676) a reaction?
- * It feels reasonable to say "if you want to edit a reaction, redact it and resend".
-   `rel_type` is immutable, much like `type`.
-
-Can you react to a reaction?
- * Yes, at the protocol level.  But you shouldn't expect clients to do anything
-   useful with it.
-
-What happens when you react to an edit?
- * You should be able to, but the reaction should be attributed to the edit (or
-   its contents) rather than the message as a whole.
- * Edits gather their own reactions, and the clients should display
-   the reactions on the most recent edit.
-   * This provides a social pressure to get your edits in quickly before there
-     are many reactions, otherwise the reactions will get lost.
-   * And it avoids us randomly aggregating reactions to potentially very
-     different contents of messages.
 
 Which message types are reactable?
  * Any. But perhaps we should provide some UI best practice guidelines:
