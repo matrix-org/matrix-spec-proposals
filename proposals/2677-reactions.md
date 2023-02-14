@@ -91,6 +91,9 @@ looks like:
 }
 ```
 
+Since they contain no `content` other than `m.relates_to`, `m.reaction` events
+are normally not encrypted, as there would be no benefit in doing so.
+
 ### Interation with edited events
 
 It is not considered valid to send an annotation for a [replacement
@@ -236,6 +239,11 @@ When evaluating `count`, servers should respect the guidelines above about
 [counting annotations](#counting-annotations).
 
 ## Alternatives
+
+### Encrypted reactions
+
+[matrix-spec#660](https://github.com/matrix-org/matrix-spec/issues/660)
+discusses the possibility of encrypting message relationships.
 
 ### Extended annotation use case
 
