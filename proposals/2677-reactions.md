@@ -23,7 +23,7 @@ events to relate to each other.  Together, these proposals replace
 A new `rel_type` of `m.annotation` is defined for use with the `m.relates_to`
 field as defined in
 [MSC2674](https://github.com/matrix-org/matrix-doc/pull/2674).  This `rel_type`
-is intended primarily for handling emoji reactions, these lets you define an
+is intended primarily for handling emoji reactions, these let you define an
 event which annotates an existing event.  The annotations are typically
 presented alongside the event in the timeline.  When used, the `m.relates_to`
 field also contains a `key` that indicates the annotation being applied.  For
@@ -78,9 +78,7 @@ is to be added that ignores reaction events:
             "pattern": "m.reaction"
         }
     ],
-    "actions": [
-        "dont_notify"
-    ]
+    "actions": []
 }
 ```
 
