@@ -181,6 +181,12 @@ Additionally, the following proposed endpoints would no longer be needed:
 | `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OP would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
 | `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OP by means of My Account functionality. |
 
+### Changes to endpoint implementations
+
+| Endpoint                           | Background                                                                                                               | Proposed change                                                                                                                      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /account/3pid`                | This endpoint is used by some Matrix clients to get a list of email and MSISDN that could be added to an Identity Server | From a client perspective the API remains the same, but the Homeserver would delegate the request through to the OP to get the 3PIDs |
+
 ### Equivalence of existing flows
 
 #### Direct replacement to the `m.login.password`
