@@ -13,10 +13,13 @@ TODO:
     - No, I think it is part of sub-proposal 1
 - [x] Go through the meeting notes and transfer ideas into sub-proposals
 - [ ] Complete TODOs scattered through the doc
+- [x] Add Travis' thought about bans [1]
 - [ ] Complete detailed definition of sub-proposals, with help from people who
       know about each area
 - [ ] Request review
 - [ ] Ask whether we can speed up faster remote joins by omitting obsolete state
+
+
 
 ## Introduction
 
@@ -238,8 +241,7 @@ for an initial sync, do not include obsolete state.
 
 ### Proposed spec wording change
 
-In [GET
-/_matrix/client/v3/sync](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync),
+In [`GET /_matrix/client/v3/sync`](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3sync),
 under "Responses", "Joined Room", in the Description of "state", should be
 updated to read:
 
@@ -324,7 +326,6 @@ We propose to invite all users as part of the room upgrade process.
 ### Proposal
 
 TODO: specific spec wording change
-TODO: consider a bulk-invite event, either as part of this MSC or a separate one
 
 ### Potential issues
 ### Alternatives
@@ -417,3 +418,35 @@ split brain situations could occur.
 ### Security considerations
 ### Unstable prefix
 ### Dependencies
+
+## Future work
+
+This section lists partially-formed ideas of further proposals that could
+complement or enhance this proposal
+
+### Pruning bans of deactivated users
+
+Some rooms have large numbers of bans, which normally need to be carried over
+on a room upgrade. However, it is common for accounts that have been banned in
+one room to end up deactivated on the homeserver.
+
+If an account has been deactivated, the ban is no longer useful, so we could
+exclude it from the room state.
+
+Risks include:
+
+* Malicious homeservers being able to reverse bans. We could mitigate this by
+  restricting the behaviour to the homeserver that is doing the upgrade, and in
+  the longer term federating deactivations and trusting some other homeservers.
+* Accounts may be reactivated, so this could only be implemented on homeservers
+  that implement policies preventing this from happening in ways which would
+  disrupt rooms.
+
+### Bulk invite events
+
+When a room is upgraded and we invite all users to the new room, we expect to
+invite a lot of users. It would almost certainly improve performance to collect
+these invitations into larger events.
+
+Events have a limited size, so we would need to allow sending multiple bulk
+events, not just one.
