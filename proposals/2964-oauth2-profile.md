@@ -154,11 +154,30 @@ The scope definitions are out of scope of this MSC and are defined in [MSC2967](
 
 ### User registration
 
-User can register themselves by initiating a authorization code flow with the `prompt=create` parameter as defined in [_Initiating User Registration via OpenID Connect - draft 03_](https://openid.net/specs/openid-connect-prompt-create-1_0.html).
+User can register themselves by initiating a authorization code flow with the `prompt=create` parameter as defined in [_Initiating User Registration via OpenID Connect 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html).
 
 ### Logging out
 
 TBD. [OIDC Front-channel logout](https://openid.net/specs/openid-connect-frontchannel-1_0.html) might be helpful.
+
+### Tracking of 3PIDs
+
+Currently the Homeserver is responsible for managing which third-party identifiers (3PIDs) are associated with a Matrix ID. This responsibility includes verifying that the 3PID is valid and owned by the user.
+
+Uses of these 3PIDs are typically:
+
+- where applicable, allowing the user to reset their password
+- allowing email and SMS notifications rules (pushers) to be configured
+- providing the Matrix client with a list of email addresses and phone numbers that the user might wish to add to the Identity Server
+
+Within the proposed architecture the OP becomes responsible for managing these 3PIDs. However, the Homeserver will still needs to track which 3PIDs are valid and verified for a user so that it only allows notifications to be set up for those 3PIDs.
+
+Unfortunately OIDC doesn't provide a standard way to represent multiple 3PIDs for a user.
+
+As such it is proposed that:
+
+- the OP should inform the Homeserver of any changes to the 3PIDs associated with a user
+- the client can continue to use `GET /account/3pid` to discover the available 3PIDs for a user
 
 ### Removal of endpoints
 
@@ -180,12 +199,6 @@ Additionally, the following proposed endpoints would no longer be needed:
 | `POST /login/token`                                                                             | [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) | Instead the Device Authorization Grant can be used.                                                                          |
 | `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OP would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
 | `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OP by means of My Account functionality. |
-
-### Changes to endpoint implementations
-
-| Endpoint                           | Background                                                                                                               | Proposed change                                                                                                                      |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `GET /account/3pid`                | This endpoint is used by some Matrix clients to get a list of email and MSISDN that could be added to an Identity Server | From a client perspective the API remains the same, but the Homeserver would delegate the request through to the OP to get the 3PIDs |
 
 ### Equivalence of existing flows
 
