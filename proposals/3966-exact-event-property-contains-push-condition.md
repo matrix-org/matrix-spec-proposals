@@ -10,7 +10,7 @@ generic fashion for re-use with other push rules.
 A new push rule condition `exact_event_property_contains` is added which acts like
 [`event_match`](https://spec.matrix.org/v1.5/client-server-api/#conditions-1),
 but searches an array for an exact value. The values must match exactly and be a
-non-compound JSON types allowed by [canonical JSON](https://spec.matrix.org/v1.5/appendices/#canonical-json):
+non-compound JSON type allowed by [canonical JSON](https://spec.matrix.org/v1.5/appendices/#canonical-json):
 i.e. strings, `null`, `true`, `false` and integers.
 
 An example condition would look like:
