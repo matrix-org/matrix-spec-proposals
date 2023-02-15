@@ -1,4 +1,4 @@
-# MSC3758: Expand push rule conditions
+# MSC3758: Add `exact_event_match` push rule condition kind 
 
 Currently the only condition used to match event content for push rules is the `event_match` kind.
 This compares a glob-style string against a string value within the event dictionary. The event
