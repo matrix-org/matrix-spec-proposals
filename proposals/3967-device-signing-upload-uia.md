@@ -20,7 +20,7 @@ This proposal aims to provide for a standard way to address this UIA usability i
 ## Proposal
 
 For the `POST /_matrix/client/v3/keys/device_signing/upload` endpoint the Homeserver should only require User-Interactive
-authentication (UIA) if a user has an existing cross-signing master key uploaded to the Homeserver.
+Authentication (UIA) if the user already has an existing cross-signing master key uploaded to the Homeserver.
 
 ## Potential issues
 
