@@ -31,7 +31,7 @@ requests that don’t require auth by offering a stage with only the m.login.dum
 401 response to requests with no auth data.
 
 Does this mean that the endpoint can't simply give back a `200` response in the case that `auth` was not given as an
-input? If this is case then the existing Synapse behaviour of allowing a UIA grace period is probably also non-compliant.
+input? If this is the case then the existing Synapse behaviour of allowing a UIA grace period is probably also non-compliant.
 
 ## Alternatives
 
@@ -48,7 +48,7 @@ applying a grace period and so allow a malicious actor to bypass UIA for a perio
 
 ## Unstable prefix
 
-Not applicable as a client behaviour need not change.
+Not applicable as client behaviour need not change.
 
 ## Dependencies
 
