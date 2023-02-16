@@ -200,6 +200,16 @@ Additionally, the following proposed endpoints would no longer be needed:
 | `POST /terms`                                                                                   | [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012) | The OP would manage any terms acceptance directly with the user probably by means of a web page or My Account functionality. |
 | `POST /account/authenticator`<br>`DELETE /account/authenticator/<auth_type>/<authenticator_id>` | [MSC3774](https://github.com/matrix-org/matrix-spec-proposals/pull/3744) | The user would manage any authenticators directly with the OP by means of My Account functionality. |
 
+### Removal of User-Interactive Authentication
+
+After removing all the endpoints listed above, the only remaining endpoint that currently uses User-Interactive Authentication (UIA) is: `POST /_matrix/client/v3/keys/device_signing/upload`
+
+This endpoint is used to set up and reset end-to-end encryption cross-signing.
+
+[MSC3967](https://github.com/matrix-org/matrix-spec-proposals/pull/3967) proposes that UIA is not required when the user first uploads cross-signing keys. Furthermore, it is anticipated that an alternative mechanism to do a reset will be devised soon and that doesn't have to require UIA in OIDC.
+
+As such, this proposal assumes that UIA is not required where auth is delegated via OIDC and as such would be removed from the Matrix spec.
+
 ### Equivalence of existing flows
 
 #### Direct replacement to the `m.login.password`
@@ -268,7 +278,8 @@ None as part of this MSC.
 
 ## Dependencies
 
-- [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964)
-- [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965)
-- [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966)
-- [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967)
+- [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964)
+- [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
+- [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966)
+- [MSC2967](https://github.com/matrix-org/matrix-spec-proposals/pull/2967)
+- [MSC3967](https://github.com/matrix-org/matrix-spec-proposals/pull/3967)
