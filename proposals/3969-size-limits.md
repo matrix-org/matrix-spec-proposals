@@ -68,8 +68,8 @@ Values not matching these types and undefined keys should be ignored.
 
 RFC1459 IRC messages are limited to 512 bytes, including message metadata overhead, whose
 length is per-user.
-IRC bridges may therefore consider the maximum possible size of the overhead, and substract
-it from the total limit, and advertize this in `m.room.size_limits`.
+IRC bridges may therefore consider the maximum possible size of the overhead, and subtract
+it from the total limit, and advertise this in `m.room.size_limits`.
 
 Sending long messages (over 3-5 lines) is usually considered poor style, but pastebining long ones
 occasionally is tolerated.
@@ -101,7 +101,7 @@ For example, for an IRC server whose maximum overhead size is 100 bytes for PRIV
 
 On IRC networks supporting the [`multiline`](https://ircv3.net/specs/extensions/multiline)
 capability, this is relaxed, and limits can be counted without the message overhead.
-For example, for servers advertizing `max-bytes=40000,max-lines=10`, and IRC bridge could
+For example, for servers advertising `max-bytes=40000,max-lines=10`, and IRC bridge could
 set this to the room:
 
 ```json5
