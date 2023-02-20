@@ -75,7 +75,7 @@ server during device removal.
 With per-device account data, the event type could be
 simplified to `m.local_notification_settings`
 
-#### Push rules with profile tags
+#### Push rules with profile tags (aka per device push rules)
 The spec allows for pushers to be assigned a
 [`profile_tag`](https://spec.matrix.org/v1.3/client-server-api/#post_matrixclientv3pushersset) which can be used to
 define per-device push rule sets. In combination with the `notify_in_app` action proposed in
@@ -86,6 +86,11 @@ Furthermore, the overrides could be simplified through cascading profile tags as
 not be trivial. Additionally, profile tags are only partially spec'ed and there is active interest in
 [removing](https://github.com/matrix-org/matrix-spec/issues/637) them entirely. If feasible, this would allow for remote
 control of notifications for clients using http-pushers and local notification generation.
+
+Effective per device notification silencing using profile tags relies on a few complex pieces of work (push rules with
+profile tags, `notify_in_app` push rule action, potentially cascading profile tags). While a more elegant solution, it
+is unlikely to land in the short or medium term. This MSC proposes a short term fix for a common user issue. As
+better solutions become available clients may choose to stop supporting `local_notification_settings`.
 
 ## Security considerations
 N/A
