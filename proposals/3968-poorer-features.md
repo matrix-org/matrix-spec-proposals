@@ -105,7 +105,7 @@ as of 2023-02 (ie. outside RFC1459 and sending files), that is:
             "a": 0,
             "b": 0,
             "code": 0,
-            "dive": 0,
+            "div": 0,
             "font": 0,
             "p": 0,
             "pre": 0,
