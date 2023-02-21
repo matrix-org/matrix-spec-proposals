@@ -195,7 +195,7 @@ When aggregating `m.annotation` events, homeservers should group events
 together based on their event `type` and `key`, and count the number of each
 distinct `type`/`key`. An example aggregation is as follows:
 
-```json
+```json5
 {
     "event_id": "$original_event_id",
     // irrelevant fields not shown
