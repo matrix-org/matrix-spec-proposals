@@ -584,7 +584,7 @@ middlemen in the user's network connection.
           "getCapabilities": true
         }
       },
-      "msc3962": {
+      "msc3963": {
         "oblivious_moh": {
           "relay": true,
           "incoming": true,
@@ -882,7 +882,7 @@ would exceed the key limit). Clients *should* ensure that time is synced at
 least to second-level precision before establishing an Oblivious MoH route, to
 improve homogeneity between clients as keys rotate.
 
-MSC3962 does not enforce using any particular cryptographic scheme, but the
+MSC3963 does not enforce using any particular cryptographic scheme, but the
 following is a sample specification for a scheme
 "`MOH_RSA_AES256_GCM_SHA256`".
 
@@ -1221,10 +1221,10 @@ stateless nature of Oblivious MoH.
 ## Unstable Prefix
 
 During the MSC stage, all endpoints *except* for `/.well-known/matrix/moh` will
-use the unstable version prefix `/unstable/org.matrix.msc3962`. The Oblivious
-MoH version shall be `msc3962`.
+use the unstable version prefix `/unstable/org.matrix.msc3963`. The Oblivious
+MoH version shall be `msc3963`.
 
 MSC Endpoints:
- * `/_matrix/client/unstable/org.matrix.msc3962/obliviousMoh/relay`
- * `/_matrix/server/unstable/org.matrix.msc3962/obliviousMoh/incoming`
- * `/_matrix/client/unstable/org.matrix.msc3962/obliviousMoh/getCapabilities`
+ * `/_matrix/client/unstable/org.matrix.msc3963/obliviousMoh/relay`
+ * `/_matrix/server/unstable/org.matrix.msc3963/obliviousMoh/incoming`
+ * `/_matrix/client/unstable/org.matrix.msc3963/obliviousMoh/getCapabilities`
