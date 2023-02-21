@@ -550,8 +550,8 @@ bearing the domain of the server.
 A specification-compliant server which implements `relay` **MUST** also
 implement `getCapabilities`.
 
-When using a version string which ends in `-relay`, clients *should* not attempt
-to use the server for any Matrix endpoints, other than the Oblivious MoH
+When using a version string which ends in `-relay-only`, clients *should* not
+attempt to use the server for any Matrix endpoints, other than the Oblivious MoH
 endpoints. (A server probably should not also need to declare both a normal and
 a relay spec version at the same time.)
 
