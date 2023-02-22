@@ -1,4 +1,4 @@
-# MSC3966: `exact_event_property_contains` push rule condition
+# MSC3966: `event_property_contains` push rule condition
 
 [MSC3952](https://github.com/matrix-org/matrix-spec-proposals/pull/3952):
 Intentional mentions requires a way for a push rule condition to search
@@ -7,7 +7,7 @@ generic fashion for re-use with other push rules.
 
 ## Proposal
 
-A new push rule condition `exact_event_property_contains` is added which acts like
+A new push rule condition `event_property_contains` is added which acts like
 [`event_match`](https://spec.matrix.org/v1.5/client-server-api/#conditions-1),
 but searches an array for an exact value. The values must match exactly and be a
 non-compound JSON type allowed by [canonical JSON](https://spec.matrix.org/v1.5/appendices/#canonical-json):
@@ -17,7 +17,7 @@ An example condition would look like:
 
 ```json
 {
-  "kind": "exact_event_property_contains",
+  "kind": "event_property_contains",
   "key": "content.my_array",
   "value": "foo"
 }
@@ -57,7 +57,7 @@ for *exact* matches.
 ## Unstable prefix
 
 During development `org.matrix.msc3966.exact_event_property_contains` shall be
-used in place of `exact_event_property_contains`.
+used in place of `event_property_contains`.
 
 ## Dependencies
 
