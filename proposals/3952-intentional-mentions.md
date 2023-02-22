@@ -87,15 +87,8 @@ includes an intentional [user mention](https://spec.matrix.org/v1.5/client-serve
 room-wide announcement. Clients may also set these values at other times when it is
 obvious the user intends to explicitly mention a user.
 
-The `m.mentions` property is part of the cleartext event body and should **not** be
-encrypted into the ciphertext for encrypted events. This exposes slightly more
-metadata to homeservers, but allows mentions to work properly. It allows the
-server to properly handle push notifications (which is a requirement for a usable
-chat application) and could result in bandwidth and battery savings (see the
-[future extensions](#muted-except-for-mentions-push-rules) section). Additionally,
-it may be useful for the homeserver to filter or prioritize rooms based on whether
-the user has been mentioned in them, e.g. for an extension to
-[MSC3575 (sliding sync)](https://github.com/matrix-org/matrix-spec-proposals/pull/3575).
+The `m.mentions` property is part of the plaintext event body and should be encrypted
+into the ciphertext for encrypted events.
 
 ### New push rules
 
@@ -272,11 +265,14 @@ to give users more control over who can generate notifications.
 
 ### Muted except for mentions push rules
 
-By leaving the mentions array unencrypted it allows for a "muted-except-for-mentions"
-push rule. This is particularly useful for large (encrypted) rooms where you would
-like to receive push notifications for mentions *only*. It is imperative for
-the homeserver to be able to send a push in this case since some mobile platforms,
-e.g. iOS, do not sync regularly in the background.
+It might be desirable to have a "muted-except-for-mentions" feature for large (encrypted)
+rooms. This is particularly useful on iOS where a push notification can be decrypted
+via a background process but *cannot* be suppressed. This means it is not possible
+for the client to handle this feature and it must be handled on the server, unfortunately
+this would not be possible with the current proposal since the `m.mentions`
+property is encrypted (and the server cannot act on it).
+
+Solving this problem is left to a future MSC.
 
 ### Pillifying `@room`
 
@@ -303,7 +299,8 @@ usecase would be a `roles` property which could include values such as `admins` 
 There are a few prior proposals which tackle subsets of the above problem:
 
 * [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796):
-  extremely similar to the proposal in this MSC, but limited to encrypted events.
+  similar to the proposal in this MSC, but limited to encrypted events (and kept
+  in cleartext).
 * [MSC2463](https://github.com/matrix-org/matrix-spec-proposals/pull/2463):
   excludes searching inside a Matrix ID for localparts / display names of other
   users.
@@ -360,38 +357,9 @@ for extensible events. This does not seem like a good fit since room versions ar
 not usually interested in non-state events. It would additionally require a stable
 room version before use, which would unnecessarily delay usage.
 
-### Encrypting the `m.mentions` property
-
-Encrypting the `m.mentions` property would solve some unintentional mentions, but
-leaving it unencrypted allows for solving a wider range of issues.
-
-Allowing an encrypted `m.mentions` property on a per-message basis could allow users
-to choose, but would result in inconsistencies and complications:
-
-* What happens if the cleartext `m.mentions` property does not match the plaintext
-  `m.mentions` property?
-* Do push rules get processed on both the cleartext and plaintext message?
-
-It may be argued that clients need to decrypt all messages anyway to handle
-user-specific keywords. This is a costly process in terms of bandwidth, CPU, and
-battery since the client must either receive every message via push notifications
-or backpaginate every room fully, in case of a gappy sync.
-
-It is asserted that the use-cases for custom keywords and mentions are sufficiently
-different that having different solutions, and different urgencies to receiving
-those notifications, is reasonable. In particular, custom keywords is more of a
-power-user feature while user mentions working properly (and promptly) is a table-stakes
-feature for a messaging application.
-
 ## Security considerations
 
-Including the mentioned users in cleartext is a small metadata leak, but we consider that the tradeoff
-of mentions working properly and the savings in bandwidth and battery makes it worthwhile.
-
-The additional metadata leaked is minor since the homeserver already knows the
-room members, how often users are sending messages, when users are receiving messages
-(via read receipts, read markers, and sync), etc. Exposing explicit mentions does not
-significantly increase metadata leakage.
+None foreseen.
 
 ## Unstable prefix
 
