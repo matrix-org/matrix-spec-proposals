@@ -38,8 +38,11 @@ There are also some other related bugs:
 
 * Matrix users will append emoji or other unique text in their display names to
   avoid unintentional pings.
-* Bridges [must use display names](https://github.com/matrix-org/matrix-spec/issues/353#issuecomment-1055809364)
-  as a trick to get pings to work.
+* Bridging mentions is suboptimal since they [use display names](https://github.com/matrix-org/matrix-spec/issues/353#issuecomment-1055809364)
+  as a workaround, e.g.:
+  * It broke the contract that bridges will not mutate the content of messages.
+  * For some protocols, bridges need try to figure out if every message contains
+    any of the possible nicknames of room members.
 * If a user changes their display name in a room, they might not be mentioned
   unless the historical display name is used while processing push rules.
   (TODO I think there's an issue about this?)
@@ -221,6 +224,18 @@ push rules, while up-to-date clients and homeservers will support the
 `.m.rule.is_user_mention` and `.m.rule.is_room_mention` push rules. It is expected
 that both sets of push rules will need to be supported for a period of time, but
 at worst case should simply result in the current behavior (documented in the preamble).
+
+### Impact on bridging
+
+This should strengthen the bridging contract as it will allow them to stop
+mutating the content of messages during the bridging process (by directly
+listing any mentioned users in the `m.mentions` property).
+
+This should reduce the impedance mismatch when bridging protocols which similarly
+list out users to mention (the bridge should simply be able to map from the
+remote user ID to the bridged user ID)[^6], but will not help in cases where the
+mention information is embedded into the text content (as today's Matrix messages
+are).[^7]
 
 ## Potential issues
 
@@ -408,3 +423,13 @@ when converting mentions, where the
 explicit. It is expected that users already considered "pilled" users to be mentions,
 and it was more unexpected when non-pilled users *were* mentioned. This MSC fixes the
 latter case.
+
+[^6]: Some protocols which provide structured data for mentions include
+[Twitter](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet),
+[Mastodon](https://docs.joinmastodon.org/entities/Status/#Mention),
+[Discord](https://discord.com/developers/docs/resources/channel#message-object),
+and [Microsoft Teams](https://learn.microsoft.com/en-us/graph/api/resources/chatmessagemention?view=graph-rest-1.0).
+
+[^7]: Unfortunately some protocols do *not* provide structured data: the message
+itself must be parsed for mentions, e.g. IRC or
+[Slack](https://api.slack.com/reference/surfaces/formatting#mentioning-users).
