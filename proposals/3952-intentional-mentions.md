@@ -85,7 +85,7 @@ Clients should add a Matrix ID to the `user_ids` array whenever composing a mess
 includes an intentional [user mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
 (often called a "pill"). Clients should set the `room` value to `true` when making a
 room-wide announcement. Clients may also set these values at other times when it is
-obvious the user intends to explicitly mention a user.
+obvious the user intends to explicitly mention a user.[^5]
 
 The `m.mentions` property is part of the plaintext event body and should be encrypted
 into the ciphertext for encrypted events.
@@ -404,5 +404,7 @@ when converting mentions, where the
 
 [^4]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
 
-[^5]: A new push condition is necessary since none of the current push conditions
-(e.g. `event_match`) can process arrays.
+[^5]: Note that this isn't really a change in behavior, it is just making the behavior
+explicit. It is expected that users already considered "pilled" users to be mentions,
+and it was more unexpected when non-pilled users *were* mentioned. This MSC fixes the
+latter case.
