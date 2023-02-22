@@ -1,4 +1,4 @@
-# MSC3758: Add `exact_event_match` push rule condition kind 
+# MSC3758: Add `event_property_is` push rule condition kind 
 
 Currently the only condition used to match event content for push rules is the `event_match` kind.
 This compares a glob-style string against a string value within the event dictionary. The event
@@ -13,7 +13,7 @@ JSON types.
 
 ### Exact matching event data
 
-We propose a new type of condition, `exact_event_match`. Similar to  the current `event_match`
+We propose a new type of condition, `event_property_is`. Similar to  the current `event_match`
 ([link to spec](https://spec.matrix.org/v1.3/client-server-api/#conditions-1)), this condition
 takes two parameters: `value` and `key`. The exact match compares the `value` to the event data
 associated with `key` exactly. Both type and content (when a string) should be identical
@@ -27,7 +27,7 @@ An example condition may look like (encoded as a JSON object):
 
 ```json
 {
-  "kind": "exact_event_match",
+  "kind": "event_property_is",
   "key": "event.content.is_something",
   "value": true
 }
@@ -45,7 +45,7 @@ None.
 
 ## Future extensions
 
-A future MSC may wish to define the behavior of `exact_event_match` when
+A future MSC may wish to define the behavior of `event_property_is` when
 used with a JSON object or array.
 
 [MSC3887](https://github.com/matrix-org/matrix-spec-proposals/pull/3887) is a
@@ -54,7 +54,8 @@ an array.
 
 ## Unstable prefix
 
-While still not part of the Matrix spec, the new rule type should be prefixed as so:
+While still not part of the Matrix spec, the new push rule condition should be
+`com.beeper.msc3758.exact_event_match` instead of `event_property_is`, e.g.:
 
 ```json
 {
