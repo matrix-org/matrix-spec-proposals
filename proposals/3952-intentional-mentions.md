@@ -181,11 +181,16 @@ and `.m.rule.is_room_mention` is provided below:
 The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules),
 [`.m.rule.contains_user_name`](https://spec.matrix.org/v1.5/client-server-api/#default-content-rules),
 and [`.m.rule.roomnotif`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules)
-push rules are to be removed.
+push rules are to be deprecated.
 
 To avoid unintentional mentions these rules are modified to only apply when the
 `m.mentions` property is missing; clients should provide the `m.mentions` property on
 every message to avoid the unintentional mentions discussed above.
+
+A future room version may wish to disable the legacy push rules: clients would
+no longer be required to include the `m.mentions` property on every event. It
+maybe convenient to do this when extensible events are adopted (see
+[MSC3932](https://github.com/matrix-org/matrix-spec-proposals/pull/3932)).
 
 If users wish to continue to be notified of messages containing their display name
 it is recommended that clients create a specific keyword rule for this, e.g. a
@@ -370,11 +375,8 @@ During development the following mapping will be used:
 | Event property      | `m.mentions`      | `org.matrix.msc3952.mentions`        |
 | Push rule ID        | `.m.rule.*`       | `.org.matrix.msc3952.*`              |
 
-If a client sees this rule available it can choose to apply the custom logic discussed
-in the [backwards compatibility](#backwards-compatibility) section.
-
-If a client sees the *stable* identifiers available, they should apply the new
-logic and start creating events with the `m.mentions` property.
+If a client sees this rule available it can choose to apply the deprecation logic
+discussed in the [backwards compatibility](#backwards-compatibility) section.
 
 ## Dependencies
 
