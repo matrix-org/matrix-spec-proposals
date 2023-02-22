@@ -111,7 +111,7 @@ before the `.m.rule.contains_display_name` push rule:
     "enabled": true,
     "conditions": [
         {
-            "kind": "exact_event_property_contains",
+            "kind": "event_property_contains",
             "key": "content.m\\.mentions.user_ids",
             "value": "[the user's Matrix ID]"
         }
@@ -139,7 +139,7 @@ before the `.m.rule.roomnotif` push rule:
     "enabled": true,
     "conditions": [
         {
-            "kind": "exact_event_match",
+            "kind": "event_property_is",
             "key": "content.m\\.mentions.room",
             "value": true
         },
@@ -413,9 +413,9 @@ logic and start creating events with the `m.mentions` property.
 This depends on two MSCs which, at the time of writing, have not yet been accepted
 into the specification:
 
-* [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758): Add `exact_event_match` push rule condition kind
+* [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758): Add `event_property_is` push rule condition kind
 * [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873): event_match dotted keys
-* [MSC3966](https://github.com/matrix-org/matrix-spec-proposals/pull/3966): `exact_event_property_contains` push rule condition
+* [MSC3966](https://github.com/matrix-org/matrix-spec-proposals/pull/3966): `event_property_contains` push rule condition
 
 [^1]: This MSC does not attempt to solve this problem, but [MSC2781](https://github.com/matrix-org/matrix-spec-proposals/pull/2781)
 proposes removing reply fallbacks which would solve it. Although as noted in
