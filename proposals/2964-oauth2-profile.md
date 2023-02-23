@@ -154,11 +154,106 @@ The scope definitions are out of scope of this MSC and are defined in [MSC2967](
 
 ### User registration
 
-User can register themselves by initiating a authorization code flow with the `prompt=create` parameter as defined in [_Initiating User Registration via OpenID Connect 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html).
+User can register themselves by initiating a authorization code flow with the `prompt=create` parameter as defined in [Initiating User Registration via OpenID Connect 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html).
 
 ### Logging out
 
-TBD. [OIDC Front-channel logout](https://openid.net/specs/openid-connect-frontchannel-1_0.html) might be helpful.
+There are two scenarios for logout:
+
+- Logout initiated from a Matrix client
+- Logout initiated from the OpenID Provider
+
+The OP is the authority on whether a user or session is valid or not and is responsible for managing the Matrix devices on the Homeserver.
+
+#### Logout initiated from a Matrix client
+
+When a user logs out of a Matrix client, the client should revoke the access token and refresh token it has been using by calling the [RFC7009](https://www.rfc-editor.org/rfc/rfc7009) token revocation endpoint exposed by the OpenID Provider.
+
+The OpenID Provider is responsible for informing the Homeserver that any associated Matrix device has been deleted so that it can be removed from the user's account.
+
+If the OpenID Provider supports the [OIDC RP-Initiated Logout 1.0](https://openid.net/specs/openid-connect-rpinitiated-1_0.html) mechanism specification, the client should also redirect or open a browser window on the RP-Initiated Logout end session endpoint.
+
+The client should also destroy any local state it has about the user.
+
+In the case that RP-Initiated Logout is not available the high-level flow looks like this:
+![](./images/2964-client-initiated-logout-no-rp-support.png)
+
+With  RP-Initiated Logout available the high-level flow looks like this:
+
+![](./images/2964-client-initiated-logout-with-rp-support.png)
+
+Or, as a sequence diagram including both scenarios:
+
+```mermaid
+sequenceDiagram
+  
+      participant U as User
+      participant UA as User-Agent<br>(Browser) 
+      participant MC as Matrix<br>Client
+      participant OP as OpenID<br>Provider
+      participant HS as Homeserver
+  
+      U->>MC: Clicks logout
+
+      opt If not already cached
+        MC->>OP: GET .well-known/openid-configuration
+        OP->>MC: HTTP 200 with discovery metadata
+      end
+
+      MC->>OP: POST {revocation_endpoint} token_type=access&token=XXX...
+      OP-->>HS: OP informs HS of any<br>device(s) that should be deleted
+      OP->>MC: HTTP 200
+
+      MC->>OP: POST {revocation_endpoint} token_type=refresh&token=YYY...
+      OP-->>HS: OP informs HS of any<br>device(s) that should be deleted
+      OP->>MC: HTTP 200
+
+      note over MC: Client destroys local state
+
+      alt If RP-Initiated Logout is not available
+          MC->>U: Client displays a logout confirmation screen     
+      else If RP-Initiated Logout is supported
+          alt Client is a web app
+            MC->>UA: Client redirect to {end_session_endpoint}?id_token_hint=XXX...
+            UA->>OP: GET {end_session_endpoint}?id_token_hint=XXX...
+            OP->>UA: HTTP 200 with HTML
+            note over UA,OP: User interacts with OP using browser completing any required steps
+            OP->>UA: HTTP 302 with redirect to {post_logout_redirect_uri}
+            UA->>MC: GET {post_logout_redirect_uri}
+            MC->>U: Client displays a logout confirmation screen
+          else Client is a native app
+            MC->>UA: Client asks for a web browser to be opened
+            rect rgba(0,0,255,0.2)
+              UA->>OP: GET {end_session_endpoint}?id_token_hint=XXX...
+              OP->>UA: HTTP 200 with HTML
+              note over UA,OP: User interacts with OP using browser completing any required steps
+              OP->>UA: HTTP 302 with redirect to {post_logout_redirect_uri}
+              UA->>MC: GET {post_logout_redirect_uri} re-opening the app
+            end
+            MC->>U: Client displays a logout confirmation screen
+          end
+      end
+```
+
+#### Logout initiated from the OpenID Provider
+
+In this scenario the logout is initiated by the OP. Scenarios where this are applicable include where a user has made use of a My Account web interface provided by the OP to sign out, or by the OP based on some other policy such as a notice from an upstream identity provider.
+
+As above, the OP should inform the Homeservers that any associated Matrix devices have been deleted so that it can be removed from the user's account.
+
+Where the OP supports it, the Matrix client can also choose to be informed of a logout via the [OIDC Front-Channel Logout 1.0](https://openid.net/specs/openid-connect-frontchannel-1_0.html) mechanism.
+
+n.b. If a Matrix client (or other Relying Party) has a server based component then the [OIDC Back-Channel Logout 1.0](https://openid.net/specs/openid-connect-backchannel-1_0.html) mechanism could also be used where the OP supports it.
+
+At a high-level the process looks like:
+
+![](./images/2964-op-initiated-logout.png)
+
+#### Client encounters an invalid access token
+
+This is similar to the current behaviour where the client encounters an invalid access token. The client can attempt to use the refresh token to obtain a new access token. If the refresh token is invalid, the client can then redirect the user to the OP's authorization endpoint to obtain a new access token.
+
+If this fails then the client should treat the user as having logged out and should destroy any local state it has about the user.
 
 ### Tracking of 3PIDs
 
