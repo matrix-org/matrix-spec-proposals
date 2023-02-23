@@ -327,12 +327,11 @@ There are still open questions that need to be addressed in future MSCs.
 These include:
 
 - using OAuth 2.0 to authenticate application services
-- account management, including active session management
 - interactions with widgets and integrations
 
 The current authentication mechanism will be deprecated later on, but a migration period where the two authentication mechanisms cohabit needs to exist.
 This is doable in clients but harder to do in servers.
-One requirement for a smooth migration is to adopt [MSC2918](https://github.com/matrix-org/matrix-doc/pull/2918).
+One requirement for a smooth migration is [MSC2918](https://github.com/matrix-org/matrix-doc/pull/2918) refresh tokens that were accepted into the Matrix 1.3 release.
 
 ### Confusion with existing `m.login.sso` OIDC capabilities
 
