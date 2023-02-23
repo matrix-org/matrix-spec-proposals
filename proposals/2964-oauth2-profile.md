@@ -60,13 +60,6 @@ Those clients are confidential and must authenticate their requests to the OpenI
 
 The authorization must issue refresh tokens for those type of clients if requested by them.
 
-#### TBD
-
-Restricted input clients like TVs might use the [Device Authorization Grant](https://tools.ietf.org/html/rfc8628).
-CLI tools might use the [Client Credentials Grant](https://tools.ietf.org/html/rfc6749#section-4.4).
-
-The details of those are still TBD.
-
 ### Requests to the authorization endpoint
 
 When making a request to the authorization endpoint, clients must provide an unpredictable value for the `state` parameter and validate it when returning to the redirect URI.
@@ -320,7 +313,7 @@ The [Device Authorization Grant](https://www.rfc-editor.org/rfc/rfc8628) is desi
 An example of a CLI login flow built using the device authorization grant is shown below:
 ![](./images/2964-github-cli-auth.gif)
 
-Alternatively, an OP may provide a mechanism by which a long-lived personal access token can be obtained by the user, which can then be entered into the client and used to authenticate with the homeserver.
+Alternatively, an OP may provide a mechanism by which a long-lived personal access token can be obtained by the user, which can then be entered into the client and used to authenticate with the homeserver. The [Client Credentials Grant](https://tools.ietf.org/html/rfc6749#section-4.4) could be used for this purpose.
 
 #### Sign in with QR code
 
