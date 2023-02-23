@@ -329,8 +329,6 @@ These include:
 - using OAuth 2.0 to authenticate application services
 - account management, including active session management
 - interactions with widgets and integrations
-- 3PID logins
-- guest logins
 
 The current authentication mechanism will be deprecated later on, but a migration period where the two authentication mechanisms cohabit needs to exist.
 This is doable in clients but harder to do in servers.
