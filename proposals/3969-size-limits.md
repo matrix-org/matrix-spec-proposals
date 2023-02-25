@@ -43,6 +43,9 @@ If multiple masks have uncomparable specificity, the lowest limit should be cons
 The number of lines includes empty lines, except the empty trailing line if any.
 (eg. `"foo\n\nbar" counts as three lines; "foobar\n" as one).
 
+If more than one `m.room.size_limits` state events are present in a room, clients should
+consider the most restrictive value of each of the limits they set.
+
 
 ### Format of `m.room.size_limits`
 
@@ -58,7 +61,13 @@ as value. These dictionaries may have the following keys:
 
 Values not matching these types and undefined keys should be ignored.
 
-`m.room.size_limits` events with a non-empty state key should be ignored.
+The state key of `m.room.size_limits` events should either follow the format defined
+in [MSC2346][MSC2346] when relevant (ie. when the limitation comes from a bridge)
+or be empty otherwise (eg. as a wish of room admins).
+
+When defining a `m.room.size_limits` with a non-empty state key, bridges should also
+publish a `uk.half-shot.bridge`/`m.bridge` event with the same key; but clients must
+be able to gracefully handle the absence of such a state event.
 
 
 ### Examples
@@ -91,7 +100,7 @@ For example, for an IRC server whose maximum overhead size is 100 bytes for PRIV
         }
     },
     "sender": "@appservice:example.com",
-    "state_key": "",
+    "state_key": "org.matrix.appservice-irc://irc/libera/#example",
     "type": "m.room.size_limits"
 }
 ```
@@ -127,7 +136,7 @@ set this to the room:
         }
     },
     "sender": "@appservice:example.com",
-    "state_key": "",
+    "state_key": "org.matrix.appservice-irc://irc/libera/#example",
     "type": "m.room.size_limits"
 }
 ```
@@ -211,10 +220,13 @@ When backfilling history backward, clients should consider they may receive a
 - Counting grapheme clusters instead of bytes for text messages. They are more user-friendly,
   but clients and bridged platforms implementing differing versions of Unicode would count them
   differently.
-- Counting characters instead of bytes for text messages. Clients can easily agree on them,
-  but they do not provide much improvement over bytes
+- Counting characters instead of bytes for text messages (like [matrix-react-sdk#4642][PR-react-sdk]).
+  Clients can easily agree on them, but they do not provide much improvement over bytes
 - Adding audio/video length limits and image/video maximum resolution. This requires at least
   partially downloading and processing the attachment, so this brings little benefit.
+- Add a `limitation` key in (like [matrix-react-sdk#4642][PR-react-sdk]) `m.bridge` events
+  defined by [MSC2346][MSC2346] instead of a new event type. This would prevent room admins
+  from setting their own limits.
 
 
 ## Security considerations
@@ -244,3 +256,5 @@ parts related to mimetypes, as they have nothing to enforce anyway.
 
 [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
 [MSC2346]: https://github.com/matrix-org/matrix-spec-proposals/pull/2346
+[MSC2346]: https://github.com/matrix-org/matrix-spec-proposals/pull/2346
+[PR-react-sdk]: https://github.com/matrix-org/matrix-react-sdk/pull/4642
