@@ -49,6 +49,9 @@ Servers may apply restrictions before sending unencrypted events, and return `M_
 in case the event contains an entity with a level under 0.
 Receiving servers may hide such events from their clients.
 
+If more than one `m.room.event_features` state events are present in a room, clients should
+consider the lowest value of each of the desirability levels they define.
+
 
 ### Format of `m.room.event_features`
 
@@ -77,7 +80,14 @@ Receiving servers may hide such events from their clients.
 
 Values not matching these types and undefined keys should be ignored.
 
-`m.room.event_features` events with a non-empty state key should be ignored.
+The state key of `m.room.size_limits` events should either follow the format defined
+in [MSC2346][MSC2346] when relevant (ie. when the limitation comes from a bridge)
+or be empty otherwise (eg. as a wish of room admins).
+
+When defining a `m.room.event_features` with a non-empty state key, bridges should also
+publish a `uk.half-shot.bridge`/`m.bridge` event with the same key; but clients must
+be able to gracefully handle the absence of such a state event.
+
 
 
 ### Examples
@@ -136,7 +146,7 @@ as of 2023-02 (ie. outside RFC1459 and sending files), that is:
         }
     },
     "sender": "@appservice:example.com",
-    "state_key": "",
+    "state_key": "org.matrix.appservice-irc://irc/libera/#example",
     "type": "m.room.event_features"
 }
 ```
@@ -202,6 +212,10 @@ When backfilling history backward, clients should consider they may receive a
   showing different sets of events, does not allow room administrators to set arbitrary limits.
 - also including event types (eg. to forbid `m.sticker`), but this is better dealt with using
   `m.room.power_levels`
+- Requiring the `state_key` to be empty, so a single `m.room.event_features` event is valid
+  at any given time. This can cause event updates to race when two bridges are set up at the
+  same time; and makes it harder (or impossible) to tear down a (restrictive) bridge without
+  removing restrictions of other bridges or admins.
 
 
 ## Security considerations
@@ -230,4 +244,5 @@ parts related to mimetypes, as they have nothing to enforce anyway.
 
 
 [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+[MSC2346]: https://github.com/matrix-org/matrix-spec-proposals/pull/2346
 [MSC2346]: https://github.com/matrix-org/matrix-spec-proposals/pull/2346
