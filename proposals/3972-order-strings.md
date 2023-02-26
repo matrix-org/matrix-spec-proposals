@@ -11,7 +11,7 @@ This is very easy to consume but non trivial to generate.
 The existing implementations take the obvious route of converting the lexicographical strings to numbers,
 performing the generative operation with the numbers, then converting the numbers back to strings.
 
-The particurlarly non-trival part of this process is the conversion and the existing implementations are correct enough to
+The particurlarly non-trivial part of this process is the conversion and the existing implementations are correct enough to
 work most of the time but not 100%. The incorrectness shows up in the form of gaps and/or collisions.
 
 This MSC provides an algorithm to correctly convert between lexicographical strings and numbers.
@@ -19,7 +19,7 @@ This MSC provides an algorithm to correctly convert between lexicographical stri
 ## Proposal
 
 For the sake of simplicity, I will be limiting the range of characters to be just A, B and C with a limit of 3 characters.
-The important conditions are that the range of characters are continguous in the ascii table and that there is a limit.
+The important conditions are that the range of characters are contiguous in the ascii table and that there is a limit.
 These conditions will be defined as a "Dictionary" for the rest of this MSC.
 
 The mapping this algorithm aims to provide is shown in the dictionary below.
