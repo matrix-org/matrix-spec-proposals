@@ -31,6 +31,13 @@ be used.  When clicked in a supported Matrix client, the client should use this 
 the latest version of the pack, as well as optionally changes to the pack that happened since.  This
 url is the "pack url".  The room id must be used, not the room alias, as the alias may change.
 
+Depending on the adoption of the protocol, a matrix:// url may also be used.
+
+To indicate that a link is linking to an image pack, the query param ```action=view_image_pack``` should
+be added to the url.  Clients should still treat links to an image pack as a pack url, even if the query
+param is not present.  If the query param is present, but the linked event is not an image pack event,
+client must either display an error or simply treat the link as an event link that's not an image pack.
+
 It is recommended that in the UI for viewing, updating, or manging packs, that the client provide a
 function for the user to copy the pack url to the clipboard for easy sharing.  This function should
 not be shown for packs that are part of private rooms.
