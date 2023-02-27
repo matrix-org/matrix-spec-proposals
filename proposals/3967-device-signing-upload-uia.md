@@ -24,14 +24,8 @@ Authentication (UIA) if the user already has an existing cross-signing master ke
 
 ## Potential issues
 
-The Client-Server API [spec](https://spec.matrix.org/v1.6/client-server-api/#user-interactive-api-in-the-rest-api) states:
+See security considerations below.
 
-> A request to an endpoint that uses User-Interactive Authentication never succeeds without auth. Homeservers may allow
-requests that don’t require auth by offering a stage with only the m.login.dummy auth type, but they must still give a
-401 response to requests with no auth data.
-
-Does this mean that the endpoint can't simply give back a `200` response in the case that `auth` was not given as an
-input? If this is the case then the existing Synapse behaviour of allowing a UIA grace period is probably also non-compliant.
 
 ## Alternatives
 
