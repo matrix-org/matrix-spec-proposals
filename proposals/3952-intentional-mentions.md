@@ -17,9 +17,9 @@ Some situations that result in unintentional mentions include:
   evaluated.
 * If the [localpart of your Matrix ID is a common word](https://github.com/matrix-org/matrix-spec-proposals/issues/3011)
   then the push rule matching usernames (`.m.rule.contains_user_name`) matches
-  too often (e.g. Travis CI matching if your Matrix ID is `@travis:example.com`).
+  too often (e.g. Travis CI matching if your Matrix ID is `@travis:example.org`).
 * If the [localpart or display name of your Matrix ID matches the hostname](https://github.com/matrix-org/matrix-spec-proposals/issues/2735)
-  (e.g. `@example:example.com` receives notifications whenever `@foo:example.com`
+  (e.g. `@example:example.org` receives notifications whenever `@foo:example.org`
   is replied to).
 
 As a sender you do not know if including the user's display name or Matrix ID would
@@ -224,6 +224,127 @@ push rules, while up-to-date clients and homeservers will support the
 `.m.rule.is_user_mention` and `.m.rule.is_room_mention` push rules. It is expected
 that both sets of push rules will need to be supported for a period of time, but
 at worst case should simply result in the current behavior (documented in the preamble).
+
+### Impact on replies
+
+Users are notified of replies via the `.m.rule.contains_display_name` or the
+`.m.rule.contains_user_name` push rule matching the
+[rich reply fallback](https://spec.matrix.org/v1.6/client-server-api/#fallbacks-for-rich-replies).
+Unfortunately these push rules will be disabled for events  which contain the
+`m.mentions` property, i.e. all newly created events (see
+[above](#backwards-compatibility)). It is proposed that clients should include
+the sender of the event being replied to as well as any users (except themself)
+mentioned in that event in the new event's `m.mentions` property. The `room`
+property should not be copied over.
+
+For example, if there is an event:
+
+```json5
+{
+  "sender": "@dan:example.org",
+  "event_id": "$initial_event",
+  "content": {
+    "body": "Alice: Have you heard from Bob?",
+    "m.mentions": {
+      "user_ids": ["@alice:example.org", "@bob:example.org"]
+    }
+  },
+  // other fields as required by events
+}
+```
+
+And a reply from Alice:
+
+```json5
+{
+  "content": {
+    "body": "> <@dan:example.org> Alice: Have you heard from Bob?\n\nNo, but I saw him with Charlie earlier.",
+    "m.mentions": {
+      "user_ids": [
+        // Include the sender of $initial_event.
+        "@dan:example.org",
+        // The users mentioned, minus yourself.
+        "@bob:example.org",
+        // New mentions, as normal.
+        "@charlie:example.org"
+      ]
+    },
+    "m.relates_to": {
+      "m.in_reply_to": {
+          "event_id": "$initial_event"
+      }
+    }
+  },
+  // other fields as required by events
+}
+```
+
+This signals that it is the *intention* of the sender to mention all of those people,
+clients may wish to allow users to modify the list of people to include, e.g. to
+"quote reply" as opposed to replying directly.
+
+If a user wishes to be notified of *all replies* to their messages, other solutions
+should be investigated, such as [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).
+This would give more equal power to both senders and receivers of events.
+
+### Impact on edits
+
+Similarly to [replies](#impact-on-replies), users are notified of message edits
+via the `.m.rule.contains_display_name` or the `.m.rule.contains_user_name` push
+rule matching the [fallback content](https://spec.matrix.org/v1.6/client-server-api/#event-replacements).
+Generally this is undesirable and users do not need to be notified for the same
+message multiple times (e.g. if a user is fixing a typo). It is recommended that
+clients include an empty `m.mentions` property when editing an event, *unless*
+the edit is significant or if additional users are mentioned.
+
+The full list of mentioned users should be included in the `m.new_content` property.
+
+For example, if there is an event:
+
+```json5
+{
+  "sender": "@dan:example.org",
+  "event_id": "$initial_event",
+  "content": {
+    "body": "Helo Alice!",
+    "m.mentions": {
+      "user_ids": ["@alice:example.org"]
+    }
+  },
+  // other fields as required by events
+}
+```
+
+And an edit after realizing that Bob is also in the room:
+
+```json5
+{
+  "content": {
+    "body": "* Hello Alice & Bob!",
+    "m.mentions": {
+      "user_ids": [
+        // Include only the newly mentioned user.
+        "@bob:example.org"
+      ]
+    },
+    "m.new_content": {
+      "body": "Hello Alice & Bob!",
+      "m.mentions": {
+        "user_ids": [
+          // Include all mentioned users.
+          "@alice:example.org",
+          "@bob:example.org"
+        ]
+      },
+    },
+    "m.relates_to": {
+      "rel_type": "m.replace",
+      "event_id": "$initial_event"
+    }
+  },
+  // other fields as required by events
+}
+```
 
 ### Impact on bridging
 
