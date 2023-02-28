@@ -77,10 +77,10 @@ that contains a rolling 24 hour window of
 Having analysed the contents of the table, it appears that there are no repeated
 transaction IDs for a given user, token and room.
 
-There are other `PUT` endpoints for which transaction IDs are not in the
-`event_txn_id` table, however because the event
+n.b. not all `PUT` endpoints contribute to the table but I think the high-volume
+ones do
 
-As such, the widening of the scope from token to device would not have caused
+As such, the widening of the scope from token to device should not have caused
 any issues during the periods sampled.
 
 For reference the following is the schema of the `event_txn_id` table:
@@ -123,25 +123,6 @@ is already scoping transaction IDs to devices.
 I can't find a related issue [listed](https://gitlab.com/famedly/conduit/-/issues),
 so presumably this non-compliant behaviour isn't causing a known issue for
 admins and users of the Conduit homeserver?
-
-#### 3. Synapse homeserver only checks for retransmits over a 30-60 minute window
-
-The Synapse homeserver uses an in-memory cache to check for idempotency of
-requests. The cache is vacated after
-[30-60 minutes](https://github.com/matrix-org/synapse/blob/adac949a417d064958039ae0918b97388413c824/synapse/rest/client/transactions.py#L50-L52)
-and is not persisted between restarts (or across a cluster).
-
-This means that for many existing deployments idempotency is only actually
-enforced over a 30-60 minutes and not eternally as the spec might suggest.
-
-#### 4. Synapse homeserver only supports local echo for the previous 24 hours
-
-The Synapse homeserver only supports local echo (by the presence of
-`transaction_id` on sync responses) for the previous 24 hours. This is because
-the `event_txn_id` table is only kept for 24 hours.
-
-Again, this suggests that in reality the local echo semantics are not preserved
-eternally as the spec might suggest.
 
 ### Is the "device" concept the right level of abstraction to use?
 
