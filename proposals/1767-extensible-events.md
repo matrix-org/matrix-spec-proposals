@@ -395,7 +395,7 @@ send stable identifiers at all.
 * simplifies it by removing displayhints (for now - deferred to a future MSC).
 * replaces the clunky m.text.1 idea with lists for types which support fallbacks.
 * removes the concept of optional compact form for m.text by instead having m.text always in expanded form.
-* tries to accomodate most of the feedback on GH and Google Docs from MSC1225.
+* tries to accommodate most of the feedback on GH and Google Docs from MSC1225.
 
 ## Historical changes
 
