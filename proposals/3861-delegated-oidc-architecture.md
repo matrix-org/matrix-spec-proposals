@@ -125,3 +125,8 @@ The following MSCs are part of this proposal:
 - [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966)
 - [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967)
 - [MSC3824](https://github.com/matrix-org/matrix-doc/pull/3824)
+
+The following MSCs are not directly part of this proposal but this proposal assumes that these are accepted:
+
+- [MSC3970: Scope transaction IDs to devices](https://github.com/matrix-org/matrix-spec-proposals/pull/3970)
+- [MSC3967: Do not require UIA when first uploading cross signing keys](https://github.com/matrix-org/matrix-spec-proposals/pull/3967)
