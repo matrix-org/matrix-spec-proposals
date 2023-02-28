@@ -10,8 +10,8 @@ or highlight notification.)
 Some situations that result in unintentional mentions include:
 
 * Replying to a message will re-issue pings from the initial message due to
-  [fallback replies](https://spec.matrix.org/v1.5/client-server-api/#fallbacks-for-rich-replies). [^1]
-* Each time a message is edited the new version will be re-evaluated for mentions. [^2]
+  [fallback replies](https://spec.matrix.org/v1.5/client-server-api/#fallbacks-for-rich-replies).
+* Each time a message is edited the new version will be re-evaluated for mentions.
 * Mentions occurring [in spoiler contents](https://github.com/matrix-org/matrix-spec/issues/16)
   or [code blocks](https://github.com/matrix-org/matrix-spec/issues/15) are
   evaluated.
@@ -32,7 +32,7 @@ This results in some unexpected behavior and bugs:
   (or display name).
 * Since the relation between `body` and `formatted_body` is ill-defined and
   ["pills" are converted to display names](https://github.com/matrix-org/matrix-spec/issues/714),
-  this can result in missed messages. [^3]
+  this can result in missed messages. [^1]
 
 There are also some other related bugs:
 
@@ -66,7 +66,7 @@ of the message should be colored differently:
 ## Proposal
 
 Instead of searching a message's `body` for the user's display name or the localpart
-of their Matrix ID, it is proposed to use a property specific to mentions,[^4] and
+of their Matrix ID, it is proposed to use a property specific to mentions,[^2] and
 augment the push rules to search for the current user's Matrix ID.
 
 ### New event property
@@ -88,7 +88,7 @@ Clients should add a Matrix ID to the `user_ids` array whenever composing a mess
 includes an intentional [user mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
 (often called a "pill"). Clients should set the `room` value to `true` when making a
 room-wide announcement. Clients may also set these values at other times when it is
-obvious the user intends to explicitly mention a user.[^5]
+obvious the user intends to explicitly mention a user.[^3]
 
 The `m.mentions` property is part of the plaintext event body and should be encrypted
 into the ciphertext for encrypted events.
@@ -346,6 +346,11 @@ And an edit after realizing that Bob is also in the room:
 }
 ```
 
+This should limit duplicate, unnecssary notifications for users. If a user wishes
+to receive notifications for edits of events they were mentioned in then they
+could setup a push rule for the `content.m\\.new_content.m\\.mentions` property
+or potentially leverage [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).
+
 ### Impact on bridging
 
 This should strengthen the bridging contract as it will allow them to stop
@@ -354,9 +359,9 @@ listing any mentioned users in the `m.mentions` property).
 
 This should reduce the impedance mismatch when bridging protocols which similarly
 list out users to mention (the bridge should simply be able to map from the
-remote user ID to the bridged user ID)[^6], but will not help in cases where the
+remote user ID to the bridged user ID)[^4], but will not help in cases where the
 mention information is embedded into the text content (as today's Matrix messages
-are).[^7]
+are).[^5]
 
 ## Potential issues
 
@@ -523,34 +528,25 @@ into the specification:
 * [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873): event_match dotted keys
 * [MSC3966](https://github.com/matrix-org/matrix-spec-proposals/pull/3966): `event_property_contains` push rule condition
 
-[^1]: This MSC does not attempt to solve this problem, but [MSC2781](https://github.com/matrix-org/matrix-spec-proposals/pull/2781)
-proposes removing reply fallbacks which would solve it. Although as noted in
-[MSC3676](https://github.com/matrix-org/matrix-spec-proposals/pull/3676) this
-may require landing [MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664)
-in order to receive notifications of replies.
-
-[^2]: Note that this MSC does not attempt to solve the problem of edits generating
-spurious notifications.
-
-[^3]: It is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes)
+[^1]: It is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes)
 the the "plain text version of the HTML [`formatted_body`] should be provided in the `body`",
 but there is no particular algorithm to convert from HTML to plain text *except*
 when converting mentions, where the
 [plain text version uses the link anchor, not the link](https://spec.matrix.org/v1.5/client-server-api/#client-behaviour-26).
 
-[^4]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
+[^2]: As proposed in [issue 353](https://github.com/matrix-org/matrix-spec/issues/353).
 
-[^5]: Note that this isn't really a change in behavior, it is just making the behavior
+[^3]: Note that this isn't really a change in behavior, it is just making the behavior
 explicit. It is expected that users already considered "pilled" users to be mentions,
 and it was more unexpected when non-pilled users *were* mentioned. This MSC fixes the
 latter case.
 
-[^6]: Some protocols which provide structured data for mentions include
+[^4]: Some protocols which provide structured data for mentions include
 [Twitter](https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet),
 [Mastodon](https://docs.joinmastodon.org/entities/Status/#Mention),
 [Discord](https://discord.com/developers/docs/resources/channel#message-object),
 and [Microsoft Teams](https://learn.microsoft.com/en-us/graph/api/resources/chatmessagemention?view=graph-rest-1.0).
 
-[^7]: Unfortunately some protocols do *not* provide structured data: the message
+[^5]: Unfortunately some protocols do *not* provide structured data: the message
 itself must be parsed for mentions, e.g. IRC or
 [Slack](https://api.slack.com/reference/surfaces/formatting#mentioning-users).
