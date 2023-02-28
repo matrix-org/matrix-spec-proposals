@@ -67,10 +67,7 @@ selector](https://www.unicode.org/reports/tr51/#def_emoji_presentation_selector)
 (`\uFE0F`) for codepoints which allow it (see the [emoji variation sequences
 list](https://www.unicode.org/Public/UCD/latest/ucd/emoji/emoji-variation-sequences.txt)).
 
-Any `type` of event is eligible for an annotation, though note that, since
-state events do not currently receive bundled aggregations (see
-[aggregations](https://spec.matrix.org/v1.6/client-server-api/#aggregations)),
-the results of annotating a state event may be inconsistent.
+Any `type` of event is eligible for an annotation, including state events.
 
 ### `m.reaction` event type
 
@@ -95,7 +92,8 @@ looks like:
 ```
 
 Since they contain no `content` other than `m.relates_to`, `m.reaction` events
-are normally not encrypted, as there would be no benefit in doing so.
+are normally not encrypted, as there would be no benefit in doing so. (However,
+see [Encrypted reactions](#encrypted-reactions) below.)
 
 ### Interation with edited events
 
@@ -120,15 +118,10 @@ Clients must keep count of the number of annotations with a given event `type`
 and annotation `key` they observe for each event; these counts are typically
 presented alongside the event in the timeline.
 
-Servers must perform a similar operation to calculate the relationship
-aggregation (see
-[below](#server-side-aggregation-of-mannotation-relationships)).
-
 When performing this count:
 
- * Servers must count each event `type` and annotation `key`
-   separately. Clients will normally choose to do so to though this is an
-   implementation decision.
+ * Each event `type` and annotation `key` should normally be counted separately,
+   though whether to actually do so is an implementation decision.
 
  * Annotation events sent by [ignored users](https://spec.matrix.org/v1.6/client-server-api/#ignoring-users)
    should be excluded from the count.
@@ -187,66 +180,30 @@ annotations when [counting annotations](#counting-annotations).
 
 #### Server-side aggregation of `m.annotation` relationships
 
-Homeservers should
-[aggregate](https://spec.matrix.org/v1.6/client-server-api/#aggregations)
-events with an `m.annotation` relationship to a given event.
-
-When aggregating `m.annotation` events, homeservers should group events
-together based on their event `type` and `key`, and count the number of each
-distinct `type`/`key`. An example aggregation is as follows:
-
-```json5
-{
-    "event_id": "$original_event_id",
-    // irrelevant fields not shown
-    "unsigned": {
-        "m.relations": {
-            "m.annotation": {
-                "chunk": [
-                  {
-                      "type": "m.reaction",
-                      "key": "👍",
-                      "count": 3
-                  },
-                  {
-                      "type": "example.com.test",
-                      "key": "👍",
-                      "count": 1
-                  },
-                  {
-                      "type": "m.reaction",
-                      "key": "👎",
-                      "count": 2
-                  }
-                ]
-            }
-        }
-    }
-}
-```
-
-This event has received three thumbsup reactions, two thumbsdown reactions, and
-a thumbsup annotation with an event type of `example.com.test` (which will be
-ignored by clients which don't understand the `example.com.test` event type).
-
-As the example shows, the aggregation format has a `chunk` property at the top
-level. (This is indended to allow pagination of reactions in a future
-extension, though that is not currently specified.) Each entry in the `chunk` is
-an object with properties:
-
- * `type`: the event `type` of the aggregated events.
- * `key`: the `key` from the `m.relates_to` properties of the aggregated events.
- * `count`: the number of unredacted events with this event `type` and annotation `key`.
-
-When evaluating `count`, servers should respect the guidelines above about
-[counting annotations](#counting-annotations).
+`m.annotation` relationships are *not* [aggregated](https://spec.matrix.org/v1.6/client-server-api/#aggregations)
+by the server. In other words, `m.annotation` is not included in the `m.relations` property.
 
 ## Alternatives
 
 ### Encrypted reactions
 
 [matrix-spec#660](https://github.com/matrix-org/matrix-spec/issues/660)
-discusses the possibility of encrypting message relationships.
+discusses the possibility of encrypting message relationships in general.
+
+Given that reactions do not rely on server-side aggregation support, an easier
+solution to encrypting reactions might be not to use the relationships
+framework at all and instead just use a keys within `m.reaction` events, which
+could then be encrypted. For example, a reaction could instead be formatted as:
+
+```json5
+{
+    "type": "m.reaction",
+    "content": {
+       "event_id": "$some_event_id",
+       "key": "👍"
+    }
+}
+```
 
 ### Extended annotation use case
 
