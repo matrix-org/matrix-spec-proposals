@@ -295,7 +295,7 @@ If cross-signing is in use then the public part of the master signing key `maste
 
 22. If the `master_key` was received then mark it as trusted
 
-23. Request 4x secrets be gossiped from existing device and set them up as per normal verification
+23. The new device requests that the verifying device share the `m.cross_signing.master`, `m.cross_signing.user_signing`, `m.cross_signing.self_signing`, `m.megolm_backup.v1` secrets by sending [`m.secret.request` device events](https://spec.matrix.org/v1.6/client-server-api/#sharing)
 
 ### Anticipated errors
 
