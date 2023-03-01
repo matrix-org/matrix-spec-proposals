@@ -95,9 +95,9 @@ into the ciphertext for encrypted events.
 
 ### New push rules
 
-Two new default push rule are proposed:
+Two new default push rule are added:
 
-The proposed `.m.rule.is_user_mention` override push rule would appear directly
+The `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
 
 ```json
@@ -125,7 +125,7 @@ before the `.m.rule.contains_display_name` push rule:
 }
 ```
 
-The proposed `.m.rule.is_room_mention` override push rule would appear directly
+The `.m.rule.is_room_mention` override push rule would appear directly
 before the `.m.rule.roomnotif` push rule:
 
 ```json
@@ -187,7 +187,7 @@ and [`.m.rule.roomnotif`](https://spec.matrix.org/v1.5/client-server-api/#defaul
 push rules are to be deprecated.
 
 To avoid unintentional mentions these rules are modified to only apply when the
-`m.mentions` property is missing; clients should provide the `m.mentions` property on
+`m.mentions` property is missing; clients should provide at least an empty `m.mentions` property on
 every message to avoid the unintentional mentions discussed above.
 
 A future room version may wish to disable the legacy push rules: clients would
@@ -346,7 +346,7 @@ And an edit after realizing that Bob is also in the room:
 }
 ```
 
-This should limit duplicate, unnecssary notifications for users. If a user wishes
+This should limit duplicate, unnecessary notifications for users. If a user wishes
 to receive notifications for edits of events they were mentioned in then they
 could setup a push rule for the `content.m\\.new_content.m\\.mentions` property
 or potentially leverage [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).
@@ -428,9 +428,8 @@ section could be expanded for this situation.
 
 ### Extensible events
 
-The `m.mentions` property can be considered a "mixin" as part of extensible events
-([MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)) with no needed
-changes.
+Handling of this property in [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767)-style
+extensible events is deliberately left for a future MSC to address, if needed.
 
 ### Role mentions
 
@@ -501,11 +500,13 @@ Alternative backwards compatibility suggestions included using a new room versio
 similar to [MSC3932](https://github.com/matrix-org/matrix-spec-proposals/pull/3932)
 for extensible events. This does not seem like a good fit since room versions are
 not usually interested in non-state events. It would additionally require a stable
-room version before use, which would unnecessarily delay usage.
+room version before use, which would unnecessarily delay usage. Another MSC
+can address this concern, such as in the extensible events series, if
+desirable to be gated by a room version for a "clean slate" approach.
 
 ## Security considerations
 
-None foreseen.
+None not already described.
 
 ## Unstable prefix
 
@@ -521,7 +522,7 @@ discussed in the [backwards compatibility](#backwards-compatibility) section.
 
 ## Dependencies
 
-This depends on two MSCs which, at the time of writing, have not yet been accepted
+This depends on the following MSCs which, at the time of writing, have not yet been accepted
 into the specification:
 
 * [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758): Add `event_property_is` push rule condition kind
