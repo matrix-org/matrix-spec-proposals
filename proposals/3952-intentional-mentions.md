@@ -558,6 +558,8 @@ into the specification:
 * [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873): event_match dotted keys
 * [MSC3966](https://github.com/matrix-org/matrix-spec-proposals/pull/3966): `event_property_contains` push rule condition
 
+<!-- Footnotes below: -->
+
 [^1]: It is [defined as](https://spec.matrix.org/v1.5/client-server-api/#mroommessage-msgtypes)
 the the "plain text version of the HTML [`formatted_body`] should be provided in the `body`",
 but there is no particular algorithm to convert from HTML to plain text *except*
