@@ -34,18 +34,35 @@ generated on the new device:
             "uri": "https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668"
         }
     },
+    "flow": "m.setup.additional_device.v2",
     "intent": "login.start"
 }
 ```
 
-This proposal should also work with a to_device based channel too.
+This proposal should also work with a to_device based transport channel too.
 
 Furthermore it should be adaptable to work with OIDC based authentication in future.
 
+The purpose of the `flow` field is to allow for future extensions such as updated
+flow semantics or other flows entirely.
+
 ## Proposal
 
-Once a secure channel is established the following protocol can be used. The
-initial steps of the secure channel setup are only included for completeness:
+This proposal defines the `m.setup.additional_device.v2` flow that is to be
+used once a secure channel has been established.
+
+The following `intent` values are defined:
+
+- `login.start` - a device with this intent is a new device that wishes to be
+set up
+- `login.reciprocate` - a device with this intent is already set up and is able
+to facilitate set up of a new device
+
+The the intents to be compatible one device must have the `login.start` intent
+and the other device must have the `login.reciprocate` intent.
+
+
+The initial steps of the secure channel setup are only included for completeness:
 
 ```mermaid
 sequenceDiagram
@@ -60,10 +77,10 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
             B->>A: Rendezvous set up and ECDH public key encoded in QR
             A->>B: New device responds with ECDH public key
         end
-        Note over B: 1. Check compatibility of intents
+        Note over A: 1. Check compatibility of intents
         alt Incompatible
-            B->>A: 2. {"type":"m.login.finish", "intent": "login.start"}
-            A->>A: Cancel rendezvous
+            A->>B: 2. {"type":"m.login.failure", "reason": "incompatible_intent", "intent": "login.start"}
+            B->>B: Cancel rendezvous
         end
     else Code was scanned on existing device
         rect rgba(240,240,240,0.5)
@@ -71,10 +88,10 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
             A->>B: Rendezvous set up and ECDH public key encoded in QR
             B->>A: New device responds with ECDH public key
         end
-        Note over A: 1. Check compatibility of intents
+        Note over B: 1. Check compatibility of intents
         alt Incompatible
-            A->>B: 2. {"type":"m.login.finish", "intent": "login.reciprocate"}
-            B->>B: Cancel rendezvous
+            B->>A: 2. {"type":"m.login.failure", "reason": "incompatible_intent", "intent": "login.reciprocate"}
+            A->>A: Cancel rendezvous
         end
         A->>B: 3. {"type":"m.login.progress"}
     end
@@ -83,37 +100,37 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
     B->>+HS: POST /versions
     HS-->>-B: supported features 
     alt no protocol available
-        B->>A: 5. {"type":"m.login.finish", "outcome":"unsupported"}
+        B->>A: 5. {"type":"m.login.failure", "reason":"unsupported"}
     else
-        B->>A: 6. {"type":"m.login.progress", "protocols":["login_token"]}
+        B->>A: 6. {"type":"m.login.protocols", "protocols":["login_token"]}
     end
 
     Note over A: 7. Check that suitable protocol available
-    A->>B: 10. {"type":"m.login.progress", "protocol": "login_token"}
+    A->>B: 10. {"type":"m.login.protocol", "protocol": "login_token"}
 
     Note over A,B: 8. Confirmation code should be displayed on both devices e.g 1234-5678-9012
 
     Note over B: 9. User asked to approve or deny login
 
     alt User declined
-        B->>A: 10. {"type":"m.login.finish", "outcome":"declined"}
+        B->>A: 10. {"type":"m.login.declined"}
     else User approved
 
         B->>+HS: 11. POST /login/token
         HS-->>-B: {"login_token": "abcdefghijkl", "expires_in": 30}
 
-        B->>A: 12. {"type": "m.login.progress", "login_token": "abcdefghijkl","homeserver": "https://matrix-client.matrix.org"}
+        B->>A: 12. {"type": "m.login.approved", "login_token": "abcdefghijkl","homeserver": "https://matrix-client.matrix.org"}
 
         A->>+HS: 13. POST /login {"type": "m.login.token", "login_token": "abcdefghijkl"}
         HS-->>-A: {"access_token": "asdsad", "device_id": "AAABBBCCC"}
 
         alt no-E2EE
-            A->>B: 14. {"type": "m.login.finish", "outcome": "success"}
+            A->>B: 14. {"type": "m.login.success"}
         else E2EE
 
             Note over A: E2EE device keys generated and uploaded to HS as normal
 
-            A->>B: 15. { "type": "m.login.progress", "outcome": "success" <br>"device_key": "zxcxzcxzc",<br>"device_id": "AAABBBCCC"}
+            A->>B: 15. { "type": "m.login.success", <br>"device_key": "zxcxzcxzc",<br>"device_id": "AAABBBCCC"}
 
             loop Timeout of 10 seconds
                 B->>B: 16. Wait for new device to come online
@@ -125,9 +142,9 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
             alt Cross-signing active
                 B->>B: 18b. Sign new device
                 B->>HS: 18b. Upload signature
-                B->>A: 19a. { "type": "m.login.finish", "outcome": "verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef", <br>"master_key": <public master signing key> }
+                B->>A: 19a. { "type": "m.login.verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef", <br>"master_key": <public master signing key> }
             else No cross-signing
-                B->>A: 19b. { "type": "m.login.finish", "outcome": "verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef" }
+                B->>A: 19b. { "type": "m.login.verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef" }
             end
 
             Note over A: 20. Check that verifying_device_id and verifying_device_key match data from homeserver. If no match then abort
@@ -161,7 +178,8 @@ it isn't compatible:
 
 ```json
 {
-    "type": "m.login.finish",
+    "type": "m.login.failure",
+    "reason": "incompatible_intent",
     "intent": "<intent type>"
 }
 ```
@@ -184,8 +202,8 @@ to support the request (i.e. support for MSC3882).
 
 ```json
 {
-    "type": "m.login.finish",
-    "outcome": "unsupported"
+    "type": "m.login.failure",
+    "reason": "unsupported"
 }
 ```
 
@@ -194,7 +212,7 @@ protocols available:
 
 ```json
 {
-    "type": "m.login.progress",
+    "type": "m.login.protocols",
     "protocols": ["login_token"]
 }
 ```
@@ -204,7 +222,7 @@ point. If so it sends:
 
 ```json
 {
-    "type": "m.login.progress",
+    "type": "m.login.protocol",
     "protocol": "login_token"
 }
 ```
@@ -213,8 +231,8 @@ It could decline with something like:
 
 ```json
 {
-    "type": "m.login.finish",
-    "outcome": "unsupported"
+    "type": "m.login.failure",
+    "reason": "unsupported"
 }
 ```
 
@@ -228,8 +246,7 @@ along with the confirmation code visible.
 
 ```json
 {
-    "type": "m.login.finish",
-    "outcome": "declined"
+    "type": "m.login.declined",
 }
 ```
 
@@ -242,7 +259,7 @@ the homeserver to use it with:
 
 ```json
 {
-    "type": "m.login.progress",
+    "type": "m.login.approved",
     "login_token": "abcdefghijkl",
     "homeserver": "https://matrix-client.matrix.org"
 }
@@ -258,8 +275,7 @@ includes device ID and keys:
 
 ```json
 {
-    "type": "m.login.finish",
-    "outcome": "success"
+    "type": "m.login.success",
 }
 ```
 
@@ -267,8 +283,7 @@ includes device ID and keys:
 
 ```json
 {
-    "type": "m.login.progress",
-    "outcome": "success",
+    "type": "m.login.success",
     "device_id": "AAABBBCCC",
     "device_key": "zxcxzcxzc"
 }
@@ -291,8 +306,7 @@ signature to homeserver.
 completed on its end:
 
 ```json
-    "type": "m.login.finish",
-    "outcome": "verified",
+    "type": "m.login.verified",
     "verifying_device_id": "XXXYYYZZZ",
     "verifying_device_key": "abcdefgh"
 ```
@@ -301,8 +315,7 @@ If cross-signing is in use then the public part of the master signing key
 `master_key` should be included:
 
 ```json
-    "type": "m.login.finish",
-    "outcome": "verified",
+    "type": "m.login.verified",
     "verifying_device_id": "XXXYYYZZZ",
     "verifying_device_key": "abcdefgh",
     "master_key": "mmmmmmmm"
@@ -337,8 +350,8 @@ The new device could cancel the process at any time by sending:
 
 ```json
 {
-    "type": "m.login.finish",
-    "outcome": "cancelled"
+    "type": "m.login.failure",
+    "reason": "cancelled"
 }
 ```
 
@@ -366,7 +379,7 @@ sequenceDiagram
             A->>B: New device responds with ECDH public key
             Note over B: 1. Check compatibility of intents
             alt Incompatible
-                B->>A: 2. {"type":"m.login.finish", "intent": "login.start"}
+                B->>A: 2. {"type":"m.login.failure", "reason": "incompatible_intent", "intent": "login.start"}
                 A->>A: Cancel rendezvous
             end
         else Code was scanned on existing device
@@ -374,7 +387,7 @@ sequenceDiagram
             B->>A: New device responds with ECDH public key
             Note over A: 1. Check compatibility of intents
             alt Incompatible
-                A->>B: 2. {"type":"m.login.finish", "intent": "login.reciprocate"}
+                A->>B: 2. {"type":"m.login.failure", "reason": "incompatible_intent", "intent": "login.reciprocate"}
                 B->>B: Cancel rendezvous
             end
             A->>B: 3. {"type":"m.login.progress"}
@@ -387,17 +400,15 @@ sequenceDiagram
     B->>+OP: GET /.well-known/openid-configuration
     OP->>-B: 200 OK {..., "grant_types_supported": ["urn:ietf:params:oauth:grant-type:device_code", ...]}
     alt no protocol available
-        B->>A: 5. {"type":"m.login.finish", "outcome":"unsupported"}
+        B->>A: 5. {"type":"m.login.failure", "reason":"unsupported"}
     else
         Note over B: n.b. that the homeserver is needed to determine the OIDC provider
-        B->>A: 6. {"type":"m.login.progress", "protocols":["login_token, "device_authorization_grant], "homeserver": "matrix-client.matrix.org"}
+        B->>A: 6. {"type":"m.login.protocols", "protocols":["login_token, "device_authorization_grant], "homeserver": "matrix-client.matrix.org"}
     end
 
     Note over A: 7. Check that suitable protocol available
-    A->>B: 10. {"type":"m.login.progress", "protocol": "device_authorization_grant"}
-
     alt no protocol available
-        B->>A: {"type":"m.login.finish", "outcome":"unsupported", "homeserver": "https://matrix-client.matrix.org"}
+        B->>A: {"type":"m.login.failure", "reason":"unsupported", "homeserver": "https://matrix-client.matrix.org"}
     else login_token
         note over A: Continue as before
     else device_authorization_grant
@@ -412,7 +423,7 @@ sequenceDiagram
 
         Note over A: At this point A finally gets back to B to tell it what it wants to do:
 
-        B->>A: {"type": "m.login.progress", "protocol": "device_authorization_grant", "device_authorization_grant": {"verification_url_complete": "https://id.matrix.org/device/abcde"}}
+        B->>A: {"type": "m.login.protocol", "protocol": "device_authorization_grant", "device_authorization_grant": {"verification_url_complete": "https://id.matrix.org/device/abcde"}}
         par
             Note over A: Device shows the user_code: 1-2-3-4-5-6 <br>and says follow instructions on other device
             loop Poll for result at interval <interval> seconds. This is standard OIDC stuff:
@@ -443,7 +454,7 @@ sequenceDiagram
         A->>HS: GET /whoami
         HS->>A: 200 OK {"device_id": "AAABBBCCC"}
 
-        A->>B: { "type": "m.login.progress", "outcome": "success" <br>"device_key": "zxcxzcxzc",<br>"device_id": "AAABBBCCC"}
+        A->>B: { "type": "m.login.success", <br>"device_key": "zxcxzcxzc",<br>"device_id": "AAABBBCCC"}
 
         Note over A,B: 8. Confirmation code should be displayed on both devices e.g 1234-5678-9012
 
@@ -451,14 +462,14 @@ sequenceDiagram
 
         alt declined
             Note over B: or can the OP tell the existing device the outcome?
-            B->>A: {"type":"m.login.finish", "outcome":"declined"}
+            B->>A: {"type":"m.login.declined"}
         else approved
             Note over A,B: Do E2EE steps as before: (just showing comms between A and B)
 
             alt Cross-signing active
-                B->>A: { "type": "m.login.finish", "outcome": "verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef", <br>"master_key": <public master signing key> }
+                B->>A: { "type": "m.login.verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef", <br>"master_key": <public master signing key> }
             else No cross-signing
-                B->>A: { "type": "m.login.finish", "outcome": "verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef" }
+                B->>A: { "type": "m.login.verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef" }
             end
 
         end
@@ -495,9 +506,15 @@ Please also refer to the dependent MSCs.
 
 ## Unstable prefix
 
-Whilst in development the unstable protocol name of
-`org.matrix.msc3906.login_token` and the unstable transport type of
-`org.matrix.msc3886.http.v1` should be used.
+Whilst in development the following unstable names should be used:
+
+- `org.matrix.msc3906.setup.additional_device.v2` for the
+`m.setup.additional_device.v2` flow
+- `org.matrix.msc3906.login_token` for the `login_token` login protocol
+- `org.matrix.msc3886.http.v1` for the `http.v1` transport type
+
+n.b. a previous version of this spec did not include the `flow` field and may be
+referred to as `v1` in early implementations.
 
 ## Dependencies
 
