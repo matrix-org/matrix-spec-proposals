@@ -55,11 +55,16 @@ determined from the access token.
 The main "issue" I see with this proposal is that this is technically a breaking
 change to the spec.
 
-Because a device ID could have multiple sequences of access tokens associated
-with it, this proposal would widen the scope of the transaction ID.
+A device ID could have multiple sequences of access tokens associated
+with it (since device ID can be specified as a parameter to 
+[`/login`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixclientv3login)). 
 
-Therefore it could potentially lead to a request being treated as "new" where
-before it would have been identified as a retransmission and deduplicated.
+For example, a "bot" implementation might masquerade as the same "device" despite
+calling `/login` on every run by passing the same device ID. Such a device might
+also use the same transaction ID on each run.
+
+Therefore it could potentially lead to a request being treated as a duplicate
+where previously it would have been treated as a distinct request.
 
 However, some evidence has been collated which suggests that nothing would be impacted
 in reality:
