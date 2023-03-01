@@ -40,7 +40,7 @@ There are also some other related bugs:
   avoid unintentional pings.
 * Bridging mentions is suboptimal since they [use display names](https://github.com/matrix-org/matrix-spec/issues/353#issuecomment-1055809364)
   as a workaround, e.g.:
-  * It broke the contract that bridges will not mutate the content of messages.
+  * It breaks the contract that bridges will not mutate the content of messages.
   * For some protocols, bridges need try to figure out if every message contains
     any of the possible nicknames of room members.
 * If a user changes their display name in a room,
@@ -65,9 +65,9 @@ of the message should be colored differently:
 
 ## Proposal
 
-Instead of searching a message's `body` for the user's display name or the localpart
-of their Matrix ID, it is proposed to use a property specific to mentions,[^2] and
-augment the push rules to search for the current user's Matrix ID.
+The existing push rules for mentions are deprecated and replaced with rules
+which use a property specific for mentions[^2], making the search for a mention
+much simpler and more reliable for the user.
 
 ### New event property
 
