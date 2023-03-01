@@ -113,7 +113,7 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
                 B->>B: 16. Wait for new device to come online
             end
 
-            Note over B: 17. check that device key from Homeserver vs received in 15 match
+            Note over B: 17. check that device key from homeserver vs received in 15 match
             B->>B: 18a. Mark new device (AAABBBCCC) as verified locally
 
             alt Cross-signing active
@@ -124,22 +124,21 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
                 B->>A: 19b. { "type": "m.login.finish", "outcome": "verified", <br>"verifying_device_id": "XXXYYYZZZ", "verifying_device_key": "abcdef" }
             end
 
-            Note over A: 20. Check that verifying_device_id and verifying_device_key match data from Homeserver
-            A->>A: 21. Mark existing device (XXXYYYZZZ) as verified locally
-            A->>A: 22. If master_key was received then mark as trusted
-            alt Cross-signing active
-                A->>HS: m.secret.request for MSK/USK/SSK private keys from existing device XXXYYYZZZ
+            Note over A: 20. Check that verifying_device_id and verifying_device_key match data from homeserver. If no match then abort
+            A->>A: 21. If master_key was received then mark as trusted
+            alt `master_key` was received
+                Note over A: 21a. Check that it matches the master key<br>received from the homeserver. If it does not match then abort the process reporting a security error to the user.
+                A->>A: 21b. Mark master key as trusted
+            end
+            A->>A: 22. Mark existing device (XXXYYYZZZ) as verified locally
+
+            A->>HS: m.secret.requests for MSK/USK/SSK/backup secrets from existing device XXXYYYZZZ
+            loop
                 HS->>B: m.secret.request
                 B->>HS: m.secret.send
                 HS->>A: m.secret.send
-                A->>A: Check and store received private keys locally
+                A->>A: Check and store received secret locally
             end
-
-            A->>HS: m.secret.request for m.megolm_backup.v1 key
-            HS->>B: m.secret.request
-            B->>HS: m.secret.send
-            HS->>A: m.secret.send with key if known
-            A->>A: Connect to key backup
         end
     end
 ```
@@ -263,14 +262,18 @@ New device informs existing device of outcome and if E2EE is to be setup then in
 
 16. If doing E2EE then existing device then waits for up to X seconds for the `device_id` to become visible.
 
-17. If the device is visible within the time period then the existing device must first check that the `device_id` and
-`device_key` match those provided by the homeserver.
+17. If the device is visible within the time period then the existing device
+must first check that the `device_id` and `device_key` match those provided by
+the homeserver. If they do not match then abort the process reporting a security
+error to the user.
 
-18a. Assuming they match then locally mark the device as verified.
+18a. Mark the new device as locally verified on existing device
 
-18b. If cross signing is in use then cross-sign the new device and upload signature to Homeserver.
+18b. If cross-signing is in use then cross-sign the new device and upload
+signature to homeserver.
 
-19. The existing device notified the new device that verification has been completed on its end:
+19. The existing device notified the new device that verification has been
+completed on its end:
 
 ```json
     "type": "m.login.finish",
@@ -289,13 +292,23 @@ If cross-signing is in use then the public part of the master signing key `maste
     "master_key": "mmmmmmmm"
 ```
 
-20. The new device checks that `verifying_device_id` and `verifying_device_key` match those from the Homeserver
+20. The new device checks that `verifying_device_id` and `verifying_device_key`
+match those received from the homeserver. If they do not match then abort the
+process reporting a security error to the user.
 
-21. If they do match then locally mark the existing device as verified.
+21a. If the `master_key` was received then check that it matches the master key
+received from the homeserver. If it does not match then abort the process
+reporting a security error to the user.
 
-22. If the `master_key` was received then mark it as trusted
+21b. If it matched the new device marks the `master_key` as locally trusted.
 
-23. The new device requests that the verifying device share the `m.cross_signing.master`, `m.cross_signing.user_signing`, `m.cross_signing.self_signing`, `m.megolm_backup.v1` secrets by sending [`m.secret.request` device events](https://spec.matrix.org/v1.6/client-server-api/#sharing)
+22. Only after the above security checks, only now should the new device mark
+the verifying device as locally verified.
+
+23. The new device requests that the verifying device share the
+`m.cross_signing.master`, `m.cross_signing.user_signing`,
+`m.cross_signing.self_signing`, `m.megolm_backup.v1` secrets by sending
+[`m.secret.request` device events](https://spec.matrix.org/v1.6/client-server-api/#sharing)
 
 ### Anticipated errors
 
@@ -327,7 +340,7 @@ sequenceDiagram
     participant A as New device <br>wanting to sign in
     participant B as Existing device <br>already signed in
     participant OP as OIDC Provider
-    participant HS as Homeserver
+    participant HS as 
     rect rgba(240,240,240,0.5)
         Note over A,B: These steps are same as login.token flow
         alt Code was scanned on new device
