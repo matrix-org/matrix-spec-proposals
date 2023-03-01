@@ -61,16 +61,15 @@ with it, this proposal would widen the scope of the transaction ID.
 Therefore it could potentially lead to a request being treated as "new" where
 before it would have been identified as a retransmission and deduplicated.
 
-However, the evidence suggests that nothing would be impacted in reality.
+However, some evidence has been collated which suggests that nothing would be impacted
+in reality:
 
-Some evidences have been collated to support this claim:
+#### 1. Data from the matrix.org homeserver suggests the change would have no impact
 
-#### 1. Data from the matrix.org Homeserver suggests the change would have no impact
+The `matrix.org` homeserver is a reasonable size deployment and could be considered
+reasonably representative of the diversity of Matrix clients.
 
-The matrix.org Homeserver is a reasonable size deployment and could be considered
-reasonably representative of the diversity of Matrix client.
-
-The Synapse homeserver that runs matrix.org maintains a `event_txn_id` table
+Synapse maintains a `event_txn_id` table
 that contains a rolling 24 hour window of
 (`user_id`, `token_id`, `room_id`, `txn_id`) tuples.
 
@@ -80,7 +79,7 @@ transaction IDs for a given user, token and room.
 n.b. not all `PUT` endpoints contribute to the table but I think the high-volume
 ones do
 
-As such, the widening of the scope from token to device should not have caused
+This suggests that the widening of the scope from token to device would not have caused
 any issues during the periods sampled.
 
 For reference the following is the schema of the `event_txn_id` table:
