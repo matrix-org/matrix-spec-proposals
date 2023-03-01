@@ -417,7 +417,8 @@ malicious behavior.
 ### Combating abuse
 
 Some ideas for combating abuse came from our discussion and research which are
-worth sharing. These ideas are not part of this MSC, but also do not depend on it.
+worth sharing. These ideas are not a requirement for implementing this MSC, and
+generally do not depend on it. (They could be implemented today with enough effort.)
 
 It was recommended that clients could expose *why* an event has caused a notification
 and give users inline tools to combat abuse. For example, a client might show a tooltip:
@@ -426,8 +427,13 @@ and give users inline tools to combat abuse. For example, a client might show a 
 >
 > Block `@alice:example.org` from sending you messages? `[Yes]` `[No]`
 
-Additionally, tooling to for moderators to quickly find messages which mention
-many users would be useful. 
+Additionally, if a user sending a message is about to mention many people it can
+be useful to confirm whether they wish to do that (or prompt them to do an `@room`
+mention instead).
+
+Moderators may find tooling to quickly find messages which mention many users
+useful in combating mention spammers. (Note that this should be made easier by
+this MSC.)
 
 A future MSC might wish to explore features for trusted contacts or soft-ignores
 to give users more control over who can generate notifications.
