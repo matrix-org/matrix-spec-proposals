@@ -346,6 +346,29 @@ And an edit after realizing that Bob is also in the room:
 }
 ```
 
+Mentions can also be removed as part of an edit, in this case top-level `m.mentions`
+property would not include any user IDs (you cannot cancel the notification from
+the previous event), and the user would be removed from the `m.new_content`'s copy
+of `m.mentions`. For example, editing the initial event to offer a generic greeting:
+
+```json5
+{
+  "content": {
+    "body": "* Hello friends!",
+    "m.mentions": {},
+    "m.new_content": {
+      "body": "Hello Alice & Bob!",
+      "m.mentions": {},
+    },
+    "m.relates_to": {
+      "rel_type": "m.replace",
+      "event_id": "$initial_event"
+    }
+  },
+  // other fields as required by events
+}
+```
+
 This should limit duplicate, unnecessary notifications for users. If a user wishes
 to receive notifications for edits of events they were mentioned in then they
 could setup a push rule for the `content.m\\.new_content.m\\.mentions` property
