@@ -274,7 +274,7 @@ includes device ID and keys:
 }
 ```
 
-16. If doing E2EE then existing device then waits for up to X seconds for the 
+16. If doing E2EE then existing device then waits for up to X seconds for the
 `device_id` to become visible.
 
 17. If the device is visible within the time period then the existing device
@@ -348,7 +348,7 @@ It is anticipated that a variant of this would work with OIDC in future
 identified by a different `protocol` value.
 
 To be clear, it is not proposed that a OIDC protocol is defined at this time,
-but instead this is included here to help get comfortable that this proposal is 
+but instead this is included here to help get comfortable that this proposal is
 reasonably future proof.
 
 Whilst not fully thought through it could work like this:
@@ -473,7 +473,8 @@ the rendezvous checksum; the OIDC device authorization grant code.
 There are two scenarios in mind:
 
 1. Showing a "widget" within an existing Matrix client embedded as an iframe/WebView
-2. "Popping out"/launching a new Matrix client from inside of an existing Matrix client
+2. "Popping out"/launching a new Matrix client from inside of an existing Matrix
+client
 
 It could be that the two are go hand-in-hand: a widget could be visible in
 embedded mode and a button offered to "open in new window". When clicked a new
