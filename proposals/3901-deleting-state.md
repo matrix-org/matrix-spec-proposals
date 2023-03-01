@@ -325,7 +325,62 @@ We propose to invite all users as part of the room upgrade process.
 
 ### Proposal
 
-TODO: specific spec wording change
+Relevant spec section:
+[11.33.3 Room upgrades - Server Behaviour](https://spec.matrix.org/v1.5/client-server-api/#server-behaviour-16).
+
+When a client requests to upgrade a room using the `POST
+/rooms/{roomId}/upgrade`, this should be interpreted by the server as a request
+not only to create the room, but also to invite all members of the old room to
+the new one, with the same power level.
+
+The server should send invitations on behalf of the user performing the upgrade.
+
+This action should only be performed by the server if the user performing the
+upgrade is registered with this server. Otherwise, the server should not create
+any invitations or emit any membership events.
+
+TODO: other than power level, what else do we need to copy across for each user?
+
+#### Specific spec wording changes
+
+In point 3 of Server behaviour:
+
+Before:
+
+```
+Membership events should not be transferred to the new room due to technical
+limitations of servers not being able to impersonate people from other
+homeservers. Additionally, servers should not transfer state events which are
+sensitive to who sent them, such as events outside of the Matrix namespace where
+clients may rely on the sender to match certain criteria.
+```
+
+After:
+
+```
+Servers should not transfer state events which are sensitive to who sent them,
+such as events outside of the Matrix namespace where clients may rely on the
+sender to match certain criteria.
+```
+
+Add a new point after point 3:
+
+```
+If the user upgrading the room is registered with this homeserver, create
+invitation events on behalf of the upgrading user for every user who is
+currently a member of the old room, inviting them to the new room with the same
+power level.
+```
+
+### Related proposal
+
+[MSC3325](https://github.com/matrix-org/matrix-spec-proposals/pull/3325)
+proposes that all users in the old room be _allowed_ to join the new room by
+using a `restricted` join rule.
+
+MSC3325 also mentions as an alternative that the room membership of each user
+could be set as `invited` without actually sending an invitation, to avoid
+invite spam.
 
 ### Potential issues
 ### Alternatives
