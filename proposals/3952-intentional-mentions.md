@@ -43,9 +43,9 @@ There are also some other related bugs:
   * It broke the contract that bridges will not mutate the content of messages.
   * For some protocols, bridges need try to figure out if every message contains
     any of the possible nicknames of room members.
-* If a user changes their display name in a room, they might not be mentioned
-  unless the historical display name is used while processing push rules.
-  (TODO I think there's an issue about this?)
+* If a user changes their display name in a room,
+  [they might not be mentioned unless the historical display name](https://github.com/matrix-org/matrix-spec/issues/353#issuecomment-1055809372)
+  is used while processing push rules.
 
 ## Background
 
