@@ -1,22 +1,28 @@
 # MSC3906: Protocol to use an existing Matrix client session to complete login and setup of E2EE via QR code
 
-This MSC proposes a method to allow an existing Matrix authenticated client/device to sign in a new device and handle
-E2EE set up (mutual device verification; setup of cross-signing if used; connecting to room key backups if used).
+This MSC proposes a method to allow an existing Matrix authenticated
+client/device to sign in a new device and handle E2EE set up (mutual device
+verification; setup of cross-signing if used; connecting to room key backups if used).
 
 There are currently two use cases for this proposal:
 
-- allowing a user to login and setup E2EE on an additional Matrix client by means of scanning a QR code
-- a mechanism to facilitate the launching of advanced E2EE aware "widgets" which are acting as full Matrix clients
+- allowing a user to login and setup E2EE on an additional Matrix client by means
+of scanning a QR code
+- a mechanism to facilitate the launching of advanced E2EE aware "widgets" which
+are acting as full Matrix clients
 
 ## Secure channel prerequisite
 
-This proposal relies on a secure "rendezvous" channel having been established between the two devices. (see dependencies
-section)
+This proposal relies on a secure "rendezvous" channel having been established
+between the two devices. (see dependencies section)
 
-The initiation of a secure channel could be via sharing a QR code or be through some other means.
+The initiation of a secure channel could be via sharing a QR code or be through
+some other means.
 
-By way of example this is what the QR for an X25519 based rendezvous via HTTP looks like in the Element Web
-[prototype](https://pr9303--matrix-react-sdk.netlify.app/) where the code was generated on the new device:
+By way of example this is what the QR for an X25519 based rendezvous via HTTP
+looks like in the Element Web
+[prototype](https://pr9303--matrix-react-sdk.netlify.app/) where the code was
+generated on the new device:
 
 ```json
 {
@@ -38,8 +44,8 @@ Furthermore it should be adaptable to work with OIDC based authentication in fut
 
 ## Proposal
 
-Once a secure channel is established the following protocol can be used. The initial steps of the secure channel setup are
-only included for completeness:
+Once a secure channel is established the following protocol can be used. The
+initial steps of the secure channel setup are only included for completeness:
 
 ```mermaid
 sequenceDiagram
@@ -150,7 +156,8 @@ The `intent` is either:
 - `login.start` - the device/client wishes to sign in
 - `login.reciprocate` - the device/client wishes to sign in another device
 
-2. If they are not compatible then the client sends a payload to indicate that it isn't compatible:
+2. If they are not compatible then the client sends a payload to indicate that
+it isn't compatible:
 
 ```json
 {
@@ -161,8 +168,8 @@ The `intent` is either:
 
 Both side can then clean up the rendezvous and provide feedback to the user.
 
-3. In the case that the new device scanned the code an empty progress payload is sent so that the the existing device
-knows it can proceed
+3. In the case that the new device scanned the code an empty progress payload
+is sent so that the the existing device knows it can proceed:
 
 ```json
 {
@@ -170,7 +177,8 @@ knows it can proceed
 }
 ```
 
-4. The existing device determines if the homeserver has sufficient capabilities to support the request (i.e. support for MSC3882).
+4. The existing device determines if the homeserver has sufficient capabilities
+to support the request (i.e. support for MSC3882).
 
 5. If it doesn't then it responds with the following and closes the rendezvous:
 
@@ -181,7 +189,8 @@ knows it can proceed
 }
 ```
 
-6. Otherwise, the existing device acknowledges the request and indicates the protocols available:
+6. Otherwise, the existing device acknowledges the request and indicates the
+protocols available:
 
 ```json
 {
@@ -190,7 +199,8 @@ knows it can proceed
 }
 ```
 
-7. The new device can then choose whether to proceed with a protocol at this point. If so it sends:
+7. The new device can then choose whether to proceed with a protocol at this
+point. If so it sends:
 
 ```json
 {
@@ -208,10 +218,11 @@ It could decline with something like:
 }
 ```
 
-8. A 12 numerical digit confirmation code derived from the shared key used by the rendezvous channel must be displayed
-on both devices.
+8. A 12 numerical digit confirmation code derived from the shared key used by
+the rendezvous channel must be displayed on both devices.
 
-9. On the existing device the user must be prompted to approve the new login along with the confirmation code visible.
+9. On the existing device the user must be prompted to approve the new login
+along with the confirmation code visible.
 
 10. If the user declines the request:
 
@@ -222,10 +233,12 @@ on both devices.
 }
 ```
 
-11. The existing device calls `POST /login/token` as per MSC3882 to obtain a `login_token`. n.b. If the homeserver
-responds with UIA challenge then the existing device must complete UIA.
+11. The existing device calls `POST /login/token` as per MSC3882 to obtain a
+`login_token`. n.b. If the homeserver responds with UIA challenge then the
+existing device must complete UIA.
 
-12. The existing device then sends the login token to the new device along with the homeserver to use it with:
+12. The existing device then sends the login token to the new device along with
+the homeserver to use it with:
 
 ```json
 {
@@ -238,7 +251,8 @@ responds with UIA challenge then the existing device must complete UIA.
 13. New device calls `POST /login` to redeem the `login_token`.
 e.g. `{ "type": "m.login.token", "login_token": <login token> }`
 
-New device informs existing device of outcome and if E2EE is to be setup then includes device ID and keys:
+New device informs existing device of outcome and if E2EE is to be setup then
+includes device ID and keys:
 
 14. No E2EE:
 
@@ -260,7 +274,8 @@ New device informs existing device of outcome and if E2EE is to be setup then in
 }
 ```
 
-16. If doing E2EE then existing device then waits for up to X seconds for the `device_id` to become visible.
+16. If doing E2EE then existing device then waits for up to X seconds for the 
+`device_id` to become visible.
 
 17. If the device is visible within the time period then the existing device
 must first check that the `device_id` and `device_key` match those provided by
@@ -282,7 +297,8 @@ completed on its end:
     "verifying_device_key": "abcdefgh"
 ```
 
-If cross-signing is in use then the public part of the master signing key `master_key` should be included:
+If cross-signing is in use then the public part of the master signing key
+`master_key` should be included:
 
 ```json
     "type": "m.login.finish",
@@ -328,10 +344,12 @@ The new device could cancel the process at any time by sending:
 
 ### OIDC variant
 
-It is anticipated that a variant of this would work with OIDC in future identified by a different `protocol` value.
+It is anticipated that a variant of this would work with OIDC in future
+identified by a different `protocol` value.
 
-To be clear, it is not proposed that a OIDC protocol is defined at this time, but instead this is included here to help
-get comfortable that this proposal is reasonably future proof.
+To be clear, it is not proposed that a OIDC protocol is defined at this time,
+but instead this is included here to help get comfortable that this proposal is 
+reasonably future proof.
 
 Whilst not fully thought through it could work like this:
 
@@ -447,8 +465,8 @@ sequenceDiagram
     end
 ```
 
-A UX complication here is that there are two codes that the user needs to see: the rendezvous checksum; the OIDC device
-authorization grant code.
+A UX complication here is that there are two codes that the user needs to see:
+the rendezvous checksum; the OIDC device authorization grant code.
 
 ### Usage for launching a new client on a single device
 
@@ -457,9 +475,10 @@ There are two scenarios in mind:
 1. Showing a "widget" within an existing Matrix client embedded as an iframe/WebView
 2. "Popping out"/launching a new Matrix client from inside of an existing Matrix client
 
-It could be that the two are go hand-in-hand: a widget could be visible in embedded mode and a button offered to "open
-in new window". When clicked a new browser (or native?) window would be opened which would be signed in and set up for
-E2EE as before.
+It could be that the two are go hand-in-hand: a widget could be visible in
+embedded mode and a button offered to "open in new window". When clicked a new
+browser (or native?) window would be opened which would be signed in and set up
+for E2EE as before.
 
 ## Potential issues
 
@@ -475,11 +494,16 @@ Please also refer to the dependent MSCs.
 
 ## Unstable prefix
 
-Whilst in development the unstable protocol name of `org.matrix.msc3906.login_token` and the unstable transport type of `org.matrix.msc3886.http.v1` should be used.
+Whilst in development the unstable protocol name of
+`org.matrix.msc3906.login_token` and the unstable transport type of
+`org.matrix.msc3886.http.v1` should be used.
 
 ## Dependencies
 
-- [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) to obtain a `m.login.token`
+- [MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) to
+obtain a `m.login.token`
 - A secure rendezvous channel such as:
-  - [MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) + [MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903) to do X25519 over HTTP
-  - Or in future guest rendezvous via to_device messaging
+  - [MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) +
+[MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903) to do
+X25519 over HTTP
+  - Or in future a guest rendezvous via to_device messaging
