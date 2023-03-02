@@ -196,7 +196,8 @@ is sent so that the the existing device knows it can proceed:
 ```
 
 4. The existing device determines if the homeserver has sufficient capabilities
-to support the request (i.e. support for MSC3882).
+to support the request (i.e. support for MSC3882). To present the best UX it is recommended
+that the client checks the capabilities before offering the ability to generate or scan a QR code.
 
 5. If it doesn't then it responds with the following and closes the rendezvous:
 
