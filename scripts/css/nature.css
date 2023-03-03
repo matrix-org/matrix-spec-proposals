@@ -290,3 +290,6 @@ div.admonition-example {
     border: 1px solid #ccc;
 }
 
+div#table-of-contents ul {
+    list-style-type: none;
+}

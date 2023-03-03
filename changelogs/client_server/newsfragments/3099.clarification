@@ -1,0 +1,1 @@
+Clarify that event bodies are untrusted, as per [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801).

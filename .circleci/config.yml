@@ -1,13 +1,19 @@
 gendoc: &gendoc
   name: Generate the docs
+  # Note: Node dependencies are required for the hugo build.
+  # Note: We use a custom config file for circleci due to some specifics with hosting the
+  #       site using CircleCI's artifacts platform. See config-circleci.toml for details.
   command: |
-    source /env/bin/activate
-    scripts/gendoc.py
+    apk add nodejs npm git hugo
+    npm i
+    cat config-circleci.toml config.toml > hugo-config.toml
+    hugo --config hugo-config.toml --baseURL "/${CIRCLE_NODE_INDEX}/public"
 
 genswagger: &genswagger
-  name: Generate the swagger
+  name: Validate sources and generate swagger json
   command: |
     source /env/bin/activate
+    scripts/check-swagger-sources.py
     scripts/dump-swagger.py
 
 buildswaggerui: &buildswaggerui
@@ -27,34 +33,19 @@ checkexamples: &checkexamples
   name: Check Event Examples
   command: |
     source /env/bin/activate
-    cd event-schemas
-    ./check_examples.py
-    cd ../api
-    ./check_examples.py
-
-genmatrixassets: &genmatrixassets
-  name: Generate/Verify matrix.org assets
-  command: |
-    source /env/bin/activate
-    ./scripts/generate-matrix-org-assets
+    scripts/check-event-schema-examples.py
 
 validateapi: &validateapi
   name: Validate OpenAPI specifications
   command: |
-    cd api
+    cd scripts
     npm install
-    node validator.js -s "client-server"
+    node validator.js -s "../data/api/client-server"
 
 buildspeculator: &buildspeculator
   name: Build Speculator
   command: |
     cd scripts/speculator
-    go build -v
-
-buildcontinuserv: &buildcontinuserv
-  name: Build Continuserv
-  command: |
-    cd scripts/continuserv
     go build -v
 
 version: 2
@@ -71,18 +62,21 @@ jobs:
     steps:
       - checkout
       - run: *checkexamples
-      - run: *genmatrixassets # We don't actually use the assets, but we do want to make sure they build
   build-docs:
     docker:
-      - image: uhoreg/matrix-doc-build
+      - image: alpine
     steps:
+      # Note: We install git in the image so we can pull git submodules. The hugo theme in use
+      # is a git submodule, which has its own submodules, and all need to be loaded.
+      - run: apk add git
       - checkout
+      - run: git submodule update --init --recursive
       - run: *gendoc
       - store_artifacts:
-          path: scripts/gen
+          path: public
       - run:
           name: "Doc build is available at:"
-          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/scripts/gen/index.html"; echo $DOCS_URL
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/public/index.html"; echo $DOCS_URL
   build-swagger:
     docker:
       - image: uhoreg/matrix-doc-build
@@ -104,8 +98,6 @@ jobs:
           name: Install Dependencies
           command: |
             go get -v github.com/hashicorp/golang-lru
-            go get -v gopkg.in/fsnotify/fsnotify.v1
-      - run: *buildcontinuserv
       - run: *buildspeculator
 
 workflows:
