@@ -2,7 +2,7 @@
 
 ## Deanonymization Threat Modelling
 
-Some aspects of the security of the Matrix protocol is built upon the assumption
+Some aspects of the security of the Matrix protocol are built upon the assumption
 that a user reasonably trusts the homeserver which they choose to use. Although
 the existing scheme of peer-to-peer encrypted rooms via Megolm is sufficient for
 ensuring the confidentiality and integrity of messages when a homeserver which
