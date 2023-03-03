@@ -158,11 +158,11 @@ instead is implemented as new stateless HTTP APIs which makes it easy to
 integrate into existing client and homeserver implementations:
 
  * `/.well-known/matrix/moh` (GET, Returns server MoH capabilities; extensible)
- * `/_matrix/client/r0/obliviousMoh/`
+ * `/_matrix/client/v1/obliviousMoh/`
    * `/relay` (POST, Relay a Matrix request to another homeserver)
    * `/getCapabilities` (GET, Retrieves well-known MoH capabilities from another
      homeserver on the client's behalf, as well as TLS certificate info)
- * `/_matrix/server/r0/obliviousMoh/`
+ * `/_matrix/server/v1/obliviousMoh/`
    * `/incoming` (POST, Receives a OMoH request from another homeserver)
 
 Typical usage flow of Oblivious MoH:
@@ -177,7 +177,7 @@ Typical usage flow of Oblivious MoH:
      `/getCapabilities` endpoint, the client requests Homeserver B to fetch OMoH
      capabilities from Homeserver A. This also includes Homeserver A's TLS
      certificate.
-     `GET /_matrix/client/r0/obliviousMoh/getCapabilities` ->
+     `GET /_matrix/client/v1/obliviousMoh/getCapabilities` ->
      `200 OK; application/json`
    * The client verifies that the TLS certificate is valid and does match
      Homeserver A's domain, and caches the public key contained within.
@@ -189,7 +189,7 @@ Typical usage flow of Oblivious MoH:
    forwarded to Homeserver B's OMoH relay endpoint as a blob. The client
    specifies Homeserver A's domain as the target homeserver in a HTTP header,
    "Target".
-   `POST /_matrix/client/r0/obliviousMoh/relay;`
+   `POST /_matrix/client/v1/obliviousMoh/relay;`
    `application/oblivious-moh-request`
    * Homeserver B now decides whether the request should be forwarded. It first
      checks a cached list of homeservers recently queried via `/getCapabilities`
@@ -199,7 +199,7 @@ Typical usage flow of Oblivious MoH:
      `/incoming` endpoint; otherwise the request is dropped and a 502 Bad
      Gateway is returned.
    * Homeserver B now relays the OMoH request to Homeserver A.
-     `POST /_matrix/server/r0/obliviousMoh/incoming;`
+     `POST /_matrix/server/v1/obliviousMoh/incoming;`
      `application/oblivious-moh-request`
 4. Homeserver A has now received an anonymous OMoH request and attempts to
    decrypt it via its TLS private key. It then validates that the content is
@@ -247,7 +247,7 @@ directly without Oblivious MoH.
 |{                                      |
 |  "capabilities": {                    |
 |    "specs": {                         |
-|       "r0": {                         |
+|       "v1": {                         |
 |        "oblivious_moh": {             |
 |          "relay": true                |
 |          "incoming": true             |
@@ -269,7 +269,7 @@ directly without Oblivious MoH.
 |                   |                   |
 |                   |                   |
 |-HTTPS 1.1 GET---->|                   |
-|/_matrix/client/r0/obliviousMoh/getCapabilities
+|/_matrix/client/v1/obliviousMoh/getCapabilities
 |Target: matrix.homeserver-a.example    |
 |                   |                   |
 |                   |-HTTPS 1.1 GET---->|
@@ -323,9 +323,7 @@ directly without Oblivious MoH.
 |{                                      |
 |  "path": "/_matrix/client/v3/sync",   |
 |  "method": "GET",                     |
-|  "response_key": "H1idSnzxPiKRuoP/..",|
 |  "response_nonce": "9C4d0GFwwtyyqt..",|
-|  "response_cipher": "MOH_RSA_AES25..",|
 |  "headers": {                         |
 |    "Authorization": "Bearer foo_12..",|
 |    "Content-Type": "application/json" |
@@ -345,7 +343,7 @@ directly without Oblivious MoH.
 |<- Relay request   |                   |
 |                   |                   |
 |-HTTPS 1.1 POST--->|                   |
-|/_matrix/client/r0/obliviousMoh/relay  |
+|/_matrix/client/v1/obliviousMoh/relay  |
 |MIME application/oblivious-moh-request |
 |Target: matrix.homeserver-a.example    |
 |Nonce: hOCBvgGrWMSQj81OzGIukQ          |
@@ -354,7 +352,7 @@ directly without Oblivious MoH.
 |5403b1a5b05cef570..|                   |
 |                   |                   |
 |                   |-HTTPS 1.1 POST--->|
-|                   |/_matrix/server/r0/obliviousMoh/incoming
+|                   |/_matrix/server/v1/obliviousMoh/incoming
 |                   |MIME application/oblivious-moh-request
 |                   |Nonce: hOCBvgGrWMSQj81OzGIukQ
 |                   |Scheme: MOH_RSA_AES256_GCM_SHA256
@@ -366,9 +364,7 @@ directly without Oblivious MoH.
 |                   |                   |{
 |                   |                   |  "path": "/_matrix/client/v3/sync",
 |                   |                   |  "method": "GET",
-|                   |                   |  "response_key": "H1idSnzxPiKRuoP...",
 |                   |                   |  "response_nonce": "9C4d0GFwwtyyq...",
-|                   |                   |  "response_cipher": "MOH_RSA_AES2...",
 |                   |                   |  "headers": {                         
 |                   |                   |    "Authorization": "Bearer foo_12..",
 |                   |                   |    "Content-Type": "application/json"
@@ -391,7 +387,7 @@ directly without Oblivious MoH.
 |                   |                   |-> 200 OK
 |                   |                   |MIME application/json
 |                   |                   |
-|                   |                   |-> Encrypt json using response_key
+|                   |                   |-> Encrypt json using negotiated key
 |                   |                   |      \/
 |                   |                   |{
 |                   |                   |  "status": 200,
@@ -514,13 +510,13 @@ Returns information about the local homeserver's Matrix over HTTPS capabilities.
 | `signature`    | string       | Cryptographic signature of `capabilities` object, encoded in base64. |
 
 #### Capabilities
-| Name            | Type           | Description                                                        |
-| --------------- | -------------- | ------------------------------------------------------------------ |
-| `specs`         | Specifications | The specs supported by the server.                                 |
-| `base_url`      | string         | Base URL to use for MoH endpoints.                                 |
-| `ephemeral_key` | Ephemeral Key  | Rotating ephemeral public key to be used for MoH requests.         |
+| Name            | Type           | Description                                                |
+| --------------- | -------------- | ---------------------------------------------------------- |
+| `specs`         | Specifications | The specs supported by the server.                         |
+| `base_url`      | string         | Base URL to use for MoH endpoints.                         |
+| `ephemeral_key` | Ephemeral Key  | Rotating ephemeral public key to be used for MoH requests. |
 
-#### Specification (r0)
+#### Specification (v1)
 | Name            | Type              | Description                      |
 | --------------- | ----------------- | -------------------------------- |
 | `oblivious_moh` | OMoH Capabilities | OMoH capabilities of the server. |
@@ -533,10 +529,10 @@ Returns information about the local homeserver's Matrix over HTTPS capabilities.
 | `getCapabilities` | boolean | True if the server supports requesting this endpoint of another server on the client's behalf. |
 
 #### Ephemeral Key
-| Name            | Type    | Description                                                                    |
-| --------------- | ------- | ------------------------------------------------------------------------------ |
-| `keys`          | object  | Most current ephemeral public keys. See [Blob Encryption](#blob-encryption).   |
-| `expires`       | number  | Timestamp for when the current `keys` are no longer accepted by the server.    |
+| Name            | Type    | Description                                                                  |
+| --------------- | ------- | ---------------------------------------------------------------------------- |
+| `keys`          | object  | Most current ephemeral public keys. See [Blob Encryption](#blob-encryption). |
+| `expires`       | number  | Timestamp for when the current `keys` are no longer accepted by the server.  |
 
 A client attempting to use Oblivious MoH **MUST** not continue if it does not
 support any specifications which the server declares support for.
@@ -570,14 +566,14 @@ middlemen in the user's network connection.
 {
   "capabilities": {
     "specs": {
-      "r0": {
+      "v1": {
         "oblivious_moh": {
           "relay": true,
           "incoming": true,
           "getCapabilities": true
         }
       },
-      "r0-relay-only": {
+      "v1-relay-only": {
         "oblivious_moh": {
           "relay": true,
           "incoming": false,
@@ -606,7 +602,7 @@ middlemen in the user's network connection.
 ```
 
 
-### POST `/_matrix/client/r0/obliviousMoh/relay`
+### POST `/_matrix/client/v1/obliviousMoh/relay`
 
 Requests the server to forward an Oblivious MoH request to another homeserver.
 Request body **MUST** be an encrypted blob of MIME Content-Type
@@ -638,9 +634,7 @@ The plaintext of the encrypted blob should be well-formed JSON.
 | ----------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
 | `path`            | string | URL of the destination API endpoint.                                                                                     |
 | `method`          | enum   | HTTP method of the request. One of ["GET", "POST", "PUT", "HEAD", "OPTIONS", "DELETE"].                                  |
-| `response_key`    | string | Cryptographic public key which the remote homeserver can use to encrypt its response.                                    |
 | `response_nonce`  | string | One-time nonce which the remote homeserver should use in response encryption, encoded in base64.                         |
-| `response_cipher` | string | Cryptographic ciphersuite which the remote homeserver should use to encrypt its response, encoded in base64.             |
 | `headers`         | object | HTTP headers associated with the request. Each JSON key corresponds to a header key. Includes "Content-Type" by default. |
 | `payload`         | object | HTTP body associated with the request. Usually a JSON object, or a JSON key containing a base64 encoding of the payload. |
 
@@ -649,20 +643,13 @@ JSON request when the `Content-Type` header is `application/json`. For any other
 `Content-Type`, `payload` will be an object which contains a key with its name
 as the file name and value as the file data encoded in base64.
 
-`response_cipher` may request a different ciphersuite than the one which was
-used for the request. Clients *should* not use different ciphersuites as this
-adds additional fingerprintable entropy for the Oblivious MoH route. How
-homeservers handle this is up to the specific implementation.
-
 For specifications on how to encrypt the JSON container, see [Blob Encryption](#blob-encryption).
 
 ```json
 {
   "path": "/_matrix/client/v3/sync",
   "method": "GET",
-  "response_key": "wBSKhd0c3ciHe3xGVmizMSN5wJdbh6B+Xn26kWk02Ao=",
   "response_nonce": "qxIX4kuOaWdv1IIr/4Yn/w",
-  "response_cipher": "MOH_RSA_AES256_GCM_SHA256",
   "headers": {
     "Authorization": "Bearer foo_1234567890",
     "Content-Type": "application/json"
@@ -674,7 +661,7 @@ For specifications on how to encrypt the JSON container, see [Blob Encryption](#
 }
 ```
 
-### POST `/_matrix/server/r0/obliviousMoh/incoming`
+### POST `/_matrix/server/v1/obliviousMoh/incoming`
 
 Requests the server to accept an Oblivious MoH request from another homeserver.
 Request and response body **MUST** be an encrypted blob of MIME Content-Type
@@ -692,7 +679,7 @@ encrypted blob, randomly generated by the client.
    the request body, likely due to a cryptographic error.
  * 429 Too Many Requests: Rate-limited.
 
-For request JSON specification, see [/relay](#post-_matrixclientr0obliviousmohrelay).
+For request JSON specification, see [/relay](#post-_matrixclientv1obliviousmohrelay).
 
 In this version of Oblivious MoH, homeservers **MUST** also reject any requests
 destined for any OMoH relay endpoint via its `path` JSON key (e.g.
@@ -723,7 +710,7 @@ For specifications on how to decrypt the JSON container, see [Blob Encryption](#
 }
 ```
 
-### GET `/_matrix/client/r0/obliviousMoh/getCapabilities`
+### GET `/_matrix/client/v1/obliviousMoh/getCapabilities`
 
 Requests the server to fetch another server's `/.well-known/matrix/moh` on
 behalf of the client, alongside the TLS certificate and public key it provides.
@@ -763,7 +750,7 @@ the remote homeserver.
   "certificate": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tDQpNSUlGTWpDQ0JObWdBd...",
   "capabilities": {
     "specs": {
-      "r0": {
+      "v1": {
         "oblivious_moh": {
           "relay": true,
           "incoming": true,
@@ -902,13 +889,13 @@ Cryptographic Primitives:
 
 The client first generates the Initialization Vector (IV) to be used for the GCM
 encrypt operation. In this scheme, part of it is the nonce sent in plaintext via
-HTTP header (see [/relay](#post-_matrixclientr0obliviousmohrelay)).
+HTTP header (see [/relay](#post-_matrixclientv1obliviousmohrelay)).
 Then, the client generates the symmetric encryption key (K) for the encrypt
 operation.
 
 PIV **MUST** be 16 bytes long, generated via a cryptograpically suitable
 randomness source by the client, hashed via SHA-256 and truncated to 16 bytes.
-The truncated 16 bytes is used as Nonce.
+The truncated 16 bytes (second segment) is used as Nonce.
 
 K **MUST** be 32 bytes long, generated via a cryptographically suitable
 randomness source by the client, hashed via SHA-256.
@@ -916,37 +903,27 @@ randomness source by the client, hashed via SHA-256.
 The message content JSON or data is then encrypted via AES-256 GCM using
 PIV+Nonce (PIV with Nonce appended, for 32 bytes) as its Initialization Vector,
 and K as its encryption key. Plaintext at the end of the plaintext body which
-does not align with the AES block size should be padded with `00` (␀) bytes.
+does not align with the AES block size should be padded with `0x00` (␀) bytes.
 
 The client then generates the *plaintext header* as follows:
 
-| Bytes | 1 | 1  | 1  | *  | 1 | 16  | 32 | 10 | *  |
-| ----- | - | -- | -- | -- | - | --- | -- | -- | -- |
-| Data  | R | LA | LB | PA | C | PIV | K  | L  | PB |
+| Bytes | 1  | 16  | 32 | * |
+| ----- | -- | --- | -- | - |
+| Data  | PL | PIV | K  | P |
 
- * `R`  : Random Pad. 1 byte, randomly generated by the client.
- * `LA` : Padding A Length. 1 byte, randomly generated by client. **MUST** be
-          within range `10` to `40`.
- * `LB` : Padding B Length. 1 byte, randomly generated by client. **MUST** be
-          within range `10` to `40`.
- * `PA` : Padding A. Zero **bits**, length specified by `LA`.
- * `C`  : Version constant. 1 byte, always `0x01`.
+ * `PL` : Padding Length. 1 byte, randomly generated by client. **MUST** be
+          within range `0x10` to `0x78`. Unencrypted.
  * `PIV`: Partial IV. 16 bytes.
  * `K`  : AES Key. 32 bytes.
- * `L`  : Length of payload. 10 bytes, length of payload data in bytes.
- * `PB` : Padding B. Zero **bits**, length specified by `LB`.
+ * `PB` : Padding. Zero **bits**, length specified by `PL`.
 
-> Beware that `PA` and `PB` have lengths of __bits__ and padded data will often
-  be misaligned!
+> Beware that `PL` has a length of __bits__ and padded data will often be
+  misaligned!
 
-> As `L` is only 10 bytes long, ensure that the payload does not exceed
-  1073741823 bytes (approximately 1 gigabyte) before encryption.
-
-The client then encrypts the header using the server's ephemeral public key via
-RSA, and appends the encrypted payload to it, thus generating the complete
-*Oblivious MoH request ciphertext*, or "encrypted blob". It is then forwarded
-to the remote server, and the client *should* discard all data used during
-generation as soon as possible, *including* PIV, Nonce, and K.
+The client then encrypts the header (except for the first byte `PL`) using the
+server's ephemeral public key via RSA, and appends the encrypted payload to it,
+thus generating the complete *Oblivious MoH request ciphertext*, or "encrypted
+blob". It is then forwarded to the remote server.
 
 Before decryption, the server **MUST** fail the request immediately if the Nonce
 was used by any Oblivious MoH request which was used for a request which it
@@ -957,30 +934,27 @@ successfully decrypted using a ephemeral keypair which is *still* valid.
   could present unknown security risks however, by introducing additional logged
   fingerprintable entropy to incoming Oblivious MoH connections.
 
-To decrypt the header, the server first decrypts the starting 512 bit block of
-the encrypted blob using every ephemeral private key it currently recognizes.
-The blob is considered valid if all of the following are true of the plaintext:
- * All bits, starting from `0x003`, of length given by value `0x001`, are
-   `0x00`;
- * The byte at `0x003` + bit offset from value `0x001` is `0x01`;
- * All bits, starting from `0x03E` + value `0x001`, of length given by value
-   `0x002`,  are `0x00`.
+To decrypt the header, the server uses the first byte `0x01` as `PL`, and
+attempts to decrypt bits from range `9` to `392` + `PL` sequentially using every
+ephemeral RSA private key it currently recognizes. The header is considered
+valid if all bits in the plaintext from `392` to `392` + `PL` are zero bits.
 
-The server then decrypts the header of length 482 + value `0x001` + value
-`0x002` bits, and attempts to decrypt the payload appended after the header
-length, using PIV+Nonce (PIV with Nonce appended) as Initialization Vector and K
-as key for AES-256 GCM.
+The server then attempts to decrypt the payload appended after the header
+length, using PIV + Nonce (PIV with Nonce appended) as Initialization Vector and
+K as key for AES-256 GCM.
 
 If the payload is valid JSON, the server processes it as requested.
 
 When the server encrypts its response to be forwarded back to the client, it
-uses the same header format, with the following changes:
- * PIV is substituted by the `response_nonce` requested by the client,
- * K is substituted by the `response_key` requested by the client.
+encrypts the payload using AES-GCM.
+ * `PIV` is substituted by the `response_nonce` requested by the client,
+ * `K` is substituted by the `K` used in the request header.
+
+Note that the server does not use a header in its encrypted response.
 
 The client thus decrypts the encrypted blob response from the server similarly
-to before, using the `response_nonce` and `response_key` that it generated when
-creating the initial JSON container.
+to before, using the `response_nonce` and `K` that it generated when creating
+the initial JSON container.
 
 ## Security Considerations
 
@@ -1217,6 +1191,40 @@ for an arbitrary amount of time before forwarding to the relay homeserver, or
 other relays along the path. Although this method could have unknown security or
 usability repercussions, it is simple implement due to the already (almost-)
 stateless nature of Oblivious MoH.
+
+## On P2P Matrix / Pinecone
+
+The primary reason to use Oblivious MoH instead of P2P Matrix for anonymity is
+aptly conveyed by the Pinecone README FAQ:
+
+> ### Does Pinecone provide anonymity?
+>
+> No, it is not a goal of Pinecone to provide anonymity. Pinecone packets will
+> be routed using the most direct paths possible (in contrast to Tor and
+> friends, which deliberately send traffic well out of their way) and Pinecone
+> packets do contain source and destination information in their headers
+> currently. It is likely that we will be able to seal some of this information,
+> in particular the source addresses, to reduce traffic correlation, but this is
+> not done today.
+
+It is likely that a future version of Pinecone will indeed be designed to
+provide stronger anonymity, but as a P2P network without enforced onion routing
+by design, this would greatly impact the original usability scopes of the
+project. If the tradeoff is instead made to not enforce anonymization via relays
+which would allow discerning between anonymized and non-anonymized traffic on
+the Pinecone network, this provides a highly significant fingerprinting vector
+which greatly weakens any potential anonymity it could offer.
+
+Oblivious MoH inherently tackles a different issue within Matrix by providing
+user anonymity with minimal implementation complexity and blending in with
+existing traffic, while Pinecone prioritizes decentralization and reachability
+before privacy as a data transport backbone.
+
+That being said, this is not a binary choice; Oblivious MoH and Pinecone can
+easily coexist, and it is likely also possible to utilize Oblivious MoH *over*
+Pinecone. Oblivious MoH (or more likely Matrix over HTTPS in general) could also
+become a bridge protocol between the Matrix P2P network and any existing Matrix
+federations over HTTP, both public and internal.
 
 ## Unstable Prefix
 
