@@ -15,8 +15,8 @@ the hosting client (e.g. Element) so the same search terms lead to the same resu
 
 ## Proposal
 
-We will add a new interface to the widget API to search users in the user directory. We will introduce
-a new capability that the user must manually approve:
+The widget API is extended with a new interface to search users in the user directory. The user must
+manually approve the following capability before the action can be used:
 
 - `m.user_directory_search`: Let the widget access the user directory.
 
