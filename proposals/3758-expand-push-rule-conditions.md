@@ -1,4 +1,4 @@
-# MSC3758: Add `event_property_is` push rule condition kind 
+# MSC3758: Add `event_property_is` push rule condition kind
 
 Currently the only condition used to match event content for push rules is the `event_match` kind.
 This compares a glob-style string against a string value within the event dictionary. The event
@@ -28,7 +28,7 @@ An example condition may look like (encoded as a JSON object):
 ```json
 {
   "kind": "event_property_is",
-  "key": "event.content.is_something",
+  "key": "content.is_something",
   "value": true
 }
 ```
