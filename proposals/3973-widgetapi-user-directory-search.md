@@ -77,8 +77,10 @@ of the original `/_matrix/client/v3/user_directory/search` API.
 ## Security considerations
 
 The same considerations as in [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762)
-apply. The widget will be able to receive information about who is present on the homeserver / user
-directory.
+apply. This feature will allow the widget to be able to receive information about who is present on
+the homeserver / in the user directory. This information could be used by the widget to send it to
+a third-party server to store or misuse it. However, the access will only be possible when the user
+accepts the capability and grant access if the widget is trusted by the user.
 
 ## Unstable prefix
 
