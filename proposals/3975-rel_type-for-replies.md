@@ -1,4 +1,4 @@
-# MSC0000: rel_type for Replies
+# MSC3975: rel_type for Replies
 
 Aggregation of child events (MSC2675) has proven itself useful for features such as Threads
 and Reactions. Clients are unable to access Rich Replies via the Relationships API,
