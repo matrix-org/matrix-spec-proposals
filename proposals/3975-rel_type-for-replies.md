@@ -1,11 +1,11 @@
 # MSC3975: rel_type for Replies
 
-Aggregation of child events (MSC2675) has proven itself useful for features such as Threads
+Aggregation of child events ([MSC2675](https://github.com/matrix-org/matrix-spec-proposals/pull/2675)) has proven itself useful for features such as Threads
 and Reactions. Clients are unable to access Rich Replies via the Relationships API,
 complicating that task of finding replies to an event. This proposal seeks to
 solve this problem by including Rich Replies among the relationship types that use rel_type.
 
-This proposal is related to MSC2675 which defines APIs to let the server calculate
+This proposal is related to [MSC2675](https://github.com/matrix-org/matrix-spec-proposals/pull/2675) which defines APIs to let the server calculate
 aggregations on behalf of the client.
 
 
