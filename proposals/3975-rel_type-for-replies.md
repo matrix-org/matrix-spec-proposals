@@ -25,7 +25,7 @@ For example, a reply might look like:
       "m.in_reply_to": {
         "event_id": "$ju0-ipo32h_2eaD1JBVUmwayiAHKcu2eq21PX15E1Zg"
       },
-      "rel_type": "org.example.reply" // Proposed addition to reply event
+      "rel_type": "m.reply" // Proposed addition to reply event
     },
     "msgtype": "m.text"
   },
@@ -53,4 +53,6 @@ as the `rel_type`.
 An alternative solution would be to add a new endpoint specifically finding an 
 event's replies. This would avoid conflicts with `m.thread`, however may be more
 confusing due to the presence of the current Relationships API.
+
+
 
