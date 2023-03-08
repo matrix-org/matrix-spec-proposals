@@ -11,35 +11,35 @@ aggregations on behalf of the client.
 
 ## Proposal
 
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
-the technical points of your proposal. Including rationale for your proposed solution and detailing
-why parts are important helps reviewers understand the problem at hand. Not including enough detail
-can result in people guessing, leading to confusing arguments in the comments section. The example
-here covers why templates are important again, giving a stronger argument as to why we should have
-a template. Afterwards, it goes on to cover the specifics of what the template could look like.*
+Rich Reply events should include a `rel_type` field with a new value specific to replies.
 
-Having a default template that everyone can use is important. Without a template, proposals would be
-all over the place and the minimum amount of detail may be left out. Introducing a template to the
-proposal process helps ensure that some amount of consistency is present across multiple proposals,
-even if each author decides to abandon the template.
+For example, a reply might look like:
 
-The default template should be a markdown document because the MSC process requires authors to write
-a proposal in markdown. Using other formats wouldn't make much sense because that would prevent authors
-from copy/pasting the template.
-
-The template should have the following sections:
-
-* **Introduction** - This should cover the primary problem and broad description of the solution.
-* **Proposal** - The gory details of the proposal.
-* **Potential issues** - This is where problems with the proposal would be listed, such as changes
-  that are not backwards compatible.
-* **Alternatives** - This section lists alternative solutions to the same
-  problem which have been considered and dismsissed.
-* **Security considerations** - Discussion of what steps were taken to avoid security issues in the
-  future and any potential risks in the proposal.
-
-Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
+```json
+{
+  "content": {
+    "body": "> <@imbev:matrix.org> Original Message\n\nReply Message",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<mx-reply><blockquote><a href=\"https://matrix.to/#/!OAWeIkjdeYXEnQPoWC:matrix.org/$ju0-ipo32h_2eaD1JBVUmwayiAHKcu2eq21PX15E1Zg?via=matrix.org\">In reply to</a> <a href=\"https://matrix.to/#/@imbev:matrix.org\">@imbev:matrix.org</a><br>Original Message</blockquote></mx-reply>Reply Message",
+    "m.relates_to": {
+      "m.in_reply_to": {
+        "event_id": "$ju0-ipo32h_2eaD1JBVUmwayiAHKcu2eq21PX15E1Zg"
+      },
+      "rel_type": "org.example.reply" // Proposed addition to reply event
+    },
+    "msgtype": "m.text"
+  },
+  "origin_server_ts": 1678300521134,
+  "sender": "@imbev:matrix.org",
+  "type": "m.room.message",
+  "unsigned": {
+    "age": 434,
+    "transaction_id": "m1678300520742.91"
+  },
+  "event_id": "$DplZPaY06i_BcWs0I_8jRxWhVoFvhMFlrBj5q41GVvk",
+  "room_id": "!OAWeIkjdeYXEnQPoWC:matrix.org"
+}
+```
 
 
 ## Potential issues
