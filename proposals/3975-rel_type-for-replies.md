@@ -54,7 +54,3 @@ An alternative solution would be to add a new endpoint specifically finding an
 event's replies. This would avoid conflicts with `m.thread`, however may be more
 confusing due to the presence of the current Relationships API.
 
-
-## Dependencies
-
-This MSC builds on MSC2675.
