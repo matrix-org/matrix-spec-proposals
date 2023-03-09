@@ -58,7 +58,7 @@ set up
 - `login.reciprocate` - a device with this intent is already set up and is able
 to facilitate set up of a new device
 
-The the intents to be compatible one device must have the `login.start` intent
+For the intents to be compatible one device must have the `login.start` intent
 and the other device must have the `login.reciprocate` intent.
 
 
@@ -267,7 +267,7 @@ the homeserver to use it with:
 ```
 
 13. New device calls `POST /login` to redeem the `login_token`.
-e.g. `{ "type": "m.login.token", "login_token": <login token> }`
+e.g. `{ "type": "m.login.token", "token": <login token> }`
 
 New device informs existing device of outcome and if E2EE is to be setup then
 includes device ID and keys:
