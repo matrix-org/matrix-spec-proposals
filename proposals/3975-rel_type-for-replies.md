@@ -26,7 +26,8 @@ For example, a reply might look like:
       "m.in_reply_to": {
         "event_id": "$ju0-ipo32h_2eaD1JBVUmwayiAHKcu2eq21PX15E1Zg"
       },
-      "rel_type": "m.reply" // Proposed addition to reply event
+      "event_id": "$ju0-ipo32h_2eaD1JBVUmwayiAHKcu2eq21PX15E1Zg", // Proposed additions to reply event
+      "rel_type": "m.reply" //
     },
     "msgtype": "m.text"
   },
@@ -41,6 +42,9 @@ For example, a reply might look like:
   "room_id": "!OAWeIkjdeYXEnQPoWC:matrix.org"
 }
 ```
+
+For compatibility, the `m.in_reply_to` field should be remain, and 
+a new `event_id` field added for consistency with other relationship types.
 
 
 ## Potential issues
