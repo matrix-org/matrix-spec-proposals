@@ -59,5 +59,8 @@ An alternative solution would be to add a new endpoint specifically finding an
 event's replies. This would avoid conflicts with `m.thread`, however may be more
 confusing due to the presence of the current Relationships API.
 
-
-
+[MSC3051](https://github.com/matrix-org/matrix-doc/pull/3051) is another alternative to this proposal. Rather than add new rel_type events,
+MSC3051 defines a format for multiple relations per event. This solves conflicts 
+between `m.thread`, `m.replaces`, and other rel_types. A combination of MSC3051
+and MSC3975 would allow aggregation of reply events while avoiding conflicts with
+other rel_types.
