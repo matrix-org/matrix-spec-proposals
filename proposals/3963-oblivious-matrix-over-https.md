@@ -278,9 +278,6 @@ directly without Oblivious MoH.
 |                   |<-----------200 OK-|
 |                   |MIME application/json
 |                   |                   |
-|                   |<- Encodes TLS info|
-|                   |   into json       |
-|                   |                   |
 |<-----------200 OK-|                   |
 |MIME application/json                  |
 |{                                      |
@@ -296,10 +293,10 @@ directly without Oblivious MoH.
 |                   |                   |
 |                   |                   |
 |[Matrix client     |[HS B can now cache|
-| verifies through  | the cert, public  |
-| cert that the key | key, and capab. of|
-| does belong to    | HS A until expiry]|
-| HS A]             |                   |
+| verifies through  | the capabilities  |
+| signature that    | until key expiry] |
+| the capabilities  |                   |
+| are from HS A]    |                   |
 |                   |                   |
 |[Matrix client     |                   |
 | generates request]|                   |
@@ -316,9 +313,9 @@ directly without Oblivious MoH.
 |      \/           |                   |
 | Encode HTTP,      |                   |
 | attach an         |                   |
-| ephemeral public  |                   |
-| key and nonce for |                   |
-| server response   |                   |
+| ephemeral nonce   |                   |
+| for server        |                   |
+| response          |                   |
 |      \/                               |
 |{                                      |
 |  "path": "/_matrix/client/v3/sync",   |
@@ -359,7 +356,7 @@ directly without Oblivious MoH.
 |                   |97e62d2f522112a0d1a|
 |                   |5403b1a5b05cef570..|
 |                   |                   |
-|                   |                   |-> Decrypt json via TLS private key
+|                   |                   |-> Decrypt json via ephemeral key
 |                   |                   |      \/
 |                   |                   |{
 |                   |                   |  "path": "/_matrix/client/v3/sync",
