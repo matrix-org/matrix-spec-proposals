@@ -9,25 +9,26 @@ require a room version bump but this MSC will explain why this is an acceptable 
 To achieve Mutes via membership a new membership state is proposed of `mute`. It would allow you to
 exclusively send EDUs and no PDUs.
 
+A passive benefit of this MSC that is notable is that with the introduction of Partial joining of rooms the minimum
+state to join said room is important. As far as the authors understand this state is obligatorily going to be
+negatively effected by PL events climbing in number. This MSC mittigates this and this is a real world
+relevant example of why this MSC matters.
 ## Proposal
 
 This proposal defines the `mute` membership type. If a user has this membership type in a room they
 are restricted to exclusively sending the read marker EDUs and nothing more except leaving via setting
-their membership to `ban` as defined later.
+their membership to `leave-mute` as defined later.
+
+This proposal also introduces the new membership type of `leave-mute` this special membership
+is set if a user leaves the room while their membership is `mute` this way you can still leave
+rooms while muted without introducing a security flaw.
 
 The legal transitions for the `mute` membership type based on Room version 10 would be
-`join` -> `mute` -> `ban`, `join`(Requires sufficient PL to set membership to `mute`), `leave`(Exclusively via kick)
+`join` -> `mute` -> `leave-mute`, `join`(Requires sufficient PL to set membership to `mute`), `leave`(Exclusively via kick)
 
-When a users membership is `mute` they may leave the room by setting their own membership to `ban`
-this transition ignores power levels and instead behaves as if it was a leave. But if the person tries to
-re-join the room they will be banned the same way they would be if someone else sent a valid ban. 
-The reason for going this way is simple. It preserves your ability to leave a room while your muted 
-but you cant return without the moderators of the room desiring you to have the ability to return.
-
-This also solves the issue of forcing implementations to break the matrix tradition and evaluate not just
-the previous membership state but 2 membership states back to determine if its legal or not that would have been
-required to enable leaves.
-
+The legal transitions for the `leave-mute` membership type based on Room version 10 would be
+`mute` -> `leave-mute` -> `invite`(Requires sufficient PL to set membership to `mute` and to set membership to `invite`) , 
+`leave-mute`, `leave`(Requires sufficient PL to set membership to `mute`).
 
 ### Authorisation rules.
 
@@ -64,18 +65,23 @@ a perfect world be able to be implemented quite quickly in a vacuum that is not 
 
 The `mute` membership type is going to be yet another thing that you can mess up implementing and that is
 recognised as an ok. The authors of this MSC believes that is an acceptable compromise since we avoid
-the PL churn of current mute implementations. We also believe that the potential issue of being trapped in
-rooms is mitigated by making self bans an option to mitigate the potential to bypass a mute fully by leaving
-the room.
+the PL churn of current mute implementations. The ability to bypass a mute by leaving the room is mittigated
+by the `leave-mute` membership type while still allowing full normal functionality except for rejoining a room via invite
+as muted.
 
 ## Unstable prefix
 
 This MSC is not recommended to be implemented before Authorisation rules are properly specified but if implemented.
-Please use the version string of `support.feline.mute.msc3909.v0`
+Please use the version string of `support.feline.mute.msc3909.v0.1`
 
-Once Authorisation rules are specified its expected that the unstable version after that is v1. This is because the
+Once Authorisation rules are specified it's expected that the unstable version after that is v1. This is because the
 pre authorisation rules properly written down version cant be trusted to interoperate and this is why its NOT recommended 
 to implement a version that is based on this MSC before that section is written. 
+
+## Historical Prefixes
+
+`support.feline.mute.msc3909.v0` was the prefix for the first itteration of the MSC. This prefix was for when self banning
+was included.
 
 ## Dependencies
 
