@@ -63,5 +63,5 @@ If the request fails, the endpoint returns a standard error response with
 
 ## Unstable prefix
 The endpoints can be implemented as `/_matrix/app/unstable/fi.mau.msc2659/ping`
-and `/_matrix/client/unstable/fi.mau.msc2659/appservice/ping` until they land
-in the spec. Error codes can use `FI.MAU.MSC2659_` instead of `M_` as the prefix.
+and `/_matrix/client/unstable/fi.mau.msc2659/appservice/{appserviceId}/ping`.
+Error codes can use `FI.MAU.MSC2659_` instead of `M_` as the prefix.
