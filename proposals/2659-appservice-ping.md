@@ -51,6 +51,16 @@ If the request fails, the endpoint returns a standard error response with
 * For other connection errors, `M_CONNECTION_FAILED` and HTTP 502.
   It is recommended to put a more detailed explanation in the `error` field.
 
+## Alternatives
+
+* The ping could make an empty `/transactions` request instead of adding a new
+  ping endpoint. A new endpoint was found to be cleaner while implementing, and
+  there didn't seem to be any significant benefits to reusing transactions.
+* Appservices could be switched to using websockets instead of the server
+  pushing events. This option is already used by some bridges, but implementing
+  websocket support on the homeserver side is much more complicated than a
+  simple ping endpoint.
+
 ## Unstable prefix
 The endpoints can be implemented as `/_matrix/app/unstable/fi.mau.msc2659/ping`
 and `/_matrix/client/unstable/fi.mau.msc2659/appservice/ping` until they land
