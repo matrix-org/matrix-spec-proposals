@@ -22,15 +22,18 @@ This endpoint is on the appservice side. Like all other appservice-side
 endpoints, it is authenticated using the `hs_token`. When the token is correct,
 this returns HTTP 200 and an empty JSON object as the body.
 
-### `POST /_matrix/client/v1/appservice/ping`
+### `POST /_matrix/client/v1/appservice/{appserviceId}/ping`
 When the endpoint is called, the homeserver makes a `/_matrix/app/v1/ping`
 request to the appservice.
 
-This endpoint is only allowed when using a valid appservice token and it can
-only ping the appservice associated with the token. A potential future
-extension would be allowing pinging different appservices using a body field or
-query parameter, but that is not included here as there aren't any clear use
-cases.
+The request body may contain a `transaction_id` field, which, if present, must
+be passed through to the appservice `/ping` request body as-is.
+
+This endpoint is only allowed when using a valid appservice token, and it can
+only ping the appservice associated with the token. If the token or appservice
+ID in the path is wrong, the server may return `M_FORBIDDEN`. However,
+implementations and future spec proposals may extend what kinds of pings are
+allowed.
 
 #### Response
 If the ping request returned successfully, the endpoint returns HTTP 200. The
