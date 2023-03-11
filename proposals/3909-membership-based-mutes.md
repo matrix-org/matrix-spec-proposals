@@ -80,7 +80,7 @@ to implement a version that is based on this MSC before that section is written.
 
 ## Historical Prefixes
 
-`support.feline.mute.msc3909.v0` was the prefix for the first itteration of the MSC. This prefix was for when self banning
+`support.feline.mute.msc3909.v0` was the prefix for the first iteration of the MSC. This prefix was for when self banning
 was included.
 
 ## Dependencies
