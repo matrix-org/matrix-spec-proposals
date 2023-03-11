@@ -528,7 +528,7 @@ look like:
 
 If Bob replaces his Dynabook without re-verifying with Alice, this will split
 the graph and Alice will not be able to verify Bob's other devices.  In
-contrast, in this proposal, Alice and Bob sign each other's self-signing key
+contrast, in this proposal, Alice and Bob sign each other's master keys
 with their user-signing keys, and the attestation graph would look like:
 
 ![](images/1756-graph2.dot.png)
@@ -543,7 +543,9 @@ devices, as there may be stale attestations and revocations lingering around.
 the signature created previously by the device making the attestation, or
 whether it should be a statement that the device should not be trusted at all.)
 In contrast, with this proposal, if a device is stolen, then only the
-user-signing key must be re-issued.
+keys for which the device had access to the private keys must be re-issued,
+along with any associated signatures.  When the new keys are distributed, the
+old keys and their signatures will no longer be part of the attestation graph.
 
 ## Security considerations
 
