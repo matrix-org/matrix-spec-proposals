@@ -14,36 +14,24 @@ In that case, similar logic applies as described below.
 ## Proposal
 
 The `/rooms/{roomId}/report/{eventId}` endpoint should check to see if the authenticated user
-is joined to the room in the current state of the room. If the user is not joined to the room OR
-the room does not exist, the server should respond with:
+is joined to the room in the current state of the room. If the user is not joined to the room, 
+the room does not exist, or the event does not exist the server should respond with:
 
 ```json
 {
-    "errcode": "M_FORBIDDEN",
-    "error": "The room does not exist, or you are not joined to the room."
+    "errcode": "M_NOT_FOUND",
+    "error": "Unable to report event: it does not exist or you aren't able to see it."
 }
 ```
 
 where the contents of `error` can be left to the implementation. It is important to note that this response
-MUST be sent regardless if the room exists or not as this endpoint could be used as a way to brute
-force room IDs in order to find a room.
-
-If the user is joined to the room, but the event doesn't exist on the homeserver OR the user doesn't have permission to see
-the event then the response should be:
-
-```json
-{
-    "errcode": "M_FORBIDDEN",
-    "error": "The event does not exist, or you do not have permission to see it."
-}
-```
+MUST be sent regardless if the room/event exists or not as this endpoint could be used as a way to brute
+force room/event IDs in order to find a room/event.
 
 It is not expected for homeservers to attempt to backfill an event they cannot find locally, as the user is unlikely to
 have seen an event that the homeserver has not yet stored.
 
-If the event is redacted, reports MAY still be allowed depending on the implementation. There is an argument that
-a redeacted event should still be reportable as even deleted abusive content was harmful at a point.
-
+If the event is redacted, reports MAY still be allowed but are dependant on the implementation.
 
 ## Tradeoffs
 
