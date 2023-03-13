@@ -1,7 +1,7 @@
 ---
 title: "Matrix as a Messaging Framework"
 abbrev: "Matrix as a Messaging Framework"
-category: info
+category: std
 
 docname: draft-ralston-mimi-matrix-framework-latest
 submissiontype: IETF  # also: "independent", "IAB", or "IRTF"
