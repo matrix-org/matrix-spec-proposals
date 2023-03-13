@@ -352,7 +352,7 @@ Olm and Megolm algorithms for encryption. For increased interoperability, Matrix
 
 The room version grammar {{MxRoomVersionGrammar}} reserves versions consisting solely of `0-9` and `.`
 for the Matrix protocol itself. For purposes of MIMI, a reservation of versions starting with `I.` and
-consiting otherwise of `0-9` and `.` is introduced.
+consisting otherwise of `0-9` and `.` is introduced.
 
 The first version under this reservation would be `I.1`, described as follows.
 
@@ -382,7 +382,7 @@ transport details in that specification are out of scope of this document.
   This is specified by Matrix already {{MxKnockApi}}.
 * A way to reject invites when the server isn't already participating in the room. This is specified by
   Matrix already {{MxLeaveApi}}.
-* A way to retrive individual and missing events from other participating servers, subject to history
+* A way to retrieve individual and missing events from other participating servers, subject to history
   visbility and authorization. This is specified by Matrix already {{MxEventsApi}} {{MxBackfillApi}}.
 * A way to send events to another server. Matrix currently describes this as a transport-level detail
   in the form of transactions {{MxTransactionApi}}.
