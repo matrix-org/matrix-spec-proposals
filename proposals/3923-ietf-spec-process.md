@@ -117,4 +117,5 @@ carefully considered than usual are appreciated.
 This MSC ends up affecting the future of the following MSCs, though is not dependent itself:
 * https://github.com/matrix-org/matrix-spec-proposals/pull/3918
 * https://github.com/matrix-org/matrix-spec-proposals/pull/3919
-* MSC0001 (TODO)
+* https://github.com/matrix-org/matrix-spec-proposals/pull/3977
+* Future MSCs/I-Ds for Matrix-as-MIMI
