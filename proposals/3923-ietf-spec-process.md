@@ -48,8 +48,8 @@ better segmentation.
 
 With consideration for how Matrix is split into major domains, a small portion of Matrix's core need
 only be specified for MIMI. Specifically, the areas covered by
-[I-D.ralston-mimi-matrix-framework](https://turt2live.github.io/ietf-mimi-matrix-framework/draft-ralston-mimi-matrix-framework.html)
-([MSC0001](https://github.com/matrix-org/matrix-spec-proposals/pull/0001)): a single room version,
+[I-D.ralston-mimi-matrix-framework](https://datatracker.ietf.org/doc/draft-ralston-mimi-matrix-framework/)
+([MSC3977](https://github.com/matrix-org/matrix-spec-proposals/pull/3977)): a single room version,
 definitions for what a homeserver, event, room, and user are, loose descriptions for what is needed
 of a federation transport API, and noting the importance of end-to-end encryption in the messaging
 sphere. The client-server API, appservice API, identity service API, and push gateway API are all
