@@ -22,6 +22,10 @@ This endpoint is on the appservice side. Like all other appservice-side
 endpoints, it is authenticated using the `hs_token`. When the token is correct,
 this returns HTTP 200 and an empty JSON object as the body.
 
+Appservices don't need to have any special behavior on this endpoint, but they
+may use the incoming request to verify that an outgoing ping actually pinged
+the appservice rather than going somewhere else.
+
 ### `POST /_matrix/client/v1/appservice/{appserviceId}/ping`
 When the endpoint is called, the homeserver makes a `/_matrix/app/v1/ping`
 request to the appservice.
@@ -34,6 +38,10 @@ only ping the appservice associated with the token. If the token or appservice
 ID in the path is wrong, the server may return `M_FORBIDDEN`. However,
 implementations and future spec proposals may extend what kinds of pings are
 allowed.
+
+In case the homeserver had backed off on sending transactions, it may treat a
+successful ping as a sign that the appservice is up again and transactions
+should be retried.
 
 #### Response
 If the ping request returned successfully, the endpoint returns HTTP 200. The
