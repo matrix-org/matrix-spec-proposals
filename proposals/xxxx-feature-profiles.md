@@ -30,8 +30,8 @@ profiles.  The profiles will indicate whether a module is required (the module
 must be implemented), recommended (the module should be implemented), or
 suggested (the module may be relevant to the client type and may enhance user
 experience, but many clients can get by without implementing them); if a module
-is not mentioned, it is likely that it is not relevant for the profile.  FIXME:
-define what the levels mean.  Profiles can have sub-profiles for clients that
+is not mentioned, it is likely that it is not relevant for the profile.  (FIXME:
+define what the levels mean.)  Profiles can have sub-profiles for clients that
 want to provide a more focused interface
 
 Below are the initial profiles.  Additional profiles can be added in the
