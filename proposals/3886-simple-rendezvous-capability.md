@@ -81,7 +81,7 @@ HTTP response headers for `201 Created`:
 - `Location` - required, the allocated rendezvous URI which can be on a different server
 - `X-Max-Bytes` - required, the maximum allowed bytes for the payload
 - `ETag` - required, ETag for the current payload at the rendezvous point as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
-- `Expires` - required, the expiry time of the rendezvous as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Expires` - required, the expiry time of the rendezvous as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.expires)
 - `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
 
 Example response headers:
@@ -201,7 +201,7 @@ The proposed protocol requires the devices to have IP connectivity to the server
 
 Try and do something with STUN or TURN or [COAP](http://coap.technology/).
 
-Rather than requiring the devices to poll for updated "long-polling" could be used instead similar to `/sync`.
+Rather than requiring the devices to poll for updates, "long-polling" could be used instead similar to `/sync`.
 
 ## Security considerations
 
