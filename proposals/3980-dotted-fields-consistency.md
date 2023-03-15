@@ -12,7 +12,7 @@ that MSC did not propose applying this change *back* to filters for consistency.
 ## Proposal
 
 Apply consistent escaping as described in [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873)
-to the `event_fields` property of filters (in addition to push rule conditions).
+to the `event_fields` property of filters.
 This would allow an unambiguous way to describe property names, as currently
 the behavior of backslashes is undefined.
 
