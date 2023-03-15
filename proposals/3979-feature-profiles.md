@@ -1,4 +1,4 @@
-# MSCxxxx: Revised feature profiles
+# MSC3979: Revised feature profiles
 
 The spec currently has a "[Feature
 Profiles](https://spec.matrix.org/unstable/client-server-api/#feature-profiles)"
