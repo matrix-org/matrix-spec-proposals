@@ -76,6 +76,10 @@ HTTP response codes:
 - `429 Too Many Requests` - the request has been rate limited
 - `307 Temporary Redirect` - if the request should be served from somewhere else specified in the `Location` response header
 
+n.b. the relatively unusual [`307 Temporary Redirect`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) response
+code has been chosen explicitly for the behaviour of ensuring that the method and body will not change whilst the user-agent
+follows the redirect. For this reason, no other `30x` response codes are allowed.
+
 HTTP response headers for `201 Created`:
 
 - `Location` - required, the allocated rendezvous URI which can be on a different server
@@ -150,6 +154,11 @@ HTTP response codes:
 - `204 No Content` - rendezvous cancelled
 - `404 Not Found` - rendezvous URI is not valid (it could have expired)
 - `429 Too Many Requests` - the request has been rate limited
+
+### Authentication
+
+These API endpoints do not require authentication. This is because the protocol is explicitly treated as untrusted,
+with trust established at a higher level outside the scope of the present proposal.
 
 ### Maximum payload size
 
