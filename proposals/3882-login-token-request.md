@@ -25,6 +25,10 @@ Add a new POST endpoint to the Client-Server API that issues a time limited `m.l
 This new endpoint should be protected by user interactive authentication (UIA). However the the homeserver admin may
 choose to disable UIA if they deem suitable alternative protections are in place.
 
+It should also be protected by rate-limiting in accordance with the existing
+[spec](https://spec.matrix.org/v1.6/client-server-api/#rate-limiting). It may be appropriate for the homeserver admin to
+to configure a low limit ("low" relative to other enforced limits). For example, a rate of once per minute could be appropriate.
+
 The values returned are:
 
 - `login_token` - required, the token to use with `m.login.token`
