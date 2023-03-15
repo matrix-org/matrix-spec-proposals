@@ -1,4 +1,4 @@
-# MSCxxxx: Deprecate room tagging
+# MSC3978: Deprecate room tagging
 
 The functionality provided by room tagging can also be achieved by spaces, and
 room tagging is not used by clients any more.
