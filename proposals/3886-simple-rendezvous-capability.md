@@ -168,8 +168,8 @@ distinguish between identical payloads sent by either client.
 
 ### CORS
 
-To support usage from web browsers, the server should allow CORS requests from any origin and expose the `ETag`,
-`Location` and `X-Max-Bytes` headers as:
+To support usage from web browsers, the server should allow CORS requests to the `/rendezvous` endpoint from any
+origin and expose the `ETag`, `Location` and `X-Max-Bytes` headers as:
 
 ```http
 Access-Control-Allow-Headers: Content-Type,If-Match,If-None-Match
@@ -178,7 +178,9 @@ Access-Control-Allow-Origin: *
 Access-Control-Expose-Headers: ETag,Location,X-Max-Bytes
 ```
 
-These headers are different from the ones currently specified in the [spec](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients).
+Currently the [spec](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients) specifies a single set of
+CORS headers to be used. Therefore, care will be required to make it clear in the spec that the headers will
+vary depending on the endpoint.
 
 ### Choice of server
 
