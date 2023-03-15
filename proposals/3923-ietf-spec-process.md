@@ -37,12 +37,12 @@ API without ever attempting to support appservices or the specified Client-Serve
 the case when a project is adding support for Matrix: they are most interested in interoperating with
 other Matrix homeservers and already have their own client-server API to work with.
 
-**Note**: Historically, a lot of server-specific behaviour has ended up in Matrix's Client-Server API.
-It is a goal of the Spec Core Team (SCT) to move the remaining behaviours to a more correct place,
-therefore reinforcing the original intent mentioned above more concretely. This MSC describes a world
-where the SCT's goal has been achieved, not the current state. A natural consequence of going through
-the IETF process is that Matrix's own specification will improve as areas are identified as needing
-better segmentation.
+**Note**: Historically, a lot of the behaviours a server needs to implement have ended up in Matrix's
+Client-Server API. It is a goal of the Spec Core Team (SCT) to move the remaining behaviours to a more
+correct place, therefore reinforcing the original intent mentioned above more concretely. This MSC
+describes a world where the SCT's goal has been achieved, not the current state. A natural consequence
+of going through the IETF process is that Matrix's own specification will improve as areas are identified
+as needing better segmentation.
 
 ## Proposal
 
