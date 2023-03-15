@@ -28,9 +28,9 @@ choose to disable UIA if they deem suitable alternative protections are in place
 The values returned are:
 
 - `login_token` - required, the token to use with `m.login.token`
-- `expires_in` - required, the expiry time for the token in seconds
+- `expires_in` - required, how long until the token expires in seconds
 
-This token can then be used as per the existing Login spec of the Client-Server API as follows:
+This token can then be used as per the existing [Login spec](https://spec.matrix.org/v1.6/client-server-api/#login) as follows:
 
 `POST /login`
 
