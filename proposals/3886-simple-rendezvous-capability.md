@@ -32,23 +32,23 @@ sequenceDiagram
   participant B as Device B
   Note over A: Device A determines which rendezvous server to use
 
-  A->R: POST /rendezvous Hello from A
-  R->A: 201 Created Location: /abc-def-123-456
+  A->>+R: POST /rendezvous Hello from A
+  R->>-A: 201 Created Location: /abc-def-123-456
 
-  A-->B: Rendezvous URI between clients, perhaps as QR code: e.g. https://rendzvous-server/abc-def-123-456
+  A-->>B: Rendezvous URI between clients, perhaps as QR code: e.g. https://rendzvous-server/abc-def-123-456
 
   Note over A: Device A starts polling for contact at the rendezvous
 
-  B->R: GET <rendezvous URI>
-  R->B: 200 OK Hello from A
+  B->>+R: GET <rendezvous URI>
+  R->>-B: 200 OK Hello from A
 
   loop Device A polls for rendezvous updates
-    A->R: GET <rendezvous URI> If-None-Match: <ETag>
-    R->A: 304 Not Modified
+    A->>+R: GET <rendezvous URI> If-None-Match: <ETag>
+    R->>-A: 304 Not Modified
   end
 
-  B->R: PUT <rendezvous URI> Hello from B
-  R->B: 202 Accepted 
+  B->>+R: PUT <rendezvous URI> Hello from B
+  R->>-B: 202 Accepted 
 
   Note over A,B: Rendezvous now established
 ```
