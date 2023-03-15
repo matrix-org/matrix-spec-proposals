@@ -210,7 +210,42 @@ The proposed protocol requires the devices to have IP connectivity to the server
 
 ## Alternatives
 
+### Send-to-Device messaging
+
+The combination of this proposal and [MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903) look similar in
+some regards to the existing [Send-to-device messaging](https://spec.matrix.org/v1.6/client-server-api/#send-to-device-messaging)
+capability.
+
+Whilst to-device messaging already provides a mechanism for secure communication
+between two Matrix clients/devices, a key consideration for the anticipated
+login with QR capability is that one of the clients is not yet authenticated with
+a Homeserver.
+
+Furthermore the client might not know which Homeserver the user wishes to
+connect to.
+
+Conceptually, one could create a new type of "guest" login that would allow the
+unauthenticated client to connect to a Homeserver for the purposes of
+communicating with an existing authenticated client via to-device messages.
+
+Some considerations for this:
+
+Where the "actual" Homeserver is not known then the "guest" Homeserver nominated
+by the new client would need to be federated with the "actual" Homeserver.
+
+The "guest" Homeserver would probably want to automatically clean up the "guest"
+accounts after a short period of time.
+
+The "actual" Homeserver operator might not want to open up full "guest" access
+so a second type of "guest" account might be required.
+
+Does the new device/client need to accept the T&Cs of the "guest" Homeserver?
+
+### Other existing protocols
+
 Try and do something with STUN or TURN or [COAP](http://coap.technology/).
+
+### Implementation details
 
 Rather than requiring the devices to poll for updates, "long-polling" could be used instead similar to `/sync`.
 
