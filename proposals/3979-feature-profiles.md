@@ -1,7 +1,7 @@
 # MSC3979: Revised feature profiles
 
 The spec currently has a "[Feature
-Profiles](https://spec.matrix.org/unstable/client-server-api/#feature-profiles)"
+Profiles](https://spec.matrix.org/v1.6/client-server-api/#feature-profiles)"
 section, which indicates what functionality clients should implement.
 Unfortunately, this section has several deficiencies:
 
