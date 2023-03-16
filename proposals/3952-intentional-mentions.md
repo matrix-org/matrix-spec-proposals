@@ -11,6 +11,9 @@ Some situations that result in unintentional mentions include:
 
 * Replying to a message will re-issue pings from the initial message due to
   [fallback replies](https://spec.matrix.org/v1.5/client-server-api/#fallbacks-for-rich-replies).
+  * A user without the power level to send `@room` can abuse this by includin
+    `@room` in a message and getting a user with the appropriate power levels
+    to reply to them.
 * Each time a message is edited the new version will be re-evaluated for mentions.
 * Mentions occurring [in spoiler contents](https://github.com/matrix-org/matrix-spec/issues/16)
   or [code blocks](https://github.com/matrix-org/matrix-spec/issues/15) are
@@ -528,8 +531,10 @@ During development the following mapping will be used:
 | Event property      | `m.mentions`      | `org.matrix.msc3952.mentions`        |
 | Push rule ID        | `.m.rule.*`       | `.org.matrix.msc3952.*`              |
 
-If a client sees this rule available it can choose to apply the deprecation logic
-discussed in the [backwards compatibility](#backwards-compatibility) section.
+The server will include the `org.matrix.msc3952_intentional_mentions` flag in the
+`unstable_features` array of the `/versions` endpoint. If a client sees this flag
+it can choose to apply the deprecation logic discussed in the
+[backwards compatibility](#backwards-compatibility) section.
 
 ## Dependencies
 
