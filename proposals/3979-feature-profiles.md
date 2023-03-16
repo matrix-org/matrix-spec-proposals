@@ -96,6 +96,7 @@ Recommended modules:
 - Event Replacements
 - Threading (only "Suggested" for the one-on-one chat sub-profile)
 - Third Party Invites (currently missing from the table)
+- Room Tagging
 
 Suggested modules:
 - Guest Accounts (only for clients that implement group chats -- not as useful
