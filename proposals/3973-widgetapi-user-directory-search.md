@@ -42,9 +42,7 @@ API. The `limit` field is optional and defaults to whatever the homeserver imple
 If the widget did not get approved for the capability required to send the event, the client MUST
 send an error response (as required currently by the capabilities system for widgets).
 
-The client SHOULD NOT modify the data of the request. The widget is responsible for producing valid
-events - the client MUST pass through any errors, such as permission errors, to the widget using the
-standard error response in the Widget API.
+The client SHOULD NOT modify the data of the request.
 
 If the event is successfully sent by the client, the client sends the following response:
 
