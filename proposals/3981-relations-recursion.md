@@ -1,4 +1,4 @@
-# MSC3715: Add a pagination direction parameter to `/relations`
+# MSC3981: `/relations` recursion
 
 [MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) introduced the
 `/relations` API to retrieve events which are directly related to a given event.
