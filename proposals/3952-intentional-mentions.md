@@ -68,9 +68,9 @@ of the message should be colored differently:
 
 ## Proposal
 
-The existing push rules for mentions are deprecated and replaced with rules
-which use a property specific for mentions[^2], making the search for a mention
-much simpler and more reliable for the user.
+The existing push rules for user and room mentions are deprecated and new rules,
+which use a property specific for mentions[^2], are added to make mentions simpler
+and more reliable for users.
 
 ### New event property
 
@@ -182,6 +182,22 @@ and `.m.rule.is_room_mention` is provided below:
 }
 ```
 
+### Client behavior
+
+The overall user experience is not modified, beyond improving explicitness and
+reducing unintended mentions.
+
+For example, it is common that a client will show an event with a mention in a
+different color (and denote the current user's "pill", as a way of showing the
+user *why* they were mentioned). This behavior is unchanged.
+
+There are two variations that clients should take into account when decorating
+messages for mentions, however:
+
+* The presence of a user's "pill" in a message no longer implies it is a mention.
+* This makes it easier to mention users without including their "pill" in a
+  message (see [Abuse Potential](#abuse-potential) for ideas to combat this).
+
 ### Backwards compatibility
 
 The [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.5/client-server-api/#default-override-rules),
@@ -197,6 +213,14 @@ A future room version may wish to disable the legacy push rules: clients would
 no longer be required to include the `m.mentions` property on every event. It
 maybe convenient to do this when extensible events are adopted (see
 [MSC3932](https://github.com/matrix-org/matrix-spec-proposals/pull/3932)).
+
+After acceptance, it is likely for there to be disagreement about which push rules are
+implemented: legacy clients and homeservers may not yet have deprecated the
+`.m.rule.contains_display_name`, `.m.rule.contains_user_name`, and `.m.rule.roomnotif`
+push rules, while up-to-date clients and homeservers will support the
+`.m.rule.is_user_mention` and `.m.rule.is_room_mention` push rules. It is expected
+that both sets of push rules will need to be supported for a period of time, but
+at worst case should simply result in the current behavior (documented in the preamble).
 
 If users wish to continue to be notified of messages containing their display name
 it is recommended that clients create a specific keyword rule for this, e.g. a
@@ -219,14 +243,6 @@ it is recommended that clients create a specific keyword rule for this, e.g. a
   "enabled": true
 }
 ```
-
-After acceptance, it is likely for there to be disagreement about which push rules are
-implemented: legacy clients and homeservers may not yet have deprecated the
-`.m.rule.contains_display_name`, `.m.rule.contains_user_name`, and `.m.rule.roomnotif`
-push rules, while up-to-date clients and homeservers will support the
-`.m.rule.is_user_mention` and `.m.rule.is_room_mention` push rules. It is expected
-that both sets of push rules will need to be supported for a period of time, but
-at worst case should simply result in the current behavior (documented in the preamble).
 
 ### Impact on replies
 
