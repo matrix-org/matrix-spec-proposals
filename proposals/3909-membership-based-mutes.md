@@ -7,28 +7,29 @@ This MSC has the simple purpose of defining a path forward that alleviates this 
 require a room version bump but this MSC will explain why this is an acceptable compromise.
 
 To achieve Mutes via membership a new membership state is proposed of `mute`. It would allow you to
-exclusively send EDUs and no PDUs.
+exclusively send Read markers and exempt events as defined later.
 
 A passive benefit of this MSC that is notable is that with the introduction of Partial joining of rooms the minimum
 state to join said room is important. As far as the authors understand this state is obligatorily going to be
-negatively effected by PL events climbing in number. This MSC mittigates this and this is a real world
+negatively effected by PL events climbing in number. This MSC mitigates this and this is a real world
 relevant example of why this MSC matters.
 ## Proposal
 
 This proposal defines the `mute` membership type. If a user has this membership type in a room they
-are restricted to exclusively sending the read marker EDUs and nothing more except leaving via setting
-their membership to `leave-mute` as defined later.
+are restricted to exclusively sending the read marker EDUs, leaving via setting
+their membership to `leave-mute` as defined later and `m.room.redaction` events.
 
 This proposal also introduces the new membership type of `leave-mute` this special membership
 is set if a user leaves the room while their membership is `mute` this way you can still leave
 rooms while muted without introducing a security flaw.
 
 The legal transitions for the `mute` membership type based on Room version 10 would be
-`join` -> `mute` -> `leave-mute`, `join`(Requires sufficient PL to set membership to `mute`), `leave`(Exclusively via kick)
+`join` -> `mute` -> `leave-mute`, `join`(Requires sufficient PL to set membership to `mute`), `leave`(Exclusively via kick),
+`ban`.
 
 The legal transitions for the `leave-mute` membership type based on Room version 10 would be
 `mute` -> `leave-mute` -> `invite`(Requires sufficient PL to set membership to `mute` and to set membership to `invite`) , 
-`leave-mute`, `leave`(Requires sufficient PL to set membership to `mute`).
+`leave-mute`, `leave`(Requires sufficient PL to set membership to `mute`) `ban`.
 
 ### Authorisation rules.
 
@@ -65,14 +66,18 @@ a perfect world be able to be implemented quite quickly in a vacuum that is not 
 
 The `mute` membership type is going to be yet another thing that you can mess up implementing and that is
 recognised as an ok. The authors of this MSC believes that is an acceptable compromise since we avoid
-the PL churn of current mute implementations. The ability to bypass a mute by leaving the room is mittigated
-by the `leave-mute` membership type while still allowing full normal functionality except for rejoining a room via invite
+the PL churn of current mute implementations. The ability to bypass a mute by leaving the room is mitigated
+by the `leave-mute` membership type while still allowing full normal functionality except for re-joining a room via invite
 as muted.
 
+Because redactions are exempt from Mutes for privacy reasons this does re open the exploit that is closed by denying profile
+updates on paper. This exploit does not in practice get reintroduced to any large degree as clients don’t render redact
+reasons. And it is recommended that stakeholders that are worried about this abuse path use clients that render so called hidden
+events so you can see the redactions to observe if they have suspicious patterns. 
 ## Unstable prefix
 
 This MSC is not recommended to be implemented before Authorisation rules are properly specified but if implemented.
-Please use the version string of `support.feline.mute.msc3909.v0.1`
+Please use the version string of `support.feline.mute.msc3909.v0.2`
 
 Once Authorisation rules are specified it's expected that the unstable version after that is v1. This is because the
 pre authorisation rules properly written down version cant be trusted to interoperate and this is why its NOT recommended 
@@ -83,6 +88,9 @@ to implement a version that is based on this MSC before that section is written.
 `support.feline.mute.msc3909.v0` was the prefix for the first iteration of the MSC. This prefix was for when self banning
 was included.
 
+`support.feline.mute.msc3909.v0.1` was the prefix for the second iteration of the MSC. This prefix was current before
+the bug that ban was omitted from the transitions was fixed and redactions are now legal for muted parties to issue.
+
 ## Dependencies
 
 This MSC builds on MSC3907, MSC3908 and MSC3784 (which at the time of writing have not yet been accepted
@@ -90,5 +98,5 @@ into the spec).
 
 It does not require any of these MSCs to be implemented but it works best when implemented together with the rest of these MSCs.
 
-MSC3907 to cordinate mutes via policy list, MSC3908 to make temporary mutes an option when cordinated via policy lists
+MSC3907 to coordinate mutes via policy list, MSC3908 to make temporary mutes an option when coordinated via policy lists
 and MSC3784 to help enable building better user experiences interacting with policy lists.
