@@ -477,8 +477,8 @@ usecase would be a `roles` property which could include values such as `admins` 
 ### Cancelling notifications
 
 It maybe useful for a future MSC to investigate cancelling notifications if a
-user's mentioned is removed while [editing events](#impact-on-edits). This could
-be quite difficult as it is unclear if the mentioned user has already receive
+user's mention is removed while [editing events](#impact-on-edits). This could
+be quite difficult as it is unclear if the mentioned user has already received
 the notification or not.
 
 ## Alternatives
