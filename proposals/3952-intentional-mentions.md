@@ -87,11 +87,11 @@ It is recommended that homeservers reject locally created events with an invalid
 `m.mentions` property with an error with a status code of `400` and an errcode of
 `M_INVALID_PARAM`.
 
-Clients should add a Matrix ID to the `user_ids` array whenever composing a message which
-includes an intentional [user mention](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions)
-(often called a "pill"). Clients should set the `room` value to `true` when making a
-room-wide announcement. Clients may also set these values at other times when it is
-obvious the user intends to explicitly mention a user.[^3]
+Clients add a Matrix ID to the `user_ids` array whenever composing a message which
+includes an intentional mention, such as a ["pill"](https://spec.matrix.org/v1.5/client-server-api/#user-and-room-mentions).
+Clients set the `room` value to `true` when making a room-wide announcement. Clients
+should also set these values at other times when it is obvious the user intends to explicitly
+mention a user.[^3]
 
 The `m.mentions` property is part of the plaintext event body and should be encrypted
 into the ciphertext for encrypted events.
