@@ -312,11 +312,18 @@ Similarly to [replies](#impact-on-replies), users are notified of message edits
 via the `.m.rule.contains_display_name` or the `.m.rule.contains_user_name` push
 rule matching the [fallback content](https://spec.matrix.org/v1.6/client-server-api/#event-replacements).
 Generally this is undesirable and users do not need to be notified for the same
-message multiple times (e.g. if a user is fixing a typo). It is recommended that
-clients include an empty `m.mentions` property when editing an event, *unless*
-the edit is significant or if additional users are mentioned.
+message multiple times (e.g. if a user is fixing a typo).
 
-The full list of mentioned users should be included in the `m.new_content` property.
+Edited events end up with two `m.mentions` properties:
+
+* One at the top-level of the `content`, this should contain any users to mention
+ *for this edit*.
+* One inside the `m.new_content` property, which should contain the full list of
+  mentioned users in any version of the event.
+
+It is recommended that clients use an empty top-level `m.mentions` property when
+editing an event, *unless* the edit is significant or if additional users are
+mentioned.
 
 For example, if there is an event:
 
@@ -466,6 +473,13 @@ extensible events is deliberately left for a future MSC to address, if needed.
 It is possible to add additional properties to the `m.mentions` object, e.g. a foreseeable
 usecase would be a `roles` property which could include values such as `admins` or
 `mods`. Defining this in detail is left to a future MSC.
+
+### Cancelling notifications
+
+It maybe useful for a future MSC to investigate cancelling notifications if a
+user's mentioned is removed while [editing events](#impact-on-edits). This could
+be quite difficult as it is unclear if the mentioned user has already receive
+the notification or not.
 
 ## Alternatives
 
