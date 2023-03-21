@@ -11,7 +11,7 @@ Some situations that result in unintentional mentions include:
 
 * Replying to a message will re-issue pings from the initial message due to
   [fallback replies](https://spec.matrix.org/v1.5/client-server-api/#fallbacks-for-rich-replies).
-  * A user without the power level to send `@room` can abuse this by includin
+  * A user without the power level to send `@room` can abuse this by including
     `@room` in a message and getting a user with the appropriate power levels
     to reply to them.
 * Each time a message is edited the new version will be re-evaluated for mentions.
@@ -191,7 +191,7 @@ push rules are to be deprecated.
 
 To avoid unintentional mentions these rules are modified to only apply when the
 `m.mentions` property is missing; clients should provide at least an empty `m.mentions` property on
-every message to avoid the unintentional mentions discussed above.
+every message to avoid the unintentional mentions discussed in the introduction.
 
 A future room version may wish to disable the legacy push rules: clients would
 no longer be required to include the `m.mentions` property on every event. It
