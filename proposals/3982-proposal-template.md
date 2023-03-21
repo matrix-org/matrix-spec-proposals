@@ -1,4 +1,4 @@
-# MSCXXXX: Limit maximum number of events sent to an AS
+# MSC3982: Limit maximum number of events sent to an AS
 
 A core feature of the Application Service API is the ability for the homeserver to push events to another
 service over a standard HTTP API. The spec currently sets no limit on how many events can be pushed in
