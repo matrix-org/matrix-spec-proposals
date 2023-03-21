@@ -538,8 +538,7 @@ it can choose to apply the deprecation logic discussed in the
 
 ## Dependencies
 
-This depends on the following MSCs which, at the time of writing, have not yet been accepted
-into the specification:
+This depends on the following MSCs:
 
 * [MSC3758](https://github.com/matrix-org/matrix-spec-proposals/pull/3758): Add `event_property_is` push rule condition kind
 * [MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873): event_match dotted keys
