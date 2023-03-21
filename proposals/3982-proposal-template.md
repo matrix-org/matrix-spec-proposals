@@ -22,7 +22,7 @@ of setting size limits on transaction payloads.
 If the homeserver needs to send more than `100` events in a transaction, it should
 send them in a subsequent transaction.
 
-If an application service recieves more than this maximum, it MAY choose to handle
+If an application service receives more than this maximum, it MAY choose to handle
 those events but would also be within rights to reject the payload (with a 413) for being non-compliant.
 
 
@@ -54,7 +54,7 @@ Potentially the homeserver and application service could negotiate a maximum eve
 one in the spec, however this isn't desirable because:
 
  - This requires a two way communication between the Homeserver and AS, which presently isn't required.
- - This potentially costs more time in negotiation than any efficency losses from the hardcoded limit.
+ - This potentially costs more time in negotiation than any efficiency losses from the hardcoded limit.
  - Practically speaking, Synapse [has had a limit of 100](https://github.com/matrix-org/synapse/blob/develop/synapse/appservice/scheduler.py#L85-L86)
    for a few years and this hasn't caused many throughput issues. 
 
