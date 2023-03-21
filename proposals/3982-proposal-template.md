@@ -31,7 +31,7 @@ those events but would also be within rights to reject the payload (with a 413) 
 Assuming the worst case, the payload should be no larger than:
 
 ```
-(65536 * 100) + 13 = 6553613 bytes
+(65536 * 100) + 113 = 6553613 bytes
 ```
 
 where 113 accounts for the JSON structure around the `events` array.
