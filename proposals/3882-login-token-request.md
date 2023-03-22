@@ -79,41 +79,12 @@ by default for the new endpoint. The purpose being that consent is obtained from
 [spec](https://spec.matrix.org/v1.6/client-server-api/#rate-limiting). It may be appropriate for the homeserver admin to
 to configure a low limit ("low" relative to other enforced limits). For example, a rate of once per minute could be appropriate.
 
-If a homeserver admin deems that they have a suitable alternative to UIA in place, they can make use of
-["dummy auth"](https://spec.matrix.org/v1.6/client-server-api/#dummy-auth) and have the homeserver respond with a response similar to:
+n.b. A homeserver admin may deem that they have suitable protections in place and offer the endpoint without UIA auth as described
+in the existing spec:
 
-```http
-HTTP/1.1 401 Unauthorized
-Content-Type: application/json
-```
-
-```json
-{
-  "flows": [
-    {
-      "stages": ["m.login.dummy"]
-    }
-  ],
-  "params": {},
-  "session": "xxxxxx"
-}
-```
-
-The client can then complete UIA without requiring action from the user by sending the following JSON request body:
-
-```http
-POST /_matrix/client/v1/login/get_token HTTP/1.1
-Content-Type: application/json
-```
-
-```json
-{
-  "auth": {
-    "type": "m.login.dummy",
-    "session": "xxxxxx"
-  }
-}
-```
+> A request to an endpoint that uses User-Interactive Authentication never succeeds without auth. Homeservers may allow requests
+> that don’t require auth by offering a stage with only the m.login.dummy auth type, but they must still give a 401 response to
+> requests with no auth data.
 
 ## Unstable prefix
 
