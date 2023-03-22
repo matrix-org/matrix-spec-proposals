@@ -15,7 +15,8 @@ Add a new POST endpoint to the Client-Server API that issues a single-use, time-
 
 `POST /_matrix/client/v1/login/get_token`
 
-The client should send an empty JSON body for the `POST` request.
+The client should send an empty JSON object for the body of the `POST` request (apart from
+the `auth` property used in user-interactive authentication).
 
 As detailed in the security selection below, this new endpoint should be protected by user interactive authentication
 (UIA) as detailed in the existing
