@@ -382,6 +382,17 @@ to receive notifications for edits of events they were mentioned in then they
 could setup a push rule for the `content.m\\.new_content.m\\.mentions` property
 or potentially leverage [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).
 
+This implies that:
+
+* If a client highlights a message visually (e.g. by coloring it red), then it
+  should look at the `m.mentions` under `m.new_content` for edited messages.
+  Otherwise, in the example above, Alice would not see the message as red, even
+  though the intent was for her to be mentioned.
+* Any sort of processing of push rules, e.g. to display a notification (sound,
+  toast, push notification), should occur without any special rules. I.e. the
+  `.m.rule.is_user_mention` and `.m.rule.is_room_mention` should look at the
+  `m.mentions` directly under `content` and not match for Alice.
+
 ### Impact on bridging
 
 For protocols with a similar mechanism for listing mentioned users this should
