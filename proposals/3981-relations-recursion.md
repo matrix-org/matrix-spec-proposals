@@ -28,9 +28,8 @@ It is proposed to add the `recurse` parameter to the `/relations` API.
 >
 > One of: `[true false]`.
 
-In order to be backwards compatible with MSC2675 (and Synapse's legacy 
-implementation), the `recurse` parameter must be optional (defaulting to 
-`false`).
+In order to be backwards compatible the `recurse` parameter must be
+optional (defaulting to `false`).
 
 Regardless of the value of the `recurse` parameter, events will always be 
 returned in the same order as they would be by the `/messages` API.
