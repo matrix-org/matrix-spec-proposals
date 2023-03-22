@@ -384,15 +384,16 @@ or potentially leverage [MSC3664](https://github.com/matrix-org/matrix-spec-prop
 
 ### Impact on bridging
 
-This should strengthen the bridging contract as it will allow them to stop
-mutating the content of messages during the bridging process (by directly
-listing any mentioned users in the `m.mentions` property).
+For protocols with a similar mechanism for listing mentioned users this should
+strengthen the bridging contract as it enables bridges to stop mutating the
+content of messages. The bridge should be able to map from the remote user ID
+to the bridged user ID and include that in the `m.mentions` property of the
+Matrix event & the proper field in the bridged protocol[^4].
 
-This should reduce the impedance mismatch when bridging protocols which similarly
-list out users to mention (the bridge should simply be able to map from the
-remote user ID to the bridged user ID)[^4], but will not help in cases where the
-mention information is embedded into the text content (as today's Matrix messages
-are).[^5]
+For bridged protocols that do not have this mechanism than the bridge will only
+be able to stop mutating content on messages bridged *into* Matrix. Messages
+bridged out of Matrix will still need to embed the mention into the text
+content.[^5]
 
 ## Potential issues
 
