@@ -26,6 +26,9 @@ It is proposed to add the `recurse` parameter to the `/relations` API.
 > If this is set to false, it will only return events directly related to the 
 > specified event.
 >
+> It is recommended that at least 3 relations are traversed, implementations
+> should be careful to not infinitely recurse.
+>
 > One of: `[true false]`.
 
 In order to be backwards compatible the `recurse` parameter must be
