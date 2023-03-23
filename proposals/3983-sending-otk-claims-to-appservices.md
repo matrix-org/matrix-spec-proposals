@@ -89,9 +89,9 @@ many implementations, when this field falls below a threshold it is common for u
 happen: appservices intending on using the new API should not perform those uploads as it means,
 quite simply, not using the new API.
 
-Normally, a client (including appservices) would consider a OTK "used" once it sees it in a to-device
-message. Given the claim query is proxied directly to where the keys are generated in this proposal,
-appservices *can* consider a key "used" when it is claimed, before seeing it in a to-device message.
+Normally the homeserver would be [ensuring](https://spec.matrix.org/v1.6/client-server-api/#one-time-and-fallback-keys)
+OTKs are only used once, however with the appservice serving the endpoint it becomes the responsibility
+of the appservice to perform this check.
 
 If the homeserver uses the fallback key, that will be communicated in the traditional ways to the
 appservice (namely through `device_unused_fallback_key_types` in the case of MSC3202).
