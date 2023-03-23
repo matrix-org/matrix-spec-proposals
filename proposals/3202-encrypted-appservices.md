@@ -29,7 +29,7 @@ defining a new set of keys on the appservice `/transactions` endpoint, similar t
     "changed": ["@alice:example.org"],
     "left": ["@bob:example.com"]
   },
-  "device_one_time_key_counts": {
+  "device_one_time_keys_count": {
     "@_irc_bob:example.org": {
       "DEVICEID": {
         "curve25519": 10,
@@ -49,7 +49,7 @@ These fields are heavily inspired by [the extensions to /sync](https://matrix.or
 in the client-server API.
 
 All the new fields can be omitted if there are no changes for the appservice to handle. For
-`device_one_time_key_counts` and `device_unused_fallback_key_types`, the format is slightly different
+`device_one_time_keys_count` and `device_unused_fallback_key_types`, the format is slightly different
 from the client-server API to better map the appservice's user namespace users to the counts. Users
 in the namespace without keys or which have unchanged keys since the last transaction can be omitted
 (more details on this later on). Note that fallback keys are described in
@@ -141,7 +141,7 @@ all the users in its namespace.
 While this MSC is not considered stable for implementation, implementations should use `org.matrix.msc3202.`
 as a prefix to the fields on the `/transactions` endpoint. For example:
 * `device_lists` becomes `org.matrix.msc3202.device_lists`
-* `device_one_time_key_counts` becomes `org.matrix.msc3202.device_one_time_key_counts`
+* `device_one_time_keys_count` becomes `org.matrix.msc3202.device_one_time_keys_count`
 * `device_unused_fallback_key_types` becomes `org.matrix.msc3202.device_unused_fallback_key_types`
 
 Appservices which support encryption but never see these fields (ie: server is not implementing this in an
