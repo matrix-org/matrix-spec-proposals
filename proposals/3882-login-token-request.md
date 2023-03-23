@@ -11,7 +11,7 @@ existing client session.
 
 ## Proposal
 
-Add a new POST endpoint to the Client-Server API that issues a single-use, time-limited `m.login.token` token:
+Add a new optional POST endpoint to the Client-Server API that issues a single-use, time-limited `m.login.token` token:
 
 `POST /_matrix/client/v1/login/get_token`
 
@@ -56,6 +56,24 @@ Content-Type: application/json
 }
 ```
 
+The availability of the new API endpoint should be determined via a new `m.get_logintoken`
+[capability](https://spec.matrix.org/v1.6/client-server-api/#capabilities-negotiation).
+
+This capability has a single flag, `enabled`, to denote whether the `/login/get_token` API is available or not.
+Cases for disabling might include security restrictions imposed by the homeserver admin.
+
+An example of the capability API’s response for this capability is:
+
+```json
+{
+  "capabilities": {
+    "m.get_logintoken": {
+      "enabled": true
+    }
+  }
+}
+```
+
 ## Potential issues
 
 None identified.
@@ -93,23 +111,13 @@ While this feature is in development the new endpoint should be exposed using th
 
 - `/_matrix/client/unstable/org.matrix.msc3882/login/get_token`
 
-Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with
-the key `org.matrix.msc3882.r1` set to `true`. (The `r1` in the feature name is used to indicate that the server implements the first revision of this proposal)
+The capability should use the unstable prefix:
 
-So, the response could look then as following:
+- `org.matrix.msc3882.get_logintoken`
 
-```json
-{
-    "versions": ["r0.6.0"],
-    "unstable_features": {
-        "org.matrix.msc3882.r1": true
-    }
-}
-```
-
-For reference - an earlier iteration of this proposal used an unstable prefix of
+For reference - an earlier revision of this proposal used an unstable prefix of
 `/_matrix/client/unstable/org.matrix.msc3882/login/token` with an unstable feature advertised as `org.matrix.msc3882`
-set to `true`.
+set to `true`. This may be referred to as "revision zero" in existing implementations.
 
 ## Dependencies
 
