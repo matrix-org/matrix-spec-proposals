@@ -42,6 +42,7 @@ paths:
           name: keys
           description: |-
             The keys to be published.
+          required: true
           schema:
             type: object
             properties:
@@ -66,6 +67,12 @@ paths:
                   request.
                 allOf:
                   - $ref: definitions/cross_signing_key.yaml
+              auth:
+                description: |-
+                  Additional authentication information for the
+                  user-interactive authentication API.
+                allOf:
+                - $ref: "definitions/auth_data.yaml"
             example: {
               "master_key": {
                 "user_id": "@alice:example.com",
@@ -129,6 +136,8 @@ paths:
               "errcode": "M_FORBIDDEN",
               "error": "Key ID in use"
             }
+      tags:
+        - End-to-end encryption
   "/keys/signatures/upload":
     post:
       summary: Upload cross-signing signatures.
@@ -143,6 +152,7 @@ paths:
           name: signatures
           description: |-
             The signatures to be published.
+          required: true
           schema:
             type: object
             title: Signatures
@@ -222,3 +232,5 @@ paths:
                     }
                   }
                 }
+      tags:
+        - End-to-end encryption

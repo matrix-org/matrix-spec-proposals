@@ -27,9 +27,11 @@ produces:
 securityDefinitions:
   $ref: definitions/security.yaml
 paths:
-  "/events":
+  # With an extra " " to disambiguate from the getEvents endpoint
+  # The extra space makes it sort first for what I'm sure is a good reason.
+  "/events ":
     get:
-      summary: Listen on the event stream.
+      summary: Listen on the event stream of a particular room.
       description: |-
         This will listen for new events related to a particular room and return
         them to the caller. This will block until an event is received, or until
@@ -103,4 +105,5 @@ paths:
                     - "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
         400:
           description: "Bad pagination `from` parameter."
-        # No tags to exclude this from the swagger UI - use the normal version instead.
+      tags:
+        - Room participation

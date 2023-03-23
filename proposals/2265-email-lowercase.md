@@ -23,8 +23,8 @@ Sydent.
 This proposal suggests changing the specification of the e-mail 3PID type in
 [the Matrix spec appendices](https://matrix.org/docs/spec/appendices#pid-types)
 to mandate that, before any processing, e-mail addresses must go through a full
-case folding based on [the unicode mapping
-file](https://www.unicode.org/Public/8.0.0/ucd/CaseFolding.txt), on top of
+case folding as described under "Caseless Matching" in
+[chapter 5 of the unicode standard](https://www.unicode.org/versions/Unicode13.0.0/ch05.pdf#G21790), on top of
 having their domain lowercased.
 
 This means that `Strauß@Example.com` must be considered as being the same e-mail

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 type: object
+title: RequestTokenResponse
 properties:
   sid:
     type: string
@@ -22,6 +23,7 @@ properties:
     example: "123abc"
   submit_url:
     type: string
+    format: uri
     description: |-
       An optional field containing a URL where the client must submit the
       validation token to, with identical parameters to the Identity Service
