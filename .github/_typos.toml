@@ -1,6 +1,6 @@
 [default]
 check-filename = true
 
-[default.extend-words]
+[default.extend-identifiers]
 OTK = "OTK"
 OTKs = "OTKs"
