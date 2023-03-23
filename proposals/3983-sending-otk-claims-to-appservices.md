@@ -72,6 +72,9 @@ API described below:
 }
 ```
 
+*Note*: Like other appservice endpoints, this endpoint should *not* be ratelimited and *does* require
+normal [authentication](https://spec.matrix.org/v1.6/application-service-api/#authorization).
+
 Multiple users, devices, and keys for those devices can be claimed in a single request. This is to
 allow homeservers to batch multiple client/federation requests into a single request on the appservice,
 if desirable. This is an optional optimization for homeserver implementations. In the example above, 2
