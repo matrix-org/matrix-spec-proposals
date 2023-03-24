@@ -126,6 +126,12 @@ It could be argued that supporting a fallback key for appservices is too much co
 however in practice a protocol should not be designed around 100% uptime. This is additionally why the
 proposal doesn't suggest proxying device/signing key queries to the appservice: the appservice could be
 down, leaving encryption broken until it comes back online.
+## Additional uses
+
+An appservice aiming to bridge two different encryption systems might use this endpoint to save on data,
+though currently the encryption used on both sides of the bridge would need to be compatible (ie: signatures
+from device IDs and user IDs need to exist). In future, other MSCs might make encryption bridges easier to
+build.
 
 ## Security considerations
 
