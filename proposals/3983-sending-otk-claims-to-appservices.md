@@ -116,6 +116,10 @@ any keys for the user(s). This could be mitigated with an implementation-specifi
 and just do proxying, though for the general case in this MSC the fallback key consideration is kept for
 reliability concerns.
 
+Similarly, if an appservice doesn't intend on uploading keys (because it doesn't support encryption) and
+indicates the route is [unknown](https://spec.matrix.org/v1.6/application-service-api/#unknown-routes),
+the homeserver could avoid calling appservice with a backoff to prevent excessive calls.
+
 ## Alternatives
 
 Many encryption-capable bridges today can avoid uploading OTKs (and sometimes even device keys) because
