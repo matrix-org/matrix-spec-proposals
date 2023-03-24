@@ -125,9 +125,10 @@ being able to (securely) DM bridge users is a valuable consideration for this MS
 encryption for appservices might take the shape of an appservice-wide device of some sort.
 
 It could be argued that supporting a fallback key for appservices is too much considering their uptime,
-however in practice a protocol should not be designed around 100% uptime. This is additionally why the
-proposal doesn't suggest proxying device/signing key queries to the appservice: the appservice could be
-down, leaving encryption broken until it comes back online.
+however in practice appservices are not quite able to achieve 100% uptime. This proposal doesn't propose
+proxying device/signing key queries to the appservice for the same reliability concerns, though appservices
+which wish to opt to do so anyways could use [MSC3984](https://github.com/matrix-org/matrix-spec-proposals/pull/3984).
+
 ## Additional uses
 
 An appservice aiming to bridge two different encryption systems might use this endpoint to save on data,
@@ -150,3 +151,6 @@ which don't support the endpoint and thus engage in the behaviour described by t
 
 This MSC has no direct dependencies, however is of little use without being partnered with something
 like [MSC3202](https://github.com/matrix-org/matrix-spec-proposals/pull/3202).
+
+This MSC is additionally useful when paired with [MSC3984](https://github.com/matrix-org/matrix-spec-proposals/pull/3984),
+though has no direct dependency.
