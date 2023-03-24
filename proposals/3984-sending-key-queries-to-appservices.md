@@ -12,8 +12,8 @@ one-time keys - implementations can make decisions to optimize for this usecase 
 
 ## Proposal
 
-Similar to MSC3983, the homeserver *always* proxies the following APIs to the appservice using the
-new API described below:
+Similar to MSC3983, the homeserver *always* proxies the following APIs for an appservice's exclusive users
+to the appservice using the new API described below:
 * [`/_matrix/client/v3/keys/query`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixclientv3keysquery)
 * [`/_matrix/federation/v1/user/keys/query`](https://spec.matrix.org/v1.6/server-server-api/#post_matrixfederationv1userkeysquery)
 
