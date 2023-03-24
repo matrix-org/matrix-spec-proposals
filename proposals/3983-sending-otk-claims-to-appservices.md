@@ -116,7 +116,11 @@ reliability concerns.
 
 ## Alternatives
 
-No major alternatives.
+Many encryption-capable bridges today can avoid uploading OTKs (and sometimes even device keys) because
+they have a bot user in the room. The bot user uploads its keys, but the remaining bridge users do not.
+This works if the bridge users don't need to be involved in rooms without the bot user present, though
+being able to (securely) DM bridge users is a valuable consideration for this MSC. In future, scalable
+encryption for appservices might take the shape of an appservice-wide device of some sort.
 
 It could be argued that supporting a fallback key for appservices is too much considering their uptime,
 however in practice a protocol should not be designed around 100% uptime. This is additionally why the
