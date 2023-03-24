@@ -116,7 +116,8 @@ The capability should use the unstable prefix:
 - `org.matrix.msc3882.get_logintoken`
 
 For reference - an earlier revision of this proposal used an unstable prefix of
-`/_matrix/client/unstable/org.matrix.msc3882/login/token` with an unstable feature advertised as `org.matrix.msc3882`
+`/_matrix/client/unstable/org.matrix.msc3882/login/token` with an unstable feature advertised 
+in the response to `GET /_matrix/client/versions` as `org.matrix.msc3882`
 set to `true`. This may be referred to as "revision zero" in existing implementations.
 
 ## Dependencies
