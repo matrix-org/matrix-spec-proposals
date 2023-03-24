@@ -109,6 +109,11 @@ will be bad), they can simply upload keys in advance, just like before this prop
 the appservice is trying to use the API but is offline, they *should* have a fallback key to continue
 using as, well, a fallback.
 
+For appservices which never intend to upload keys there is a bit of a wasted lookup to see if there are
+any keys for the user(s). This could be mitigated with an implementation-specific flag to skip the lookup
+and just do proxying, though for the general case in this MSC the fallback key consideration is kept for
+reliability concerns.
+
 ## Alternatives
 
 No major alternatives.
