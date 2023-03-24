@@ -81,7 +81,9 @@ if desirable. This is an optional optimization for homeserver implementations. I
 keys are claimed for one device.
 
 If the appservice responds with an error of any kind (including timeout), the homeserver uses the
-fallback key, if known.
+fallback key, if known. The homeserver additionally uses the fallback key (if known) to fill in
+missing keys from the appservice. For example, if the homeserver requested 2 keys for Alice but
+the appservice only provided 1, the homeserver would use the fallback key to fulfill the second.
 
 In this case, the appservice is responsible for ensuring it doesn't use a key twice. The
 `device_one_time_keys_count` field for the appservice (over MSC3202, for example) would be zero. In
