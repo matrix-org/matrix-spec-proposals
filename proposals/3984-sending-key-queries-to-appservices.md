@@ -8,7 +8,7 @@ avoid uploading any keys, it would use this MSC to proxy the `/keys/query` endpo
 *Note*: Readers are encouraged to read MSC3983 for background on this problem space.
 
 Appservices which implement this MSC would generally be expected to *not* upload fallback keys or
-OTKs - implementations can make decisions to optimize for this usecase if they choose.
+one-time keys - implementations can make decisions to optimize for this usecase if they choose.
 
 ## Proposal
 
