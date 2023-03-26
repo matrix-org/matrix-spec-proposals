@@ -50,7 +50,7 @@ a new `event_id` field added for consistency with other relationship types.
 ## Potential issues
 
 There is a possible conflict with threads, as a messages in threads use `m.thread`
-as the `rel_type`. As a solution, clients could prefer other `rel_types`, and fallback with the current `m.in_reply_to`.
+as the `rel_type`. As a solution, clients could prefer other `rel_types`, and fallback with the current `m.in_reply_to`. This problem would cease to exist upon approval of [MSC3051](https://github.com/matrix-org/matrix-doc/pull/3051).
 
 
 ## Alternatives
