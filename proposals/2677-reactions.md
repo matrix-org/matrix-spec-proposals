@@ -95,7 +95,7 @@ Since they contain no `content` other than `m.relates_to`, `m.reaction` events
 are normally not encrypted, as there would be no benefit in doing so. (However,
 see [Encrypted reactions](#encrypted-reactions) below.)
 
-### Interation with edited events
+### Interaction with edited events
 
 It is not considered valid to send an annotation for a [replacement
 event](https://spec.matrix.org/v1.6/client-server-api/#event-replacements)
@@ -274,7 +274,7 @@ and gets bundled into an event like:
 This is something that could be added later on. A few issues with this are:
 
   * How does this work with E2EE? How do we encrypt the `m.result`?
-  * We would end up including old annotations that had been superceded, should
+  * We would end up including old annotations that had been superseded, should
     these be done via edits instead?
 
 ## Security considerations
