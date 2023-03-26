@@ -24,5 +24,5 @@ This is consistent with the Server-Server API.
 1. Mark the `/_matrix/identity/v2` status check API as deprecated. `/_matrix/identity/versions`
 is the suggested replacement.
 
-1. The maximum size of size of the well-known file is 51200 bytes. A client or server
+1. The maximum size of the well-known file is 51200 bytes. A client or server
 requesting a well-known file MUST abort and FAIL_PROMPT if the response exceeds 51200 bytes.
