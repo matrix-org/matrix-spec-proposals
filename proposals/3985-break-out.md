@@ -39,8 +39,16 @@ a specific room, the UI should reflect that.
 If a user is participating in a call when the event is sent, they should either
 start a call or join an existing call in the "child" room, if there is one.
 
-The "child" rooms may have `join_rules` of the user's, which has initiated the
-break-out, or their client's choosing.
+The "child" rooms may have `join_rules` of the `m.breakout` event's creator's or
+their client's choosing. A few common examples are:
+
+- The "child" room has a `join_rule` of `restricted` indicating that only the
+  members of the "parent" room can join.
+- The "child" room has `join_rule` if `invite` indicating that only the invited
+  users can join. In this case, the room information in the `m.breakout` event
+  should include the list of users who are suggested to join the given room.
+- The "child" room has a `join_rule` of `public` indicating anyone can join.
+  This would usually happen if the "parent" room was also public.
 
 ## Potential issues
 
