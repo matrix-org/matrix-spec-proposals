@@ -64,3 +64,7 @@ MSC3051 defines a format for multiple relations per event. This solves conflicts
 between `m.thread`, `m.replaces`, and other rel_types. A combination of MSC3051
 and MSC3975 would allow aggregation of reply events while avoiding conflicts with
 other rel_types.
+
+## Unstable Prefix
+
+Clients should use `app.somix.msc3975.reply` instead of `m.reply` in the meantime.
