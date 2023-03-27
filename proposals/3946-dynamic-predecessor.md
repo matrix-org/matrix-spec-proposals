@@ -49,6 +49,7 @@ key | type | value | description | required
 --- | --- | --- | --- | ---
 `predecessor_room_id` | string | Room ID | A reference to the room that came before and was replaced by this room | yes
 `via_servers` | [string] | List of server names | The servers to attempt to join the room through. These servers should be participating in the room to be useful. This option is necessary since room ID's are not routable on their own.
+`last_known_event_id` | string | Event ID | The event ID of the last known event in the old room
 
 The presence of `m.room.predecessor` state in the room should take priority over the
 `predecessor` specified in the `m.room.create` event.
