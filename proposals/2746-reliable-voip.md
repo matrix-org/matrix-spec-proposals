@@ -199,7 +199,7 @@ Example:
 ```
 
 Once an `m.call.negotiate` event is received, the client must respond with another `m.call.negotiate`
-event, with the SDP answer (with `"type"`: `"answer"`) in the description property.
+event, with the SDP answer (with `"type": "answer"`) in the `description` property.
 
 This MSC also proposes clarifying the `m.call.invite` and `m.call.answer` events to state that
 the `offer` and `answer` fields respectively are objects of type `RTCSessionDescriptionInit`
