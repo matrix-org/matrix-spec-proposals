@@ -1,7 +1,7 @@
 # MSC3981: `/relations` recursion
 
-[MSC2675](https://github.com/matrix-org/matrix-doc/pull/2675) introduced the
-`/relations` API to retrieve events which are directly related to a given event.
+[MSC2675] introduced the `/relations` API to retrieve events which are directly
+related to a given event.
 
 This API has been used as basis of many other features and MSCs since then, 
 including threads.
@@ -54,6 +54,7 @@ amplify the load on the server unreasonably.
 2. A new, specialised endpoint could be created for threads, specifically 
    designed to present separate timelines that, in all other ways, would
    behave identically to `/messages`
+3. Twitter-style threads (see [MSC2836])
 
 ## Security considerations
 
@@ -63,3 +64,7 @@ None.
 
 Before standardization, `org.matrix.msc3981.recurse` should be used in place
 of `recurse`.
+
+[MSC2675]: https://github.com/matrix-org/matrix-spec-proposals/pull/2675
+[MSC2836]: https://github.com/matrix-org/matrix-spec-proposals/pull/2836
+[MSC3771]: https://github.com/matrix-org/matrix-spec-proposals/pull/3771
