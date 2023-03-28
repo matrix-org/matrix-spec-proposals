@@ -200,9 +200,10 @@ Once an `m.call.negotiate` event is received, the client must respond with anoth
 event, with the SDP answer (with `"type": "answer"`) in the `description` property.
 
 This MSC also proposes clarifying the `m.call.invite` and `m.call.answer` events to state that
-the `offer` and `answer` fields respectively are objects of type `RTCSessionDescriptionInit`
-(and hence the `type` field, whilst redundant in these events, is included for ease of working
-with the WebRTC API).
+the `offer` and `answer` fields respectively are objects of type `RTCSessionDescriptionInit`.
+Hence the `type` field, whilst redundant in these events, is included for ease of working
+with the WebRTC API and is mandatory. Receiving clients should not attempt to validate the `type` field,
+but simply pass the object into the WebRTC API.
 
 ### Designate one party as 'polite'
 In line with WebRTC perfect negotiation (https://w3c.github.io/webrtc-pc/#perfect-negotiation-example)
