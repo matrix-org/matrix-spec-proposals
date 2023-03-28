@@ -76,7 +76,7 @@ lowercase alphanumeric characters is recommended. Parties in the call are identi
 
 The client  adds a `party_id` field containing this ID to the top-level of the content of all VoIP events
 it sends on the call, including `m.call.invite`. Clients use this to identify remote echo of their own
-events, since a user may now call themselves, they can no longer ignore events from their own user. This
+events: since a user may now call themselves, they can no longer ignore events from their own user. This
 field also identifies different answers sent by different clients to an invite, and matches `m.call.candidates`
 events to their respective answer/invite.
 
