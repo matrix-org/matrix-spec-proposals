@@ -314,9 +314,9 @@ rule matching the [fallback content](https://spec.matrix.org/v1.6/client-server-
 Generally this is undesirable and users do not need to be notified for the same
 message multiple times (e.g. if a user is fixing a typo).
 
-Edited events end up with two `m.mentions` properties:
+Replacement events may have `m.mentions` properties in two locations:
 
-* One at the top-level of the `content`, this should contain any users to mention
+* One at the top-level of the `content`, which should contain any users to mention
  *for this edit*.
 * One inside the `m.new_content` property, which should contain the full list of
   mentioned users in any version of the event.
@@ -372,7 +372,7 @@ And an edit after realizing that Bob is also in the room:
 }
 ```
 
-Mentions can also be removed as part of an edit, in this case top-level `m.mentions`
+Mentions can also be removed as part of an edit. In this case top-level `m.mentions`
 property would not include the removed user IDs (you cannot cancel the notification from
 the previous event) or any previously notified users, and the removed user would also be
 removed from the `m.new_content` proprerty's copy  of `m.mentions`.
