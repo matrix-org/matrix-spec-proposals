@@ -300,7 +300,7 @@ or not there have been any changes to the Matrix spec.
    is problematic with Matrix since any device or user could answer the call, so it is not known which
    device is going to answer before the user chooses to answer. It would also leak information on which
    of a user's devices were online.
- * We could define that the ID of a call is implcitly the event ID of the invite event rather than
+ * We could define that the ID of a call is implicitly the event ID of the invite event rather than
    having a specific `call_id` field. This would mean that a client would be unable to know the ID of
    a call before the it received the response from sending the invite event, which could complicate
    implementations. There is probably no compelling reason to change this.
