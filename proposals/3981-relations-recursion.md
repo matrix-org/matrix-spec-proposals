@@ -90,14 +90,17 @@ flowchart RL
     D-->C-->B
 ```
 
-`/messages` with `dir=f` would return 
-`[A, B, C, D, E, F, G]`
+`/messages` with `dir=f` would 
+return `[A, B, C, D, E, F, G]`.
 
-`/relations` on event `A` with `rel_type=m.thread` and `dir=f` would return 
-`[A, B, G]`. 
+`/relations` on event `A` with `rel_type=m.thread` and `dir=f` would 
+return `[A, B, G]`. 
 
-`/relations` on event `A` with `recurse=true` and `dir=f` would return 
-`[A, B, D, E, G]`.
+`/relations` on event `A` with `recurse=true` and `dir=f` would 
+return `[A, B, D, E, G]`.
+
+`/relations` on event `A` with `recurse=true`, `dir=b` and `limit=2` would
+return `[G, E]`.
 
 ## Unstable prefix
 
