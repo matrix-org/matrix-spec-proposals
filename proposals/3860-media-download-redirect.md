@@ -34,7 +34,7 @@ None at this time.
 ## Security Considerations
 
 A media repo could redirect requests to a bad actor, although this would make the primary media
-repo itself a bad actor, this does present any increased security issues.
+repo itself a bad actor, thus this does not present any increased security issues.
 
 ## Unstable Prefix
 
