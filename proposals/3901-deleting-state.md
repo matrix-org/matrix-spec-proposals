@@ -12,6 +12,8 @@ TODO:
 - [x] Consider changing "definition of obsolete state" into a sub-proposal
     - No, I think it is part of sub-proposal 1
 - [x] Go through the meeting notes and transfer ideas into sub-proposals
+- [ ] Add thoughts from the Deleting state room on marking invitations so we
+      know they come from an upgrade and should be auto-joined.
 - [ ] Complete TODOs scattered through the doc
 - [x] Add Travis' thought about bans [1]
 - [ ] Complete detailed definition of sub-proposals, with help from people who
