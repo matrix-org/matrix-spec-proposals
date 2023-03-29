@@ -300,7 +300,11 @@ it will help us understand what we really mean by "obsolete" state, and flush
 out problems we have not yet considered.
 
 ### Security considerations
-### Unstable prefix
+
+If security-critical events were not sent to clients, this could cause security
+problems, but since only events that are irrelevant to clients should be marked
+as obsolete, this should not happen.
+
 ### Dependencies
 
 As soon as we can agree on a definition of obsolete state, we believe this
@@ -328,10 +332,10 @@ We propose to invite all users as part of the room upgrade process.
 Relevant spec section:
 [11.33.3 Room upgrades - Server Behaviour](https://spec.matrix.org/v1.5/client-server-api/#server-behaviour-16).
 
-When a client requests to upgrade a room using the `POST
-/rooms/{roomId}/upgrade`, this should be interpreted by the server as a request
-not only to create the room, but also to invite all members of the old room to
-the new one, with the same power level.
+When a client requests to upgrade a room using `POST /rooms/{roomId}/upgrade`,
+this should be interpreted by the server as a request not only to create the
+room, but also to invite all members of the old room to the new one, with the
+same power level.
 
 The server should send invitations on behalf of the user performing the upgrade.
 
@@ -368,11 +372,26 @@ Add a new point after point 3:
 ```
 If the user upgrading the room is registered with this homeserver, create
 invitation events on behalf of the upgrading user for every user who is
-currently a member of the old room, inviting them to the new room with the same
-power level.
+currently a member of the old room, inviting them to the new room. Also set the
+room power levels to give the same power level to each user that they had in the
+old room.
+
+Only members who are currently members of the room should be invited to the new
+ones.
+
+`m.room.membership` events should also be created for users who are banned from
+the old room, banning them from the new room for with the same information,
+except if the ban event is marked as `obsolete` using sub-proposal 1 of this
+proposal.
 ```
 
-### Related proposal
+### Potential issues
+
+Invitations will not be generated if the upgrading user's homeserver is not
+participating in the room. However, since the user is in the room, their
+homeserver will be participating.
+
+### Alternatives
 
 [MSC3325](https://github.com/matrix-org/matrix-spec-proposals/pull/3325)
 proposes that all users in the old room be _allowed_ to join the new room by
@@ -382,11 +401,17 @@ MSC3325 also mentions as an alternative that the room membership of each user
 could be set as `invited` without actually sending an invitation, to avoid
 invite spam.
 
-### Potential issues
-### Alternatives
 ### Security considerations
-### Unstable prefix
+
+This operation causes a homeserver to send out lots of invitations, which could
+be a cause of invite spam. It can only be caused by someone who is an admin of a
+room already containing the recipients, so that limits the scope.
+
 ### Dependencies
+
+In order to exclude obsolete bans, the definition of obsolete from this proposal
+is required, but the main part of this sub-proposal does not depend on any
+others.
 
 ## Sub-proposal 3: Auto-accept invitations to upgraded rooms
 
@@ -403,15 +428,32 @@ if they consider them valid, automatically join users from the old room to the
 upgraded one.
 
 ### Proposal
+
+When a homeserver observes that a room is being upgraded, we propose that it
+accepts the resulting invitation to that room on behalf of all users invited to
+the new room who are registered with this homeserver.
+
+TODO: how to do this only the first time this user is invited, straight after
+the upgrade? Do we need to mark the invitation in some way, so we know it's an
+auto-invite?
+
+TODO: spec wording here
+
 ### Potential issues
+
+TODO: auto-joining someone later, just because they were invited to a room that
+was previously upgraded
+
 ### Alternatives
 ### Security considerations
 
 TODO: obviously, doing something on behalf of the user is a potential abuse
 vector.
 
-### Unstable prefix
 ### Dependencies
+
+TODO: maybe dependencies on sub-proposal 2, if we decide that invitations need
+to be different to support this.
 
 ## Sub-proposal 4: Copy more state to upgraded rooms
 
