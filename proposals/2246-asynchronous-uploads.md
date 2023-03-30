@@ -27,8 +27,9 @@ settings (related: [MSC701]).
 The server may optionally enforce a maximum age for unused media IDs to delete
 media IDs when the client doesn't start the upload in time, or when the upload
 was interrupted and not resumed in time. The server should include the maximum
-timestamp to start the upload in the `unused_expires_at` field in the response
-JSON. The recommended default expiration for starting the upload is 1 minute.
+timestamp to complete the upload in the `unused_expires_at` field in the
+response JSON. The recommended default expiration for completing the upload is 1
+minute.
 
 The server should also rate limit requests to create media. When combined with
 the maximum age for created media IDs, it effectively prevents spam by creating
