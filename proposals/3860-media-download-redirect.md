@@ -38,8 +38,8 @@ repo itself a bad actor, thus this does not present any increased security issue
 
 ## Unstable Prefix
 
-No need for an unstable prefix for redirects as it stands. If a query string was to be used to
-enable this functionality this could use the following unstable prefix:
+Until this functionality has landed in the spec, the `allow_redirect` query
+parameter should be prefixed with `com.beeper.msc3860.`:
 
 ```
 ?com.beeper.msc3860.allow_redirect=true
