@@ -45,7 +45,8 @@ None.
 
 [^1]: [Dendrite](https://github.com/search?q=repo%3Amatrix-org%2Fdendrite+CoalesceAction+NOT+path%3A%2F_test.go%24%2F&type=code),
 [Synapse](https://github.com/search?q=repo%3Amatrix-org%2Fsynapse+coalesce+language%3ARust&type=code&l=Rust),
-[Conduit](https://gitlab.com/search?search=coalesce&nav_source=navbar&project_id=22083768&group_id=4616224&search_code=true&repository_ref=next).
+[Conduit](https://gitlab.com/search?search=coalesce&nav_source=navbar&project_id=22083768&group_id=4616224&search_code=true&repository_ref=next),
+[Construct](https://github.com/matrix-construct/construct/blob/4ecf1ef037ecc1a5d1e3a1049d9a63cb0a6f3455/matrix/push.cc#L739-L740)..
 
 [^2]: [matrix-js-sdk](https://github.com/search?q=repo%3Amatrix-org/matrix-js-sdk%20Coalesce&type=code),
 [matrix-ios-sdk](https://github.com/search?q=repo%3Amatrix-org%2Fmatrix-ios-sdk%20coalesce&type=code),
