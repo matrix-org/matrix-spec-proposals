@@ -28,8 +28,9 @@ The server may optionally enforce a maximum age for unused media IDs to delete
 media IDs when the client doesn't start the upload in time, or when the upload
 was interrupted and not resumed in time. The server should include the maximum
 timestamp to complete the upload in the `unused_expires_at` field in the
-response JSON. The recommended default expiration for completing the upload is 1
-minute.
+response JSON. The recommended default expiration is 24 hours which should be
+enough time to accommodate users on poor connection who find a better connection
+to complete the upload.
 
 ##### Rate Limiting
 
