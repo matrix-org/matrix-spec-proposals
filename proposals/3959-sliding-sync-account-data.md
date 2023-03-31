@@ -8,30 +8,47 @@ which includes support for global and room account data in the `/sync` response.
 MSC3575 does not include support for account data. This extension will add support for both global
 and room account data.
 
-The prosposal is to introduce a new extension called `account_data` with the following request parameters:
-```js
+The prosposal is to introduce a new extension called `account_data`.
+It processes the core extension arguments `enabled`, `rooms` and `lists`, but
+defines no arguments of its own.
+```json5
 {
     "enabled": true, // sticky
+    "lists": ["rooms", "dms"], // sticky
+    "rooms": ["!abcd:example.com"] // sticky
 }
 ```
 If `enabled` is `true`, then the sliding sync response MAY include the following response fields in
 the `account_data` extension response:
-```json
+```json5
 {
     "global": [
-        { account data JSON }
+        {
+           // account data JSON
+        }
     ],
     "rooms": {
         "!foo:bar": [
-            { account data JSON },
-            { account data JSON }
+           {
+              // account data JSON
+           },
+           {
+              // account data JSON
+           }
         ],
-        "!foo2:bar" [
-            { account data JSON }
+        "!foo2:bar": [
+            {
+               // account data JSON
+            }
         ]
     }
 }
 ```
+
+If a `lists` or `rooms` argument is given to the extension, the `typing` extension
+response SHOULD only include rooms belonging at least one of the sliding windows
+in `lists`, or rooms whose IDs are in `rooms`. See also MSC3575's "Extensions"
+section.
 
 All keys are optional and clients MUST check if they exist prior to use. The semantics of these fields
 is exactly the same as the current `/sync` implementation whereby:
@@ -78,7 +95,7 @@ No additional security considerations beyond what the current `/sync` implementa
 
 No unstable prefix as Sliding Sync is still in review. To enable this extension, just add this to
 your request JSON:
-```js
+```json
 {
     "extensions": {
         "account_data": {
