@@ -7,29 +7,38 @@ which includes support for typing notifications in the `/sync` response.
 
 MSC3575 does not include support for typing notifications. This extension will add support for it.
 
-The prosposal is to introduce a new extension called `typing` with the following request parameters:
-```js
+The proposal is to introduce a new extension called `typing`. It processes the
+core extension arguments `enabled`, `rooms` and `lists`, but defines no 
+arguments of its own.
+```json5
 {
-    "enabled": true // sticky
+    "enabled": true, // sticky
+    "lists": ["rooms", "dms"], // sticky
+    "rooms": ["!abcd:example.com"] // sticky
 }
 ```
 If `enabled` is `true`, then the sliding sync response MAY include the following response fields in
 the `typing` extension response:
-```json
+```json5
 {
     "rooms": {
         "!foo:bar": {
-            m.typing EDU
+            // m.typing EDU
         },
-        "!foo2:bar" {
-            m.typing EDU
+        "!foo2:bar": {
+            // m.typing EDU
         }
     }
 }
 ```
 
+If a `lists` or `rooms` argument is given to the extension, the `typing` extension
+response SHOULD only include rooms belonging at least one of the sliding windows
+in `lists`, or rooms whose IDs are in `rooms`. See also MSC3575's "Extensions"
+section.
+
 The `m.typing` event in this response is the same event that would appear in the array
-`rooms.join["!foo:bar"].ephemeral.events` under `/sync`. 
+`rooms.join["!foo:bar"].ephemeral.events` under a traditional "v2" `/sync`.
 
 On an initial sync, typing notifications MUST only be sent for rooms returned in the sliding sync response.
 When live streaming, typing notifications MUST be sent as the server receives typing updates. Rooms which
@@ -54,7 +63,7 @@ No additional security considerations beyond what the current `/sync` implementa
 
 No unstable prefix as Sliding Sync is still in review. To enable this extension, just add this to
 your request JSON:
-```js
+```json
 {
     "extensions": {
         "typing": {
