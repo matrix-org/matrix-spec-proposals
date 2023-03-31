@@ -11,6 +11,8 @@ existing client session.
 
 ## Proposal
 
+### New API endpoint POST /login/get_token
+
 Add a new optional POST endpoint to the Client-Server API that issues a single-use, time-limited `m.login.token` token:
 
 `POST /_matrix/client/v1/login/get_token`
@@ -56,18 +58,70 @@ Content-Type: application/json
 }
 ```
 
-The availability of the new API endpoint should be determined via a new `m.get_logintoken`
-[capability](https://spec.matrix.org/v1.6/client-server-api/#capabilities-negotiation).
+### Determining the availability of the new API endpoint
 
-This capability has a single flag, `enabled`, to denote whether the `/login/get_token` API is available or not.
-Cases for disabling might include security restrictions imposed by the homeserver admin.
+As this new API endpoint is optional, clients should determine whether the endpoint is available
+before prompting the user to try using it.
+
+There are two usage scenarios to consider:
+
+1. The user wishes to sign in on a Matrix client.
+2. The user wishes to use an already signed in Matrix client to sign in another client.
+
+In scenario 2 the client is already authenticated. For scenario 1 the client is not yet authenticated.
+
+#### Scenario 1: The user wishes to sign in on a Matrix client
+
+The client wants to determine if it *may* be possible to sign in by getting a login token from an
+existing session.
+
+It is proposed that the unauthenticated client can determine if the new API endpoint *may* be available
+as part of the existing
+[`GET /_matrix/client/v3/login`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientv3login)
+API endpoint.
+
+As the `m.login.token` mechanism is used to redeem the login token, the client can first determine if the
+`m.login.token` is advertised as a flow in the `GET /_matrix/client/v3/login` response. Then it can check a
+new boolean field `get_login_token` to determine if the capability *may* be available.
+
+An example of the proposed `GET /_matrix/client/v3/login` response is:
+
+```json
+{
+  "flow": [
+    {
+      "type": "m.login.token",
+      "get_login_token": true
+    }
+  ]
+}
+```
+
+In this case the mechanism could be available and so the client could prompt the user to try using it.
+
+#### Scenario 2: The user wishes to use an already signed in Matrix client to sign in another client
+
+The client is already authenticated. The client can determine whether it is able and allowed to sign in
+another client by checking the
+[capabilities](https://spec.matrix.org/v1.6/client-server-api/#capabilities-negotiation)
+advertised by the homeserver.
+
+Where the client is authenticated the client can determine whether the new API endpoint is available
+via the [capability negotiation](https://spec.matrix.org/v1.6/client-server-api/#capabilities-negotiation)
+mechanism.
+
+The homeserver can then decide on a per user basis if the capability is available or not. For example,
+it could implement a policy based on some risk criteria around the user’s account, session, or device.
+
+A new capability `m.get_login_token` is proposed. This capability has a single boolean flag, `enabled`, to
+denote whether the `/login/get_token` API is available or not.
 
 An example of the capability API’s response for this capability is:
 
 ```json
 {
   "capabilities": {
-    "m.get_logintoken": {
+    "m.get_login_token": {
       "enabled": true
     }
   }
@@ -107,13 +161,11 @@ in the existing spec:
 
 ## Unstable prefix
 
-While this feature is in development the new endpoint should be exposed using the following unstable prefix:
+While this feature is in development the following unstable prefixes should be used:
 
-- `/_matrix/client/unstable/org.matrix.msc3882/login/get_token`
-
-The capability should use the unstable prefix:
-
-- `org.matrix.msc3882.get_logintoken`
+- API endpoint `/_matrix/client/v1/login/get_token` => `/_matrix/client/unstable/org.matrix.msc3882/login/get_token`
+- capability `m.get_login_token` => `org.matrix.msc3882.get_login_token`
+- login flow field `get_login_token` => `org.matrix.msc3882.get_login_token`
 
 For reference - an earlier revision of this proposal used an unstable prefix of
 `/_matrix/client/unstable/org.matrix.msc3882/login/token` with an unstable feature advertised 
