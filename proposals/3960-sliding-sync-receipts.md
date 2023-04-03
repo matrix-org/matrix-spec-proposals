@@ -8,26 +8,35 @@ which includes support for room receipts in the `/sync` response.
 MSC3575 does not include support for receipts. This extension will add support for both public
 and private room receipts.
 
-The prosposal is to introduce a new extension called `receipts` with the following request parameters:
-```js
+The proposal is to introduce a new extension called `receipts`. It processes the
+core extension arguments `enabled`, `rooms` and `lists`, but defines no
+arguments of its own.
+```json5
 {
     "enabled": true, // sticky
+    "lists": ["rooms", "dms"], // sticky
+    "rooms": ["!abcd:example.com"] // sticky
 }
 ```
 If `enabled` is `true`, then the sliding sync response MAY include the following response fields in
 the `receipts` extension response:
-```json
+```json5
 {
     "rooms": {
         "!foo:bar": {
-            m.receipt EDU
+            // m.receipt EDU
         },
-        "!foo2:bar" {
-            m.receipt EDU
+        "!foo2:bar": {
+            // m.receipt EDU
         }
     }
 }
 ```
+
+If a `lists` or `rooms` argument is given to the extension, the `typing` extension
+response SHOULD only include rooms belonging at least one of the sliding windows
+in `lists`, or rooms whose IDs are in `rooms`. See also MSC3575's "Extensions"
+section.
 
 The `m.receipt` event in this response is the same event that would appear in the array
 `rooms.join["!foo:bar"].ephemeral.events` under `/sync`. This includes the `m.read.private` key in the
@@ -66,7 +75,7 @@ No additional security considerations beyond what the current `/sync` implementa
 
 No unstable prefix as Sliding Sync is still in review. To enable this extension, just add this to
 your request JSON:
-```js
+```json
 {
     "extensions": {
         "receipts": {
