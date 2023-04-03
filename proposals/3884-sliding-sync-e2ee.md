@@ -9,11 +9,15 @@ MSC3575 does not include support for end-to-end encrypted rooms. This extension 
 end-to-end encrypted fields, specifically one-time keys, changed devices and fallback key types.
 
 The prosposal is to introduce a new extension called `e2ee` with the following request parameters:
-```js
+```json5
 {
     "enabled": true, // sticky
 }
 ```
+
+_Note: This extension ignores the core `lists` and `rooms` parameters to extensions, because none of the
+data returned by this extension is scoped to a particular room._
+
 If `enabled` is `true`, then the sliding sync response MAY include the following response fields in
 the `e2ee` extension response:
 ```json
@@ -65,11 +69,11 @@ No additional security considerations beyond what the current `/sync` implementa
 
 No unstable prefix as Sliding Sync is still in review. To enable this extension, just add this to
 your request JSON:
-```js
+```json
 {
     "extensions": {
         "e2ee": {
-            "enabled": true
+            "enabled": true,
         }
     }
 }
