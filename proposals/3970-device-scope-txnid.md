@@ -180,7 +180,7 @@ this MSC as device IDs are crucial to the implementation of end-to-end encryptio
 
 ## Other recommendations
 
-I'm not suggesting that these recommendations are address in this proposal, but
+I'm not suggesting that these recommendations are addressed in this proposal, but
 more notes for future proposals or spec clarifications.
 
 ### Clarification on idempotency semantics
