@@ -1,4 +1,4 @@
-# MSC0000: Power level up! Taking the room to new heights
+# MSC3991: Power level up! Taking the room to new heights
 
 Once a room is created, the highest power level is set in stone. Even if you're the only
 admin in the room, if you try to raise your own power level above the initial `100`, it
@@ -107,5 +107,5 @@ changes for holes in the logic.
 ## Unstable room version
 
 While this feature is in development, the proposed behavior can be trialed with the
-`org.matrix.mscXXXX` unstable room version and `org.matrix.mscXXXXv2`, etc as we develop
+`org.matrix.msc3991` unstable room version and `org.matrix.msc3991v2`, etc as we develop
 and iterate along the way.
