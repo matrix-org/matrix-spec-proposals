@@ -34,7 +34,7 @@ generated on the new device:
             "uri": "https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668"
         }
     },
-    "flow": "m.setup.additional_device.v2",
+    "flow": "m.setup.additional_device",
     "intent": "login.start"
 }
 ```
@@ -48,7 +48,7 @@ flow semantics or other flows entirely.
 
 ## Proposal
 
-This proposal defines the `m.setup.additional_device.v2` flow that is to be
+This proposal defines the `m.setup.additional_device` flow that is to be
 used once a secure channel has been established.
 
 The following `intent` values are defined:
@@ -545,7 +545,8 @@ Please also refer to the dependent MSCs.
 Whilst in development the following unstable names should be used:
 
 - `org.matrix.msc3906.setup.additional_device.v2` for the
-`m.setup.additional_device.v2` flow
+`m.setup.additional_device` flow (the `v2` is to distinguish from an earlier
+revision of the proposal)
 - `org.matrix.msc3906.login_token` for the `login_token` login protocol
 - `org.matrix.msc3886.http.v1` for the `http.v1` transport type
 
