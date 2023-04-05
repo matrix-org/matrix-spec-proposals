@@ -56,8 +56,8 @@ The main "issue" I see with this proposal is that this is technically a breaking
 change to the spec.
 
 A device ID could have multiple sequences of access tokens associated
-with it (since device ID can be specified as a parameter to 
-[`/login`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixclientv3login)). 
+with it (since device ID can be specified as a parameter to
+[`/login`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixclientv3login)).
 
 For example, a "bot" implementation might masquerade as the same "device" despite
 calling `/login` on every run by passing the same device ID. Such a device might
@@ -195,15 +195,23 @@ I also suggest that the spec be clarified over what time periods the transaction
 ID is scoped for such that clients can be aware. This cloud simply be to say
 that the time period is not defined and so may vary by implementation.
 
-### Suggest a lease naive transaction ID format
+### Recommend a less naive transaction ID format
 
-I think we should sense to update the recommendation on the format of
-transaction IDs from:
+Currently the format of a transaction ID is not specified, but a recommendation
+is [given](https://spec.matrix.org/v1.6/client-server-api/#transaction-identifiers):
 
-> how is not specified; a monotonically increasing integer is recommended
+> After the [previous] request has finished, the {txnId} value should be changed
+> (how is not specified; **a monotonically increasing integer is recommended**).
 
-To something more unique (in my research I have found some clients use a seconds
-since epoch which doesn't seem ideal)
+I think this is an unnecessarily naive recommendation.
+
+In most clients environments a pseudo-random number generator will be available and so
+could be used to generate a UUID/ULID or similar.
+
+As an aside, in my research I have found some clients use a "seconds since epoch" as a
+transaction ID which introduces a limit on the maximum possible event transmission rate
+per room to once per second. Perhaps a better recommendation could help prevent the
+such behaviour being introduced in future.
 
 ## Unstable prefix
 
