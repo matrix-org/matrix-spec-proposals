@@ -106,7 +106,7 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
     end
 
     Note over A: 7. Check that suitable protocol available
-    A->>B: 10. {"type":"m.login.protocol", "protocol": "login_token"}
+    A->>B: 7. {"type":"m.login.protocol", "protocol": "login_token"}
 
     Note over A,B: 8. Confirmation code should be displayed on both devices e.g 1234-5678-9012
 
