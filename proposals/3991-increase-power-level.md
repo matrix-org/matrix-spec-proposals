@@ -54,7 +54,6 @@ Imagine wanting a central company bot to maintain control of every room at power
 to upgrade every room.
 
 
-
 ## Proposal
 
 This MSC proposes updating the room event auth rules to allow for raising the `sender`'s
@@ -93,8 +92,22 @@ consistently.
 Room upgrades allow for creating a new room where you can initially specify
 `m.room.power_levels` as desired. There is nothing restricting the integer range that
 `users` field of `m.room.power_levels` so all of the same end results can be achieved
-this way. This has all of the flexibility downsides mentioned for existing rooms in the
-intro/context paragraphs above though.
+this way. But this has all of the flexibility downsides mentioned for existing rooms in
+the intro/context paragraphs above though.
+
+---
+
+As an [alternative that could solve the Gitter specific
+case](https://gitlab.com/gitterHQ/gitter.im/-/issues/4) where a user with a power level
+of `90` appears as "Moderator" when it actually functions as an admin role; this could
+be solved by spec'ing out how to figure out what is the admin PL and what is the
+moderator PL. Hardcoding random integers to labels just doesn't work well. For example,
+with the [Nheko](https://github.com/Nheko-Reborn/nheko) client, it considers people with
+the permission to change powerlevels to be admins and users with redaction permissions
+are moderators. Or maybe something more flexible like [MSC3949: Power Level
+Tags](https://github.com/matrix-org/matrix-spec-proposals/pull/3949).
+
+This MSC does make sense on top of those kind of changes in any case though.
 
 
 ## Security considerations
