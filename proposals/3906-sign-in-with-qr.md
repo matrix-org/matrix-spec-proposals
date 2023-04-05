@@ -86,7 +86,7 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
         rect rgba(240,240,240,0.5)
             Note over A,B: These are from MSC3886
             A->>B: Rendezvous set up and ECDH public key encoded in QR
-            B->>A: New device responds with ECDH public key
+            B->>A: Existing device responds with ECDH public key
         end
         Note over B: 1. Check compatibility of intents
         alt Incompatible
@@ -97,15 +97,15 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
     end
 
     Note over B: 4. Determine if MSC3882 is available:
-    B->>+HS: POST /versions
-    HS-->>-B: supported features 
+    B->>+HS: GET /capabilities
+    HS-->>-B: supported capabilities
     alt no protocol available
         B->>A: 5. {"type":"m.login.failure", "reason":"unsupported"}
-    else
+    else send available protocols
         B->>A: 6. {"type":"m.login.protocols", "protocols":["login_token"]}
     end
 
-    Note over A: 7. Check that suitable protocol available
+    Note over A: Check that suitable protocol available
     A->>B: 7. {"type":"m.login.protocol", "protocol": "login_token"}
 
     Note over A,B: 8. Confirmation code should be displayed on both devices e.g 1234-5678-9012
@@ -116,8 +116,8 @@ Note over A,B: Devices establish secure rendezvous and derive<br> confirmation c
         B->>A: 10. {"type":"m.login.declined"}
     else User approved
 
-        B->>+HS: 11. POST /login/token
-        HS-->>-B: {"login_token": "abcdefghijkl", "expires_in": 30}
+        B->>+HS: 11. POST /login/get_token
+        HS-->>-B: {"login_token": "abcdefghijkl", "expires_in_ms": 30000}
 
         B->>A: 12. {"type": "m.login.approved", "login_token": "abcdefghijkl","homeserver": "https://matrix-client.matrix.org"}
 
@@ -189,6 +189,8 @@ Both side can then clean up the rendezvous and provide feedback to the user.
 3. In the case that the new device scanned the code an empty progress payload
 is sent so that the the existing device knows it can proceed:
 
+*New device => Existing device:*
+
 ```json
 {
     "type": "m.login.progress"
@@ -201,6 +203,8 @@ that the client checks the capabilities before offering the ability to generate 
 
 5. If it doesn't then it responds with the following and closes the rendezvous:
 
+*Existing device => New device:*
+
 ```json
 {
     "type": "m.login.failure",
@@ -210,6 +214,8 @@ that the client checks the capabilities before offering the ability to generate 
 
 6. Otherwise, the existing device acknowledges the request and indicates the
 protocols available:
+
+*Existing device => New device:*
 
 ```json
 {
@@ -221,6 +227,8 @@ protocols available:
 7. The new device can then choose whether to proceed with a protocol at this
 point. If so it sends:
 
+*New device => Existing device:*
+
 ```json
 {
     "type": "m.login.protocol",
@@ -229,6 +237,8 @@ point. If so it sends:
 ```
 
 It could decline with something like:
+
+*New device => Existing device:*
 
 ```json
 {
@@ -245,18 +255,22 @@ along with the confirmation code visible.
 
 10. If the user declines the request:
 
+*Existing device => New device:*
+
 ```json
 {
     "type": "m.login.declined",
 }
 ```
 
-11. The existing device calls `POST /login/token` as per MSC3882 to obtain a
+11. The existing device calls `POST /login/get_token` as per MSC3882 to obtain a
 `login_token`. n.b. If the homeserver responds with UIA challenge then the
 existing device must complete UIA.
 
 12. The existing device then sends the login token to the new device along with
 the homeserver to use it with:
+
+*Existing device => New device:*
 
 ```json
 {
@@ -274,6 +288,8 @@ includes device ID and keys:
 
 14. No E2EE:
 
+*New device => Existing device:*
+
 ```json
 {
     "type": "m.login.success",
@@ -281,6 +297,8 @@ includes device ID and keys:
 ```
 
 15. With E2EE:
+
+*New device => Existing device:*
 
 ```json
 {
@@ -290,7 +308,12 @@ includes device ID and keys:
 }
 ```
 
-16. If doing E2EE then existing device then waits for up to X seconds for the
+Fields:
+
+- `device_id` is the device ID of the new device.
+- `device_key` is the base64 encoded Ed25519 key of the new device.
+
+16. If doing E2EE then existing device then waits for up to 10 seconds for the
 `device_id` to become visible.
 
 17. If the device is visible within the time period then the existing device
@@ -306,6 +329,8 @@ signature to homeserver.
 19. The existing device notified the new device that verification has been
 completed on its end:
 
+*Existing device => New device:*
+
 ```json
     "type": "m.login.verified",
     "verifying_device_id": "XXXYYYZZZ",
@@ -315,12 +340,20 @@ completed on its end:
 If cross-signing is in use then the public part of the master signing key
 `master_key` should be included:
 
+*Existing device => New device:*
+
 ```json
     "type": "m.login.verified",
     "verifying_device_id": "XXXYYYZZZ",
     "verifying_device_key": "abcdefgh",
     "master_key": "mmmmmmmm"
 ```
+
+Fields:
+
+- `verifying_device_id` is the device ID for the existing device.
+- `verifying_device_key` is the base64 encoded Ed25519 key of the existing device.
+- `master_key` is the base64 encoded public part of the master signing key.
 
 20. The new device checks that `verifying_device_id` and `verifying_device_key`
 match those received from the homeserver. If they do not match then abort the
@@ -348,6 +381,8 @@ the verifying device as locally verified.
 ### Cancellation
 
 The new device could cancel the process at any time by sending:
+
+*New device => Existing device:*
 
 ```json
 {
@@ -395,8 +430,8 @@ sequenceDiagram
         end
     end
     Note over B: 4. Determine if login_token is available:
-    B->>+HS: POST /versions
-    HS-->>-B: check supported features for MSC3882
+    B->>+HS: GET /capabilities
+    HS-->>-B: check supported capabilities for MSC3882
     Note over B: Determine if device authorization grant is available
     B->>+OP: GET /.well-known/openid-configuration
     OP->>-B: 200 OK {..., "grant_types_supported": ["urn:ietf:params:oauth:grant-type:device_code", ...]}
@@ -420,7 +455,7 @@ sequenceDiagram
         OP->>-A: 200 OK {..., "device_authorization_endpoint": "https://id.matrix.org/auth/device", ...}
         Note over A: Device now knows the OP and what the endpoint is, so then attempts to start the login
         A->>+OP: POST /auth/device client_id=xyz&scope=urn:matrix:api:*...
-        OP->>-A: 200 OK {"user_code": "123456", "verification_url_complete": "https://id.matrix.org/device/abcde", "expires_in": 120, "device_code": "XYZ", "interval": 1}
+        OP->>-A: 200 OK {"user_code": "123456", "verification_url_complete": "https://id.matrix.org/device/abcde", "expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
 
         Note over A: At this point A finally gets back to B to tell it what it wants to do:
 
