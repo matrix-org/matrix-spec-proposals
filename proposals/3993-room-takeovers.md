@@ -1,11 +1,11 @@
 # MSC3991: Room takeover
 
 In the current Spec, room members with the same power level cannot decrease or remove each other's power level.
-However, a room admin may wish to legitimately depromote another room admin.
+However, a room admin may wish to legitimately demote another room admin.
 
 For this proposal a "room admin" is a user with the highest power level in a room. For the use case this MSC addresses, a room must have two or more room admins.
 
-There are multiple scenarios of why one room admin wishes to depromote another room admin:
+There are multiple scenarios of why one room admin wishes to demote another room admin:
 
 * The home server admin of a room admin can no longer be trusted.
   * "I no longer want room admins with an account on evil.com, because their home server admin started messing with rooms."
@@ -14,17 +14,17 @@ There are multiple scenarios of why one room admin wishes to depromote another r
 * The home server of a room admin went offline and cannot be recovered.
   * "I no longer want room admins with an account on foo.com, because the domain is available for sale and a new domain owner could use the custom power level for evil."
 * The account of a room admin has been compromised.
-  * "I want to depromote Alice, because her account got hacked. She now has a new account."
+  * "I want to demote Alice, because her account got hacked. She now has a new account."
 * The account of a room admin is no longer in use or deactivated.
-  * "I want to depromote Bob, because he left the company."
+  * "I want to demote Bob, because he left the company."
 * A room admin can no longer be trusted.
-  * "I want to depromote Charles, because they left their role as an organiser."
+  * "I want to demote Charles, because they left their role as an organiser."
 
 Use cases:
-* The IT department of an organisation wants to depromote a room admin when or after the person leaves the company.
+* The IT department of an organisation wants to demote a room admin when or after the person leaves the company.
 * A meetup group with multiple organisers wants to deprom
-* An organisation migrates from one domain to another. To avoid having to ask every room admin to depromote themselves while promoting their new accounts, they want one account that has the permission to do so.
-* To ensure my ownership of a room, I added multiple of my accounts as room admins to a room. One of the accounts is no longer accessible to me and I want to depromote that account.
+* An organisation migrates from one domain to another. To avoid having to ask every room admin to demote themselves while promoting their new accounts, they want one account that has the permission to do so.
+* To ensure my ownership of a room, I added multiple of my accounts as room admins to a room. One of the accounts is no longer accessible to me and I want to demote that account.
 
 ## Proposal 1 (simplest: `allow_depromotions`)
 
@@ -97,8 +97,8 @@ Any Matrix user listed in the array can lower (or remove) the power level of any
 
 * Alice and Bob can not lower each other's power level.
 * Charles can not lower Delilah's power level.
-* Delilah can lower everone's power level. She could depromote Alice to allow Bob to take over the room. _(this is the change!)_
-  * She could also depromote everyone but herself. This would decrease the highest power level of the room to 50 which is her own.
+* Delilah can lower everone's power level. She could demote Alice to allow Bob to take over the room. _(this is the change!)_
+  * She could also demote everyone but herself. This would decrease the highest power level of the room to 50 which is her own.
 
 ## Proposal 3 (complex: `takeover_users`)
 
@@ -139,15 +139,15 @@ Any Matrix user listed in the array can lower (or remove) the power level of any
 
 * Alice and Bob can not lower each other's power level.
 * Charles can lower the power level of Alice, but not the other room admins. _(this is different!)_
-* Delilah can lower everone's power level. She could depromote Alice and Charles to allow Bob to take over the room. _(this is different!)_
+* Delilah can lower everone's power level. She could demote Alice and Charles to allow Bob to take over the room. _(this is different!)_
 
 ## Potential issues
 
 Simplest: It's simple but might not cover more complex use cases. It could be that one wishes to only allow a subset of room admins to take over a room.
 
-Simple: It covers more use cases and also allows a room owner who can depromote admins while not being allowed to otherwise change the power levels state event.
+Simple: It covers more use cases and also allows a room owner who can demote admins while not being allowed to otherwise change the power levels state event.
 
-Complex: It covers even more cases but might introduce more complexity than needed. On the Other hand it allows fine tuning over who is allowed to depromote which other user.
+Complex: It covers even more cases but might introduce more complexity than needed. On the Other hand it allows fine tuning over who is allowed to demote which other user.
 
 ## Similar but different MSCs
 
@@ -162,7 +162,7 @@ Complex: It covers even more cases but might introduce more complexity than need
 
 ## Security considerations
 
-The current spec does not allow for a room admin to depromote another admin. This MSC would allow them to become a sole room admin by upgrading the room, changing the state event for them to take over the room and then depromoting other admins.
+The current spec does not allow for a room admin to demote another admin. This MSC would allow them to become a sole room admin by upgrading the room, changing the state event for them to take over the room and then depromoting other admins.
 
 ## Unstable room version
 
