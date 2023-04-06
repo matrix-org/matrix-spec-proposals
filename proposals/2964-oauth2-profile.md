@@ -363,7 +363,6 @@ None as part of this MSC.
 
 ## Dependencies
 
-- [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964)
 - [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
 - [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966)
 - [MSC2967](https://github.com/matrix-org/matrix-spec-proposals/pull/2967)
