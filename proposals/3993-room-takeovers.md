@@ -97,7 +97,7 @@ Any Matrix user listed in the array can lower (or remove) the power level of any
 
 * Alice and Bob can not lower each other's power level.
 * Charles can not lower Delilah's power level.
-* Delilah can lower everone's power level. She could demote Alice to allow Bob to take over the room. _(this is the change!)_
+* Delilah can lower everyone's power level. She could demote Alice to allow Bob to take over the room. _(this is the change!)_
   * She could also demote everyone but herself. This would decrease the highest power level of the room to 50 which is her own.
 
 ## Proposal 3 (complex: `takeover_users`)
@@ -139,7 +139,7 @@ Any Matrix user listed in the array can lower (or remove) the power level of any
 
 * Alice and Bob can not lower each other's power level.
 * Charles can lower the power level of Alice, but not the other room admins. _(this is different!)_
-* Delilah can lower everone's power level. She could demote Alice and Charles to allow Bob to take over the room. _(this is different!)_
+* Delilah can lower everyone's power level. She could demote Alice and Charles to allow Bob to take over the room. _(this is different!)_
 
 ## Potential issues
 
