@@ -102,7 +102,7 @@ Any Matrix user listed in the array can lower (or remove) the power level of any
 
 ## Proposal 3 (complex: `takeover_users`)
 
-This MSC proposes an optional array `takeover_owners` to be added to the `m.room.power_level` state event. Its default value is an empty array to be compatible with the current behaviour.
+This MSC proposes an optional array `takeover_users` to be added to the `m.room.power_level` state event. Its default value is an empty array to be compatible with the current behaviour.
 
 Any Matrix user listed in the array can lower (or remove) the power level of any member. They cannot raise their own power level based on this, to prevent an ambiguity of their actual power level.
 
