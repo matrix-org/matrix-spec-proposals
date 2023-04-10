@@ -120,7 +120,7 @@ define 3 fields relevant for DAG representation of events:
 * `auth_events`: The event IDs which prove the sender is allowed to send the event. Which events must
   be included here are [selected](https://spec.matrix.org/v1.6/server-server-api/#auth-events-selection).
 
-* `prev_events`: The event IDs which preceed this event. Typically will be forward extremities for the
+* `prev_events`: The event IDs which precede this event. Typically will be forward extremities for the
   server.
 
 * `depth`: The topological ordering of this event in the DAG.
