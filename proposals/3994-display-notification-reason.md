@@ -15,8 +15,8 @@ Extend the `Notification` object returned by [`GET /notifications`](https://spec
 
 | Name | Type | Description |
 |--|--|--|
-| `executedRuleKind` | [push rule kind](https://spec.matrix.org/latest/client-server-api/#push-rules) (`override` \| `content` \| `room` \| `sender` \| `underride`) | `kind` of the executed push rule |
-| `executedRuleId` | string | `rule_id` of the executed push rule |
+| `rule_kind` | [push rule kind](https://spec.matrix.org/latest/client-server-api/#push-rules) (`override` \| `content` \| `room` \| `sender` \| `underride`) | `kind` of the executed push rule |
+| `rule_id` | string | `rule_id` of the executed push rule |
 
 
 ## Alternatives
