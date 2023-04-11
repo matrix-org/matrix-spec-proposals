@@ -21,7 +21,8 @@ Extend the `Notification` object returned by [`GET /notifications`](https://spec
 
 ## Alternatives
 
-Let clients determine the executed push rule.
+Let clients determine the executed push rule. Clients likely already do this in many cases. For example, Element Web
+runs client-side push rule processing for encrypted events, and on `/sync` response)
 
 ## Security considerations
 
