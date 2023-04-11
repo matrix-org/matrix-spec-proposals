@@ -97,14 +97,14 @@ the intro/context paragraphs above though.
 
 ---
 
-As an [alternative that could solve the Gitter specific
+As an alternative that could solve the [Gitter specific
 case](https://gitlab.com/gitterHQ/gitter.im/-/issues/4) where a user with a power level
 of `90` appears as "Moderator" when it actually functions as an admin role; this could
 be solved by spec'ing out how to figure out what is the admin PL and what is the
 moderator PL. Hardcoding random integers to labels just doesn't work well. For example,
 with the [Nheko](https://github.com/Nheko-Reborn/nheko) client, it considers people with
-the permission to change powerlevels to be admins and users with redaction permissions
-are moderators. Or maybe something more flexible like [MSC3949: Power Level
+the permission to change power levels to be admins and users with redaction permissions
+as moderators. Or maybe something more flexible like [MSC3949: Power Level
 Tags](https://github.com/matrix-org/matrix-spec-proposals/pull/3949).
 
 This MSC does make sense on top of those kind of changes in any case though.
