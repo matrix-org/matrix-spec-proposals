@@ -28,4 +28,4 @@ Let clients determine the executed push rule.
 N/A
 
 ## Unstable prefix
-While this MSC is not included in the spec `executedRuleKind` and `executedRuleId` should use the unstable prefixes `org.matrix.mscXXX.executedRuleKind` and `org.matrix.mscXXX.executedRuleId` respectively
+While this MSC is not included in the spec `rule_kind` and `rule_id` should use the unstable prefixes `org.matrix.msc3994.rule_kind` and `org.matrix.msc3994.rule_id` respectively
