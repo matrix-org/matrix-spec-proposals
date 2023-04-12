@@ -340,6 +340,8 @@ room, but also to invite all members of the old room to the new one, with the
 same power level.
 
 The server should send invitations on behalf of the user performing the upgrade.
+These invitations should contain a `part_of` property in their content, whose
+value is the ID of the `m.room.create` event of the new room.
 
 This action should only be performed by the server if the user performing the
 upgrade is registered with this server. Otherwise, the server should not create
@@ -385,6 +387,16 @@ ones.
 the old room, banning them from the new room for with the same information,
 except if the ban event is marked as `obsolete` using sub-proposal 1 of this
 proposal.
+```
+
+In [m.room.member](https://spec.matrix.org/latest/client-server-api/#mroommember),
+under "Content", add a property:
+
+```
+Name: part_of
+Type: string
+Description: The Event ID of the m.room.create event that this invitation is
+part of, if any.
 ```
 
 ### Potential issues
@@ -435,27 +447,41 @@ When a homeserver observes that a room is being upgraded, we propose that it
 accepts the resulting invitation to that room on behalf of all users invited to
 the new room who are registered with this homeserver.
 
-TODO: how to do this only the first time this user is invited, straight after
-the upgrade? Do we need to mark the invitation in some way, so we know it's an
-auto-invite?
+To do this safely, the server must check that the user was a member of the room
+before it was upgraded.
 
-TODO: spec wording here
+The server will begin this process if it finds a new `m.room.member` event that
+has its `part_of` property set. This should contain the event ID of an
+`m.room.create` event. If it does, the server should examine that event to find
+a predecessor room and event ID. If these exist, the server should validate that
+the predecessor event ID refers to a tombstone event in that room, that the
+tombstone event refers to the new room as successor, and that the user was a
+member of the old room at the time the tombstone was created. If all these are
+true, the server should auto-join the user to the new room by emitting an
+`m.room.member` event on their behalf whose properties match their membership of
+the old room (excluding `join_authorised_via_users_server`, which should be
+omitted since the user is invited, so does not need additional authorisation).
 
 ### Potential issues
-
-TODO: auto-joining someone later, just because they were invited to a room that
-was previously upgraded
 
 ### Alternatives
 ### Security considerations
 
-TODO: obviously, doing something on behalf of the user is a potential abuse
-vector.
+Joining a room automatically could very easily be problematic, so this proposal
+requires close scrutiny.
+
+We believe that it is safe because the requirement to check back in the old room
+and validate that there is a tombstone pointing at the new room, and that the
+user was a member of the old room at the time of the tombstone mean that this
+process can only be triggered by someone able to create a tombstone within a
+room of which the user is a member.
+
+So only an admin of a room I am in can trigger me to auto-join a new room.
 
 ### Dependencies
 
-TODO: maybe dependencies on sub-proposal 2, if we decide that invitations need
-to be different to support this.
+This depends on sub-proposal 2, because it requires that `m.room.member` events
+contain the `part_of` property.
 
 ## Sub-proposal 4: Copy more state to upgraded rooms
 
