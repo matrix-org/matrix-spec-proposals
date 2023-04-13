@@ -39,6 +39,11 @@ could be future considerations to opening this up to any client as it's kinda ar
 to restrict it this way and just seems like friction to try to get only people with good
 intentions using it.
 
+---
+
+Also related: [MSC3998](https://github.com/matrix-org/matrix-spec-proposals/pull/3998)
+proposes adding a `ts` querystring parameter to the `/join` and `/knock` endpoints but
+for different reasons.
 
 ## Potential issues
 
