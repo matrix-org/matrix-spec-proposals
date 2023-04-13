@@ -711,7 +711,7 @@ However, this feels needlessly complicated if the DAG approach is sufficient.
 
 As an update, [Gitter has fully migrated to
 Matrix](https://blog.gitter.im/2023/02/13/gitter-has-fully-migrated-to-matrix/) and was
-able to accomplish the 141M message import with MSC2716. If your use case is just one
+able to accomplish the 141M message import without MSC2716. If your use case is just one
 big import blast at the beginning of the room, the way Gitter accomplished this works
 now and is a lot simpler (do this instead).
 
