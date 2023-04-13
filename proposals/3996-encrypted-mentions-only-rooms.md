@@ -172,11 +172,11 @@ equivalent, see [issue #643](https://github.com/matrix-org/matrix-spec/issues/64
 [^2]: The [`.m.rule.master`](https://spec.matrix.org/v1.6/client-server-api/#default-override-rules)
 is *always* first, so this rule gets created right after it.
 
-[^3]: Stricly speaking this does not require MSC3952, but it simplifies the text
+[^3]: Strictly speaking this does not require MSC3952, but it simplifies the text
 to assume it will be accepted.
 
 [^4]: In the past it was not possible to discard notifications on iOS: if a push
-notifcation was received it *had to be displayed*. This is [no longer the case](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering).
+notification was received it *had to be displayed*. This is [no longer the case](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering).
 
 [^5]: [From MSC3952 comments](https://github.com/matrix-org/matrix-spec-proposals/pull/3952#discussion_r1113525021):
 "we already are committed to downloading all contents in E2EE rooms in order to
