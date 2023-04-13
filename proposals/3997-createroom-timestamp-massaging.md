@@ -1,4 +1,4 @@
-# MSC0000: Add timestamp massaging to `/createRoom`
+# MSC3997: Add timestamp massaging to `/createRoom`
 
 [Timestamp massaging is an existing
 concept](https://spec.matrix.org/v1.5/application-service-api/#timestamp-massaging)
@@ -60,19 +60,19 @@ does not create any new security considerations.
 ## Unstable prefix
 
 While this feature is in development, the `ts` querystring parameter can be used as
-`org.matrix.mscXXXX.ts`
+`org.matrix.msc3997.ts`
 
 ### While the MSC is unstable
 
 During this period, to detect server support clients should check for the presence of
-the `org.matrix.mscXXX` flag in `unstable_features` on `/versions`. Clients are also
+the `org.matrix.msc3997` flag in `unstable_features` on `/versions`. Clients are also
 required to use the unstable prefixes (see [unstable prefix](#unstable-prefix)) during
 this time.
 
 ### Once the MSC is merged but not in a spec version
 
 Once this MSC is merged, but is not yet part of the spec, clients should rely on the
-presence of the `org.matrix.mscXXX.stable` flag in `unstable_features` to determine
+presence of the `org.matrix.msc3997.stable` flag in `unstable_features` to determine
 server support. If the flag is present, clients are required to use stable prefixes (see
 [unstable prefix](#unstable-prefix)).
 
