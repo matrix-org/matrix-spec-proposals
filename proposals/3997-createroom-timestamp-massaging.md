@@ -15,7 +15,7 @@ created back in time before your messages were sent and to have stable/consisten
 timestamps. If you start using timestamp massaging when sending messages, it can appear
 as though those events occurred before the `m.room.create` and other primordial events.
 We specifically run into this with the [Matrix Public
-Archive](https://github.com/matrix-org/matrix-public-archive/) end-to-end tests
+Archive](https://github.com/matrix-org/matrix-public-archive/) end-to-end tests.
 
 In real-life scenarios, practically, this hasn't mattered much for content because the
 DAG is ordered topologically and not by timestamp but is a semantic inconsistency that
