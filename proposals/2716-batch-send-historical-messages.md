@@ -302,21 +302,23 @@ breakdown which incrementally explains how everything fits together.
     (`[0, 1, 2]`) and is processed in that order so the `prev_events` point to
     it's older-in-time previous message which gives us a nice straight line in
     the DAG.
-    - <a name="depth-discussion"></a>**Depth discussion:** For Synapse, when
-      persisting, we **reverse the list (to make it reverse-chronological)** so
-      we can still get the correct `(topological_ordering, stream_ordering)` so
-      it sorts between A and B as we expect. Why?  `depth` (or the
-      `topological_ordering`) is not re-calculated when historical messages are
-      inserted into the DAG. This means we have to take care to insert in the
-      right order. Events are sorted by `(topological_ordering,
+    - <a name="depth-discussion"></a>**Depth discussion:** For Synapse, when persisting,
+      we **reverse the list (to make it reverse-chronological)** so we can still get the
+      correct `(topological_ordering, stream_ordering)` so it sorts between A and B as
+      we expect. Why?  `depth` (or the `topological_ordering`) is not re-calculated when
+      historical messages are inserted into the DAG. This means we have to take care to
+      insert in the right order. Events are sorted by `(topological_ordering,
       stream_ordering)` where `topological_ordering` is just `depth`. Normally,
-      `stream_ordering` is an auto incrementing integer but for
-      `backfilled=true` events, it decrements. Since historical messages are
-      inserted all at the same `depth`, the only way we can control the ordering
-      in between is the `stream_ordering`. Historical messages are marked as
-      backfilled so the `stream_ordering` decrements and each event is sorted
-      behind the next. (from
-      https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201)
+      `stream_ordering` is an auto incrementing integer but for `backfilled=true`
+      events, it decrements. Since historical messages are inserted all at the same
+      `depth`, the only way we can control the ordering in between is the
+      `stream_ordering`. Historical messages are marked as backfilled so the
+      `stream_ordering` decrements and each event is sorted behind the next. (from
+      https://github.com/matrix-org/synapse/pull/9247#discussion_r588479201). Because
+      ordering between events is mostly controlled by `stream_ordering`, we will run
+      into ordering issues over federation if it backfills in the wrong order (see the
+      ["Message ordering issues over
+      federation"](#message-ordering-issues-over-federation) section below)
 
 
 ### Power levels
@@ -581,11 +583,67 @@ flowchart BT
 ```
 
 
-
-
 ## Potential issues
 
 Also see the security considerations section below.
+
+### Message ordering issues over federation
+
+See the ["Depth discussion"](#depth-discussion) for the appropriate context for how
+ordering currently works. This works fine for the local server that imported the history
+in any scenario but since current homeserver implementations rely on `stream_ordering`
+(which is just when the server received the event) to tie break the
+`topological_ordering`/`depth`, this will cause message out of order problems for
+federating servers consuming the events. It only works if the federating server scrolls
+back sequentially without jumping around in the history at all which isn't realistic
+with API's like jump to date (`/timestamp_to_event`) around nowadays.
+
+To totally fix this problem, it would require a different [graph
+linearization](https://github.com/matrix-org/gomatrixserverlib/issues/187) strategy.
+Perhaps we would do some online topological ordering (Katriel–Bodlaender algorithm)
+where `depth`/`topological_ordering` is dynamically updated whenever new events are
+inserted into the DAG. This is something extremely sci-fi and a big task though.
+
+ - https://github.com/matrix-org/gomatrixserverlib/issues/187 is the best reference I
+   know of for graph linearization (how to go from a DAG to a list of events in order)
+   in general though
+ - Related event ordering issue: https://github.com/matrix-org/matrix-spec/issues/852
+ - Synapse docs on depth and stream ordering:
+   https://github.com/matrix-org/synapse/blob/66ad1b8984eb536608e0915722c6a0b4493bb9df/docs/development/room-dag-concepts.md#depth-and-stream-ordering
+
+---
+
+When factoring in how to use MSC2716 with the Gitter import and the static archives, we
+were hand waving over this part and planned to have a script manually scrollback across
+all of the rooms on the archive server before anyone else or Google spider crawls in
+some weird way. This way it will lock the sort in place for all of the historical
+messages. Or have the static archives fetch directly from the `gitter.im` homeserver
+which would be correct since it was the server that imported everything.
+
+Then later, online topological ordering can happen in the future and by its nature will
+apply retroactively to fix any inconsistencies introduced by jumping and people permalinking.
+
+But we were able to accomplish the Gitter to Matrix migration message import without
+MSC2716 and if your use case is just one big import blast at the beginning of the room,
+the way Gitter accomplished this works now and is a lot simpler (do that instead), see
+[*"Alternative for one big import blast at the start of a room (Gitter case study)"*
+section below](#one-big-import-blast-gitter-case-study).
+
+
+
+
+### Self-referential batches
+
+We probably want to come up with a solution for how to reference another event in the
+same batch. Imagine wanting to reply to an earlier event in the batch. Or any other
+relation like reactions and threads.
+
+See this [discussion
+thread](https://github.com/matrix-org/matrix-spec-proposals/pull/2716#discussion_r870884150)
+for ideas.
+
+
+### Application service signals to lazy load more history
 
 This doesn't provide a way for a HS to tell an AS that a client has tried to
 call `/messages` beyond the beginning of a room, and that the AS should try to
@@ -596,6 +654,9 @@ the existing AS query APIs is that they don't include who is querying,
 so they're hard to use in bridges that require logging in. If a similar query
 API is added here, it should include the ID of the user who's asking for
 history.
+
+
+
 
 
 ## Alternatives
@@ -642,6 +703,25 @@ and retrospectively insert events into the room outside the context of the DAG
   history provided by ASes.
 
 However, this feels needlessly complicated if the DAG approach is sufficient.
+
+
+### Alternative for one big import blast at the start of a room (Gitter case study)
+
+<a name="one-big-import-blast-gitter-case-study"></a>
+
+As an update, [Gitter has fully migrated to
+Matrix](https://blog.gitter.im/2023/02/13/gitter-has-fully-migrated-to-matrix/) and was
+able to accomplish the 141M message import with MSC2716. If your use case is just one
+big import blast at the beginning of the room, the way Gitter accomplished this works
+now and is a lot simpler (do this instead).
+
+In the Gitter case, we started with a fresh room for the historical messages and
+imported one by one so the `topological_ordering` was correct. We also used
+`/send?ts=xxx` to make the timestamps correct. Then connected the historical and  "live"
+room together with a `m.room.tombstone` and MSC3946 `predecessor` event. This
+functionality is completely separate from MSC2716 and works fine today.
+
+
 
 
 ## Security considerations
