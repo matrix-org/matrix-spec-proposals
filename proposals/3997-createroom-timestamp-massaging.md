@@ -80,7 +80,7 @@ server support. If the flag is present, clients are required to use stable prefi
 
 Once this MSC becomes a part of a spec version, clients should rely on the presence of
 the spec version, that supports the MSC, in `versions` on `/versions`, to determine
-support. Servers are encouraged to keep the `org.matrix.msc3871.stable` flag around for
+support. Servers are encouraged to keep the `org.matrix.msc3997.stable` flag around for
 a reasonable amount of time to help smooth over the transition for clients. "Reasonable"
 is intentionally left as an implementation detail, however the MSC process currently
 recommends *at most* 2 months from the date of spec release.
