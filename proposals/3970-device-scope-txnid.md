@@ -14,6 +14,11 @@ The spec [reads](https://spec.matrix.org/v1.6/client-server-api/#transaction-ide
 > client logs out and back in between the `A` and `B` tokens, `TXN1` could be used
 > once for each.
 
+The "client session" scope concept described can be complicated to implement.
+
+This MSC proposes that the scope of a transaction identifier is changed to something
+that is easier to implement whilst maintaining required transaction semantics.
+
 The transaction IDs appear in two parts of the Client-Server API spec:
 
 1. As a identifier to allow the homeserver to make some `PUT` endpoints
