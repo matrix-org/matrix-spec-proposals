@@ -46,6 +46,14 @@ milliseconds).
  - `POST /_matrix/client/v3/join/{roomId}?ts=123`
  - `POST /_matrix/client/v3/knock/{roomIdOrAlias}?ts=123`
 
+This functionality is restricted to the application service (AS) API to be consistent
+with [MSC3316](https://github.com/matrix-org/matrix-spec-proposals/pull/3316). There
+could be future considerations to opening this up to any client as it's kinda arbitrary
+to restrict it this way and just seems like friction to try to get only people with good
+intentions using it.
+
+---
+
 Also related: [MSC3997](https://github.com/matrix-org/matrix-spec-proposals/pull/3997)
 proposes adding a `ts` querystring parameter to the `/createRoom` endpoint but for
 different reasons.
