@@ -1,4 +1,4 @@
-# MSCXXXX: Forwards fill (`/backfill` forwards)
+# MSC4000: Forwards fill (`/backfill` forwards)
 
 Currently, `/messages` only backfills events when you paginate backwards with `?dir=b`.
 The limiting factor here is `/backfill` which only looks backwards to find preceding
@@ -118,20 +118,20 @@ Other links:
 ## Unstable prefix
 
 While this feature is in development, the endpoint can be used with the unstable prefix
-at `GET /_matrix/federation/org.matrix.mscXXXX/forwards_fill/{roomId}` instead of it's
+at `GET /_matrix/federation/org.matrix.msc4000/forwards_fill/{roomId}` instead of it's
 stable `/v1` location as described above.
 
 ### While the MSC is unstable
 
 During this period, to detect server support, other servers should check for the
-presence of the `org.matrix.mscXXXX` flag in `unstable_features` on `/versions`. Servers
+presence of the `org.matrix.msc4000` flag in `unstable_features` on `/versions`. Servers
 are also required to use the unstable prefixes (see [unstable prefix](#unstable-prefix))
 during this time.
 
 ### Once the MSC is merged but not in a spec version
 
 Once this MSC is merged, but is not yet part of the spec, servers should rely on the
-presence of the `org.matrix.mscXXXX.stable` flag in `unstable_features` to determine
+presence of the `org.matrix.msc4000.stable` flag in `unstable_features` to determine
 server support. If the flag is present, servers are required to use stable prefixes (see
 [unstable prefix](#unstable-prefix)).
 
@@ -139,7 +139,7 @@ server support. If the flag is present, servers are required to use stable prefi
 
 Once this MSC becomes a part of a spec version, servers should rely on the presence of
 the spec version, that supports the MSC, in `versions` on `/versions`, to determine
-support. Servers are encouraged to keep the `org.matrix.mscXXXX.stable` flag around for
+support. Servers are encouraged to keep the `org.matrix.msc4000.stable` flag around for
 a reasonable amount of time to help smooth over the transition for other servers.
 "Reasonable" is intentionally left as an implementation detail, however the MSC process
 currently recommends *at most* 2 months from the date of spec release.
