@@ -79,7 +79,7 @@ direction. This is basically what Matrix Public Archive will probably do.
 ## Potential issues
 
 While you can still receive a rogue out of place event using `/timestamp_to_event`, we
-can at least gurantee that the event comes before or after the given `?event_id` casual
+can at least guarantee that the event comes before or after the given `?event_id` casual
 query parameter.
 
 
