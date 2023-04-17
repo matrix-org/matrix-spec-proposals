@@ -123,26 +123,28 @@ stable `/v1` location as described above.
 
 ### While the MSC is unstable
 
-During this period, to detect server support, other servers should check for the
-presence of the `org.matrix.msc4000` flag in `unstable_features` on `/versions`. Servers
-are also required to use the unstable prefixes (see [unstable prefix](#unstable-prefix))
-during this time.
+During this period, servers should optimistically try the unstable endpoint and look for
+the `404` `M_UNRECOGNIZED` error code to determine support (see [MSC3743: *Standardized
+error response for unknown
+endpoints*](https://github.com/matrix-org/matrix-spec-proposals/pull/3743)).
 
 ### Once the MSC is merged but not in a spec version
 
-Once this MSC is merged, but is not yet part of the spec, servers should rely on the
-presence of the `org.matrix.msc4000.stable` flag in `unstable_features` to determine
-server support. If the flag is present, servers are required to use stable prefixes (see
-[unstable prefix](#unstable-prefix)).
+Once this MSC is merged, but is not yet part of the spec, servers should optimistically
+use the stable endpoint and fallback to the unstable endpoint to have maximum
+compatibility if desired.
 
 ### Once the MSC is in a spec version
 
-Once this MSC becomes a part of a spec version, servers should rely on the presence of
-the spec version, that supports the MSC, in `versions` on `/versions`, to determine
-support. Servers are encouraged to keep the `org.matrix.msc4000.stable` flag around for
-a reasonable amount of time to help smooth over the transition for other servers.
-"Reasonable" is intentionally left as an implementation detail, however the MSC process
-currently recommends *at most* 2 months from the date of spec release.
+Once this MSC becomes a part of a spec version, servers should optimistically use the
+stable endpoint. If a given server doesn't support the endpoint, another server in the
+room can be tried until all are exhausted.
+
+Servers can keep falling back to the unstable endpoint and are encouraged (not
+obligated) to serve the unstable fallback endpoint for a reasonable amount of time to
+help smooth over the transition for other servers. "Reasonable" is intentionally left as
+an implementation detail, however the MSC process currently recommends *at most* 2
+months from the date of spec release.
 
 
 
