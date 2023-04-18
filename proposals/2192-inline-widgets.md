@@ -27,7 +27,7 @@ An example is:
 {
   "type": "m.embed",
   "content": {
-    "m.markup": [
+    "m.text": [
        // Format of the fallback is not defined, but should have enough information for a text-only
        // client to do something with the widget.
        {"body": "https://www.youtube.com/watch?v=Vn-NZvMcujc"}
@@ -49,7 +49,7 @@ With consideration for extensible events, the following content blocks are defin
 
 Together with content blocks from other proposals, an `m.embed` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process
+* **Required** - An `m.text` block to act as a fallback for clients which can't process
   inline widgets.
 * **Required** - An `m.widget` block to describe the widget itself. Clients use this to show
   the widget.
