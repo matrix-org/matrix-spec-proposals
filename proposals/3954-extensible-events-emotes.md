@@ -10,8 +10,8 @@ are represented should not block the overall schema from going through.
 
 ## Proposal
 
-MSC1767 allows for regular, non-emotive, text to be sent with an `m.message` event type and `m.markup`
-content block. This MSC simply introduces a new `m.emote` event type taking a **required** `m.markup`
+MSC1767 allows for regular, non-emotive, text to be sent with an `m.message` event type and `m.text`
+content block. This MSC simply introduces a new `m.emote` event type taking a **required** `m.text`
 content block, enabling emotes in rooms supporting extensible events.
 
 An example:
@@ -21,7 +21,7 @@ An example:
     // irrelevant fields not shown
     "type": "m.emote",
     "content": {
-        "m.markup": [{"body": "says hi"}]
+        "m.text": [{"body": "says hi"}]
     }
 }
 ```
