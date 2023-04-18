@@ -29,6 +29,11 @@ Appservices don't need to have any special behavior on this endpoint, but they
 may use the incoming request to verify that an outgoing ping actually pinged
 the appservice rather than going somewhere else.
 
+This proposal doesn't define any cases where a homeserver would call the ping
+endpoint unless explicitly requested by the appservice (using the client
+endpoint below). Therefore, appservices don't necessarily have to implement
+this endpoint if they never call the client ping endpoint.
+
 ### `POST /_matrix/client/v1/appservice/{appserviceId}/ping`
 When the endpoint is called, the homeserver makes a `/_matrix/app/v1/ping`
 request to the appservice.
