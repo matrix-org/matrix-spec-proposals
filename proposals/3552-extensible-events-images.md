@@ -22,7 +22,7 @@ An example is:
 {
   "type": "m.image",
   "content": {
-    "m.markup": [
+    "m.text": [
       // Format of the fallback is not defined, but should have enough information for a text-only
       // client to do something with the image, just like with plain file uploads.
       {"body": "matrix.png (12 KB) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
@@ -55,10 +55,10 @@ An example is:
       // ...
     ],
     "m.caption": { // optional - goes above/below image
-      "m.markup": [{"body": "Look at this cool Matrix logo"}]
+      "m.text": [{"body": "Look at this cool Matrix logo"}]
     },
     "m.alt_text": { // optional - accessibility consideration for image
-      "m.markup": [{"body": "matrix logo"}]
+      "m.text": [{"body": "matrix logo"}]
     }
   }
 }
@@ -78,14 +78,14 @@ With consideration for extensible events, the following content blocks are defin
   * `m.file`'s `mimetype` is a required field in this block.
   * `m.file`'s `name` is optional in this block.
 * `m.alt_text` - Alternative text for the content, for accessibility considerations. Currently
-  requires an `m.markup` content block to be nested within it, however senders should only
+  requires an `m.text` content block to be nested within it, however senders should only
   specify a plain text body for ease of parsing.
-  * *Note*: We use the full capability of `m.markup` here not for mimetype, but future support
+  * *Note*: We use the full capability of `m.text` here not for mimetype, but future support
     for translations and other text-based extensions.
 
 Together with content blocks from other proposals, an `m.image` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process images.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process images.
 * **Required** - An `m.file` block to contain the image itself. Clients use this to show the image.
 * **Optional** - An `m.image_details` block to describe any image-specific metadata, such as dimensions.
   Like with existing `m.room.message` events today, clients should keep images within a set of
