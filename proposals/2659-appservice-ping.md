@@ -53,8 +53,8 @@ should be retried.
 
 #### Response
 If the ping request returned successfully, the endpoint returns HTTP 200. The
-response body has a `duration` field containing the ping request roundtrip time
-as milliseconds.
+response body has a `duration` field containing the `/_matrix/app/v1/ping`
+request roundtrip time as milliseconds.
 
 If the request fails, the endpoint returns a standard error response with
 `errcode`s and HTTP status codes as specified below:
