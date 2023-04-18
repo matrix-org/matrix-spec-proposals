@@ -4,7 +4,7 @@ weight: 10
 type: docs
 ---
 
-The client-server API provides a simple lightweight API to let clients
+The client-server API allows clients to
 send messages, control rooms and synchronise conversation history. It is
 designed to support both lightweight clients which store no state and
 lazy-load data from the server as required - as well as heavyweight
@@ -20,20 +20,15 @@ supported as optional extensions - e.g. a packed binary encoding over
 stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip
 mobile usage. For the default HTTP transport, all API calls use a
 Content-Type of `application/json`. In addition, all strings MUST be
-encoded as UTF-8. Clients are authenticated using opaque `access_token`
-strings (see [Client Authentication](#client-authentication) for
-details), passed as a query string parameter on all requests.
+encoded as UTF-8.
 
-The names of the API endpoints for the HTTP transport follow a
-convention of using underscores to separate words (for example
-`/delete_devices`). The key names in JSON objects passed over the API
-also follow this convention.
+Clients are authenticated using opaque `access_token` strings (see [Client
+Authentication](#client-authentication) for details).
 
-{{% boxes/note %}}
-There are a few historical exceptions to this rule, such as
-`/createRoom`. A future version of this specification will address the
-inconsistency.
-{{% /boxes/note %}}
+See also [Conventions for Matrix APIs](/appendices#conventions-for-matrix-apis)
+in the Appendices for conventions which all Matrix APIs are expected to follow.
+
+### Standard error response
 
 Any errors which occur at the Matrix API level MUST return a "standard
 error response". This is a JSON object which looks like:
@@ -46,15 +41,17 @@ error response". This is a JSON object which looks like:
 ```
 
 The `error` string will be a human-readable error message, usually a
-sentence explaining what went wrong. The `errcode` string will be a
-unique string which can be used to handle an error message e.g.
-`M_FORBIDDEN`. These error codes should have their namespace first in
-ALL CAPS, followed by a single \_ to ease separating the namespace from
-the error code. For example, if there was a custom namespace
-`com.mydomain.here`, and a `FORBIDDEN` code, the error code should look
-like `COM.MYDOMAIN.HERE_FORBIDDEN`. There may be additional keys
-depending on the error, but the keys `error` and `errcode` MUST always
-be present.
+sentence explaining what went wrong.
+
+The `errcode` string will be a unique string which can be used to handle an
+error message e.g.  `M_FORBIDDEN`. Error codes should have their namespace
+first in ALL CAPS, followed by a single `_`. For example, if there was a custom
+namespace `com.mydomain.here`, and a `FORBIDDEN` code, the error code should
+look like `COM.MYDOMAIN.HERE_FORBIDDEN`. Error codes defined by this
+specification should start `M_`.
+
+Some `errcode`s define additional keys which should be present in the error
+response object, but the keys `error` and `errcode` MUST always be present.
 
 Errors are generally best expressed by their error code rather than the
 HTTP status code returned. When encountering the error code `M_UNKNOWN`,
@@ -66,7 +63,9 @@ found. However, if the client were to receive an error code of
 `M_UNKNOWN` with a 400 Bad Request, the client should assume that the
 request being made was invalid.
 
-The common error codes are:
+#### Common error codes
+
+These error codes can be returned by any API endpoint:
 
 `M_FORBIDDEN`
 Forbidden access, e.g. joining a room without permission, failed login.
@@ -98,7 +97,11 @@ then try again.
 `M_UNKNOWN`
 An unknown error has occurred.
 
-Other error codes the client might encounter are:
+#### Other error codes
+
+The following error codes are specific to certain endpoints.
+
+<!-- TODO: move them to the endpoints that return them -->.
 
 `M_UNRECOGNIZED`
 The server did not understand the request.
@@ -226,7 +229,7 @@ headers to be returned by servers on all requests are:
 
     Access-Control-Allow-Origin: *
     Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-    Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+    Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
 
 ## Server Discovery
 
@@ -1021,6 +1024,41 @@ client supports it, the client should redirect the user to the
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
 
+#### Appservice Login
+
+An appservice can log in by providing a valid appservice token and a user within the appservice's
+namespace. 
+
+{{% boxes/note %}}
+Appservices do not need to log in as individual users in all cases, as they
+can perform [Identity Assertion](/application-service-api#identity-assertion)
+using the appservice token. However, if the appservice needs a scoped token
+for a single user then they can use this API instead.
+{{% /boxes/note %}}
+
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration) 
+(see [Client Authentication](#client-authentication) on how to provide the token).
+
+To use this login type, clients should submit a `/login` request as follows:
+
+```json
+{
+  "type": "m.login.appservice",
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+}
+```
+
+If the access token is not valid, does not correspond to an appservice
+or the user has not previously been registered then the homeserver will
+respond with an errcode of `M_FORBIDDEN`.
+
+If the access token does correspond to an appservice, but the user id does
+not lie within its namespace then the homeserver will respond with an
+errcode of `M_EXCLUSIVE`.
+
 {{% http-api spec="client-server" api="login" %}}
 
 {{% http-api spec="client-server" api="logout" %}}
@@ -1210,88 +1248,6 @@ using an `unstable` version.
 
 When this capability is not listed, clients should use `"1"` as the
 default and only stable `available` room version.
-
-## Pagination
-
-{{% boxes/note %}}
-The paths referred to in this section are not actual endpoints. They
-only serve as examples to explain how pagination functions.
-{{% /boxes/note %}}
-
-Pagination is the process of dividing a dataset into multiple discrete
-pages. Matrix makes use of pagination to allow clients to view extremely
-large datasets. These datasets are not limited to events in a room (for
-example clients may want to paginate a list of rooms in addition to
-events within those rooms). Regardless of what is being paginated, there
-is a common approach which is used to give clients an easy way of
-selecting subsets of a potentially changing dataset. Each endpoint that
-uses pagination may use different parameters. However the theme among
-them is that they take a `from` and `to` token, and occasionally a
-`limit` and `dir`. Together, these parameters describe the position in a
-data set, where `from` and `to` are known as "stream tokens" matching
-the regular expression `[a-zA-Z0-9.=_-]+`. If supported, the `dir`
-defines the direction of events to return: either forwards (`f`) or
-backwards (`b`). The response may contain tokens that can be used for
-retrieving results before or after the returned set. These tokens may be
-called <span class="title-ref">start</span> or <span
-class="title-ref">prev\_batch</span> for retrieving the previous result
-set, or <span class="title-ref">end</span>, <span
-class="title-ref">next\_batch</span> or <span
-class="title-ref">next\_token</span> for retrieving the next result set.
-
-In the following examples, 'START' and 'END' are placeholders to signify
-the start and end of the data sets respectively.
-
-For example, if an endpoint had events E1 -&gt; E15. The client wants
-the last 5 events and doesn't know any previous events:
-
-```
-    S                                                    E
-    |-E1-E2-E3-E4-E5-E6-E7-E8-E9-E10-E11-E12-E13-E14-E15-|
-    |                               |                    |
-    |                          _____|  <--backwards--    |
-    |__________________       |         |        ________|
-                       |      |         |        |
-     GET /somepath?to=START&limit=5&dir=b&from=END
-     Returns:
-       E15,E14,E13,E12,E11
-```
-
-Another example: a public room list has rooms R1 -&gt; R17. The client
-is showing 5 rooms at a time on screen, and is on page 2. They want to
-now show page 3 (rooms R11 -&gt; 15):
-
-```
-    S                                                           E
-    |  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16 | stream token
-    |-R1-R2-R3-R4-R5-R6-R7-R8-R9-R10-R11-R12-R13-R14-R15-R16-R17| room
-                      |____________| |________________|
-                            |                |
-                        Currently            |
-                        viewing              |
-                                             |
-                             GET /roomslist?from=9&to=END&limit=5
-                             Returns: R11,R12,R13,R14,R15
-```
-
-Note that tokens are treated in an *exclusive*, not inclusive, manner.
-The end token from the initial request was '9' which corresponded to
-R10. When the 2nd request was made, R10 did not appear again, even
-though from=9 was specified. If you know the token, you already have the
-data.
-
-Responses for pagination-capable endpoints SHOULD have a `chunk` array
-alongside the applicable stream tokens to represent the result set.
-
-In general, when the end of a result set is reached the applicable
-stream token will be excluded from the response. For example, if a user
-was backwards-paginating events in a room they'd eventually reach the
-first event in the room. In this scenario, the `prev_batch` token would
-be excluded from the response. Some paginated endpoints are open-ended
-in one direction, such as endpoints which expose an event stream for an
-active room. In this case, it is not possible for the client to reach
-the true "end" of the data set and therefore should always be presented
-with a token to keep moving forwards.
 
 ## Filtering
 

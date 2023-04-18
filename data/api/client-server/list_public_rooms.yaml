@@ -61,6 +61,8 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+      tags:
+        - Room discovery
     put:
       summary: Sets the visibility of a room in the room directory
       description: |-
@@ -111,6 +113,8 @@ paths:
             }
           schema:
             "$ref": "definitions/errors/error.yaml"
+      tags:
+        - Room discovery
   "/publicRooms":
     get:
       summary: Lists the public rooms on the server.

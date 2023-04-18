@@ -47,6 +47,27 @@ When decoding Base64, implementations SHOULD accept input with or
 without padding characters wherever possible, to ensure maximum
 interoperability.
 
+## Binary data
+
+In some cases it is necessary to encapsulate binary data, for example,
+public keys or signatures. Given that JSON cannot safely represent raw
+binary data, all binary values should be encoded and represented in
+JSON as unpadded Base64 strings as described above.
+
+In cases where the Matrix specification refers to either opaque byte
+or opaque Base64 values, the value is considered to be opaque AFTER
+Base64 decoding, rather than the encoded representation itself.
+
+It is safe for a client or homeserver implementation to check for
+correctness of a Base64-encoded value at any point, and to altogether
+reject a value which is not encoded properly. However, this is optional
+and is considered to be an implementation detail.
+
+Special consideration is given for future protocol transformations,
+such as those which do not use JSON, where Base64 encoding may not be
+necessary in order to represent a binary value safely. In these cases,
+Base64 encoding of binary values may be skipped altogether.
+
 ## Signing JSON
 
 Various points in the Matrix specification require JSON objects to be
@@ -1039,3 +1060,48 @@ The event signing algorithm should emit the following signed event:
     }
 }
 ```
+
+## Conventions for Matrix APIs
+
+This section is intended primarily to guide API designers when adding to Matrix,
+setting guidelines to follow for how those APIs should work. This is important to
+maintain consistency with the Matrix protocol, and thus improve developer
+experience.
+
+### HTTP endpoint and JSON property naming
+
+The names of the API endpoints for the HTTP transport follow a convention of
+using underscores to separate words (for example `/delete_devices`).
+
+The key names in JSON objects passed over the API also follow this convention.
+
+{{% boxes/note %}}
+There are a few historical exceptions to this rule, such as `/createRoom`.
+These inconsistencies may be addressed in future versions of this specification.
+{{% /boxes/note %}}
+
+### Pagination
+
+REST API endpoints which can return multiple "pages" of results should adopt the
+following conventions.
+
+ * If more results are available, the endpoint should return a property named
+   `next_batch`. The value should be a string token which can be passed into
+   a subsequent call to the endpoint to retrieve the next page of results.
+
+   If no more results are available, this is indicated by *omitting* the
+   `next_batch` property from the results.
+
+ * The endpoint should accept a query-parameter named `from` which the client
+   is expected to set to the value of a previous `next_batch`.
+
+ * Some endpoints might support pagination in two directions (example:
+   `/messages`, which can be used to move forward or backwards in the timeline
+   from a known point). In this case, the endpoint should return a `prev_batch`
+   property which can be passed into `from` to receive the previous page of
+   results.
+
+   Avoid having a separate "direction" parameter, which is generally redundant:
+   the tokens returned by `next_batch` and `prev_batch` should contain enough
+   information for subsequent calls to the API to know which page of results
+   they should return.

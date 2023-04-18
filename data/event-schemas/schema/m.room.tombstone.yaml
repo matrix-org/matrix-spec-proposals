@@ -10,7 +10,7 @@ properties:
         description: A server-defined message.
       replacement_room:
         type: string
-        description: The new room the client should be visiting.
+        description: The room ID of the new room the client should be visiting.
     required:
       - replacement_room
       - body

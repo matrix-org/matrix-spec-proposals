@@ -51,9 +51,12 @@ paths:
           name: from
           description: |-
             The token to start returning events from. This token can be obtained
-            from a `prev_batch` token returned for each room by the sync API,
-            or from a `start` or `end` token returned by a previous request
-            to this endpoint.
+            from a `prev_batch` or `next_batch` token returned by the `/sync` endpoint,
+            or from an `end` token returned by a previous request to this endpoint.
+
+            This endpoint can also accept a value returned as a `start` token
+            by a previous request to this endpoint, though servers are not 
+            required to support this. Clients should not rely on the behaviour.
           required: true
           x-example: "s345_678_333"
         - in: query
@@ -61,16 +64,18 @@ paths:
           name: to
           description: |-
             The token to stop returning events at. This token can be obtained from
-            a `prev_batch` token returned for each room by the sync endpoint,
-            or from a `start` or `end` token returned by a previous request to
-            this endpoint.
+            a `prev_batch` or `next_batch` token returned by the `/sync` endpoint,
+            or from an `end` token returned by a previous request to this endpoint.
           required: false
         - in: query
           type: string
           enum: ["b", "f"]
           name: dir
           description: |-
-            The direction to return events from.
+            The direction to return events from. If this is set to `f`, events
+            will be returned in chronological order starting at `from`. If it
+            is set to `b`, events will be returned in *reverse* chronolgical
+            order, again starting at `from`.
           required: true
           x-example: "b"
         - in: query
@@ -96,20 +101,29 @@ paths:
               start:
                 type: string
                 description: |-
-                  The token the pagination starts from. If `dir=b` this will be
-                  the token supplied in `from`.
+                  A token corresponding to the start of `chunk`. This will be the same as
+                  the value given in `from`.
               end:
                 type: string
                 description: |-
-                  The token the pagination ends at. If `dir=b` this token should
-                  be used again to request even earlier events.
+                  A token corresponding to the end of `chunk`. This token can be passed
+                  back to this endpoint to request further events.
+
+                  If no further events are available (either because we have
+                  reached the start of the timeline, or because the user does
+                  not have permission to see any more events), this property
+                  is omitted from the response.
               chunk:
                 type: array
                 description: |-
                   A list of room events. The order depends on the `dir` parameter.
                   For `dir=b` events will be in reverse-chronological order,
-                  for `dir=f` in chronological order, so that events start
-                  at the `from` point.
+                  for `dir=f` in chronological order. (The exact definition of `chronological`
+                  is dependent on the server implementation.)
+
+                  Note that an empty `chunk` does not *necessarily* imply that no more events
+                  are available. Clients should continue to paginate until no `end` property
+                  is returned.
                 items:
                   "$ref": "../../event-schemas/schema/core-event-schema/room_event.yaml"
               state:
@@ -125,6 +139,7 @@ paths:
                   the membership of those members has not changed.
                 items:
                   $ref: "../../event-schemas/schema/core-event-schema/state_event.yaml"
+            required: [start, chunk]
           examples:
             application/json: {
                 "start": "t47429-4392820_219380_26003_2265",
