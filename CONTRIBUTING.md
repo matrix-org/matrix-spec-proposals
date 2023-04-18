@@ -1,5 +1,4 @@
-Contributing to `matrix-spec-proposals`
-=======================================
+# Contributing to `matrix-spec-proposals`
 
 Thank you for taking the time to contribute to Matrix!
 
@@ -8,8 +7,7 @@ for submitting a proposal is described in
 [this repository's README](README.md#the-matrix-spec-process) or in further detail at
 https://spec.matrix.org/proposals/#process.
 
-Sign off
---------
+## Sign off
 
 We ask that everybody who contributes to this project signs off their
 contributions, as explained below.
@@ -76,5 +74,14 @@ can't be accepted. Git makes this trivial - just use the -s flag when you do
 ``git commit``, having first set ``user.name`` and ``user.email`` git configs
 (which you should have done anyway :)
 
+### Private sign off
+
+If you would like to provide your legal name privately to the Matrix.org
+Foundation (instead of in a public commit or comment), you can do so by emailing
+your legal name and a link to the pull request to dco@matrix.org. It helps to
+include "sign off" or similar in the subject line. You will then be instructed
+further.
+
+Once private sign off is complete, doing so for future contributions will not be required.
 
 [1]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request
