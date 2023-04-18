@@ -22,6 +22,9 @@ This endpoint is on the appservice side. Like all other appservice-side
 endpoints, it is authenticated using the `hs_token`. When the token is correct,
 this returns HTTP 200 and an empty JSON object as the body.
 
+The request body contains an optional `transaction_id` string field, which
+comes from the client ping request defined below.
+
 Appservices don't need to have any special behavior on this endpoint, but they
 may use the incoming request to verify that an outgoing ping actually pinged
 the appservice rather than going somewhere else.
@@ -30,8 +33,8 @@ the appservice rather than going somewhere else.
 When the endpoint is called, the homeserver makes a `/_matrix/app/v1/ping`
 request to the appservice.
 
-The request body may contain a `transaction_id` field, which, if present, must
-be passed through to the appservice `/ping` request body as-is.
+The request body may contain a `transaction_id` string field, which, if present,
+must be passed through to the appservice `/ping` request body as-is.
 
 This endpoint is only allowed when using a valid appservice token, and it can
 only ping the appservice associated with the token. If the token or appservice
