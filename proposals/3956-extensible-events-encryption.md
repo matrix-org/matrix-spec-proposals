@@ -28,7 +28,6 @@ an `m.room.encrypted` event:
             "device_id": "<sender_device_id>",
             "session_id": "<outbound_group_session_id>",
             "ciphertext": "<encrypted_payload_base_64>"
-            "
         }
     }
 }
