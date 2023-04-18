@@ -45,7 +45,7 @@ An example is:
 {
   "type": "m.voice",
   "content": {
-    "m.markup": [
+    "m.text": [
       // Format of the fallback is not defined, but should have enough information for a text-only
       // client to do something with the voice message, just like with plain file uploads.
       //
@@ -71,7 +71,7 @@ No new content blocks are introduced in this MSC.
 
 Together with content blocks from other proposals, an `m.voice` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process voice messages.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process voice messages.
 * **Required** - An `m.file` block to contain the audio itself. Clients use this to represent the voice
   message. Per above, it MUST be in the file format described by this MSC.
 * **Required** - An `m.audio_details` block to describe any audio-specific metadata, such as duration.
