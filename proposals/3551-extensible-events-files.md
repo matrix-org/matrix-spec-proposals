@@ -19,7 +19,7 @@ An example is:
 {
   "type": "m.file",
   "content": {
-    "m.markup": [
+    "m.text": [
       // Format of the fallback is not defined, but should have enough information for a text-only
       // client to do something with the file.
       {"body": "matrix.pdf (12 KB) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
@@ -45,7 +45,7 @@ An example is:
       "v": "v2"
     },
     "m.caption": { // optional - goes above/below file
-      "m.markup": [{"body": "Look at this cool Matrix document"}]
+      "m.text": [{"body": "Look at this cool Matrix document"}]
     },
   }
 }
@@ -72,11 +72,11 @@ This structure covers the existing [`m.file`](https://spec.matrix.org/v1.1/clien
 Additionally, the following content blocks are defined:
 
 * `m.caption` - A message to place above or below the rendered content (in this case, a file).
-  Currently requires an `m.markup` content block to be nested within it.
+  Currently requires an `m.text` content block to be nested within it.
 
 Together with content blocks from other proposals, an `m.file` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process files.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process files.
 * **Required** - An `m.file` to describe the actual file.
 * **Optional** - An `m.caption` block to represent any text that should be shown above or below the
   file. Currently this MSC does not describe a way to pick whether the text goes above or below,
