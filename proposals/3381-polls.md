@@ -19,9 +19,9 @@ it does not need server-side involvement.
 
 The events in this MSC make use of the following functionality:
 
-* [MSC1767](https://github.com/matrix-org/matrix-doc/pull/1767) (extensible events & `m.markup`)
-* [Event relationships](https://spec.matrix.org/v1.4/client-server-api/#forming-relationships-between-events)
-* [Reference relations](https://github.com/matrix-org/matrix-spec/pull/1206) (**TODO:** Link to final spec here & below)
+* [MSC1767](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md) (extensible events & `m.text`)
+* [Event relationships](https://spec.matrix.org/v1.6/client-server-api/#forming-relationships-between-events)
+* [Reference relations](https://spec.matrix.org/v1.6/client-server-api/#reference-relations)
 
 To start a poll, a user sends an `m.poll.start` event into the room. An example being:
 
@@ -30,8 +30,8 @@ To start a poll, a user sends an `m.poll.start` event into the room. An example 
   "type": "m.poll.start",
   "sender": "@alice:example.org",
   "content": {
-    "m.markup": [
-      // Markup is used as a fallback for text-only clients which don't understand polls. Specific formatting is
+    "m.text": [
+      // Simple text is used as a fallback for text-only clients which don't understand polls. Specific formatting is
       // not specified, however something like the following is likely best.
       {
         "mimetype": "text/plain",
@@ -42,13 +42,13 @@ To start a poll, a user sends an `m.poll.start` event into the room. An example 
       "kind": "m.disclosed",
       "max_selections": 1,
       "question": {
-        "m.markup": [{"body": "What should we order for the party?"}]
+        "m.text": [{"body": "What should we order for the party?"}]
       },
       "answers": [
-        {"m.id": "pizza", "m.markup": [{"body": "Pizza 🍕"}]},
-        {"m.id": "poutine", "m.markup": [{"body": "Poutine 🍟"}]},
-        {"m.id": "italian", "m.markup": [{"body": "Italian 🍝"}]},
-        {"m.id": "wings", "m.markup": [{"body": "Wings 🔥"}]},
+        {"m.id": "pizza", "m.text": [{"body": "Pizza 🍕"}]},
+        {"m.id": "poutine", "m.text": [{"body": "Poutine 🍟"}]},
+        {"m.id": "italian", "m.text": [{"body": "Italian 🍝"}]},
+        {"m.id": "wings", "m.text": [{"body": "Wings 🔥"}]},
       ]
     }
   }
@@ -63,17 +63,17 @@ With consideration for extensible events, a new `m.poll` content block is define
   later in this proposal.
 * `max_selections` - An optional integer to represent how many answers the user is allowed to select
   from the poll. Must be greater than or equal to `1`, and defaults to `1`.
-* `question` - A required object to represent the question being posed by the poll. Takes an `m.markup`
+* `question` - A required object to represent the question being posed by the poll. Takes an `m.text`
   content block within. More blocks might be added in the future. Clients should treat this similar
   to how they would an `m.message` event.
-* `answers` - Array of options users can select. Each entry is an object with an `m.markup` content
+* `answers` - Array of options users can select. Each entry is an object with an `m.text` content
   block, similar to `question`, and an opaque string field `m.id` for use in response events. More
   blocks might be added in the future. Clients should treat each entry similar to how they would an
   `m.message` event. The array is truncated to 20 maximum options.
 
 Together with content blocks from other proposals, an `m.poll.start` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process polls.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process polls.
 * **Required** - An `m.poll` block to describe the poll itself. Clients use this to show the poll.
 
 The above describes the minimum requirements for sending an `m.poll.start` event. Senders can add additional
@@ -92,8 +92,7 @@ To respond or vote in a poll, a user sends an `m.poll.response` event into the r
   "sender": "@bob:example.org",
   "content": {
     // Reference relationship formed per spec
-    // https://github.com/matrix-org/matrix-spec/pull/1206
-    // TODO: Link to reference relationship spec
+    // https://spec.matrix.org/v1.6/client-server-api/#reference-relations
     "m.relates_to": {
       "rel_type": "m.reference",
       "event_id": "$poll_start_event_id"
@@ -134,15 +133,14 @@ To close a poll, a user sends an `m.poll.end` event into the room. An example be
   "sender": "@alice:example.org",
   "content": {
     // Reference relationship formed per spec
-    // https://github.com/matrix-org/matrix-spec/pull/1206
-    // TODO: Link to reference relationship spec
+    // https://spec.matrix.org/v1.6/client-server-api/#reference-relations
     "m.relates_to": {
       "rel_type": "m.reference",
       "event_id": "$poll_start_event_id"
     },
   },
-  "m.markup": [{
-    // Markup is used as a fallback for text-only clients which don't understand polls. Specific formatting is
+  "m.text": [{
+    // Simple text is used as a fallback for text-only clients which don't understand polls. Specific formatting is
     // not specified, however something like the following is likely best.
     "body": "The poll has closed. Top answer: Poutine 🍟"
   }],
@@ -167,7 +165,7 @@ With consideration for extensible events, a new `m.poll.results` content block i
 Together with content blocks from other proposals, an `m.poll.end` is described as:
 
 * **Required** - An `m.relates_to` block to form a reference relationship to the poll start event.
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process polls.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process polls.
 * **Optional** - An `m.poll.results` block to show the sender's perspective of the vote results.
 
 The above describes the minimum requirements for sending an `m.poll.end` event. Senders can add additional
