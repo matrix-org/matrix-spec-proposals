@@ -23,7 +23,7 @@ An example is:
 {
   "type": "m.audio",
   "content": {
-    "m.markup": [
+    "m.text": [
       // Format of the fallback is not defined, but should have enough information for a text-only
       // client to do something with the audio, just like with plain file uploads.
       {"body": "matrix.mp3 (12 KB, 1:30) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
@@ -38,7 +38,7 @@ An example is:
       "duration": 90
     },
     "m.caption": { // optional - goes above/below audio
-      "m.markup": [{"body": "Listen to the Matrix logo in all its glory"}]
+      "m.text": [{"body": "Listen to the Matrix logo in all its glory"}]
     }
   }
 }
@@ -50,7 +50,7 @@ With consideration for extensible events, the following content blocks are defin
 
 Together with content blocks from other proposals, an `m.audio` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process audio files.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process audio files.
 * **Required** - An `m.file` block to contain the audio itself. Clients use this to represent the audio.
 * **Optional** - An `m.audio_details` block to describe any audio-specific metadata, such as duration.
 * **Optional** - An `m.caption` block to represent any text that should be shown above or below the
