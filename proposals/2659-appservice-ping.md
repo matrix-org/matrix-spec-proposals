@@ -70,11 +70,11 @@ If the request fails, the endpoint returns a standard error response with
 ### Example flow
 
 1. bridge -> homeserver (request #1): `POST http://synapse:8008/_matrix/client/v1/appservice/whatsapp/ping`
-  * Header `Authorization: Bearer as_token`
-  * Body: `{"transaction_id": "meow"}`
+   * Header `Authorization: Bearer as_token`
+   * Body: `{"transaction_id": "meow"}`
 2. homeserver -> bridge (request #2): `POST http://bridge:29318/_matrix/app/v1/ping`
-  * Header `Authorization: Bearer hs_token`
-  * Body: `{"transaction_id": "meow"}`
+   * Header `Authorization: Bearer hs_token`
+   * Body: `{"transaction_id": "meow"}`
 3. bridge -> homeserver (response to #2): 200 OK with body `{}`
 4. homeserver -> bridge (response to #1): 200 OK with body `{"duration": 123}`
    (123 milliseconds being the time it took for request #2 to complete).
