@@ -21,7 +21,7 @@ An example is:
 {
   "type": "m.video",
   "content": {
-    "m.markup": [
+    "m.text": [
       // Format of the fallback is not defined, but should have enough information for a text-only
       // client to do something with the video, just like with plain file uploads.
       {"body": "matrix.mp4 (12 KB, 1:30) https://example.org/_matrix/media/v3/download/example.org/abcd1234"}
@@ -55,7 +55,7 @@ An example is:
       // ...
     ],
     "m.caption": { // optional - goes above/below video
-      "m.markup": [{"body": "Look at this cool animated Matrix logo"}]
+      "m.text": [{"body": "Look at this cool animated Matrix logo"}]
     }
   }
 }
@@ -68,7 +68,7 @@ The newly introduced blocks are:
 
 Together with content blocks from other proposals, an `m.video` is described as:
 
-* **Required** - An `m.markup` block to act as a fallback for clients which can't process videos.
+* **Required** - An `m.text` block to act as a fallback for clients which can't process videos.
 * **Required** - An `m.file` block to contain the video itself. Clients use this to show the video.
 * **Optional** - An `m.video_details` block to describe any video-specific metadata, such as dimensions.
   Like with existing `m.room.message` events today, clients should keep videos within a set of
