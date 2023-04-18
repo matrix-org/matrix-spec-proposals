@@ -21,7 +21,7 @@ clients) to send plain text. To open this functionality up to any event, we defi
     // irrelevant fields not shown
     "type": "m.emote",
     "content": {
-        "m.markup": [{"body": "says hi"}],
+        "m.text": [{"body": "says hi"}],
         "m.automated": true
     }
 }
