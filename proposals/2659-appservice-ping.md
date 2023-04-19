@@ -84,6 +84,11 @@ If the request fails, the endpoint returns a standard error response with
 * The ping could make an empty `/transactions` request instead of adding a new
   ping endpoint. A new endpoint was found to be cleaner while implementing, and
   there didn't seem to be any significant benefits to reusing transactions.
+* A `/versions` endpoint could be introduced to work for both pinging and
+  checking what spec versions an appservice supports. However, it's not clear
+  that a new endpoint is the best way to detect version support (a simple flag
+  in the registration file may be preferable), so this MSC proposes a `/ping`
+  endpoint that doesn't have other behavior.
 * Appservices could be switched to using websockets instead of the server
   pushing events. This option is already used by some bridges, but implementing
   websocket support on the homeserver side is much more complicated than a
