@@ -10,14 +10,15 @@ Threads was one of the first usages of this API that allowed nested relations -
 an event may have an `m.reaction` or `m.replace` relation to another event, 
 which in turn may have an `m.thread` relation to the thread root.
 
-This forms a tree of relations, which so far could only be traversed 
+This forms a tree of relations, which can currently only be traversed 
 efficiently in hierarchical, but not in chronological order. Yet, for some
 functionality – e.g., to determine which event a read receipt should 
 reference as per [MSC3771] – chronological order is necessary.
 
 ## Proposal
 
-It is proposed to add the `recurse` parameter to the `/relations` API.
+It is proposed to add the `recurse` parameter to the `/relations` API, defined
+as follows:
 
 > Whether to recursively include all nested relations of a given event. 
 >
@@ -26,7 +27,7 @@ It is proposed to add the `recurse` parameter to the `/relations` API.
 > If this is set to false, it will only return events directly related to the 
 > specified event.
 >
-> It is recommended that at least 3 relations are traversed, implementations
+> It is recommended that at least 3 relations are traversed. Implementations
 > should be careful to not infinitely recurse.
 >
 > One of: `[true false]`.
@@ -58,9 +59,9 @@ amplify the load on the server unreasonably.
    increase network traffic and server load significantly.
 2. A new, specialised endpoint could be created for threads, specifically 
    designed to present separate timelines that, in all other ways, would
-   behave identically to `/messages`
-3. Twitter-style threads (see [MSC2836])
-4. Alternatively a `depth` parameter could have been specified, as in [MSC2836]  
+   behave identically to `/messages`.
+3. Twitter-style threads (see [MSC2836]).
+4. Alternatively a `depth` parameter could have been specified, as in [MSC2836].  
    We believe that a customizable depth would add unnecessary constraints to 
    server implementers, as different server implementations may have different
    performance considerations and may choose different limits. Additionally,
