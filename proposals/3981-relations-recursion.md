@@ -96,10 +96,10 @@ flowchart RL
 return `[A, B, C, D, E, F, G]`.
 
 `/relations` on event `A` with `rel_type=m.thread` and `dir=f` would 
-return `[A, B, G]`. 
+return `[B, G]`. 
 
 `/relations` on event `A` with `recurse=true` and `dir=f` would 
-return `[A, B, D, E, G]`.
+return `[B, D, E, G]`.
 
 `/relations` on event `A` with `recurse=true`, `dir=b` and `limit=2` would
 return `[G, E]`.
