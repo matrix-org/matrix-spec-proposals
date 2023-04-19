@@ -49,10 +49,12 @@ applied to nested relations just as it is applied to direct relations.
 
 ## Potential issues
 
-Naive implementations of recursive API endpoints frequently cause N+1 query 
-problems. Homeservers should take care to implementing this MSC to avoid 
-situations where a specifically crafted set of events and API calls could 
-amplify the load on the server unreasonably.
+Naive implementations might be tempted to provide support for this parameter
+through a thin shim which is functionally identical to the client doing 
+separate recursive `/relations` requests itself. This is ill-advised.
+
+Such an implementation would, given a specifically crafted set of events, 
+allow a client to cause unreasonable load.
 
 ## Alternatives
 
