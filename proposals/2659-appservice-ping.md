@@ -1,4 +1,4 @@
-# Application service ping endpoint
+# MSC2659: Application service ping endpoint
 
 ## Problem
 A relatively common problem when setting up appservices is the connection
