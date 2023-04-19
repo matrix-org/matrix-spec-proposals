@@ -1,13 +1,13 @@
 # MSC3981: `/relations` recursion
 
-[MSC2675] introduced the `/relations` API to retrieve events which are directly
-related to a given event.
+The [`/relations`] API allows clients to retrieve events which directly relate
+to a given event.
 
 This API has been used as basis of many other features and MSCs since then, 
 including threads.
 
 Threads was one of the first usages of this API that allowed nested relations -
-an event may have an `m.reaction` or `m.replace` relation to another event, 
+an event may have an [`m.reaction`] or [`m.replace`] relation to another event, 
 which in turn may have an `m.thread` relation to the thread root.
 
 This forms a tree of relations, which can currently only be traversed 
@@ -108,6 +108,8 @@ return `[G, E]`.
 Before standardization, `org.matrix.msc3981.recurse` should be used in place
 of `recurse`.
 
-[MSC2675]: https://github.com/matrix-org/matrix-spec-proposals/pull/2675
 [MSC2836]: https://github.com/matrix-org/matrix-spec-proposals/pull/2836
 [MSC3771]: https://github.com/matrix-org/matrix-spec-proposals/pull/3771
+[`/relations`]: https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientv1roomsroomidrelationseventid
+[`m.reaction`]: https://github.com/matrix-org/matrix-spec-proposals/pull/2677
+[`m.replace`]: https://spec.matrix.org/v1.6/client-server-api/#event-replacements
