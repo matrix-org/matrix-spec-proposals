@@ -107,7 +107,7 @@ for the user.
 
 **TODO**: This is probably best as its own MSC.
 
-Independent of the appservice having `/keys/claim` proxied to it, it may be desireable for both the
+Independent of the appservice having `/keys/claim` proxied to it, it may be desirable for both the
 fallback and one-time key to be returned. Servers should *always* include the fallback key alongside
 the requested OTKs. When using this proposal's new endpoint, the server should use the fallback key
 from the appservice's response rather than a previously stored fallback key, if present (if the
@@ -120,6 +120,8 @@ do upon first (known) use.
 
 Clients can determine which of the keys returned is the fallback key by `fallback: true` on the returned
 keys.
+
+Servers MUST NOT mark the fallback key as "used" unless no other OTKs are returned.
 
 ## Potential issues
 
