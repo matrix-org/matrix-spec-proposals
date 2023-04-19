@@ -103,6 +103,24 @@ to have a namespace covering the user: instead of guessing or going around to ea
 user to be in an exclusive namespace. This guarantees that there's only one appservice responsible
 for the user.
 
+## Returning extra keys
+
+**TODO**: This is probably best as its own MSC.
+
+Independent of the appservice having `/keys/claim` proxied to it, it may be desireable for both the
+fallback and one-time key to be returned. Servers should *always* include the fallback key alongside
+the requested OTKs. When using this proposal's new endpoint, the server should use the fallback key
+from the appservice's response rather than a previously stored fallback key, if present (if the
+appservice doesn't respond with a fallback key then the server uses the stored fallback key instead,
+if known). 
+
+The server SHOULD NOT replace any uploaded fallback keys with ones returned by the appservice via
+this proposal. The appservice MUST re-upload the fallback key if it wants to replace it, as it would
+do upon first (known) use.
+
+Clients can determine which of the keys returned is the fallback key by `fallback: true` on the returned
+keys.
+
 ## Potential issues
 
 As described, the appservice could be offline or in fact experience a worse uptime than the homeserver.
