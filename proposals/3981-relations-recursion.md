@@ -20,15 +20,16 @@ reference as per [MSC3771] – chronological order is necessary.
 It is proposed to add the `recurse` parameter to the `/relations` API, defined
 as follows:
 
-> Whether to recursively include all nested relations of a given event. 
+> Whether to include events which relate only indirectly to the given event.
+> 
+> If set to false, only events which have direct a relation with the given 
+> event will be included.
+> 
+> If set to true, all events which relate to the given event, or relate to 
+> events that relate to the given event, will be included.
 >
-> If this is set to true, it will return the entire subtree of events related
-> to the specified event, directly or indirectly.
-> If this is set to false, it will only return events directly related to the 
-> specified event.
->
-> It is recommended that at least 3 relations are traversed. Implementations
-> should be careful to not infinitely recurse.
+> It is recommended that at least 3 levels of relationships are traversed. 
+> Implementations should be careful to not infinitely recurse.
 >
 > One of: `[true false]`.
 
