@@ -432,6 +432,20 @@ benefits to using a separate property for mentions:
 Overall this proposal seems to be neutral or positive in the ability to combat
 malicious behavior.
 
+### Encrypted mentions & `/notifications`
+
+Previous version of this proposal (and the alternative [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796))
+suggested leaving the `m.mentions` property in cleartext. This was
+[deemed too large of a metadata leak](https://github.com/matrix-org/matrix-spec-proposals/pull/3952#discussion_r1112154200)
+and removed from this proposal (and MSC1796 was closed). A downside of this is
+that homeservers (still) will not be able to differentiate between notifications
+and mentions in many cases.
+
+This mostly affects how often homeservers push to devices (see
+[MSC3996](https://github.com/matrix-org/matrix-spec-proposals/pull/3996)
+for more information), but also means that the `/notifications?only=highlight`
+API is not useful in encrypted rooms.
+
 ## Future extensions
 
 ### Combating abuse
@@ -467,7 +481,8 @@ for the client to handle this feature and it must be handled on the server, unfo
 this would not be possible with the current proposal since the `m.mentions`
 property is encrypted (and the server cannot act on it).
 
-Solving this problem is left to a future MSC.
+Solving this problem is left to a future MSC, such as [MSC3996](https://github.com/matrix-org/matrix-spec-proposals/pull/3996)
+which builds on this proposal.
 
 ### Pillifying `@room`
 
@@ -488,7 +503,7 @@ usecase would be a `roles` property which could include values such as `admins` 
 
 ### Cancelling notifications
 
-It maybe useful for a future MSC to investigate cancelling notifications if a
+It might be useful for a future MSC to investigate cancelling notifications if a
 user's mention is removed while [editing events](#impact-on-edits). This could
 be quite difficult as it is unclear if the mentioned user has already received
 the notification or not.
