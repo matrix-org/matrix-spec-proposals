@@ -108,7 +108,7 @@ Both of the above solutions are sub-optimal however:
 * Some platforms don't allow a polling loop,
   [e.g. iOS](https://github.com/matrix-org/matrix-spec-proposals/pull/3952#discussion_r1065004790),
   so Matrix homeservers are forced to push every (encrypted) message.
-* Some platforms, e.g. F-Droid, it is known to be
+* Some platforms, e.g. Android without Firebase Cloud Messaging support, it is known to be
   [expensive to run a polling loop](https://github.com/vector-im/element-android/issues/2055)
   to download all messages and search them for notifications.
 
