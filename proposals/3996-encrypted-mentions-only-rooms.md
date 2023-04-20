@@ -50,7 +50,7 @@ encrypted mentions:
     "conditions": [
         {
             "kind": "event_property_is",
-            "key": "content.m\\.has_mentions",
+            "key": "content.m\.has_mentions",
             "value": true
         },
         {
@@ -107,7 +107,7 @@ Both of the above solutions are sub-optimal however:
 
 * Some platforms don't allow a polling loop,
   [e.g. iOS](https://github.com/matrix-org/matrix-spec-proposals/pull/3952#discussion_r1065004790),
-  so Matrix clients are forced to push every (encrypted) message.
+  so Matrix homeservers are forced to push every (encrypted) message.
 * Some platforms, e.g. F-Droid, it is known to be
   [expensive to run a polling loop](https://github.com/vector-im/element-android/issues/2055)
   to download all messages and search them for notifications.
