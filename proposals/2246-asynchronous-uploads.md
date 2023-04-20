@@ -18,7 +18,8 @@ the download and thumbnail endpoints.
 
 #### `POST /_matrix/media/v1/create`
 Create a new MXC URI without content. Like `/upload`, this endpoint requires
-auth and returns the `content_uri` that can be used in events.
+auth, can be rate limited, and returns the `content_uri` that can be used in
+events.
 
 The request body should be an empty JSON object. In the future, the body could
 be used for metadata about the file, such as the mime type or access control
@@ -56,7 +57,7 @@ exact limits that are used and not provide such details.
 #### `PUT /_matrix/media/v3/upload/{serverName}/{mediaId}`
 Upload content to a MXC URI that was created earlier. This endpoint requires
 auth. If the upload is successful, an empty JSON object and status code 200 is
-returned.
+returned. Rate limiting additionally can apply here.
 
 If the endpoint is called with a media ID that already has content, the request
 should be rejected with the error code `M_CANNOT_OVERWRITE_MEDIA` and HTTP
