@@ -402,7 +402,7 @@ content of messages. The bridge should be able to map from the remote user ID
 to the bridged user ID and include that in the `m.mentions` property of the
 Matrix event & the proper field in the bridged protocol[^4].
 
-For bridged protocols that do not have this mechanism than the bridge will only
+For bridged protocols that do not have this mechanism, the bridge will only
 be able to stop mutating content on messages bridged *into* Matrix. Messages
 bridged out of Matrix will still need to embed the mention into the text
 content.[^5]
@@ -435,7 +435,7 @@ malicious behavior.
 
 ### Encrypted mentions & `/notifications`
 
-Previous version of this proposal (and the alternative [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796))
+A previous version of this proposal (and the alternative [MSC1796](https://github.com/matrix-org/matrix-spec-proposals/pull/1796))
 suggested leaving the `m.mentions` property in cleartext. This was
 [deemed too large of a metadata leak](https://github.com/matrix-org/matrix-spec-proposals/pull/3952#discussion_r1112154200)
 and removed from this proposal (and MSC1796 was closed). A downside of this is
