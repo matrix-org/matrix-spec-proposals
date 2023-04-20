@@ -319,11 +319,12 @@ Replacement events may have `m.mentions` properties in two locations:
 * One at the top-level of the `content`, which should contain any users to mention
  *for this edit*.
 * One inside the `m.new_content` property, which should contain the full list of
-  mentioned users in any version of the event.
+  mentioned users in any version of the event, unless a mention is removed
+  (see below).
 
 It is recommended that clients use an empty top-level `m.mentions` property when
 editing an event, *unless* the edit is significant or if additional users are
-mentioned.
+mentioned in the latest version.
 
 For example, if there is an event:
 
@@ -332,7 +333,7 @@ For example, if there is an event:
   "sender": "@dan:example.org",
   "event_id": "$initial_event",
   "content": {
-    "body": "Helo Alice!",
+    "body": "Hello Alice!",
     "m.mentions": {
       "user_ids": ["@alice:example.org"]
     }
@@ -372,7 +373,7 @@ And an edit after realizing that Bob is also in the room:
 }
 ```
 
-Mentions can also be removed as part of an edit. In this case top-level `m.mentions`
+Mentions can also be removed as part of an edit. In this case, the top-level `m.mentions`
 property would not include the removed user IDs (you cannot cancel the notification from
 the previous event) or any previously notified users, and the removed user would also be
 removed from the `m.new_content` proprerty's copy  of `m.mentions`.
