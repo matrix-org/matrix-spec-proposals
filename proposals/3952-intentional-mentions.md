@@ -98,7 +98,7 @@ into the ciphertext for encrypted events.
 
 ### New push rules
 
-Two new default push rule are added:
+Two new default push rule are added.
 
 The `.m.rule.is_user_mention` override push rule would appear directly
 before the `.m.rule.contains_display_name` push rule:
@@ -127,6 +127,10 @@ before the `.m.rule.contains_display_name` push rule:
     ]
 }
 ```
+
+(Note: `\\.` would become a single logical backslash followed by a dot since the
+above is in JSON-representation. See
+[MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873).)
 
 The `.m.rule.is_room_mention` override push rule would appear directly
 before the `.m.rule.roomnotif` push rule:
