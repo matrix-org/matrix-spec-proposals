@@ -50,7 +50,7 @@ encrypted mentions:
     "conditions": [
         {
             "kind": "event_property_is",
-            "key": "content.m\.has_mentions",
+            "key": "content.m\\.has_mentions",
             "value": true
         },
         {
@@ -62,6 +62,10 @@ encrypted mentions:
     "actions": ["notify"]
 }
 ```
+
+(Note: `\\.` would become a single logical backslash followed by a dot since the
+above is in JSON-representation. See
+[MSC3873](https://github.com/matrix-org/matrix-spec-proposals/pull/3873).)
 
 When this push rule matches then it would push the event to all users, similar to
 how the [`.m.rule.encrypted` default underride rule](https://spec.matrix.org/v1.6/client-server-api/#default-underride-rules)
