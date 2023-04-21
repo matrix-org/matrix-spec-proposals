@@ -255,10 +255,15 @@ Users are notified of replies via the `.m.rule.contains_display_name` or the
 [rich reply fallback](https://spec.matrix.org/v1.6/client-server-api/#fallbacks-for-rich-replies).
 Unfortunately these push rules will be disabled for events  which contain the
 `m.mentions` property, i.e. all newly created events (see
-[above](#backwards-compatibility)). It is proposed that clients should include
-the sender of the event being replied to as well as any users (except themself)
-mentioned in that event in the new event's `m.mentions` property. The `room`
-property should not be copied over.
+[above](#backwards-compatibility)). Clients should include the sender of the event
+being replied to as well as any mentioned users in that event (excluding yourself)
+in the new event's `m.mentions` property. The `room` property should not be copied over.
+
+This signals that it is the *intention* of the sender to mention all of those people.
+This behavior may not make sense in all situations (e.g. an email-like client could
+provide both a "reply" and "reply all", while a microblogging client may wish to
+provide a "quote reply", dropping all mentions from the original event) and clients
+may wish to allow users to modify the list of mentioned users.
 
 For example, if there is an event:
 
@@ -284,9 +289,9 @@ And a reply from Alice:
     "body": "> <@dan:example.org> Alice: Have you heard from Bob?\n\nNo, but I saw him with Charlie earlier.",
     "m.mentions": {
       "user_ids": [
-        // Include the sender of $initial_event.
+        // Include the sender of $initial_event (optional).
         "@dan:example.org",
-        // The users mentioned, minus yourself.
+        // The users mentioned, minus yourself (optional).
         "@bob:example.org",
         // New mentions, as normal.
         "@charlie:example.org"
@@ -301,10 +306,6 @@ And a reply from Alice:
   // other fields as required by events
 }
 ```
-
-This signals that it is the *intention* of the sender to mention all of those people,
-clients may wish to allow users to modify the list of people to include, e.g. to
-"quote reply" as opposed to replying directly.
 
 If a user wishes to be notified of *all replies* to their messages, other solutions
 should be investigated, such as [MSC3664](https://github.com/matrix-org/matrix-spec-proposals/pull/3664).
