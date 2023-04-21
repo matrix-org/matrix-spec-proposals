@@ -1,4 +1,4 @@
-# MSC0000: Template for new MSCs
+# MSC4001: Return start of room state at context
 
 The endpoint `GET /_matrix/client/v3/rooms/{roomId}/context/{eventId}` describes that the `state` field in the 200 response returns the state of the room at the **last** event returned. This is the case for all six spec versions released so far:
 
@@ -11,9 +11,7 @@ The endpoint `GET /_matrix/client/v3/rooms/{roomId}/context/{eventId}` describes
 
 Earlier in these specs, the following rationale is described:
 
-```
-[...] consider a returned timeline [M0, S1, M2], where M0 and M2 are both messages sent by the same user, and S1 is a state event where that user changes their displayname. If the state list represents the room state at the end of the timeline, the client must take a copy of the state dictionary, and rewind S1, in order to correctly calculate the display name for M0.
-```
+> [...] consider a returned timeline [M0, S1, M2], where M0 and M2 are both messages sent by the same user, and S1 is a state event where that user changes their displayname. If the state list represents the room state at the end of the timeline, the client must take a copy of the state dictionary, and rewind S1, in order to correctly calculate the display name for M0.
 
 
 ## Proposal
