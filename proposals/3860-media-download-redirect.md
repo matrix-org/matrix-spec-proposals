@@ -7,7 +7,7 @@ tell clients/servers to pull data direct from the source, e.g. a CDN.
 
 ## Proposal
 
-This MSC proposes that a 307 redirect code is allowed and followed according to the `Location`
+This MSC proposes that a 307 or 308 redirect code is allowed and followed according to the `Location`
 header. It is possible some clients would already follow these which needs to be confirmed. Specific
 endpoints in question:
 
