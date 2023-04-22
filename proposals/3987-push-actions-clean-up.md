@@ -12,7 +12,7 @@ which are of dubious use:
 
 ## Proposal
 
-The `coalesce` push rule action is removed the Matrix specification.
+The `coalesce` push rule action is removed from the Matrix specification.
 
 The `dont_notify` push rule action is deprecated. Homeservers and clients should
 ignore it. Any [pre-defined rules](https://spec.matrix.org/v1.6/client-server-api/#actions)
