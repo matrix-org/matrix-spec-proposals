@@ -6,7 +6,7 @@ a large file would block all messages.
 
 ## Proposal
 This proposal proposes a way to send the event containing media before actually
-uploading the media, which would make the aformentioned bridge message order
+uploading the media, which would make the aforementioned bridge message order
 preservation possible without blocking all other messages behind a long upload.
 
 In the future, this new functionality could be used for streaming file
