@@ -106,7 +106,7 @@ another client by checking the
 [capabilities](https://spec.matrix.org/v1.6/client-server-api/#capabilities-negotiation)
 advertised by the homeserver.
 
-Where the client is authenticated the client can determine whether the new API endpoint is available
+The unauthenticated client can also determine whether the new API endpoint is available
 via the [capability negotiation](https://spec.matrix.org/v1.6/client-server-api/#capabilities-negotiation)
 mechanism.
 
@@ -167,7 +167,7 @@ While this feature is in development the following unstable prefixes should be u
 - capability `m.get_login_token` => `org.matrix.msc3882.get_login_token`
 - login flow field `get_login_token` => `org.matrix.msc3882.get_login_token`
 
-For reference - an earlier revision of this proposal used an unstable prefix of
+For reference - an earlier revision of this proposal used an unstable endpoint of
 `/_matrix/client/unstable/org.matrix.msc3882/login/token` with an unstable feature advertised 
 in the response to `GET /_matrix/client/versions` as `org.matrix.msc3882`
 set to `true`. This may be referred to as "revision zero" in existing implementations.
