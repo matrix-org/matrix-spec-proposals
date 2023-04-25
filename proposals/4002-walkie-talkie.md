@@ -1,4 +1,4 @@
-# MSCXXXX: Walkie-Talkie 
+# MSC4002: Walkie-Talkie 
 
 Implementing a Walkie-Talkie-like feature to enhance its communication capabilities.
 The proposed feature would allow users to send and receive E2EE voice messages
