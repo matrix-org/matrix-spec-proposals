@@ -257,7 +257,7 @@ Unfortunately these push rules will be disabled for events  which contain the
 `m.mentions` property, i.e. all newly created events (see
 [above](#backwards-compatibility)). Clients should include the sender of the event
 being replied to as well as any mentioned users in that event (excluding yourself)
-in the new event's `m.mentions` property. The `room` property should not be copied over.
+in the new event's `m.mentions` property. The `room` property MUST NOT be copied over.
 
 This signals that it is the *intention* of the sender to mention all of those people.
 This behavior may not make sense in all situations (e.g. an email-like client could
