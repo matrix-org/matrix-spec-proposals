@@ -20,8 +20,9 @@ The version property is changed to `"1"` in all existing VoIP events
 ([`m.call.answer`](https://spec.matrix.org/v1.5/client-server-api/#mcallanswer),
 [`m.call.candidates`](https://spec.matrix.org/v1.5/client-server-api/#mcallcandidates),
 [`m.call.hangup`](https://spec.matrix.org/v1.5/client-server-api/#mcallhangup)
-[`m.call.invite`](https://spec.matrix.org/v1.5/client-server-api/#mcallinvite)).
-This will be used to determine whether devices support this new version of the protocol.
+[`m.call.invite`](https://spec.matrix.org/v1.5/client-server-api/#mcallinvite)). Note
+that this changes the type of the `version` field from an integer to a string, as
+described in the [Unstable Prefix](#unstable-prefix) section.
 
 This will be used to determine whether devices support this new version of the protocol. For example,
 clients can use this field to know whether to expect an `m.call.select_answer` event from their
@@ -51,7 +52,7 @@ This follows the existing known implementations of v0 VoIP.
 
 ### Add `invitee` field to [`m.call.invite`](https://spec.matrix.org/v1.5/client-server-api/#mcallinvite)
 This allows for the following use cases:
- * Placing a call to a specifc user in a room where other users are also present.
+ * Placing a call to a specific user in a room where other users are also present.
  * Placing a call to oneself.
 
 The field should be added for all invites where the target is a specific user, and should be set
@@ -80,15 +81,16 @@ events to their respective answer/invite.
 
 A client implementation may choose to use the device ID used in end-to-end cryptography for this purpose,
 or it may choose, for example, to use a different one for each call to avoid leaking information on which
-devices were used in a call (in an unencrypted room) or if a single device (ie. access token were used to
+devices were used in a call (in an unencrypted room) or if a single device (ie. access token) were used to
 send signalling for more than one call party.
 
 A grammar for `party_id` is defined [below](#specify-exact-grammar-for-voip-ids).
 
 ### Introduce `m.call.select_answer`
-This event is sent by the caller's client once it has chosen an answer. Its
-`selected_party_id` field indicates the answer it's chosen (and has `call_id`
-and its own `party_id` too). If the callee's client sees a `select_answer` for an answer
+This event is sent by the caller's client once it has decided which other
+client to talk to, by selecting one of multiple possible incoming `m.call.answer`
+events. Its `selected_party_id` field indicates the answer it's chosen. The `call_id`
+and `party_id` of the caller is also included. If the callee's client sees a `select_answer` for an answer
 with party ID other than the one it sent, it ends the call and informs the user the call
 was answered elsewhere. It does not send any events. Media can start flowing
 before this event is seen or even sent.  Clients that implement previous
@@ -116,8 +118,7 @@ Example:
    `party_id` just like an answer, and the caller sends a `select_answer` for it just like an
    answer. If another client had already sent an answer and sees the caller select the
    reject response instead of its answer, it ends the call.
- * If the `m.call.invite` event has `version` `0`, the callee sends an `m.call.hangup` event
-   as in spec version 0.
+ * If the `m.call.invite` event has `version` `0`, the callee sends an `m.call.hangup` event.
 
 Example:
 ```
@@ -175,7 +176,7 @@ own negotiate events.
 This has a `lifetime` field as in `m.call.invite`, after which the sender of the negotiate event
 should consider the negotiation failed (timed out) and the recipient should ignore it.
 
-The `description` field is the same as the `offer` field in in `m.call.invite` and `answer`
+The `description` field is the same as the `offer` field in `m.call.invite` and `answer`
 field in `m.call.answer` and is an `RTCSessionDescriptionInit` object as per
 https://www.w3.org/TR/webrtc/#dom-rtcsessiondescriptioninit.
 
@@ -241,7 +242,7 @@ Clients should aim to send a small number of candidate events, with guidelines:
    suggested as a starting point.
  * The client should then allow some time for further candidates to be gathered in order to batch them,
    rather than sending each candidate as it arrives. A starting point of 2 seconds after sending the
-   invite or 500ms after sending the answer is suggested as starting point (since a delay is natural
+   invite or 500ms after sending the answer is suggested as a starting point (since a delay is natural
    anyway after the invite whilst the client waits for the user to accept it).
 
 ### Mandate the end-of-candidates candidate
@@ -307,7 +308,7 @@ or not there have been any changes to the Matrix spec.
  * This MSC elects to allow invites without an `invitee` field to mean a call for anyone in the room.
    This could be useful for hunt group style semantics where an incoming call causes many different
    users' phones to ring and any one of them may pick up the call. This does mean clients will need
-   to not blindly ring for any call invites in any room, since this would make unsolicited calls in
+   to not blindly ring for any call invites in any room, since this would make unsolicited calls
    easy in public rooms. We could opt to leave this out, or make it more explicit with a specific value
    for the `invitee` field.
  * `party_id` is one of many potential solutions: callees could add `answer_id`s to their events and
