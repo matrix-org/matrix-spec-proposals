@@ -85,7 +85,7 @@ the policy rule is interpreted. However a suggestion for a simple implementation
   + Apllied to a user: New events from the room are ignored, not displayed in notifications and
     not shown to be active in a client.
   + Applied to a room: No-op? Could be changing `events_default` to the same level as moderators
-  + Applied to a server: Uknown, no action recommended.
+  + Applied to a server: No-op? Could also be rendering the room read only from the specific server.
 
 * is a `server` rule:
   + Applied to a user: No op
