@@ -21,6 +21,8 @@ To enable policies to expire an `"expiry"` field is used that contains a timesta
 for when the policy expires.
 An expired policy should have its recommendation discarded and any existing effects reverted.
 
+The `"expiry"` field is optional and if `"expiry"` is set to `0` it is equivalent to permanent.
+
 Implementations are free to determine how they check for expiry..
 It is important that consumers understand that a policy is deemed to have expired
 once the expiry date is met from a subjective perspective.
@@ -90,7 +92,12 @@ to trust only their own perspective on what time it is we believe the MSC is sec
 
 ## Unstable prefix
 
-During the time this MSC is unstable `expiry` key is replaced with `support.feline.policy.expiry`
+During the time this MSC is unstable `expiry` key is replaced with `support.feline.policy.expiry.rev.2`
+
+### Historical Prefixes
+
+`support.feline.policy.expiry` was the first prefix for this MSC and it was replaced when 0 was made
+to equal permanent.
 
 ## Dependencies
 
