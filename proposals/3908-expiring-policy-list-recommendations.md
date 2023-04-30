@@ -17,8 +17,8 @@ temporary and other future policy recommendations can also be temporary.
 
 ## Proposal
 
-To enable policies to expire an `"expiry"` field is used that contains a timestamp for
-when the policy expires.
+To enable policies to expire an `"expiry"` field is used that contains a timestamp (in milliseconds since the unix epoch) 
+for when the policy expires.
 An expired policy should have its recommendation discarded and any existing effects reverted.
 
 Implementations are free to determine how they check for expiry..
@@ -38,7 +38,7 @@ only timestamp that matters is the expiry timestamp.
     "entity": "@evil:example.com",
     "reason": "spam",
     "recommendation": "m.mute",
-    "expiry": 2000003600
+    "expiry": 2003600000
   },
   "sender": "@mjolnir:example.com",
   "state_key": "_evil:example.com",
