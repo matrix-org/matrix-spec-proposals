@@ -63,7 +63,7 @@ Below is the same event but without the expiry.
 
 Note: The state key is an identifier for the rule, it is not supposed to be used for traceability
 between the entity and the state event, it includes the mxid of the user in this example
-for debuging purposes only.
+for debugging purposes only.
 
 When it's applied on a client level its recommended to be ignored as to not be redundant with the m.ban
 recommendation. A future MSC is welcome to make m.ban and m.mute be recommended to be applied the same.
@@ -82,7 +82,7 @@ the policy rule is interpreted. However a suggestion for a simple implementation
     Effectively leaving the user's account in a read-only state.
 
 * is a `room` rule:
-  + Apllied to a user: New events from the room are ignored, not displayed in notifications and
+  + Applied to a user: New events from the room are ignored, not displayed in notifications and
     not shown to be active in a client.
   + Applied to a room: No-op? Could be changing `events_default` to the same level as moderators
   + Applied to a server: No-op? Could also be rendering the room read only from the specific server.
