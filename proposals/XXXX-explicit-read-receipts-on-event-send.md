@@ -35,7 +35,7 @@ receipt would then be pointing to an event that the client doesn't know about ye
 is sent prior to the receipt there's a risk of the client attempting to generate a duplicate read
 receipt for the same event.
 
-The client logic for marking a room as read can be simplified to moving the m.read to the latest
+The client logic for marking a room as read can be simplified to moving the `m.read` (or `m.read.private`) receipt to the latest
 event in the room and notifying the server if that's different than the current receipt position.
 Clients wouldn't need to feature detect whether the homeserver implements this proposal, as the
 client sending a read receipt for their own message shouldn't harm homeservers that predate it. In
