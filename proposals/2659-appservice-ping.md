@@ -53,7 +53,7 @@ should be retried.
 
 #### Response
 If the ping request returned successfully, the endpoint returns HTTP 200. The
-response body has a `duration` field containing the `/_matrix/app/v1/ping`
+response body has a `duration_ms` field containing the `/_matrix/app/v1/ping`
 request roundtrip time as milliseconds.
 
 If the request fails, the endpoint returns a standard error response with
@@ -76,7 +76,7 @@ If the request fails, the endpoint returns a standard error response with
    * Header `Authorization: Bearer hs_token`
    * Body: `{"transaction_id": "meow"}`
 3. bridge -> homeserver (response to #2): 200 OK with body `{}`
-4. homeserver -> bridge (response to #1): 200 OK with body `{"duration": 123}`
+4. homeserver -> bridge (response to #1): 200 OK with body `{"duration_ms": 123}`
    (123 milliseconds being the time it took for request #2 to complete).
 
 ## Alternatives
