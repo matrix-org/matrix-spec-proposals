@@ -17,8 +17,8 @@ https://spec.matrix.org/v1.5/client-server-api/#receiving-notifications says (em
 > notifications prior to and including that event MUST be marked as read.
 
 This leads to overly complicated implementations on both the client and the server. Each codebase
-needs to comapre the sender of events as well as the read receipts in order to handle marking the
-room as read, clearning notification counts, and displaying read markers for other users. This code
+needs to compare the sender of events as well as the read receipts in order to handle marking the
+room as read, clearing notification counts, and displaying read markers for other users. This code
 is complex and leads to bugs, such as https://github.com/matrix-org/synapse/issues/14837
 
 ## Proposal
