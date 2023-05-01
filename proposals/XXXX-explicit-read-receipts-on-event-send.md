@@ -1,4 +1,4 @@
-# MSCXXXX: Explicit read receipts for sent events
+# MSC4005: Explicit read receipts for sent events
 
 Today, the spec dictates that clients should not send read receipts for their own events, and
 homeservers should clear notifications in a room for a user after the user sends an event to the
