@@ -13,7 +13,7 @@ The client behavior section of https://spec.matrix.org/v1.5/client-server-api/#r
 
 https://spec.matrix.org/v1.5/client-server-api/#receiving-notifications says (emphasis mine)
 
-> When the user updates their read receipt (either by using the API or by sending an event),
+> When the user updates their read receipt (either by using the API *or by sending an event)*,
 > notifications prior to and including that event MUST be marked as read.
 
 This leads to overly complicated implementations on both the client and the server. Each codebase
