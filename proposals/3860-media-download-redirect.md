@@ -5,6 +5,11 @@ means the media server instance must stream the data from wherever it is stored,
 local to itself. Allowing redirects on these endpoints would  make it possible for the media repo to
 tell clients/servers to pull data direct from the source, e.g. a CDN.
 
+Additionally redirects could be used to avoid downloading media from untrusted homeservers. Currently
+users can make their homeserver download, cache and proxy any matrix mid that I want, including
+bad/illegal content. Allowing for a 307 redirect would permit cautious server operators to not
+store and provide any media that floats in the matrixverse, but just refer to the "original" media.
+
 ## Proposal
 
 This MSC proposes that a 307 or 308 redirect code is allowed and followed according to the `Location`
