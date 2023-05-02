@@ -50,8 +50,224 @@ Name | Type | Description | required
 
 key | type | value | description | required
 --- | --- | --- | --- | ---
+`event_id` | string | Event ID | The event ID indicating the position in the `/messages` `chunk` response  | yes
+`prev_pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG before the given `event_id` in the `chunk` | yes
+`next_pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG after the given `event_id` in the `chunk` | yes
+
+
+### `/messages` response examples
+
+The following mermaid diagram represents the room DAG snapshot used for the following
+`/messages` responses. The slightly transparent events with no background are events
+that the homeserver does not have and are in the gap.
+
+Pagination tokens are positions between events. This already an established concept but
+to illustrate this better, see the following `tX` pagination tokens in the following
+diagram.
+
+```mermaid
+flowchart RL
+    after[newest events...]:::gap-event -->|t10| fred -->|t9| waldo:::gap-event -->|t8| garply -->|t7| grault:::gap-event -->|t6| corge -->|t5| qux:::gap-event -->|t4| baz -->|t3| bar:::gap-event -->|t2| foo -->|t1| before[oldest events...]:::gap-event
+
+    classDef gap-event opacity:0.8,fill:transparent;
+```
+
+The idea is to be able to keep paginating from
+`prev_pagination_token`/`next_pagination_token` in the respective direction to fill in
+the gap.
+
+
+#### `/messages?dir=b`
+
+`/messages?dir=b` response example with gaps (`chunk` has events in
+reverse-chronoligcal order since we're paginating backwards):
+
+`/messages?dir=b&from=t6`
+```json5
+{
+  "chunk": [
+    {
+      "event_id": "$corge",
+      "type": "m.room.message",
+      "content": {
+        "body": "corge",
+      }
+    },
+    {
+      "event_id": "$baz",
+      "type": "m.room.message",
+      "content": {
+        "body": "baz",
+      }
+    },
+    {
+      "event_id": "$foo",
+      "type": "m.room.message",
+      "content": {
+        "body": "foo",
+      }
+    }
+  ]
+  "gaps": [
+        {
+          "prev_pagination_token": "t6",
+          "event_id": "$corge",
+          "next_pagination_token": "t5",
+        },
+        {
+          "prev_pagination_token": "t4",
+          "event_id": "$baz",
+          "next_pagination_token": "t3",
+        },
+        {
+          "prev_pagination_token": "t2",
+          "event_id": "$foo",
+          "next_pagination_token": "t1",
+        }
+  ]
+}
+```
+
+
+#### `/messages?dir=f`
+
+`/messages?dir=f` response example with gaps (`chunk` has events in
+chronoligcal order since we're paginating forwards):
+
+`/messages?dir=f&from=t6`
+```json5
+{
+  "chunk": [
+    {
+      "event_id": "$garply",
+      "type": "m.room.message",
+      "content": {
+        "body": "garply",
+      }
+    },
+    {
+      "event_id": "$fred",
+      "type": "m.room.message",
+      "content": {
+        "body": "fred",
+      }
+    },
+  ]
+  "gaps": [
+        {
+          "prev_pagination_token": "t7",
+          "event_id": "$garply",
+          "next_pagination_token": "t8",
+        },
+        {
+          "prev_pagination_token": "t9",
+          "event_id": "$fred",
+          "next_pagination_token": "t10",
+        }
+  ]
+}
+```
+
+
+
+## Potential issues
+
+Lots of gaps/extremities are generated when a spam attack occurs and federation
+falls behind. If clients start showing gaps with retry links, we might just be
+exposing the spam more.
+
+
+## Alternatives
+
+As an alternative, we can continue to do nothing as we do today and not worry
+about the occasional missing events. People seem not to notice any missing
+messages anyway but they do probably see our slow `/messages` pagination.
+
+
+### Expose `prev_events` to the client
+
+One alternative is including the `prev_events` in the events that the client sees so
+they can figure out the DAG chain themselves and see if there is an missing event in the
+middle.
+
+There is an [unspecced `/messages?raw=true` query parameter in
+Synapse](https://github.com/matrix-org/synapse/blob/20c76cecb9eb84dadfa7b2d25b436d3ab9218a1a/synapse/rest/client/room.py#L653)
+that returns the full raw event as seen over federation which means it will include the
+`prev_events`.
+
+You can also specify `event_format: federation` directly in that JSON `filter` parameter
+of `/messages` ->
+`/_matrix/client/v3/rooms/{room_id}}/messages?dir=b&filter=%7B%22event_format%22%3A%20%22federation%22%7D`
+
+Related to:
+
+ - https://github.com/matrix-org/matrix-spec/issues/859
+ - https://github.com/matrix-org/matrix-spec/issues/1047
+
+
+### Synthetic `m.timeline.gap` event alternative
+
+Another alternative is using synthetic events (thing that looks like an event
+without an `event_id`) which the server inserts alongside other events in the
+`chunk` to indicate where the gap is. But this has detractors since it's harder
+to implement in strongly typed SDK's and easy for a client to naively display
+every "event" in the `chunk`.
+
+`/messages` response example with a gap:
+
+```json
+{
+  "chunk": [
+    {
+      "type": "m.room.message",
+      "content": {
+        "body": "foo",
+      }
+    },
+    {
+      "type": "m.timeline.gap",
+      "content": {
+        "gap_start_event_id": "$12345",
+        "pagination_token": "t47409-4357353_219380_26003_2265",
+      }
+    },
+    {
+      "type": "m.room.message",
+      "content": {
+        "body": "baz",
+      }
+    },
+  ]
+}
+```
+
+
+### `GapEntry` alternative only indicating a gap `next_to_event_id` (only one side)
+
+Same concept as the existing `GapEntry` proposal but we only indicate the gap on one
+side of an event `next_to_event_id` according to the direction that `/messages` is going
+already.
+
+The problem with this alternative is that clients store events differently and it's
+valid to want to paginate in either direction from a given event. This alternative works
+fine in the Element Web case where you always paginate backwards in the scrollback and
+store events as a whole timeline list but another client like the [Trixinity
+SDK](https://github.com/benkuly/trixnity), where events are stored individually in a
+linked list, where each event could have a gap before and after, and where a gap could
+be 100's, 1000's of events wide, it would be useful to paginate from both ends to fill
+the gap faster.
+
+<details>
+<summary>
+  Details for the <code>GapEntry</code> alternative only indicating a gap <code>next_to_event_id</code>
+</summary>
+
+#### `GapEntry`
+
+key | type | value | description | required
+--- | --- | --- | --- | ---
 `next_to_event_id` | string | Event ID | The event ID indicating the position in the `/messages` `"chunk"` response where the gap starts after that position. This field can be `null` or completely omitted to indicate that the gap is at the start of the `/messages` `"chunk"` | no
-`pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG after the missing `gap_start_event_id`. Useful when retrying to fetch the missing part of the timeline again via `/messages?dir=b&from=<pagination_token>` | yes
+`pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG to be able to continue paginating in the same direction as the request and fill in the gap from `next_to_event_id` to the next known event. | yes
 
 
 ### `/messages` response examples
@@ -172,78 +388,8 @@ chronoligcal order since we're paginating forwards):
 }
 ```
 
+</details>
 
-
-## Potential issues
-
-Lots of gaps/extremities are generated when a spam attack occurs and federation
-falls behind. If clients start showing gaps with retry links, we might just be
-exposing the spam more.
-
-
-## Alternatives
-
-As an alternative, we can continue to do nothing as we do today and not worry
-about the occasional missing events. People seem not to notice any missing
-messages anyway but they do probably see our slow `/messages` pagination.
-
-
-### Expose `prev_events` to the client
-
-One alternative is including the `prev_events` in the events that the client sees so
-they can figure out the DAG chain themselves and see if there is an missing event in the
-middle.
-
-There is an [unspecced `/messages?raw=true` query parameter in
-Synapse](https://github.com/matrix-org/synapse/blob/20c76cecb9eb84dadfa7b2d25b436d3ab9218a1a/synapse/rest/client/room.py#L653)
-that returns the full raw event as seen over federation which means it will include the
-`prev_events`.
-
-You can also specify `event_format: federation` directly in that JSON `filter` parameter
-of `/messages` ->
-`/_matrix/client/v3/rooms/{room_id}}/messages?dir=b&filter=%7B%22event_format%22%3A%20%22federation%22%7D`
-
-Related to:
-
- - https://github.com/matrix-org/matrix-spec/issues/859
- - https://github.com/matrix-org/matrix-spec/issues/1047
-
-
-### Synthetic `m.timeline.gap` event alternative
-
-Another alternative is using synthetic events (thing that looks like an event
-without an `event_id`) which the server inserts alongside other events in the
-`chunk` to indicate where the gap is. But this has detractors since it's harder
-to implement in strongly typed SDK's and easy for a client to naively display
-every "event" in the `chunk`.
-
-`/messages` response example with a gap:
-
-```json
-{
-  "chunk": [
-    {
-      "type": "m.room.message",
-      "content": {
-        "body": "foo",
-      }
-    },
-    {
-      "type": "m.timeline.gap",
-      "content": {
-        "gap_start_event_id": "$12345",
-        "pagination_token": "t47409-4357353_219380_26003_2265",
-      }
-    },
-    {
-      "type": "m.room.message",
-      "content": {
-        "body": "baz",
-      }
-    },
-  ]
-}
-```
 
 
 ## Security considerations
