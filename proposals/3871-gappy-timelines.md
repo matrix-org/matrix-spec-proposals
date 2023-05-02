@@ -51,8 +51,8 @@ Name | Type | Description | required
 key | type | value | description | required
 --- | --- | --- | --- | ---
 `event_id` | string | Event ID | The event ID indicating the position in the `/messages` `chunk` response  | yes
-`prev_pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG before the given `event_id` in the `chunk` | yes
-`next_pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG after the given `event_id` in the `chunk` | yes
+`prev_pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG before the given `event_id` in the `chunk`. Omitting this field just means there is no gap on this side. | no
+`next_pagination_token` | string | Pagination token | A pagination token that represents the spot in the DAG after the given `event_id` in the `chunk`. Omitting this field just means there is no gap on this side. | no
 
 
 ### `/messages` response examples
