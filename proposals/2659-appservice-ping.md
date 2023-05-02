@@ -98,3 +98,8 @@ If the request fails, the endpoint returns a standard error response with
 The endpoints can be implemented as `/_matrix/app/unstable/fi.mau.msc2659/ping`
 and `/_matrix/client/unstable/fi.mau.msc2659/appservice/{appserviceId}/ping`.
 Error codes can use `FI.MAU.MSC2659_` instead of `M_` as the prefix.
+
+`fi.mau.msc2659` can be used as an `unstable_features` flag in `/versions` to
+indicate support for the unstable prefixed endpoint. Once the MSC is approved,
+`fi.mau.msc2659.stable` can be used to indicate support for the stable endpoint
+until the spec release containing the endpoint is supported.
