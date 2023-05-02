@@ -188,6 +188,27 @@ about the occasional missing events. People seem not to notice any missing
 messages anyway but they do probably see our slow `/messages` pagination.
 
 
+### Expose `prev_events` to the client
+
+One alternative is including the `prev_events` in the events that the client sees so
+they can figure out the DAG chain themselves and see if there is an missing event in the
+middle.
+
+There is an [unspecced `/messages?raw=true` query parameter in
+Synapse](https://github.com/matrix-org/synapse/blob/20c76cecb9eb84dadfa7b2d25b436d3ab9218a1a/synapse/rest/client/room.py#L653)
+that returns the full raw event as seen over federation which means it will include the
+`prev_events`.
+
+You can also specify `event_format: federation` directly in that JSON `filter` parameter
+of `/messages` ->
+`/_matrix/client/v3/rooms/{room_id}}/messages?dir=b&filter=%7B%22event_format%22%3A%20%22federation%22%7D`
+
+Related to:
+
+ - https://github.com/matrix-org/matrix-spec/issues/859
+ - https://github.com/matrix-org/matrix-spec/issues/1047
+
+
 ### Synthetic `m.timeline.gap` event alternative
 
 Another alternative is using synthetic events (thing that looks like an event
