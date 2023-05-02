@@ -23,6 +23,9 @@ client respects redirect responses it can make requests like so to the media end
 + `/_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}?allow_redirect=true`
 + `/_matrix/media/v3/thumbnail/{serverName}/{mediaId}?allow_redirect=true`
 
+In the case where a client wishes not to redirect (either implictly with no parameter or explicitly
+providing `allow_redirect=false`) the server must continue to serve media directly with no redirect.
+
 ## Potential Issues
 
 None, as opt-in functionality this change is 100% backwards compatible.
