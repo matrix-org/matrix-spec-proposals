@@ -391,6 +391,15 @@ chronoligcal order since we're paginating forwards):
 </details>
 
 
+## Future considerations
+
+In the future, we should consider adding the same `gaps` field to `/context` because
+it's another endpoint that returns a linearized version of the DAG.
+
+It could make sense to roll this into this MSC but it might make the proposal less clear
+if we have to bulk it up by specifying the same details for `/context`. Leaving it to be
+follow-up MSC for now.
+
 
 ## Security considerations
 
