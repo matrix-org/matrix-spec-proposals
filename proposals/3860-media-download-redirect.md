@@ -9,7 +9,7 @@ tell clients/servers to pull data direct from the source, e.g. a CDN.
 
 This MSC proposes that a 307 or 308 redirect code is allowed and followed according to the `Location`
 header. It is possible some clients would already follow these which needs to be confirmed. Specific
-endpoints in question:
+endpoints in question ([current spec link for these](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)):
 
 + `/_matrix/media/v3/download/{serverName}/{mediaId}`
 + `/_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`
