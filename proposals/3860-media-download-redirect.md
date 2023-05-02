@@ -33,7 +33,14 @@ providing `allow_redirect=false`) the server must continue to serve media direct
 
 ## Potential Issues
 
-None, as opt-in functionality this change is 100% backwards compatible.
+None for clients, as opt-in functionality this change is 100% backwards compatible.
+
+With redirects it becomes easier to force another homeserver to be your CDN, which isn't great
+(clients could already do that, but not without recompiling).
+
+Redirects also potentially allow changing of media underneath the users as different redirects could
+be returned over time. It is worth noting that a badly behaving media server can already just return
+different content as well.
 
 ## Alternatives
 
