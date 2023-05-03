@@ -11,7 +11,7 @@ Historically, Matrix has basic support for signalling 1:1 WebRTC calls which suf
  * There is no support for renegotiation of SDP, for changing ICE candidates / hold/resume
    functionality, etc.
  * There is no distinction between rejecting a call and ending it, which means that in trying
-   to reject a call, a client can inadvertantly cause a call that has been sucessfully set up
+   to reject a call, a client can inadvertently cause a call that has been successfully set up
    on a different device to be hung up.
 
 ## Proposal
@@ -151,7 +151,7 @@ The client may:
    an ICE renegotiation, a client should be sure to send `ice_timeout` rather than `ice_failed` if
    media had previously been received successfully, even if the ICE renegotiation itself failed.
  * `user_hangup`: Clients must now send this code when the user chooses to end the call, although
-   for backwards compatability with version 0, a clients should treat an absence of the `reason`
+   for backwards compatibility with version 0, a clients should treat an absence of the `reason`
    field as `user_hangup`.
  * `user_media_failed`: The client was unable to start capturing media in such a way that it is unable
    to continue the call.
@@ -237,7 +237,7 @@ enough time to actually pick up the call.
 ### Introduce recommendations for batching of ICE candidates
 Clients should aim to send a small number of candidate events, with guidelines:
  * ICE candidates which can be discovered immediately or almost immediately in the invite/answer
-   event itself (eg. host candidates). If server reflexive or relay candiates can be gathered in
+   event itself (eg. host candidates). If server reflexive or relay candidates can be gathered in
    a sufficiently short period of time, these should be sent here too. A delay of around 200ms is
    suggested as a starting point.
  * The client should then allow some time for further candidates to be gathered in order to batch them,
