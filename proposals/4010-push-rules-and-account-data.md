@@ -40,7 +40,7 @@ clarifications are offered:
 * `m.push_rules` and `m.fully_read` should be rejected for both global and room
   account data.
 * Reading `m.push_rules` and `m.fully_read` should be allowed (although note that
-  currently `m.push_rules` only makes sense for global account data nd `m.fully_read`
+  currently `m.push_rules` only makes sense for global account data and `m.fully_read`
   only makes sense for room account data).
 
 ## Potential issues
