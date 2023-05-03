@@ -16,9 +16,9 @@ Tasks:
       know they come from an upgrade and should be auto-joined.
 - [x] Complete tasks scattered through the doc
 - [x] Add Travis' thought about bans [1]
-- [ ] Complete detailed definition of sub-proposals, with help from people who
+- [x] Complete detailed definition of sub-proposals, with help from people who
       know about each area
-- [ ] Request review
+- [x] Request review
 - [ ] Ask whether we can speed up faster remote joins by omitting obsolete state
 
 ## Introduction
