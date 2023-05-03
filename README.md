@@ -90,7 +90,7 @@ same major points is fine.
 
 Some tips for MSC writing:
 
-* Please wrap your lines to 80 characters maximum (some small leeway is OK).
+* Please wrap your lines to 120 characters maximum.
   This allows readers to review your markdown without needing to horizontally
   scroll back and forth. Many markdown text editors have this a feature.
 * If you are referencing an existing endpoint in the spec, or another MSC, it
