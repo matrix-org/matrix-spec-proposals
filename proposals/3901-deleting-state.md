@@ -1,6 +1,6 @@
 # MSC3901: Deleting State
 
-TODO:
+Tasks:
 
 - [x] Create document
 - [x] Intro and motivation
@@ -12,16 +12,14 @@ TODO:
 - [x] Consider changing "definition of obsolete state" into a sub-proposal
     - No, I think it is part of sub-proposal 1
 - [x] Go through the meeting notes and transfer ideas into sub-proposals
-- [ ] Add thoughts from the Deleting state room on marking invitations so we
+- [x] Add thoughts from the Deleting state room on marking invitations so we
       know they come from an upgrade and should be auto-joined.
-- [ ] Complete TODOs scattered through the doc
+- [x] Complete tasks scattered through the doc
 - [x] Add Travis' thought about bans [1]
 - [ ] Complete detailed definition of sub-proposals, with help from people who
       know about each area
 - [ ] Request review
 - [ ] Ask whether we can speed up faster remote joins by omitting obsolete state
-
-
 
 ## Introduction
 
@@ -341,13 +339,13 @@ same power level.
 
 The server should send invitations on behalf of the user performing the upgrade.
 These invitations should contain a `part_of` property in their content, whose
-value is the ID of the `m.room.create` event of the new room.
+value is the ID of the `m.room.create` event of the new room. (This makes a
+later step, automatically accepting these invitations, possible - see
+sub-proposal 3).
 
 This action should only be performed by the server if the user performing the
 upgrade is registered with this server. Otherwise, the server should not create
 any invitations or emit any membership events.
-
-TODO: other than power level, what else do we need to copy across for each user?
 
 #### Specific spec wording changes
 
@@ -500,8 +498,9 @@ state events in the upgraded room.
 Homeservers cannot impersonate users from other homeservers, so no one
 homeserver can copy the required state.
 
-TODO: this could cause too much state to be copied, or bad or abusive state to
-be copied.
+Part of the reason for this proposal is to reduce the amount of state that is
+held in a room, so we need to make sure we are not copying unnecessary state
+here, and that unwanted state such as spam or abuse can be excluded.
 
 ### Alternatives
 ### Security considerations
@@ -531,8 +530,6 @@ use room ID + room version to identify the real actual room.
 
 When a client talks to a server using just room ID, the server automatically
 picks the most recent version of that room.
-
-TODO: much more specific here.
 
 ### Potential issues
 
