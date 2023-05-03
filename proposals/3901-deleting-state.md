@@ -463,6 +463,7 @@ omitted since the user is invited, so does not need additional authorisation).
 ### Potential issues
 
 ### Alternatives
+
 ### Security considerations
 
 Joining a room automatically could very easily be problematic, so this proposal
@@ -493,6 +494,60 @@ This involves copying all non-obsolete, non-user-scoped room state by creating
 state events in the upgraded room.
 
 ### Proposal
+
+When upgrading a room, the homeserver should examine the state of the old room
+and create state events in the new room with the same `state_key` and
+`contents`, but with `sender` set to the mxid of the user performing the upgrade.
+
+The server should copy all state except:
+
+* Obsolete state, as defined earlier in this proposal
+* User-scoped state i.e. any state whose `state_key` is equal to the sender's
+  mxid. (If MSC3779 "Owned state events" is merged, user-scoped state will also
+  include anything with a `state_key` that starts with the user's mxid plus
+  underscore.
+* State whose contents include a top-level property `exclude_from_upgrade:
+  true`.
+
+### Proposed spec wording change
+
+In [11.33.3 Server behaviour](https://spec.matrix.org/v1.5/client-server-api/#server-behaviour-16),
+under "Room Upgrades", step 3 should be updated to read:
+
+> Replicates transferable state events to the new room.
+>
+> The homeserver should examine the state of the old room and create state
+> events in the new room with the same `state_key` and `contents`, but with
+> `sender` set to the mxid of the user performing the upgrade.
+>
+> The server should copy all state except:
+>
+> * Obsolete state, as defined in section ...
+> * User-scoped state i.e. any state whose `state_key` is equal to the sender's
+>   mxid.
+> * State whose contents include a top-level property `exclude_from_upgrade:
+>   true`.
+
+(Note that if MSC3779 is merged, user-scoped state will need a different
+definition.)
+
+For reference, the current wording is:
+
+> Replicates transferable state events to the new room. The exact details for
+> what is transferred is left as an implementation detail, however the
+> recommended state events to transfer are:
+>
+>     m.room.server_acl, m.room.encryption, m.room.name, m.room.avatar,
+>     m.room.topic, m.room.guest_access, m.room.history_visibility,
+>     m.room.join_rules,
+>     m.room.power_levels
+>
+> Membership events should not be transferred to the new room due to technical
+> limitations of servers not being able to impersonate people from other
+> homeservers. Additionally, servers should not transfer state events which are
+> sensitive to who sent them, such as events outside of the Matrix namespace
+> where clients may rely on the sender to match certain criteria.
+
 ### Potential issues
 
 Homeservers cannot impersonate users from other homeservers, so no one
@@ -502,10 +557,33 @@ Part of the reason for this proposal is to reduce the amount of state that is
 held in a room, so we need to make sure we are not copying unnecessary state
 here, and that unwanted state such as spam or abuse can be excluded.
 
+The existing spec states:
+
+> servers should not transfer state events which are sensitive to who sent
+> them, such as events outside of the Matrix namespace where clients may rely
+> on the sender to match certain criteria.
+
+Instead, we propose including all events except those that explicitly exclude
+themselves with `exclude_from_upgrade: true` in their contents. This requires
+anyone using non-upgradable state events to notice this MSC and add that
+property.
+
 ### Alternatives
+
 ### Security considerations
-### Unstable prefix
+
+New state events are created by the upgrading user, so it may be possible for
+that user to make it look like they were the initiators of events that were
+actually created by a different user in the previous room.
+
+A room upgrade will change the sender of any maliciously-added event, making it
+harder to remove all state created by a malicious user.
+
 ### Dependencies
+
+In order to exclude obsolete state, the definition of obsolete from this
+proposal is required, but the main part of this sub-proposal does not depend on
+any others.
 
 ## Sub-proposal 5: Upgraded rooms have the same room ID
 ### Proposal
