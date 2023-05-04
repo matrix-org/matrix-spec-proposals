@@ -1,4 +1,4 @@
-# MSC4011: Thumbnail media negotation
+# MSC4011: Thumbnail media negotiation
 
 It is currently up to the homeserver to decide which media formats are exposed
 by the media repository for the [`/thumbnail` endpoint](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid).
@@ -54,7 +54,7 @@ potential to break current clients, however.
 ## Future extensions
 
 It may make sense to also apply this to the `/download` resource. This could
-allow simple clients to make a request to `/download` which is only fullfilled
+allow simple clients to make a request to `/download` which is only fulfilled
 for e.g. images (by requesting it with `Accept: image/*`).
 
 ## Security considerations
