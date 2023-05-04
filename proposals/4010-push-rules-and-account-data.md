@@ -19,7 +19,7 @@ The [fully read marker](https://spec.matrix.org/v1.6/client-server-api/#fully-re
 operates in a similar way and
 [servers must reject updating `m.fully_read` via `/account_data`](https://spec.matrix.org/v1.6/client-server-api/#server-behaviour-10).
 
-Note that when attempting to set `m.fully_read` via push rules the following
+Note that when attempting to set `m.fully_read` via `/account_data` the following
 behavior is observed:
 
 * Synapse will reject it with a 405 error (only for room account data).
