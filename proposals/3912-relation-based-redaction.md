@@ -1,4 +1,4 @@
-# MSC3912: Relation-based redaction
+# MSC3912: Redaction of related events
 
 There are cases where, when redacting an event, it would make sense to also
 redact all events that relate to it in a certain way. A few examples of this
@@ -37,11 +37,7 @@ For example, let's consider the following message:
     "type": "m.room.message",
     "content": {
         "body": "Hello",
-        "msgtype": "m.text",
-        "m.relates_to": {
-            "rel_type": "m.replace",
-            "event_id": "$some_event_id"
-        }
+        "msgtype": "m.text"
     },
     "event_id": "$a"
 }
@@ -106,6 +102,55 @@ result of this proposal, servers may respond to the request once the event
 referenced to by the `{eventId}` parameter is redacted, and redact events that
 relate to it in the background.
 
+This is important to note that we do not consider parent events. In the previous example,
+a redaction of `$b` would not cause `$a` to be redacted. The following request:
+
+```
+PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$b/foo
+
+{
+    "with_relations": ["m.replace"]
+}
+```
+
+Causes only event `$b` to get redacted.
+
+The redaction will be limited to the events which meet the validity requirements of the
+selected relationship types, for example [these requirements](https://spec.matrix.org/v1.6/client-server-api/#validity-of-replacement-events) for edited events.
+In case of the previous example, let's consider this additional event `$c`: 
+
+```json
+{
+    "type": "m.room.message",
+    "content": {
+        "body": "* Hello world2!",
+        "msgtype": "m.text",
+        "m.new_content": {
+            "body": "Hello world2!",
+            "msgtype": "m.text"
+        },
+        "m.relates_to": {
+            "rel_type": "m.replace",
+            "event_id": "$b"
+        }
+    },
+    "event_id": "$c"
+}
+```
+
+This edit event is invalid because we must not edit an edit (We were supposed to refer to the
+original event: `$a`)
+Then the request:
+
+```
+PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$a/foo
+
+{
+    "with_relations": ["m.replace"]
+}
+```
+
+Causes events `$a` and `$b` to get redacted, but no `$c`
 
 ### Unstable feature in `/version`
 
