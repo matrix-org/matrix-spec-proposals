@@ -1,4 +1,4 @@
-# MSC4006: Completed Elsewhere for VoIP
+# MSC4006: Answered Elsewhere for VoIP
 
 Usually, it is self-evident when a VoIP call in Matrix has been answered by a different client:
 the answer event from a different party ID is present in the room. However, bridges can complicate
@@ -9,7 +9,7 @@ there is no equivalent to translate it to, so the call will show as a missed cal
 
 ## Proposal
 
-Add another value for the `reason` field in an `m.call.hangup` event of `completed_elsewhere`.
+Add another value for the `reason` field in an `m.call.hangup` event of `answered_elsewhere`.
 
 ```
 {
@@ -18,7 +18,7 @@ Add another value for the `reason` field in an `m.call.hangup` event of `complet
     "call_id": "1234567",
     "party_id": "AAAAAAA",
     "version": "1",
-    "reason": "completed_elsewhere"
+    "reason": "answered_elsewhere"
   },
 }
 ```
@@ -36,6 +36,10 @@ This could potentially be done without extra spec if the bridge were to create a
 However, in SIP, the bridge would get no further information about the call, so wouldn't know when it
 ended, meaning that it would have to send a fake hangup straight afterwards, so the call would appear
 as zero duration.
+
+A previous version of this proposal suggested, `completed_elsewhere` to match SIP (and not imply that
+the call was necessarily answered). However, there is prior art in the js-sdk implementing `answered_elsewhere`.
+
 
 ## Security considerations
 
