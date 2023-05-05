@@ -14,7 +14,7 @@ header in its [content negotiation](https://developer.mozilla.org/en-US/docs/Web
 algorithm to determine what thumbnail format to serve to the client.
 
 Homeservers *must* support providing responses for `image/png` and `image/jpeg`
-for the `/thumbnail` endpoint, but does not need to actually provide every thumbnail
+for the `/thumbnail` endpoint, but do not need to actually provide every thumbnail
 in both formats. (These formats are known as the "fallback formats" below.) Clients
 which support thumbnails are expected to support both of these formats.
 
