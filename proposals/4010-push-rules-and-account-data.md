@@ -41,7 +41,8 @@ clarifications are offered:
   account data.
 * Reading `m.push_rules` and `m.fully_read` should be allowed (although note that
   currently `m.push_rules` only makes sense for global account data and `m.fully_read`
-  only makes sense for room account data).
+  only makes sense for room account data). The format should match what is currently
+  [returned via `/sync`](https://spec.matrix.org/v1.6/client-server-api/#push-rules-events).
 
 The above rules shall also apply when deleting account data if [MSC3391](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
 is merged before this MSC.
