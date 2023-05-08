@@ -48,7 +48,11 @@ is merged before this MSC.
 
 ## Potential issues
 
-None, hopefully.
+It is possible that a client is currently storing data in the `m.push_rules`
+(or global `m.fully_read`) account data. After this change it could no longer
+be updated, deleted, or retrieved. It seems unlikely that the data stored here
+is done purposefully (and is likely the result of undefined behavior that this
+MSC is attempting to fix).
 
 ## Alternatives
 
