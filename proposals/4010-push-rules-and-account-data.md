@@ -43,6 +43,9 @@ clarifications are offered:
   currently `m.push_rules` only makes sense for global account data and `m.fully_read`
   only makes sense for room account data).
 
+The above rules shall also apply when deleting account data if [MSC3391](https://github.com/matrix-org/matrix-spec-proposals/pull/3391)
+is merged before this MSC.
+
 ## Potential issues
 
 None, hopefully.
