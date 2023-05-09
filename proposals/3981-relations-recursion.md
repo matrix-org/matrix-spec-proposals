@@ -15,6 +15,12 @@ efficiently in hierarchical, but not in chronological order. Yet, for some
 functionality – e.g., to determine which event a read receipt should 
 reference as per [MSC3771] – chronological order is necessary.
 
+Previously, clients would be unable to obtain a consistent ordering of
+events in threads or related to threads.  
+Workarounds such as sending a separate `/relations` request per individual 
+message in each thread are only able to approximate the actual ordering,
+as they rely on timestamps.
+
 ## Proposal
 
 It is proposed to add the `recurse` parameter to the `/relations` API, defined
@@ -105,6 +111,9 @@ return `[B, D, E, G]`.
 
 `/relations` on event `A` with `recurse=true`, `dir=b` and `limit=2` would
 return `[G, E]`.
+
+`/relations` on event `A` with `rel_type=m.annotation`, 
+`event_type=m.reaction` and `recurse=true` would return `[G, E]`.
 
 ## Unstable prefix
 
