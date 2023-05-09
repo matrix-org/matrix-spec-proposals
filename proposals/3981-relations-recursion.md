@@ -50,8 +50,10 @@ Regardless of the value of the `recurse` parameter, events will always be
 returned in topological ordering. Pagination and limiting shall also apply to 
 topological ordering.
 
-If the API call specifies an `event_type` or `rel_type`, this filter will be
-applied to nested relations just as it is applied to direct relations.
+Filters specified via `event_type` or `rel_type` will only be applied to the 
+leaves of the graph formed by the related events, even if their only relation
+to the original given event is through an intermediate event that does not
+match these filters. 
 
 ## Potential issues
 
