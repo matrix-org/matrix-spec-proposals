@@ -50,10 +50,10 @@ Regardless of the value of the `recurse` parameter, events will always be
 returned in topological ordering. Pagination and limiting shall also apply to 
 topological ordering.
 
-Filters specified via `event_type` or `rel_type` will only be applied to the 
-leaves of the graph formed by the related events, even if their only relation
-to the original given event is through an intermediate event that does not
-match these filters. 
+Filters specified via `event_type` or `rel_type` will be applied to leaves 
+and intermediate events on the graph formed by the related events.  
+Events that would match the filter, but whose only relation to the original 
+given event is through a non-matching intermediate event, will not be included.
 
 ## Potential issues
 
