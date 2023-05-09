@@ -88,7 +88,7 @@ flowchart RL
     end
     B-.->|m.thread|A
     G-.->|m.thread|A
-    E-.->|m.reaction|B
+    E-.->|m.annotation|B
     D-.->|m.edit|A
     G-->F-->E
     D-->C-->B
