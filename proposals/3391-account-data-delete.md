@@ -53,6 +53,8 @@ These, respectively, remove account-wide account data, and room-scoped account d
 
 For idempotency reasons, these endpoints always return `200 OK`, with an empty JSON body `{}`.
 
+For any account data key that cannot be set (like `m.fully_read`), the delete API will have a likewise error response.
+
 #### Deleted account data responses
 
 Furthermore, when a client deletes account data, it must expect the `GET` methods above to return a 404 on
@@ -86,4 +88,6 @@ DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/account_data/{t
 DELETE /_matrix/client/unstable/org.matrix.msc3391/user/{userId}/rooms/{roomId}/account_data/{type}
 ```
 
-The `unstable_features` key for this MSC is `org.matrix.msc3391`.
+The `unstable_features` key for this MSC is `org.matrix.msc3391`, it has to be set to `true`.
+
+Any other value or absence of this key will signal the absence of support for this feature.
