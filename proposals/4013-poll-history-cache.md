@@ -15,7 +15,7 @@ More information on polls can be found on the [MSC3381](https://github.com/matri
 
 This is how the new state event would look like:
 
-```json
+```json5
 {
    // irrelevant fields not shown
    "content": {},
@@ -31,7 +31,7 @@ First of all a room creator sends the new `m.room.poll_history` state event in t
 
 For example the body when creating a new encrypted room would look like this:
 
-```json
+```json5
 {
     "preset": "private_chat",
     "name": "Some room",
@@ -57,7 +57,7 @@ For example the body when creating a new encrypted room would look like this:
 
 Any time a client starts a new poll, it also includes a reference to the above state event id like this:
 
-```json
+```json5
 {
     "type": "m.poll.start",
     // irrelevant fields not shown
@@ -111,7 +111,7 @@ The problem this MSC is trying  to fix here is to build an index for events of a
 
 For polls the state event would look like this:
 
-```json
+```json5
 {
    // irrelevant fields not shown
    "content": {},
@@ -129,7 +129,7 @@ For polls the state event would look like this:
 An alternative can be to have multiple instances of the same state event `m.room.poll_history` but with different `state_key`s.  In this case the client opening a poll is also required to send a state event with the `state_key` equal to `@sender:somewhere.org_XYZ`. The string `XYZ` should be a unique token for the poll. The perfect candidate is the event id of the `m.poll.start` event. 
 The poll history can later be built by fetching all the state events with type `m.room.poll_history` by calling the [state API](https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientv3roomsroomidstateeventtypestatekey). This is possible since here the state event also contains the event id of the `m.poll.start` event: 
 
-```json
+```json5
 {
    // irrelevant fields not shown
    "content": { 
@@ -153,7 +153,7 @@ Potential problems with this approach however are:
 The idea here is to introduce new state event as the main proposal. The only difference is that here clients are supposed to update the state event every time they open a new poll. The new state event's purpose is to contain all the ids for `m.poll.start` events.
 
 The new state event would look like this:
-```json
+```json5
 {
    // irrelevant fields not shown
    "content": { 
