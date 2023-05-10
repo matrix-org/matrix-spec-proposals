@@ -14,7 +14,7 @@ Events with a relation may be redacted like any other event.
 The `m.relates_to`.`rel_type` and `m.relates_to`.`event_id` fields should
 be preserved over redactions, so that clients can still distinguish
 redacted relations from other redacted events of the same event type.
-If `m.relates_to` is not an object, or `m._relates_to` would be
+If `m.relates_to` is not an object, or `m.relates_to` would be
 an empty object after redacting any other keys, then `m.relates_to`
 should also be removed from `content`.
 
