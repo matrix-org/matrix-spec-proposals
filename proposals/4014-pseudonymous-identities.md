@@ -65,6 +65,8 @@ Clients can inspect the `sender_key` on events and use that as a fixed ID repres
 
 - `join_authorised_via_users_server` is currently a user ID, which will now be a `sender_key`. The clause:
    > the event must be signed by the server which owns the user ID in the field.
+
   would change to:
+  
    > the event must be signed by the same key as this field.
 
