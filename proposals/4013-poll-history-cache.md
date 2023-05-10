@@ -1,6 +1,6 @@
-# MSC4013: Poll History cache
+# MSC4013: Poll history cache
 
-The purpose of this MSC is to allow clients to quickly fetch all the polls in a given room (aka “Poll History”).
+The purpose of this MSC is to allow clients to quickly fetch all the polls in a given room (aka “Poll history”).
 
 ## Problem
 
