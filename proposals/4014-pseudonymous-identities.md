@@ -1,4 +1,4 @@
-## MSCXXXX: Pseudonymous Identities
+## MSC4014: Pseudonymous Identities
 
 This MSC aims to remove MXIDs from events in almost exactly the same was as proposed in [MSC1228](https://github.com/matrix-org/matrix-spec-proposals/blob/rav/proposal/remove_mxids_from_events/proposals/1228-removing-mxids-from-events.md), with a few minor tweaks.
 
