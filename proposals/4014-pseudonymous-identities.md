@@ -43,19 +43,23 @@ This proposal creates a new room version where the following changes are made:
 #### Changes from MSC1228
 
 - There is no `user_key`. As a result, there is no `user_mapping` field.
-- There is no `room_key`. TODO: Erik made a good point that this then complicates auth rules as
+- There is no `room_key`.
 - The `user_room_key` is now `sender_key` and has no new sigil.
 - The `sender` key is no longer used over federation (to avoid implementation confusion), using the `sender_key` instead.
 - There is no `verified_sender_mxid` field. Instead, the `sender` field is used in the CSAPI to allow clients to transparently work in pseudo ID rooms. The `sender_key` field is also sent to clients to allow clients to slowly migrate to be pseudo ID aware.
 - If a `sender` cannot be verified by server `example.com`, the user ID `@localhost:domain` in question is transformed into a fake user ID `@_unverified_localhost_domain:example.com`.
     * Currently, these events would be ignored _entirely_ by homeservers as the server keys are required to verify event signatures. With this MSC, those events would now be accepted by the server. To ensure we keep a consistent view between clients and servers, we need to ensure clients also accept this event. To do that in a safe way is hard. The main options are A) use an empty/malformed user ID, B) use a fake user ID, C) use the claimed user ID despite not being able to verify it. A) would break many clients. C) would allow malicious servers to pretend that Alice is in a room when they are not. B) seems like the only reasonable workaround. By using the same domain as the client, all requests involving the unverified user ID will go through the homeserver, providing a mechanism for client-initiated retries.
-    * If the server successfully verifies the user ID at a later date, it should resend the `m.room.member` event for that user ID in that room, with the correct verified user ID instead of the fake user ID. Events sent prior to this will show ugly `@_unverified_localhost_domain:example.com` senders. Events sent after this will show the correct displayname and avatar. E2EE will be broken until the user ID is verified, due to `@_unverified_localhost_domain:example.com` not having the same devices as the verified user. These seem like reasonable tradeoffs. Remember, the current UX is that these messages are _entirely dropped by the protocol_.
+    * If the server successfully verifies the user ID at a later date, it should resend the `m.room.member` event for that user ID in that room, with the correct verified user ID instead of the fake user ID. [MSC3575: Sliding Sync](https://github.com/matrix-org/matrix-doc/blob/kegan/sync-v3/proposals/3575-sync.md) clients should have the room invalidated and room state resent to the client. Events sent prior to this will show ugly `@_unverified_localhost_domain:example.com` senders. Events sent after this will show the correct displayname and avatar. E2EE will be broken until the user ID is verified, due to `@_unverified_localhost_domain:example.com` not having the same devices as the verified user. These seem like reasonable tradeoffs. Remember, the current UX is that these messages are _entirely dropped by the protocol_ if we fail to get server keys.
 
 ##### Addressing the "Problems" section in MSC1228
  - The state keys in the room aliases event is unimportant since v6 rooms removed them from the specification.
  - matrix.to links remain as they are, with the `via=` params formed using verified mxid mappings.
  - Redacting an `m.room.member` event should not remove the `mxid_mapping` field in the case where the `displayname` or `avatar_url` is malicious. In order to remove the `mxid_mapping` field (e.g for PII removal), the account in question should be deactivated or the room in question should be "purged", which would cause the mapping to be removed. This more severe form of redaction has side-effects as deleting the `mxid_mapping` potentially alters routing information as that user may be the last user in the room for that server, and hence should not be triggered by a CSAPI `/redact` call. How this functions at a protocol level is undetermined at this point. The redaction algorithm will remain the same for the purposes of signing events / hashes (so the `mxid_mapping` is removed in this case). This implies 2 kinds of redaction for `m.room.member` events.
 
+
+#### Key-aware clients
+
+Clients can inspect the `sender_key` on events and use that as a fixed ID representing the sender of the event. This isn't particularly important _right now_, but can be useful for pairing up senders from an unverified mxid and a verified mxid. In the future when portable accounts are introduced, this key will be critical as the mxid will regularly change as the user migrates accounts.
 
 #### Additional notes
 
