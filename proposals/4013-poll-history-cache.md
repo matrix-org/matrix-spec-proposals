@@ -174,3 +174,7 @@ Potential problems with this approach are:
 - Users opening a poll need enough power level to send a state event (`m.room.poll_history`)
 - Conflicts may arise when two users attempt to change the state event at the same time
 - A malicious user or a bug in a client may accidentally erase the history sending a wrong payload
+
+# Unstable prefix
+
+While this MSC is not considered stable, implementations should use `org.matrix.msc4013.*` as a prefix in place of `m.*` for the new state event type.
