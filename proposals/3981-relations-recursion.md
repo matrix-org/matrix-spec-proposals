@@ -122,6 +122,11 @@ return `[G, E]`.
 Before standardization, `org.matrix.msc3981.recurse` should be used in place
 of `recurse`.
 
+## Unstable feature in `/version`
+
+Homeservers which support this MSC should indicate it by adding `org.matrix.msc3981` and
+`org.matrix.msc3981.stable` in the response to `GET /_matrix/client/versions` requests.
+
 [MSC2836]: https://github.com/matrix-org/matrix-spec-proposals/pull/2836
 [MSC3771]: https://github.com/matrix-org/matrix-spec-proposals/pull/3771
 [`/relations`]: https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientv1roomsroomidrelationseventid
