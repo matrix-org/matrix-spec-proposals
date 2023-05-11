@@ -11,7 +11,7 @@ For unencrypted rooms the problem doesn't exist since clients can call the [mess
 ## Proposal
 
 Introduce a new state event `m.room.poll_history`. This state event is supposed to be referenced by any `m.poll.start` that will be sent next in the room. The new state event must have an empty string as `state_key`.
-More information on polls can be found on the [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/blob/travis/msc/polls/proposals/3381-polls.md).
+More information on polls can be found on the [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/pull/3381).
 
 This is how the new state event would look like:
 
