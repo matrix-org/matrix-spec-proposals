@@ -26,6 +26,9 @@ This is how the new state event would look like:
 
 ```
 
+### Dependencies
+- [MSC3381](https://github.com/matrix-org/matrix-spec-proposals/pull/338)
+
 ## Client behaviour
 First of all a room creator sends the new `m.room.poll_history` state event in the `initial_state` when calling the [createRoom API](https://spec.matrix.org/v1.6/client-server-api/#post_matrixclientv3createroom).
 
