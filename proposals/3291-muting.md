@@ -100,6 +100,10 @@ track, it would be harder to implement and feels generally disjointed.
 
 None that I can think of.
 
+## Dependencies
+
++ [MSC3077](https://github.com/matrix-org/matrix-doc/pull/3077)
+
 ## Unstable prefix
 
 |Release                             |Development                                  |
