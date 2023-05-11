@@ -21,6 +21,10 @@ Workarounds such as sending a separate `/relations` request per individual
 message in each thread are only able to approximate the actual ordering,
 as they rely on timestamps.
 
+If a homeserver announces support for this feature, a client can stop this 
+fallback behavior and instead just append the recurse parameter to the initial 
+request.
+
 ## Proposal
 
 It is proposed to add the `recurse` parameter to the `/relations` API, defined
