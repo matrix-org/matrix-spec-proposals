@@ -15,8 +15,7 @@ The Alternatives section describes the issues with using these alone.
 
 ## Proposal
 
-This MSC proposes that clients disable muted tracks (as is almost instantaneous)
-and extends the `SDPStreamMetadata` object (see
+This MSC proposes extending the `SDPStreamMetadata` object (see
 [MSC3077](https://github.com/matrix-org/matrix-doc/pull/3077)) to allow
 indicating the mute state to the other side using the following fields:
 
@@ -27,12 +26,19 @@ This MSC also adds a new call event `m.call.sdp_stream_metadata_changed`, which
 has the common VoIP fields as specified in
 [MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746) (`version`,
 `call_id`, `party_id`) and a `sdp_stream_metadata` object which is the same
-thing as `sdp_stream_metadata`  in `m.call.negotiate`, `m.call.invite` and
+thing as `sdp_stream_metadata` in `m.call.negotiate`, `m.call.invite` and
 `m.call.answer`. The client sends this event the when `sdp_stream_metadata` has
 changed but no negotiation is required (e.g. the user mutes their
 camera/microphone).
 
 All tracks should be assumed unmuted unless specified otherwise.
+
+It is suggested `video_muted` (but not required) should determine if a user sees
+video but `audio_muted` only determines if a user is shown a mute indication
+rather than actually muting the audio track on the receiving side. This is
+suggested because if the track is muted using the WebRTC `disabled` property,
+there can be delay between the audio track getting unmuted and the client
+receiving the `m.call.sdp_stream_metadata_changed` event.
 
 ### Example
 
@@ -41,19 +47,24 @@ All tracks should be assumed unmuted unless specified otherwise.
     "type": "m.call.sdp_stream_metadata_changed",
     "room_id": "!roomId",
     "content": {
+        "version": "1",
         "call_id": "1414213562373095",
         "party_id": "1732050807568877",
         "sdp_stream_metadata": {
             "2311546231": {
                 "purpose": "m.usermedia",
-                "audio_muted:": false,
-                "video_muted": true,
+                "audio_muted:": true,
+                "video_muted": true
             }
-        },
-        "version": "1",
+        }
     }
 }
 ```
+
+This event indicates that both audio and video are muted. It is suggested the
+video track of stream `2311546231` should be hidden in the UI (probably replaced
+by an avatar). It also suggests the UI should show an indication that the audio
+track is muted but the client should not mute the audio on the receiving side.
 
 ## Potential issues
 
