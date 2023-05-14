@@ -6,7 +6,7 @@
 * As a result, relative to a dedicated file-copying system (e.g. scp) they feel sluggish. For instance, you can’t incrementally view a progressive JPEG or voice or video file as it’s being uploaded for “zero latency” file transfers.
 * You can’t skip within them without downloading the whole thing (if they’re streamable content, such as an .opus file)
 * For instance, you can’t do realtime broadcast of voice messages via Matrix, or skip within them (other than splitting them into a series of separate file transfers).
-* Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third Room to edit a scene, you want all participants to get it and stream the decode with minimal latency.
+* Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third Room to edit a scene, you want all participants to be able to receive the data and stream-decode it with minimal latency.
 
 Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com/matrix-org/matrix-spec/issues/432) 
 
@@ -30,7 +30,7 @@ Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com
 * Relatively minor changes needed from AES-CTR to sequence-of-AES-GCM-blocks for implementations like [https://github.com/matrix-org/matrix-encrypt-attachment](https://github.com/matrix-org/matrix-encrypt-attachment)  
 * We automatically maintain a serverside E2EE store of the file as normal, while also getting 1:many streaming semantics
 * Provides streaming transfer for any file type - not just media formats
-* Minimises memory usage in Matrix clients for large file transfers. Currently all(?) implementations store the whole file in RAM in order to check hashes and then decrypt, whereas this would naturally lend itself to processing files incrementally in blocks.
+* Minimises memory usage in Matrix clients for large file transfers. Currently all(?) client implementations store the whole file in RAM in order to check hashes and then decrypt, whereas this would naturally lend itself to processing files incrementally in blocks.
 * Leverages AES-GCM’s existing primitives and hashing rather than inventing our own hashing strategy
 * We already had Range/Content-Range resumable/seekable zero-latency HTTP transfer implemented and working excellently pre-E2EE and pre-Matrix in our ‘glow’ codebase.
 
@@ -41,6 +41,7 @@ Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com
 * Cancelled file uploads will still leak a partial file transfer to receivers who start to stream, which could be awkward if the sender sent something sensitive, and then can’t tell who downloaded what before they hit the cancel button
 * Small bandwidth overhead for the additional AEADs and block headers - probably ~16 bytes per block.
 * Out of the box it wouldn't be able to adapt streaming to network conditions (no HLS or DASH style support for multiple bitstreams)
+* Might not play nice with CDNs? (I haven't checked if they pass through Range headers properly)
 
 ## Detailed proposal
 
@@ -91,3 +92,4 @@ Therefore, I’ve written this as a high-level MSC to gather feedback, and to ge
 ## Dependencies
 
 This MSC depends on [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246), which is landing currently in the spec.
+Extends [MSC3469](https://github.com/matrix-org/matrix-spec-proposals/pull/3469).
