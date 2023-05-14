@@ -1,4 +1,4 @@
-# MSC4016: Streaming E2EE file transfer with random access
+# WIP: MSC4016: Streaming E2EE file transfer with random access
 
 ## Problem
 
@@ -37,7 +37,7 @@ Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com
 * When applied to unencrypted files, server-side content scanning (for trust & safety etc) would be unable to scan until it’s too late.
 * Cancelled file uploads will still leak a partial file transfer to receivers who start to stream, which could be awkward if the sender sent something sensitive, and then can’t tell who downloaded what before they hit the cancel button
 * Small bandwidth overhead for the additional AEADs and block headers - probably ~16 bytes per block.
-* Incompatible with multi-bitstream streaming formats like HLS or DASH
+* Out of the box it wouldn't be able to adapt streaming to network conditions (no HLS or DASH style support for multiple bitstreams)
 
 ## Detailed proposal
 
@@ -50,9 +50,9 @@ TODO, if folks think it's worth it
         * Works automatically with antivirus & CDGs
         * Could be made to map onto HLS or DASH? (by generating an .m3u8 which contains a bunch of MXC urls? This could also potentially solve the glitching problems we’ve had, by reusing existing HLS players augmented with our E2EE support)
     * Cons:
-        * Can be a pain to glue media uploads back together without glitching
         * Is always going to be high latency (e.g. Element currently splits into ~30s chunks) given rate limits on sending file events
-* Transfer files via streaming P2P file transfer via WebRTC data channels
+        * Can be a pain to glue media uploads back together without glitching
+* Transfer files via streaming P2P file transfer via WebRTC data channels (https://github.com/matrix-org/matrix-spec/issues/189)
     * Pros:
         * Easy to implement with Matrix’s existing WebRTC signalling
         * Could use MSC3898-inspired media control to seek in the stream
@@ -63,7 +63,9 @@ TODO, if folks think it's worth it
     * Pros:
         * Lowest latency
         * Could use media control to seek
-        * Automatically supports variable streams via SFU
+        * Supports multiple senders
+        * Works with CDGs and other enterprisey scanners which know how to scan VOIP payloads
+        * Could automatically support variable streams via SFU to adapt to network conditions
         * If the SFU does E2EE and archiving, you get that for free.
     * Cons:
         * Complex; you can’t just download the file via HTTP
