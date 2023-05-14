@@ -6,6 +6,7 @@
 * As a result, relative to a dedicated file-copying system (e.g. scp) they feel sluggish. For instance, you can’t incrementally view a progressive JPEG or voice or video file as it’s being uploaded for “zero latency” file transfers.
 * You can’t skip within them without downloading the whole thing (if they’re streamable content, such as an .opus file)
 * For instance, you can’t do realtime broadcast of voice messages via Matrix, or skip within them (other than splitting them into a series of separate file transfers).
+* Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third Room to edit a scene, you want all participants to get it and stream the decode with minimal latency.
 
 Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com/matrix-org/matrix-spec/issues/432) 
 
@@ -25,6 +26,7 @@ Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com
 ## Advantages
 
 * Backwards compatible with current implementations at the HTTP layer
+* Fully backwards compatible for unencrypted transfers
 * Relatively minor changes needed from AES-CTR to sequence-of-AES-GCM-blocks for implementations like [https://github.com/matrix-org/matrix-encrypt-attachment](https://github.com/matrix-org/matrix-encrypt-attachment)  
 * We automatically maintain a serverside E2EE store of the file as normal, while also getting 1:many streaming semantics
 * Provides streaming transfer for any file type - not just media formats
