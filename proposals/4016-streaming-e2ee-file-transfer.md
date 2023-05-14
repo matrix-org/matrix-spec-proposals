@@ -82,6 +82,7 @@ TODO, if folks think it's worth it
 * Variable size blocks could leak metadata for VBR audio.  Mitigation is to use CBR if you care about leaking voice traffic patterns (constant size blocks isn’t necessarily enough, as you’d still leak the traffic patterns)
 * Is encrypting a sequence number in block header (with authenticated encryption) sufficient to mitigate reordering attacks?
 * Do the repeated and predictable encrypted block headers facilitate attacks?
+* The resulting lack of atomicity on file transfer means that accidentally uploaded files may leak partial contents to other users, even if they're cancelled.
 
 ## Conclusion
 
