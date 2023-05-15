@@ -33,6 +33,7 @@ Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com
 * Minimises memory usage in Matrix clients for large file transfers. Currently all(?) client implementations store the whole file in RAM in order to check hashes and then decrypt, whereas this would naturally lend itself to processing files incrementally in blocks.
 * Leverages AES-GCM’s existing primitives and hashing rather than inventing our own hashing strategy
 * We already had Range/Content-Range resumable/seekable zero-latency HTTP transfer implemented and working excellently pre-E2EE and pre-Matrix in our ‘glow’ codebase.
+* Random access could enable future torrent-like semantics in future (i.e. servers doing parallel downloads of different chunks from different servers, with appropriate coordination)
 
 ## Limitations
 
