@@ -30,6 +30,7 @@ Please read MSC1228 first, as it is extremely similar to this proposal.
 This proposal creates a new room version where the following changes are made:
 - Events no longer have a `sender` field. Events now have a `sender_key` field, which is a base-64 encoded ed25519 public key (encoded the same way as other binary event data in Matrix).
     * By using a new field it ensures that everyone knows that the value of a `sender` field is ALWAYS a user ID, and not _sometimes_ a public key. Likewise, the value of a `sender_key` is _always_ a public key. No new sigil e.g `@ # !` is introduced.
+    * The private part of this key resides on the server of the sender, in the same way that server keys are today.
 - Events are signed by the `sender_key`. This bundles the signature and key together in the event, ensuring it is always possible to verify event signatures, without requiring external network requests.
     * This removes the need for server keys to verify the room DAG, making them much more reliable when remote servers are dead.
 - The `sender_key` is scoped to a specific per-room, per-user identity.
