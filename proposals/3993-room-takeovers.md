@@ -22,19 +22,19 @@ There are multiple scenarios of why one room admin wishes to demote another room
 
 Use cases:
 * The IT department of an organisation wants to demote a room admin when or after the person leaves the company.
-* A meetup group with multiple organisers wants to deprom
+* A meetup group with multiple organisers wants to demote a former organiser.
 * An organisation migrates from one domain to another. To avoid having to ask every room admin to demote themselves while promoting their new accounts, they want one account that has the permission to do so.
 * To ensure my ownership of a room, I added multiple of my accounts as room admins to a room. One of the accounts is no longer accessible to me and I want to demote that account.
 
-## Proposal 1 (simplest: `allow_depromotions`)
+## Proposal 1 (simplest: `allow_demotons`)
 
-This MSC proposes an optional boolean `allow_depromotions` to be added to the `m.room.power_levels` state event. Its default value is `false` to be compatible with the current behaviour.
+This MSC proposes an optional boolean `allow_demotons` to be added to the `m.room.power_levels` state event. Its default value is `false` to be compatible with the current behaviour.
 
 If `true`, a room member with the highest power level can lower (or remove) the power level of other room members with the same power level.
 
 ```json
 {
-    "allow_depromotions": true,
+    "allow_demotons": true,
     "ban": 50,
     "events": {
         "m.room.name": 100,
@@ -151,7 +151,7 @@ Complex: It covers even more cases but might introduce more complexity than need
 
 ## Similar but different MSCs
 
-* [MSC3915: Owner power level](https://github.com/matrix-org/matrix-spec-proposals/pull/3915) introduces a new named power level 150, however, it does not solve the use case of depromoting rogue users.
+* [MSC3915: Owner power level](https://github.com/matrix-org/matrix-spec-proposals/pull/3915) introduces a new named power level 150, however, it does not solve the use case of demotng rogue users.
 * [MSC3991: Power level up! Taking the room to new heights
 ](https://github.com/matrix-org/matrix-spec-proposals/pull/3991) allows room admins to raise their power level, however, it specifies that all members with the highest power level must be set to the new level.
 
@@ -162,7 +162,7 @@ Complex: It covers even more cases but might introduce more complexity than need
 
 ## Security considerations
 
-The current spec does not allow for a room admin to demote another admin. This MSC would allow them to become a sole room admin by upgrading the room, changing the state event for them to take over the room and then depromoting other admins.
+The current spec does not allow for a room admin to demote another admin. This MSC would allow them to become a sole room admin by upgrading the room, changing the state event for them to take over the room and then demotng other admins.
 
 ## Unstable room version
 
