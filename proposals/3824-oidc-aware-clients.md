@@ -59,7 +59,7 @@ For a client to be considered *OIDC aware* it would:
 - support the `m.login.sso` auth flow
 - where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then *only* offer that auth flow to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
-- sign post and link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965)
+- Link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) instead of native UI
 - RECOMMENDED: label the SSO button as "Continue"
 
 For an OIDC enabled homeserver to provide support for *OIDC aware* clients it would:
