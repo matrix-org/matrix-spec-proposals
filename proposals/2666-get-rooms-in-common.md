@@ -60,6 +60,9 @@ continue until the server does no longer insert `"next_batch_token"`.
 }
 ```
 
+The response error for when the given `batch_token` is invalid will be a response with HTTP code 400,
+with `M_INVALID_PARAM` as `errcode`.
+
 The response error for trying to get shared rooms with yourself will be an HTTP code 422, with
 `M_INVALID_PARAM` as the `errcode`.
 
