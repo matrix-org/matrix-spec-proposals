@@ -1,4 +1,4 @@
-# MSCXXXX: Reliable call membership
+# MSC4018: Reliable call membership
 
 In [MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401), clients announce their participation in a
 call by sending a state event of type `m.call.member`, with their user ID as the state key. This approach is generally
@@ -98,26 +98,26 @@ This change shouldn't have any security implications.
 
 While this feature is in development, the endpoints `PUT/DELETE /_matrix/client/v3/rooms/{roomId}/calls/{callId}/member`
 should instead be exposed as
-`PUT/DELETE /_matrix/client/unstable/town.robin.mscXXXX/rooms/{roomId}/calls/{callId}/member`.
+`PUT/DELETE /_matrix/client/unstable/town.robin.msc4018/rooms/{roomId}/calls/{callId}/member`.
 
 ### While the MSC is unstable
 
 During this period, to detect server support clients should check for the presence of
-the `town.robin.mscXXXX` flag in `unstable_features` on `/versions`. Servers are also
+the `town.robin.msc4018` flag in `unstable_features` on `/versions`. Servers are also
 required to use the unstable prefixes (see [unstable prefix](#unstable-prefix)) during
 this time.
 
 ### Once the MSC is merged but not in a spec version
 
 Once this MSC is merged, but is not yet part of the spec, clients should rely on the
-presence of the `town.robin.mscXXXX.stable` flag in `unstable_features` to determine
+presence of the `town.robin.msc4018.stable` flag in `unstable_features` to determine
 server support. If the flag is present, clients may use the stable prefixes.
 
 ### Once the MSC is in a spec version
 
 Once this MSC becomes a part of a spec version, clients should rely on the presence of
 the spec version that supports the MSC, in `versions` on `/versions`, to determine
-support. Servers are encouraged to keep the `town.robin.mscXXXX.stable` flag around for
+support. Servers are encouraged to keep the `town.robin.msc4018.stable` flag around for
 a reasonable amount of time to help smooth over the transition for clients. "Reasonable"
 is intentionally left as an implementation detail, however the MSC process currently
 recommends *at most* 2 months from the date of spec release.
