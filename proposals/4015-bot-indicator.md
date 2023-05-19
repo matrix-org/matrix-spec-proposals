@@ -97,6 +97,9 @@ or are requiring notifications to behave normally due to the function of the bot
 An alternative to using a single flag for `bots` it could make sense to have member types similar to
 how room types work. Here a user could be `m.bot`, `m.puppet` or similar.
 
+Another alternative is [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) which
+allows for fully extensible profiles.
+
 
 ## Security considerations
 
