@@ -110,6 +110,7 @@ The /versions endpoint MUST include a new key in `unstable_features` with the na
 
 Previous iterations of this MSC has used the following `unstable_features` key(s):
 - `uk.half-shot.msc2666.mutual_rooms`
+- `uk.half-shot.msc2666`
 
 If the value is false or the key is not present, clients MUST assume the feature is not available.
 
