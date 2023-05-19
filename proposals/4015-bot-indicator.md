@@ -22,7 +22,18 @@ This flag cannot be enforced technically since there is no difference in a bot o
 the technical side. So we need to rely on the user. Furthermore, this flag is not supposed to be used
 to detect spambots. It doesn't come with guarantees.
 
-### Example
+### Details of the flag
+
+The flag consists of a boolean flag in the `content` of the event. It can therefore take either
+the values `true` or `false` but also can be omitted. In this case, the user should be considered
+`not a bot`.
+
+### Practical implementation details
+
+Since this is a member related flag this flag shall be setable on a per room basis by directly modifying
+the `m.room.member` event or via a `profile` endpoint:
+
+#### Member Event
 
 Such an example member event should look like this:
 
@@ -48,11 +59,24 @@ Such an example member event should look like this:
 }
 ```
 
-### Details of the flag
+#### Profile endpoint
 
-The flag consists of a boolean flag in the `content` of the event. It can therefore take either
-the values `true` or `false` but also can be omitted. In this case, the user should be considered
-`not a bot`.
+Additionally to setting the field using the member event directly there should be a profile endpoint.
+
+`PUT /profile/{userId}/bot` and `GET /profile/{userId}/bot`
+
+Like other endpoints in this namespace this should be considered the global profile data and needs to
+be copied to member events on join by a server implementation.
+
+The expected request body is:
+
+```json
+{
+  "bot": true
+}
+```
+
+In general the endpoint is expected to behave like `displayname` and `avatar_url` already do.
 
 ## Potential issues
 
