@@ -36,7 +36,11 @@ want to send the `m.relates_to` in the cleartext part.
 
 ## Alternatives
 
-Not known.
+We could also just let the clients to decide (maybe by user's preferences) whether to send `m.relates_to`
+in the encrypted payload, ignoring the state event. At the first look, this alternative approach leads to
+arguably better privacy. However, it lacks interoperability, because users would need to explain to
+others how to tweak the settings for those having a conversation with them. And if the other users in the
+room do not know how to turn this option on, it actually has worse privacy than my proposal.
 
 ## Security considerations
 
