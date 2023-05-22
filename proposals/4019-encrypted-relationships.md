@@ -20,6 +20,10 @@ clients SHOULD ignore the `m.relates_to` that appears in the cleartext part of t
 appears in the encrypted payload. Clients SHOULD NOT trust the results obtained from the
 [relationships API](https://spec.matrix.org/v1.6/client-server-api/#relationships-api)
 in the client-server API, and SHOULD NOT obtain event relationships from those API.
+If clients called the relationships API, they SHOULD understand that the responses may be incomplete.
+They SHOULD also check for each encrypted received event in the response whether it contains an encrypted
+`m.relates_to`, and if it does, it SHOULD use the encrypted copy to verify whether the event does belong
+to that relationship.
 
 ### Server behaviour
 
