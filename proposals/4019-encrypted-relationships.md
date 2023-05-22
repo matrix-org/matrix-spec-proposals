@@ -17,7 +17,9 @@ the cleartext part. Like `m.room.encryption`, once turned on, it cannot be turne
 If the state event `m.room.relationship_encryption` exists or existed in the room, clients SHOULD send the
 `m.relates_to` that appears in any encrypted event in the encrypted payload. In received encrypted events,
 clients SHOULD ignore the `m.relates_to` that appears in the cleartext part of the event if an `m.relates_to`
-appears in the encrypted payload. Clients SHOULD NOT trust the results obtained from the
+appears in the encrypted payload. If there is no `m.relates_to` in the encrypted payload, clients SHOULD
+use the `m.relates_to` in the cleartext part of the event instead.
+Clients SHOULD NOT trust the results obtained from the
 [relationships API](https://spec.matrix.org/v1.6/client-server-api/#relationships-api)
 in the client-server API, and SHOULD NOT obtain event relationships from those API.
 If clients called the relationships API, they SHOULD understand that the responses may be incomplete.
