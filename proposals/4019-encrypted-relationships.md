@@ -34,6 +34,10 @@ MAY send the `m.relates_to` in both the cleartext part and the encrypted payload
 Clients that do so SHOULD inform their users of this, and SHOULD allow the users to choose whether they
 want to send the `m.relates_to` in the cleartext part.
 
+As "Client behaviour" indicates, using encrypted relationships for events means that the user does not
+want the relationships to be exposed to the server, so the relationships API, including aggregations,
+will not work. Clients SHOULD have their own way to build the event relationships from individual events.
+
 ## Alternatives
 
 We could also just let the clients to decide (maybe by user's preferences) whether to send `m.relates_to`
