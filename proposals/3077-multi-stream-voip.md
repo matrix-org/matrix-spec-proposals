@@ -24,10 +24,11 @@ The `sdp_stream_metadata` field is an object in which each key is one stream
 `id` in the session description. The values are of `SDPStreamMetadata` type and
 have the following fields:
 
-+ `purpose` - a string indicating the purpose of the stream. For compatibility
++ `purpose` - an optional string indicating the purpose of the stream. For compatibility
   between clients values `m.usermedia` and `m.screenshare` are defined.
   `m.usermedia` is the stream that contains the webcam and/or microphone tracks.
-  `m.screenshare` is then the stream with the screen-sharing tracks.
+  `m.screenshare` is then the stream with the screen-sharing tracks. Multiple
+  media streams may have the same `purpose`.
 
 ### Example
 
@@ -71,7 +72,7 @@ have the following fields:
 
 During the initial invite and answer exchange clients find out if the field
 `sdp_stream_metadata` is missing. If it is not present in the event sent by the
-oponent, the client should ignore any new incoming streams (i.e. it should use
+opponent, the client should ignore any new incoming streams (i.e. it should use
 the first one) and it shouldn't send more than one stream.
 
 ## Alternatives
