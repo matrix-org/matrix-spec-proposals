@@ -163,7 +163,7 @@ _Implementation based on [MSC3401: Native Group VoIP Signalling][MSC3401]_
 - VoIP can’t do mix down while preserving E2EE without a high effort
 - It would rely on a media-server SFU which doesn’t exist at the time writing this MSC
 
-_Implementation based on [MSC4016: Streaming E2EE file transfers with random access]_
+_Implementation based on [MSC4016: Streaming E2EE file transfers with random access][MSC4016]_
 
 Streaming file transfer could be relatively easy on the server-side, given Glow exists and works (other than the operational unpleasantness of introducing an entirely new server), but client-side it requires major changes on all three platforms:
 
