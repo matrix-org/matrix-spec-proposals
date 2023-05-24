@@ -10,7 +10,7 @@ and that the `sender` field be used instead.
 
 Note that `creator` is mentioned in the [auth
 rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules). It can
-safely be removed.
+safely be replaced with a check against the `sender` instead.
 
 `creator` is also mentioned as a key to be preserved during [Event
 redaction](https://matrix.org/docs/spec/client_server/r0.5.0#redactions). It
