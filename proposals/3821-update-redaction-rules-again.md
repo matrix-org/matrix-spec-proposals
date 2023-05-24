@@ -1,6 +1,6 @@
 # Update redaction rules, again
 
-The current [redaction algorithm](https://spec.matrix.org/v1.2/rooms/v9/#redactions) are
+The current [redaction algorithm](https://spec.matrix.org/v1.6/rooms/v9/#redactions) are
 still missing some key fields, even after [MSC2176](https://github.com/matrix-org/matrix-spec-proposals/pull/2176)
 attempted to fix some of the obvious cases. This MSC aims to fix more fields.
 
@@ -12,7 +12,7 @@ before this proposal as MSC2176 contains a lot of backing context.
 In a new room version due to redactions affecting event hashes, we:
 
 * `m.room.member` events additionally preserve part of `third_party_invite` under `content`, if present:
-  * Spec: https://spec.matrix.org/v1.2/client-server-api/#mroommember
+  * Spec: https://spec.matrix.org/v1.6/client-server-api/#mroommember
   * Under `third_party_invite`, `signed` is preserved. Rationale being that the `signed` block is required
     for the server to validate the event, however excess fields and `display_name` are not as important.
     Clients which are trying to represent a redacted `m.room.member` event with `third_party_invite` should
