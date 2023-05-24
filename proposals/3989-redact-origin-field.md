@@ -10,7 +10,7 @@ and have [tried to do so](https://github.com/matrix-org/matrix-spec/pull/998) in
 malformed examples are even [known to us](https://github.com/matrix-org/matrix-spec/issues/1480).
 
 What's not clear, and mentioned in [a comment](https://github.com/matrix-org/matrix-spec/issues/1480#issuecomment-1495183789),
-is whether the `origin` field is *acutally* used. There do not appear to be any auth rules or similar
+is whether the `origin` field is *actually* used. There do not appear to be any auth rules or similar
 which would use the field, however it'd hardly be the first time that the spec was wrong about an
 ancient room version like v1. What is clear is that Synapse, where this question would be asked,
 wants to [drop support](https://github.com/matrix-org/synapse/issues/3816) for the field and has
