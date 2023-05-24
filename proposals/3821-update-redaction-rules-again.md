@@ -22,5 +22,3 @@ In a new room version due to redactions affecting event hashes, we:
 
 Implementations looking to test these changes before adopted into a stable room version should use
 `org.matrix.msc3821.opt1` as the room version, using v9 as a base and treating it as unstable.
-
-**However, servers are not encouraged to attempt implementation until this MSC leaves draft/WIP state.**
