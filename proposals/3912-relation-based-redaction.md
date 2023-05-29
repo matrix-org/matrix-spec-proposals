@@ -23,12 +23,16 @@ their other actions would also be prevented by rate limiters as a result).
 
 ## Proposal
 
-We add a new optional `with_relations` property to the body of the [`PUT
+We add a new optional `with_rel_types` property to the body of the [`PUT
 /_matrix/client/v3/rooms/{roomId}/redact/{eventId}/{txnId}`](https://spec.matrix.org/latest/client-server-api/#put_matrixclientv3roomsroomidredacteventidtxnid)
 requests. This property is a list of relation types. If an event relates to the
 event specified in the `{eventId}` parameter with a relation type specified in
-this `with_relations` property, the server also redacts it on behalf of the user
+this `with_rel_types` property, the server also redacts it on behalf of the user
 performing the redaction. The response body of this endpoint does not change.
+
+The client may not be aware of the relation types associated with an event (for
+example in the case of moderation). That's why we introduce a catch-all `"*"` value,
+which if found in the list means "any relation type".
 
 For example, let's consider the following message:
 
@@ -70,7 +74,7 @@ Then the request:
 PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$a/foo
 
 {
-    "with_relations": ["m.replace"]
+    "with_rel_types": ["m.replace"]
 }
 ```
 
@@ -81,7 +85,7 @@ A server may wish to leverage
 to redact all events targeted by the redaction request if supports it, however
 this is not a requirement.
 
-If the `with_relations` property is absent from the request body, only the event referred to by the `{eventId}` parameter (`$a` in the example above) is redacted. Same goes if `with_relations` is an empty list.
+If the `with_rel_types` property is absent from the request body, only the event referred to by the `{eventId}` parameter (`$a` in the example above) is redacted. Same goes if `with_rel_types` is an empty list.
 
 If an event that matches the redaction criteria (i.e. relates to the event
 that's being redacted with one of the relation types specified in the request)
@@ -109,7 +113,7 @@ a redaction of `$b` would not cause `$a` to be redacted. The following request:
 PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$b/foo
 
 {
-    "with_relations": ["m.replace"]
+    "with_rel_types": ["m.replace"]
 }
 ```
 
@@ -146,7 +150,7 @@ Then the request:
 PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$a/foo
 
 {
-    "with_relations": ["m.replace"]
+    "with_rel_types": ["m.replace"]
 }
 ```
 
@@ -190,4 +194,4 @@ given they have more control over feature UX.
 ## Unstable prefixes
 
 Until this proposal is stabilised, `org.matrix.msc3912.with_relations` should be
-used instead of `with_relations`.
+used instead of `with_rel_types`.
