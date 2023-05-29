@@ -27,7 +27,9 @@ The homeserver should generate a public (`m.read`) read receipt for the user whe
 sends an event to the room. The receipt should point at the newly created event. This receipt should
 be generated prior to calculating notification counts or push rules. This means the concept of
 "where the user has read up to" is simplified to just a read receipt, where previously it was the
-greater value of the user's read receipt and their last sent event.
+greater value of the user's read receipt and their last sent event. If the event is "in a thread"
+(using the definition from [threaded read receipts](https://spec.matrix.org/v1.7/client-server-api/#threaded-read-receipts))
+the generated read receipt should be a threaded read receipt.
 
 Clients should receive this receipt at the same time as receiving the event itself back from the
 homeserver (in the same /sync payload). The read receipt can't be sent prior to the event, as the
@@ -35,11 +37,12 @@ receipt would then be pointing to an event that the client doesn't know about ye
 is sent prior to the receipt there's a risk of the client attempting to generate a duplicate read
 receipt for the same event.
 
-The client logic for marking a room as read can be simplified to moving the `m.read` (or `m.read.private`) receipt to the latest
-event in the room and notifying the server if that's different than the current receipt position.
-Clients wouldn't need to feature detect whether the homeserver implements this proposal, as the
-client sending a read receipt for their own message shouldn't harm homeservers that predate it. In
-practice, some clients already generate read receipts in this way.
+The client logic for marking a room as read can be simplified to moving the `m.read` (or
+`m.read.private`) receipt to the latest event in the room and notifying the server if that's
+different than the current receipt position. Clients wouldn't need to feature detect whether the
+homeserver implements this proposal, as the client sending a read receipt for their own message
+shouldn't harm homeservers that predate it. In practice, some clients already generate read
+receipts in this way.
 
 ## Potential issues
 
