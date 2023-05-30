@@ -55,6 +55,16 @@ clear on this. If it is always included, this adds extra bytes and therefore con
 bandwidth. In practice, Synapse _always_ includes these fields, when this is probably not needed.
 Changing this behaviour may break clients which expect these fields to always exist.
 
+### Concurrent connections
+
+The sliding sync protocol allows multiple concurrent connections disambiguated
+by a `conn_id`: see "Concurrent connections" of [MSC3575](
+    https://github.com/matrix-org/matrix-spec-proposals/pull/3575
+). Clients using multiple concurrent connections MUST enable the E2EE
+extension on at most one connection. Using the E2EE extension on multiple
+concurrent connections is not supported; doing so risks data loss and E2EE
+messaging failures.
+
 ## Alternatives
 
 The alternative is to not include this extension at all, making it impossible to include reliable
@@ -69,7 +79,7 @@ No additional security considerations beyond what the current `/sync` implementa
 
 No unstable prefix as Sliding Sync is still in review. To enable this extension, just add this to
 your request JSON:
-```json
+```json5
 {
     "extensions": {
         "e2ee": {
