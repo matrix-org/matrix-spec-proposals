@@ -9,7 +9,7 @@ attempted to fix some of the obvious cases. This MSC aims to fix more fields.
 *Note*: It is recommended to read [MSC2176](https://github.com/matrix-org/matrix-spec-proposals/pull/2176)
 before this proposal as MSC2176 contains a lot of backing context.
 
-In a new room version due to redactions affecting event hashes, we:
+In a new room version (due to redactions affecting event hashes):
 
 * `m.room.member` events additionally preserve part of `third_party_invite` under `content`, if present:
   * Spec: https://spec.matrix.org/v1.6/client-server-api/#mroommember
