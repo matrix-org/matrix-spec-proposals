@@ -1,9 +1,9 @@
 # MSC3989: Redact `origin` field on events
 
 The [current redaction algorithm](https://spec.matrix.org/v1.6/rooms/v10/#redactions) *keeps* the
-top-level `origin` field on events during redaction, however the only use of it within the spec
-as of writing is a malformed example of event format. The field has no significant meaning in
-modern room versions.
+top-level `origin` property on events during redaction, however, as of this writing, the only use within the 
+spec of  `origin` as a top-level event property is a malformed example of event format. The field has no 
+significant meaning in modern room versions.
 
 Within the ecosystem, it's clear that we'd [prefer the field to disappear](https://github.com/matrix-org/matrix-spec/issues/374),
 and have [tried to do so](https://github.com/matrix-org/matrix-spec/pull/998) in the past. The
@@ -18,7 +18,7 @@ taken [steps](https://github.com/matrix-org/synapse/pull/8324) towards that miss
 in the area. In a [quick audit](https://github.com/matrix-org/matrix-spec-proposals/pull/3989#issuecomment-1497659507)
 of the Synapse codebase during implementation of this MSC, the `origin` field appears unused.
 
-Given the above context, this proposal removes the `origin` field from the redaction algorithm in
+Given the above context, this proposal removes the `origin` field from the [redaction algorithm](https://spec.matrix.org/v1.7/rooms/v10/#redactions) in
 future room versions, leaving it as-is for existing versions (not that an MSC can change the behaviour
 of an already-stable room version).
 
