@@ -1,6 +1,6 @@
 # MSC3958: Suppress notifications from message edits
 
-[Event replacement](https://spec.matrix.org/v1.5/client-server-api/#event-replacements)
+[Event replacement](https://spec.matrix.org/v1.7/client-server-api/#event-replacements)
 (more commonly known as message edits) signals that a message is intended to
 be replaced with new content.
 
@@ -95,7 +95,7 @@ An alternative solution would be to add a push rule with no actions and a condit
 check whether a notification was generated for the original message.
 
 This would be placed as an override rule before the `.m.rule.contains_display_name`
-and the `.m.rule.roomnotif` [push rules](https://spec.matrix.org/v1.5/client-server-api/#push-rules).
+and the `.m.rule.roomnotif` [push rules](https://spec.matrix.org/v1.7/client-server-api/#push-rules).
 
 This would suppress duplicate notifications, while still allow for new notifications due
 to new mentions or keywords changing.
@@ -108,7 +108,7 @@ None forseen.
 
 If message edits by other senders were allowed than it would be useful to
 know when your own message was edited, but this
-[is not currently allowed](https://spec.matrix.org/v1.5/client-server-api/#validity-of-replacement-events).
+[is not currently allowed](https://spec.matrix.org/v1.7/client-server-api/#validity-of-replacement-events).
 A future MSC to define this behavior should take into account notifying
 users in this situation.
 
