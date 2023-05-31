@@ -1,8 +1,11 @@
-# Update redaction rules, again
+# MSC3821: Update redaction rules, again
 
-The current [redaction algorithm](https://spec.matrix.org/v1.6/rooms/v9/#redactions) are
-still missing some key properties, even after [MSC2176](https://github.com/matrix-org/matrix-spec-proposals/pull/2176)
-attempted to fix some of the obvious cases. This MSC aims to fix those missing cases.
+[MSC2176](https://github.com/matrix-org/matrix-spec-proposals/pull/2176) aimed to fix inconsistencies
+with the [redaction algorithm](https://spec.matrix.org/v1.6/rooms/v10/#redactions) where server-side
+event auth required properties to exist that were being removed. While MSC2176 fixed a number of cases,
+one was unfortunately missed.
+
+This MSC aims to fix that missing case, originally identified long ago by [synapse#1831](https://github.com/matrix-org/synapse/issues/1831).
 
 ## Proposal
 
@@ -28,4 +31,7 @@ might show it as "Bob accepted a third party invite".
 ## Unstable prefix
 
 Implementations looking to test these changes before adopted into a stable room version should use
-`org.matrix.msc3821.opt1` as the room version, using v9 as a base and treating it as unstable.
+`org.matrix.msc3821.opt1` as the room version, using **v9** as a base and treating it as unstable.
+
+**History**: This MSC was originally written before room version 10 existed. Implementations wishing to use
+v10 as a base instead of v9 should use `org.matrix.msc3821.opt1.v10` as the room version instead.
