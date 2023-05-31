@@ -41,6 +41,7 @@ To start a poll, a user sends an `m.poll.start` event into the room. An example 
     "m.poll": {
       "kind": "m.disclosed",
       "max_selections": 1,
+      "show_participants": true,
       "question": {
         "m.text": [{"body": "What should we order for the party?"}]
       },
@@ -63,6 +64,8 @@ With consideration for extensible events, a new `m.poll` content block is define
   later in this proposal.
 * `max_selections` - An optional integer to represent how many answers the user is allowed to select
   from the poll. Must be greater than or equal to `1`, and defaults to `1`.
+* `show_participants` - An optional boolean that indicates if clients should present not only the
+  result from the poll but also how each individual participant has voted. Defaults to false.
 * `question` - A required object to represent the question being posed by the poll. Takes an `m.text`
   content block within. More blocks might be added in the future. Clients should treat this similar
   to how they would an `m.message` event.
