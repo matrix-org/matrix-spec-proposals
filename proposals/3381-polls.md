@@ -256,6 +256,12 @@ Limiting polls to client-side enforcement could be problematic if the MSC was in
 or provable votes, however as a chat feature this should reasonably be able to achieve user expectations.
 Bolt-on support for signing, verification, validity, etc can be accomplished as well in the future.
 
+Due to the reference relationship between responses and the poll start event, it's possible that a
+client facing an "unable to decrypt" error on the response won't know if it's a poll response specifically
+or some other reference relationship. Clients are encouraged to tell users when there's a possibility
+that not all responses are known, potentially impacting the results, such as where related events are
+undecryptable.
+
 ## Alternatives
 
 The primary competition to this MSC is the author's own [MSC2192](https://github.com/matrix-org/matrix-doc/pull/2192)
