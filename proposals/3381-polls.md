@@ -234,7 +234,11 @@ disclosing who voted for what in an undisclosed poll, though this MSC leaves tha
 
 Clients can rely on the [`/relations`](https://spec.matrix.org/v1.4/client-server-api/#get_matrixclientv1roomsroomidrelationseventidreltype)
 API to find votes which might have been received during limited ("gappy") syncs, or whenever they become
-descynchronized and need to recalculate events.
+descynchronized and need to recalculate events. Ranged approaches, such as [MSC3523](https://github.com/matrix-org/matrix-spec-proposals/pull/3523),
+are not suitable for this particular case because the gap between syncs might contain events which are not
+revealed by the range. For example, if a remote server took an extra hour to send events and the receiving
+client had a gappy sync over a span of 15 minutes: the client might not know that it needs to go back potentially
+hours to see the missing event.
 
 This MSC does not describe an aggregation approach for poll events, hence the need for the client to retrieve
 all referenced events rather than simply relying on bundles.
