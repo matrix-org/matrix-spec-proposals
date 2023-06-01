@@ -1,4 +1,4 @@
-# WIP: MSC4016: Streaming E2EE file transfer with random access
+# WIP: MSC4016: Streaming E2EE file transfer with random access and zero latency
 
 ## Problem
 
@@ -9,6 +9,8 @@
 * Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third Room to edit a scene, you want all participants to be able to receive the data and stream-decode it with minimal latency.
 
 Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com/matrix-org/matrix-spec/issues/432) 
+
+N.B. this MSC is *not* needed to do a streaming decryption or encryption of E2EE files (as opposed to streaming transfer).  The current APIs let you stream a download of AES-CTR data and incrementally decrypt it without loading the whole thing into RAM, calculating the hash as you go, and then either surfacing or deleting the decrypted result at the end if the hash matches.  Similarly when uploading (if combined with [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246), given you won't be able to send the hash in the event contents until you've uploaded the media).
 
 ## Solution overview
 
