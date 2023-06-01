@@ -27,7 +27,7 @@ order presented by this MSC.
     {"kind": "room_member_count", "is": "2"},
 
     // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
-    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.start"}
+    {"kind": "event_property_is", "key": "type", "value": "m\\.poll\\.start"}
   ],
   "actions": [
     "notify",
@@ -43,7 +43,7 @@ order presented by this MSC.
   "enabled": true,
   "conditions": [
     // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
-    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.start"}
+    {"kind": "event_property_is", "key": "type", "value": "m\\.poll\\.start"}
   ],
   "actions": [
     "notify"
@@ -60,7 +60,7 @@ order presented by this MSC.
     {"kind": "room_member_count", "is": "2"},
 
     // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
-    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.end"}
+    {"kind": "event_property_is", "key": "type", "value": "m\\.poll\\.end"}
   ],
   "actions": [
     "notify",
@@ -76,7 +76,7 @@ order presented by this MSC.
   "enabled": true,
   "conditions": [
     // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
-    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.end"}
+    {"kind": "event_property_is", "key": "type", "value": "m\\.poll\\.end"}
   ],
   "actions": [
     "notify"
@@ -127,6 +127,9 @@ preferred approach over this MSC's (hopefully) short-term solution.
 While the order within the MSC is deliberate for the new rules, the positioning relative to other rules
 already in the spec is fairly arbitrary. The new rules are placed at the end of each list (underride and
 override) for simplicity, but could realistically go anywhere in the list.
+
+See ["Dot-separated property paths"](https://spec.matrix.org/v1.7/appendices/#dot-separated-property-paths)
+for more information on why we escape the `event_property_is` condition values.
 
 ## Security considerations
 
