@@ -117,4 +117,4 @@ None applicable - no new considerations need to be made with this proposal.
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use `org.matrix.msc3930.*` as a prefix
-in place of `m.*`.
+in place of `m.*` for the push rule IDs. As of writing, polls are only implemented using the legacy `org.matrix.msc3381.poll.*` prefix rather than the newer `v2` prefix - implementations of this MSC should be aware of which version of MSC3381 they plan to support.
