@@ -118,8 +118,8 @@ preferred approach over this MSC's (hopefully) short-term solution.
 ## General considerations
 
 While the order within the MSC is deliberate for the new rules, the positioning relative to other rules
-already in the spec is fairly arbitary. The new rules are placed at the end of each list (underride and
-override) for simplicty, but could realistically go anywhere in the list.
+already in the spec is fairly arbitrary. The new rules are placed at the end of each list (underride and
+override) for simplicity, but could realistically go anywhere in the list.
 
 ## Security considerations
 
