@@ -182,20 +182,81 @@ like help with writing spec PRs, feel free to join and ask questions in the
 
 ### Other useful information
 
-#### Unstable prefixes
+#### Stable and unstable prefixes
 
-*Unstable* prefixes are the namespaces which are used before an MSC has
-completed FCP (see above). While the MSC might propose that a `m.space` or
-`/_matrix/client/v1/account/whoami` endpoint should exist, the implementation
-cannot use a *stable* identifier such as `/v1/` or `m.space` prior to the MSC
-being accepted: it needs unstable prefixes.
+*Unstable* prefixes are the namespaces which are used by implementations while
+an MSC is not yet accepted. For instance, an MSC can propose an a `m.space`
+event type or an `/_matrix/client/v1/account/whoami` endpoint should exist.
+However, an implementation of that same MSC cannot use a *stable* prefix (in the
+case, `/_matrix/client/` or `m.`) until the MSC has been accepted, as the
+underlying design may change at any time; the design is
+*unstable*.
 
-Typically for MSCs, one will use `org.matrix.msc0000` (using the real MSC
-number once known) as a prefix. For the above examples, this would mean
-`org.matrix.msc0000.space` and
-`/_matrix/client/unstable/org.matrix.msc0000/account/whoami` to allow for
-breaking compatibility changes between edits of the MSC itself, or indeed
-another competing MSC that's attempting to add the same identifiers.
+Typically MSCs will define `org.matrix.msc1234` (using the real MSC number once
+known) as an *unstable* prefix. For the above examples, this would mean using
+`org.matrix.msc1234.space` and
+`/_matrix/client/unstable/org.matrix.msc1234/account/whoami` to allow for
+breaking changes between edits of the MSC itself, or to not clash with another
+MSC that's attempting to add the same stable identifiers. The unstable prefixes
+in this case of `org.matrix.msc1234` and `/_matrix/client/unstable`
+respectively.
+
+Note: not all MSCs need to make use of unstable prefixes. They are only needed
+when defining new endpoints, field names, etc. in your MSC, and serve to allow
+implementations of your MSC to exist in the wild before your MSC is accepted.
+
+In the case of some MSCs, implementation types may need a way to check that another
+implementation type supports this feature. A common case is when a client that has
+implemented an MSC needs to check whether the homeserver it is talking to has
+also implemented support. Typically, this is handled by the MSC defining an
+entry in the `unstable_features` dictionary of the
+[`/_matrix/client/versions`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientversions)
+endpoint, in the form of a new entry:
+
+```json5
+{
+  "unstable_features": {
+    "org.matrix.msc1234": true
+  }
+}
+```
+
+With a value of `true` indicating that the feature is supported, and `false`
+or lack of the field altogether indicating the feature is not supported.
+
+According to the spec process, once an MSC has been accepted, implementations
+are allowed to switch to *stable* prefixes (i.e. `m.`). However, the MSC is
+still not yet part of a released spec version. How can a homeserver advertise to
+clients that they can start using *stable* prefixes, before the homeserver
+advertises support for a spec release which contains the new endpoint? One case
+where this poses a problem is when an MSC proposes new event types or fields.
+
+Events are immutable data. A client may wish to introduce your new feature, but
+if it sending events with unstable prefixes, eventually those events won't
+be supported by future clients, and thus that data will be effectively lost!
+
+This is often solved by having the homeserver telling clients that it supports
+stable prefixes for an MSC with yet another `unstable_features` flag:
+
+```json5
+{
+  "unstable_features": {
+    "org.matrix.msc1234": true,
+    "org.matrix.msc1234.stable": true
+  }
+}
+```
+
+If a client sees `org.matrix.msc1234.stable` is `true`, it knows that it can
+start sending events with stable prefixes, and the homeserver will accept them
+accordingly.
+
+While the general pattern of adding a new `*.stable` flag has emerged from
+previous MSCs (see
+[MSC3827](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3827-space-explore.md#unstable-prefix)
+for a good example of how to include this information in your MSC), you can pick
+any name you like for your unstable prefixes. You need only to clearly state
+their meaning, usually under an "Unstable prefixes" header in your MSC.
 
 
 #### Room versions
