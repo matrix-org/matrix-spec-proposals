@@ -18,14 +18,16 @@ Note that [order matters](https://github.com/matrix-org/matrix-spec/issues/1406)
 underride rules are to be inserted immediately after the `.m.rule.encrypted` underride push rule, in the
 order presented by this MSC.
 
-```json
+```jsonc
 {
   "rule_id": ".m.rule.poll_start_one_to_one",
   "default": true,
   "enabled": true,
   "conditions": [
     {"kind": "room_member_count", "is": "2"},
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.start"}
+
+    // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
+    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.start"}
   ],
   "actions": [
     "notify",
@@ -34,13 +36,14 @@ order presented by this MSC.
 }
 ```
 
-```json
+```jsonc
 {
   "rule_id": ".m.rule.poll_start",
   "default": true,
   "enabled": true,
   "conditions": [
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.start"}
+    // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
+    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.start"}
   ],
   "actions": [
     "notify"
@@ -48,14 +51,16 @@ order presented by this MSC.
 }
 ```
 
-```json
+```jsonc
 {
   "rule_id": ".m.rule.poll_end_one_to_one",
   "default": true,
   "enabled": true,
   "conditions": [
     {"kind": "room_member_count", "is": "2"},
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.end"}
+
+    // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
+    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.end"}
   ],
   "actions": [
     "notify",
@@ -64,13 +69,14 @@ order presented by this MSC.
 }
 ```
 
-```json
+```jsonc
 {
   "rule_id": ".m.rule.poll_end",
   "default": true,
   "enabled": true,
   "conditions": [
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.end"}
+    // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
+    {"kind": "event_property_is", "key": "type", "pattern": "m\\.poll\\.end"}
   ],
   "actions": [
     "notify"
@@ -81,13 +87,14 @@ order presented by this MSC.
 Additionally, a new override rule is defined to suppress poll responses by default, inserted immediately
 after the `.m.rule.room.server_acl` override rule.
 
-```json
+```jsonc
 {
   "rule_id": ".m.rule.poll_response",
   "default": true,
   "enabled": true,
   "conditions": [
-    {"kind": "event_match", "key": "type", "pattern": "m.poll.response"}
+    // Note: `.` is escaped once, but for valid JSON we need to escape the escape.
+    {"kind": "event_property_is", "key": "type", "value": "m\\.poll\\.response"}
   ],
   "actions": []
 }
