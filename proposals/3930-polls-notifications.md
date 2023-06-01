@@ -6,13 +6,17 @@ This proposal aims to address that specific feature gap.
 
 Readers should review MSC3381 to better understand how polls are intended to operate in a room.
 
-Push rules are currently defined [here](https://spec.matrix.org/v1.5/client-server-api/#push-rules) in
+Push rules are currently defined [here](https://spec.matrix.org/v1.7/client-server-api/#push-rules) in
 specification.
 
 ## Proposal
 
-In order to have polls behave similar to message events, the following underride push rules are defined.
-Note that the push rules are mirrored from those available to `m.room.message` events.
+Polls should behave similar to message events. To achieve this effect, we define the following underride
+push rules which mimic their `m.room.message` partners.
+
+Note that [order matters](https://github.com/matrix-org/matrix-spec/issues/1406) for push rules - these
+underride rules are to be inserted immediately after the `.m.rule.encrypted` underride push rule, in the
+order presented by this MSC.
 
 ```json
 {
@@ -74,7 +78,8 @@ Note that the push rules are mirrored from those available to `m.room.message` e
 }
 ```
 
-Additionally, a new override rule is defined to suppress poll responses by default:
+Additionally, a new override rule is defined to suppress poll responses by default, inserted immediately
+after the `.m.rule.room.server_acl` override rule.
 
 ```json
 {
@@ -110,6 +115,12 @@ term need while other MSCs work on improving the notifications system. Most impo
 believes future MSCs which aim to fix notifications for extensible events in general will be a more
 preferred approach over this MSC's (hopefully) short-term solution.
 
+## General considerations
+
+While the order within the MSC is deliberate for the new rules, the positioning relative to other rules
+already in the spec is fairly arbitary. The new rules are placed at the end of each list (underride and
+override) for simplicty, but could realistically go anywhere in the list.
+
 ## Security considerations
 
 None applicable - no new considerations need to be made with this proposal.
@@ -117,4 +128,6 @@ None applicable - no new considerations need to be made with this proposal.
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use `org.matrix.msc3930.*` as a prefix
-in place of `m.*` for the push rule IDs. As of writing, polls are only implemented using the legacy `org.matrix.msc3381.poll.*` prefix rather than the newer `v2` prefix - implementations of this MSC should be aware of which version of MSC3381 they plan to support.
+in place of `m.*` for the push rule IDs. As of writing, polls are only implemented using the legacy
+`org.matrix.msc3381.poll.*` prefix rather than the newer `v2` prefix - implementations of this MSC
+should be aware of which version of MSC3381 they plan to support.
