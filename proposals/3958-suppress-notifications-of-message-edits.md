@@ -80,7 +80,7 @@ are edited. Both of those are state events and
 
 Mobile clients currently depend on the push notifications of edited events to update the
 text of on-screen notifications. The proposed push rule would result in mobile clients no
-longer receiving these edits; but showing slightly outdated text on a notification screen
+longer receiving these edits; but showing slightly outdated text on a notification screen. That
 is only a minor impact and it would be better to separate when (& why) we send pushes vs.
 when we generate notifications.
 
