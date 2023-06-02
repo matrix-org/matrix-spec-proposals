@@ -14,17 +14,17 @@ events with certainty in a time efficient manner.
 
 ## Proposal
 
-All 2nd order-relation events in a thread should add a `m.thread_id` property in their
+All 2nd order-relation events in a thread should add a `thread_id` property in their
 `unsigned` field definition, referencing the thread root, as defined in MSC3440.
 
 ```jsonc
 {
-  "m.thread_id": "$event_id"
+  "thread_id": "$event_id"
 }
 ```
 
 Given the following diagram where `Reply1`, `Reply2` and `Reply3` are direct `m.thread`
-relations. `Edit` and `Reaction` MUST include `m.thread_id` as defined in this
+relations. `Edit` and `Reaction` MUST include `thread_id` as defined in this
 proposal.
 
 ```mermaid
@@ -53,7 +53,7 @@ No security considerations
 ## Unstable prefix
 
 While this MSC is not considered stable by the specification, implementations _must_ use
-`org.matrix.msc4023.thread_id` in place of `m.thread_id`.
+`org.matrix.msc4023.thread_id` in place of `thread_id`.
 
 ## Dependencies
 
