@@ -14,8 +14,9 @@ events with certainty in a time efficient manner.
 
 ## Proposal
 
-All 2nd order-relation events in a thread should add a `thread_id` property in their
-`unsigned` field definition, referencing the thread root, as defined in MSC3440.
+All events in a thread and the 2nd order-relation events should add a `thread_id`
+property in their `unsigned` field definition, referencing the thread root – as
+defined in MSC3440.
 
 ```jsonc
 {
@@ -23,18 +24,8 @@ All 2nd order-relation events in a thread should add a `thread_id` property in t
 }
 ```
 
-Given the following diagram where `Reply1`, `Reply2` and `Reply3` are direct `m.thread`
-relations. `Edit` and `Reaction` MUST include `thread_id` as defined in this
-proposal.
-
-```mermaid
-graph TD;
-  Edit-->Reply3
-  Reaction-->Reply2
-  Reply3-->Root
-  Reply2-->Root
-  Reply1-->Root
-```
+All events that are not part of a thread should fill the `thread_id` property with
+the special value `main` – as defined in MSC3771.
 
 ## Potential issues
 
