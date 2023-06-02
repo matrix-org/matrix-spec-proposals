@@ -14,7 +14,7 @@ events with certainty in a time efficient manner.
 
 ## Proposal
 
-All 2nd order-relation in a thread should add a `m.thread_id` property in their
+All 2nd order-relation events in a thread should add a `m.thread_id` property in their
 `unsigned` field definition, referencing the thread root, as defined in MSC3440.
 
 ```jsonc
