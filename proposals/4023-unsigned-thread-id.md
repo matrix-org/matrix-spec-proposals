@@ -1,4 +1,4 @@
-# MSC4023: Thread ID for 2nd order-relation
+# MSC4023: Thread ID for second-order relation
 
 [MSC3981](https://github.com/matrix-org/matrix-spec-proposals/pull/3981) defines
 a way to recursively load relations in a thread context. However this does not
@@ -14,7 +14,7 @@ events with certainty in a time efficient manner.
 
 ## Proposal
 
-All events in a thread and the 2nd order-relation events should add a `thread_id`
+All events in a thread and the second-order relation events should add a `thread_id`
 property in their `unsigned` field definition, referencing the thread root – as
 defined in MSC3440.
 
@@ -27,10 +27,23 @@ defined in MSC3440.
 All events that are not part of a thread should fill the `thread_id` property with
 the special value `main` – as defined in MSC3771.
 
+If a server does not have the first-order event, the unsigned `thread_id` property
+should be filled with a `null` value. When the server gets a hold of the first-order
+event, it should retroactively update the `thread_id` property and communicate the
+change to clients.
+
 ## Potential issues
+
+### Database query performances
 
 This could have performance implications on the server side, requiring more work
 to be performed when fetching events in a room.
+
+### Missing first-order relation
+
+It is possible that a server will have the second-order event, but not have the
+first-order event (eg, it has received a reaction over federation, but has not
+yet received the event being reacted to).
 
 ## Alternatives
 
