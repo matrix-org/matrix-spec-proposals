@@ -169,7 +169,7 @@ Streaming file transfer could be relatively easy on the server-side, given Glow 
 
 - Switch the whole file-upload/download pipeline to be streamed rather than in-memory blobs (desirable anyway for memory usage of clients, and ability to send > ~1.5GB files)
 - Switch crypto to AES-GCM to solve hashing causality
-- Switch to use async file uploads (MSC2246)[https://github.com/matrix-org/matrix-spec-proposals/pull/2246] so you can send the event to reference the URL before finishing uploading the media
+- Switch to use async file uploads [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246) so you can send the event to reference the URL before finishing uploading the media
 - Switch the whole voice message UI to calculate waveforms locally as the file is received (rescaling the waveform as more message is received!?), and to allow scrubbing within a file whose length is changing from under you
 - Optional: random access to the download, letting the receiver jump to the end of the voice message without having to download the rest of the file first. (a 2 hour voice message is roughly 20MB, so it might not be a disaster to have to download the whole VM first rather than doing random access). This would mean:
 - Change crypto to send in self-contained AES-GCM blocks (of 16KB or so), to support random access
