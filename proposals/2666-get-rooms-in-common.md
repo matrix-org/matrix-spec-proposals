@@ -56,7 +56,7 @@ continue until the server does no longer insert `"next_batch_token"`.
   "joined": [
     // ...
   ],
-  "next_batch_token": "<any valid ascii string up to 32 chars>"
+  "next_batch_token": "<a string up to 32 characters abiding by the regex /[a-zA-Z0-9]+/>"
 }
 ```
 
