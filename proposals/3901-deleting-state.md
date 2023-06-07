@@ -233,12 +233,15 @@ Some state is already, loosely speaking, "obsolete" in the sense that new
 members don't really care about it. For example, leaving events.
 
 It might be possible to define obsolete state as including these special cases,
-and this might allow us to avoid needing a new room version.
+and this might allow us to avoid needing a new room version. It would also
+reduce unnecessary boilerplate (and hence bandwidth) in cases like `membership:
+leave`, where we will always required `obsolete: true` as well.
 
 However, we believe that we need to change the rules around redacted events,
 meaning that we can't avoid a new room version. Since we need a new room version
 anyway, we have gone for a simpler definition of obsolete state with no special
-cases.
+cases. We believe the extra boilerplate is worth it to avoid any chance of
+confusion.
 
 ## Sub-proposal 1: Hide obsolete state from clients on initial sync
 ### Proposal
