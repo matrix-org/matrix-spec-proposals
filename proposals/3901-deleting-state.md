@@ -185,6 +185,7 @@ content.
 
 Note: `membership: "ban"` events are not considered obsolete since this
 information is needed in future to prevent bad actors from re-entering a room.
+Similarly, invite rejections are not considered obsolete.
 
 ### Encrypted obsolete state events
 
