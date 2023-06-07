@@ -575,6 +575,17 @@ property.
 
 ### Alternatives
 
+We could consider also copying user-scoped state, perhaps in a future MSC. One
+way to achieve this would be to allow a room founder special permission to
+create user-scoped events for users other than themselves under particular
+circumstances.
+
+For example, we could permit this kind of not-my-user user-scoped event for the
+founder, if it occurs between their `m.room.create` and before any `m.room.member`
+events. Of course, the definition of "between" needs to be carefully crafted,
+and, if possible, some provision to prevent the room founder from forking the
+room later and modifying the outcome would be useful.
+
 ### Security considerations
 
 New state events are created by the upgrading user, so it may be possible for
