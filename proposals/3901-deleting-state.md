@@ -160,7 +160,8 @@ If a state event has `m.obsolete: false` or no `m.obsolete` property at all, it
 is not obsolete.
 
 No event should ever have an `m.obsolete` property with any other value (other
-than `true` or `false`.
+than `true` or `false`. (If a different value is encountered, it should be
+treated as `false`.)
 
 To mark some state as obsolete, a client sends a state event with
 `m.obsolete: true` in its content. To "unobsolete" some state later, the client
