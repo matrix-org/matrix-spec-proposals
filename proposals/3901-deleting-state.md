@@ -286,9 +286,9 @@ to redaction logic, this proposal requires a new room version.
 
 If clients actually need obsolete state to render properly, this would imply
 that events have been marked as obsolete when they should not have been. (Note:
-we are discussing room state here, not state events. Obsolete state events
-should be returned as normal when the events timeline is requested. This allows
-users to explore historical events.)
+we are discussing current room state here, not state events. Obsolete state
+events should be returned as normal when the events timeline is requested. This
+allows users to explore historical events.)
 
 The only time when an obsolete state event is needed to update room state is
 when a client has already received non-obsolete state for this `event_key`.
