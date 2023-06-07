@@ -196,7 +196,12 @@ If MSC3414 goes ahead, an obsolete encrypted state event should contain
 and `ciphertext`.
 
 When the ciphertext is decrypted, the `content` in the plaintext JSON
-should also contain `m.obsolete: true`.
+should also contain `m.obsolete: true`. The unencrypted and encrypted
+information should always be identical (present in one if and only if it is
+present in the other, and with identical values if present). If a client
+encounters different values here, the unencrypted value should be considered the
+source of truth (since servers can't read the encrypted value and we want
+servers to agree with clients).
 
 ### Alternative definitions
 
