@@ -36,7 +36,7 @@ All tracks should be assumed unmuted unless specified otherwise.
 It is suggested `video_muted` (but not required) should determine if a user sees
 video but `audio_muted` only determines if a user is shown a mute indication
 rather than actually muting the audio track on the receiving side. This is
-suggested because if the track is muted using the WebRTC `disabled` property,
+suggested because if the track is muted using the WebRTC `enabled` property,
 there can be delay between the audio track getting unmuted and the client
 receiving the `m.call.sdp_stream_metadata_changed` event.
 
