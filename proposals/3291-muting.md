@@ -75,8 +75,8 @@ which will waste bandwidth.
 
 ### Only disabling the corresponding track
 
-This is the solution that some clients (e.g. Element) use at the moment. While
-this is almost instantaneous, it doesn't allow the other side to know the
+This is the solution that some clients (e.g. Element Android) use at the moment.
+While this is almost instantaneous, it doesn't allow the other side to know the
 opponent's mute state. This leads to the opponent showing a black screen for a
 muted video track and not doing anything for a muted audio track which is bad
 for UX.
