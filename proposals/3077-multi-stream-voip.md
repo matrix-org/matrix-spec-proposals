@@ -16,19 +16,18 @@ metadata about the content of the streams.
 This MSC proposes adding an `sdp_stream_metadata` field to the events containing
 a session description i.e.:
 
-+ `m.call.invite`
-+ `m.call.answer`
-+ `m.call.negotiate`
++ [`m.call.invite`](https://spec.matrix.org/unstable/client-server-api/#mcallinvite)
++ [`m.call.answer`](https://spec.matrix.org/unstable/client-server-api/#mcallanswer)
++ [`m.call.negotiate`](https://spec.matrix.org/unstable/client-server-api/#mcallnegotiate)
 
 The `sdp_stream_metadata` field is an object in which each key is one stream
-`id` in the session description. The values are of `SDPStreamMetadata` type and
-have the following fields:
+`id` in the session description. The `sdp_stream_metadata` objects have the
+following fields:
 
-+ `purpose` - an optional string indicating the purpose of the stream. For compatibility
-  between clients values `m.usermedia` and `m.screenshare` are defined.
-  `m.usermedia` is the stream that contains the webcam and/or microphone tracks.
-  `m.screenshare` is then the stream with the screen-sharing tracks. Multiple
-  media streams may have the same `purpose`.
++ `purpose` - a string indicating the purpose of the stream. For compatibility
+  between client the following values are defined:
+  + `m.usermedia` - stream that contains the webcam and/or microphone tracks
+  + `m.screenshare` - stream with the screen-sharing tracks
 
 ### Example
 
@@ -63,10 +62,10 @@ have the following fields:
 
 ### Edge cases
 
-+ If an incoming stream is not described, in `sdp_stream_metadata`, it should be
-  ignored.
++ If an incoming stream is not described in `sdp_stream_metadata` and
+  `sdp_stream_metadata` is present, the stream should be ignored.
 + If a stream has a `purpose` of an unknown type (i.e. not `m.usermedia` or
-  `m.screenshare`), it should be ignored.
+  `m.screenshare`) or is missing completely, it should be ignored.
 
 ### Backwards compatibility
 
