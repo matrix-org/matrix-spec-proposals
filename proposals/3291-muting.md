@@ -33,12 +33,16 @@ camera/microphone).
 
 All tracks should be assumed unmuted unless specified otherwise.
 
-It is suggested `video_muted` (but not required) should determine if a user sees
-video but `audio_muted` only determines if a user is shown a mute indication
-rather than actually muting the audio track on the receiving side. This is
-suggested because if the track is muted using the WebRTC `enabled` property,
-there can be delay between the audio track getting unmuted and the client
-receiving the `m.call.sdp_stream_metadata_changed` event.
+Clients are recommended to not mute the audio of WebRTC tracks locally when a
+stream has the `audio_muted` field set to `false`. This is because when the
+other user unmutes themselves, there may be a slight delay between their client
+sending audio and the `m.call.sdp_stream_metadata_changed` event arriving. If
+`enabled` is set to `false`, then any audio sent in between those two events
+will not be heard. The other user will still stop transmitting audio once they
+mute on their side, so no audio is sent without the user's knowledge.
+
+The same suggestion does not apply to `video_muted` - there clients _should_
+mute video locally, so that the receiving side doesn't see black video.
 
 ### Example
 
