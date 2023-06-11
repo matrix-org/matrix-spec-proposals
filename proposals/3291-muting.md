@@ -27,7 +27,7 @@ has the common VoIP fields as specified in
 [MSC2746](https://github.com/matrix-org/matrix-doc/pull/2746) (`version`,
 `call_id`, `party_id`) and a `sdp_stream_metadata` object which is the same
 thing as `sdp_stream_metadata` in `m.call.negotiate`, `m.call.invite` and
-`m.call.answer`. The client sends this event the when `sdp_stream_metadata` has
+`m.call.answer`. The client sends this event when the `sdp_stream_metadata` has
 changed but no negotiation is required (e.g. the user mutes their
 camera/microphone).
 
