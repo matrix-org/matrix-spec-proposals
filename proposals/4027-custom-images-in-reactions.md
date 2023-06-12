@@ -125,8 +125,8 @@ for the following reasons:
 
 ## Unstable prefix
 
-Until this proposal is merged into the spec, the `shortcode` key should be
-prefixed with `com.beeper.msc4027.`.
+Until this proposal is merged into the spec, the `shortcode` unstable field name
+should be `com.beeper.reaction.shortcode`.
 
 An unstable prefix for the `key` in `m.relates_to` is not necessary as the spec
 already allows arbitrary data to be used as the `key`. This MSC merely adds
