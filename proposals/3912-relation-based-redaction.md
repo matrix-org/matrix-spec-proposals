@@ -156,7 +156,7 @@ PUT /_matrix/client/v3/rooms/!someroom:example.com/redact/$a/foo
 
 Causes events `$a` and `$b` to get redacted, but no `$c`
 
-### Unstable feature in `/version`
+### Unstable feature in `/versions`
 
 Homeservers which support this MSC should indicate it by adding
 `org.matrix.msc3912` and `org.matrix.msc3912.stable` in the response to `GET
