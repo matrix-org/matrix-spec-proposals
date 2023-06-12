@@ -23,6 +23,10 @@ Tasks:
 
 ## Introduction
 
+See also the video of
+[Solving the Historical State Problem in Matrix](https://media.ccc.de/v/gpn21-202-solving-the-historical-state-problem-in-matrix)
+in which Andrew Morgan introduces this proposal at the GPN21 event.
+
 ### Why delete state?
 
 Matrix rooms have an ever-growing list of state, caused by real-world events
