@@ -158,10 +158,11 @@ Causes events `$a` and `$b` to get redacted, but no `$c`
 
 ### Unstable feature in `/versions`
 
-Homeservers which support this MSC should indicate it by adding
-`org.matrix.msc3912` and `org.matrix.msc3912.stable` in the response to `GET
+While this MSC is unstable, homeservers which support this MSC should indicate it by adding
+`org.matrix.msc3912` flag in the `unstable_features` array of the response to `GET
 /_matrix/client/versions` requests.
-
+Once this MSC becomes a part of a spec version, clients should rely on the presence of the spec
+version, that supports the MSC, in versions on /versions, to determine support.
 
 ## Potential issues
 
