@@ -80,6 +80,8 @@ The clients without push may observe encrypted rooms with a high number of unrea
 
 [MSC3996: Encrypted mentions-only rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/3996): the suggested top-level property `m.has_mentions` may be an option to reduce the volume of pushes. But we would not be able to support notifications on keywords then.
 
+Another alternative would be to define a new [`action`](https://spec.matrix.org/v1.7/client-server-api/#actions): `push_without_notify` or `silently_notify` in order to push all encrypted events without incrementing the notifications count. The client implementation to handle these counts would be then less complex. But this would need to implement more changes in Synapse. The current proposal is just to add a new push rules without changing the rules handling server side. This alternative should be discussed as soon as possible.
+
 ## Security considerations
 
 None
