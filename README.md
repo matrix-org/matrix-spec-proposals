@@ -185,7 +185,7 @@ like help with writing spec PRs, feel free to join and ask questions in the
 #### Stable and unstable prefixes
 
 *Unstable* prefixes are the namespaces which are used by implementations while
-an MSC is not yet accepted. For instance, an MSC can propose an a `m.space`
+an MSC is not yet accepted. For instance, an MSC can propose that a `m.space`
 event type or an `/_matrix/client/v1/account/whoami` endpoint should exist.
 However, an implementation of that same MSC cannot use a *stable* prefix (in the
 case, `/_matrix/client/` or `m.`) until the MSC has been accepted, as the
@@ -197,9 +197,10 @@ known) as an *unstable* prefix. For the above examples, this would mean using
 `org.matrix.msc1234.space` and
 `/_matrix/client/unstable/org.matrix.msc1234/account/whoami` to allow for
 breaking changes between edits of the MSC itself, or to not clash with another
-MSC that's attempting to add the same stable identifiers. The unstable prefixes
-in this case of `org.matrix.msc1234` and `/_matrix/client/unstable`
-respectively.
+MSC that's attempting to add the same stable identifiers. The unstable
+prefixes, in this case, are `org.matrix.msc1234` and `/_matrix/client/unstable`
+respectively. It is also fine to use more traditional forms of namespace
+prefixes, such as `com.example.*` (e.g. `com.example.space`).
 
 Note: not all MSCs need to make use of unstable prefixes. They are only needed
 when defining new endpoints, field names, etc. in your MSC, and serve to allow
