@@ -1,4 +1,4 @@
-# MSC40xx: Push all encrypted events except for muted rooms
+# MSC4028: Push all encrypted events except for muted rooms
 
 About notifications handling, it is currently not possible for mobile clients which get push notifications to properly implement a mentions-and-keywords-only room.
 
