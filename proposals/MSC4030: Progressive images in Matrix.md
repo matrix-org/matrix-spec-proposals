@@ -41,7 +41,7 @@ To fix this issue, clients SHOULD NOT generate the `"thumbnail_file"` entry (and
 
 ### Supporting Different Formats
 
-As proposed in [MSC4011](https://github.com/matrix-org/matrix-spec-proposals/blob/clokep/thumbnail-media-negotiation/proposals/4011-thumbnail-media-negotiation.md), media negotiation MUST be performed using the [HTTP Content Negotiation mechanism](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). This mechanism allows the delivery of images in progressive or more modern formats to clients that support such features.
+As proposed in [MSC4011](https://github.com/matrix-org/matrix-spec-proposals/pull/4011), media negotiation MUST be performed using the [HTTP Content Negotiation mechanism](https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation). This mechanism allows the delivery of images in progressive or more modern formats to clients that support such features.
 
 If the `Accept` header field is unspecified, absent or list unsupported formats, the server MUST provide the image resource as `image/png` or `image/jpeg`.
 
