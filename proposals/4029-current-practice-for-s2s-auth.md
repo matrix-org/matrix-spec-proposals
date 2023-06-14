@@ -38,6 +38,7 @@ Issues:
 * What's the error and status code when auth fails?
 * Can the sending server add random fields to the signed JSON object? (issue #510)
   * ... or can we presume that they're redacted?
+* What is the JSON request body for a GET request? (or non-PUT, non-POST request)
 * Other edge case questions not yet asked.
 
 ## Potential issues
