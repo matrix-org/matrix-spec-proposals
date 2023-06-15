@@ -68,7 +68,7 @@ in the same format (and all others) as a progressive image.
 If the negotiation is successful and a different non-progressive format is chosen for the image, the server MAY compare
 the size between the image in the transcoded format and the image in the original format, if the image in the original format
 is smaller than the transcoded one and is supported by the client, the server could chose to send the image in
-the original format instead of the transcoded one. However, this behavior SHOULD NEVER be implemented for progressive formats.
+the original format instead of the transcoded one. However, this behavior SHOULD NOT be implemented for progressive formats.
 
 Clients SHOULD NOT connect to the `/thumbnail` endpoint if the server can provide images in progressive formats,
 supported by the client, at the `/download` endpoint.
