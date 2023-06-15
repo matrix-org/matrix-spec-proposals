@@ -42,7 +42,7 @@ GET /_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}
 PUT /_matrix/client/v3/user/{userId}/rooms/{roomId}/account_data/{type}
 ```
 
-This proposal aims to add the following two endpoints (with no request body):
+This proposal adds the following two endpoints (with no request body):
 ```
 DELETE /_matrix/client/v3/user/{userId}/account_data/{type}
 
