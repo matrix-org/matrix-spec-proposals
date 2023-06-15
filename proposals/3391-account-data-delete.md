@@ -67,7 +67,7 @@ equivalent as `DELETE`-ing that account data.
 
 ### Sync
 
-Account Data changes are announced through sync, this proposal also aims to change this response slightly after account data deletion.
+Account Data changes are announced through sync; this proposal also aims to change this response slightly after account data deletion.
 
 In `account_data.events` and `rooms.join.{room_id}.account_data.events`, a client must interpret
 `{}` for an event content as it being deleted.
