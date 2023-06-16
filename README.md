@@ -224,19 +224,31 @@ endpoint, in the form of a new entry:
 With a value of `true` indicating that the feature is supported, and `false`
 or lack of the field altogether indicating the feature is not supported.
 
-According to the spec process, once an MSC has been accepted, implementations
-are allowed to switch to *stable* prefixes (i.e. `m.`). However, the MSC is
-still not yet part of a released spec version. How can a homeserver advertise to
-clients that they can start using *stable* prefixes, before the homeserver
-advertises support for a spec release which contains the new endpoint? One case
-where this poses a problem is when an MSC proposes new event types or fields.
+#### When can I use stable prefixes?
 
-Events are immutable data. A client may wish to introduce your new feature, but
-if it sending events with unstable prefixes, eventually those events won't
-be supported by future clients, and thus that data will be effectively lost!
+[According to the spec
+process](https://spec.matrix.org/proposals/#early-release-of-an-mscidea): once
+an MSC has been accepted, implementations are allowed to switch to *stable*
+prefixes (i.e. `m.`). However, the MSC is still not yet part of a released spec
+version.
 
-This is often solved by having the homeserver telling clients that it supports
-stable prefixes for an MSC with yet another `unstable_features` flag:
+In most cases, this is not an issue. For instance, if your MSC specifies a new
+event type, you can now start sending events with those types!
+
+Some MSCs introduce functionality where coordination between implementations is
+needed. For instance, a client may want to know whether a homeserver supports
+the stable version of a new endpoint before actually attempting to request it.
+Or perhaps the new event type you're trying to send relies on the homeserver
+recognising that new event type, and doing some work when it sees it.
+
+At this point, it may be best to wait until a new spec version is released with
+your changes. Homeservers that support the changes will eventually advertise
+that spec version under `/versions`, and your client can check for that.
+
+But if you really can't wait, then there is another option.
+
+This is often solved by having the homeserver tell clients that it supports
+stable prefixes, using yet another `unstable_features` flag:
 
 ```json5
 {
@@ -247,17 +259,18 @@ stable prefixes for an MSC with yet another `unstable_features` flag:
 }
 ```
 
-If a client sees `org.matrix.msc1234.stable` is `true`, it knows that it can
-start sending events with stable prefixes, and the homeserver will accept them
-accordingly.
+If a client sees that `org.matrix.msc1234.stable` is `true`, it knows that it
+can start using stable prefixes, and the homeserver will accept and act on
+them accordingly.
 
-While the general pattern of adding a new `*.stable` flag has emerged from
-previous MSCs (see
+While the general pattern of using the text ".stable" has emerged from previous
+MSCs, you can pick any name you like. You need only to clearly state their
+meaning, usually udner an "Unstable prefixes" header in your MSC.
+
+See
 [MSC3827](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3827-space-explore.md#unstable-prefix)
-for a good example of how to include this information in your MSC), you can pick
-any name you like for your unstable prefixes. You need only to clearly state
-their meaning, usually under an "Unstable prefixes" header in your MSC.
-
+for a good example of an MSC that wanted to use such a flag to speed up
+implementation rollout, and how it did so.
 
 #### Room versions
 
