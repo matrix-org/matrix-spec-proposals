@@ -205,10 +205,9 @@ Note: not all MSCs need to make use of unstable prefixes. They are only needed
 when defining new endpoints, field names, etc. in your MSC, and serve to allow
 implementations of your MSC to exist in the wild before your MSC is accepted.
 
-In the case of some MSCs, implementation types may need a way to check that another
-implementation type supports this feature. A common case is when a client that has
-implemented an MSC needs to check whether the homeserver it is talking to has
-also implemented support. Typically, this is handled by the MSC defining an
+It is common when implementing support for an MSC that a client may wish to check
+if the homeserver it is communicating with supports an MSC.
+Typically, this is handled by the MSC defining an
 entry in the `unstable_features` dictionary of the
 [`/_matrix/client/versions`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientversions)
 endpoint, in the form of a new entry:
