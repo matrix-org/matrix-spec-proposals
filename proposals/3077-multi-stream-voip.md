@@ -16,9 +16,9 @@ metadata about the content of the streams.
 This MSC proposes adding an `sdp_stream_metadata` field to the events containing
 a session description i.e.:
 
-+ [`m.call.invite`](https://spec.matrix.org/unstable/client-server-api/#mcallinvite)
-+ [`m.call.answer`](https://spec.matrix.org/unstable/client-server-api/#mcallanswer)
-+ [`m.call.negotiate`](https://spec.matrix.org/unstable/client-server-api/#mcallnegotiate)
++ [`m.call.invite`](https://spec.matrix.org/v1.7/client-server-api/#mcallinvite)
++ [`m.call.answer`](https://spec.matrix.org/v1.7/client-server-api/#mcallanswer)
++ [`m.call.negotiate`](https://spec.matrix.org/v1.7/client-server-api/#mcallnegotiate)
 
 The `sdp_stream_metadata` field is an object in which each key is one stream
 `id` in the session description. The `sdp_stream_metadata` objects have the
