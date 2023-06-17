@@ -21,7 +21,7 @@ a session description i.e.:
 + [`m.call.negotiate`](https://spec.matrix.org/v1.7/client-server-api/#mcallnegotiate)
 
 The `sdp_stream_metadata` field is an object in which each key is one stream
-`id` in the session description. The `sdp_stream_metadata` objects have the
+`id` in the session description. The values are objects with the
 following fields:
 
 + `purpose` - a string indicating the purpose of the stream. For compatibility
