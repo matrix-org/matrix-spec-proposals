@@ -65,7 +65,7 @@ following fields:
 + If an incoming stream is not described in `sdp_stream_metadata` and
   `sdp_stream_metadata` is present, the stream should be ignored.
 + If a stream has a `purpose` of an unknown type (i.e. not `m.usermedia` or
-  `m.screenshare`) or is missing completely, it should be ignored.
+  `m.screenshare`), it should be ignored.
 
 ### Backwards compatibility
 
