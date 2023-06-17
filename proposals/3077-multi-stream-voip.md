@@ -84,7 +84,7 @@ Similar is true for SDP attributes.
 
 This proposal is also more practical for cases where more complex metadata is
 needed. For conferencing, a `user_id` field could be added to
-`SDPStreamMetadata`; for differentiating between the front and rear camera of a
+the objects in `sdp_stream_metadata`; for differentiating between the front and rear camera of a
 phone, a `camera_type` field could be added.
 
 Previously, it has been thought that the `purpose` field has to be unique (or
