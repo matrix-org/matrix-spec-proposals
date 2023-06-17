@@ -41,7 +41,7 @@ in `m.image` messages sent in encrypted rooms.
 ## Unencrypted Rooms
 
 Since we can re-encode the image server-side it would be optimal to serve the image (`/download` endpoint) and the server-side thumbnails
-(`/thumbnails` endpoint) with the best format that align with the client capabilities.
+(`/thumbnail` endpoint) with the best format that align with the client capabilities.
 
 ### Eliminating Unwanted Behavior
 
