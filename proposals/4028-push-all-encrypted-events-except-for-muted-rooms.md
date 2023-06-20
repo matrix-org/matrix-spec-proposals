@@ -51,16 +51,37 @@ Note: The “user-defined rules” are evaluated with a higher priority than “
 
 ### Receiving notifications
 
-When this push rule matches then homeserver would push the event to all registered clients, similar to how other rules work. Clients would [decrypt the event and re-run push rules](https://spec.matrix.org/v1.7/client-server-api/#receiving-notifications) as normal, but they will consider at the same time the original event is encrypted. The following algorithm has to be implemented client side as soon as it received a push for an encrypted event **and** `.m.rule.encrypted_event` is present and enabled in the account push rules set:
-
-1. If the decryption failed, the new `.m.rule.encrypted_event` rule will match on client side too. There is no reason to notify the end user. The push is discarded [^2]. The client decrements locally the number of unread notifications received from the homeserver for this room. We decided to discard here the push because this use case should not happen except if the event was not encrypted for the current session,
-or if we are in front of an unexpected "Unable To Decrypt" (UTD) issue.  
-2. If the decryption succeeded, there are 3 cases:
-- the decrypted event resulted in a highlight notification -> the client increments locally the highlight notifications count for this room
-- the decrypted event results in a notification -> no change is required on the notifications count
-- the decrypted event results in no notification -> the client decrements locally the number of unread notifications for this room
+When this push rule matches then homeserver would push the event to all registered clients, similar to how other rules work. Clients would [decrypt the event and re-run push rules](https://spec.matrix.org/v1.7/client-server-api/#receiving-notifications) as normal. If the decrypted event results in no notification, the push is discarded [^2]. If the decryption failed, the new `.m.rule.encrypted_event` rule will match on client side, but there is no reason to notify the end user, so the push is discarded [^2] too. Globally the client must discard the push when the event stays encrypted locally because this use case should not happen except if the event was not encrypted for the current session, or if we are in front of an unexpected "Unable To Decrypt" (UTD) issue.
 
 The overall tradeoff is that clients will receive extra pushes some of the time.
+
+### Unread notification counts
+
+As soon as the rule `.m.rule.encrypted_event` is present and enabled in the account push rules set, the clients have to track unread notifications themselves in **encrypted rooms**. All the clients with or without push services will have to compute the unread notification count for each encrypted room during the client-server sync, by implementing the algorithm described below.
+
+This algorithm depends on the unread notification count `unread_notifications` received from the server for each joined room in the [sync response](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclientv3sync). It has to be adapted to the potential unread thread notification counts `unread_thread_notifications` that we will ignore here to simplify the description.
+
+Let's consider we receive the following data for a joined encrypted rooms in the sync response:
+- number of new encrypted events in the timeline: n
+- unread notification count: k
+
+1. if k = 0 -> reset the local notification counts for this room (the unread notification count and the highlight count).
+2. else if k <= n -> reset the local notification counts, then decrypt and run push rules on the k most recent events:
+   - if the decrypted event resulted in a highlight notification -> increment the local highlight notifications count and the local unread notification count.
+   - if the decrypted event results in a notification -> increment only the local unread notifications count.
+   - if the decrypted event results in no notification -> no change is required on the local notification counts.
+   - if the decryption failed -> increment the local unread notifications count.
+3. else if k > n and no gap is mentioned in the sync response for this room -> update the local notification counts by taking into account the potential change of the read receipt position of the current user, then decrypt and run push rules on the n received events by applying the same rules as above.
+4. else if k > n and a gap is mentioned in the sync response -> there is 2 options: 
+- flush the local room storage, this will reset the local notification counts, then decrypt and run push rules on the n received events by applying the same rules as above. In order to compute locally accurate notification counts, back paginate to retrieve (k-n) more encrypted events.
+
+or
+
+- update the local notification counts by taking into account the potential change of the read receipt position of the current user, then decrypt and run push rules on the n received events by applying the same rules as above. In order to compute locally accurate notification counts, back paginate to close the gap or at least retrieve (k-n) more encrypted events.
+
+About the case 4, the back pagination should be mandatory for mentions-and-keywords-only rooms to detect if there are some mentions in the gap. The client may decide to not trigger back pagination for rooms in "all messages" mode, but in that case the local unread notification count is unknown. No badge can be displayed at the application side, only an unread marker.
+
+Note: some unencrypted events (for example `m.room.redaction`) may be taken into account or not in this unreads count k. This depends on the push rules set. If you force "all messages" mode on a room by creating a room-specific push rule, some unencrypted events (like redaction events) will be included in this count. This is not the case if "all messages" mode is obtained by the combination of server predefined rules. The client have locally all the information (= the push rules) to handle this edge case during the implementation of the algorithm.
 
 ### Listening notifications
 
@@ -68,13 +89,9 @@ This new push rule will impact the existing endpoint [`GET /_matrix/client/v3/no
 
 When this rule will be present and enabled in the account push rules set, the clients which retrieve the list of events that it has been notified about with this endpoint, will receive most of the encrypted events (except for muted rooms). They will be able to decrypt and re-run push rules locally. This should fix the notifications panel observed in some web clients where currently the notifications of encrypted events are missing.
 
-### Polling
-
-The clients without push services (Web or F-Droid for example) will have to take into account this new push rule (if it is enabled) during their polling mechanism. Indeed they should update the unread notifications count by following the same algorithm as above. This algorithm should replace the potential current one.
-
 ## Potential issues
 
-The clients without push may observe encrypted rooms with a high number of unread notifications in case of gappy sync. The workaround would be to not display the count for the room until the gap is completed or the count is reset (mark all as read).
+Until a client is updated to support this MSC, it may display a high number of unread notifications for encrypted rooms. The first workaround would be to not display the count for the encrypted rooms when the rule `.m.rule.encrypted_event` is present and enabled in the account push rules set, until the suggested algorithm is implemented.
 
 ## Alternatives
 
@@ -92,7 +109,7 @@ None
 
 ## Unstable prefix
 
-During development the new push rule shall use `org.matrix.msc40xx.encrypted_event` instead of `.m.rule.encrypted_event`.
+During development the new push rule shall use `org.matrix.msc4028.encrypted_event` instead of `.m.rule.encrypted_event`.
 
 ## Dependencies
 
