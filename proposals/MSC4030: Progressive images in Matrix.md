@@ -45,7 +45,7 @@ Since we can re-encode the image server-side it would be optimal to serve the im
 
 ### Eliminating Unwanted Behavior
 
-Clients does not acknowledge the fact that in un-encrypted rooms server-side generated thumbnails are available for image resources.
+Clients do not acknowledge that, in unencrypted rooms, server-side generated thumbnails are available for image resources.
 As a result, they unnecessarily generate client-side thumbnails, upload them to the server, and reference them in the `m.image` event,
 creating redundant and unnecessary resources.
 
