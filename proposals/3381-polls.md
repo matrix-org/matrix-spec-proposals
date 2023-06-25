@@ -1,7 +1,7 @@
 # MSC3381: Chat Polls
 
 Polls are additive functionality in a room, allowing someone to pose a question and others to answer
-until the poll is closed. In chat, these are typically used for quick questionares such as what to
+until the poll is closed. In chat, these are typically used for quick questionnaires such as what to
 have for lunch or when the next office party should be, not elections or anything needing truly
 secret ballot.
 
