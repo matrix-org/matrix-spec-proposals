@@ -25,22 +25,61 @@ present in `m.room.create` state event content.
 ### Submitting scene with `m.repository_room.scene` message event
 
 A scene can be submitted by the user using `m.repository_room.scene` message event. Other then
-`author_url` & `source_url` all properties specified below are required to describe a scene.
+`attribution` and `description` all properties specified below are required to describe a scene.
+
+`version` this property should be incremented when a new version of the scene is submitted.
+
+`name` this is the name of the scene.
+
+`description` (optional) this is a short description of the scene.
+
+`url` this is the URL of the 3D scene to use for the room. Currently only .glb files are supported.
+For supported glTF extensions see the
+[Third Room glTF extensions](https://thirdroom.io/docs/gltf/).
+
+`script_url` (optional) is the URL to a JavaScript or WebAssembly file that will be executed in the
+3D scene. This can be used to add interactivity to the scene. See the [WebSceneGraph
+documentation](https://thirdroom.io/docs/guides/websg/) for more information on scripts.
+
+`preview_url` this is the URL of the preview image to use for the room. This should be a
+high resolution, compressed, 16:9 aspect ratio image that is representative of the scene.
+
+`attribution` (optional) this is an array of attributions for the scene.
+
+`attribution.title` (optional) this is the title of the attributed sub-asset. This should be the
+original title of the source material.
+
+`attribution.source_url` (optional) this is the URL of the source material. This could be a link to
+the original asset, a page describing the asset, or some other url describing where the asset is
+from.
+
+`attribution.author_name` This is the name of the author (individual or organization) of the source
+material.
+
+`attribution.author_url` (optional) this is the URL of the author's website.
+
+`attribution.license` (optional) this is the license of the source material. This should be a valid
+[SPDX license identifier](https://spdx.org/licenses/).
 
 ```json
 {
   "type": "m.repository_room.scene",
   "content": {
     "scene": {
+      "version": 1,
+      "name": "Forest Scene",
+      "description": "A low poly forest scene.",
       "url": "mxc:abc",
       "preview_url": "mxc:abc",
-      "name": "",
-      "description": "",
-      "author_name": "",
-      "license": "",
-      "version": 1,
-      "author_url": "",
-      "source_url": "",
+      "attribution": [
+        {
+          "title": "Kenney's Nature Kit",
+          "source_url": "https://kenney.nl/assets/nature-kit",
+          "author_name": "Kenney",
+          "author_url": "https://kenney.nl",
+          "license": "CC0"
+        }
+      ]
     },
   },
 }
