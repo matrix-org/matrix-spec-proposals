@@ -209,11 +209,11 @@ chat room.
   API](https://github.com/matrix-org/matrix-spec-proposals/pull/3266)
 
 ## Unstable prefix
-* `msc3948.repository_room` - Repository room type
-* `msc3948.repository_room.scene` - Scene message event type
-* `msc3948.repository_room.featured_scene` - Featured scene state event type
-* `msc3948.repository_room.featured_world` - Featured world state event type
-* `msc3948.repository_room.featured_room` - Featured room state event type
+* `org.matrix.msc3948.repository_room` - Repository room type
+* `org.matrix.msc3948.repository_room.scene` - Scene message event type
+* `org.matrix.msc3948.repository_room.featured_scene` - Featured scene state event type
+* `org.matrix.msc3948.repository_room.featured_world` - Featured world state event type
+* `org.matrix.msc3948.repository_room.featured_room` - Featured room state event type
 
 ## Dependencies
 
