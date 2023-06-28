@@ -45,10 +45,13 @@ documentation](https://thirdroom.io/docs/gltf/). When provided, this property ov
 `scene_description` (optional) is a short description of the scene. When provided, this property
 overrides the `base_scene.description` property.
 
-`preview_url` (optional) is the URL to an image to use while loading the scene. This should be a
+`thumbnail_url` (optional) is the URL to an image to use while loading the scene. This should be a
 large 16:9 image that is representative of the scene or your room. When provided, this property
-overrides the `base_scene.preview_url` property. Either a `preview_url` or `base_scene.preview_url`
-must be provided.
+overrides the `base_scene.info.thumbnail_url` property. Either a `thumbnail_url` or
+`base_scene.info.thumbnail_url` must be provided.
+
+`thumbnail_info` (optional) is an object that describes the thumbnail image. This uses the
+`ThumbnailInfo` data structure.
 
 `script_url` (optional) is the URL to a JavaScript or WebAssembly file that will be executed in the
 3D scene. This can be used to add interactivity to the scene. See the [WebSceneGraph
@@ -59,7 +62,7 @@ provided, this property overrides the `base_scene.script_url` property.
 to the user. If `base_scene.attribution` is defined then this array will be appended to the base
 scene's attributions. This is useful when you have added additional content to the base scene. The
 attribution data structure is described in detail in
-[MSC3948](https://github.com/matrix-org/matrix-spec-proposals/pull/3948).
+[MSC4032](https://github.com/matrix-org/matrix-spec-proposals/pull/4032).
 
 `base_scene` is an asset object that describes the scene that the `scene_url` is based on. This is
 used to provide info and attribution for the current scene. The properties of scene asset objects
@@ -80,7 +83,13 @@ the world or script then they will be warned that their changes will be lost if 
     "scene_name": "My Forest Scene",
     "scene_description": "My remixed low poly forest scene",
     "scene_url": "mxc://example/scene.glb",
-    "preview_url": "mxc://example/thumbnail.jpeg",
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX",
     "script_url": "mxc://example/script.js",
     "attribution": [
       {
@@ -95,10 +104,33 @@ the world or script then they will be warned that their changes will be lost if 
       "version": 1,
       "name": "Forest",
       "description": "A low poly forest scene",
-      "asset_type": "scene",
       "url": "mxc:abc",
-      "preview_url": "mxc:abc",
-      "script_url": "mxc://example/script.js",
+      "asset_type": "m.world.scene",
+      "info": {
+        "mimetype": "model/gltf-binary",
+        "size": 123456,
+        "vertices": 480,
+        "textures": 1,
+        "materials": 1,
+        "animations": false,
+        "audio": false,
+        "boundingBox": {
+          "min": [-1, -1, -1],
+          "max": [1, 1, 1]
+        },
+        "thumbnail_info": {
+          "w": 480,
+          "h": 270,
+          "mimetype": "image/png",
+          "size": 12345
+        },
+        "thumbnail_url": "mxc://matrix.org/XXXX",
+        "script_info": {
+          "mimetype": "application/javascript",
+          "size": 123456
+        },
+        "script_url": "mxc://matrix.org/XXXX"
+      },
       "attribution": [
         {
           "title": "Kenney's Nature Kit",
@@ -141,10 +173,33 @@ enter the world for the first time. Once they have selected an avatar they can s
       {
         "name": "Y Bot",
         "description": "A friendly robot",
-        "thumbnail_url": "mxc://matrix.org/XXXX",
-        "uri": "mxc://matrix.org/XXXX",
-        "asset_type": "avatar",
-        "file_size": 4096,
+        "url": "mxc://matrix.org/XXXX",
+        "asset_type": "m.world.avatar",
+        "info": {
+          "mimetype": "model/gltf-binary",
+          "size": 123456,
+          "vertices": 480,
+          "textures": 1,
+          "materials": 1,
+          "animations": false,
+          "audio": false,
+          "boundingBox": {
+            "min": [-1, -1, -1],
+            "max": [1, 1, 1]
+          },
+          "thumbnail_info": {
+            "w": 480,
+            "h": 270,
+            "mimetype": "image/png",
+            "size": 12345
+          },
+          "thumbnail_url": "mxc://matrix.org/XXXX",
+          "script_info": {
+            "mimetype": "application/javascript",
+            "size": 123456
+          },
+          "script_url": "mxc://matrix.org/XXXX"
+        },
         "attribution": [
           {
             "title": "Y Bot",
@@ -223,4 +278,4 @@ This MSC builds on [MSC3401](https://github.com/matrix-org/matrix-doc/pull/3401)
 is used for VoIP and game networking.
 
 The data structures defined in the `m.world` and `m.world.avatars` event types are based on the data
-structures defined in [MSC3948](https://github.com/matrix-org/matrix-spec-proposals/pull/3948).
+structures defined in [MSC4032](https://github.com/matrix-org/matrix-spec-proposals/pull/4032).
