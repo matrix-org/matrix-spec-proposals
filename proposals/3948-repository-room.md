@@ -41,8 +41,10 @@ For supported glTF extensions see the
 3D scene. This can be used to add interactivity to the scene. See the [WebSceneGraph
 documentation](https://thirdroom.io/docs/guides/websg/) for more information on scripts.
 
-`preview_url` this is the URL of the preview image to use for the room. This should be a
-high resolution, compressed, 16:9 aspect ratio image that is representative of the scene.
+`thumbnail_url` this is the URL of the thumbnail image to use for the room.
+
+`thumbnail_info` this is an object containing information about the thumbnail image using the
+ThumbnailInfo data type.
 
 `attribution` (optional) this is an array of attributions for the scene.
 
@@ -70,7 +72,13 @@ material.
       "name": "Forest Scene",
       "description": "A low poly forest scene.",
       "url": "mxc:abc",
-      "preview_url": "mxc:abc",
+      "thumbnail_info": {
+        "w": 1920,
+        "h": 1080,
+        "mimetype": "image/jpeg",
+        "size": 12345
+      },
+      "thumbnail_url": "mxc://matrix.org/XXXX",
       "attribution": [
         {
           "title": "Kenney's Nature Kit",
@@ -101,7 +109,13 @@ is used to order the featured scene.
   "content": {
     "scene": {
       "url": "mxc:abc",
-      "preview_url": "mxc:abc",
+      "thumbnail_info": {
+        "w": 1920,
+        "h": 1080,
+        "mimetype": "image/jpeg",
+        "size": 12345
+      },
+      "thumbnail_url": "mxc://matrix.org/XXXX",
       ...
     },
     "order": ""
@@ -124,10 +138,22 @@ can check and prompt an admin for future featured scene updates.
   "state_key": "",
   "content": {
     "scene_url": "",
-    "scene_preview_url": "",
+    "thumbnail_info": {
+      "w": 1920,
+      "h": 1080,
+      "mimetype": "image/jpeg",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX",
     "scene": {
       "url": "mxc:abc",
-      "preview_url": "mxc:abc",
+      "thumbnail_info": {
+        "w": 1920,
+        "h": 1080,
+        "mimetype": "image/jpeg",
+        "size": 12345
+      },
+      "thumbnail_url": "mxc://matrix.org/XXXX",
       ...
     },
     "scene_from": {
