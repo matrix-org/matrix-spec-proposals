@@ -654,7 +654,19 @@ TODO
 
 ## Unstable prefix
 
-TODO
+* `org.matrix.msc4032.world.script` - Script asset type
+* `org.matrix.msc4032.world.model` - Model asset type
+* `org.matrix.msc4032.world.avatar` - Avatar asset type
+* `org.matrix.msc4032.world.scene` - Scene asset type
+* `org.matrix.msc4032.world.object` - Object asset type
+* `org.matrix.msc4032.world.prefab` - Prefab asset type
+* `org.matrix.msc4032.asset_collections.my_collections` - User's collections
+* `org.matrix.msc4032.asset_collections.user_uploads` - User's uploads collection
+* `org.matrix.msc4032.asset_collections.room_uploads` - Room's uploads collection
+* `org.matrix.msc4032.asset_collections.room_uploads.item` - Room upload
+* `org.matrix.msc4032.asset_collections.world_collections.item` - World collections
+* `org.matrix.msc4032.repository_room.collection` - Repository room collection
+* `org.matrix.msc4032.repository_room.featured_collection` - Repository room featured collection
 
 ## Dependencies
 
