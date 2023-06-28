@@ -91,7 +91,23 @@ When this rule will be present and enabled in the account push rules set, the cl
 
 ## Potential issues
 
-Until a client is updated to support this MSC, it may display a high number of unread notifications for encrypted rooms. The first workaround would be to not display the count for the encrypted rooms when the rule `.m.rule.encrypted_event` is present and enabled in the account push rules set, until the suggested algorithm is implemented.
+### Client side
+
+#### Unexpected unread counts
+Until a client is updated to support this MSC, it may display a high number of unread notifications for encrypted rooms. The first workaround would be to not display the count for the encrypted rooms when the rule `.m.rule.encrypted_event` is present and enabled in the account push rules set, until the suggested algorithm is implemented, at least for the mentions-and-keywords-only encrypted rooms.
+
+#### Battery life
+The mobile client will wake up more frequently than currently. We will have to control any potential issue with battery life when we will implement this MSC. The impact on the battery life will be definitly lower than the one observed on clients without push service which poll for events in the background. The end user will be able to reduce the impact by muting some encrypted rooms. 
+
+### Server side
+
+#### Event fetching
+The clients with push services will request more frequently the server to retrieve the event contents. I'm mainly thinking about an encrypted room with a high number of members, each mobile client of these members will try to retrieve simultaneously the event content of each new encrypted event (pushed by the server). This scenario may happen today only when most of the members configure the room in "All messages" mode.
+
+This may be a potential performance issue if each client fetchs separately each pushed event. But this should not be the case, because the clients have to run a sync if they want to be able to receive potential new encryption keys through to_devices. So they will retrieve more than one event at the time.
+
+#### Push sending
+Push is a huge bottleneck on the sending side. So calculating what to push and the unread counts (its the same process) is a big performance bottleneck currently when sending in large rooms. A bunch of optimisation has taken place to make that better, but its still quite expensive. We should plan an effort to limit potential issue server side here.
 
 ## Alternatives
 
