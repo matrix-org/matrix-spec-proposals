@@ -1,4 +1,4 @@
-# MSCXXXX: Asset Collections
+# MSC4032: Asset Collections
 
 Asset Collections are intended to be a way to store one or more `mxc` files or URLs relating to a
 particular room or user. Currently their primary use case is to store assets for 3D worlds
