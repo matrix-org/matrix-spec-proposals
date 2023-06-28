@@ -10,14 +10,15 @@ based on the [MSC3815](https://github.com/matrix-org/matrix-spec-proposals/pull/
 
 These are the currently defined asset types:
 
-- `image` - A 2D image in the PNG or JPEG format.
-- `audio` - An audio file in the MP3 format.
-- `video` - A video file in the MP4 format.
-- `script` - A script file in the JavaScript or WebAssembly format.
-- `model` - A 3D model in the glTF format.
-- `avatar` - A 3D model in the glTF format that is intended to be used as an avatar.
-- `scene` - A 3D model in the glTF format that is intended to be used as a scene.
-- `object` - A 3D model in the glTF format that is intended to be used as an interactable object.
+- `m.image` - A 2D image in the PNG or JPEG format.
+- `m.audio` - An audio file in the MP3 format.
+- `m.video` - A video file in the MP4 format.
+- `m.world.script` - A script file in the JavaScript or WebAssembly format.
+- `m.world.model` - A 3D model in the glTF format.
+- `m.world.avatar` - A 3D model in the glTF format that is intended to be used as an avatar.
+- `m.world.scene` - A 3D model in the glTF format that is intended to be used as a scene.
+- `m.world.object` - A 3D model in the glTF format that is intended to be used as an interactable object.
+- `m.world.prefab` - A 3D prefab to be used in a scene.
 
 ### Base Asset data structure
 
@@ -26,9 +27,7 @@ These are the currently defined asset types:
   "name": "Base Asset",
   "description": "Some asset",
   "categories": ["Category 1", "Category 2"],
-  "preview_url": "mxc://matrix.org/XXXX",
   "url": "mxc://matrix.org/XXXX",
-  "mime_type": "image/png",
   "asset_type": "some_asset_type",
   "attribution": [
     {
@@ -51,42 +50,65 @@ These are the currently defined asset types:
 
 ### Image Asset Data Structure
 
+- `info` - Uses the [ImageInfo](https://spec.matrix.org/v1.6/client-server-api/#mimage) data structure.
+
 ```json
 {
   // ...base asset
-  "asset_type": "image",
-  "mime_type": "image/png",
-  "image_info": {
-    "width": 1920,
-    "height": 1080
+  "asset_type": "m.image",
+  "info": {
+    "w": 1920,
+    "h": 1080,
+    "mimetype": "image/png",
+    "size": 123456,
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX"
   }
 }
 ```
 
 ### Audio Asset Data Structure
 
+- `info` - Uses the [AudioInfo](https://spec.matrix.org/v1.6/client-server-api/#maudio) data structure.
+
 ```json
 {
   // ...base asset
-  "asset_type": "audio",
-  "mime_type": "audio/mpeg",
-  "audio_info": {
-    "duration": 60
+  "asset_type": "m.audio",
+  "info": {
+    "duration": 60,
+    "mimetype": "audio/mpeg",
+    "size": 123456
   }
 }
 ```
 
 ### Video Asset Data Structure
 
+- `info` - Uses the [VideoInfo](https://spec.matrix.org/v1.6/client-server-api/#mvideo) data structure.
+
 ```json
 {
   // ...base asset
-  "asset_type": "video",
-  "mime_type": "video/mp4",
+  "asset_type": "m.video",
   "video_info": {
     "duration": 60,
-    "width": 1920,
-    "height": 1080
+    "w": 1920,
+    "h": 1080,
+    "size": 123456,
+    "mimetype": "video/mp4",
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX"
   }
 }
 ```
@@ -96,83 +118,190 @@ These are the currently defined asset types:
 ```json
 {
   // ...base asset
-  "asset_type": "script",
-  "mime_type": "application/javascript"
+  "asset_type": "m.world.script",
+  "info": {
+    "mimetype": "application/javascript",
+    "size": 123456
+  }
 }
 ```
 
 ### Model Asset Data Structure
 
+- `info` - Uses the ModelInfo data structure.
+- `info.mimetype` - The mimetype of the model file.
+- `info.size` - The size of the model file in bytes.
+- `info.vertices` - The number of vertices in the model.
+- `info.textures` - The number of textures in the model.
+- `info.materials` - The number of materials in the model.
+- `info.animations` - Whether the model contains animations.
+- `info.audio` - Whether the model contains audio.
+- `info.boundingBox` - The bounding box of the model.
+- `info.boundingBox.min` - The minimum point of the bounding box.
+- `info.boundingBox.max` - The maximum point of the bounding box.
+- `info.thumbnail_info` - The thumbnail info of the model (uses the ThumbnailInfo data structure).
+- `info.thumbnail_url` - The thumbnail URL of the model.
+
 ```json
 {
   // ...base asset
-  "asset_type": "model",
-  "mime_type": "model/gltf-binary",
-  "model_info": {
-    "triangles": 480,
+  "asset_type": "m.world.model",
+  "info": {
+    "mimetype": "model/gltf-binary",
+    "size": 123456,
+    "vertices": 480,
+    "textures": 1,
     "materials": 1,
     "animations": false,
+    "audio": false,
     "boundingBox": {
       "min": [-1, -1, -1],
       "max": [1, 1, 1]
-    }
+    },
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX"
   }
 }
 ```
 
 ### Avatar Asset Data Structure
 
+- `info` - Uses the AvatarInfo data structure which extends from the ModelInfo data structure.
+- `info.script_info` (optional) - The script info of the avatar (uses the ScriptInfo data structure).
+- `info.script_info.mimetype` - The mimetype of the script file.
+- `info.script_info.size` - The size of the script file in bytes.
+- `info.script_url` (optional) - The script URL of the avatar.
+
 ```json
 {
   // ...base asset
-  "asset_type": "avatar",
+  "asset_type": "m.world.avatar",
   "mime_type": "model/gltf-binary",
-  "avatar_info": {
-    "script_url": "mxc://matrix.org/XXXX",
-    "triangles": 480,
+  "info": {
+    "mimetype": "model/gltf-binary",
+    "size": 123456,
+    "vertices": 480,
+    "textures": 1,
     "materials": 1,
+    "animations": false,
+    "audio": false,
     "boundingBox": {
       "min": [-1, -1, -1],
       "max": [1, 1, 1]
-    }
+    },
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX",
+    "script_info": {
+      "mimetype": "application/javascript",
+      "size": 123456
+    },
+    "script_url": "mxc://matrix.org/XXXX"
   }
 }
 ```
 
 ### Scene Asset Data Structure
 
+- `info` - Uses the SceneInfo data structure which extends from the ModelInfo data structure.
+- `info.script_info` (optional) - The script info of the scene (uses the ScriptInfo data structure).
+
 ```json
 {
   // ...base asset
-  "asset_type": "scene",
-  "mime_type": "model/gltf-binary",
-  "scene_info": {
-    "script_url": "mxc://matrix.org/XXXX",
-    "triangles": 480,
+  "asset_type": "m.world.scene",
+  "info": {
+    "mimetype": "model/gltf-binary",
+    "size": 123456,
+    "vertices": 480,
+    "textures": 1,
     "materials": 1,
+    "animations": false,
+    "audio": false,
     "boundingBox": {
       "min": [-1, -1, -1],
       "max": [1, 1, 1]
-    }
+    },
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX",
+    "script_info": {
+      "mimetype": "application/javascript",
+      "size": 123456
+    },
+    "script_url": "mxc://matrix.org/XXXX"
   }
 }
 ```
 
 ### Object Asset Data Structure
 
+- `info` - Uses the ObjectInfo data structure which extends from the ModelInfo data structure.
+
 ```json
 {
   // ...base asset
-  "asset_type": "object",
-  "mime_type": "model/gltf-binary",
-  "object_info": {
-    "script_url": "mxc://matrix.org/XXXX",
-    "triangles": 480,
+  "asset_type": "m.world.object",
+  "info": {
+    "mimetype": "model/gltf-binary",
+    "size": 123456,
+    "vertices": 480,
+    "textures": 1,
     "materials": 1,
+    "animations": false,
+    "audio": false,
     "boundingBox": {
       "min": [-1, -1, -1],
       "max": [1, 1, 1]
-    }
+    },
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX",
+    "script_info": {
+      "mimetype": "application/javascript",
+      "size": 123456
+    },
+    "script_url": "mxc://matrix.org/XXXX"
+  }
+}
+```
+
+### Prefab Asset Data Structure
+
+- `info` - Uses the PrefabInfo data structure.
+- `info.thumbnail_info` - The thumbnail info of the prefab (uses the ThumbnailInfo data structure).
+- `info.thumbnail_url` - The thumbnail URL of the prefab.
+
+```json
+{
+  // ...base asset
+  "asset_type": "m.world.prefab",
+  "url": "prefab://prefab-name",
+  "info": {
+    "thumbnail_info": {
+      "w": 480,
+      "h": 270,
+      "mimetype": "image/png",
+      "size": 12345
+    },
+    "thumbnail_url": "mxc://matrix.org/XXXX"
   }
 }
 ```
@@ -190,17 +319,27 @@ These are the currently defined asset types:
       "name": "Crate",
       "description": "A wooden crate.",
       "categories": ["Models"],
-      "preview_url": "mxc://matrix.org/XXXX",
       "url": "mxc://matrix.org/XXXX",
-      "asset_type": "model",
-      "model_info": {
-        "triangles": 480,
+      "asset_type": "m.world.model",
+      "info": {
+        "mimetype": "model/gltf-binary",
+        "size": 123456,
+        "vertices": 480,
+        "textures": 1,
         "materials": 1,
         "animations": false,
+        "audio": false,
         "boundingBox": {
           "min": [-1, -1, -1],
           "max": [1, 1, 1]
-        }
+        },
+        "thumbnail_info": {
+          "w": 480,
+          "h": 270,
+          "mimetype": "image/png",
+          "size": 12345
+        },
+        "thumbnail_url": "mxc://matrix.org/XXXX"
       },
       "attribution": [
         {
@@ -272,17 +411,27 @@ This account data event is used to store a collection of the user's uploaded ass
       "name": "Crate",
       "description": "A wooden crate.",
       "categories": ["Models"],
-      "preview_url": "mxc://matrix.org/XXXX",
       "url": "mxc://matrix.org/XXXX",
-      "asset_type": "model",
-      "model_info": {
-        "triangles": 480,
+      "asset_type": "m.world.model",
+      "info": {
+        "mimetype": "model/gltf-binary",
+        "size": 123456,
+        "vertices": 480,
+        "textures": 1,
         "materials": 1,
         "animations": false,
+        "audio": false,
         "boundingBox": {
           "min": [-1, -1, -1],
           "max": [1, 1, 1]
-        }
+        },
+        "thumbnail_info": {
+          "w": 480,
+          "h": 270,
+          "mimetype": "image/png",
+          "size": 12345
+        },
+        "thumbnail_url": "mxc://matrix.org/XXXX"
       },
       "attribution": [
         {
@@ -333,39 +482,47 @@ media ID of the asset.
   "type": "m.asset_collections.room_uploads.item",
   "state_key": "mxc-id",
   "content": {
-    {
-      "name": "Crate",
-      "description": "A wooden crate.",
-      "categories": ["Models"],
-      "preview_url": "mxc://matrix.org/XXXX",
-      "url": "mxc://matrix.org/XXXX",
-      "asset_type": "model",
-      "model_info": {
-        "triangles": 480,
-        "materials": 1,
-        "animations": false,
-        "boundingBox": {
-          "min": [-1, -1, -1],
-          "max": [1, 1, 1]
-        }
+    "name": "Crate",
+    "description": "A wooden crate.",
+    "categories": ["Models"],
+    "url": "mxc://matrix.org/XXXX",
+    "asset_type": "m.world.model",
+    "info": {
+      "mimetype": "model/gltf-binary",
+      "size": 123456,
+      "vertices": 480,
+      "textures": 1,
+      "materials": 1,
+      "animations": false,
+      "audio": false,
+      "boundingBox": {
+        "min": [-1, -1, -1],
+        "max": [1, 1, 1]
       },
-      "attribution": [
-        {
-          "title": "Wood Material",
-          "source_url": "https://example.com/wood-material",
-          "author_name": "Alice",
-          "author_url": "https://example.com",
-          "license": "CC0"
-        },
-        {
-          "title": "Crate Base Mesh",
-          "source_url": "https://example.com/crate",
-          "author_name": "Bob",
-          "author_url": "https://example.com",
-          "license": "CC-BY-4.0"
-        }
-      ]
-    }
+      "thumbnail_info": {
+        "w": 480,
+        "h": 270,
+        "mimetype": "image/png",
+        "size": 12345
+      },
+      "thumbnail_url": "mxc://matrix.org/XXXX"
+    },
+    "attribution": [
+      {
+        "title": "Wood Material",
+        "source_url": "https://example.com/wood-material",
+        "author_name": "Alice",
+        "author_url": "https://example.com",
+        "license": "CC0"
+      },
+      {
+        "title": "Crate Base Mesh",
+        "source_url": "https://example.com/crate",
+        "author_name": "Bob",
+        "author_url": "https://example.com",
+        "license": "CC-BY-4.0"
+      }
+    ]
   }
 }
 ```
@@ -400,8 +557,9 @@ A collection can be submitted by the user using `m.repository_room.collection` m
 For supported glTF extensions see the
 [Third Room glTF extensions](https://thirdroom.io/docs/gltf/).
 
-`preview_url` this is the URL of the preview image to use for the room. This should be a
-high resolution, compressed, 16:9 aspect ratio image that is representative of the collection.
+`thumbnail_url` this is the URL of the thumbnail image to use for the collection.
+
+`thumbnail_info` this is an object containing information about the thumbnail image to use for the collection. This should use the `ThumbnailInfo` type.
 
 `attribution` (optional) this is an array of attributions for the collection.
 
@@ -429,7 +587,13 @@ material.
       "name": "Kenney's Nature Kit",
       "description": "A collection of nature assets.",
       "url": "mxc:abc",
-      "preview_url": "mxc:abc",
+      "thumbnail_info": {
+        "w": 480,
+        "h": 270,
+        "mimetype": "image/png",
+        "size": 12345
+      },
+      "thumbnail_url": "mxc://matrix.org/XXXX",
       "attribution": [
         {
           "title": "Kenney's Nature Kit",
@@ -460,7 +624,13 @@ is used to order the featured collection.
   "content": {
     "collection": {
       "url": "mxc:abc",
-      "preview_url": "mxc:abc",
+      "thumbnail_info": {
+        "w": 480,
+        "h": 270,
+        "mimetype": "image/png",
+        "size": 12345
+      },
+      "thumbnail_url": "mxc://matrix.org/XXXX",
       ...
     },
     "order": ""
