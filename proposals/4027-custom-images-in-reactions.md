@@ -29,13 +29,13 @@ This proposal suggests two changes to events with the `m.annotation` relation.
    should render the referenced image instead of the key text.
 
 2. When the annotation's key is an MXC URI, a new (optional) `shortcode` key can
-   be added to the content of the event with a textual name for the image.
+   be added to the content of the event with a textual name for the image. This
+   field must be a string and should start and end with the `:` (colon)
+   character.
 
    This shortcode should be shown by clients in situations such as hovering over
    the annotation, as alt-text, or if the client does not support rendering
    images.
-
-   The shortcode should start and end with the `:` (colon) character.
 
 Example custom image reaction event content
 
