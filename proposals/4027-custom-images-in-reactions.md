@@ -35,6 +35,8 @@ This proposal suggests two changes to events with the `m.annotation` relation.
    the annotation, as alt-text, or if the client does not support rendering
    images.
 
+   The shortcode should start and end with the `:` (colon) character.
+
 Example custom image reaction event content
 
 ```json
