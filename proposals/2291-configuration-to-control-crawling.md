@@ -48,7 +48,7 @@ uhoreg.ca ran an instance of the Voyager bot, then the configuration for both
 the bot should order the two names in some way, check the configuration using
 one name, and if no value is found, to check the configuration using the next
 name.  This can also be done with multiple names.  In general, the names should
-be ordered from more specifig to more general, so in this case,
+be ordered from more specific to more general, so in this case,
 `ca.uhoreg.voyager` would be checked first, then `io.t2bot.voyager`, and
 finally `*`.
 
@@ -117,7 +117,7 @@ Voyager additionally has a custom parameter of `io.t2bot.foo` defined.
 There are many aspects of a room whose crawling could potentially be controlled
 by individual parameters.  This proposal attempts to strike a reasonable
 balance between allowing administrators control over crawling, and avoiding too
-many configuration options.  Thus the thus parameters mainly target the parts
+many configuration options.  Thus the parameters mainly target the parts
 of the room that are the most privacy-sensitive.
 
 As mentioned above, not all parts of the room are covered by configuration
