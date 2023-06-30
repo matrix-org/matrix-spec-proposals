@@ -28,10 +28,6 @@ This proposal suggests two changes to events with the `m.annotation` relation.
 1. If the `key` of an `m.annotation` relation is an MXC URI of an image, clients
    should render the referenced image instead of the key text.
 
-   Detecting if the `key` is an MXC URI can be as sophisticated as the client
-   wants, but this proposal recommends checking if the string starts with
-   `mxc://`.
-
 2. When the annotation's key is an MXC URI, a new (optional) `shortcode` key can
    be added to the content of the event with a textual name for the image.
 
