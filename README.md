@@ -184,27 +184,29 @@ like help with writing spec PRs, feel free to join and ask questions in the
 
 #### Stable and unstable prefixes
 
-*Unstable* prefixes are the namespaces which are used by implementations while
-an MSC is not yet accepted. For instance, an MSC can propose that a `m.space`
+"Unstable prefixes" are the namespaces which are used by implementations while
+an MSC is not yet accepted.
+
+For instance, an MSC might propose that a `m.space`
 event type or an `/_matrix/client/v1/account/whoami` endpoint should exist.
-However, an implementation of that same MSC cannot use a *stable* prefix (in the
-case, `/_matrix/client/` or `m.`) until the MSC has been accepted, as the
-underlying design may change at any time; the design is
+However, implementations cannot use these *stable* identifiers until the MSC
+has been accepted, as the underlying design may change at any time; the design is
 *unstable*.
 
-Typically MSCs will define `org.matrix.msc1234` (using the real MSC number once
-known) as an *unstable* prefix. For the above examples, this would mean using
-`org.matrix.msc1234.space` and
-`/_matrix/client/unstable/org.matrix.msc1234/account/whoami` to allow for
-breaking changes between edits of the MSC itself, or to not clash with another
-MSC that's attempting to add the same stable identifiers. The unstable
-prefixes, in this case, are `org.matrix.msc1234` and `/_matrix/client/unstable`
-respectively. It is also fine to use more traditional forms of namespace
-prefixes, such as `com.example.*` (e.g. `com.example.space`).
+Instead, an MSC can define a namespace such as `org.matrix.msc1234` (using the real
+MSC number once known) which is added to the stable identifier, allowing for
+breaking changes between edits of the MSC itself, and preventing clashes with other
+MSCs that might attempt to add the same stable identifiers. 
 
-Note: not all MSCs need to make use of unstable prefixes. They are only needed
-when defining new endpoints, field names, etc. in your MSC, and serve to allow
-implementations of your MSC to exist in the wild before your MSC is accepted.
+For the above examples, this would mean using `org.matrix.msc1234.space` and
+`/_matrix/client/unstable/org.matrix.msc1234/account/whoami`. It is also fine to
+use more traditional forms of namespace prefixes, such as `com.example.*` (e.g. `com.example.space`).
+
+Note: not all MSCs need to make use of unstable prefixes. They are only needed if
+implementations of your MSC need to exist in the wild before your MSC is accepted,
+*and* the MSC defines new endpoints, field names, etc.
+
+#### Unstable feature flags
 
 It is common when implementing support for an MSC that a client may wish to check
 if the homeserver it is communicating with supports an MSC.
@@ -245,10 +247,8 @@ At this point, it may be best to wait until a new spec version is released with
 your changes. Homeservers that support the changes will eventually advertise
 that spec version under `/versions`, and your client can check for that.
 
-But if you really can't wait, then there is another option.
-
-This is often solved by having the homeserver tell clients that it supports
-stable prefixes, using yet another `unstable_features` flag:
+But if you really can't wait, then there is another option: the homeserver can
+tell clients that it supports *stable* indentifiers for the new MSC, using yet another `unstable_features` flag:
 
 ```json5
 {
@@ -260,12 +260,12 @@ stable prefixes, using yet another `unstable_features` flag:
 ```
 
 If a client sees that `org.matrix.msc1234.stable` is `true`, it knows that it
-can start using stable prefixes, and the homeserver will accept and act on
+can start using stable identifiers for the new MSC, and the homeserver will accept and act on
 them accordingly.
 
 While the general pattern of using the text ".stable" has emerged from previous
 MSCs, you can pick any name you like. You need only to clearly state their
-meaning, usually udner an "Unstable prefixes" header in your MSC.
+meaning, usually under an "Unstable prefixes" header in your MSC.
 
 See
 [MSC3827](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3827-space-explore.md#unstable-prefix)
