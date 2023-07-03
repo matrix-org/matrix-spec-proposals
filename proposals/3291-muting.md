@@ -34,7 +34,7 @@ camera/microphone).
 All tracks should be assumed unmuted unless specified otherwise.
 
 Clients are recommended to not mute the audio of WebRTC tracks locally when a
-stream has the `audio_muted` field set to `false`. This is because when the
+incoming stream has the `audio_muted` field set to `true`. This is because when the
 other user unmutes themselves, there may be a slight delay between their client
 sending audio and the `m.call.sdp_stream_metadata_changed` event arriving. If
 `enabled` is set to `false`, then any audio sent in between those two events
