@@ -72,7 +72,7 @@ track is muted but the client should not mute the audio on the receiving side.
 
 ## Potential issues
 
-When the user mutes their camera, the client will keep sending meaningless data
+When the user mutes their camera, some browsers may keep sending meaningless data
 which will waste bandwidth.
 
 ## Alternatives
