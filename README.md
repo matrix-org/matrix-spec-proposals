@@ -200,7 +200,8 @@ MSCs that might attempt to add the same stable identifiers.
 
 For the above examples, this would mean using `org.matrix.msc1234.space` and
 `/_matrix/client/unstable/org.matrix.msc1234/account/whoami`. It is also fine to
-use more traditional forms of namespace prefixes, such as `com.example.*` (e.g. `com.example.space`).
+use more traditional forms of namespace prefixes, such as `com.example.*` (e.g.
+`com.example.space`).
 
 Note: not all MSCs need to make use of unstable prefixes. They are only needed if
 implementations of your MSC need to exist in the wild before your MSC is accepted,
@@ -226,13 +227,12 @@ endpoint, in the form of a new entry:
 With a value of `true` indicating that the feature is supported, and `false`
 or lack of the field altogether indicating the feature is not supported.
 
-#### When can I use stable prefixes?
+#### When can I use stable identifiers?
 
 [According to the spec
 process](https://spec.matrix.org/proposals/#early-release-of-an-mscidea): once
 an MSC has been accepted, implementations are allowed to switch to *stable*
-prefixes (i.e. `m.`). However, the MSC is still not yet part of a released spec
-version.
+identifiers. However, the MSC is still not yet part of a released spec version.
 
 In most cases, this is not an issue. For instance, if your MSC specifies a new
 event type, you can now start sending events with those types!
@@ -248,7 +248,8 @@ your changes. Homeservers that support the changes will eventually advertise
 that spec version under `/versions`, and your client can check for that.
 
 But if you really can't wait, then there is another option: the homeserver can
-tell clients that it supports *stable* indentifiers for the new MSC, using yet another `unstable_features` flag:
+tell clients that it supports *stable* indentifiers for your MSC before it
+enters a spec version, using yet another `unstable_features` flag:
 
 ```json5
 {
@@ -260,12 +261,12 @@ tell clients that it supports *stable* indentifiers for the new MSC, using yet a
 ```
 
 If a client sees that `org.matrix.msc1234.stable` is `true`, it knows that it
-can start using stable identifiers for the new MSC, and the homeserver will accept and act on
-them accordingly.
+can start using stable identifiers for the new MSC, and the homeserver will
+accept and act on them accordingly.
 
-While the general pattern of using the text ".stable" has emerged from previous
-MSCs, you can pick any name you like. You need only to clearly state their
-meaning, usually under an "Unstable prefixes" header in your MSC.
+Note: While the general pattern of using the text ".stable" has emerged from
+previous MSCs, you can pick any name you like. You need only to clearly state
+their meaning, usually under an "Unstable prefixes" header in your MSC.
 
 See
 [MSC3827](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3827-space-explore.md#unstable-prefix)
