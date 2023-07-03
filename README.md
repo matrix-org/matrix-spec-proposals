@@ -182,7 +182,7 @@ like help with writing spec PRs, feel free to join and ask questions in the
 
 ### Other useful information
 
-#### Stable and unstable prefixes
+#### Unstable prefixes
 
 "Unstable prefixes" are the namespaces which are used by implementations while
 an MSC is not yet accepted.
