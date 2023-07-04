@@ -50,7 +50,7 @@ events from the server via sync", so if a client received an event and another
 event for which it has a receipt via sync, then the event that was later in the
 sync or received in a later sync, is after the other one. We think this is
 similar to Stream Ordering, which is mentioned once in the spec without
-defintion [7.6
+definition [7.6
 Syncing](https://spec.matrix.org/unstable/client-server-api/#syncing), but we
 are not certain that it is identical, because we believe it may be possible for
 different clients to receive events in a different order from each other for the
