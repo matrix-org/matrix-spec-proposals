@@ -113,7 +113,8 @@ Together with content blocks from other proposals, an `m.poll.response` is descr
 * **Required** - An `m.selections` block to list the user's preferred selections in the poll. Clients
   must truncate this array to `max_selections` during processing. Each entry is the `m.id` of a poll
   answer option from the poll start event. If *any* of the supplied answers is unknown, the sender's
-  vote is spoiled (as if they didn't make a selection).
+  vote is spoiled (as if they didn't make a selection). If an entry is repeated after truncation, only
+  one of those entries counts as the sender's vote (each sender gets 1 vote).
 
 The above describes the minimum requirements for sending an `m.poll.response` event. Senders can add
 additional blocks, however as per the extensible events system, receivers which understand poll events
@@ -123,7 +124,11 @@ There is deliberately no textual or renderable fallback on poll responses: the i
 which don't understand how to process these events will hide/ignore them.
 
 Only a user's most recent vote (by `origin_server_ts`) is accepted, even if that event is invalid or
-redacted. Votes with timestamps after the poll has closed are ignored, as if they never happened.
+redacted. Votes with timestamps after the poll has closed are ignored, as if they never happened. Note
+that redaction currently removes the `m.relates_to` information from the event, causing the vote to be
+detached from the poll. In this scenario, the user's vote is *reverted* to its previous state rather
+than explicitly spoiled. To "unvote" or otherwise override the previous vote state, clients should send
+a response with an empty `m.selections` array.
 
 To close a poll, a user sends an `m.poll.end` event into the room. An example being:
 
@@ -360,16 +365,82 @@ If a client/user wishes to make a poll statically visible, they should check out
 
 Notifications support for polls have been moved to [MSC3930](https://github.com/matrix-org/matrix-spec-proposals/pull/3930).
 
+Normally extensible events would only be permitted in a specific room version, however as a known-lossy chat
+feature, this proposal's events are permitted in any room version. The stable event types should only be sent
+in a room version which supports extensible events, however.
+
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use `org.matrix.msc3381.v2.*` as a prefix
-in place of `m.*` throughout this proposal. Note that extensible events and content blocks might have their
-own prefixing requirements.
+While this MSC is not considered stable, implementations should use `org.matrix.msc3381.*` as a namespace
+instead of `m.*` throughout this proposal, with the added considerations below. Note that extensible events
+and content blocks might have their own prefixing requirements.
 
-Normally extensible events would only be permitted in a specific room version, however as a known-lossy chat
-feature, this proposal's events are permitted in any room version, provided they are of the unstable variety.
-The stable event types must only be sent in a room version which supports extensible events.
+Unstable implementations should note that a previous draft is responsible for defining the event format/schema
+for the unstable prefix. The differences are rooted in a change in MSC1767 (Extensible Events) where the approach
+and naming of fields changed. The differences are:
 
-Client implementations should note that a previous draft of this proposal had a different format and some of
-those events might be found in the wild, hence the `v2` portion of the unstable prefix. Clients interested in
-this older format should review older drafts of this proposal.
+* For `m.poll.start` / `org.matrix.msc3381.poll.start`:
+  * `m.text` throughout becomes a single string, represented as `org.matrix.msc1767.text`
+  * `m.poll` becomes `org.matrix.msc3381.poll.start`, retaining all other fields as described. Note the `m.text`
+    under `question` and `answers`, and the `org.matrix.msc3381` prefix for `kind` enum values.
+* For `m.poll.response` / `org.matrix.msc3381.poll.response`:
+  * `m.selections` becomes an `org.matrix.msc3381.poll.response` object with a single key `answers` being the
+    array of selections.
+  * `m.relates_to` is unchanged.
+* For `m.poll.end` / `org.matrix.msc3381.poll.end`:
+  * `m.text` has the same change as `m.poll.start`.
+  * `m.poll.results` is removed.
+  * `org.matrix.msc3381.poll.end` is added as an empty object, and is required.
+
+Examples of unstable events are:
+
+```json
+{
+  "type": "org.matrix.msc3381.poll.start",
+  "content": {
+    "org.matrix.msc1767.text": "What should we order for the party?\n1. Pizza 🍕\n2. Poutine 🍟\n3. Italian 🍝\n4. Wings 🔥",
+    "org.matrix.msc3381.poll.start": {
+      "kind": "org.matrix.msc3381.poll.disclosed",
+      "max_selections": 1,
+      "question": {
+        "org.matrix.msc1767.text": "What should we order for the party?",
+      },
+      "answers": [
+        {"id": "pizza", "org.matrix.msc1767.text": "Pizza 🍕"},
+        {"id": "poutine", "org.matrix.msc1767.text": "Poutine 🍟"},
+        {"id": "italian", "org.matrix.msc1767.text": "Italian 🍝"},
+        {"id": "wings", "org.matrix.msc1767.text": "Wings 🔥"}
+      ]
+    }
+  }
+}
+```
+
+```json
+{
+  "type": "org.matrix.msc3381.poll.response",
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$fw8dod4VdLCkakmKiD6XiVj7-RrFir9Jwc9RW6llJhU"
+    },
+    "org.matrix.msc3381.poll.response": {
+      "answers": ["pizza"]
+    }
+  }
+}
+```
+
+```json
+{
+  "type": "org.matrix.msc3381.poll.end",
+  "content": {
+    "m.relates_to": {
+      "rel_type": "m.reference",
+      "event_id": "$fw8dod4VdLCkakmKiD6XiVj7-RrFir9Jwc9RW6llJhU"
+    },
+    "org.matrix.msc1767.text": "The poll has ended. Top answer: Italian 🍝",
+    "org.matrix.msc3381.poll.end": {},
+  }
+}
+```
