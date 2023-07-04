@@ -57,7 +57,7 @@ event is read.
 ### Current definition of *after*
 
 The current spec (see
-[11.6](https://spec.matrix.org/latest/client-server-api/#receipts) is not clear
+[11.6 Receipts](https://spec.matrix.org/latest/client-server-api/#receipts)) is not clear
 about what it calls "read up to" means.
 
 Clients like Element Web make the assumption that *after* means "after in Sync
