@@ -15,7 +15,7 @@ The Alternatives section describes the issues with using these alone.
 
 ## Proposal
 
-This MSC proposes extending the `SDPStreamMetadata` object (see
+This MSC proposes extending the `sdp_stream_metadata` object (see
 [MSC3077](https://github.com/matrix-org/matrix-doc/pull/3077)) to allow
 indicating the mute state to the other side using the following fields:
 
