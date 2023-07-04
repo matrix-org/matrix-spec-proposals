@@ -112,8 +112,6 @@ read.
 We propose that the definition of *after* should be:
 
 * Event A is after event B if its Stream Order is larger.
-* Where A and B have the same Stream Order, A is after B if A's event ID is
-  lexicographically after B's event ID.
 
 ### Proposed definition of *in the same thread*
 
@@ -178,6 +176,8 @@ as unread (but we possibly could be persuaded?).
 
 ## Alternatives
 
+### This replaces other attempts to fix receipts
+
 This proposal would replace
 [MSC4023: Thread ID for 2nd order-relation](https://github.com/matrix-org/matrix-spec-proposals/pull/4023)
 and the idea that
@@ -195,6 +195,27 @@ MSC3981 would solve many problems for clients because the events in a thread
 would be returned in Sync Order, but this is not true: the proposal will return
 events in Topological Order, which is useless for determining which events are
 read.
+
+### Avoiding saying "Stream Order"
+
+We could avoid the phrase Stream Order in this proposal, and instead simply talk
+about a consistent order that the server and client agree on because it is
+included with event info.
+
+We could even note that we expect it to be Stream Order for homeservers that
+have such a concept, but the important thing for us is that it is consistent and
+explicit.
+
+### The server calculates unread status
+
+We could use the definitions within this proposal but avoid calculating what was
+unread on the client. Instead we could ask the server to figure out which rooms
+are unread.
+
+The client will still need to know which events are unread in order to process
+notifications that are encrypted when they pass through the server, so this
+proposal would probably be unaltered even if we added the capability for servers
+to surface which rooms are unread.
 
 ## Security considerations
 
