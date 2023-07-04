@@ -382,7 +382,7 @@ and naming of fields changed. The differences are:
 * For `m.poll.start` / `org.matrix.msc3381.poll.start`:
   * `m.text` throughout becomes a single string, represented as `org.matrix.msc1767.text`
   * `m.poll` becomes `org.matrix.msc3381.poll.start`, retaining all other fields as described. Note the `m.text`
-    under `question` and `answers`, and the `org.matrix.msc3381` prefix for `kind` enum values.
+    under `question` and `answers`, and the `org.matrix.msc3381.poll` prefix for `kind` enum values.
 * For `m.poll.response` / `org.matrix.msc3381.poll.response`:
   * `m.selections` becomes an `org.matrix.msc3381.poll.response` object with a single key `answers` being the
     array of selections.
