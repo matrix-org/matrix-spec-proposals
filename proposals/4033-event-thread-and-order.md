@@ -5,7 +5,7 @@
 - [x] review request Patrick
 - [x] Mention no need for the words Stream Order to be included
 - [x] Mention server-side calculation of unreadness
-- [ ] Acknowledge patrick
+- [x] Acknowledge patrick and others
 - [ ] Move ordering into unsigned
 - [ ] Events can never have the same stream order
 - [ ] Reword to some generic order instead of stream order?
@@ -244,3 +244,8 @@ TODO
 ## Dependencies
 
 None at this time.
+
+## Acknowledgements
+
+Formed from a discussion with @ara4n, with early review from @clokep. Built on
+ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
