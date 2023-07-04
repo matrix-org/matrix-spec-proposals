@@ -1,4 +1,4 @@
-# MSCXXXX: Providing thread and order for all events to allow consistent read receipt handling
+# MSC4033: Providing thread and order for all events to allow consistent read receipt handling
 
 We argue that we have made it unnecessarily hard for clients and servers to
 decide whether a message is read or unread, and we can solve this problem by
