@@ -109,7 +109,7 @@ read.
 
 ### Proposed definition of *after*
 
-We propose that the definiton of *after* should be:
+We propose that the definition of *after* should be:
 
 * Event A is after event B if its Stream Order is larger.
 * Where A and B have the same Stream Order, A is after B if A's event ID is
