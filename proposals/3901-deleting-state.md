@@ -392,10 +392,13 @@ Only members who are currently members of the room should be invited to the new
 ones.
 
 `m.room.member` events should also be created for users who are banned from
-the old room, banning them from the new room for with the same information,
-except if the ban event is marked as `obsolete` using sub-proposal 1 of this
-proposal.
+the old room, banning them from the new room with the same information.
 ```
+
+(Note: if the admin wishes to forget this ban state, they may unban the users in
+the usual way - setting their `membership` to `leave`, which will make the
+member state event obsolete, meaning it will be forgotten in any upgrade they
+perform later.)
 
 In [m.room.member](https://spec.matrix.org/latest/client-server-api/#mroommember),
 under "Content", add a property:
@@ -431,9 +434,7 @@ room already containing the recipients, so that limits the scope.
 
 ### Dependencies
 
-In order to exclude obsolete bans, the definition of obsolete from this proposal
-is required, but the main part of this sub-proposal does not depend on any
-others.
+No dependencies.
 
 ## Sub-proposal 3: Auto-accept invitations to upgraded rooms
 
