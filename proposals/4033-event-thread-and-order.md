@@ -6,17 +6,18 @@
 - [x] Mention no need for the words Stream Order to be included
 - [x] Mention server-side calculation of unreadness
 - [x] Acknowledge patrick and others
-- [ ] Make it robust to redactions by always considering redacted messages read
+- [x] Make it robust to redactions by always considering redacted messages read
 - [x] Remove thread roots from the thread
 - [x] ~~Move ordering into unsigned (maybe thread id too?)~~ No - unsigned is frowned upon
 - [ ] Events can never have the same stream order
-- [ ] Reword to some generic order instead of stream order?
+- [x] Reword to some generic order instead of stream order?
 - [x] Can't do m.is_thread_root because we don't know until a child exists
 - [ ] Example of inconsistent Sync Order:
 - [ ]   I guess that happens if one is doing an incremental sync and one is doing an initial sync and the event in question is the latest event by stream order but a much earlier event by topo order?
 - [ ] Explicitly say we should update the spec wording around what we mean by read-up-to
-- [ ] Consider the thread root not being in the thread. Would need to think about whether it matters if the thread root is somehow later than a thread message in Stream Order.
-- [ ] m.thread_id should be preserved through a redaction. Note that this will need a new room version Would moving into unsigned prevent this?
+- [x] Consider the thread root not being in the thread. Would need to think about whether it matters if the thread root is somehow later than a thread message in Stream Order.
+- [ ] Be really clear on the JSON changes, and the semantics changes
+- [ ] Suggest that `ts` in receipts might be redundant?
 
 We argue that we have made it unnecessarily hard for clients and servers to
 decide whether a message is read or unread, and we can solve this problem by
@@ -101,7 +102,7 @@ thread root events) are in BOTH the main thread and another thread.
 
 The current definition of *after* is ambiguous, and difficult for clients to
 calculate. It depends on only receiving events via sync, which is impractical
-due to backpaginating, and the desire to fetch thread messages via the
+due to backpagination, and the desire to fetch thread messages via the
 `relations` API.
 
 Further, we believe that the current working definition of "Sync Order" does not
@@ -121,15 +122,57 @@ before it is available.
 
 ## Proposal
 
-We propose to tighten up the definitions, and include extra information in the
-events provided by the server to make it easy to calculate whether an event is
-read.
+We propose to modify the definitions slightly, and include extra information in
+the events provided by the server to make it easy to calculate whether an event
+is read.
 
 ### Proposed definition of *after*
 
 We propose that the definition of *after* should be:
 
-* Event A is after event B if its Stream Order is larger.
+* Event A is after event B if its *Stream Order* is larger.
+
+We define *Stream Order* to be an immutable, unique number attached to an event
+on creation that defines the order of events in regard to receipts.
+
+Note: some home servers already have a concept of Stream Order, and we intend
+that this definition is consistent with that as currently implemented. But, for
+the purposes of this proposal the only important aspect of Stream Order is that
+server and clients agree that receipts apply to events with a lower Stream
+Order, and that the Stream Order of an event never changes.
+
+If the name Stream Order proves confusing, this proposal can function equally
+well using a different name: it simply needs to be unique, immutable, and
+increase for "newer" messages.
+
+We do not require that Stream Order be consistent across federation (in fact, we
+believe that this would be impossible to achieve). The only requirement is that
+all the clients for a user and the one server to which they connect agree. For
+this reason, we propose that `m.order` be included in an event's `unsigned`
+property.
+
+### Notes on the meaning of Stream Order
+
+Because it controls the meaning of read receipts, it is desirable that Stream
+Order be as close as possible to Sync Order, the order in which clients receive
+events via sync. However, since clients receive events in different orders
+depending on the APIs they use, it is not a goal that Stream Order exactly match
+the order in which clients receive events. Instead, it provides a canonical
+order that means we can be clear about what the user has read, and thus should
+generally increase for "newer" messages. Clients may decide to re-order events
+into Stream Order, or they may decide to display unread messages higher up the
+timeline if the orders do not match the order they choose for display.
+
+Because Stream Order may be inconsistent across federation (and, in theory, across
+different users on the same home server, although we expect in practice this
+will not happen), one user may occasionally see a different unread status for
+another user from what that user themselves see. We regard this as impossible to
+avoid, and expect that in most cases it will be unnoticeable, since home servers
+with good connectivity will normally have similar Stream Order. When servers have
+long network splits, there will be a noticeable difference at first, but once
+messages start flowing normally and users start reading them, the differences
+will disappear as new events will have higher Stream order than the older ones
+on both servers.
 
 ### Proposed definition of *in the same thread*
 
@@ -148,15 +191,28 @@ thread branching from them. Non-thread children of thread roots (e.g.
 reactions to a thread root) are also in the `main` thread. This is a change to
 the current definition.
 
+### Proposed change in consideration of redacted events
+
+We propose that redacted events and redaction events should never be considered
+unread.
+
+This avoids the need to identify which thread a redacted event belongs to, which
+will be difficult if its `m.thread_id` property has been stripped out.
+
+Since we propose that receipts contain the `m.order` of their referred-to event,
+this means we do not need to look within a redacted event for its Stream Order,
+because the receipt provides it. This avoids needing to preserve the `m.order`
+property when redacting events.
+
 ### Supporting changes to event structure
 
 We propose:
 
 * all events in a thread should contain an `m.thread_id` property.
-* all events should contain an `m.stream_order` property.
-* all receipts should contain an `m.stream_order` property alongside `m.read`
+* all events should contain an `m.order` property.
+* all receipts should contain an `m.order` property alongside `m.read`
   and/or `m.read.private` inside the information about an event, which is a
-  cache of the `m.stream_order` property within the referred-to event.
+  cache of the `m.order` property within the referred-to event.
 
 The server should include an `m.thread_id` property in any event that has an
 ancestor relationship that includes an `m.thread` relationship. The value of
@@ -254,3 +310,7 @@ ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
 
 * 2023-07-04 Initial draft by @andybalaam after conversation with @ara4n.
 * 2023-07-05 Remove thread roots from their thread after conversation with @clokep.
+* 2023-07-05 Handle redactions after conversation with @t3chguy
+* 2023-07-05 Give a definition of Stream Order, caveat around its name
+* 2023-07-05 Be explicit about Stream Order not going over federation
+* 2023-07-05 Mention disagreeing about what another user has read
