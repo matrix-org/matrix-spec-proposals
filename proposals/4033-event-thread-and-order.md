@@ -52,7 +52,7 @@ event for which it has a receipt via sync, then the event that was later in the
 sync or received in a later sync, is after the other one [^1].
 
 [^1]: We think this is similar to Stream Ordering, which is mentioned once in
-  the spec without definition
+  the spec without definition in
   [7.6 Syncing](https://spec.matrix.org/unstable/client-server-api/#syncing),
   but we are not certain that it is identical, because we believe it may be
   possible for different clients to receive events in a different order from
