@@ -15,7 +15,7 @@
 - [x] Example of inconsistent Sync Order
 - [x] Explicitly say we should update the spec wording around what we mean by read-up-to
 - [x] Consider the thread root not being in the thread. Would need to think about whether it matters if the thread root is somehow later than a thread message in Stream Order.
-- [ ] JSON examples
+- [x] JSON examples
 - [x] Suggest that `ts` in receipts might be redundant?
 
 We argue that we have made it unnecessarily hard for clients and servers to
@@ -158,7 +158,7 @@ increase for "newer" messages.
 We do not require that Stream Order be consistent across federation (in fact, we
 believe that this would be impossible to achieve). The only requirement is that
 all the clients for a user and the one server to which they connect agree. For
-this reason, we propose that `m.order` be included in an event's `unsigned`
+this reason, we propose that `order` be included in an event's `unsigned`
 property.
 
 ### Notes on the meaning of Stream Order
@@ -191,7 +191,7 @@ We propose that the definition of *in the same thread* should use this wording:
 
 An event is in a non-main-thread if:
 
-* it has an `m.thread_id` property
+* it has a `thread_id` property
 
 Otherwise, it is in the `main` thread.
 
@@ -208,29 +208,71 @@ We propose that redacted events and redaction events should never be considered
 unread.
 
 This avoids the need to identify which thread a redacted event belongs to, which
-will be difficult if its `m.thread_id` property has been stripped out.
+will be difficult if its `thread_id` property has been stripped out.
 
-Since we propose that receipts contain the `m.order` of their referred-to event,
+Since we propose that receipts contain the `order` of their referred-to event,
 this means we do not need to look within a redacted event for its Stream Order,
-because the receipt provides it. This avoids needing to preserve the `m.order`
+because the receipt provides it. This avoids needing to preserve the `order`
 property when redacting events.
 
 ### Supporting changes to event structure
 
+Example event (changes are highlighted in bold):
+
+<code>{
+  "content": {
+    "body": "This is an example text message",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "&lt;b&gt;This is an example text message&lt;/b&gt;",
+    "msgtype": "m.text"
+  },
+  "event_id": "$143273582443PhrSn:example.org",
+  "origin_server_ts": 1432735824653,
+  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+  <b>"thread_id": "$fgsUZKDJdhlrceRyhj", // Optional</b>
+  "sender": "@example:example.org",
+  "type": "m.room.message",
+  "unsigned": {
+    "age": 1234,
+    <b>"order": 56764334543</b>
+  }
+}</code>
+
+Example receipt (changes are highlighted in bold):
+
+<code>{
+  "content": {
+    "$1435641916114394fHBLK:matrix.org": {
+      <b>"order": 56764334544,</b>
+      "m.read": {
+        "@rikj:jki.re": {
+          "ts": 1436451550453
+        }
+      },
+      "m.read.private": {
+        "@self:example.org": {
+          "ts": 1661384801651
+        }
+      }
+    }
+  },
+  "type": "m.receipt"
+}</code>
+
 We propose:
 
-* all events in a thread should contain an `m.thread_id` property.
-* all events should contain an `m.order` property.
-* all receipts should contain an `m.order` property alongside `m.read`
+* all events in a thread should contain a `thread_id` property.
+* all events should contain an `order` property.
+* all receipts should contain an `order` property alongside `m.read`
   and/or `m.read.private` inside the information about an event, which is a
-  cache of the `m.order` property within the referred-to event [^3].
+  cache of the `order` property within the referred-to event [^3].
 
 [^3]: This might make the `ts` property within receipts redundant. We are not
   actually sure what purpose this property is intended to serve.
 
-The server should include an `m.thread_id` property in any event that has an
+The server should include a `thread_id` property in any event that has an
 ancestor relationship that includes an `m.thread` relationship. The value of
-`m.thread_id` is the event ID of the event referenced by the `m.thread`
+`thread_id` is the event ID of the event referenced by the `m.thread`
 relationship.
 
 This makes it explicit how the server has categorised events, meaning clients
@@ -254,9 +296,9 @@ We propose that the definition of whether an event is read should be:
 > pointing at an event that is *in the same thread* as the event, and is *after
 > or the same as* the event.
 >
-> Because the receipt itself contains the `m.order` of the pointed-to event,
+> Because the receipt itself contains the `order` of the pointed-to event,
 > there is no need to examine the pointed-to event, so it is sufficient to
-> compare the `m.order` of the event in question with the `m.order` in the
+> compare the `order` of the event in question with the `order` in the
 > receipt.
 >
 > Redacted events are always read.
@@ -267,10 +309,12 @@ Obviously, this definition depends on the definitions above.
 
 ## Potential issues
 
-This special-cases threads over other relationships.
+This special-cases threads over other relationships, raising them a little
+closer to the same status as rooms.
 
-But, this was already the case with threaded receipts, and we believe it is
-necessary to provide consistent behaviour.
+But, this was already the case with threaded receipts, and because of
+`thread_id`'s special place in receipts, we believe it needs similar special
+treatment in events to provide consistent behaviour.
 
 The change to consider thread roots (and reactions to them) as outside of the
 thread may be inconvenient for clients, because they will probably want to
