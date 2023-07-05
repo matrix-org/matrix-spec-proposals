@@ -58,7 +58,7 @@ sync or received in a later sync, is after the other one [^1].
   possible for different clients to receive events in a different order from
   each other for the same account. For example, if one client is doing an
   incremental sync, and another is doing an initial sync, recently-arrived
-  events that are "old "in Topological Order may be received in different orders
+  events that are "old" in Topological Order may be received in different orders
   on the two clients.
 
 See also [Spec Issue #1167](https://github.com/matrix-org/matrix-spec/issues/1167).
