@@ -391,7 +391,7 @@ old room.
 Only members who are currently members of the room should be invited to the new
 ones.
 
-`m.room.membership` events should also be created for users who are banned from
+`m.room.member` events should also be created for users who are banned from
 the old room, banning them from the new room for with the same information,
 except if the ban event is marked as `obsolete` using sub-proposal 1 of this
 proposal.
