@@ -201,7 +201,7 @@ property when redacting events.
 
 Example event (changes are highlighted in bold):
 
-<code><pre>{
+<pre>{
   "content": {
     "body": "This is an example text message",
     "format": "org.matrix.custom.html",
@@ -218,11 +218,11 @@ Example event (changes are highlighted in bold):
     "age": 1234,
     <b>"order": 56764334543</b>
   }
-}</pre></code>
+}</pre>
 
 Example receipt (changes are highlighted in bold):
 
-<code><pre>{
+<pre>{
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
       <b>"order": 56764334544,</b>
@@ -239,7 +239,7 @@ Example receipt (changes are highlighted in bold):
     }
   },
   "type": "m.receipt"
-}</pre></code>
+}</pre>
 
 We propose:
 
