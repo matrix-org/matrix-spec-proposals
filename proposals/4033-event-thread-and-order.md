@@ -77,12 +77,10 @@ An event is in thread A if:
   in the thread), or
 * it has an ancestor event (found by traversing relationships) that fits either of the above.
 
-An event is in the main thread if:
-
-* its ancestor events do not include an `m.thread` relationship
-
-Note that thread root events, and their non-threaded children (e.g. reactions to
-thread root events) are in BOTH the main thread and another thread.
+The spec states that room events are in `main` if they are not in another thread, but
+clients such as Element Web treat thread roots, and non-thread descendants of thread roots
+(such as reactions to the thread root) as being in BOTH `main` and the thread branching
+from the thread root.
 
 ### Problems with the current definitions
 
