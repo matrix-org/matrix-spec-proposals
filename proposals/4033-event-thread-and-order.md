@@ -173,7 +173,7 @@ We propose that the definition of *in the same thread* should use this wording:
 
 An event is in a non-main-thread if:
 
-* it has a `thread_id` property
+* it has a `thread_id` property in its content
 
 Otherwise, it is in the `main` thread.
 
@@ -206,11 +206,11 @@ Example event (changes are highlighted in bold):
     "format": "org.matrix.custom.html",
     "formatted_body": "&lt;b&gt;This is an example text message&lt;/b&gt;",
     "msgtype": "m.text"
+    <b>"thread_id": "$fgsUZKDJdhlrceRyhj", // Optional</b>
   },
   "event_id": "$143273582443PhrSn:example.org",
   "origin_server_ts": 1432735824653,
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
-  <b>"thread_id": "$fgsUZKDJdhlrceRyhj", // Optional</b>
   "sender": "@example:example.org",
   "type": "m.room.message",
   "unsigned": {
@@ -242,7 +242,7 @@ Example receipt (changes are highlighted in bold):
 
 We propose:
 
-* all events in a thread should contain a `thread_id` property.
+* all events in a thread should contain a `thread_id` property in their content.
 * all events should contain an `order` property.
 * all receipts should contain an `order` property alongside `m.read`
   and/or `m.read.private` inside the information about an event, which is a
@@ -251,14 +251,14 @@ We propose:
 [^3]: This might make the `ts` property within receipts redundant. We are not
   actually sure what purpose this property is intended to serve.
 
-The server should include a `thread_id` property in any event that has an
-ancestor relationship that includes an `m.thread` relationship. The value of
-`thread_id` is the event ID of the event referenced by the `m.thread`
-relationship.
+The creator of an event should include a `thread_id` property in the content of
+any event that has an ancestor relationship that includes an `m.thread`
+relationship. The value of `thread_id` is the event ID of the event referenced
+by the `m.thread` relationship.
 
-This makes it explicit how the server has categorised events, meaning clients
-and servers can always agree on which thread an event is in, so the meaning of
-a threaded receipt is clear.
+This makes it explicit how events are categorised, meaning clients and servers
+can always agree on which thread an event is in, so the meaning of a threaded
+receipt is clear.
 
 It also makes it explicit which event is before or after another event in Stream
 Order.
@@ -373,3 +373,4 @@ ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
 * 2023-07-05 Give a definition of Stream Order
 * 2023-07-05 Be explicit about Stream Order not going over federation
 * 2023-07-05 Mention disagreeing about what another user has read
+* 2023-07-05 Move thread_id into content after talking to @deepbluev7
