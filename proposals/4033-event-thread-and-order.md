@@ -307,6 +307,20 @@ which the client can use to draw attention to the thread root.
 
 ## Alternatives
 
+### Use MSC3501 instead of thread_id
+
+If [MSC3051: A scalable relation format](https://github.com/matrix-org/matrix-spec-proposals/pull/3051)
+is on the path to standardisation, it could be used to specify the thread
+containing each event.
+
+For the purposes of making receipts work, this is just as good as using
+`thread_id`, and the author of this MSC supports MSC3051.
+
+We would simply need to mandate that anyone creating an event within a thread
+must include an `m.thread` relation to that thread, even if the event is
+a child of an event with a similar relation. This would be directly equivalent
+to adding `thread_id` to the content.
+
 ### This replaces other attempts to fix receipts
 
 This proposal would replace
