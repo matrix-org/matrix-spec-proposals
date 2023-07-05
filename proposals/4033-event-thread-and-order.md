@@ -9,15 +9,14 @@
 - [x] Make it robust to redactions by always considering redacted messages read
 - [x] Remove thread roots from the thread
 - [x] ~~Move ordering into unsigned (maybe thread id too?)~~ No - unsigned is frowned upon
-- [ ] Events can never have the same stream order
+- [x] Events can never have the same stream order
 - [x] Reword to some generic order instead of stream order?
 - [x] Can't do m.is_thread_root because we don't know until a child exists
-- [ ] Example of inconsistent Sync Order:
-- [ ]   I guess that happens if one is doing an incremental sync and one is doing an initial sync and the event in question is the latest event by stream order but a much earlier event by topo order?
-- [ ] Explicitly say we should update the spec wording around what we mean by read-up-to
+- [x] Example of inconsistent Sync Order
+- [x] Explicitly say we should update the spec wording around what we mean by read-up-to
 - [x] Consider the thread root not being in the thread. Would need to think about whether it matters if the thread root is somehow later than a thread message in Stream Order.
-- [ ] Be really clear on the JSON changes, and the semantics changes
-- [ ] Suggest that `ts` in receipts might be redundant?
+- [ ] JSON examples
+- [x] Suggest that `ts` in receipts might be redundant?
 
 We argue that we have made it unnecessarily hard for clients and servers to
 decide whether a message is read or unread, and we can solve this problem by
@@ -67,13 +66,17 @@ Clients like Element Web make the assumption that *after* means "after in Sync
 Order", where "Sync Order" means "the order in which I (the client) received the
 events from the server via sync", so if a client received an event and another
 event for which it has a receipt via sync, then the event that was later in the
-sync or received in a later sync, is after the other one. We think this is
-similar to Stream Ordering, which is mentioned once in the spec without
-definition [7.6
-Syncing](https://spec.matrix.org/unstable/client-server-api/#syncing), but we
-are not certain that it is identical, because we believe it may be possible for
-different clients to receive events in a different order from each other for the
-same account.
+sync or received in a later sync, is after the other one [^1].
+
+[^1]: We think this is similar to Stream Ordering, which is mentioned once in
+  the spec without definition
+  [7.6 Syncing](https://spec.matrix.org/unstable/client-server-api/#syncing),
+  but we are not certain that it is identical, because we believe it may be
+  possible for different clients to receive events in a different order from
+  each other for the same account. For example, if one client is doing an
+  incremental sync, and another is doing an initial sync, recently-arrived
+  events that are "old "in Topological Order may be received in different orders
+  on the two clients.
 
 See also [Spec Issue #1167](https://github.com/matrix-org/matrix-spec/issues/1167).
 
@@ -135,7 +138,13 @@ We propose that the definition of *after* should be:
 We define *Stream Order* to be an immutable, unique number attached to an event
 on creation that defines the order of events in regard to receipts.
 
-Note: some home servers already have a concept of Stream Order, and we intend
+We propose updating the spec around receipts
+([11.6 Receipts](https://spec.matrix.org/latest/client-server-api/#receipts))
+to be explicit about what "read up to" means, using the above definition.
+
+#### Notes
+
+Some home servers already have a concept of Stream Order, and we intend
 that this definition is consistent with that as currently implemented. But, for
 the purposes of this proposal the only important aspect of Stream Order is that
 server and clients agree that receipts apply to events with a lower Stream
@@ -163,16 +172,17 @@ generally increase for "newer" messages. Clients may decide to re-order events
 into Stream Order, or they may decide to display unread messages higher up the
 timeline if the orders do not match the order they choose for display.
 
-Because Stream Order may be inconsistent across federation (and, in theory, across
-different users on the same home server, although we expect in practice this
-will not happen), one user may occasionally see a different unread status for
-another user from what that user themselves see. We regard this as impossible to
-avoid, and expect that in most cases it will be unnoticeable, since home servers
-with good connectivity will normally have similar Stream Order. When servers have
-long network splits, there will be a noticeable difference at first, but once
-messages start flowing normally and users start reading them, the differences
-will disappear as new events will have higher Stream order than the older ones
-on both servers.
+Because Stream Order may be inconsistent across federation[^2], one user may
+occasionally see a different unread status for another user from what that user
+themselves see. We regard this as impossible to avoid, and expect that in most
+cases it will be unnoticeable, since home servers with good connectivity will
+normally have similar Stream Order. When servers have long network splits, there
+will be a noticeable difference at first, but once messages start flowing
+normally and users start reading them, the differences will disappear as new
+events will have higher Stream order than the older ones on both servers.
+
+[^2]: In theory, Stream Order could also be inconsistent across different users
+  on the same home server, although we expect in practice this will not happen.
 
 ### Proposed definition of *in the same thread*
 
@@ -212,7 +222,10 @@ We propose:
 * all events should contain an `m.order` property.
 * all receipts should contain an `m.order` property alongside `m.read`
   and/or `m.read.private` inside the information about an event, which is a
-  cache of the `m.order` property within the referred-to event.
+  cache of the `m.order` property within the referred-to event [^3].
+
+[^3]: This might make the `ts` property within receipts redundant. We are not
+  actually sure what purpose this property is intended to serve.
 
 The server should include an `m.thread_id` property in any event that has an
 ancestor relationship that includes an `m.thread` relationship. The value of
@@ -310,7 +323,7 @@ ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
 
 * 2023-07-04 Initial draft by @andybalaam after conversation with @ara4n.
 * 2023-07-05 Remove thread roots from their thread after conversation with @clokep.
-* 2023-07-05 Handle redactions after conversation with @t3chguy
-* 2023-07-05 Give a definition of Stream Order, caveat around its name
+* 2023-07-05 Make redactions never unread after conversation with @t3chguy
+* 2023-07-05 Give a definition of Stream Order
 * 2023-07-05 Be explicit about Stream Order not going over federation
 * 2023-07-05 Mention disagreeing about what another user has read
