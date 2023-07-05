@@ -249,3 +249,8 @@ None at this time.
 
 Formed from a discussion with @ara4n, with early review from @clokep. Built on
 ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
+
+## Changelog
+
+* 2023-07-04 Initial draft by @andybalaam after conversation with @ara4n.
+* 2023-07-05 Remove thread roots from their thread after conversation with @clokep.
