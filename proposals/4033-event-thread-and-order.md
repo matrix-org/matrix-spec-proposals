@@ -61,7 +61,8 @@ sync or received in a later sync, is after the other one [^1].
   events that are "old" in Topological Order may be received in different orders
   on the two clients.
 
-See also [Spec Issue #1167](https://github.com/matrix-org/matrix-spec/issues/1167).
+See also [Spec Issue #1167](https://github.com/matrix-org/matrix-spec/issues/1167),
+which calls out this ambiguity about the meaning of "read up to".
 
 ### Current definition of *in the same thread*
 
