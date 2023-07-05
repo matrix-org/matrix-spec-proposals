@@ -357,10 +357,6 @@ value is the ID of the `m.room.create` event of the new room. (This makes a
 later step, automatically accepting these invitations, possible - see
 sub-proposal 3).
 
-This action should only be performed by the server if the user performing the
-upgrade is registered with this server. Otherwise, the server should not create
-any invitations or emit any membership events.
-
 #### Specific spec wording changes
 
 In point 3 of Server behaviour:
