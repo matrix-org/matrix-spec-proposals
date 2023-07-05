@@ -256,7 +256,7 @@ relationship.
 
 This makes it explicit how the server has categorised events, meaning clients
 and servers can always agree on which thread an event is in, so the meaning of
-threaded receipt is clear.
+a threaded receipt is clear.
 
 It also makes it explicit which event is before or after another event in Stream
 Order.
