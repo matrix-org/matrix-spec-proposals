@@ -6,15 +6,17 @@
 - [x] Mention no need for the words Stream Order to be included
 - [x] Mention server-side calculation of unreadness
 - [x] Acknowledge patrick and others
-- [ ] Move ordering into unsigned
+- [ ] Make it robust to redactions by always considering redacted messages read
+- [x] Remove thread roots from the thread
+- [x] ~~Move ordering into unsigned (maybe thread id too?)~~ No - unsigned is frowned upon
 - [ ] Events can never have the same stream order
 - [ ] Reword to some generic order instead of stream order?
-- [ ] Can't do m.is_thread_root because we don't know until a child exists
+- [x] Can't do m.is_thread_root because we don't know until a child exists
 - [ ] Example of inconsistent Sync Order:
 - [ ]   I guess that happens if one is doing an incremental sync and one is doing an initial sync and the event in question is the latest event by stream order but a much earlier event by topo order?
 - [ ] Explicitly say we should update the spec wording around what we mean by read-up-to
 - [ ] Consider the thread root not being in the thread. Would need to think about whether it matters if the thread root is somehow later than a thread message in Stream Order.
-- [ ] m.thread_id should be preserved through a redaction. Note that this will need a new room version
+- [ ] m.thread_id should be preserved through a redaction. Note that this will need a new room version Would moving into unsigned prevent this?
 
 We argue that we have made it unnecessarily hard for clients and servers to
 decide whether a message is read or unread, and we can solve this problem by
@@ -133,24 +135,18 @@ We propose that the definition of *after* should be:
 
 We propose that the definition of *in the same thread* should use this wording:
 
-An event is in the `main` thread if:
+An event is in a non-main-thread if:
 
-* it has no `m.thread_id` property
+* it has an `m.thread_id` property
 
-An event is in a non-main thread if:
+Otherwise, it is in the `main` thread.
 
-* it has an `m.thread_id` property (i.e. it is in the thread whose ID matches
-  the value of this property), or
-* it contains an `m.is_thread_root` property with value `true`, then it is in
-  the thread whose ID is its event ID (i.e. it is a thread root).
+No events are in more than one thread.
 
-Note: thread roots are in TWO threads: the one whose thread ID equals their
-event ID, AND the `main` thread.
-
-Note: other events with relationships to the thread root (e.g. reactions to the
-thread root) are NOT considered part of the thread. This is a change to the
-current definition. We propose that threads should not be considered unread if a
-new reaction to the thread root is received.
+Note: this means that thread roots are in the `main` thread, and not in the
+thread branching from them. Non-thread children of thread roots (e.g.
+reactions to a thread root) are also in the `main` thread. This is a change to
+the current definition.
 
 ### Supporting changes to event structure
 
@@ -158,15 +154,18 @@ We propose:
 
 * all events in a thread should contain an `m.thread_id` property.
 * all events should contain an `m.stream_order` property.
-* all thread root events should contain an `m.is_thread_root` property with
-  value `true`.
 * all receipts should contain an `m.stream_order` property alongside `m.read`
   and/or `m.read.private` inside the information about an event, which is a
   cache of the `m.stream_order` property within the referred-to event.
 
+The server should include an `m.thread_id` property in any event that has an
+ancestor relationship that includes an `m.thread` relationship. The value of
+`m.thread_id` is the event ID of the event referenced by the `m.thread`
+relationship.
+
 This makes it explicit how the server has categorised events, meaning clients
-and servers can always agree on what is a thread root, a threaded message, or a
-main thread message.
+and servers can always agree on which thread an event is in, so the meaning of
+threaded receipt is clear.
 
 It also makes it explicit which event is before or after another event in Stream
 Order.
@@ -183,12 +182,13 @@ This special-cases threads over other relationships.
 But, this was already the case with threaded receipts, and we believe it is
 necessary to provide consistent behaviour.
 
-The change to consider reactions to thread roots as outside of the thread may be
-inconvenient for clients, because they will probably want to display those
-reactions in any "thread view" they display. We consider this inconvenience
-worthwhile because it is necessary to ensure the semantics of read receipts make
-sense. We do not think that reactions to a thread root should mark that thread
-as unread (but we possibly could be persuaded?).
+The change to consider thread roots (and reactions to them) as outside of the
+thread may be inconvenient for clients, because they will probably want to
+display those events in any "thread view" they display. We consider this
+inconvenience worthwhile because it is necessary to ensure the semantics of read
+receipts make sense. We do not think that reactions or edits to a thread root
+should mark that thread as unread - instead they mark the main thread as unread,
+which the client can use to draw attention to the thread root.
 
 ## Alternatives
 
