@@ -184,8 +184,7 @@ the current definition.
 
 ### Proposed change in consideration of redacted events
 
-We propose that redacted events and redaction events should never be considered
-unread.
+We propose that redacted events should never be considered unread.
 
 This avoids the need to identify which thread a redacted event belongs to, which
 will be difficult if its `thread_id` property has been stripped out.
