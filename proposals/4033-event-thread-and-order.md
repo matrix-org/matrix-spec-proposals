@@ -1,23 +1,5 @@
 # MSC4033: Providing thread and order for all events to allow consistent read receipt handling
 
-## TODO
-
-- [x] review request Patrick
-- [x] Mention no need for the words Stream Order to be included
-- [x] Mention server-side calculation of unreadness
-- [x] Acknowledge patrick and others
-- [x] Make it robust to redactions by always considering redacted messages read
-- [x] Remove thread roots from the thread
-- [x] ~~Move ordering into unsigned (maybe thread id too?)~~ No - unsigned is frowned upon
-- [x] Events can never have the same stream order
-- [x] Reword to some generic order instead of stream order?
-- [x] Can't do m.is_thread_root because we don't know until a child exists
-- [x] Example of inconsistent Sync Order
-- [x] Explicitly say we should update the spec wording around what we mean by read-up-to
-- [x] Consider the thread root not being in the thread. Would need to think about whether it matters if the thread root is somehow later than a thread message in Stream Order.
-- [x] JSON examples
-- [x] Suggest that `ts` in receipts might be redundant?
-
 We argue that we have made it unnecessarily hard for clients and servers to
 decide whether a message is read or unread, and we can solve this problem by
 clarifying the definitions, and including extra pieces of information with
