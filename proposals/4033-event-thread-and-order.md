@@ -28,8 +28,9 @@ every event that help to identify its thread(s) and ordering.
 In order to decide whether a room is unread, a Matrix client must decide whether
 it contains any unread messages.
 
-In order to decide whether a room has notifications, a Matrix client or server
-must decide whether any of its potentially-notifying messages is unread.
+Similarly, in order to decide whether a room has notifications, a Matrix client
+or server must decide whether any of its potentially-notifying messages is
+unread.
 
 Both of these tasks require us to decide whether a message is read or unread.
 
@@ -243,6 +244,26 @@ This prevents disagreements between clients and servers about the meaning of a
 particular read receipt, and by including the Stream Order of the referred event
 in the receipt, avoids the need to fetch that event in order to make a decision
 about which events are read.
+
+### Definition of read and unread events
+
+We propose that the definition of whether an event is read should be:
+
+> An event is read if the room contains an unthreaded receipt pointing at an
+> event which is *after or the same as* the event, or a threaded receipt
+> pointing at an event that is *in the same thread* as the event, and is *after
+> or the same as* the event.
+>
+> Because the receipt itself contains the `m.order` of the pointed-to event,
+> there is no need to examine the pointed-to event, so it is sufficient to
+> compare the `m.order` of the event in question with the `m.order` in the
+> receipt.
+>
+> Redacted events are always read.
+>
+> Otherwise, it is unread.
+
+Obviously, this definition depends on the definitions above.
 
 ## Potential issues
 
