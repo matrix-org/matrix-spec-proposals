@@ -36,8 +36,8 @@ We do not propose to change the above definition.
 To perform this calculation we need definitions of *after or the same as* and *in the same
 thread*.
 
-The meaning *the same as* is clear: if a receipt points at an event, then that
-event is read.
+The meaning of *the same as* is clear: if a receipt points at an event, then
+that event is read.
 
 ### Current definition of *after*
 
@@ -201,7 +201,7 @@ property when redacting events.
 
 Example event (changes are highlighted in bold):
 
-<code>{
+<code><pre>{
   "content": {
     "body": "This is an example text message",
     "format": "org.matrix.custom.html",
@@ -218,11 +218,11 @@ Example event (changes are highlighted in bold):
     "age": 1234,
     <b>"order": 56764334543</b>
   }
-}</code>
+}</pre></code>
 
 Example receipt (changes are highlighted in bold):
 
-<code>{
+<code><pre>{
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
       <b>"order": 56764334544,</b>
@@ -239,7 +239,7 @@ Example receipt (changes are highlighted in bold):
     }
   },
   "type": "m.receipt"
-}</code>
+}</pre></code>
 
 We propose:
 
