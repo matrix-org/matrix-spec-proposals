@@ -80,7 +80,9 @@ An event is in thread A if:
 The spec states that room events are in `main` if they are not in another thread, but
 clients such as Element Web treat thread roots, and non-thread descendants of thread roots
 (such as reactions to the thread root) as being in BOTH `main` and the thread branching
-from the thread root.
+from the thread root. We strongly suspect that home servers also consider thread roots
+to be in the main thread, since otherwise their status would change when a new thread
+reply was added.
 
 ### Problems with the current definitions
 
