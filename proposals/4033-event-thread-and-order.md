@@ -79,7 +79,6 @@ An event is in thread A if:
 
 An event is in the main thread if:
 
-* it is not in another thread, or
 * its ancestor events do not include an `m.thread` relationship
 
 Note that thread root events, and their non-threaded children (e.g. reactions to
