@@ -300,7 +300,7 @@ events should be returned as normal when the events timeline is requested. This
 allows users to explore historical events.)
 
 The only time when an obsolete state event is needed to update room state is
-when a client has already received non-obsolete state for this `event_key`.
+when a client has already received non-obsolete state for this `state_key`.
 Since this proposal only affects initial sync, clients have not received any
 state, so this does not apply.
 
