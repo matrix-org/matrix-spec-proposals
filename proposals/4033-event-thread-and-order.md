@@ -173,7 +173,7 @@ We propose that the definition of *in the same thread* should use this wording:
 
 An event is in a non-main-thread if:
 
-* it has a `thread_id` property in its content
+* it has a `thread_id` property in its cleartext content
 
 Otherwise, it is in the `main` thread.
 
@@ -219,6 +219,21 @@ Example event (changes are highlighted in bold):
   }
 }</pre>
 
+Example encrypted event (changes are highlighted in bold):
+
+<pre>{
+    "type": "m.room.encrypted",
+    "content": {
+        <b>"thread_id": "$fgsUZKDJdhlrceRyhj", // Optional</b>
+        "algorithm": "m.megolm.v1.aes-sha2",
+        "sender_key": "<sender_curve25519_key>",
+        "device_id": "<sender_device_id>",
+        "session_id": "<outbound_group_session_id>",
+        "ciphertext": "<encrypted_payload_base_64>"
+    }
+    // irrelevant fields not shown
+}</pre>
+
 Example receipt (changes are highlighted in bold):
 
 <pre>{
@@ -251,10 +266,10 @@ We propose:
 [^3]: This might make the `ts` property within receipts redundant. We are not
   actually sure what purpose this property is intended to serve.
 
-The creator of an event should include a `thread_id` property in the content of
-any event that has an ancestor relationship that includes an `m.thread`
-relationship. The value of `thread_id` is the event ID of the event referenced
-by the `m.thread` relationship.
+The creator of an event should include a `thread_id` property in the cleartext
+content of any event that has an ancestor relationship that includes an
+`m.thread` relationship. The value of `thread_id` is the event ID of the event
+referenced by the `m.thread` relationship.
 
 This makes it explicit how events are categorised, meaning clients and servers
 can always agree on which thread an event is in, so the meaning of a threaded
