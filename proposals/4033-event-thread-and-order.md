@@ -127,8 +127,8 @@ Example receipt (changes are highlighted in bold):
 <pre>{
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
-      <b>"order": 56764334544,</b>
-      "m.read": { "@rikj:jki.re": { "ts": 1436451550453 } },
+      <b>"order": 56764334544,</b> // Optional
+      "m.read": { "@rikj:jki.re": { "ts": 1436451550453, "thread_id": "$x" } },
       "m.read.private": { "@self:example.org": { "ts": 1661384801651 } }
     }
   },
@@ -141,6 +141,11 @@ We propose:
 * all receipts should contain an `order` property alongside `m.read` inside the
   information about an event, which is a cache of the `order` property within
   the referred-to event.
+
+The `order` property in receipts should be inserted by servers when they are
+creating the aggregated receipt event. If the server does not have the
+referenced event and so does not know its order, this property may be omitted,
+and clients will need to look up the event themselves to determine its order.
 
 ### Proposed definition of *after*
 
@@ -254,6 +259,28 @@ The client will still need to know which events are unread in order to process
 notifications that are encrypted when they pass through the server, so this
 proposal would probably be unaltered even if we added the capability for servers
 to surface which rooms are unread.
+
+### Location of order property in receipts
+
+It is possible that adding an `order` property within receipts alongside
+`m.read` might break existing clients. If so, an alternative would be to include
+it alongside `ts`, which is probably less likely to cause problems.
+
+Example:
+
+<pre>{
+  "content": {
+    "$1435641916114394fHBLK:matrix.org": {
+      "m.read": {
+        "@rikj:jki.re": {
+          "ts": 1436451550453,
+          <b>"order": 56764334544,</b> // Optional
+        }
+      },
+    }
+  },
+  "type": "m.receipt"
+}</pre>
 
 ## Security considerations
 
