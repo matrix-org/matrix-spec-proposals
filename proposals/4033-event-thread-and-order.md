@@ -9,18 +9,15 @@ which events are read.
 
 ## Motivation
 
-In order to decide whether a room is unread, a Matrix client must decide whether
-it contains any unread messages.
+To decide whether a room is unread, a Matrix client must decide whether it
+contains any unread messages.
 
-Similarly, in order to decide whether a room has notifications, a Matrix client
-or server must decide whether any of its potentially-notifying messages is
-unread.
+Similarly, to decide whether a room has notifications, we must decide whether
+any of its potentially-notifying messages is unread.
 
 Both of these tasks require us to decide whether a message is read or unread.
 
-To make this decision we have receipts.
-
-To decide whether an event is read, we use the following rule:
+To make this decision we have receipts. We use the following rule:
 
 > An event is read if the room contains an unthreaded receipt pointing at an
 > event which is *after* the event, or a threaded receipt pointing at an event
@@ -31,8 +28,6 @@ To decide whether an event is read, we use the following rule:
 
 (In both cases we only consider receipts sent by the current user, obviously. We
 consider either private or public read receipts.)
-
-We do not propose to change the above definition.
 
 To perform this calculation we need a clear definition of *after*.
 
