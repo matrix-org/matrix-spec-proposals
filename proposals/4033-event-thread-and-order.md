@@ -127,9 +127,12 @@ Example receipt (changes are highlighted in bold):
 <pre>{
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
-      <b>"order": 56764334544,</b> // Optional
-      "m.read": { "@rikj:jki.re": { "ts": 1436451550453, "thread_id": "$x" } },
-      "m.read.private": { "@self:example.org": { "ts": 1661384801651 } }
+      "m.read": {
+        "@rikj:jki.re": {
+          "ts": 1436451550453,
+          <b>"order": 56764334544,</b> // Optional
+        }
+      },
     }
   },
   "type": "m.receipt"
@@ -138,7 +141,7 @@ Example receipt (changes are highlighted in bold):
 We propose:
 
 * all events should contain an `order` property inside `unsigned`.
-* all receipts should contain an `order` property alongside `m.read` inside the
+* all receipts should contain an `order` property alongside `ts` inside the
   information about an event, which is a cache of the `order` property within
   the referred-to event.
 
@@ -146,6 +149,11 @@ The `order` property in receipts should be inserted by servers when they are
 creating the aggregated receipt event. If the server does not have the
 referenced event and so does not know its order, this property may be omitted,
 and clients will need to look up the event themselves to determine its order.
+
+Note that the `order` property for a particular event will probably be the same
+for every user, so will be repeated multiple times in an aggregated receipt
+event. This structure was chosen to reduce the chance of breaking existing
+clients by introducing `order` at a higher level.
 
 ### Proposed definition of *after*
 
@@ -262,25 +270,23 @@ to surface which rooms are unread.
 
 ### Location of order property in receipts
 
-It is possible that adding an `order` property within receipts alongside
-`m.read` might break existing clients. If so, an alternative would be to include
-it alongside `ts`, which is probably less likely to cause problems.
-
-Example:
+Initially, we included `order` as a sibling of `m.read` inside the content of a
+receipt:
 
 <pre>{
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
-      "m.read": {
-        "@rikj:jki.re": {
-          "ts": 1436451550453,
-          <b>"order": 56764334544,</b> // Optional
-        }
-      },
+      <b>"order": 56764334544,</b> // Optional
+      "m.read": { "@rikj:jki.re": { "ts": 1436451550453, "thread_id": "$x" } },
+      "m.read.private": { "@self:example.org": { "ts": 1661384801651 } }
     }
   },
   "type": "m.receipt"
 }</pre>
+
+We moved it inside the content, as a sibling to `ts`, because multiple existing
+clients (mautrix-go, mautrix-python and matrix-rust-sdk) would have failed to
+parse the above JSON if they encountered it without first being updated.
 
 ## Security considerations
 
@@ -309,3 +315,4 @@ ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
 * 2023-07-05 Mention disagreeing about what another user has read
 * 2023-07-05 Move thread_id into content after talking to @deepbluev7
 * 2023-07-06 Reduced to just order. Thread IDs will be a separate MSC
+* 2023-07-06 Moved order deeper within receipts to reduce existing client impact
