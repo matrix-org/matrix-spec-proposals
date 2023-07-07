@@ -224,7 +224,7 @@ endpoint, in the form of a new entry:
 }
 ```
 
-With a value of `true` indicating that the feature is supported, and `false`
+... with a value of `true` indicating that the feature is supported, and `false`
 or lack of the field altogether indicating the feature is not supported.
 
 #### When can I use stable identifiers?
