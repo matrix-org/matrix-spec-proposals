@@ -64,8 +64,8 @@ information: the referenced event must be fetched and correctly ordered.
 
 ## Proposal
 
-We propose to add an explicit order number to events and receipts, so we always
-know what is before or after what.
+We propose to add an explicit order number to events and receipts, so we can easily
+compare whether an event is before or after a receipt.
 
 This order should be a number that is attached to an event by the server before
 it sends it to any client, and it should never change. It should,
