@@ -55,6 +55,8 @@ For idempotency reasons, these endpoints always return `200 OK`, with an empty J
 
 For any account data key that cannot be set (like `m.fully_read`), the delete API will have a likewise error response.
 
+These endpoints are authenticated, and can be rate-limited.
+
 #### Deleted account data responses
 
 Furthermore, when a client deletes account data, it must expect the `GET` methods above to return a 404 on
@@ -69,10 +71,16 @@ equivalent as `DELETE`-ing that account data.
 
 Account Data changes are announced through sync; this proposal also aims to change this response slightly after account data deletion.
 
-In `account_data.events` and `rooms.join.{room_id}.account_data.events`, a client must interpret
-`{}` for an event content as it being deleted.
+On incremental syncs (sync with `since`), in paths `account_data.events` and `rooms.join.{room_id}.account_data.events`,
+a `{}` for event content must be interpreted as a deletion by the client.
 
-This must happen only on syncs with a `since` token.
+These only occur in incremental syncs. An initial sync (without `sync`) must never contain keys with content `{}`,
+even if the delete has just occurred.
+
+## Alternatives
+
+Instead of sending down deletions through `.events` as `{}`, we could use a new `.deleted_events`
+to send down the keys of deleted events.
 
 ## Security considerations
 
