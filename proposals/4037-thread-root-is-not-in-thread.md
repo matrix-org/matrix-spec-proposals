@@ -1,8 +1,8 @@
 # MSC4037: Thread root is not in the thread
 
 The current spec implies that a thread root is considered within the thread, but
-we argue that this does not make sense, and a thread root is not "in" it the
-thread branching from it.
+we argue that this does not make sense, and a thread root is not "in" the thread
+branching from it.
 
 This is important for creating and interpreting read receipts.
 
@@ -41,17 +41,18 @@ This is problematic because:
 In practice, Synapse ignores any request to mark the thread root as read within
 the thread, and accepts requests to mark it as read in the main timeline.
 
-In consequence, Element Web displayed bugs relating to unread rooms while its
+In consequence, Element Web exhibited bugs relating to unread rooms while its
 underlying library used spec-compliant behaviour, many of which were fixed by
-[reverting to the behaviour recommended by this proposal](https://github.com/matrix-org/matrix-js-sdk/pull/3600).
+[adoptingthe behaviour recommended by this proposal](https://github.com/matrix-org/matrix-js-sdk/pull/3600).
 
 It really does not make sense to treat thread roots as outside the main
 timeline: any message can become a thread root at any time, when a user creates
-a new threaded message pointing at it.
+a new threaded message pointing at it, so suddenly switching which receipts are
+allowed to apply to it would not be sensible.
 
 ## Proposal
 
-We propose this definition:
+We propose that thread roots are in the main timeline, making the definition:
 
 > An event is considered to be "in a thread" if:
 >
