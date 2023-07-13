@@ -67,6 +67,7 @@ We propose that thread roots are in the main timeline, making the definition:
 
 ## Potential issues
 
+None known.
 
 ## Alternatives
 
@@ -77,10 +78,12 @@ been read. A thread cannot exist without at least one additional message.
 
 ## Security considerations
 
+Unlikely to have any security impact.
 
 ## Unstable prefix
 
+None needed.
 
 ## Dependencies
 
-
+No dependencies.
