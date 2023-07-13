@@ -69,7 +69,8 @@ easily compare whether an event is before or after a receipt.
 
 This order should be a number that is attached to an event by the server before
 it sends it to any client, and it should never change. It should,
-loosely-speaking, increase for "newer" messages within the same room. It may be negative.
+loosely-speaking, increase for "newer" messages within the same room. It may be
+negative.
 
 The exact meaning of this order is not as important as the fact that it exists
 and is consistent between clients and servers, and events and receipts.
