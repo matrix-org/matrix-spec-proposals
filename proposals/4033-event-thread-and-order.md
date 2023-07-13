@@ -72,13 +72,15 @@ it sends it to any client, and it should never change. It should,
 loosely-speaking, increase for "newer" messages within the same room. It may be
 negative.
 
-The exact meaning of this order is not as important as the fact that it exists
-and is consistent between clients and servers, and events and receipts.
+The ordering must be consistent between a user's homeserver and all of that
+user's connected clients. There are no guarantees it is consistent across
+different users or rooms. It will be inconsistent across federation as there is
+no mechanism to sync order between homeservers. For this reason, we propose that
+`order` be included in an event's `unsigned` property.
 
-We do not require that order be consistent across federation. The only
-requirement is that all the clients for a user and the one server to which they
-connect agree. For this reason, we propose that `order` be included in an
-event's `unsigned` property.
+This proposal attaches no particular meaning to the rate at which the ordering
+increments. (Although we can imagine that some future proposal might want to
+expand this idea to include some meaning.)
 
 ### Examples
 
