@@ -262,7 +262,7 @@ would be returned in Sync Order, but this is not true: the proposal will return
 events in Topological Order, which is useless for determining which events are
 read.
 
-### The server could calculate unread status
+### The server could report which rooms are unread
 
 We could use the definitions within this proposal but avoid calculating what was
 unread on the client. Instead we could ask the server to figure out which rooms
