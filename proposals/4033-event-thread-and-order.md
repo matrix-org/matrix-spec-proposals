@@ -55,8 +55,8 @@ which calls out this ambiguity about the meaning of "read up to".
 
 The current definition of *after* is ambiguous, and difficult for clients to
 calculate. It depends on only receiving events via sync, which is impossible
-when we want to do backpagination or to fetch thread messages via the
-`relations` API.
+since we sometimes want messages that did not arrive via sync, so we use
+different APIs such as `messages` or `relations`.
 
 The current definition also makes it needlessly complex for clients to determine
 whether an event is read because the receipt itself does not hold enough
