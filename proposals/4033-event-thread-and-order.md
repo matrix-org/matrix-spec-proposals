@@ -182,10 +182,12 @@ And the above definition of *after* should be included.
 
 ### Redacted events
 
-Since we propose that receipts should cache the `order` of their referred-to
-event, this means we do not need to look within a redacted event for its order,
-because the receipt provides it. This avoids needing to preserve the `order`
-property when redacting events.
+Existing servers already include an `unsigned` section with redacted events,
+despite `unsigned` not being mentioned in the [redaction
+rules](https://spec.matrix.org/unstable/rooms/v10/#redactions).
+
+Therefore we propose that redacted events should include `order` in exactly the
+same way as all room events.
 
 ## Discussion
 
@@ -319,3 +321,4 @@ ideas from @t3chguy, @justjanne, @germain-gg and @weeman1337.
 * 2023-07-05 Move thread_id into content after talking to @deepbluev7
 * 2023-07-06 Reduced to just order. Thread IDs will be a separate MSC
 * 2023-07-06 Moved order deeper within receipts to reduce existing client impact
+* 2023-07-13 Include order with redacted events after comments from @clokep
