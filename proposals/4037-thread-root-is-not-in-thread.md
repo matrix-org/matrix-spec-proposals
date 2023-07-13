@@ -64,6 +64,9 @@ We propose that thread roots are in the main timeline, making the definition:
 >
 > Events not in a thread but still in the room are considered to be part of the
 > "main timeline": a special thread with an ID of `main`.
+>
+> Note: thread roots (events that are referred to in a `m.thread` relationship)
+> are in the main timeline.
 
 ## Potential issues
 
