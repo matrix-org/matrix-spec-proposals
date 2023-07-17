@@ -175,15 +175,13 @@ to be explicit about what "read up to" means, using the above definition.
 
 ### Definition of read and unread events
 
-We propose that the definition of whether an event is read should be unchanged,
-but this note should be added:
+We propose that the definition of whether an event is read should include the
+original definition plus the above definition of *after*, and also include this
+clarification:
 
 > (Because the receipt itself contains the `order` of the pointed-to event,
-> there is no need to examine the pointed-to event, so it is sufficient to
-> compare the `order` of the event in question with the `order` in the
-> receipt.)
-
-And the above definition of *after* should be included.
+> there is no need to examine the pointed-to event: it is sufficient to compare
+> the `order` of the event in question with the `order` in the receipt.)
 
 ### Redacted events
 
