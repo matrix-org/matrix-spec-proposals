@@ -43,7 +43,7 @@ the thread, and accepts requests to mark it as read in the main timeline.
 
 In consequence, Element Web exhibited bugs relating to unread rooms while its
 underlying library used spec-compliant behaviour, many of which were fixed by
-[adoptingthe behaviour recommended by this proposal](https://github.com/matrix-org/matrix-js-sdk/pull/3600).
+[adopting the behaviour recommended by this proposal](https://github.com/matrix-org/matrix-js-sdk/pull/3600).
 
 It really does not make sense to treat thread roots as outside the main
 timeline: any message can become a thread root at any time, when a user creates
