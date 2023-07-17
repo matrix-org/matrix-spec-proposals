@@ -62,6 +62,11 @@ The current definition also makes it needlessly complex for clients to determine
 whether an event is read because the receipt itself does not hold enough
 information: the referenced event must be fetched and correctly ordered.
 
+Note: these problems actually apply to all receipts, not just those of the
+current user. The symptoms are much more visible and impactful when the current
+user's receipts are misinterpreted than for other users, but this proposal
+covers both cases.
+
 ## Proposal
 
 We propose to add an explicit order number to events and receipts, so we can
