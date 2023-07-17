@@ -50,6 +50,9 @@ timeline: any message can become a thread root at any time, when a user creates
 a new threaded message pointing at it, so suddenly switching which receipts are
 allowed to apply to it would not be sensible.
 
+Similarly, it does not make sense for reactions to the thread root (or other
+related events such as edits) to be outside the main timeline.
+
 ## Proposal
 
 We propose that thread roots are in the main timeline, making the definition:
