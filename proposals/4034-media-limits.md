@@ -40,7 +40,7 @@ client can query to check how much storage has been used:
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| `m.storage.free` | `integer` | The free space remaining in bytes for the user's media content. If not listed or null, the remaining free space should be treated as unknown. |
+| `m.storage.used` | `integer` | The amount of storage space in bytes used up by the user's media content. If not listed or null, the remaining used space should be treated as unknown. |
 | `m.storage.files` | `integer` | The number of files the user has stored on their homeserver. If not listed or null, the number of files stored should be treated as unknown. |
 
 ## Potential issues
@@ -69,8 +69,7 @@ None expected.
 
 The new endpoint can be made available at
 `/_matrix/media/unstable/org.matrix.msc4034/usage`. The changes to
-`/_matrix/media/v3/config` are not breaking, and should not require an unstable
-prefix.
+`/_matrix/media/v3/config` can be made available at `/_matrix/media/unstable/org.matrix.msc4034/config`.
 
 ## Dependencies
 
