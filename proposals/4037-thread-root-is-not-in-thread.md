@@ -39,8 +39,8 @@ This is problematic because:
   they have only read the thread root.
 
 In practice, Synapse
-[ignores any request to mark the thread root as read](https://github.com/matrix-org/synapse/blob/v1.87.0/synapse/rest/client/receipts.py#L116-L154)
-within the thread, and accepts requests to mark it as read in the main timeline.
+[returns an error for any request to mark the thread root as read within the thread](https://github.com/matrix-org/synapse/blob/v1.87.0/synapse/rest/client/receipts.py#L116-L154),
+and accepts requests to mark it as read in the main timeline.
 When it reports thread notifications, it excludes thread roots (and e.g. edits
 to thread roots) from the thread count, only showing them in the main timeline
 count.
