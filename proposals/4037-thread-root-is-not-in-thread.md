@@ -52,7 +52,13 @@ a new threaded message pointing at it, so suddenly switching which receipts are
 allowed to apply to it would not be sensible.
 
 Similarly, it does not make sense for reactions to the thread root (or other
-related events such as edits) to be outside the main timeline.
+related events such as edits) to be outside the main timeline, for similar
+reasons: the message we are reacting to can become a thread root at any time,
+making our previous receipt invalid retrospectively. (We could conceivably allow
+receipts to exist both within a thread and the main timeline, but this does not
+match the expected user mental model: I have either read a reaction/edit/reply,
+or I have not - I don't want to have to read it twice just because it appears in
+two places in the UI.)
 
 ## Proposal
 
