@@ -82,7 +82,9 @@ We propose that thread roots are in the main timeline, making the definition:
 > "main timeline": a special thread with an ID of `main`.
 >
 > Note: thread roots (events that are referred to in a `m.thread` relationship)
-> are in the main timeline.
+> are in the main timeline. Similarly, reactions to thread roots, edits of
+> thread root, and other events with non-thread relations to a thread root are
+> in the main timline.
 
 ## Potential issues
 
