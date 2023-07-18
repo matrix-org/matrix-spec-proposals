@@ -38,8 +38,9 @@ This is problematic because:
   thread root, since the user has not really read anything in that thread if
   they have only read the thread root.
 
-In practice, Synapse ignores any request to mark the thread root as read within
-the thread, and accepts requests to mark it as read in the main timeline.
+In practice, Synapse
+[ignores any request to mark the thread root as read](https://github.com/matrix-org/synapse/blob/v1.87.0/synapse/rest/client/receipts.py#L116-L154)
+within the thread, and accepts requests to mark it as read in the main timeline.
 
 In consequence, Element Web exhibited bugs relating to unread rooms while its
 underlying library used spec-compliant behaviour, many of which were fixed by
