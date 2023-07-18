@@ -68,8 +68,17 @@ None expected.
 ## Unstable prefix
 
 The new endpoint can be made available at
-`/_matrix/media/unstable/org.matrix.msc4034/usage`. The changes to
-`/_matrix/media/v3/config` can be made available at `/_matrix/media/unstable/org.matrix.msc4034/config`.
+`/_matrix/media/unstable/org.matrix.msc4034/usage`. The additional fields on
+`/_matrix/media/v3/config` can be including in server responses using the `org.matrix.msc4034` namespace, e.g.
+
+```
+GET /_matrix/media/v3/config
+{
+  "m.upload.size": 1024,
+  "org.matrix.msc4034.storage.used": 1024,
+  "org.matrix.msc4034.storage.files": 10
+}
+```
 
 ## Dependencies
 
