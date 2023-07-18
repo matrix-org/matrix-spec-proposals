@@ -55,10 +55,16 @@ Similarly, it does not make sense for reactions to the thread root (or other
 related events such as edits) to be outside the main timeline, for similar
 reasons: the message we are reacting to can become a thread root at any time,
 making our previous receipt invalid retrospectively. (We could conceivably allow
-receipts to exist both within a thread and the main timeline, but this does not
+receipts to exist both within a thread and the main timeline[^1], but this does not
 match the expected user mental model: I have either read a reaction/edit/reply,
 or I have not - I don't want to have to read it twice just because it appears in
 two places in the UI.)
+
+[^1]: In fact, observation of Synapse's behaviour shows that it does appear to
+  track two read/unread statuses for edits of thread roots, but not for thread
+  roots themselves. The code for this is in
+  [receipts.py](https://github.com/matrix-org/synapse/blob/v1.87.0/synapse/rest/client/receipts.py#L116-L154).
+  We still argue that this behaviour does not match the user's mental model.
 
 ## Proposal
 
