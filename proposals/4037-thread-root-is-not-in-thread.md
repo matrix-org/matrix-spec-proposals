@@ -9,7 +9,7 @@ This is important for creating and interpreting read receipts.
 ## Motivation
 
 The current spec, in
-[11.6.2.2 Threaded read receipts](https://spec.matrix.org/unstable/client-server-api/#threaded-read-receipts)
+[11.6.2.2 Threaded read receipts](https://spec.matrix.org/v1.7/client-server-api/#threaded-read-receipts)
 says:
 
 > An event is considered to be "in a thread" if it meets any of the following
