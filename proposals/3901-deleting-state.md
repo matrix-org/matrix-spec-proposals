@@ -524,8 +524,10 @@ The server should copy all state except:
   mxid. (If MSC3779 "Owned state events" is merged, user-scoped state will also
   include anything with a `state_key` that starts with the user's mxid plus
   underscore.
-* State whose contents include a top-level property `exclude_from_upgrade:
-  true`.
+
+Note: if a client creates custom state events that for some reason should not
+survive a room upgrade, the client should mark them as obsolete before the
+upgrade is performed.
 
 ### Proposed spec wording change
 
@@ -543,8 +545,6 @@ under "Room Upgrades", step 3 should be updated to read:
 > * Obsolete state, as defined in section ...
 > * User-scoped state i.e. any state whose `state_key` is equal to the sender's
 >   mxid.
-> * State whose contents include a top-level property `exclude_from_upgrade:
->   true`.
 
 (Note that if MSC3779 is merged, user-scoped state will need a different
 definition.)
@@ -581,10 +581,10 @@ The existing spec states:
 > them, such as events outside of the Matrix namespace where clients may rely
 > on the sender to match certain criteria.
 
-Instead, we propose including all events except those that explicitly exclude
-themselves with `exclude_from_upgrade: true` in their contents. This requires
-anyone using non-upgradable state events to notice this MSC and add that
-property.
+Instead, we propose including all events except those that are considered
+obsolete, and ones in the user's namespace. This change might be surprising to
+some clients who use custom state events, and rely on the `sender` property for
+their behaviour.
 
 ### Alternatives
 
@@ -598,6 +598,11 @@ founder, if it occurs between their `m.room.create` and before any `m.room.membe
 events. Of course, the definition of "between" needs to be carefully crafted,
 and, if possible, some provision to prevent the room founder from forking the
 room later and modifying the outcome would be useful.
+
+An earlier draft proposed an additional `exclude_from_upgrade` property on state
+events to allow explicitly avoiding copying some events, but no clear use case
+could be found for this that is not covered by simply marking events that are no
+longer needed as obsolete.
 
 ### Security considerations
 
