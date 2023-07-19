@@ -1,4 +1,4 @@
-# MSCxxxx: MLS with key backup
+# MSC4038: Key backup for MLS
 
 [MSC2883](https://github.com/matrix-org/matrix-spec-proposals/pull/2883)
 defines how to use [Messaging Layer Security
@@ -103,7 +103,7 @@ privacy or convenience.
 ## Unstable prefix
 
 Until this MSC is accepted, clients should use
-`org.matrix.mscxxxx.v0.aes-hmac-sha2` as the backup version.  Note that the
+`org.matrix.msc4038.v0.aes-hmac-sha2` as the backup version.  Note that the
 session data contains an `algorithm` property giving the encryption algorithm
 for the key.  Until MSC2883 is accepted, the unstable identifier from that MSC
 should be used as the algorithm name, rather than the stable identifier.
