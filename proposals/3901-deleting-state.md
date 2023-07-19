@@ -357,6 +357,9 @@ value is the ID of the `m.room.create` event of the new room. (This makes a
 later step, automatically accepting these invitations, possible - see
 sub-proposal 3).
 
+Note that this behaviour does not affect the auth rules for either room in any
+way: the server simply sends invitations on behalf of the upgrading user.
+
 #### Specific spec wording changes
 
 In point 3 of Server behaviour:
@@ -470,6 +473,10 @@ true, the server should auto-join the user to the new room by emitting an
 `m.room.member` event on their behalf whose properties match their membership of
 the old room (excluding `join_authorised_via_users_server`, which should be
 omitted since the user is invited, so does not need additional authorisation).
+
+Note that this behaviour does not affect the auth rules for either room in any
+way: the server simply accepts invitations on behalf of the user under these
+circumstances.
 
 ### Potential issues
 
