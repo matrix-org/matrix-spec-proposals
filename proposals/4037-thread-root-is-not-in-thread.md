@@ -2,7 +2,7 @@
 
 The current spec implies that a thread root is considered within the thread, but
 we argue that this does not make sense, and a thread root is not "in" the thread
-branching from it.
+branching from it, and neither are its non-thread children (e.g. edits).
 
 This is important for creating and interpreting read receipts.
 
@@ -25,8 +25,9 @@ says:
 > Events not in a thread but still in the room are considered to be part of the
 > "main timeline", or a special thread with an ID of `main`.
 
-This explicitly includes thread roots in the thread which branches off them, and
-implicitly _excludes_ those messages from being in the `main` thread.
+This explicitly includes thread roots (and their non-thread children) in the
+thread which branches off them, and implicitly _excludes_ those messages from
+being in the `main` thread.
 
 This is problematic because:
 
@@ -65,7 +66,8 @@ two places in the UI.)
 
 ## Proposal
 
-We propose that thread roots are in the main timeline, making the definition:
+We propose that thread roots and their non-thread children are in the main
+timeline, making the definition:
 
 > An event is considered to be "in a thread" if:
 >
