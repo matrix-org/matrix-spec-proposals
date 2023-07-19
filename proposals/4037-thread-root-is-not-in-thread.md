@@ -83,6 +83,26 @@ We propose that thread roots are in the main timeline, making the definition:
 > thread roots, and other events with non-thread relations to a thread root are
 > in the main timeline.
 
+## How we got here
+
+The MSC that introduced read receipts for threads is
+[MSC3771](https://github.com/matrix-org/matrix-spec-proposals/pull/3771).
+
+The relevant wording is in the
+[Proposal](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3771-read-receipts-for-threads.md#proposal)
+section:
+
+> notifications generated from events with a thread relation matching the
+> receipt’s thread ID prior to and including that event which are MUST be marked
+> as read
+
+Notably it only mentions things "**with a thread relation**", so it appears to
+match the wording of this proposal.
+
+It comes tantalisingly close to covering these issues in the example it uses,
+but unfortunately does not cover what would happen if we received a receipt for
+a thread root or for e.g. an edit of a thread root.
+
 ## Potential issues
 
 None known.
