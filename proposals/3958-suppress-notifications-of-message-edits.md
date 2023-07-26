@@ -11,7 +11,7 @@ is re-notified). This contributes to notification fatigue as the additional
 notifications contain no new information.
 
 Additionally for users which have a room set to "all messages" then every event
-edit results in a new notification.
+edit results in an additional notification.[^1]
 
 ## Proposal
 
@@ -89,31 +89,6 @@ when we generate notifications.
 If an event is edited and the new event (but not the original event) matches a keyword
 then the notification would erroneously be suppressed.
 
-### Edits of rooms set to "all messages"
-
-A room can be configured to be notify for "all messages" by creating the earliest
-[override push rule](https://spec.matrix.org/v1.7/client-server-api/#push-rules)
-possible which matches the room ID & has `actions` set to "notify" [^1][^2], e.g.:
-
-```json
-{
-    "rule_id" : "!abcdef:example.com",
-    "conditions" : [
-       {
-          "key" : "room_id",
-          "kind" : "event_match",
-          "pattern" : "!abcdef:example.com"
-       }
-    ],
-    "default" : false,
-    "enabled" : true,
-    "actions" : ["notify"]
-}
-```
-
-Since this push rule would be evaluated before the new `.m.rule.suppress_edits` it would
-still result in duplicate notifications for those rooms.
-
 ## Alternatives
 
 An alternative solution would be to add a push rule with no actions and a condition to
@@ -149,8 +124,19 @@ A previous version of this MSC used `.com.beeper.suppress_edits` with a differen
 
 N/A
 
-[^1]: The [`.m.rule.master`](https://spec.matrix.org/v1.7/client-server-api/#default-override-rules)
-is *always* first, so this rule gets created right after it.
+<!-- Footnotes below -->
 
-[^2]: See the [Element Web](https://github.com/matrix-org/matrix-react-sdk/blob/da7aa4055e04f291be9b5141b704bd12aec03d0c/src/RoomNotifs.ts#L162-L170)
-implementation.
+[^1]: A room can be configured to be notify for "all messages" by creating a [room-specific push rule](https://spec.matrix.org/v1.7/client-server-api/#push-rules)
+with an `rule_id` of the room ID & has `actions` set to "notify" , e.g.:
+
+    ```json
+    {
+        "rule_id" : "!abcdef:example.com",
+        "default" : false,
+        "enabled" : true,
+        "actions" : ["notify"]
+    }
+    ```
+
+    See the [Element Web](https://github.com/matrix-org/matrix-react-sdk/blob/da7aa4055e04f291be9b5141b704bd12aec03d0c/src/RoomNotifs.ts#L162-L170)
+    implementation.
