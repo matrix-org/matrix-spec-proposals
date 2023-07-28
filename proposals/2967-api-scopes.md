@@ -100,7 +100,7 @@ Content-Type: application/json
 
 ## Potential issues
 
-The Device ID handling involves a change in where device IDs are generated. This is discussed in MSC2964. On the OIDC Provider side the device ID proposal requires the use of dynamic scopes. That is, the specific scope is a templated form rather than being static. This is not currently supported by some OpenID Providers (e.g. Okta and Auth0).
+The Device ID handling involves a change in where device IDs are generated. This is discussed in [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964). On the OIDC Provider side the device ID proposal requires the use of dynamic scopes. That is, the specific scope is a templated form rather than being static. This is not currently supported by some OpenID Providers (e.g. Okta and Auth0).
 
 The addition of the `WWW-Authenticate` header could cause issue with some clients.
 
