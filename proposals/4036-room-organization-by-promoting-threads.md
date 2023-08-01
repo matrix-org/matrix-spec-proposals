@@ -1,4 +1,4 @@
-# MSC0000: Room oranization by promoting threads
+# MSC436: Room oranization by promoting threads
 
 Sometimes, having a discussion in a busy room can be difficult.
 People are often simply replying with a message event which is technically not related (`m.relates_to`) using replies (`m.in_reply_to`) or threads (`m.thread`) with the previous messages of the conversation making separation of one conversation from others difficult.
