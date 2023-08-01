@@ -22,7 +22,7 @@ widget the URL of the homeserver API the user is currently using:
 The widget API is extended with a two new interface to upload files into the content repository. The
 user must manually approve the following capability before the actions can be used:
 
-- `m.upload_file`: Let the widget access the user directory.
+- `m.upload_file`: Let the widget upload files.
 
 ### Get configuration
 
@@ -57,7 +57,7 @@ If the event is successfully sent by the client, the client sends the following 
 }
 ```
 
-The `response` is are a mirrored representation of the original `/_matrix/media/v3/config` API.
+The `response` is a mirrored representation of the original `/_matrix/media/v3/config` API.
 
 ### Upload file
 
@@ -76,8 +76,7 @@ To trigger the action to upload a file, widgets will use a new `fromWidget` requ
 }
 ```
 
-Under `data`, all keys are a mirrored representation of the original `/_matrix/client/v3/user_directory/search`
-API. `file` is a `XMLHttpRequestBodyInit` that is supported as a data type in the `postMessage` API.
+`data.file` is a `XMLHttpRequestBodyInit` that is supported as a data type in the `postMessage` API.
 
 If the widget did not get approved for the capability required to send the event, the client MUST
 send an error response (as required currently by the capabilities system for widgets).
@@ -91,7 +90,7 @@ If the event is successfully sent by the client, the client sends the following 
   "api": "fromWidget",
   "widgetId": "20200827_WidgetExample",
   "requestid": "generated-id-1234",
-  "action": "user_directory_search",
+  "action": "upload_file",
   "data": {
     "file": "some-content"
   },
@@ -125,8 +124,8 @@ however, it still requires that the upload is authenticated.
 ## Security considerations
 
 The same considerations as in [MSC2762](https://github.com/matrix-org/matrix-spec-proposals/pull/2762)
-apply. This feature will allow the widget to be able to receive upload data into the media repository.
-This could potentially be used to upload malicious content. However, the access will only be possible
+apply. This feature will allow the widget to be able to upload data into the media repository. This
+could potentially be used to upload malicious content. However, the access will only be possible
 when the user accepts the capability and grant access if the widget is trusted by the user.
 
 ## Unstable prefix
