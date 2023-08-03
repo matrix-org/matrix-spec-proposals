@@ -136,7 +136,7 @@ Example receipt (changes are highlighted in bold):
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
       "m.read": {
-        "@rikj:jki.re": {
+        "@erikj:jki.re": {
           "ts": 1436451550453,
           <b>"order": 56764334544,</b> // Optional
         }
