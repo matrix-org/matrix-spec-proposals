@@ -253,7 +253,7 @@ already been outlined.
 
 ### Solves the same problem MSC3981 Relations Recursion tried to solve
 
-This propsal would not replace
+This proposal would not replace
 [MSC3981: /relations recursion](https://github.com/matrix-org/matrix-spec-proposals/pull/3981)
 but would make it less important, because we would no longer depend on the
 server providing messages in Sync Order, so we could happily fetch messages
