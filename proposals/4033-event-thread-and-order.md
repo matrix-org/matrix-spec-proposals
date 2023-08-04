@@ -302,6 +302,19 @@ We moved it inside the content, as a sibling to `ts`, because multiple existing
 clients (mautrix-go, mautrix-python and matrix-rust-sdk) would have failed to
 parse the above JSON if they encountered it without first being updated.
 
+### Drop receipts with missing order information
+
+In the case where a server has a receipt to send to the client, but does not
+have the event to which it refers, and therefore cannot find its order, we
+proposed above that the server should hold the receipt until it has the relevant
+event, and send it then.
+
+Alternatively, we could simply never send the receipt under these circumstances.
+We believe that this is reasonable because it is not expected to happen for the
+user's own events, which are the most critical to provide accurate read
+receipts, and implementing the "hold and send later" strategy may cause extra
+work for the server for little practical gain.
+
 ## Security considerations
 
 None highlighted so far.
