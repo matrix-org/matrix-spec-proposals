@@ -138,7 +138,7 @@ Example receipt (changes are highlighted in bold):
       "m.read": {
         "@erikj:jki.re": {
           "ts": 1436451550453,
-          <b>"order": 56764334544,</b> // Optional
+          <b>"order": 56764334544,</b>
         }
       },
     }
@@ -154,9 +154,15 @@ We propose:
   the referred-to event.
 
 The `order` property in receipts should be inserted by servers when they are
-creating the aggregated receipt event. If the server does not have the
-referenced event and so does not know its order, this property may be omitted,
-and clients will need to look up the event themselves to determine its order.
+creating the aggregated receipt event.
+
+If the server is not able to provide the order of a receipt (e.g. because it
+does not have the relevant event) it should not send the receipt. If a server
+later receives an event, allowing it to provide an order for this receipt, it
+should send the receipt at that time. Rationale: without the order, a receipt is
+not useful to the client since it is not able to use it to determine which
+events are read. If a receipt points at an unknown event, the safest assumption
+is that other events in the room are unread i.e. there is no receipt.
 
 Note that the `order` property for a particular event will probably be the same
 for every user, so will be repeated multiple times in an aggregated receipt
@@ -284,7 +290,7 @@ receipt:
 <pre>{
   "content": {
     "$1435641916114394fHBLK:matrix.org": {
-      <b>"order": 56764334544,</b> // Optional
+      <b>"order": 56764334544,</b>
       "m.read": { "@rikj:jki.re": { "ts": 1436451550453, "thread_id": "$x" } },
       "m.read.private": { "@self:example.org": { "ts": 1661384801651 } }
     }
