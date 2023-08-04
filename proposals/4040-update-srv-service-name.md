@@ -1,4 +1,4 @@
-# MSC4040: Update SRV service name to IANA registation
+# MSC4040: Update SRV service name to IANA registration
 
 The Internet Assigned Numbers Authority (IANA) holds a registry of all service names and ports in use
 by Internet applications. Unfortunately, the service name `matrix` was registered an eternity ago for
