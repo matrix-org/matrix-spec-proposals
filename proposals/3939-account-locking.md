@@ -14,7 +14,8 @@ associated 3PIDs, etc).
 
 ## Proposal
 
-A new `M_USER_LOCKED` is introduced, which is communicated to clients in `403 Forbidden` HTTP responses.
+A new `M_USER_LOCKED` is introduced, which is communicated to clients in
+`401 Unauthorized` HTTP responses with `soft_logout` set to `true`.
 
 When an account is locked:
 
@@ -28,6 +29,11 @@ When an account is locked:
 When an account is unlocked, clients and the homeserver can start interacting
 again as if nothing happened, similarly to when a client recovers after loss of
 connection.
+
+Using 401 return code allows the user to be aware of the fact that something wrong is
+happening, since the app will be logged out.
+Using `soft_logout` allows to keep everything encryption related in the client until
+the user logs again (after being unlocked).
 
 ## Alternatives
 
@@ -43,6 +49,10 @@ Another option for merging this proposal with MSC3823 would be adding a
 be required if `suspended` is `true`) to errors bearing the `M_USER_LOCKED`
 error code. Opinions are welcome on whether this is a better solution than using
 two distincts error codes.
+
+Another option is to use 403 responses instead of 401 and `soft_logout`. We choose this
+so that existing apps provide some feedback to the user without explicit support for
+this MSC.
 
 ## Unstable prefix
 
