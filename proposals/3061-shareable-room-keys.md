@@ -144,7 +144,7 @@ One way to ensure that keys are only shared with authorized users is to only
 share keys with users when the client invites them, as the client is then
 certain that the user is allowed to be in the room.  Another way is to have a
 mechanism of verifying membership, such as the method proposed in
-(MSC3917)[https://github.com/matrix-org/matrix-spec-proposals/pull/3917].
+[MSC3917](https://github.com/matrix-org/matrix-spec-proposals/pull/3917).
 
 ## Unstable prefix
 
