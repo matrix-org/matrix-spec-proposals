@@ -162,6 +162,24 @@ it can delete the dehydrated device and create a new one.
 If the given `device_id` is not the dehydrated device ID, the server responds
 with an error code of `M_FORBIDDEN`, HTTP code 403.
 
+### Deleting a dehydrated device
+
+A dehydrated device will get replaced whenever a new device gets uploaded using
+the `PUT /dehydrated_device`, this makes a `DELETE /dehydrated_device`
+unnecessary, though for completeness sake and to give client authors to get back
+to a state where no dehydrated device exists for a given user we will introduce
+one.
+
+`DELETE /dehydrated_device`
+
+Response:
+
+```json
+{
+  "device_id": "dehydrated device's ID"
+}
+```
+
 ### Device Dehydration Format
 
 TODO: define a format.  Unlike MSC2679, we don't need to worry about the
