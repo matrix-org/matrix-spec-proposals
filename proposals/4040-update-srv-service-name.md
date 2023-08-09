@@ -107,7 +107,8 @@ A potential way forward is to remove SRV resolution entirely, however prior effo
 
 ## Security considerations
 
-Increased
+There is increased DNS load with this change, due to having to potentially look up 6+ records in the worst case
+scenario. DNS servers should be more than capable of caching, and handling such a spike of requests.
 
 ## Unstable prefix
 
