@@ -143,7 +143,7 @@ Response:
     // array of to-device messages, in the same format as in
     // https://spec.matrix.org/unstable/client-server-api/#extensions-to-sync
   ],
-  "next_batch": "token to obtain next events" // optional
+  "next_batch": "token to obtain next events"
 }
 ```
 
