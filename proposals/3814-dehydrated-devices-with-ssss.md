@@ -147,14 +147,17 @@ Response:
 }
 ```
 
-Once a client calls `POST /dehydrated_device/{device_id}/events`, the server
-can delete the device (though not necessarily its to-device messages).  Once a
-client calls `POST /dehydrated_device/{device_id}/events` with a `next_batch`
-token, the server will delete any to-device messages delivered in previous
-batches.  For the last batch of messages, the server will still send a
+Once a client calls `POST /dehydrated_device/{device_id}/events` with a `next_batch`
+token, unlike the `/sync` endpoint, the server should *not* delete any to-device
+messages delivered in previous batches. This should prevent the loss of messages
+in case the device performing the rehydration gets deleted. In the case the
+rehydration process gets aborted, another device will be able to restart the
+process.
+
+For the last batch of messages, the server will still send a
 `next_batch` token, and return an empty `events` array when called with that
-token, so that it knows that the client has successfully received all the
-messages and can clean up all the to-device messages for that device.
+token, this signals to the client that it has received all to-device events and
+it can delete the dehydrated device and create a new one.
 
 If the given `device_id` is not the dehydrated device ID, the server responds
 with an error code of `M_FORBIDDEN`, HTTP code 403.
