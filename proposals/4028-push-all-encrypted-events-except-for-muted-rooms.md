@@ -57,9 +57,11 @@ The overall tradeoff is that clients will receive extra pushes some of the time.
 
 ### Unread notification counts
 
-As soon as the rule `.m.rule.encrypted_event` is present and enabled in the account push rules set, the clients have to track unread notifications themselves in **encrypted rooms**. All the clients with or without push services will have to compute the unread notification count for each encrypted room during the client-server sync, by implementing the algorithm described below.
+Since the encryption has been introduced, the actual unread notification counts have to be updated/computed at the client side for the **encrypted rooms**. Nothing has been specified for that, so each client implemented its own mechanism. We want to harmonize this here.
 
-This algorithm depends on the unread notification count `unread_notifications` received from the server for each joined room in the [sync response](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclientv3sync). It has to be adapted to the potential unread thread notification counts `unread_thread_notifications` that we will ignore here to simplify the description.
+As soon as the rule `.m.rule.encrypted_event` is present and enabled in the account push rules set, all the clients with or without push services should compute the unread notification count for each encrypted room during the client-server sync, by implementing the algorithm described below. Its complexity is similar to the existing implementations.
+
+This algorithm depends on the unread notification count `unread_notifications` received from the server for each joined room in the [sync response](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclientv3sync). It has to be adapted to the potential unread thread notification counts `unread_thread_notifications` that we will ignore here to ease the description.
 
 Let's consider we receive the following data for a joined encrypted rooms in the sync response:
 - number of new encrypted events in the timeline: n
