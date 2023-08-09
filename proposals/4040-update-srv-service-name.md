@@ -71,15 +71,15 @@ The new steps thus become:
       are then made to the resolve IP address and a port of 8448, using a `Host` header of `<delegated_hostname>`.
       The target server must present a valid certificate for `<delegated_hostname>`.
 
-4. **(ADDED)** If the `/.well-known` request resulted in an error response, a server is found by resolving an
-   SRV record for `_matrix-fed._tcp.<hostname>`. This may result in a hostname (to be resolved using AAAA or A
-   records) and port. Requests are made to the resolved IP address and port, using 8448 as a default port, with
-   a `Host` header of `<hostname>`. The target server must present a valid certificate for `<hostname>`.
+4. **(ADDED)** If the `/.well-known` request resulted in an error response, a server is found by resolving
+   an SRV record for `_matrix-fed._tcp.<hostname>`. This may result in a hostname (to be resolved using AAAA or A
+   records) and port. Requests are made to the resolved IP address and port, with a `Host` header of `<hostname>`.
+   The target server must present a valid certificate for `<hostname>`.
 
 5. **(DEPRECATED)** If the `/.well-known` request resulted in an error response, a server is found by resolving
    an SRV record for `_matrix._tcp.<hostname>`. This may result in a hostname (to be resolved using AAAA or A
-   records) and port. Requests are made to the resolved IP address and port, using 8448 as a default port, with a
-   `Host` header of `<hostname>`. The target server must present a valid certificate for `<hostname>`.
+   records) and port. Requests are made to the resolved IP address and port, with a `Host` header of `<hostname>`.
+   The target server must present a valid certificate for `<hostname>`.
 
 6. (unchanged) If the `/.well-known` request returned an error response, and the SRV record was not found, an IP
    address is resolved using CNAME, AAAA and A records. Requests are made to the resolved IP address using port
