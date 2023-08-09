@@ -2,9 +2,9 @@
 
 [MSC2697](https://github.com/matrix-org/matrix-doc/pull/2697) introduces device
 dehydration -- a method for creating a device that can be stored in a user's
-account and receive megolm sessions.  In this way, if a user has no other
+account and receive Megolm sessions.  In this way, if a user has no other
 devices logged in, they can rehydrate the device on the next login and retrieve
-the megolm sessions.
+the Megolm sessions.
 
 However, the approach presented in that MSC has some downsides, making it
 tricky to implement in some clients, and presenting some UX difficulties.  For
@@ -24,28 +24,68 @@ these problems by storing the dehydration key in SSSS, and by not changing the
 client's device ID.  Rather than changing its device ID when it rehydrates the
 device, it will keep its device ID and upload its own device keys. The client
 will separately rehydrate the device, fetch its to-device messages, and decrypt
-them to retrieve the megolm sessions.
+them to retrieve the Megolm sessions.
 
 ## Proposal
 
 ### Dehydrating a device
 
-The dehydration process is the same as in MSC2697.  For completeness, it is
-repeated here:
+The dehydration process is similar as in MSC2697. One important change is that
+the dehydrated device, the public device keys, and one-time keys are all
+uploaded in the same request. This change should prevent the creation of
+dehydrated devices which do not support end-to-end encryption.
 
 To upload a new dehydrated device, a client will use `PUT /dehydrated_device`.
 Each user has at most one dehydrated device; uploading a new dehydrated device
 will remove any previously-set dehydrated device.
 
+The client *should* use the public Curve25519 identity key of the device,
+encoded as unpadded base64, as the device ID.
+
+The `device_keys`, `one_time_keys`, and `fallback_keys` fields use the same
+structure as for the `/keys/upload` response.
+
 `PUT /dehydrated_device`
 
 ```jsonc
 {
+  "device_id": "dehydrated_device_id",
   "device_data": {
     "algorithm": "m.dehydration.v1.olm"
     "other_fields": "other_values"
   },
-  "initial_device_display_name": "foo bar" // optional
+  "initial_device_display_name": "foo bar", // optional
+  "device_keys": {
+    "user_id": "<user_id>",
+    "device_id": "<device_id>",
+    "valid_until_ts": <millisecond_timestamp>,
+    "algorithms": [
+        "m.olm.curve25519-aes-sha2",
+    ]
+    "keys": {
+        "<algorithm>:<device_id>": "<key_base64>",
+    },
+    "signatures:" {
+        "<user_id>" {
+            "<algorithm>:<device_id>": "<signature_base64>"
+        }
+    }
+  },
+  "fallback_keys": {
+    "<algorithm>:<device_id>": "<key_base64>",
+    "signed_<algorithm>:<device_id>": {
+      "fallback": true,
+      "key": "<key_base64>",
+      "signatures": {
+        "<user_id>": {
+          "<algorithm>:<device_id>": "<key_base64>"
+        }
+      }
+    }
+  },
+  "one_time_keys": {
+    "<algorithm>:<key_id>": "<key_base64>"
+  }
 }
 ```
 
@@ -56,18 +96,6 @@ Result:
   "device_id": "dehydrated device's ID"
 }
 ```
-
-After the dehydrated device is uploaded, the client will upload the encryption
-keys using `POST /keys/upload/{device_id}`, where the `device_id` parameter is
-the device ID given in the response to `PUT /dehydrated_device`.  The request
-and response formats for `POST /keys/upload/{device_id}` are the same as those
-for `POST /keys/upload` with the exception of the addition of the `device_id`
-path parameter.
-
-Note: Synapse already supports `POST /keys/upload/{device_id}` as this was used
-in some old clients.  However, synapse requires that the given device ID
-matches the device ID of the client that made the call.  So this will be
-changed to allow uploading keys for the dehydrated device.
 
 ### Rehydrating a device
 
@@ -183,7 +211,7 @@ the moment.
 ### Accumulated to-device messages
 
 If a dehydrated device is not rehydrated for a long time, then it may
-accumulate many to-device messages from other clients sending it megolm
+accumulate many to-device messages from other clients sending it Megolm
 sessions.  This may result in a slower initial sync when the device eventually
 does get rehydrated, due to the number of messages that it will retrieve.
 Again, this can be addressed by periodically replacing the dehydrated device,
