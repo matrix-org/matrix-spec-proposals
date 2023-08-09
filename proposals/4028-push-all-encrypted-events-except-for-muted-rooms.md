@@ -1,6 +1,6 @@
 # MSC4028: Push all encrypted events except for muted rooms
 
-About notifications handling, it is currently not possible for mobile clients which get push notifications to properly implement a mentions-and-keywords-only room.
+About notifications handling, it is currently not possible for mobile clients which get push notifications to properly implement a mentions-and-keywords-only room when encryption is enabled.
 
 Like it was already described in [MSC3996: Encrypted mentions-only rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/3996): 
 
