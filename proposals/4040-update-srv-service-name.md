@@ -34,7 +34,7 @@ The new steps thus become:
    and given port with a `Host` header of the original server name (with port). The target server must present
    a valid certificate for the hostname.
 
-3. (unchanged) If the hostname is not an IP literal, a regular HTTPS request is made to `https://<hostname>/.well-known/matrix/server`,
+3. (steps added/deprecated) If the hostname is not an IP literal, a regular HTTPS request is made to `https://<hostname>/.well-known/matrix/server`,
    expecting the schema defined later in this section. 30x redirects should be followed, however redirection
    loops should be avoided. Responses (successful or otherwise) to the `/.well-known` endpoint should be
    cached by the requesting server. Servers should respect the cache control headers present on the response,
