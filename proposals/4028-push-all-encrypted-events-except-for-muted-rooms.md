@@ -83,7 +83,7 @@ About the case 4, the back pagination should be mandatory for mentions-and-keywo
 
 Note: some unencrypted events (for example `m.room.redaction`) may be taken into account or not in this unreads count k. This depends on the push rules set. If you force "all messages" mode on a room by creating a room-specific push rule, some unencrypted events (like redaction events) will be included in this count. This is not the case if "all messages" mode is obtained by the combination of server predefined rules. The client have locally all the information (= the push rules) to handle this edge case during the implementation of the algorithm.
 
-### Listening notifications
+### Listing notifications
 
 This new push rule will impact the existing endpoint [`GET /_matrix/client/v3/notifications`](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclientv3notifications).
 
