@@ -1,4 +1,4 @@
-# MSC0000: Use http header Retry-After to enable library-assisted retry handling
+# MSC4041: Use http header Retry-After to enable library-assisted retry handling
 
 The current Matrix Client-Server API (v1.7) recommends that home servers should protect themselves from
 being overloaded by enforcing rate-limits to selected API calls.
