@@ -259,7 +259,7 @@ to be interpreted as described in [RFC5869].
 $$
 \begin{aligned}
     DEVICE\_KEY
-    &= \operatorname{HKDF} \left(
+    &= \text{HKDF} \left(
         \text{``Device ID``},
         RANDOM\_KEY,
         \text{``dehydrated-device-pickle-key"},
@@ -279,7 +279,7 @@ initialization vector.
 $$
 \begin{aligned}
     AES\_KEY\;\parallel\;HMAC\_KEY\;\parallel\;AES\_IV
-    &= \operatorname{HKDF}\left(0,DEVICE\_KEY,\text{``Pickle"},80\right)
+    &= \text{HKDF}\left(0,DEVICE\_KEY,\text{``Pickle"},80\right)
 \end{aligned}
 $$
 
