@@ -1,11 +1,11 @@
-# MSC0000: Presence Override API
+# MSC4043: Presence Override API
 
 In current matrix there exists no mechanism that is reliable to override the supposed to exist totem pole
 for presence. Where more important states overrule less important ones. This proposal fixes that.
 
 This proposal proposes a new API that you can call to set a authoritative presence state for your account. This
 state is always used negating all other ways to set presence. So if you set your state to `disabled` from
-MSC_disabled_presence_state then well then your state would always be `disabled`.
+MSC4042 then well then your state would always be `disabled`.
 
 Using a new API for this instead of recycling some old method does come at the benefit of that this just works.
 
@@ -63,11 +63,11 @@ positive effect is privacy related not strictly security in that users can cloak
 ## Unstable prefix
 
 While this proposal is unstable instead of using `/_matrix/client/v1/presence/{userId}/override` you use
-`/_matrix/client/unstable/support.feline.mscAAAA.v1/override`
+`/_matrix/client/unstable/support.feline.msc4043.v1/override`
 
-And unstable feature flag used is `support.feline.mscAAAA.v1`
+And unstable feature flag used is `support.feline.msc4043.v1`
 
 ## Dependencies
 
-This MSC has MSC_disabled_presence_state as a soft dependency as its a very useful state to override to.
+This MSC has MSC4042 as a soft dependency as its a very useful state to override to.
 This MSC has no hard dependencies and can be used on its own and merged on its own.
