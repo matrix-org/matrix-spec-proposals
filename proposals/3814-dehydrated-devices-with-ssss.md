@@ -259,11 +259,7 @@ to be interpreted as described in [RFC5869].
 $$
 \begin{aligned}
     DEVICE\_KEY
-    &= \text{HKDF} \left(
-        \text{``Device ID``},
-        RANDOM\_KEY,
-        \text{``dehydrated-device-pickle-key"},
-        32\right)
+    &= \text{HKDF} \left(\text{``Device ID``}, RANDOM\_KEY, \text{``dehydrated-device-pickle-key"}, 32\right)
 \end{aligned}
 $$
 
@@ -278,7 +274,7 @@ initialization vector.
 
 $$
 \begin{aligned}
-    AES\_KEY\;\parallel\;HMAC\_KEY\;\parallel\;AES\_IV
+    AES\_KEY \parallel HMAC\_KEY \parallel AES\_IV
     &= \text{HKDF}\left(0,DEVICE\_KEY,\text{``Pickle"},80\right)
 \end{aligned}
 $$
@@ -292,7 +288,7 @@ mac_key = output[32..64]
 initialization_vector = output[64..80]
 ```
 
-The plain-text is encrypted with [AES-256] in [CBC] mode with [PKCS7] padding,
+The plain-text is encrypted with [AES-256] in [CBC] mode with [PKCS#7] padding,
 using the key $`AES\_KEY`$ and the IV $`AES\_IV`$ to give the cipher-text.
 
 Then the cipher-text are passed through [HMAC-SHA-256]. The first 8 bytes of the
