@@ -1,10 +1,10 @@
-# MSC3814: Dehydrated Devices with SSSS
+# MSC3814: Dehydrated Devices with [SSSS]
 
-[MSC2697](https://github.com/matrix-org/matrix-doc/pull/2697) introduces device
+[MSC2697] introduces device
 dehydration -- a method for creating a device that can be stored in a user's
-account and receive Megolm sessions.  In this way, if a user has no other
+account and receive [Megolm] sessions.  In this way, if a user has no other
 devices logged in, they can rehydrate the device on the next login and retrieve
-the Megolm sessions.
+the [Megolm] sessions.
 
 However, the approach presented in that MSC has some downsides, making it
 tricky to implement in some clients, and presenting some UX difficulties.  For
@@ -13,14 +13,14 @@ calls are made (in particular `/sync`), which may conflict with clients that
 currently assume that `/sync` can be called immediately after logging in.
 
 In addition, the user is required to enter a key or passphrase to create a
-dehydrated device.  In practice, this is usually the same as the SSSS
+dehydrated device.  In practice, this is usually the same as the [SSSS]
 key/passphrase, which means that the user loses the advantage of verifying
 their other devices via emoji or QR code: either they will still be required to
-enter their SSSS key/passphrase (or a separate one for device dehydration), or
+enter their [SSSS] key/passphrase (or a separate one for device dehydration), or
 else that client will not be able to dehydrate a device.
 
 This proposal introduces another way to use the dehydrated device that solves
-these problems by storing the dehydration key in SSSS, and by not changing the
+these problems by storing the dehydration key in [SSSS], and by not changing the
 client's device ID.  Rather than changing its device ID when it rehydrates the
 device, it will keep its device ID and upload its own device keys. The client
 will separately rehydrate the device, fetch its to-device messages, and decrypt
@@ -30,7 +30,7 @@ them to retrieve the Megolm sessions.
 
 ### Dehydrating a device
 
-The dehydration process is similar as in MSC2697. One important change is that
+The dehydration process is similar as in [MSC2697]. One important change is that
 the dehydrated device, the public device keys, and one-time keys are all
 uploaded in the same request. This change should prevent the creation of
 dehydrated devices which do not support end-to-end encryption.
@@ -39,11 +39,11 @@ To upload a new dehydrated device, a client will use `PUT /dehydrated_device`.
 Each user has at most one dehydrated device; uploading a new dehydrated device
 will remove any previously-set dehydrated device.
 
-The client *should* use the public Curve25519 identity key of the device,
-encoded as unpadded base64, as the device ID.
+The client *must* use the public [Curve25519] [identity key] of the device,
+encoded as unpadded Base64, as the device ID.
 
 The `device_keys`, `one_time_keys`, and `fallback_keys` fields use the same
-structure as for the `/keys/upload` response.
+structure as for the [`/keys/upload`] request.
 
 `PUT /dehydrated_device`
 
@@ -124,7 +124,7 @@ If the client is able to decrypt the data and wants to use the dehydrated
 device, the client retrieves the to-device messages sent to the dehydrated
 device by calling `POST /dehydrated_device/{device_id}/events`, where
 `{device_id}` is the ID of the dehydrated device.  Since there may be many
-messages, the response can be sent in batches: the response can include a
+messages, the response can be sent in batches: the response must include a
 `next_batch` parameter, which can be used in a subsequent call to `POST
 /dehydrated_device/{device_id}/events` to obtain the next batch.
 
@@ -147,12 +147,12 @@ Response:
 }
 ```
 
-Once a client calls `POST /dehydrated_device/{device_id}/events` with a `next_batch`
-token, unlike the `/sync` endpoint, the server should *not* delete any to-device
-messages delivered in previous batches. This should prevent the loss of messages
-in case the device performing the rehydration gets deleted. In the case the
-rehydration process gets aborted, another device will be able to restart the
-process.
+Once a client calls `POST /dehydrated_device/{device_id}/events` with a
+`next_batch` token, unlike the `/sync` endpoint, the server should *not* delete
+any to-device messages delivered in previous batches. This should prevent the
+loss of messages in case the device performing the rehydration gets deleted. In
+the case the rehydration process gets aborted, another device will be able to
+restart the process.
 
 For the last batch of messages, the server will still send a
 `next_batch` token, and return an empty `events` array when called with that
@@ -192,10 +192,134 @@ will have the advantage that we don't need to figure out a format that will fit
 into every possible implementation's idiosyncrasies.  The format will be
 encrypted, which leads to ...
 
+```text
+   ┌───────────────────────────────────────────────────────────┐
+   │                           Pickle                          │
+   ├───────────────────────────────────────────────────────────┤
+   │Name                    │ Type          │ Size (bytes)     │
+   ├────────────────────────┼───────────────┼──────────────────┤
+   │Version                 │ u32           │ 4                │
+   │Ed25519 key pair        │ KeyPair       │ 64               │
+   │Curve25519 key pair     │ KeyPair       │ 64               │
+   │Number of one-time keys │ u32           │ 4                │
+   │One-time keys           │ [OneTimeKey]  │ N * 69           │
+   │Fallback keys           │ FallbackKeys  │ 2 * 69           │
+   │Next key ID             │ u32           │ 4                │
+   └────────────────────────┴───────────────┴──────────────────┘
+   ┌───────────────────────────────────────────────────────────┐
+   │                           KeyPair                         │
+   ├────────────────────────┬───────────────┬──────────────────┤
+   │Name                    │ Type          │ Size (bytes)     │
+   ├────────────────────────┼───────────────┼──────────────────┤
+   │Public key              │ [u8; 32]      │ 32               │
+   │Private key             │ [u8; 32]      │ 32               │
+   └────────────────────────┴───────────────┴──────────────────┘
+
+   ┌───────────────────────────────────────────────────────────┐
+   │                    OneTimeKey                             │
+   ├────────────────────────┬───────────────┬──────────────────┤
+   │Name                    │ Type          │ Size             │
+   ├────────────────────────┼───────────────┼──────────────────┤
+   │Key ID                  │ u32           │ 4 bytes          │
+   │Is published            │ u8            │ 1 byte           │
+   │Curve 25519 key pair    │ KeyPair       │ 69 bytes         │
+   └────────────────────────┴───────────────┴──────────────────┘
+
+   ┌───────────────────────────────────────────────────────────┐
+   │                    FallbackKeys                           │
+   ├────────────────────────┬───────────────┬──────────────────┤
+   │Name                    │ Type          │ Size             │
+   ├────────────────────────┼───────────────┼──────────────────┤
+   │Number of fallback keys │ u8            │ 1 byte           │
+   │Fallback-key            │ OneTimeKey    │ 69 bytes         │
+   │Previous fallback-key   │ OneTImeKey    │ 69 bytes         │
+   └────────────────────────┴───────────────┴──────────────────┘
+```
+
+TODO: Explain why we must ignore public keys when decoding them and why they are
+included in the first place.
+
+When decoding, clients *must* ignore the public keys and instead derive the
+public key from the private one.
+
 #### Encryption key
+
+TODO: Decide if the Latex format or the pseudocode format is preferred, or maybe
+both.
+
+TODO: Explain why the double derivation is necessary.
 
 The encryption key used for the dehydrated device will be randomly generated
 and stored/shared via SSSS using the name `m.dehydrated_device`.
+
+The randomly generated encryption key *must* be expanded using the HMAC-based
+Key Derivation function defined in [RFC5869]. The notation in this document are
+to be interpreted as described in [RFC5869].
+
+$$
+\begin{aligned}
+    DEVICE\_KEY
+    &= \operatorname{HKDF} \left(
+        \text{``Device ID``},
+        RANDOM\_KEY,
+        \text{``dehydrated-device-pickle-key"},
+        32\right)
+\end{aligned}
+$$
+
+```text
+PRK = HKDF-Extract("Device ID", random_encryption_key)
+device_key = HKDF-Expand(PRK, "dehydrated-device-pickle-key", 32)
+```
+
+The `device_key` is then further expanded into a AES256 key, HMAC key and
+initialization vector.
+
+
+$$
+\begin{aligned}
+    AES\_KEY\;\parallel\;HMAC\_KEY\;\parallel\;AES\_IV
+    &= \operatorname{HKDF}\left(0,DEVICE\_KEY,\text{``Pickle"},80\right)
+\end{aligned}
+$$
+
+```text
+PRK = HKDF-Extract("", DeviceKey)
+output = HKDF-Expand(PRK, "Pickle", 80)
+
+aes_key = output[0..32]
+mac_key = output[32..64]
+initialization_vector = output[64..80]
+```
+
+The plain-text is encrypted with [AES-256] in [CBC] mode with [PKCS7] padding,
+using the key $`AES\_KEY`$ and the IV $`AES\_IV`$ to give the cipher-text.
+
+Then the cipher-text are passed through [HMAC-SHA-256]. The first 8 bytes of the
+MAC are appended to the cipher-text.
+
+The cipher-text, including the appended MAC tag, are encoded using unpadded
+Base64 to give the device pickle.
+
+The device pickle can be inserted into the `device_pickle` field of the
+`device_data` JSON message.
+
+ ```json
+{
+ "device_data": {
+    "algorithm": "m.dehydration.v1.olm",
+    "device_pickle": "encrypted dehydrated device"
+  }
+}
+```
+
+#### Test vectors
+
+Device pickle:
+```
+Gc0elC7k7NISzWW/C2UIuzRMDSHzzRLfM3lMnJHMLMcuyLtZHljhV/YvIctIlepxevznEcwBc40Q0CtS3k5SI9gGyN7G+95hnQan0rKe64a1Vx1Vx4Ky8i+m1y9JVT++WcQ54CGhMuCGoN2O1xEQb+4fM+UVS/bLNJ4Pzzqa1ilzCrs4SCTz70eriShvzt7y1cn2A6ABNhK4aXnLB8gK9HuMLyctyX5ikvIjkAIAdVr1EI1azetZDQ
+```
+
 
 ## Potential issues
 
@@ -275,3 +399,15 @@ dehydration algorithm `m.dehydration.v1.olm` will be called
 ## Dependencies
 
 None
+
+[RFC5869]: https://datatracker.ietf.org/doc/html/rfc5869
+[AES-256]: http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
+[CBC]: http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
+[PKCS#7]: https://tools.ietf.org/html/rfc2315
+[Curve25519]: http://cr.yp.to/ecdh.html
+[identity key]: https://gitlab.matrix.org/matrix-org/olm/-/blob/master/docs/olm.md#initial-setup
+[Megolm]: https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md
+[SSSS]: https://spec.matrix.org/v1.7/client-server-api/#storage
+[MSC2697]: https://github.com/matrix-org/matrix-doc/pull/2697
+[`/keys/upload`]: https://spec.matrix.org/v1.7/client-server-api/#post_matrixclientv3keysupload
+[device keys]: https://spec.matrix.org/v1.7/client-server-api/#device-keys
