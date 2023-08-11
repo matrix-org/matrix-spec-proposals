@@ -38,6 +38,14 @@ And you will get back a response that is like the example below if your override
 }
 ```
 
+And to disable override you send a payload with a empty `presence_override` key like the example below.
+
+```json
+{
+  "presence_override": ""
+}
+```
+
 As for error codes this is currently WIP but it follows a similar pattern to the current `/_matrix/client/v3/presence/{userId}/status`
 endpoint. With minor reasonable adaptations like how presence is replaced with presence override where sensible.
 
