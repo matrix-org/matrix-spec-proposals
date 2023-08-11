@@ -32,6 +32,14 @@ in order to handle rate-limiting correctly.
 If the http header `Retry-After` is introduced existing SDKs might behave differently thus leading to an
 unexpected behaviour.
 
+In order to maintain backward compatibility home servers should use both the `Retry-After` header and the
+`retry-after-ms` property in the response body. 
+
+In this case, client libraries are advised to use the values in this order:
+
+1) `Retry-After` http header.
+2) `retry-after-ms` property in the response body.
+
 
 ## Alternatives
 
