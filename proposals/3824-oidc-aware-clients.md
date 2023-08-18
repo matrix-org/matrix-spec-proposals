@@ -27,7 +27,7 @@ Add an optional `delegated_oidc_compatibility` field to the response of `GET /_m
 
 For example, if a homeserver is advertising password login for legacy clients only then it could return the following:
 
-```
+```json
 {
   "flows": [{
     "type": "m.login.password"
@@ -59,7 +59,7 @@ For a client to be considered *OIDC aware* it would:
 - support the `m.login.sso` auth flow
 - where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then *only* offer that auth flow to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
-- Link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) instead of native UI
+- link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) instead of native UI
 - RECOMMENDED: label the SSO button as "Continue"
 
 For an OIDC enabled homeserver to provide support for *OIDC aware* clients it would:
@@ -92,13 +92,13 @@ None relevant.
 
 While this feature is in development the following unstable prefixes should be used:
 
-* `delegated_oidc_compatibility` --> `org.matrix.msc3824.delegated_oidc_compatibility`
-* `action` query param --> `org.matrix.msc3824.action`
+- `delegated_oidc_compatibility` --> `org.matrix.msc3824.delegated_oidc_compatibility`
+- `action` query param --> `org.matrix.msc3824.action`
 
 ## Dependencies
 
 This MSC depends on the following MSCs, which at the time of writing have not yet
 been accepted into the spec:
 
-* [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964): Delegation of auth from homeserver to OIDC Provider
-* [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965): OIDC Provider discovery
+- [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964): Delegation of auth from homeserver to OIDC Provider
+- [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965): OIDC Provider discovery
