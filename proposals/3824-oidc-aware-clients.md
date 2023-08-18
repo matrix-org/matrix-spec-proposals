@@ -4,7 +4,7 @@ This proposal is part of the broader [MSC3861: Matrix architecture change to del
 
 In the context of [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) we can define four types of client:
 
-1. *OIDC native client* - This is a client that, where the homeserver supports it, talks to the specified OP in order to complete login and registration. e.g. Element X (WIP), Hydrogen (WIP)
+1. *OIDC native client* - This is a client that, where the homeserver supports it, talks to the specified OpenID Provider in order to complete login and registration. e.g. Element X (WIP), Hydrogen (WIP)
 1. *OIDC aware client* - This is a client that is aware of OIDC but will still use existing auth types (e.g. `m.login.sso`) to auth with an OIDC enabled homeserver.
 1. *Legacy client with SSO support* - This is a client that is not aware of OIDC but does support `m.login.sso` flow. e.g. Element Web, iOS, Android, Fluffy, Nheko, Cinny
 1. *Legacy client without SSO support* - This is a client that is not aware of OIDC at all and nor does it support `m.login.sso` flow. Typically auth is done via `m.login.password` only. e.g. Fractal
@@ -59,7 +59,10 @@ For a client to be considered fully *OIDC aware* it **must**:
 - support the `m.login.sso` auth flow
 - where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then *only* offer that auth flow to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
-- link users to manage their account at the OP web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) instead of native UI
+- link users to manage their account at the OpenID Provider web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) instead of native UI
+- check and honour the `m.3pid_changes` [capability](https://spec.matrix.org/v1.7/client-server-api/#m3pid_changes-capability) so that the user is not offered the ability to add or remove 3PIDs when OIDC is used
+- if the user wishes to sign out a device session other than it's own then the client **must** link the user to the OpenID Provider web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) if provided
+- where the user is linked to the OpenID Provider web UI above, the client should include `#action=logout&device_id=<device_id>` in the URL to indicate which device session the user wishes to sign out
 
 Optionally, an *OIDC aware* client **could**:
 
@@ -82,7 +85,7 @@ None.
 
 ## Alternatives
 
-Clients could assume that an `m.login.sso` is preferred directly from where [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) OP discovery indicates OIDC is being used. However, this might hamper some more custom configuration.
+Clients could assume that an `m.login.sso` is preferred directly from where [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) OpenID Provider discovery indicates OIDC is being used. However, this might hamper some more custom configuration.
 
 The homeserver could only offer `m.login.sso` as the supported auth type but this would prevent non-SSO capable legacy clients from accessing the homeserver.
 
