@@ -71,7 +71,7 @@ positive effect is privacy related not strictly security in that users can cloak
 ## Unstable prefix
 
 While this proposal is unstable instead of using `/_matrix/client/v1/presence/{userId}/override` you use
-`/_matrix/client/unstable/support.feline.msc4043.v1/override`
+`/_matrix/client/unstable/support.feline.msc4043.v1/presence/{userId}/override`
 
 And unstable feature flag used is `support.feline.msc4043.v1`
 
