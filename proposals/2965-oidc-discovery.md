@@ -16,13 +16,13 @@ It is an object containing two fields:
 
 For example:
 
-```
+```http
 GET /.well-known/matrix/client
 Host: example.com
 Accept: application/json
 ```
 
-```
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 ```
@@ -44,13 +44,13 @@ Content-Type: application/json
 
 The authentication server metadata can then be discovered by the client using [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html) against the `issuer` field.
 
-```
+```http
 GET /.well-known/openid-configuration
 Host: account.example.com
 Accept: application/json
 ```
 
-```
+```http
 HTTP/1.1 200 OK
 Content-Type: application/json
 ```
@@ -72,8 +72,15 @@ Content-Type: application/json
 
 The account management URL may accept the following additional query parameters:
 
-- RECOMMENDED `id_token_hint` - An ID Token that was previously issued to the client; the issuer uses it as a hint for which user is requesting to manage their account. If the requesting user is not logged in then it is used as a login hint; if a different user/identity is already logged in then warn the user that they are accessing a different account.
+- `id_token_hint` - An ID Token that was previously issued to the client; the issuer uses it as a hint for which user is requesting to manage their account. If the requesting user is not logged in then it is used as a login hint; if a different user/identity is already logged in then warn the user that they are accessing a different account.
+- `action` - Can be used to indicate the action that the user wishes to take:
+  - `profile` - The user wishes to view their profile (name, avatar, contact details).
+  - `sessions_list` - The user wishes to view a list of their sessions.
+  - `session_view` - The user wishes to view the details of a session.
+  - `session_end` - The user wishes to end/logout a session.
+- `device_id` - This can be used to identify a particular session for `session_view` and `session_end`. This is the Matrix device ID.
 
+For example, if a user wishes to sign out a session for the device `ABCDEFGH` where the advertised account management URL was `https://account.example.com/myaccount` the client could open a link to `https://account.example.com/myaccount?action=session_end&device_id=ABCDEFGH`.
 
 ## Potential issues
 
