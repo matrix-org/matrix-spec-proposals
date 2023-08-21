@@ -61,7 +61,7 @@ Content-Type: application/json
   "authorization_endpoint": "https://account.example.com/oauth2/auth",
   "token_endpoint": "https://account.example.com/oauth2/token",
   "registration_endpoint": "https://account.example.com/oauth2/clients/register",
-  "end_session_edntpoint": "https://account.example.com/oauth2/logout",
+  "end_session_endpoint": "https://account.example.com/oauth2/logout",
   "jwks_uri": "https://account.example.com/.well-known/jwks.json",
   "response_types_supported": ["code"],
   "grant_types_sypported": ["authorization_code", "refresh_token"],
