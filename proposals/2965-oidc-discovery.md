@@ -122,7 +122,7 @@ Host: example.com
 The `mxid` scheme is a bit arbitrary here.
 The parameters in the URL should be percent-encoded, this was left unencoded for clarity.
 
-The benefits of this approach are that it is standard and decouples the authentication server from the Matrix server: different authentication servers could be used by accounts on the server.
+The benefits of this approach are that it is standard and decouples the authentication server from the Matrix server: different authentication servers could be used by different accounts on the server.
 
 The downsides of this approach are:
 
