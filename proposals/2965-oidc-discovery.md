@@ -72,7 +72,7 @@ Content-Type: application/json
 
 The account management URL may accept the following additional query parameters:
 
-- RECOMMENDED `id_token_hint` - ID Token (as previously issued by the issuer to the client) as a hint about the current authenticated user that is requesting to be able to manage their account. This may be used by the issuer to: if not logged in then used as a login hint; if already logged in, but for a different user/identity then warn the user that they are accessing account.
+- RECOMMENDED `id_token_hint` - An ID Token that was previously issued to the client; the issuer uses it as a hint for which user is requesting to manage their account. If the requesting user is not logged in then it is used as a login hint; if a different user/identity is already logged in then warn the user that they are accessing a different account.
 
 
 ## Potential issues
