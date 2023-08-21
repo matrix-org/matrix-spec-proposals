@@ -61,12 +61,14 @@ For a client to be considered fully *OIDC aware* it **must**:
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
 - link users to manage their account at the OpenID Provider web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) instead of native UI
 - check and honour the `m.3pid_changes` [capability](https://spec.matrix.org/v1.7/client-server-api/#m3pid_changes-capability) so that the user is not offered the ability to add or remove 3PIDs when OIDC is used
-- if the user wishes to sign out a device session other than it's own then the client **must** link the user to the OpenID Provider web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) if provided
-- where the user is linked to the OpenID Provider web UI above, the client should include `#action=logout&device_id=<device_id>` in the URL to indicate which device session the user wishes to sign out
+- if the user wishes to sign out a device session other than it's own then the client **must**:
+  - link the user to the OpenID Provider web UI given by [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965) if provided
+  - append the `action` and `device_id` to the web UI link parameters described by [MSC2965](https://github.com/sandhose/matrix-doc/blob/msc/sandhose/oidc-discovery/proposals/2965-oidc-discovery.md#account-management-url-parameters) so that the web UI knows that the user wishes to sign out a device and which one it is. e.g. `?action=session_end&device_id=<device_id>`
 
 Optionally, an *OIDC aware* client **could**:
 
 - label the SSO button as "Continue"
+- pass other [query parameters for context](https://github.com/sandhose/matrix-doc/blob/msc/sandhose/oidc-discovery/proposals/2965-oidc-discovery.md#account-management-url-parameters) when linking to the account web UI
 
 For an OIDC enabled homeserver to provide support for *OIDC aware* clients it **must**:
 
