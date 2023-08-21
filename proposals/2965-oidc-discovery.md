@@ -8,7 +8,8 @@ To be able to initiate an OAuth 2.0 login flow to use a Matrix server, the clien
 
 Clients already discover the homeserver when doing a server discovery via the well-known document.
 
-Two new fields are added to this document to support OIDC Provider discovery:
+A new `m.authentication` field is added to this document to support OIDC Provider discovery.
+It is an object containing two fields:
 
 - REQUIRED `issuer` - the OIDC Provider that is trusted by the homeserver
 - OPTIONAL `account` - the URL where the user is able to access the account management capabilities of the OIDC Provider
