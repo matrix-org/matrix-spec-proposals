@@ -55,7 +55,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 ```
 
-```json
+```json5
 {
   "issuer": "https://account.example.com/",
   "authorization_endpoint": "https://account.example.com/oauth2/auth",
@@ -65,8 +65,8 @@ Content-Type: application/json
   "jwks_uri": "https://account.example.com/.well-known/jwks.json",
   "response_types_supported": ["code"],
   "grant_types_sypported": ["authorization_code", "refresh_token"],
-  "response_mode_sypported": ["query", "fragment"],
-  "//": "some fields omitted"
+  "response_mode_sypported": ["query", "fragment"]
+  // some fields omitted
 }
 ```
 
