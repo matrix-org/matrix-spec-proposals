@@ -70,6 +70,8 @@ Content-Type: application/json
 }
 ```
 
+### Account management URL parameters
+
 The account management URL may accept the following additional query parameters:
 
 - `id_token_hint` - An ID Token that was previously issued to the client; the issuer uses it as a hint for which user is requesting to manage their account. If the requesting user is not logged in then it is used as a login hint; if a different user/identity is already logged in then warn the user that they are accessing a different account.
