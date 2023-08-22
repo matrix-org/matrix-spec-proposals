@@ -110,7 +110,19 @@ bug in the proposal, however.
 
 ## Alternatives
 
-None relevant. MSCs which intentionally use this functionality might have their own alternatives.
+### Give clients context for the auth chain
+
+If a client was given enough information for useful `prev_events` and `auth_events`, it could likely skip
+the "make" step and jump to "send". `prev_events` is easy because the client can just use the end of its known
+timeline, but `auth_events` is harder: clients don't traditionally become aware of state resets and similar,
+and so can become desynced from reality. If "current state" was highly reliable for the client then it could
+calculate `auth_events` trivially - the server already fully resolves and linearizes the DAG for the client.
+
+Assuming infrequent use of this MSC's APIs, a workaround might be for a client to call
+[`GET /state`](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclientv3roomsroomidstate), cache the
+response for a short while, generate its events, and send them. The client should be sure to mutate its cache
+with any events it generates to keep it as up to date as possible. The client can also refresh the cache from
+time to time.
 
 ## Security considerations
 
