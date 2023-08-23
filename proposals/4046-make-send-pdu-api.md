@@ -94,6 +94,8 @@ In both endpoints, the server SHOULD proxy the error through to the client. Serv
 call each `server_name` in parallel for `GET /make_pdu` and use the first to respond (and use the first
 200 OK as a successful response).
 
+Both endpoints are additionally affected by [Server ACLs](https://spec.matrix.org/v1.7/server-server-api/#server-access-control-lists-acls).
+
 ## Potential issues
 
 The client APIs described by this MSC are likely to be used very often. Future MSCs might make better use
