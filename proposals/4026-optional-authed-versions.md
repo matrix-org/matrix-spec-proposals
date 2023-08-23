@@ -1,3 +1,5 @@
+# MSC4026: Allow /versions to optionally accept authentication
+
 ## Introduction
 
 Synapse is implementing the ability to turn some unstable features on per-user. Once this is 
