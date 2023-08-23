@@ -2,6 +2,8 @@
 
 Synapse is implementing the ability to turn some unstable features on per-user. Once this is 
 implemented, certain experimental features will be available to be enabled per-user via the [Admin API](https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/index.html).
+The intention is to allow certain users to test the experimental feature without making it available to
+all users before it is stable.
 This is in addition to the current ability to toggle on/off those features system-wide in the configuration.
 
 However, this poses a problem when considering how to advertise that those features are enabled to clients. 
