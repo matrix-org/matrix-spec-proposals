@@ -1,4 +1,4 @@
-# MSCxxxx: Signed key backup
+# MSC4048: Signed key backup
 
 The [server-side key
 backups](https://spec.matrix.org/unstable/client-server-api/#server-side-key-backups)
@@ -98,8 +98,8 @@ message.
 ## Unstable prefix
 
 Until this MSC is accepted, the property name
-`org.matrix.mscxxxx.signing_public_key` should be used in place of
-`signing_public_key`, and `org.matrix.mscxxxx.authenticated` should be used in
+`org.matrix.msc4048.signing_public_key` should be used in place of
+`signing_public_key`, and `org.matrix.msc4048.authenticated` should be used in
 place of `authenticated`.  No unstable prefix is used for the `signatures`
 property since it uses the existing definition of JSON signing.
 
