@@ -4,7 +4,8 @@ A common feature request is a room structure where most/all members are not awar
 currently requires all senders to be aware of each other for routing purposes, making it difficult to hide
 a user's subscription to the room.
 
-The core principle of this problem is tracked as [issue #367](https://github.com/matrix-org/matrix-spec/issues/367), though the exact semantics described by that issue are different from this proposal. Instead of limiting
+The core principle of this problem is tracked as [issue #367](https://github.com/matrix-org/matrix-spec/issues/367),
+though the exact semantics described by that issue are different from this proposal. Instead of limiting
 membership visibility by power level, this MSC aims to introduce an ability for "external senders", with
 an assumption that [MSC2753-style](https://github.com/matrix-org/matrix-spec-proposals/pull/2753) peeking
 or other similar mechanism can be used to subscribe to the room without becoming a member.
@@ -201,13 +202,14 @@ Check 6 of "checks performed upon receipt of a PDU" is clarified as such:
 > `m.room.send_key` state event in the room, otherwise it is "soft failed".
 >
 > For example, if the current `m.room.send_key` event ID is `$current`, and the following signature is present:
-> ```json
-> {
->   "$event": {
->     "ed25519:abcd": "<signature>"
->   }
-> }
-> ```
+>
+  ```json
+  {
+    "$event": {
+      "ed25519:abcd": "<signature>"
+    }
+  }
+  ```
 >
 > then the signature for `ed25519:abcd` must be valid when compared against `m.room.send_key`.
 
