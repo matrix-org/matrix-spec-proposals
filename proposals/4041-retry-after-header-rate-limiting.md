@@ -52,7 +52,7 @@ N/A
 
 ## Unstable prefix
 
-N/A
+Since this MSC is using a standard HTTP header, it will not use a unstable prefix.
 
 ## Dependencies
 
