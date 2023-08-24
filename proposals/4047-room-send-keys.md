@@ -82,21 +82,21 @@ This implies 3 things:
 The first and second items are covered by the "Distribution of send keys" section in this proposal,
 and the last item is covered by the new `/make` and `/send_pdu` APIs introduced later.
 
-With respect to [event authorization](https://spec.matrix.org/v1.7/rooms/v10/#authorization-rules),
+With respect to [event authorization](https://spec.matrix.org/v1.8/rooms/v10/#authorization-rules),
 events use a send key when their `signatures` include a key starting with `$`. That key MUST appear
 as in the event's `auth_events` and MUST be a state event of type `m.room.send_key`, with empty state
 key. If the event is not referenced or does not point to the send key state event the event is rejected.
 If the referenced send key state event does not contain the key ID being used, or the signature fails
 verification, the event is rejected.
 
-Note that as part of [receiving a PDU](https://spec.matrix.org/v1.7/server-server-api/#checks-performed-on-receipt-of-a-pdu)
+Note that as part of [receiving a PDU](https://spec.matrix.org/v1.8/server-server-api/#checks-performed-on-receipt-of-a-pdu)
 the server already checks 3 conditions:
 
 1. The event passes based upon its `auth_events`.
 2. The event passes based upon the state prior to its own change (ie: a send key state event is not
    sent using a new key only it contains).
 3. The event passes based upon the current state of the room, which may be different from #1 and #2,
-   otherwise it is [soft-failed](https://spec.matrix.org/v1.7/server-server-api/#soft-failure).
+   otherwise it is [soft-failed](https://spec.matrix.org/v1.8/server-server-api/#soft-failure).
 
 The first two conditions are covered above where we say an event using a send key *must* reference a
 valid send key, and have a valid accompanying signature. The third condition we cover with an additional
@@ -121,9 +121,9 @@ description of how power levels work with respect to sent events.
 
 After a user has generated a key and populated a relevant `m.room.send_key`, they need to actually
 send the private key to an external sender (or several). This is done over encrypted
-[to-device messages](https://spec.matrix.org/v1.7/client-server-api/#send-to-device-messaging),
+[to-device messages](https://spec.matrix.org/v1.8/client-server-api/#send-to-device-messaging),
 shielding the private key material from anyone along the send path. The following `m.send_key` object
-is encrypted using Olm before being sent, exactly like [`m.room_key`](https://spec.matrix.org/v1.7/client-server-api/#mroom_key).
+is encrypted using Olm before being sent, exactly like [`m.room_key`](https://spec.matrix.org/v1.8/client-server-api/#mroom_key).
 
 ```jsonc
 {
@@ -164,11 +164,9 @@ it constructed, making it legal to send into the room.
 
 The following definitions are referenced by this section:
 
-* [Authorization rules](https://spec.matrix.org/v1.7/rooms/v10/#authorization-rules)
-* [Auth events selection algorithm](https://spec.matrix.org/v1.7/server-server-api#auth-events-selection)
-* ["Checks performed upon receipt of a PDU"](https://spec.matrix.org/v1.7/server-server-api/#checks-performed-on-receipt-of-a-pdu)
-
-**TODO**: Update for room version 11.
+* [Authorization rules](https://spec.matrix.org/v1.8/rooms/v10/#authorization-rules)
+* [Auth events selection algorithm](https://spec.matrix.org/v1.8/server-server-api#auth-events-selection)
+* ["Checks performed upon receipt of a PDU"](https://spec.matrix.org/v1.8/server-server-api/#checks-performed-on-receipt-of-a-pdu)
 
 Note that throughout the changes described below there may be more implementation efficient methods. Specifically
 in Change 3 a server can likely optimize the new rules down a bit, but for specification purposes we need to
@@ -219,7 +217,7 @@ key ID:
 1. If `content` does not contain that key ID, signature fails.
 2. If the public key from `content` doesn't verify the signature, signature fails.
 
-Note that ["checking for a signature"](https://spec.matrix.org/v1.7/appendices/#checking-for-a-signature) may
+Note that ["checking for a signature"](https://spec.matrix.org/v1.8/appendices/#checking-for-a-signature) may
 require an update on Step 3 to account for `m.room.send_key` as a place to "look up" verification keys.
 
 **Change 3**: Allow the `sender` to be considered "in the room" for purposes of event auth, provided they aren't
@@ -234,7 +232,7 @@ Immediately prior to Rule 5 of the authorization rules, the following new rules 
 
 (Rule 5 becomes Rule 8 with these additions)
 
-Note that [Server ACLs](https://spec.matrix.org/v1.7/server-server-api/#server-access-control-lists-acls) still
+Note that [Server ACLs](https://spec.matrix.org/v1.8/server-server-api/#server-access-control-lists-acls) still
 apply to events using send keys. Server ACLs are not currently part of event authorization, but do apply at a
 transport level.
 
@@ -296,8 +294,13 @@ from being used, as discussed earlier in this section, but does cause the sent e
 ## Unstable prefix
 
 While this proposal is not incorporated into a stable room version, implementations should use `org.matrix.msc4047`
-as an unstable room version. The event type `m.room.send_key` should additionally be prefixed as
-`org.matrix.msc4047.send_key` for clarity during development.
+as an unstable room version, using [room version 11](https://spec.matrix.org/v1.8/rooms/v11/) as a base.
+The event type `m.room.send_key` should additionally be prefixed as `org.matrix.msc4047.send_key` in that
+room version for clarity during development.
+
+### Test vectors
+
+**TODO**: "This event produces this event ID" sort of idea.
 
 ## Footnotes
 
