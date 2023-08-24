@@ -18,14 +18,14 @@ potential that current http libraries offer in terms of automated retry handling
 
 In order to allow developers to make use of the automated retry handling capabilities of http libraries
 home servers should add an http header `Retry-After` in case they respond with an http error 429.
-Since the body of the response already contains a property `retry_after_ms` (in miliseconds) the value 
+Since the body of the response already contains a property `retry_after_ms` (in milliseconds) the value 
 of `Retry-After` should be the calculated by rounding up `retry_after_ms / 1000` to the next integer. 
 Doing so would correspond to a (relative) delay (in seconds) as defined in 
 [RFC 9119 - HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110#field.retry-after).
 
 ## Potential issues
 
-Existing SDKs may use client libraries that migth be able to honor the http header `Retry-After`. Since 
+Existing SDKs may use client libraries that might be able to honor the http header `Retry-After`. Since 
 this header is currently not part of the response developers might have created purpose-built functions
 in order to handle rate-limiting correctly.
 
