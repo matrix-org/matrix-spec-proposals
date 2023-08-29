@@ -4,6 +4,15 @@ If you want to sign-up for a service which wants to have a guaranteed contact wa
 
 ## User story
 A user registers to a website, using his matrix user. The user is then asked in his matrix client to confirm his identity to the website. The user than either receives a code to enter on the website or the click on the button already triggers the verification.
+#### Possible overlay design in a matrix-client
+```
++---------------------------------------------------+
+| example.org wants to verify its you who signed up.|
+|  +------------------+       +------------------+  |
+|  |    Disapprove    |       |     Approve      |  |
+|  +------------------+       +------------------+  |
++---------------------------------------------------+
+```
 
 ## Proposal
 ### Requesting verification
@@ -21,7 +30,8 @@ The back-end of the requesring server sends a matrix event to the user. The cont
     - ```code``` ```String``` - This is the string with the code that needs to be entered on the website.
   - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
     - ```href``` ```String``` - Link that should be opened if the user accepts
-    - ```hide``` ```Bool``` ```optional``` - Should the user see the webpage behind the link (Defaults to ```false```)
+    - ```hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
+    - ```expect-response-json``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect a json-object as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
 - ```disapprove-methods``` ```Object``` ```optional```<br>This objects contains all possible methods to tell the webservice, that it was NOT you, who tried to sign-up/log-in. The methods are the same as for the ```verification-methods```.
 
 ## Potential issues
