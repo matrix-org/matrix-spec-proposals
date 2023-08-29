@@ -1,56 +1,28 @@
-# MSC0000: Template for new MSCs
+# MSC0000: Matrix user id verification for thrid parties
 
-*Note: Text written in italics represents notes about the section or proposal process. This document
-serves as an example of what a proposal could look like (in this case, a proposal to have a template)
-and should be used where possible.*
+If you want to sign-up for a service which wants to have a guaranteed contact way, the current standard process is to send a verification code or link to the user. A similar method is used for so-called 'Magic links'. But this method is heavily flawed, since it requires you to change the app and for verification codes to copy the code. Finally you need to delete the message. This proposal should simplify this process with minimal effort for the websites using this method.
 
-*In this first section, be sure to cover your problem and a broad overview of the solution. Covering
-related details, such as the expected impact, can also be a good idea. The example in this document
-says that we're missing a template and that things are confusing and goes on to say the solution is
-a template. There's no major expected impact in this proposal, so it doesn't list one. If your proposal
-was more invasive (such as proposing a change to how servers discover each other) then that would be
-a good thing to list here.*
-
-*If you're having troubles coming up with a description, a good question to ask is "how
-does this proposal improve Matrix?" - the answer could reveal a small impact, and that is okay.*
-
-There can never be enough templates in the world, and MSCs shouldn't be any different. The level
-of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
-
+## User story
+A user registers to a website, using his matrix user. The user is then asked in his matrix client to confirm his identity to the website. The user than either receives a code to enter on the website or the click on the button already triggers the verification.
 
 ## Proposal
-
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
-the technical points of your proposal. Including rationale for your proposed solution and detailing
-why parts are important helps reviewers understand the problem at hand. Not including enough detail
-can result in people guessing, leading to confusing arguments in the comments section. The example
-here covers why templates are important again, giving a stronger argument as to why we should have
-a template. Afterwards, it goes on to cover the specifics of what the template could look like.*
-
-Having a default template that everyone can use is important. Without a template, proposals would be
-all over the place and the minimum amount of detail may be left out. Introducing a template to the
-proposal process helps ensure that some amount of consistency is present across multiple proposals,
-even if each author decides to abandon the template.
-
-The default template should be a markdown document because the MSC process requires authors to write
-a proposal in markdown. Using other formats wouldn't make much sense because that would prevent authors
-from copy/pasting the template.
-
-The template should have the following sections:
-
-* **Introduction** - This should cover the primary problem and broad description of the solution.
-* **Proposal** - The gory details of the proposal.
-* **Potential issues** - This is where problems with the proposal would be listed, such as changes
-  that are not backwards compatible.
-* **Alternatives** - This section lists alternative solutions to the same
-  problem which have been considered and dismsissed.
-* **Security considerations** - Discussion of what steps were taken to avoid security issues in the
-  future and any potential risks in the proposal.
-
-Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
-
+### Requesting verification
+The back-end of the requesring server sends a matrix event to the user. The content object has the following keys:
+- ```requesting-device``` ```Object``` ```optional```
+  - ```browser``` ```Object``` ```optional```
+    - ```name``` ```String``` - Name of the browser
+    - ```version``` ```String``` ```optional``` - Version of the browser
+  - ```os``` ```Object``` ```optional```
+    - ```name``` ```String``` - Name of the os
+    - ```version``` ```String``` ```optional``` - Version of the os
+  - ```ip``` ```String``` ```optional``` - IP-address of the device
+- ```verification-methods``` ```Object```<br>This objects contains all possible verification methods in the order they should be tried in.
+  - ```code``` ```Object``` ```optional```<br>This verification methods provides the user with a code, that needs to be enter into a form on the website. (This is an object to possibly allow an extension of this method in the future.)
+    - ```code``` ```String``` - This is the string with the code that needs to be entered on the website.
+  - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
+    - ```href``` ```String``` - Link that should be opened if the user accepts
+    - ```hide``` ```Bool``` ```optional``` - Should the user see the webpage behind the link (Defaults to ```false```)
+- ```disapprove-methods``` ```Object``` ```optional```<br>This objects contains all possible methods to tell the webservice, that it was NOT you, who tried to sign-up/log-in. The methods are the same as for the ```verification-methods```.
 
 ## Potential issues
 
