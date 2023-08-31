@@ -4,12 +4,12 @@ The [server-side key
 backups](https://spec.matrix.org/unstable/client-server-api/#server-side-key-backups)
 allows clients to store event decryption keys so that when the user logs in to
 a new device, they can decrypt old messages.  The current algorithm encrypts
-the event keys using a symmetric algorithm, allowing clients to upload keys to
+the event keys using an asymmetric algorithm, allowing clients to upload keys to
 the backup without necessarily giving them the ability to read from the
 backup.  For example, this allows for a partially-trusted client to be able to
 read (and save the keys for) current messages, but not read old messages.
 
-However, since the event decryption keys are encrypted using a symmetric
+However, since the event decryption keys are encrypted using an asymmetric
 algorithm, this allows anyone who knows the public key to write to the backup.
 As a result, keys loaded from the backup must be marked as unauthenticated,
 leading to [usability
@@ -21,7 +21,7 @@ which ensures that only someone who knows the secret key can write to the
 backup.  However this removes the ability for a client to be able to write to
 the backup without being able to read from it.
 
-We propose to continue using a symmetric encryption algorithm in the backup,
+We propose to continue using an asymmetric encryption algorithm in the backup,
 but to ensure authenticity by signing the backup data.
 
 ## Proposal
@@ -89,7 +89,7 @@ fact come from them.
 
 This is somewhat mitigated by the fact that obtaining the Megolm session
 requires the decryption key for the backup.  In addition, the deniability
-property is mainly refers to the fact that a recipient cannot prove the
+property mainly refers to the fact that a recipient cannot prove the
 authenticity of the message to a third party, and usually is not concerned with
 preventing self-incrimination.  And in fact, a confiscated device may already
 have enough information to sufficiently prove that the device's owner sent a
