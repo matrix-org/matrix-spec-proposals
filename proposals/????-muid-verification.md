@@ -64,14 +64,7 @@ The planned switch to OIDC for matrix would allow users to verify their matrix-u
 
 ## Security considerations
 
-*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
-section is a great place to outline some of the security-sensitive components of your proposal, such as
-why a particular approach was (or wasn't) taken. The example here is a bit of a stretch and unlikely to
-actually be worthwhile of including in a proposal, but it is generally a good idea to list these kinds
-of concerns where possible.*
-
-By having a template available, people would know what the desired detail for a proposal is. This is not
-considered a risk because it is important that people understand the proposal process from start to end.
+None I can think of.
 
 ## Unstable prefix
 
