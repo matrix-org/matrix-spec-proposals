@@ -59,18 +59,7 @@ can follow.
 
 ## Alternatives
 
-*This is where alternative solutions could be listed. There's almost always another way to do things
-and this section gives you the opportunity to highlight why those ways are not as desirable. The
-argument made in this example is that all of the text provided by the template could be integrated
-into the proposals introduction, although with some risk of losing clarity.*
-
-Instead of adding a template to the repository, the assistance it provides could be integrated into
-the proposal process itself. There is an argument to be had that the proposal process should be as
-descriptive as possible, although having even more detail in the proposals introduction could lead to
-some confusion or lack of understanding. Not to mention if the document is too large then potential
-authors could be scared off as the process suddenly looks a lot more complicated than it is. For those
-reasons, this proposal does not consider integrating the template in the proposals introduction a good
-idea.
+The planned switch to OIDC for matrix would allow users to verify their matrix-user-id via OIDC. But this only works if you want to verify your muid on a device you have access to your OIDC log in.
 
 
 ## Security considerations
