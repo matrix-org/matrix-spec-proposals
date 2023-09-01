@@ -1,9 +1,9 @@
 # MSC0000: Matrix user id verification for third parties
 
-If you want to sign-up for a service which wants to have a guaranteed contact way, the current standard process is to send a verification code or link to the user. A similar method is used for so-called 'Magic links'. But this method is heavily flawed, since it requires you to change the app and for verification codes to copy the code. Finally you need to delete the message. This proposal should simplify this process with minimal effort for the websites using this method.
+If you want to sign-up for a service which wants to have a guaranteed contact way, the current standard process is to send a verification code or link to the user. A similar method is used for so-called 'Magic links'. But this method is heavily flawed, since it requires you to change the app and for verification codes to copy the code. Finally you need to delete the message. This proposal should simplify this process with minimal effort for the websites and services, from now on called ```third-parties```, using this method.
 
 ## User story
-A user registers to a website, using his matrix user. The user is then asked in his matrix client to confirm his identity to the website. The user than either receives a code to enter on the website or the click on the button already triggers the verification.
+A user registers to a third-party using his matrix user. The user is then asked in his matrix client to confirm his identity to the third-parties. The user then either receives a code to enter on at the website or app of the third-party; or the click on the ```approve```-button already triggers the verification.
 #### Possible overlay design in a matrix-client
 ```
 +---------------------------------------------------+
