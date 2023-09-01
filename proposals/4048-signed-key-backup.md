@@ -79,6 +79,14 @@ As mentioned above, we could switch to using a symmetric encryption algorithm
 for the key backup.  However, this is not backwards-compatible, and does not
 allow for clients that can write to the backup without reading.
 
+Rather than using a new signing key, we could use an existing signing key, such
+as one of the cross-signing keys.  This would remove the need for users to
+enter their Secret Storage key to add the new signing key.  However, this means
+that a user cannot create a key backup without also using cross-signing.  Using
+a separate key also allows the user to give someone else (such as a bot)
+permission to write to their backups without allowing them to perform any
+cross-signing operations.
+
 ## Security considerations
 
 Being able to prove authenticity of keys may affect the deniability of
