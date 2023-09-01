@@ -17,7 +17,7 @@ A user registers to a website, using his matrix user. The user is then asked in 
 ## Proposal
 ### Requesting verification
 The back-end of the requesring server sends a matrix event to the user. The content object has the following keys:
-- ```requesting-device``` ```Object``` ```optional```
+- ```requesting_device``` ```Object``` ```optional```
   - ```browser``` ```Object``` ```optional```
     - ```name``` ```String``` - Name of the browser
     - ```version``` ```String``` ```optional``` - Version of the browser
@@ -31,14 +31,16 @@ The back-end of the requesring server sends a matrix event to the user. The cont
   - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
     - ```url``` ```String``` - Link that should be opened if the user accepts
     - ```hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
-    - ```expect-response-json``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect a json-object as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
-- ```disapprove-methods``` ```Object``` ```optional```<br>This objects contains all possible methods to tell the webservice, that it was NOT you, who tried to sign-up/log-in. The methods are the same as for the ```verification-methods```.
+    - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect a json-object as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
+- ```disapprove_methods``` ```Object``` ```optional```<br>This objects contains all possible methods to tell the webservice, that it was NOT you, who tried to sign-up/log-in. The methods are the same as for the ```verification_methods```.
 
 ### Verify via link
 If the verification request supports verification via link, and the client chooses to use this method, the client opens this link (hiden or not is decided via the hide key). The webserver than can return a ```JSON```-file. It should have the form of a matrix event as described here:
 - ```matrix-event``` ```Object```
   - ```type``` ```String``` - ```m.muid-verification.result```
   - ```content``` ```Object```
+    - ```result``` ```String``` - ```success```, ```error```
+    - ```error_code``` ```String``` ```optional``` - ```m.invalid_url```, ```m.wrong_device```, ```m.expired```, ...
 
 ## Potential issues
 
