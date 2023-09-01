@@ -1,9 +1,9 @@
 # MSC0000: Matrix user id verification for third parties
 
-If you want to sign-up for a service which wants to have a guaranteed contact way, the current standard process is to send a verification code or link to the user. A similar method is used for so-called 'Magic links'. But this method is heavily flawed, since it requires you to change the app and for verification codes to copy the code. Finally you need to delete the message. This proposal should simplify this process with minimal effort for the websites and services, from now on called ```third-parties```, using this method.
+If you want to sign up for a service that requires a guaranteed contact method, the current standard process is to send a verification code or link to the user. A similar method is used for so-called magic links. But this method is heavily flawed since it requires you to change the app, and for verification codes to copy the code. Finally, you need to delete the message. This proposal should simplify this process with minimal effort for the websites and services, from now on called third parties, using this method.
 
 ## User story
-A user registers to a third-party using his matrix user. The user is then asked in his matrix client to confirm his identity to the third-parties. The user then either receives a code to enter on at the website or app of the third-party; or the click on the ```approve```-button already triggers the verification.
+A user registers with a third party using his matrix user. The user is then asked in his matrix client to confirm his identity to the third party. The user then either receives a code to enter on the website or app of the third party; or the click on the approve-button already triggers the verification.
 #### Possible overlay design in a matrix-client
 ```
 +---------------------------------------------------+
@@ -25,17 +25,17 @@ The back-end of the requesring server sends a matrix event to the user. The cont
     - ```name``` ```String``` - Name of the os
     - ```version``` ```String``` ```optional``` - Version of the os
   - ```ip``` ```String``` ```optional``` - IP-address of the device
-- ```verification-methods``` ```Object```<br>This objects contains all possible verification methods in the order they should be tried in.
+- ```verification-methods``` ```Object```<br>This object contains all possible verification methods in the order they should be tried in.
   - ```code``` ```Object``` ```optional```<br>This verification methods provides the user with a code, that needs to be enter into a form on the website. (This is an object to possibly allow an extension of this method in the future.)
     - ```code``` ```String``` - This is the string with the code that needs to be entered on the website.
   - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
     - ```url``` ```String``` - Link that should be opened if the user accepts
     - ```hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
     - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect a json-object as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
-- ```disapprove_methods``` ```Object``` ```optional```<br>This objects contains all possible methods to tell the webservice, that it was NOT you, who tried to sign-up/log-in. The methods are the same as for the ```verification_methods```.
+- ```disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```verification_methods```.
 
 ### Verify via link
-If the verification request supports verification via link, and the client chooses to use this method, the client opens this link (hiden or not is decided via the hide key). The webserver than can return a ```JSON```-file. It should have the form of a matrix event as described here:
+If the verification request supports verification via link, and the client chooses to use this method, the client opens this link (hiden or not is decided via the hide key). The webserver than can return a ```JSON```-file. It should have the form of a matrix event, as described here:
 - ```matrix-event``` ```Object```
   - ```type``` ```String``` - ```m.muid-verification.result```
   - ```content``` ```Object```
