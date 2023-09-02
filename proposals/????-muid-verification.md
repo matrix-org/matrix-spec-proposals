@@ -17,22 +17,22 @@ A user registers with a third party using his matrix user. The user is then aske
 ## Proposal
 ### Requesting verification
 The back-end of the requesring server sends a matrix event to the user. The content object has the following keys:
-- ```requesting_device``` ```Object``` ```optional```
-  - ```browser``` ```Object``` ```optional```
-    - ```name``` ```String``` - Name of the browser
-    - ```version``` ```String``` ```optional``` - Version of the browser
-  - ```os``` ```Object``` ```optional```
-    - ```name``` ```String``` - Name of the os
-    - ```version``` ```String``` ```optional``` - Version of the os
-  - ```ip``` ```String``` ```optional``` - IP-address of the device
-- ```verification-methods``` ```Object```<br>This object contains all possible verification methods in the order they should be tried in.
-  - ```code``` ```Object``` ```optional```<br>This verification methods provides the user with a code, that needs to be enter into a form on the website. (This is an object to possibly allow an extension of this method in the future.)
-    - ```code``` ```String``` - This is the string with the code that needs to be entered on the website.
-  - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
-    - ```url``` ```String``` - Link that should be opened if the user accepts
-    - ```hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
-    - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect [json](#verify)  as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
-- ```disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```verification_methods```.
+- ```m.requesting_device``` ```Object``` ```optional```
+  - ```m.browser``` ```Object``` ```optional```
+    - ```m.name``` ```String``` - Name of the browser
+    - ```m.version``` ```String``` ```optional``` - Version of the browser
+  - ```m.os``` ```Object``` ```optional```
+    - ```m.name``` ```String``` - Name of the os
+    - ```m.version``` ```String``` ```optional``` - Version of the os
+  - ```m.ip``` ```String``` ```optional``` - IP-address of the device
+- ```m.verification-methods``` ```Object```<br>This object contains all possible verification methods in the order they should be tried in.
+  - ```m.code``` ```Object``` ```optional```<br>This verification methods provides the user with a code, that needs to be enter into a form on the website. (This is an object to possibly allow an extension of this method in the future.)
+    - ```m.code``` ```String``` - This is the string with the code that needs to be entered on the website.
+  - ```m.link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
+    - ```m.url``` ```String``` - Link that should be opened if the user accepts
+    - ```m.hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
+    - ```m.expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect [json](#verify)  as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
+- ```m,disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```m.verification_methods```.
 
 ### Verify
 If the user takes an action, the server should send a new event to let the client know the current state.
@@ -44,9 +44,9 @@ If the user takes an action, the server should send a new event to let the clien
         - ```event_id``` ```String```
       - ```event_id``` ```String```
     - ```m.muid_verification.result.id``` ```String``` - An id assigned by the third party to let the client match responses via HTTP and matrix.
-    - ```result``` ```String``` - ```success```, ```error```
-    - ```state``` ```String``` - ```m.pending```, ```m.verified```, ```m.disapproved```
-    - ```error_code``` ```String``` ```optional```
+    - ```m.result``` ```String``` - ```success```, ```error```
+    - ```m.state``` ```String``` - ```m.pending```, ```m.verified```, ```m.disapproved```
+    - ```m.error_code``` ```String``` ```optional```
       - ```m.invalid_verification``` - The url/code is invalid
         - ```.expired```
       - ```m.wrong_device``` - The device the link was opened on does not fulfill a criteria to be accepted (f.e. the third party requires the same ip address for both the link beeing opened on and the registering device).
