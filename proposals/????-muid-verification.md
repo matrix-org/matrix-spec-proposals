@@ -32,7 +32,7 @@ The back-end of the requesring server sends a matrix event to the user. The cont
     - ```m.url``` ```String``` - Link that should be opened if the user accepts
     - ```m.hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
     - ```m.expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect [json](#verify)  as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
-- ```m,disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```m.verification_methods```.
+- ```m.disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```m.verification_methods```.
 
 ### Verify
 If the user takes an action, the server should send a new event to let the client know the current state.
