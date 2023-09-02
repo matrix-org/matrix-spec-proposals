@@ -31,7 +31,7 @@ The back-end of the requesring server sends a matrix event to the user. The cont
   - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
     - ```url``` ```String``` - Link that should be opened if the user accepts
     - ```hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
-    - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect a json-object as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
+    - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect [json](#verify-via-link) as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
 - ```disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```verification_methods```.
 
 ### Verify via link
