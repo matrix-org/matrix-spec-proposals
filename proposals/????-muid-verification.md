@@ -31,26 +31,30 @@ The back-end of the requesring server sends a matrix event to the user. The cont
   - ```link``` ```Object``` ```optional```<br>This verification method lets the user open a link to verify his identity. This could be done without the user seeing it, just opening in the background after the user accepts the request.
     - ```url``` ```String``` - Link that should be opened if the user accepts
     - ```hide``` ```Bool``` ```optional``` - Should the user NOT see the webpage behind the link (Defaults to ```false```)
-    - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect [json](#verify-via-link) as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
+    - ```expect_response``` ```Bool``` ```optional``` - If the matrix-client opens the link, should the client expect [json](#verify)  as the response and therefor display an error if this doesn't happen? (Defaults to ```false```)
 - ```disapprove_methods``` ```Object``` ```optional```<br>This object contains all possible methods to tell the webservice, that it was NOT you, who tried to sign up/log in. The methods are the same as for the ```verification_methods```.
 
-### Verify via link
-If the verification request supports verification via link, and the client chooses to use this method, the client opens this link (hiden or not is decided via the hide key). The webserver than can return a ```JSON```-file. It should have the form of a matrix event, as described here:
-- ```matrix-event``` ```Object```
-  - ```type``` ```String``` - ```m.muid-verification.result```
+### Verify
+If the user takes an action, the server should send a new event to let the client know the current state.
+  - ```type``` ```String``` - ```m.muid_verification.result```
   - ```content``` ```Object```
     - ```m.relates_to``` ```Object``` ```optional if used in the HTTP context (since it can get hard to exchange event ids between the matrix server and the server delivering the response via HTTP and the matrix client knows which event id the response is for)```
       - ```rel_type``` ```String``` - ```m.thread```
       - ```m.in_reply_to``` ```Object```
         - ```event_id``` ```String```
       - ```event_id``` ```String```
+    - ```m.muid_verification.result.id``` ```String``` - An id assigned by the third party to let the client match responses via HTTP and matrix.
     - ```result``` ```String``` - ```success```, ```error```
+    - ```state``` ```String``` - ```m.pending```, ```m.verified```, ```m.disapproved```
     - ```error_code``` ```String``` ```optional```
-      - ```m.invalid_url``` - The url is invalid
+      - ```m.invalid_verification``` - The url/code is invalid
         - ```.expired```
       - ```m.wrong_device``` - The device the link was opened on does not fulfill a criteria to be accepted (f.e. the third party requires the same ip address for both the link beeing opened on and the registering device).
         - ```.ip```
         - ```.cookie```
+       
+#### Verify via link
+If the verification request supports verification via link, and the client chooses to use this method, the client opens this link (hiden or not is decided via the hide key). The webserver than can return a ```JSON```-file. It should have the form of a matrix event, as described above, but all in a ```matrix_event``` object (the reason for transmiting the event also via the HTTP connection is to allow faster responses in the users matrix-clients ui).
 
 ## Potential issues
 
@@ -68,10 +72,4 @@ None I can think of.
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+Replace the ```m.``` with a ```io.github.jucktnich```.
