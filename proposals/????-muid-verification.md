@@ -3,8 +3,8 @@
 If you want to sign up for a service that requires a guaranteed contact method, the current standard process is to send a verification code or link to the user. A similar method is used for so-called magic links. But this method is heavily flawed since it requires you to change the app, and for verification codes to copy the code. Finally, you need to delete the message. This proposal should simplify this process with minimal effort for the websites and services, from now on called third parties, using this method.
 
 ## User story
-A user registers with a third party using his matrix user. The user is then asked in his matrix client to confirm his identity to the third party. The user then either receives a code to enter on the website or app of the third party; or the click on the approve-button already triggers the verification.
-#### Possible overlay design in a matrix-client
+A user registers with a third party using his matrix user. The user is then asked in his matrix client (f.e. via a pop up) to confirm his identity to the third party. The user then either receives a code to enter on the website or app of the third party; or the click on the approve-button already triggers the verification.
+<!---#### Possible overlay design in a matrix-client
 ```
 +---------------------------------------------------+
 | example.org wants to verify its you who signed up.|
@@ -12,7 +12,7 @@ A user registers with a third party using his matrix user. The user is then aske
 |  |    Disapprove    |       |     Approve      |  |
 |  +------------------+       +------------------+  |
 +---------------------------------------------------+
-```
+```--->
 
 ## Proposal
 ### Requesting verification
@@ -40,21 +40,16 @@ If the verification request supports verification via link, and the client choos
   - ```type``` ```String``` - ```m.muid-verification.result```
   - ```content``` ```Object```
     - ```result``` ```String``` - ```success```, ```error```
-    - ```error_code``` ```String``` ```optional``` - ```m.invalid_url```, ```m.wrong_device```, ```m.expired```, ...
+    - ```error_code``` ```String``` ```optional```
+      - ```m.invalid_url``` - The url is invalid
+        - ```.expired```
+      - ```m.wrong_device``` - The device the link was opened on does not fulfill a criteria to be accepted (f.e. the third party requires the same ip address for both the link beeing opened on and the registering device).
+        - ```.ip```
+        - ```.cookie```
 
 ## Potential issues
 
-*Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
-and they should be documented here. There should be some explanation for why the disadvantage is
-acceptable, however - just like in this example.*
-
-Someone is going to have to spend the time to figure out what the template should actually have in it.
-It could be a document with just a few headers or a supplementary document to the process explanation,
-however more detail should be included. A template that actually proposes something should be considered
-because it not only gives an opportunity to show what a basic proposal looks like, it also means that
-explanations for each section can be described. Spending the time to work out the content of the template
-is beneficial and not considered a significant problem because it will lead to a document that everyone
-can follow.
+None I can think of.
 
 
 ## Alternatives
@@ -75,8 +70,3 @@ For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pul
 should be used to document things such as what endpoints and names are being used while the feature is
 in development, the name of the unstable feature flag to use to detect support for the feature, or what
 migration steps are needed to switch to newer versions of the proposal.*
-
-## Dependencies
-
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
