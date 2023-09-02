@@ -39,6 +39,11 @@ If the verification request supports verification via link, and the client choos
 - ```matrix-event``` ```Object```
   - ```type``` ```String``` - ```m.muid-verification.result```
   - ```content``` ```Object```
+    - ```m.relates_to``` ```Object``` ```optional if used in the HTTP context (since it can get hard to exchange event ids between the matrix server and the server delivering the response via HTTP and the matrix client knows which event id the response is for)```
+      - ```rel_type``` ```String``` - ```m.thread```
+      - ```m.in_reply_to``` ```Object```
+        - ```event_id``` ```String```
+      - ```event_id``` ```String```
     - ```result``` ```String``` - ```success```, ```error```
     - ```error_code``` ```String``` ```optional```
       - ```m.invalid_url``` - The url is invalid
