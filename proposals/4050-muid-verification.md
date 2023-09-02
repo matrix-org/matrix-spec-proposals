@@ -1,4 +1,4 @@
-# MSC0000: Matrix user id verification for third parties
+# MSC4050: Matrix user id verification for third parties
 
 If you want to sign up for a service that requires a guaranteed contact method, the current standard process is to send a verification code or link to the user. A similar method is used for so-called magic links. But this method is heavily flawed since it requires you to change the app, and for verification codes to copy the code. Finally, you need to delete the message. This proposal should simplify this process with minimal effort for the websites and services, from now on called third parties, using this method.
 
