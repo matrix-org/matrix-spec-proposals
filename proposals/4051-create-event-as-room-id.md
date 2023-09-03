@@ -12,7 +12,7 @@ unique value that can be used.
 
 ## Proposal
 
-A new room version is established to accomodate the event format, redaction, and identifier changes
+A new room version is established to accommodate the event format, redaction, and identifier changes
 from this proposal.
 
 The `room_id` field is removed from events, and no longer protected from redaction. The create event's
