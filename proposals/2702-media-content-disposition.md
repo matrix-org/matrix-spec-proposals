@@ -1,47 +1,114 @@
 # MSC2702: `Content-Disposition` usage in the media repo
 
-Clients and servers often disagree on how the `Content-Disposition` header should work with respect
-to uploads. This proposal aims to settle the disagreement while standardizing the behaviour.
+The current specification does not clarify how to treat `Content-Disposition` on
+[`/download`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3downloadservernamemediaid)
+and [`/thumbnail`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)
+requests. Some clients expect attachments to be `download` only (or don't care), while other applications
+like bridges rely on it sometimes being `inline` for user experience reasons.
+
+This proposal clarifies the exact behaviour and introduces a set of suggestions for servers to follow
+with respect to `Content-Disposition`.
+
+## Context
+
+Headers:
+* [`Content-Disposition`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+
+Endpoints affected:
+
+* [`/download`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3downloadservernamemediaid)
+* [`/thumbnail`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)
+
+Upload endpoints:
+* [`POST /upload`](https://spec.matrix.org/v1.8/client-server-api/#post_matrixmediav3upload)
+* [`PUT /upload`](https://spec.matrix.org/v1.8/client-server-api/#put_matrixmediav3uploadservernamemediaid)
 
 ## Proposal
 
-The `Content-Disposition` header becomes required on `/download` and `/thumbnail`, with `/download`. When
-a `filename` was supplied to `/upload`, `/download`'s `Content-Disposition` MUST have a filename attribute.
+For `/download`:
 
-For `/thumbnail`, the `Content-Disposition` MUST be `inline` (with optional server-generated filename).
+* `Content-Disposition` MUST be returned, and MUST be one of `inline` or `attachment` (see below).
+* `Content-Disposition` MUST include the `filename` from the originating `/upload` endpoint. If the media
+  being downloaded is remote, the `filename` from the remote server's `Content-Disposition` header MUST
+  be used.
 
-For `/download`, the attribute MUST be one of `inline` or `attachment`. The server SHOULD intelligently
-decide which of the two to use, such as by implying all `image/*` content types are `inline` and binary
-blobs are `attachment`s.
+  * For backwards compatibility reasons, clients cannot assume that a `filename` will be present.
 
-To allow for clients to specifically request a behaviour, a new query string parameter is added to
-`/download` to let clients pick explicitly which one they would like: `asAttachment`. When not
-supplied, the server's default processing is to be used. When supplied as `true`, the server MUST
-use `Content-Disposition: attachment` (with possible filename). When supplied as `false`, the server
-MUST use `Content-Disposition: inline` (with possible filename).
+For `/thumbnail`:
 
-This proposal does not advocate to let clients specify the entire header out of caution.
+* `Content-Disposition` MUST be returned, and MUST be `inline` (see below).
+* `Content-Disposition` SHOULD include a server-generated `filename`. For example, `thumbnail.png`.
+
+Note that in both endpoints `Content-Disposition` becomes required, though the legal set of parameters is
+intentionally different. Note also that by restricting `/thumbnail` to `inline` it reduces the allowed set
+of `Content-Type` options the server can use, as per below.
+
+When `Content-Disposition` is `inline`, the `Content-Type` MUST be one of the following mimetypes:
+
+* `text/css`
+* `text/plain`
+* `text/csv`
+* `application/json`
+* `application/ld+json`
+* `image/jpeg`
+* `image/gif`
+* `image/png`
+* `image/apng`
+* `image/webp`
+* `image/avif`
+* `video/mp4`
+* `video/webm`
+* `video/ogg`
+* `video/quicktime`
+* `audio/mp4`
+* `audio/webm`
+* `audio/aac`
+* `audio/mpeg`
+* `audio/ogg`
+* `audio/wave`
+* `audio/wav`
+* `audio/x-wav`
+* `audio/x-pn-wav`
+* `audio/flac`
+* `audio/x-flac`
+
+If the content to be returned does *not* match these types, it MUST be returned as `attachment` (or in the
+case of `/thumbnail`, not returned at all).
+
+Servers SHOULD NOT rely on the `Content-Type` supplied to `/upload` to determine `Content-Disposition`. Instead,
+the content should be "sniffed" to determine appropriate type.
+
+`Content-Type` additionally becomes a required header on both `/download` and `/thumbnail`, as `Content-Disposition`
+without `Content-Type` is effectively useless in HTTP.
+
+For clarity, a server is *not* required to use `inline` on `/download`. Clients SHOULD assume that a server will
+always use `attachment` instead.
 
 ## Potential issues
 
-Servers could "intelligently" decide to always use `inline` by default (as they currently do). This
-is acceptable under this proposal, though not advocated by the author.
+This proposal does not require the usage of `inline` on `/download`, making it harder for IRC and similar
+bridges to rely on "pastebin" behaviour. For example, when a large message is posted on the Matrix side of
+the bridge, the IRC bridge might upload it as a text file due to limits on the IRC side. Ideally, that text
+file would be rendered inline by the serer. Bridges are encouraged to use "proxy APIs" to serve the text
+file instead, where they can better control the user experience.
 
 ## Alternatives
 
-We could settle the debate by picking one or the other, however from past discussions not everyone
-would be happy with the result. Currently clients link to the `/download` endpoint as a literal "download
-this" button (implying they'd like `attachment`) whereas others use the endpoint as a fallback, allowing
-users to click on it to view the content in their browser. We could introduce an additional `/preview`
-or `/view` endpoint which changes the implicit behaviour of the header, however this solution feels like
-unneeded endpoint sprawl.
+No major alternatives identified.
 
 ## Security considerations
 
-None known.
+This MSC fixes theoretical security issues relating to Cross-Site Scripting and similar. No new security issues
+are identified, and careful consideration was put into `inline` to ensure an extremely limited set of possible
+media types.
+
+The allowable content types for `inline` were inspired by [the react-sdk](https://github.com/matrix-org/matrix-react-sdk/blob/a70fcfd0bcf7f8c85986da18001ea11597989a7c/src/utils/blobs.ts#L51),
+and extended to include what is present in [a related Synapse PR](https://github.com/matrix-org/synapse/pull/15988).
+The react-sdk list of types has been known to be safe for several years now, and the added types in the Synapse
+PR are not subject to XSS or similar attacks. Note that `image/svg`, `text/javascript`, and `text/html` are
+explicitly not allowed.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use `org.matrix.msc2702` as a
-prefix. For example, `?org.matrix.msc2702.asAttachment=true`. As this is backwards compatible otherwise,
-no special endpoint is required.
+This MSC has no particular unstable prefix requirements. Servers are already able to return arbitrary
+`Content-Disposition` headers on the affected endpoints.
