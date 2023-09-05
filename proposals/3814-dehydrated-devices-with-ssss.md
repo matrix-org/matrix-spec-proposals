@@ -218,21 +218,21 @@ encrypted, which leads to ...
    ┌───────────────────────────────────────────────────────────┐
    │                    OneTimeKey                             │
    ├────────────────────────┬───────────────┬──────────────────┤
-   │Name                    │ Type          │ Size             │
+   │Name                    │ Type          │ Size (bytes)     │
    ├────────────────────────┼───────────────┼──────────────────┤
-   │Key ID                  │ u32           │ 4 bytes          │
-   │Is published            │ u8            │ 1 byte           │
-   │Curve 25519 key pair    │ KeyPair       │ 69 bytes         │
+   │Key ID                  │ u32           │ 4                │
+   │Is published            │ u8            │ 1                │
+   │Curve 25519 key pair    │ KeyPair       │ 69               │
    └────────────────────────┴───────────────┴──────────────────┘
 
    ┌───────────────────────────────────────────────────────────┐
    │                    FallbackKeys                           │
    ├────────────────────────┬───────────────┬──────────────────┤
-   │Name                    │ Type          │ Size             │
+   │Name                    │ Type          │ Size (bytes)     │
    ├────────────────────────┼───────────────┼──────────────────┤
-   │Number of fallback keys │ u8            │ 1 byte           │
-   │Fallback-key            │ OneTimeKey    │ 69 bytes         │
-   │Previous fallback-key   │ OneTImeKey    │ 69 bytes         │
+   │Number of fallback keys │ u8            │ 1                │
+   │Fallback-key            │ OneTimeKey    │ 69               │
+   │Previous fallback-key   │ OneTImeKey    │ 69               │
    └────────────────────────┴───────────────┴──────────────────┘
 ```
 
