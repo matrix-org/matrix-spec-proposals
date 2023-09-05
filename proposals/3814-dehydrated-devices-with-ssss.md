@@ -244,48 +244,30 @@ public key from the private one.
 
 #### Encryption key
 
-TODO: Decide if the Latex format or the pseudocode format is preferred, or maybe
-both.
-
 TODO: Explain why the double derivation is necessary.
 
 The encryption key used for the dehydrated device will be randomly generated
 and stored/shared via SSSS using the name `m.dehydrated_device`.
 
 The randomly generated encryption key *must* be expanded using the HMAC-based
-Key Derivation function defined in [RFC5869]. The notation in this document are
-to be interpreted as described in [RFC5869].
+Key Derivation function defined in [RFC5869].
 
-$$
+```math
 \begin{aligned}
     DEVICE\_KEY
     &= \text{HKDF} \left(\text{``Device ID``}, RANDOM\_KEY, \text{``dehydrated-device-pickle-key"}, 32\right)
 \end{aligned}
-$$
-
-```text
-PRK = HKDF-Extract("Device ID", random_encryption_key)
-device_key = HKDF-Expand(PRK, "dehydrated-device-pickle-key", 32)
 ```
 
 The `device_key` is then further expanded into a AES256 key, HMAC key and
 initialization vector.
 
 
-$$
+```math
 \begin{aligned}
     AES\_KEY \parallel HMAC\_KEY \parallel AES\_IV
     &= \text{HKDF}\left(0,DEVICE\_KEY,\text{``Pickle"},80\right)
 \end{aligned}
-$$
-
-```text
-PRK = HKDF-Extract("", DeviceKey)
-output = HKDF-Expand(PRK, "Pickle", 80)
-
-aes_key = output[0..32]
-mac_key = output[32..64]
-initialization_vector = output[64..80]
 ```
 
 The plain-text is encrypted with [AES-256] in [CBC] mode with [PKCS#7] padding,
@@ -297,12 +279,12 @@ MAC are appended to the cipher-text.
 The cipher-text, including the appended MAC tag, are encoded using unpadded
 Base64 to give the device pickle.
 
-The device pickle can be inserted into the `device_pickle` field of the
+The device pickle is then inserted into the `device_pickle` field of the
 `device_data` JSON message.
 
  ```json
 {
- "device_data": {
+  "device_data": {
     "algorithm": "m.dehydration.v1.olm",
     "device_pickle": "encrypted dehydrated device"
   }
@@ -407,3 +389,4 @@ None
 [MSC2697]: https://github.com/matrix-org/matrix-doc/pull/2697
 [`/keys/upload`]: https://spec.matrix.org/v1.7/client-server-api/#post_matrixclientv3keysupload
 [device keys]: https://spec.matrix.org/v1.7/client-server-api/#device-keys
+[HMAC-SHA-256]: https://datatracker.ietf.org/doc/html/rfc2104
