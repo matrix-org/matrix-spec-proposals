@@ -1,0 +1,1 @@
+Add `/make_knock` and `/send_knock` endpoints as per [MSC2403](https://github.com/matrix-org/matrix-doc/pull/2403).
