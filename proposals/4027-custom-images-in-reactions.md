@@ -37,6 +37,13 @@ This proposal suggests two changes to events with the `m.annotation` relation.
    the annotation, as alt-text, or if the client does not support rendering
    images.
 
+   The `shortcode` must have a length of less than or equal to 100 bytes
+   (including the colons at the beginning and end of the string). This
+   restriction must be enforced by servers when sending reactions, but servers
+   should not reject events coming across federation due to having too many
+   bytes in the `shortcode` field. Servers may still opt to locally redact
+   events having too many bytes in the `shortcode` field.
+
 Example custom image reaction event content
 
 ```json
