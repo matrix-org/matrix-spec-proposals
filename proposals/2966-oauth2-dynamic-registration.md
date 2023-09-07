@@ -32,7 +32,7 @@ Some of those metadatas are optional in the RFC but required in this context.
 | `client_name`    | Human-readable name of the client to be presented to the user                                               | Required                                         | Yes         |
 | `client_uri`     | URL of a web page providing information about the client                                                    | Optional                                         | Yes         |
 | `logo_uri`       | URL that references a logo for the client                                                                   | Optional                                         | Yes         |
-| `contacts`       | Array of strings representing ways to contact people responsible for this client, typically email addresses | Required                                         | No          |
+| `contacts`       | Array of strings representing ways to contact people responsible for this client, typically email addresses | Required, non-empty                                         | No          |
 | `tos_uri`        | URL that points to a human-readable terms of service document for the client                                | Required                                         | Yes         |
 | `policy_uri`     | URL that points to a human-readable policy document for the client                                          | Required                                         | Yes         |
 | `redirect_uris`  | Array of redirection URIs for use in redirect-based flows                                                   | Required with the `authorization_code` grant ype | No          |
