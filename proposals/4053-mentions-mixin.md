@@ -24,7 +24,7 @@ as [noted in MSC3932](https://github.com/matrix-org/matrix-spec-proposals/blob/t
 > disabled when a room version does support extensible events.
 
 [Intentional mentions (i.e. the `m.mentions` property)](https://spec.matrix.org/v1.8/client-server-api/#user-and-room-mentions)
-is redefined as an extensible events "mixin" ([see MSC1767](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc1767/proposals/1767-extensible-events.md#mixins-specifically-allowed)).
+is redefined as an extensible events "mixin" ([see MSC1767](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md#mixins-specifically-allowed)).
 No changes to the implementation are needed except for additional push rules (similar
 to those defined in [MSC3933](https://github.com/matrix-org/matrix-spec-proposals/pull/3933)) [^1]:
 
