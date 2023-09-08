@@ -43,6 +43,9 @@ Note that in both endpoints `Content-Disposition` becomes required, though the l
 intentionally different. Note also that by restricting `/thumbnail` to `inline` it reduces the allowed set
 of `Content-Type` options the server can use, as per below.
 
+It's not typical for a client to link to `/thumbnail` in a way which makes use of `Content-Disposition`, but
+in the event that a client does (and for consistency within the spec), we ensure a safe default is used.
+
 When `Content-Disposition` is `inline`, the `Content-Type` MUST be one of the following mimetypes:
 
 * `text/css`
