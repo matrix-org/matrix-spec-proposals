@@ -79,7 +79,8 @@ If the content to be returned does *not* match these types, it MUST be returned 
 case of `/thumbnail`, not returned at all).
 
 Servers SHOULD NOT rely on the `Content-Type` supplied to `/upload` to determine `Content-Disposition`. Instead,
-the content should be "sniffed" to determine appropriate type.
+the content should be "sniffed" to determine appropriate type. To effect this layered protection, servers which
+do not sniff for `Content-Type` SHOULD NOT use `Content-Disposition: inline`.
 
 `Content-Type` additionally becomes a required header on both `/download` and `/thumbnail`, as `Content-Disposition`
 without `Content-Type` is effectively useless in HTTP.
