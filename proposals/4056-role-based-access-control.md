@@ -154,6 +154,10 @@ clients don't make use of many theorized alternatives.
 
 **TODO**
 
+If `m.role_map` uses a role ID which doesn't exist and assigns users to it, those users will never be able
+to send events because the `auth_events` will never be complete. This needs to be fixed before this MSC
+enters FCP, at least for `m.room.member` and similar power events.
+
 ## Unstable prefix
 
 While this proposal is not incorporated into a stable room version, implementations should use `org.matrix.msc4056`
