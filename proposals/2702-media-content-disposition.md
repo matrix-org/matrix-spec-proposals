@@ -93,7 +93,7 @@ always use `attachment` instead.
 This proposal does not require the usage of `inline` on `/download`, making it harder for IRC and similar
 bridges to rely on "pastebin" behaviour. For example, when a large message is posted on the Matrix side of
 the bridge, the IRC bridge might upload it as a text file due to limits on the IRC side. Ideally, that text
-file would be rendered inline by the serer. Bridges are encouraged to use "proxy APIs" to serve the text
+file would be rendered inline by the server. Bridges are encouraged to use "proxy APIs" to serve the text
 file instead, where they can better control the user experience.
 
 ## Alternatives
