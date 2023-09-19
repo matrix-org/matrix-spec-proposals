@@ -105,7 +105,7 @@ The image object consists of the following keys:
    `m.sticker` events.
  - `usage`: (String[], optional) An array of the usages for this image. The possible values match those
    of the `usage` key of a pack object. If present and non-empty, this overrides the usage defined at
-   pack level for this particular image. This is useful to e.g. have one pack contain mixed emotees and
+   pack level for this particular image. This is useful to e.g. have one pack contain mixed emotes and
    stickers. Additionally, as there is only a single account data level image pack, this is required to
    have a mixture of emotes and stickers available in account data.
 
@@ -156,7 +156,7 @@ the `m.image_pack.rooms` key in a user's account data. The value is an object, w
 a map of room ids to the state keys to an object. If a room id / state key combination is provided in this form,
 clients should make the corresponding room image pack globally accessible in all rooms.
 
-Note that while this MSC does not define any keys for the bottom-level object, definint it as an object means greater
+Note that while this MSC does not define any keys for the bottom-level object, defining it as an object means greater
 flexibility in the case of future changes.
 
 The contents of `m.image_pack.rooms` could look like the following:
@@ -180,7 +180,7 @@ Here three emote packs are globally accessible to the user: Two defined in `!som
 `!someotherroom:example.org` (with a blank state key).
 
 ### Image pack source priority and deduplicating
-If a client gives image suggestions (emotes, stickers) to the user in some ordered fassion (e.g. an
+If a client gives image suggestions (emotes, stickers) to the user in some ordered fashion (e.g. an
 ordered list where you click an entry), the order of the images should be predictable between rooms.
 A suggestion for clients of image pack ordering is as follows:
 1. User image pack (defined in your own account data)
@@ -189,7 +189,7 @@ A suggestion for clients of image pack ordering is as follows:
 4. Room image packs (defined in the currently open room's state)
 
 Furthermore, clients are expected to de-duplicate images so that same images are not displayed multiple
-times. Such scenarios includ e.g.:
+times. Such scenarios include:
 1. when viewing a room that has a pack defined in the `m.image_pack.rooms` account data object, and
 2. a bot which syncs emotes over multiple rooms.
 
@@ -197,14 +197,14 @@ This could be done by deduplicating by the mxc URI.
 
 ### Sending
 #### Emoticons
-For emoticons a client could add deliminators (e.g. `:`) around the image shortcode, meaning
+For emoticons a client could add delimiters (e.g. `:`) around the image shortcode, meaning
 that if an image has a shortcode of `emote`, the user can enter `:emote:` to send it. If there are
 multiple emoticons with the same shortcode in a room, the client could e.g. slugify the packs display
 name and then have the user enter `:slug~emote:`. As slugs typically match `^[\w-]+$`, that should
 ensure complete-ability.
 
 The alt / title text for the `<img>` tag is expected to be the `body` of the emote. If absent, its
-shotcode should be used instead.
+shortcode should be used instead.
 
 #### Stickers
 When sending a sticker, the `body` of the `m.sticker` event should be set to the `body` defined for that
