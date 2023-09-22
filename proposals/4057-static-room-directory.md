@@ -102,7 +102,7 @@ others.
 
 [MSC2324](https://github.com/matrix-org/matrix-spec-proposals/pull/2324) describes well-known apis as not being
 able to be versioned, however while this proposal is not considered stable, implementations should use
-`.well-known/matrix/org.matrix.msc0000.rooms` as the path instead of `.well-known/matrix/rooms`.
+`.well-known/matrix/org.matrix.msc4057.rooms` as the path instead of `.well-known/matrix/rooms`.
 
 ## Dependencies
 
