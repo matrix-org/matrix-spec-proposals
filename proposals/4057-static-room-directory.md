@@ -74,6 +74,11 @@ limits.
 
 As resolving inherently exposes metadata to a third party, caching might also be desireable for privacy reasons.
 
+Users on homeservers that do not support this feature will not be able to resolve room aliases served statically.
+A workaround for this could be limiting the ability for setting a statically served room alias as the canonical alias
+of a room to a new room version, this could discourage users of using the feature in a state in which few homeservers
+support it.
+
 ## Alternatives
 
 Instead of defining room alias mappings in a well-known path, the current `.well-known/matrix/server` content
