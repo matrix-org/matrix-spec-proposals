@@ -64,6 +64,31 @@ The following changes are made to the cleartext `session_data` property of the
   it for compatibility with older clients, but should no longer use it to
   verify the contents of the backup if the `mac2` property is present.
 
+The [construction of the `session_data`
+property](https://spec.matrix.org/unstable/client-server-api/#backup-algorithm-mmegolm_backupv1curve25519-aes-sha2)
+thus becomes:
+
+1. Encode the session key to be backed up as a JSON object using the
+   SessionData.
+2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
+   key and the backup’s public key to generate a shared secret. The public half
+   of the ephemeral key, encoded using unpadded base64, becomes the `ephemeral`
+   property of the `session_data`.
+3. Using the shared secret, generate 80 bytes by performing an HKDF using
+   SHA-256 as the hash, with a salt of 32 bytes of 0, and with the empty string
+   as the info. The first 32 bytes are used as the AES key, the next 32 bytes
+   are used as the MAC key, and the last 16 bytes are used as the AES
+   initialization vector.
+4. Stringify the JSON object, and encrypt it using AES-CBC-256 with PKCS#7
+   padding. This encrypted data, encoded using unpadded base64, becomes the
+   `ciphertext` property of the `session_data`.
+5. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the MAC key generated above. The first 8 bytes of the resulting MAC
+   are base64-encoded, and become the `mac` property of the `session_data`.
+6. Pass the raw encrypted data (prior to base64 encoding) through HMAC-SHA-256
+   using the backup MAC key.  The MAC is base64-encoded (unpadded), and becomes
+   the `mac2` property of the `session_data`.
+
 ## Potential issues
 
 In order to store a new secret in the Secret Storage, clients may need to
