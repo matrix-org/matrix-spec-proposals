@@ -1,4 +1,4 @@
-# MSC4048: Signed key backup
+# MSC4048: Authenticated key backup
 
 The [server-side key
 backups](https://spec.matrix.org/unstable/client-server-api/#server-side-key-backups)
@@ -22,56 +22,52 @@ backup.  However this removes the ability for a client to be able to write to
 the backup without being able to read from it.
 
 We propose to continue using an asymmetric encryption algorithm in the backup,
-but to ensure authenticity by signing the backup data.
+but to ensure authenticity by producing a MAC using a key derived from the
+backup's decryption key.
 
 ## Proposal
 
-A user has a new signing key, referred to as the "backup signing key", used to
-sign key backups using the ed25519 signature algorithm.  The private key can be
-shared/stored using [the Secrets
-module](https://spec.matrix.org/unstable/client-server-api/#secrets) using the
-name `m.key_backup.signing`.
+A user who has a key backup derives a new backup MAC key by performing HKDF on
+the backup decryption key (as raw unencoded bytes) with no salt and an info
+parameter if `"MATRIX_BACKUP_MAC_KEY"` and generating 32 bytes (256 bits):
 
-The `AuthData` object for the [`m.megolm_backup.v1.curve25519-aes-sha2` key
+    mac_key = HKDF("", decryption_key, "MATRIX_BACKUP_MAC_KEY", 32)
+
+The signing key can be shared/stored using [the Secrets
+module](https://spec.matrix.org/unstable/client-server-api/#secrets) using the
+name `m.key_backup.mac`.
+
+The `SessionData` object for the [`m.megolm_backup.v1.curve25519-aes-sha2` key
 backup
 algorithm](https://spec.matrix.org/unstable/client-server-api/#backup-algorithm-mmegolm_backupv1curve25519-aes-sha2)
-has a new optional property called `signing_public_key`, contains the public
-key of the backup signing key, encoded in unpadded base64.  If the `AuthData`
-is not signed by the user's master signing key or by a verified device
-belonging to the same user, the backup signing key must be ignored, and all
-keys in the backup must be treated as being unsigned.
+key backup algorithm has a new optional `authenticated` property, defaulting to
+`false`.  This property indicates whether the device that uploaded the key to
+the backup believes that the key belongs to the given `sender_key`.  This is
+true if: a) the key was received via an Olm-encrypted `m.room_key` event from
+the `sender_key`, b) the key was received via a trusted key forward
+([MSC3879](https://github.com/matrix-org/matrix-spec-proposals/pull/3879)), or
+c) the key was downloaded from the key backup, with the `authenticated`
+property set to `true` and signed by a trusted key.  If the `session_data` does
+not have a `mac2` property (see below), then this flag must be treated as being
+`false`.
 
-The `SessionData` object for the `m.megolm_backup.v1.curve25519-aes-sha2` key
-backup algorithm has two new optional properties:
+No changes are made to the `AuthData` for the
+`m.megolm_backup.v1.curve25519-aes-sha2` key backup algorithm.
 
-- a `signatures` property: the `SessionData` is a [signed JSON
-  object](https://spec.matrix.org/unstable/appendices/#signing-json), signed
-  using the backup signing key, using the public key (encoded in unpadded
-  base64) as the key ID
-- a boolean `authenticated` property, defaulting to `false`: indicates whether
-  the device that uploaded the key to the backup believes that the key belongs
-  to the given `sender_key`.  This is true if: a) the key was received via an
-  Olm-encrypted `m.room_key` event from the `sender_key`, b) the key was
-  received via a trusted key forward
-  ([MSC3879](https://github.com/matrix-org/matrix-spec-proposals/pull/3879)),
-  or c) the key was downloaded from the key backup, with the `authenticated`
-  property set to `true` and signed by a trusted key.  If the `SessionData` is
-  not signed by the backup signing key, then this flag must be treated as being
-  `false`.
+The following changes are made to the cleartext `session_data` property of the
+`KeyBackupData` object is deprecated:
 
-The `mac` property in the cleartext `session_data` property of the
-`KeyBackupData` is deprecated.  Clients should continue to produce it for
-compatibility with older clients, but should no longer use it to verify the
-contents of the backup if the `SessionData` object is signed.
+- a new `mac2` [FIXME: get a better name.  suggestions?] property is added,
+  which is a MAC of the `SessionData` ciphertext (priory to base64-encoding),
+  using HMAC-SHA-256 with the backup MAC key derived above.
+- the current `mac` property is deprecated.  Clients should continue to produce
+  it for compatibility with older clients, but should no longer use it to
+  verify the contents of the backup if the `mac2` property is present.
 
 ## Potential issues
 
-As the `AuthData` is changed, a new backup version will need to be created.  A
-client will need to download all existing keys and re-upload them.
-
 In order to store a new secret in the Secret Storage, clients may need to
-prompt the user for the Secret Storage key.  Clients may need to do so already
-to download all the current keys from the backup.
+prompt the user for the Secret Storage key.
 
 ## Alternatives
 
@@ -79,13 +75,32 @@ As mentioned above, we could switch to using a symmetric encryption algorithm
 for the key backup.  However, this is not backwards-compatible, and does not
 allow for clients that can write to the backup without reading.
 
-Rather than using a new signing key, we could use an existing signing key, such
-as one of the cross-signing keys.  This would remove the need for users to
-enter their Secret Storage key to add the new signing key.  However, this means
-that a user cannot create a key backup without also using cross-signing.  Using
-a separate key also allows the user to give someone else (such as a bot)
+Rather than using a new MAC key, we could use an existing signing key, such as
+one of the cross-signing keys.  This would remove the need for users to enter
+their Secret Storage key to add the new signing key.  However, this means that
+a user cannot create a key backup without also using cross-signing.  Using a
+separate key also allows the user to give someone else (such as a bot)
 permission to write to their backups without allowing them to perform any
 cross-signing operations.
+
+A previous version of this MSC used a signing key that was generated randomly.
+The method presented in the current version has the following advantages:
+
+- no changes to `AuthData` are necessary, so a new backup version is not
+  required
+- a MAC is faster to calculate.  The main advantage of a signature is that it
+  allows one to verify the signature without knowing the private key, but in
+  this case, reading is a more privileged action than writing, and writers
+  already need to know the private/secret key.
+- since the MAC key is derived from the decryption key, two clients can be
+  upgraded at the same time without interfering with each other, as they will
+  derive the same MAC key
+
+A disadvantage of the currently-proposed method versus the previous proposal is
+that migration requires that the user gives the client access to the backup
+decryption key in order to derive the MAC key.  However, in both proposals,
+most clients would require that the user enter their default SSSS key, which
+would give them access to the decryption key anyways.
 
 ## Security considerations
 
@@ -106,10 +121,9 @@ message.
 ## Unstable prefix
 
 Until this MSC is accepted, the property name
-`org.matrix.msc4048.signing_public_key` should be used in place of
-`signing_public_key`, and `org.matrix.msc4048.authenticated` should be used in
-place of `authenticated`.  No unstable prefix is used for the `signatures`
-property since it uses the existing definition of JSON signing.
+`org.matrix.msc4048.authenticated` should be used in place of `authenticated`
+in the `SessionData` object, and the property name `org.matrix.msc4048.mac2`
+should be used in place of `mac2` in the `session_data` property.
 
 ## Dependencies
 
