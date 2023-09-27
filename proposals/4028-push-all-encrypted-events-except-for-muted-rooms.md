@@ -108,6 +108,8 @@ The clients with push services will request more frequently the server to retrie
 
 This may be a potential performance issue if each client fetches separately each pushed event. But this should not be the case, because the clients have to run a sync if they want to be able to receive potential new encryption keys through to_devices. So they will retrieve more than one event at the time.
 
+BTW [MSC3013: Encrypted Push](https://github.com/matrix-org/matrix-spec-proposals/pull/3013) could potentially mitigate this.
+
 #### Push sending
 Push is a huge bottleneck on the sending side. So calculating what to push and the unread counts (its the same process) is a big performance bottleneck currently when sending in large rooms. A bunch of optimisation has taken place to make that better, but its still quite expensive. We should plan an effort to limit potential issue server side here.
 
