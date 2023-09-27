@@ -38,9 +38,9 @@ A new predefined **override** push rule (`.m.rule.encrypted_event`) is added jus
     "enabled": true,
     "conditions": [
       {
-         "kind": "event_match",
+         "kind": "event_property_is",
          "key": "type",
-         "pattern": "m.room.encrypted"
+         "value": "m.room.encrypted"
       }
     ],
     "actions": ["notify"]
