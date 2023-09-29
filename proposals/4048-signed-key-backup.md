@@ -29,11 +29,11 @@ backup's decryption key.
 
 A user who has a key backup derives a new backup MAC key by performing HKDF on
 the backup decryption key (as raw unencoded bytes) with no salt and an info
-parameter if `"MATRIX_BACKUP_MAC_KEY"` and generating 32 bytes (256 bits):
+parameter of `"MATRIX_BACKUP_MAC_KEY"` and generating 32 bytes (256 bits):
 
-    mac_key = HKDF("", decryption_key, "MATRIX_BACKUP_MAC_KEY", 32)
+    backup_mac_key = HKDF("", decryption_key, "MATRIX_BACKUP_MAC_KEY", 32)
 
-The signing key can be shared/stored using [the Secrets
+The backup MAC key can be shared/stored using [the Secrets
 module](https://spec.matrix.org/unstable/client-server-api/#secrets) using the
 name `m.key_backup.mac`.
 
