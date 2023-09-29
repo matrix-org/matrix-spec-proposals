@@ -58,7 +58,7 @@ No changes are made to the `AuthData` for the
 `m.megolm_backup.v1.curve25519-aes-sha2` key backup algorithm.
 
 The following changes are made to the cleartext `session_data` property of the
-`KeyBackupData` object is deprecated:
+`KeyBackupData` object:
 
 - a new `mac2` [FIXME: get a better name.  suggestions?] property is added,
   which is a MAC of the `SessionData` ciphertext (priory to base64-encoding),
@@ -75,8 +75,8 @@ property](https://spec.matrix.org/unstable/client-server-api/#backup-algorithm-m
 thus becomes:
 
 1. Encode the session key to be backed up as a JSON object using the
-   SessionData.
-2. Generate an ephemeral curve25519 key, and perform an ECDH with the ephemeral
+   `SessionData`.
+2. Generate an ephemeral Curve25519 key, and perform an ECDH with the ephemeral
    key and the backup’s public key to generate a shared secret. The public half
    of the ephemeral key, encoded using unpadded base64, becomes the `ephemeral`
    property of the `session_data`.
@@ -126,18 +126,18 @@ cross-signing operations.
 A previous version of this MSC used a signing key that was generated randomly.
 The method presented in the current version has the following advantages:
 
-- no changes to `AuthData` are necessary, so a new backup version is not
-  required
-- a MAC is faster to calculate.  The main advantage of a signature is that it
+- No changes to `AuthData` are necessary, so a new backup version is not
+  required.
+- A MAC is faster to calculate.  The main advantage of a signature is that it
   allows one to verify the signature without knowing the private key, but in
   this case, reading is a more privileged action than writing, and writers
   already need to know the private/secret key.
-- since the MAC key is derived from the decryption key, two clients can be
+- Since the MAC key is derived from the decryption key, two clients can be
   upgraded at the same time without interfering with each other, as they will
-  derive the same MAC key
-- the MAC is calculated after encryption, and hence is verified before
+  derive the same MAC key.
+- The MAC is calculated after encryption, and hence is verified before
   decryption, so we know that it is authenticated before we do any processing
-  on it
+  on it.
 
 A disadvantage of the currently-proposed method versus the previous proposal is
 that migration requires that the user gives the client access to the backup
