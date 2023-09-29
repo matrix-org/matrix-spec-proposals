@@ -35,7 +35,10 @@ parameter of `"MATRIX_BACKUP_MAC_KEY"` and generating 32 bytes (256 bits):
 
 The backup MAC key can be shared/stored using [the Secrets
 module](https://spec.matrix.org/unstable/client-server-api/#secrets) using the
-name `m.key_backup.mac`.
+name `m.megolm_backup.v1.mac`.  Note that if the backup decryption key (the
+secret using the name `m.megolm_backup.v1`) is stored/shared, then the backup
+MAC key does not need to be stored/shared as it can be derived from the backup
+decryption key.
 
 The `SessionData` object for the [`m.megolm_backup.v1.curve25519-aes-sha2` key
 backup
@@ -47,9 +50,9 @@ true if: a) the key was received via an Olm-encrypted `m.room_key` event from
 the `sender_key`, b) the key was received via a trusted key forward
 ([MSC3879](https://github.com/matrix-org/matrix-spec-proposals/pull/3879)), or
 c) the key was downloaded from the key backup, with the `authenticated`
-property set to `true` and signed by a trusted key.  If the `session_data` does
-not have a `mac2` property (see below), then this flag must be treated as being
-`false`.
+property set to `true` and was authenticated (for example using the method from
+this proposal).  If the `session_data` does not have a `mac2` property (see
+below), then this flag must be treated as being `false`.
 
 No changes are made to the `AuthData` for the
 `m.megolm_backup.v1.curve25519-aes-sha2` key backup algorithm.
@@ -62,7 +65,10 @@ The following changes are made to the cleartext `session_data` property of the
   using HMAC-SHA-256 with the backup MAC key derived above.
 - the current `mac` property is deprecated.  Clients should continue to produce
   it for compatibility with older clients, but should no longer use it to
-  verify the contents of the backup if the `mac2` property is present.
+  verify the contents of the backup if the `mac2` property is present.  Clients
+  should also accept `session_data` that does not have the `mac` property if
+  the `mac2` property is present, as the `mac` property may become optional in
+  the future.
 
 The [construction of the `session_data`
 property](https://spec.matrix.org/unstable/client-server-api/#backup-algorithm-mmegolm_backupv1curve25519-aes-sha2)
@@ -89,10 +95,19 @@ thus becomes:
    using the backup MAC key.  The MAC is base64-encoded (unpadded), and becomes
    the `mac2` property of the `session_data`.
 
+FIXME: should the server compare the `mac2` when a client uploads a key to the
+backup, when deciding whether to keep the existing key or replace it with a new
+key?
+
 ## Potential issues
 
-In order to store a new secret in the Secret Storage, clients may need to
-prompt the user for the Secret Storage key.
+For users with existing backups, in order to start storing backup keys using
+this format, the user may need to enter their Secret Storage key so that the
+client can obtain the backup decryption key, if it does not already have it
+cached, in order to derive the backup MAC key.  If a user has multiple clients,
+one client may try to obtain the backup MAC key from other clients using Secret
+Sharing, but it does not have a way of knowing which clients, if any, have the
+backup MAC key.
 
 ## Alternatives
 
@@ -120,6 +135,9 @@ The method presented in the current version has the following advantages:
 - since the MAC key is derived from the decryption key, two clients can be
   upgraded at the same time without interfering with each other, as they will
   derive the same MAC key
+- the MAC is calculated after encryption, and hence is verified before
+  decryption, so we know that it is authenticated before we do any processing
+  on it
 
 A disadvantage of the currently-proposed method versus the previous proposal is
 that migration requires that the user gives the client access to the backup
@@ -130,10 +148,10 @@ would give them access to the decryption key anyways.
 ## Security considerations
 
 Being able to prove authenticity of keys may affect the deniability of
-messages: if a user has a Megolm session in their key backup that is signed by their
-backup signing key, and the session data indicates that it originated from one
-of their devices, this could be used as evidence that the Megolm session did in
-fact come from them.
+messages: if a user has a Megolm session in their key backup that is MAC'ed by
+their backup MAC key, and the session data indicates that it originated from
+one of their devices, this could be used as evidence that the Megolm session
+did in fact come from them.
 
 This is somewhat mitigated by the fact that obtaining the Megolm session
 requires the decryption key for the backup.  In addition, the deniability
@@ -145,10 +163,14 @@ message.
 
 ## Unstable prefix
 
-Until this MSC is accepted, the property name
-`org.matrix.msc4048.authenticated` should be used in place of `authenticated`
-in the `SessionData` object, and the property name `org.matrix.msc4048.mac2`
-should be used in place of `mac2` in the `session_data` property.
+Until this MSC is accepted, the following unstable names should be used:
+
+- the property name `org.matrix.msc4048.authenticated` should be used in place
+  of `authenticated` in the `SessionData` object,
+- the property name `org.matrix.msc4048.mac2` should be used in place of `mac2`
+  in the `session_data` property,
+- the SSSS identifier `org.matrix.msc4048.mac` should be used in place of
+  `m.megolm_backup.v1.mac`.
 
 ## Dependencies
 
