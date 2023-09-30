@@ -61,7 +61,7 @@ The following changes are made to the cleartext `session_data` property of the
 `KeyBackupData` object:
 
 - a new `mac2` [FIXME: get a better name.  suggestions?] property is added,
-  which is a MAC of the `SessionData` ciphertext (priory to base64-encoding),
+  which is a MAC of the `SessionData` ciphertext (prior to base64-encoding),
   using HMAC-SHA-256 with the backup MAC key derived above.
 - the current `mac` property is deprecated.  Clients should continue to produce
   it for compatibility with older clients, but should no longer use it to
