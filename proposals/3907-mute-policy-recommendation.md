@@ -26,7 +26,7 @@ of these 2 MSCs.
 ## Proposal
 
 This MSC will create a new Policy List recommendation of `m.mute`. Below is an example event for this MSC
-that displays how it would be used in conjunction with MSC3907.
+that displays how it would be used in conjunction with MSC3908.
 
 ```
 {
