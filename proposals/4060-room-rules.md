@@ -11,7 +11,7 @@ This proposal introduces a feature where rooms can define rules that users must
 accept before they're allowed to speak. Perhaps controversially, this MSC does
 *not* require a new room version as it does not tie acceptance of the rules into
 the event authorization rules. This is a deliberate choice as a change in rules
-would consitute a requirement that all past agreements are rendered invalid,
+would constitute a requirement that all past agreements are rendered invalid,
 which may be a desired trait in some communities but not all. This is explored
 in a little bit more detail in the Alternatives section.
 
