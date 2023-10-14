@@ -11,6 +11,8 @@ history for clients to use - this can make the feature unhelpful in many cases.
 
 ## Proposal
 
+In a future room version...
+
 **TODO**: Detail.
 
 Events must self-declare as mutable by *not* providing a content hash over
