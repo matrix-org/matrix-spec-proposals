@@ -11,7 +11,9 @@ MSC authors, feel free to ask in a thread on your PR or in the
 [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org) room for
 clarification of any of these points.
 
-- [ ] Are appropriate implementation(s) specified in the MSC’s PR description?
+- [ ] Are [appropriate
+      implementation(s)](https://spec.matrix.org/proposals/#implementing-a-proposal)
+      specified in the MSC’s PR description?
 - [ ] Are all MSCs that this MSC depends on already accepted?
 - [ ] For each new endpoint that is introduced:
     - [ ] Have authentication requirements been specified?
