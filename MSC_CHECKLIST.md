@@ -25,7 +25,7 @@ clarification of any of these points.
 - [ ] Are backwards-compatibility concerns appropriately addressed?
 - [ ] Are the [endpoint conventions](https://spec.matrix.org/latest/appendices/#conventions-for-matrix-apis) honoured?
     - [ ] Do HTTP endpoints `use_underscores_like_this`?
-    - [ ] If the endpoint utilises pagination, it is consistent with [the appendices](https://spec.matrix.org/v1.8/appendices/#pagination)?
+    - [ ] If the endpoint utilises pagination, is it consistent with [the appendices](https://spec.matrix.org/v1.8/appendices/#pagination)?
 - [ ] Where applicable, is the [documentation style](https://github.com/matrix-org/matrix-spec/blob/main/meta/documentation_style.rst) adhered to?
     - [ ] TODOs are resolved
     - [ ] Line width is approximately 120 characters
