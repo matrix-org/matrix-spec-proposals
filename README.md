@@ -108,6 +108,9 @@ Some tips for MSC writing:
   effort using [Mermaid](https://mermaid-js.github.io/mermaid/#/). See [this
   guide](https://github.blog/2022-02-14-include-diagrams-markdown-files-mermaid/)
   for more information.
+* Take a look at the [MSC Checklist](MSC_CHECKLIST.md). When it comes time for
+  the Spec Core Team to review your MSC for acceptance, they'll use the items
+  on this checklist as a guide.
 
 #### 2. Submitting a Pull Request
 
