@@ -23,13 +23,18 @@ clarification of any of these points.
         - [ ] Does each error case have a specified `errcode` (e.g. `M_FORBIDDEN`) and HTTP status code?
             - [ ] If a new `errcode` is introduced, is it clear that it is new?
 - [ ] Will the MSC require a new room version, and if so, has that been made clear?
-    - [ ] Is the reason for a new room version clearly stated? For example, modifying the set of redacted fields changes how event IDs are calculated, thus requiring a new room version.
+    - [ ] Is the reason for a new room version clearly stated? For example,
+          modifying the set of redacted fields changes how event IDs are calculated,
+          thus requiring a new room version.
 - [ ] Are backwards-compatibility concerns appropriately addressed?
 - [ ] Are the [endpoint conventions](https://spec.matrix.org/latest/appendices/#conventions-for-matrix-apis) honoured?
     - [ ] Do HTTP endpoints `use_underscores_like_this`?
     - [ ] Will the endpoint return unbounded data? If so, has pagination been considered?
-    - [ ] If the endpoint utilises pagination, is it consistent with [the appendices](https://spec.matrix.org/v1.8/appendices/#pagination)?
-- [ ] An introduction exists and clearly outlines the problem being solved. Ideally, the first paragraph should be understandable by a non-technical audience
+    - [ ] If the endpoint utilises pagination, is it consistent with [the
+          appendices](https://spec.matrix.org/v1.8/appendices/#pagination)?
+- [ ] An introduction exists and clearly outlines the problem being solved.
+      Ideally, the first paragraph should be understandable by a non-technical
+      audience
 - [ ] All outstanding threads are resolved
     - [ ] All feedback is incorporated into the proposal text itself, either as a fix or noted as an alternative
 - [ ] While the exact sections do not need to be present, the details implied by the proposal template are covered. Namely:
