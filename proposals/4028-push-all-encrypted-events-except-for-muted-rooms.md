@@ -91,6 +91,18 @@ This new push rule will impact the existing endpoint [`GET /_matrix/client/v3/no
 
 When this rule will be present and enabled in the account push rules set, the clients which retrieve the list of events that it has been notified about with this endpoint, will receive most of the encrypted events (except for muted rooms). They will be able to decrypt and re-run push rules locally. This should fix the notifications panel observed in some web clients where currently the notifications of encrypted events are missing.
 
+### Email notifications
+
+A user may set up a pusher to receive emails with unread notifications (see the spec [here](https://spec.matrix.org/v1.8/client-server-api/#post_matrixclientv3pushersset) with `kind` = "email"). Note that it sends emails on a delay of ~10 minutes to give people time to see the notification and mark it as read.
+
+The number of this email notifications may increase when this new rule will be present and enabled in the account push rules set. Indeed the email notifications will then include the encrypted rooms for which the notifications are configured in mentions-and-keywords-only mode. These rooms are not supported for the moment in the email notifications, so the users may miss some mentions.
+
+Currently the existing email notifications are not really relevant in case of encrypted rooms. The users may receive emails with a long bunch of encrypted messages (only the room names and the sender names are in plain text). This will happen more frequently when this new push rule will be enabled. **We should just list the encrypted room names in the email notification when the pushed events stayed encrypted server side**. The users need at least to be notified by email when there is activity in these unmuted encrypted rooms without expecting more details (except unencrypted events). They should mute the room if they don't need this information.
+
+If the email notifications become too noisy because of this new rule, we would have to work on them in another MSC by considering eventually one of the following options:
+1. Ignore in the email notifications the encrypted events which have been pushed only because the condition "event type == m.room.encrypted" was satisfied. The server is not able to send relevant email notification in that specific case.
+2. Define a new action which is "push but don't notify", to exclude some pushed events in the email.
+
 ## Potential issues
 
 ### Client side
