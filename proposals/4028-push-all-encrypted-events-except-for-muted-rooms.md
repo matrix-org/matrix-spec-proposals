@@ -93,15 +93,14 @@ When this rule will be present and enabled in the account push rules set, the cl
 
 ### Email notifications
 
-A user may set up a pusher to receive emails with unread notifications (see the spec [here](https://spec.matrix.org/v1.8/client-server-api/#post_matrixclientv3pushersset) with `kind` = "email"). Note that it sends emails on a delay of ~10 minutes to give people time to see the notification and mark it as read.
+A user may set up a pusher to receive emails with unread notifications (see the spec [here](https://spec.matrix.org/v1.8/client-server-api/#post_matrixclientv3pushersset) with `kind` = "email"). Note that in the current Synapse implementation this pusher sends emails on a delay of ~10 minutes to give people time to see the notification and mark it as read. It looks like some other server implementations don't support email pushers though (see details in [this comment](https://github.com/matrix-org/matrix-spec-proposals/pull/4028#discussion_r1364373223)).
 
-The number of this email notifications may increase when this new rule will be present and enabled in the account push rules set. Indeed the email notifications will then include the encrypted rooms for which the notifications are configured in mentions-and-keywords-only mode. These rooms are not supported for the moment in the email notifications, so the users may miss some mentions.
+Currently the existing email notifications are not really relevant in case of encrypted rooms. The users may receive emails with a long bunch of encrypted messages when the room is configured in "all messages" notification mode. This feature should be reviewed again with a Product point of view.
 
-Currently the existing email notifications are not really relevant in case of encrypted rooms. The users may receive emails with a long bunch of encrypted messages (only the room names and the sender names are in plain text). This will happen more frequently when this new push rule will be enabled. **We should just list the encrypted room names in the email notification when the pushed events stayed encrypted server side**. The users need at least to be notified by email when there is activity in these unmuted encrypted rooms without expecting more details (except unencrypted events). They should mute the room if they don't need this information.
+In order to not disturb the existing email notifications mechanism, the server implementations which support it should ignore in the email notifications the events pushed because of the new push rule.
+Otherwise the number of emails will increase by including the encrypted rooms for which the notifications are configured in mentions-and-keywords-only mode. These rooms are not handled for the moment in the email notifications.
 
-If the email notifications become too noisy because of this new rule, we would have to work on them in another MSC by considering eventually one of the following options:
-1. Ignore in the email notifications the encrypted events which have been pushed only because the condition "event type == m.room.encrypted" was satisfied. The server is not able to send relevant email notification in that specific case.
-2. Define a new action which is "push but don't notify", to exclude some pushed events in the email.
+As a first option, the server should ignore these pushed events by using the push rule Id: `.m.rule.encrypted_event` (`org.matrix.msc4028.encrypted_event`). We may consider to work later on a new MSC to introduce a new [action](https://spec.matrix.org/latest/client-server-api/#actions) _"push but don't notify"_ or a new tweak _"dont_email"_ to exclude some pushed events from the email.
 
 ## Potential issues
 
