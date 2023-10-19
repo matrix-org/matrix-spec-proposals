@@ -1,4 +1,4 @@
-# MSC 1929 Homeserver Admin Contact and Support page
+# MSC1929 Homeserver Admin Contact and Support page
 
 Currently, contacting a homeserver admin is difficult because you need to have insider knowledge
 of who the admin actually is. This proposal aims to fix that by specifying a way to add contact details
@@ -12,18 +12,20 @@ The proposal suggests adding a new endpoint: `.well-known/matrix/support`.
 
 The response format should be:
 
-```javascript
+```json5
 {
-    admins: [{
-        matrix_id: "@admin:domain.tld",
-        email_address: "admin@domain.tld",
-        role: "admin" # If omitted, the default will be "admin"
-    },
     {
-        email_address: "security@domain.tld",
-        role: "security"
-    }],
-    support_page: "https://domain.tld/support.html"
+        "contacts": [{
+            "matrix_id": "@admin:domain.tld",
+            "email_address": "admin@domain.tld",
+            "role": "admin" // If omitted, the default will be "admin"
+        },
+        {
+            "email_address": "security@domain.tld",
+            "role": "security"
+        }],
+        "support_page": "https://domain.tld/support.html"
+    }
 }
 ```
 
