@@ -1,4 +1,4 @@
-# MSC40XX: Add a push rule tweak to disable email notification
+# MSC4062: Add a push rule tweak to disable email notification
 
 A user may set up a pusher to receive emails with unread notifications (see the spec [here](https://spec.matrix.org/v1.8/client-server-api/#post_matrixclientv3pushersset) with `kind` = "email"). Note that in the current Synapse implementation this pusher sends emails on a delay of ~10 minutes to give people time to see the notification and mark it as read. It looks like some other server implementations don't support email pushers though (see details in [this comment](https://github.com/matrix-org/matrix-spec-proposals/pull/4028#discussion_r1364373223)).
 
@@ -30,7 +30,7 @@ None.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, `dont_email` should be referred to as `org.matrix.msc40XX.dont_email`.
+While this MSC is not considered stable, `dont_email` should be referred to as `org.matrix.msc4062.dont_email`.
 
 ## Dependencies
 
