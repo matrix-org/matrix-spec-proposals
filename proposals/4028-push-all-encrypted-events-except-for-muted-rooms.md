@@ -104,7 +104,7 @@ Currently the existing email notifications are not really relevant in case of en
 
 In order to not disturb the existing email notifications mechanism, the server implementations which support it should ignore in the email notifications the events pushed because of the new push rule. Otherwise the number of emails will increase by including the encrypted rooms for which the notifications are configured in mentions-and-keywords-only mode. These rooms are not handled for the moment in the email notifications.
 
-As a first option, we suggested to ignore these pushed events by using the push rule Id: `org.matrix.msc4028.encrypted_event`. But this would require significant rework to the way Synapse handles push notifications (in particular the database will need to be modified -- this is a massive table so modifying the database is non-trival). To avoid database modifications, we wrote [MSC4062](https://github.com/matrix-org/matrix-spec-proposals/pull/4062). The new tweak `org.matrix.msc4062.dont_email` would let us disable the email notification in the push rule definition.
+As a first option, we suggested to ignore these pushed events by using the push rule Id: `org.matrix.msc4028.encrypted_event`. But this would require significant rework to the way Synapse handles push notifications (in particular the database will need to be modified -- this is a massive table so modifying the database is non-trivial). To avoid database modifications, we wrote [MSC4062](https://github.com/matrix-org/matrix-spec-proposals/pull/4062). The new tweak `org.matrix.msc4062.dont_email` would let us disable the email notification in the push rule definition.
 
 ## Potential issues
 
