@@ -72,7 +72,7 @@ This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to i
 {
   "ephemeral": [
     {
-      "edu_type": "m.typing",
+      "type": "m.typing",
       "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
       "content": {
         "user_ids": [
@@ -81,7 +81,7 @@ This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to i
       }
     },
     {
-      "edu_type": "m.receipt",
+      "type": "m.receipt",
       "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
       "content": {
         "$1435641916114394fHBLK:matrix.org": {
@@ -136,7 +136,7 @@ A complete example of the transaction with all 3 arrays populated would be:
 {
   "ephemeral": [
     {
-      "edu_type": "m.typing",
+      "type": "m.typing",
       "room_id": "!jEsUZKDJdhlrceRyVU:domain.com",
       "content": {
         "user_ids": [
