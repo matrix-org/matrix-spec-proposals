@@ -29,6 +29,14 @@ Request error code is returned.
 * [`PUT /avatar_url`](https://spec.matrix.org/v1.8/client-server-api/#put_matrixclientv3profileuseridavatar_url)
 * [`PUT /displayname`](https://spec.matrix.org/v1.8/client-server-api/#put_matrixclientv3profileuseriddisplayname)
 
+When `false`, `m.room.member` and `m.presence` events are *not* emitted automatically by the server
+during execution of the above two endpoints. Servers should still perform this bit of the spec,
+however:
+
+> Additionally, when homeservers emit room membership events for their own users, they should
+> include the display name and avatar URL fields in these events so that clients already have these
+> details to hand, and do not have to perform extra round trips to query it.
+
 With respect to [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911), when the
 user updates their profile's avatar with `?propagate=false`, the media they use is *not* cloned nor
 used in event updates. The client can manually clone the media if they prefer using MSC3911's copy
