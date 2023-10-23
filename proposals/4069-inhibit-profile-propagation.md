@@ -1,4 +1,4 @@
-# MSC0000: Inhibit profile propagation
+# MSC4069: Inhibit profile propagation
 
 The current [`PUT /avatar_url`](https://spec.matrix.org/v1.8/client-server-api/#put_matrixclientv3profileuseridavatar_url)
 and [`PUT /displayname`](https://spec.matrix.org/v1.8/client-server-api/#put_matrixclientv3profileuseriddisplayname)
@@ -62,12 +62,12 @@ will be visible, regardless of this MSC.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, clients can use `?org.matrix.msc0000.propagate` instead of
+While this MSC is not considered stable, clients can use `?org.matrix.msc4069.propagate` instead of
 `?propagate`. To ensure the server supports the functionality before a spec release, clients should
-look for the unstable feature `org.matrix.msc0000`.
+look for the unstable feature `org.matrix.msc4069`.
 
 Once this MSC has successfully passed a merge FCP, clients can (and should) send *both* `?propagate`
-and `?org.matrix.msc0000.propagate` to ensure backwards compatibility with slightly old servers.
+and `?org.matrix.msc4069.propagate` to ensure backwards compatibility with slightly old servers.
 
 Once released in the specification, clients should be checking for server support through advertised
 spec versions instead.
