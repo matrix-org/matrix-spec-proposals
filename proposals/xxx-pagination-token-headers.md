@@ -1,3 +1,0 @@
-# MSCXXX: Pagination Token Headers
-
-Coming soon...
