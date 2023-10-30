@@ -7,7 +7,7 @@ handled. It is however explicit that unknown devices be omitted
 from the response, and in practice Synapse (at least) treats both scenarios the
 same.
 
-This requires clients to keeo a record of which devices were included in the
+This requires clients to keep a record of which devices were included in the
 request. This MSC proposes that such devices be included in the response.
 
 ## Background
@@ -113,7 +113,7 @@ HTTP request fails for any reason, there will be no such call.
 So it would be easy to introduce a memory leak in this way. A correct
 implementation might involve some sort of expiring map, or more substantial
 changes to the API of `matrix-sdk-crypto`. In any case it is likely to be
-non-trivial compared with changing the behaviour on the client side.
+non-trivial compared with changing the behaviour on the server side.
 
 ### Variations in response shape
 
