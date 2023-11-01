@@ -10,6 +10,10 @@ This MSC proposes an opt-in workaround that enables clients to specify the pagin
 header rather than query string thus avoiding a new CORS request each time the token changes. This
 is absolutely a hack, and if accepted must only be used to work around this specific problem.
 
+Note that there are a bunch of less hacky [alternatives](#alternatives) but none of them are simple
+and quick to implement such as this. This is very much a patch to alleviate the immediate issue while
+better solutions can be worked out.
+
 ## Proposal
 
 Super simple - clients may pass pagination tokens as a header instead of query parameters using the
@@ -36,6 +40,12 @@ for discussion here.
 
 A POST request with a body containing the parameters would also suffice as a solution. Like this
 proposal this would also be a hacky workaround.
+
+[matrix-spec#223](https://github.com/matrix-org/matrix-spec/issues/223) discusses some other alternative
+workarouds for the issue.
+
+[MSC2108](https://github.com/matrix-org/matrix-spec-proposals/pull/2108) proposes using SSE as an
+alternative. This would indeed work, but it's a significant change to implement and deploy everywhere.
 
 ## Security considerations
 
