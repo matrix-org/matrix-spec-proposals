@@ -42,7 +42,7 @@ A POST request with a body containing the parameters would also suffice as a sol
 proposal this would also be a hacky workaround.
 
 [matrix-spec#223](https://github.com/matrix-org/matrix-spec/issues/223) discusses some other alternative
-workarouds for the issue.
+workarounds for the issue.
 
 [MSC2108](https://github.com/matrix-org/matrix-spec-proposals/pull/2108) proposes using SSE as an
 alternative. This would indeed work, but it's a significant change to implement and deploy everywhere.
