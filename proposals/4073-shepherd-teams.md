@@ -63,8 +63,12 @@ Some of the most important takeaways from this:
 - The SCT may still intervene where necessary to resolve administrative disputes, or replace shepherds if they become
   unavailable.
 
-This is a significant step towards a more community-driven protocol, by putting more of the specification process in
-the hands of community members, and more crucially, it frees up significant capacity from the SCT.
+Throughout the process, the original author(s) remain responsible for updating the proposal in response to feedback,
+as is currently already the case. If the author(s) wish to step back, they may - in agreement with the shepherd team -
+choose to transfer this responsibility to the shepherd team (or another community member) instead.
+
+These changes are a significant step towards a more community-driven protocol, by putting more of the specification
+process in the hands of community members, and more crucially, it frees up significant capacity from the SCT.
 
 This proposal does not currently encompass the question of "who writes the final specification text?" - that is left
 unchanged from the current situation, and may be clarified or changed in a separate MSC.
