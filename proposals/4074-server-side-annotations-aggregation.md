@@ -1,4 +1,4 @@
-# MSC4042: Server side annotations aggregation
+# MSC4074: Server side annotations aggregation
 Currently, the specification for [`m.annotation aggregation`](https://spec.matrix.org/v1.8/client-server-api/#server-side-aggregation-of-mannotation-relationships) says that such relations should not be aggregated
 on the server side.
 
