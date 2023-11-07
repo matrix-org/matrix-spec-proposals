@@ -43,13 +43,16 @@ The new process will work as follows:
 3. The shepherd team will be responsible for guiding the discussion on the proposal. This discussion should
    incrementally improve the proposal until outstanding concerns have been resolved. They may request administrative
    assistance from the SCT if eg. moderator intervention is required.
-4. Once the shepherd team feels that all concerns have been resolved satisfactorily, and that there is no meaningful
+4. If the MSC proposes to standardize functionality that is already informally supported in one or more protocol
+   implementations in a different form, the shepherd team should additionally reach out to the relevant implementation
+   developers to notify them of the proposal, and to invite their review.
+5. Once the shepherd team feels that all concerns have been resolved satisfactorily, and that there is no meaningful
    refinement left to be done, they can carry out a final technical review, and call FCP (Final Comment Period). Alternatively, if the shepherd team feels that the proposal is not salvageable, they may choose to reject it.
 	- This requires unanimous agreement from all shepherds.
 	- The SCT must be informed immediately by the shepherds when the FCP starts, so that the SCT can make a public
 	  'last call' for feedback. Likewise, the SCT must be informed of a decision to reject.
 	- The FCP process itself remains as it was before.
-5. If FCP passes without objection, the shepherds declare the MSC accepted, and notify the SCT. The SCT will then
+6. If FCP passes without objection, the shepherds declare the MSC accepted, and notify the SCT. The SCT will then
    merge the proposal.
 
 Some of the most important takeaways from this:
