@@ -44,10 +44,10 @@ The new process will work as follows:
    incrementally improve the proposal until outstanding concerns have been resolved. They may request administrative
    assistance from the SCT if eg. moderator intervention is required.
 4. Once the shepherd team feels that all concerns have been resolved satisfactorily, and that there is no meaningful
-   refinement left to be done, they can carry out a final technical review, and call FCP (Final Comment Period).
+   refinement left to be done, they can carry out a final technical review, and call FCP (Final Comment Period). Alternatively, if the shepherd team feels that the proposal is not salvageable, they may choose to reject it.
 	- This requires unanimous agreement from all shepherds.
 	- The SCT must be informed immediately by the shepherds when the FCP starts, so that the SCT can make a public
-	  'last call' for feedback.
+	  'last call' for feedback. Likewise, the SCT must be informed of a decision to reject.
 	- The FCP process itself remains as it was before.
 5. If FCP passes without objection, the shepherds declare the MSC accepted, and notify the SCT. The SCT will then
    merge the proposal.
