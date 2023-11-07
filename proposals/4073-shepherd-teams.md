@@ -73,6 +73,16 @@ process in the hands of community members, and more crucially, it frees up signi
 This proposal does not currently encompass the question of "who writes the final specification text?" - that is left
 unchanged from the current situation, and may be clarified or changed in a separate MSC.
 
+### Tasks for the SCT
+
+For the implementation of this proposal, the SCT will carry out the following tasks:
+
+1. Develop guidance for shepherd teams, explaining their responsibilities and how to go about implementing these, as
+   well as defining any additional circumstances under which the SCT should be notified. Particular attention should
+   be paid to the topics of preventing burnout, and constructive conflict resolution.
+2. Develop and publish guidance for the SCT itself, on how to select a representative shepherd team for a given MSC,
+   and which concerns (eg. organizational distribution, diverse viewpoints) to take into account in their selection.
+
 ## Anticipated outcomes
 
 Primarily, this should unblock the many MSCs that some community members feel strongly about, but that the SCT has
