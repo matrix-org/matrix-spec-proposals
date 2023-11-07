@@ -83,6 +83,21 @@ For the implementation of this proposal, the SCT will carry out the following ta
 2. Develop and publish guidance for the SCT itself, on how to select a representative shepherd team for a given MSC,
    and which concerns (eg. organizational distribution, diverse viewpoints) to take into account in their selection.
 
+### Transitioning existing proposals
+
+There is currently a large set of existing MSCs that is in some kind of stalled state. These are currently under the 
+responsibility of the SCT directly, as that has been the process thus far. To prevent organizational chaos and to
+account for the expected low initial availability of shepherds, it would be unwise to immediately transition all of
+these proposals to the shepherd team model.
+
+Instead, these proposals will be gradually transitioned; starting with languished proposals for which there is a known
+"support base" of proponents and, conversely, a known interest in critical review. These can serve as the initial
+testcases for this new policy, and it may even be worth starting this process experimentally before this MSC has been
+fully accepted.
+
+Drawing lessons from these initial experiences, the process can then be improved where necessary and, over time, be
+applied to the remainder of the pending MSCs that were started under the old policy.
+
 ## Anticipated outcomes
 
 Primarily, this should unblock the many MSCs that some community members feel strongly about, but that the SCT has
