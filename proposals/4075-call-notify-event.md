@@ -1,4 +1,4 @@
-# MSC0000: MatrixRTC Call Ringing
+# MSC4075: MatrixRTC Call Ringing
 It is important that a call initiated on clientA can make targeted clients ring.
 This is of interest in 1:1 Rooms/Calls but also in bigger rooms ringing can be desired.
 
@@ -29,7 +29,7 @@ This event contains the following fields by leveraging intentional mentions.
 }
 ```
 
-In the following we define **call** as any matrix RTC session with the same `"application"` and the same application specific data. In the calse of `"m.call"`, the same `"call_id"`.
+In the following we define **call** as any matrix RTC session with the same `"application"` and the same application specific data. In the case of `"m.call"`, the same `"call_id"`.
 
 On retrieval, the event should not be rendered in the timeline. But if the notify conditions (listed below) apply, the client has to inform the user about the **call** with an appropriate user flow. 
 For `notify_by == "ring"` some kind of sound is required (except if overwritten by another client specific setting), 
@@ -79,7 +79,7 @@ This is another timeline event where any room participant can send a push notifi
 
 ## Unstable prefix
 While this MSC is not present in the spec, clients and widgets should:
-   - Use org.matrix.mscXXXX. in place of m. in all new identifiers of this MSC. (`m.call.notify`)
+   - Use org.matrix.msc4075. in place of m. in all new identifiers of this MSC. (`m.call.notify`)
 
 ## Dependencies
 
