@@ -13,7 +13,7 @@ This event is added to the push rules for clients which support calling so they 
 
 This event contains the following fields by leveraging intentional mentions.
 
-```json
+```
 {
   "content": {
     "application": "m.call" | "m.other_matrix_session_type" | "...",
