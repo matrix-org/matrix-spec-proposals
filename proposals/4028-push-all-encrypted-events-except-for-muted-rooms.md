@@ -229,8 +229,8 @@ None
 ## Unstable prefix
 
 During development the new push rule shall use `org.matrix.msc4028.encrypted_event` instead of `.m.rule.encrypted_event`.
-Contrary to the stable push rule, this unstable one should not be enabled by default until the clients are ready
-to support a minimum this MSC.
+Caution: this unstable push rule will be enabled by defaut like the stable push rule, the server owners should wait for
+the clients to support a minimum this MSC before enabling the MSC server side.
 
 ## Dependencies
 
