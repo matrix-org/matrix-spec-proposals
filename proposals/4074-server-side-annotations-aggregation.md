@@ -90,13 +90,13 @@ Full aggregate format (with parent ClientEvent/PDU):
           "key": "👍",
           "origin_server_ts": 1562763768320,
           "count": 3,
-          "current_user_participated": true,
+          "current_user_annotation_event_id": "$bar", // optional field
         },
         {
           "key": "👎",
           "origin_server_ts": 1562763768320,
           "count": 1,
-          "current_user_participated": false,
+          "current_user_annotation_event_id": "$foo", // optional field
         }
       ],
       ...
@@ -114,7 +114,7 @@ Partial aggregate format (EDU):
       "rel_type": "m.annotation",
       "event_id": "$parent_event_id",
       "key": "👍"
-      "current_user_participated": true,
+      "current_user_annotation_event_id": "$foo", // optional field
       "origin_server_ts": 1562763768320,
     }
   },
