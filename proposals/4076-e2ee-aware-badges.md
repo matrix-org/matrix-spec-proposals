@@ -115,6 +115,6 @@ None.
 
 ## Footnotes
 
-[^1] https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943362
-[^2] https://github.com/vector-im/element-x-ios/issues/2066
-[^3] https://github.com/matrix-org/matrix-spec/issues/644
+[^1]: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943362
+[^2]: https://github.com/vector-im/element-x-ios/issues/2066
+[^3]: https://github.com/matrix-org/matrix-spec/issues/644
