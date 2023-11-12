@@ -50,7 +50,7 @@ to the request called `e2ee_badge_aware` which defaults to `false` if absent.
 If `e2ee_badge_aware` is set to true, then the pusher will not specify `unread` or `missed_calls` in the
 `POST /_matrix/push/v1/notify` request to the target push gateway, and so not override the client's app badge.
 
-We also add a new optional field to read receipts called `cleared-notifs` which defaults to `false` if absent.  This is
+We also add a new optional field to read receipts called `cleared_notifs` which defaults to `false` if absent.  This is
 set to `true` by e2ee-badge-aware clients to indicate that a given receipt means the user has read all push
 notifications for this room's main timeline.  The server should then send a 'null' push notification to all other
 clients to encourage them to sync and recalculate their app badge counts, ensuring that the app badge count decreases
@@ -70,15 +70,15 @@ up pushing the client, and potential notifs get dropped.  Perhaps we can detect 
 notifs?) and warn the user to launch the app to catch up on any notifs they may have missed?
 
 2. Rather than sending a null push to clients to get them to update their app badge counts, should we instead send the
-`cleared-notifs` read receipt details through - to tell them which room cleared its notifs, and at which event, rather
+`cleared_notifs` read receipt details through - to tell them which room cleared its notifs, and at which event, rather
 than requiring them to /sync and guess?  This seems likelier to succeed within resource constraints, but exposes more
 metadata to the push provider on what events have been read by the user.  This in turn could be mitigated by
 [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013).
 
 3. Just because one client thinks a room's notifs have been cleared doesn't mean a different client will agree, so if
 another client has more noisy per-device rules, it may end up with a stuck app badge count.  A workaround could be for
-e2ee_badge_aware clients to set `cleared-notifs: true` on every RR they send if they spot that the user has per-device
-rules.  Alternatively, they could set `cleared-notifs: true` whatever when the user reads the most recent message in
+e2ee_badge_aware clients to set `cleared_notifs: true` on every RR they send if they spot that the user has per-device
+rules.  Alternatively, they could set `cleared_notifs: true` whatever when the user reads the most recent message in
 the room as a guaranteed point where all clients will agree that there are no unread notifs.
 Given per-device rules aren't common currently in the wild, I suggest we punt this to a later MSC.
 
@@ -111,7 +111,7 @@ the badge count for a given room.  This doesn't seem unreasonable.
 
 Until this MSC is merged:
  * `e2ee_badge_aware` should be prefixed as `org.matrix.msc4076.e2ee_badge_aware` when setting pushers
- * `cleared-notifs` should be prefixed as `org.matrix.msc4076.cleared-notifs` when sending read receipts which clear
+ * `cleared_notifs` should be prefixed as `org.matrix.msc4076.cleared_notifs` when sending read receipts which clear
    all the notifs in the room.
 
 ## Dependencies
