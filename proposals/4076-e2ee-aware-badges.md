@@ -89,7 +89,7 @@ room_filter or similar.
 
 ## Alternatives
 
-We could track app badge count on the server, but let it be set your clients instead - e.g. by a dedicated API like
+We could track app badge count on the server, but let it be set by your clients instead - e.g. by a dedicated API like
 `POST /_matrix/client/v3/pushers/set_badge { badge: 123 }`, which would in turn push it to all clients so they are in
 sync.  This would avoid each client individually trying to figure out when to reduce the badge count in its Push
 Extension - instead the client sending the read receipts would do it for them.  But on the other hand, it would not
