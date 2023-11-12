@@ -93,7 +93,8 @@ We could track app badge count on the server, but let it be set by your clients 
 `POST /_matrix/client/v3/pushers/set_badge { badge: 123 }`, which would in turn push it to all clients so they are in
 sync.  This would avoid each client individually trying to figure out when to reduce the badge count in its Push
 Extension - instead the client sending the read receipts would do it for them.  But on the other hand, it would not
-work with per-device push rules.  (Then again, nor does the proposed solution).
+work with per-device push rules.  And if the local client happens to be stale on spidering for old push events, the
+incorrect badge count would leak confusingly to the other clients which may be more accurate themselves.
 
 Alternatively, we could push all devices every time the user sends a read receipt anywhere, just in case they need to
 recalculate their app badge count.  This would have an avoidable and large impact on battery life.
