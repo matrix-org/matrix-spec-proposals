@@ -56,6 +56,11 @@ notifications for this room's main timeline.  The server should then send a 'nul
 clients to encourage them to sync and recalculate their app badge counts, ensuring that the app badge count decreases
 when the user catches up on a given room.
 
+Finally, we fix the spec to describe the behaviour of the `unread` count field in `POST /_matrix/push/v1/notify`
+correctly.  We also remove the `missed_calls` field at all, as nothing has ever implemented it, as far as I know - I
+think it was originally included for questionable futureproofness and never hooked up ("ooh, if we are tracking unread
+message notifs, let's also track unread call notifs")[^4].
+
 ## Potential issues
 
 1. It's not clear that the push extension will be able to reliably calculate badge counts, as they run with very
@@ -118,3 +123,4 @@ None.
 [^1]: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943362
 [^2]: https://github.com/vector-im/element-x-ios/issues/2066
 [^3]: https://github.com/matrix-org/matrix-spec/issues/644
+[^4]: https://github.com/matrix-org/synapse/blame/bdc21e72820e148941bbecb36200d51ca340748d/synapse/push/httppusher.py
