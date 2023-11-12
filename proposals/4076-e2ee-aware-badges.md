@@ -1,4 +1,4 @@
-# MSC4076: Let E2EE clients calculate app & encrypted-room badge counts themselves
+# MSC4076: Let E2EE clients calculate app badge counts themselves
 
 ## Problem
 
