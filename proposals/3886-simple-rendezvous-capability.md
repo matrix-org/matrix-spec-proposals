@@ -26,6 +26,46 @@ It will work with devices behind NAT. It doesn't require homeserver administrato
 It is proposed that a general purpose HTTP based protocol be used to establish ephemeral bi-directional communication
 channels over which arbitrary data can be exchanged.
 
+Please note that it is intentional that this protocol does nothing to ensure the integrity of the data exchanged at a rendezvous.
+
+### High-level description
+
+Suppose that Device A wants to establish communications with Device B. A can do
+so by creating a _rendezvous session_ via a `POST /_matrix/client/rendezvous`
+call to an appropriate server. Its response includes an HTTP _rendezvous URL_
+which should be shared out-of-band with device B. (This URL may be located on a
+different domain to the initial `POST`.)
+
+The rendezvous URL points to an arbitrary data resource ("the payload"), which
+is initially populated using data from A's `POST` request. There are no
+restrictions on the payload itself, but the rendezvous server SHOULD impose a
+maximum size limit. The payload may be retrieved (`GET`) and updated (`PUT`) by
+anyone—A, B, or a third party—who is able to reach the rendezvous URL.
+
+In this way, A and B can communicate by repeatedly inspecting and updating the
+payload pointed at the rendezvous URL.
+
+#### The update mechanism
+
+Every update request MUST include an `ETag` header, whose value is supplied
+the `ETag` header in the last `GET` response seen by the requester. (The
+initiating device may also use the `ETag` supplied in the initial `POST`
+response to immediately update the payload.) Updates will succeed only if the
+supplied `ETag` matches the server's current revision of the payload. This
+prevents concurrent writes to the payload.
+
+There is no mechanism to retrieve previous payloads after an update.
+
+#### Expiry
+
+The rendezvous session (i.e. the payload) SHOULD expire after a period of time
+communicated to clients via the `Expires` header. After this point, any
+further attempts to query or update the payload MUST fail. The expiry time
+SHOULD be extended every time the payload is updated. The rendezvous session can
+be manually expired with a `DELETE` call to the rendezvous URL.
+
+### Example
+
 A typical flow might look like this where device A is initiating the rendezvous with device B:
 
 ```mermaid
@@ -56,8 +96,6 @@ sequenceDiagram
 
   Note over A,B: Rendezvous now established
 ```
-
-Please note that it is intentional that this protocol does nothing to ensure the integrity of the data exchanged at a rendezvous.
 
 ### Protocol
 
