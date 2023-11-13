@@ -164,6 +164,7 @@ HTTP response codes, and Matrix error codes:
 
 - `202 Accepted` - payload updated
 - `400 Bad Request` (`M_MISSING_PARAM`) - a required header was not provided.
+- `400 Bad Request` (`M_INVALID_PARAM`) - a malformed [`ETag`](#the-update-mechanism) header was provided.
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous URI is not valid (it could have expired)
 - `412 Precondition Failed` (`M_CONCURRENT_WRITE`, **a new error code**) - when the ETag does not match
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
