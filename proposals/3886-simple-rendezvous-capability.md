@@ -68,12 +68,12 @@ HTTP request body:
 
 - any data up to maximum size allowed by the server
 
-HTTP response codes:
+HTTP response codes, and Matrix error codes:
 
 - `201 Created` - rendezvous created
-- `403 Forbidden` - forbidden by server policy
-- `413 Payload Too Large` - the supplied payload is too large
-- `429 Too Many Requests` - the request has been rate limited
+- `403 Forbidden` (`M_FORBIDDEN`) - forbidden by server policy
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
+- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 - `307 Temporary Redirect` - if the request should be served from somewhere else specified in the `Location` response header
 
 n.b. the relatively unusual [`307 Temporary Redirect`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) response
@@ -111,13 +111,13 @@ HTTP request body:
 
 - any data up to maximum size allowed by the server
 
-HTTP response codes:
+HTTP response codes, and Matrix error codes:
 
 - `202 Accepted` - payload updated
-- `404 Not Found` - rendezvous URI is not valid (it could have expired)
-- `412 Precondition Failed` - when `If-Match` is supplied and the ETag does not match
-- `413 Payload Too Large` - the supplied payload is too large
-- `429 Too Many Requests` - the request has been rate limited
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous URI is not valid (it could have expired)
+- `412 Precondition Failed` (`M_DIRTY_WRITE`, **a new error code**) - when `If-Match` is supplied and the ETag does not match
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
+- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
 HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
 
@@ -132,12 +132,12 @@ HTTP request headers:
 - `If-None-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-none-match) server will
 only return data if given ETag does not match
 
-HTTP response codes:
+HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload returned
 - `304 Not Modified` - when `If-None-Match` is supplied and the ETag does not match
-- `404 Not Found` - rendezvous URI is not valid (it could have expired)
-- `429 Too Many Requests` - the request has been rate limited
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous URI is not valid (it could have expired)
+- `429 Too Many Requests` (`M_UNKNOWN`)- the request has been rate limited
 
 HTTP response headers for `200 OK` and `304 Not Modified`:
 
@@ -152,8 +152,8 @@ HTTP response headers for `200 OK` and `304 Not Modified`:
 HTTP response codes:
 
 - `204 No Content` - rendezvous cancelled
-- `404 Not Found` - rendezvous URI is not valid (it could have expired)
-- `429 Too Many Requests` - the request has been rate limited
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous URI is not valid (it could have expired)
+- `429 Too Many Requests` (`M_UNKNOWN`)- the request has been rate limited
 
 ### Authentication
 
