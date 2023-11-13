@@ -10,6 +10,8 @@ information such as:
 - the user ID
 - facilitation of issuing a new access token
 - device ID for end-to-end encryption
+- data for establishing a secure communication channel (e.g. via
+  [MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903))
 
 To enable [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906) and support any future proposals this MSC proposes a simple HTTP based protocol that can be used to
 establish a direct communication channel between two IP connected devices.
@@ -296,7 +298,9 @@ following:
 
 ## Dependencies
 
-None, although it's intended to be used with [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906).
+None, although it's intended to be used with
+[MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903) and
+[MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906).
 
 ## Credits
 
