@@ -54,6 +54,11 @@ response to immediately update the payload.) Updates will succeed only if the
 supplied `ETag` matches the server's current revision of the payload. This
 prevents concurrent writes to the payload.
 
+The `ETag` header is standard, described by
+[RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-etag). In this
+proposal we only accept strong, single-valued ETag values; anything else
+constitutes a malformed request.
+
 There is no mechanism to retrieve previous payloads after an update.
 
 #### Expiry
