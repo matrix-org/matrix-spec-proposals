@@ -10,10 +10,12 @@ information such as:
 - the user ID
 - facilitation of issuing a new access token
 - device ID for end-to-end encryption
-- device keys for end-to-end encryption
 
 To enable [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906) and support any future proposals this MSC proposes a simple HTTP based protocol that can be used to
 establish a direct communication channel between two IP connected devices.
+
+This channel SHOULD be considered untrusted by both devices, and SHOULD NOT be
+used to transmit sensitive data in plaintext.
 
 It will work with devices behind NAT. It doesn't require homeserver administrators to deploy a separate server.
 
