@@ -57,7 +57,7 @@ Please note that it is intentional that this protocol does nothing to ensure the
 
 ### Protocol
 
-#### Create a new rendezvous point: `POST /rendezvous`
+#### Create a new rendezvous point: `POST /_matrix/client/rendezvous`
 
 HTTP request headers:
 
