@@ -3,7 +3,7 @@
 ## Abstract 
 
 This proposal extends the Matrix protocol to allow servers to define custom
-HTML-formatted documents that can be rendered by clients as a user home page. This feature
+formatted documents that can be rendered by clients as a user home page. This feature
 introduces a non-intrusive yet flexible manner to communicate server-specific information such as
 donation requests, scheduled maintenance, updates, new features, and changelogs.
 
@@ -17,7 +17,7 @@ rooms.
 
 ## Proposal 
 
-Introduce an optional configuration for matrix servers that allows them to specify an
+Introduce an optional configuration for matrix servers that allows them to specify an optionally
 HTML-formatted document, adhering to the current subset of HTML utilized for message formatting.
 Clients can render this document in a dedicated "home" view or as a placeholder page when no active
 conversations are selected.
