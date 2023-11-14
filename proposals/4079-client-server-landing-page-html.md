@@ -9,9 +9,11 @@ donation requests, scheduled maintenance, updates, new features, and changelogs.
 
 ## Background 
 
-Currently, there is no standardized method in Matrix for server admins to communicate
-information directly within user clients. While rooms can serve this purpose, they lack the
-persistence and prime visibility that many server administrators desire.
+Currently, there is no standardized method in Matrix for server admins to communicate information
+directly within user clients in a passive way. While rooms can serve this purpose, they lack the
+persistence and prime visibility that many server administrators desire. Similarly, server-notices
+are aggressive notifications to users that can cause unnecessary noise, and are implemented as
+rooms.
 
 ## Proposal 
 
