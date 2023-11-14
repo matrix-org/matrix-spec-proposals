@@ -1,15 +1,21 @@
 # Server-Defined User Home Pages
 
-## Abstract This proposal extends the Matrix protocol to allow servers to define custom
+## Abstract 
+
+This proposal extends the Matrix protocol to allow servers to define custom
 HTML-formatted documents that can be rendered by clients as a user home page. This feature
 introduces a non-intrusive yet flexible manner to communicate server-specific information such as
 donation requests, scheduled maintenance, updates, new features, and changelogs.
 
-## Background Currently, there is no standardized method in Matrix for server admins to communicate
+## Background 
+
+Currently, there is no standardized method in Matrix for server admins to communicate
 information directly within user clients. While rooms can serve this purpose, they lack the
 persistence and prime visibility that many server administrators desire.
 
-## Proposal Introduce an optional configuration for matrix servers that allows them to specify an
+## Proposal 
+
+Introduce an optional configuration for matrix servers that allows them to specify an
 HTML-formatted document, adhering to the current subset of HTML utilized for message formatting.
 Clients can render this document in a dedicated "home" view or as a placeholder page when no active
 conversations are selected.
@@ -69,20 +75,26 @@ Only one value is needed. If both in-line and URI definitions are defined, clien
 the in-line HTML.
 
 
-## Security Considerations To mitigate any potential security risks from malicious content:
+## Security Considerations 
+
+To mitigate any potential security risks from malicious content:
 
 - Clients MUST sanitize the HTML content according to the existing rules for message content
   sanitation.
 - External resources (e.g., images, stylesheets) MUST NOT be fetched by default to avoid privacy
   leaks and must be explicitly allowed by the client.
 
-## Privacy Considerations As this feature may potentially be used to track user interaction with the
+## Privacy Considerations 
+
+As this feature may potentially be used to track user interaction with the
 home page content, it's important to:
 
 - Provide clients the ability to disable external resource fetching.
 - Ensure that user privacy preferences are respected when displaying this content.
 
-## Conclusion This spec change proposal seeks to empower server administrators with the ability to
+## Conclusion 
+
+This spec change proposal seeks to empower server administrators with the ability to
 directly communicate important information to their users within the Matrix client, enhancing the
 user experience by providing relevant and timely information while respecting user privacy and
 security.
