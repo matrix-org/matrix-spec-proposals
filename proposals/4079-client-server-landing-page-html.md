@@ -25,12 +25,17 @@ Introduce an optional configuration for matrix servers that allows them to speci
   - This field can be queried by clients during the login process or refreshed periodically.
   - Clients may choose to implement this feature as a "home" button or as default content in the main view when no conversation is active.
 
+## Examples
+
+Advertisement of the content for clients to use would be done via `/.well-known/matrix/client` within the existing
+`m.homeserver` object.
+
 Example formatting using a file URI:
 
 ```
 {
-  "m.user_home_page": {
-    "html_url": "https://your.website/user_home.html"
+  "m.homeserver": {
+    "user_home_page_uri": "https://your.website/user_home.html"
   }
 }
 ```
@@ -39,11 +44,14 @@ Example formatting using in-line HTML:
 
 ```
 {
-  "m.user_home_page": {
-    "html_inline": "<h1>Welcome to our Matrix Homeserver!</h1><p>Visit our website to make a donation.</p>"
+  "m.homeserver": {
+    "user_home_page_html": "<h1>Welcome to our Matrix Homeserver!</h1><p>Visit our website to make a donation.</p>"
   }
 }
 ```
+
+Only one value is needed. If both in-line and URI definitions are defined, clients will prioritize the in-line HTML.
+
 
 ## Security Considerations
 To mitigate any potential security risks from malicious content:
