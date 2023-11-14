@@ -39,9 +39,12 @@ conversations are selected.
 
 - A new optional field will be defined within the well-known Matrix configuration for clients:
   user_home_page.
-- The user_home_page field can be defined by either in-line HTML content or a fully-qualified domain
-  name and path to an HTML document.
-- The HTML content will be sanitized by the client and restricted to the subset of HTML currently
+- The user_home_page field can be defined as a list of formats following the [Extensible Event
+MSC](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md),
+  allowing clients which do not render a specific format to fall back to other message types. HTML
+  is supported as either in-line, or by pointing to an html file at an accessible http(s) endpoint
+  reachable by the client.
+- HTML content will be sanitized by the client and restricted to the subset of HTML currently
   allowed for messages.
 - This field can be queried by clients during the login or initial loading process, and refreshed at
   least once every 12 hours if the client has been open the entire time.
@@ -58,7 +61,16 @@ Example formatting using a file URI:
 ```
 { 
   "m.homeserver": { 
-    "user_home_page_uri": "https://your.website/user_home.html"
+    "user_home_page": [
+        {
+            "mimetype": "text/plain",
+            "body": "# Visit https://your.domain/user-home.html for the latest server announcements."
+        },
+        {
+            "mimetype": "text/html",
+            "body": "https://your.domain/user-home.html"
+        }
+    ]
   }
 }
 ```
@@ -68,14 +80,23 @@ Example formatting using in-line HTML:
 ``` 
 { 
   "m.homeserver": { 
-    "user_home_page_html": "<h1>Welcome to our Matrix Homeserver!</h1><p>Visit our website to make a donation.</p>" 
-  } 
+    "user_home_page": [
+        {
+            "mimetype": "text/plain",
+            "body": "# Welcome to our Matrix Homeserver!\nVisit our website to make a donation."
+        },
+        {
+            "mimetype": "text/html",
+            "body": "<h1>Welcome to our Matrix Homeserver!</h1><p>Visit our website to make a donation.</p>"
+        }
+    ]
+  }
 }
 ```
 
-Only one value is needed. If both in-line and URI definitions are defined, clients will prioritize
-the in-line HTML.
-
+Only one value is needed for clients to serve the content. If more than one is presented, the same
+standards used the the [Extensible Event
+MSC](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md) are used to choose a format to render.
 
 ## Security Considerations 
 
