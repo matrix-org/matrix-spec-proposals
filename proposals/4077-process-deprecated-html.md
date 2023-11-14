@@ -42,7 +42,7 @@ the effort to *not* write an MSC, an MSC has been written for review.
 ## Alternatives
 
 Critically, without agreement that replacing deprecated HTML features can happen outside the MSC process,
-changes to the HTML subset become slow and burdensome for no apparant gain.
+changes to the HTML subset become slow and burdensome for no apparent gain.
 
 ## Security considerations
 
