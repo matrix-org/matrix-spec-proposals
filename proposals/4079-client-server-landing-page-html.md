@@ -35,7 +35,8 @@ conversations are selected.
   name and path to an HTML document.
 - The HTML content will be sanitized by the client and restricted to the subset of HTML currently
   allowed for messages.
-- This field can be queried by clients during the login process or refreshed periodically.
+- This field can be queried by clients during the login or initial loading process, and refreshed at
+  least once every 12 hours if the client has been open the entire time.
 - Clients may choose to implement this feature as a "home" button or as default content in the main
   view when no conversation is active.
 
@@ -46,12 +47,23 @@ within the existing `m.homeserver` object.
 
 Example formatting using a file URI:
 
-``` { "m.homeserver": { "user_home_page_uri": "https://your.website/user_home.html" } } ```
+```
+{ 
+  "m.homeserver": { 
+    "user_home_page_uri": "https://your.website/user_home.html"
+  }
+}
+```
 
 Example formatting using in-line HTML:
 
-``` { "m.homeserver": { "user_home_page_html": "<h1>Welcome to our Matrix Homeserver!</h1><p>Visit
-our website to make a donation.</p>" } } ```
+``` 
+{ 
+  "m.homeserver": { 
+    "user_home_page_html": "<h1>Welcome to our Matrix Homeserver!</h1><p>Visit our website to make a donation.</p>" 
+  } 
+}
+```
 
 Only one value is needed. If both in-line and URI definitions are defined, clients will prioritize
 the in-line HTML.
