@@ -83,8 +83,9 @@ To mitigate any potential security risks from malicious content:
 
 - Clients MUST sanitize the HTML content according to the existing rules for message content
   sanitation.
-- External resources (e.g., images, stylesheets) MUST NOT be fetched by default to avoid privacy
-  leaks and must be explicitly allowed by the client.
+- External resources (e.g., scripts, stylesheets) MUST NOT be fetched by default to avoid privacy
+  leaks and must be explicitly allowed by the client. Images or files may be rendered and linked
+  using mxc URIs for native matrix media serving.
 
 ## Privacy Considerations 
 
