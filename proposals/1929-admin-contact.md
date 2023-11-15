@@ -20,11 +20,11 @@ The response format should be:
         {
             "matrix_id": "@admin:domain.tld",
             "email_address": "admin@domain.tld",
-            "role": "org.matrix.admin"
+            "role": "m.role.admin"
         },
         {
             "email_address": "security@domain.tld",
-            "role": "org.matrix.security"
+            "role": "m.role.security"
         }
     ],
     "support_page": "https://domain.tld/support.html"
@@ -39,8 +39,12 @@ an admin will have a "backup" contact address if the server is down, like an ema
 Entries may have a `matrix_id` OR an `email_address`, but at least one MUST be specified.
 
 `role` is an informal description of what the address(es) are used for. The only two specified in this
-proposal are `org.matrix.admin` and `org.matrix.security`. Admin is a catch-all user for any queries, where security is intended
-for sensitive requests. Implementors may use custom values for role for other purposes, but it's suggested
+proposal are `m.role.admin` and `m.role.security`. 
+
+ - `m.role.admin` is a catch-all user for any queries.
+ - `m.role.security` is intended for sensitive requests
+
+Implementors may use custom values for role for other purposes, but it's suggested
 that the value be namespaced to prevent collisions. A value for `role` MUST be specified.
 
 `support_page` is an optional property to specify a affiliated page of the homserver to give users help
