@@ -16,8 +16,8 @@ The response format should be:
 
 ```json5
 {
-    {
-        "contacts": [{
+    "contacts": [
+        {
             "matrix_id": "@admin:domain.tld",
             "email_address": "admin@domain.tld",
             "role": "admin" // If omitted, the default will be "admin"
@@ -25,9 +25,9 @@ The response format should be:
         {
             "email_address": "security@domain.tld",
             "role": "security"
-        }],
-        "support_page": "https://domain.tld/support.html"
-    }
+        }
+    ],
+    "support_page": "https://domain.tld/support.html"
 }
 ```
 
