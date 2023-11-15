@@ -3,7 +3,7 @@
 ## Abstract 
 
 This proposal extends the Matrix protocol to allow servers to define custom
-formatted documents that can be rendered by clients as a user home page. This feature
+formatted documents that can be rendered by clients as a homeserver landing page. This feature
 introduces a non-intrusive yet flexible manner to communicate server-specific information such as
 donation requests, scheduled maintenance, updates, new features, and changelogs.
 
@@ -38,8 +38,8 @@ conversations are selected.
 ## Specification
 
 - A new optional field will be defined within the well-known Matrix configuration for clients:
-  user_home_page.
-- The user_home_page field can be defined as a list of formats following the [Extensible Event
+  landing_page. This is nested within the `m.homeserver` object.
+- The landing_page field can be defined as a list of formats following the [Extensible Event
 MSC](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md),
   allowing clients which do not render a specific format to fall back to other message types. HTML
   is supported as either in-line, or by pointing to an html file at an accessible http(s) endpoint
@@ -47,7 +47,8 @@ MSC](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/176
 - HTML content will be sanitized by the client and restricted to the subset of HTML currently
   allowed for messages.
 - This field can be queried by clients during the login or initial loading process, and refreshed at
-  least once every 12 hours if the client has been open the entire time.
+  least once every 12 hours if the client has been open the entire time. These are minimums, and
+  clients may choose to load and reload this content more frequently.
 - Clients may choose to implement this feature as a "home" button or as default content in the main
   view when no conversation is active.
 
@@ -61,7 +62,7 @@ Example formatting using a file URI:
 ```
 { 
   "m.homeserver": { 
-    "user_home_page": [
+    "landing_page": [
         {
             "mimetype": "text/plain",
             "body": "# Visit https://your.domain/user-home.html for the latest server announcements."
@@ -80,7 +81,7 @@ Example formatting using in-line HTML:
 ``` 
 { 
   "m.homeserver": { 
-    "user_home_page": [
+    "landing_page": [
         {
             "mimetype": "text/plain",
             "body": "# Welcome to our Matrix Homeserver!\nVisit our website to make a donation."
