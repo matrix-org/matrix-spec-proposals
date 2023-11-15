@@ -8,7 +8,9 @@ This proposal aims to fix https://github.com/matrix-org/matrix-doc/issues/484
 
 ## Proposal
 
-The proposal suggests adding a new endpoint: `.well-known/matrix/support`.
+The proposal suggests adding a new endpoint: `https://{hostname}/.well-known/matrix/support`,
+where `hostname` is the server name, without the port number.  This is the same as what is used
+when performing server discovery.
 
 The response format should be:
 
