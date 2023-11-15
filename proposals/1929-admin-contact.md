@@ -40,7 +40,7 @@ Entries may have a `matrix_id` OR an `email_address`, but at least one MUST be s
 proposal are "admin" and "security." Admins are a catchall user for any queries, where security is intended
 for sensitive requests.
 
-`admins` is optional, but recommended.
+`contacts` is optional, but recommended.
 
 `support_page` is an optional property to specify a affiliated page of the homserver to give users help
 specific to the homeserver, like extra login/registration steps.
