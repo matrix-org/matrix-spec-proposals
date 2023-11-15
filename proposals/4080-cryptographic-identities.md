@@ -388,26 +388,26 @@ conflicts in the room DAG. Revocation of a delegated key is known to be extremel
 
 ## Unstable prefix
 
-While this proposal is not considered stable, the `org.matrix.mscXXXX` unstable prefix should be used on
+While this proposal is not considered stable, the `org.matrix.msc4080` unstable prefix should be used on
 all new or changed endpoints.
 
 | Stable | Unstable |
 |-|-|
-| `POST /_matrix/client/v1/send_pdus/{txnId}` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/send_pdus/{txnId}` |
-| `POST /_matrix/client/v4/createRoom` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/createRoom` |
-| `POST /_matrix/client/v4/rooms/{roomId}/invite` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/invite` |
-| `POST /_matrix/client/v4/join/{roomIdOrAlias}` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/join/{roomIdOrAlias}` |
-| `POST /_matrix/client/v4/rooms/{roomId}/join` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/join` |
-| `POST /_matrix/client/v4/rooms/{roomId}/leave` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/leave` |
-| `PUT /_matrix/client/v4/rooms/{roomId}/send/{eventType}/{txnId}` | `PUT /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/send/{eventType}/{txnId}` |
-| `PUT /_matrix/client/v4/rooms/{roomId}/state/{eventType}/{stateKey}` | `PUT /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/state/{eventType}/{stateKey}` |
-| `POST /_matrix/client/v4/keys/upload` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/keys/upload` |
-| `GET /_matrix/client/v4/sync` | `GET /_matrix/client/unstable/org.matrix.mscXXXX/sync` |
-| `POST /_matrix/client/v4/rooms/{roomId}/kick` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/kick` |
-| `POST /_matrix/client/v4/rooms/{roomId}/ban` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/ban` |
-| `POST /_matrix/client/v4/rooms/{roomId}/unban` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/unban` |
-| `PUT /_matrix/client/v4/rooms/{roomId}/redact/{eventId}/{txnId}` | `PUT /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/redact/{eventId}/{txnId}` |
-| `POST /_matrix/client/v4/rooms/{roomId}/upgrade` | `POST /_matrix/client/unstable/org.matrix.mscXXXX/rooms/{roomId}/upgrade` |
+| `POST /_matrix/client/v1/send_pdus/{txnId}` | `POST /_matrix/client/unstable/org.matrix.msc4080/send_pdus/{txnId}` |
+| `POST /_matrix/client/v4/createRoom` | `POST /_matrix/client/unstable/org.matrix.msc4080/createRoom` |
+| `POST /_matrix/client/v4/rooms/{roomId}/invite` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/invite` |
+| `POST /_matrix/client/v4/join/{roomIdOrAlias}` | `POST /_matrix/client/unstable/org.matrix.msc4080/join/{roomIdOrAlias}` |
+| `POST /_matrix/client/v4/rooms/{roomId}/join` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/join` |
+| `POST /_matrix/client/v4/rooms/{roomId}/leave` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/leave` |
+| `PUT /_matrix/client/v4/rooms/{roomId}/send/{eventType}/{txnId}` | `PUT /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/send/{eventType}/{txnId}` |
+| `PUT /_matrix/client/v4/rooms/{roomId}/state/{eventType}/{stateKey}` | `PUT /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/state/{eventType}/{stateKey}` |
+| `POST /_matrix/client/v4/keys/upload` | `POST /_matrix/client/unstable/org.matrix.msc4080/keys/upload` |
+| `GET /_matrix/client/v4/sync` | `GET /_matrix/client/unstable/org.matrix.msc4080/sync` |
+| `POST /_matrix/client/v4/rooms/{roomId}/kick` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/kick` |
+| `POST /_matrix/client/v4/rooms/{roomId}/ban` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/ban` |
+| `POST /_matrix/client/v4/rooms/{roomId}/unban` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/unban` |
+| `PUT /_matrix/client/v4/rooms/{roomId}/redact/{eventId}/{txnId}` | `PUT /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/redact/{eventId}/{txnId}` |
+| `POST /_matrix/client/v4/rooms/{roomId}/upgrade` | `POST /_matrix/client/unstable/org.matrix.msc4080/rooms/{roomId}/upgrade` |
 
 
 ## Dependencies
