@@ -1,4 +1,4 @@
-# MSC 4080: Cryptographic Identities (Client-Owned Identities)
+# MSC4080: Cryptographic Identities (Client-Owned Identities)
 **THIS MSC IS IN PROGRESS AND WILL CHANGE AS IMPLEMENTATIONS LAND**
 
 Today’s Matrix does not allow users to move their account between homeservers. It would be beneficial to be able 
