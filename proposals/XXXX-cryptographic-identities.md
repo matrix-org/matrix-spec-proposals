@@ -69,13 +69,20 @@ A `txn_id` is added to the request parameters. Clients should generate an ID uni
 access token; it will be used by the server to ensure idempotency of requests.
 
 Request:
-```json
+```
 {
     pdus:  [
-        room_version:  string,
-        via_server:  string,  //  optional
-        pdu: PDU  //  signed  PDU
+        PDUInfo    
     ]
+}
+```
+
+PDUInfo:
+```
+{
+    room_version:  string,
+    via_server:  string,  //  optional
+    pdu: PDU  //  signed  PDU
 }
 ```
 
@@ -96,7 +103,7 @@ needs to be told which pseudoID to correlate to this room for this user.
 The response includes the new fields: `room_version` and `pdus`.
 
 Request:
-```json
+```
 {
     ...,
     sender_id: string
@@ -104,7 +111,7 @@ Request:
 ```
 
 200 OK Response:
-```json
+```
 {
     room_id: string,
     room_version: string,
@@ -140,7 +147,7 @@ the event to the invited user’s homeserver.
 **TODO**: document /make_invite & /send_invite endpoints
 
 200 OK Response:
-```json
+```
 {
     pdu:  PDU
 }
@@ -153,7 +160,7 @@ These are added to help the client when sending the join event to the `/send_pdu
 server chosen by the homeserver to perform the join via.
 
 200 OK Response:
-```json
+```
 {
     room_id: string,
     room_version: string,
@@ -167,7 +174,7 @@ server chosen by the homeserver to perform the join via.
 The leave endpoint is extended to return a `pdu` for the client to sign.
 
 200 OK Response:
-```json
+```
 {
     pdu:  PDU 
 }
@@ -178,7 +185,7 @@ The leave endpoint is extended to return a `pdu` for the client to sign.
 The `/send` & `/state` endpoints are extended to return the `pdu` in the response for the client to sign.
 
 200 OK Response:
-```json
+```
 {
     event_id: string,
     pdu:  PDU
@@ -191,7 +198,7 @@ A `one_time_pseudoids` field is added to the `/keys/upload` endpoint in order to
 the purposes of inviting the user to new rooms.
 
 Request:
-```json
+```
 {
     ...,
     one_time_pseudoids: map[string]OneTimePseudoID
@@ -199,7 +206,7 @@ Request:
 ```
 
 200 OK Response:
-```json
+```
 {
     ...,
     one_time_pseudoid_counts: map[string]int
@@ -207,7 +214,7 @@ Request:
 ```
 
 OneTimePseudoID: 
-```json
+```
 “algorithm:KeyID”: {
     “key”: ”base64_bytes”
 }
@@ -220,7 +227,7 @@ The `/sync` endpoint will need to be extended to report the one-time pseudoID co
 `one_time_pseudoids` for that algorithm.
 
 200 OK Response:
-```json
+```
 {
     ...,
     one_time_pseudoids_count: map[string]int
@@ -234,7 +241,7 @@ all pseudoIDs to regular mxids when sending events to the client. Then the clien
 internally in order to correctly sign future events sent to the room.
 
 200 OK Response (InvitedRoom JSON Object):
-```json
+```
 {
     invite_state:  InviteState,
     one_time_pseudoid: string
