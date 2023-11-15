@@ -66,7 +66,8 @@ via the `events` array.
 ```
 
 This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to include a new key
-`ephemeral` to behave similar to the various sections of the CS API `/sync` endpoint.
+`ephemeral` to behave similar to the various sections of the CS API `/sync` endpoint. The `ephemeral` key
+MAY be omitted entirely if there are ephemeral no events to send.
 
 ```json
 {
