@@ -102,7 +102,7 @@ MAY be omitted entirely if there are ephemeral no events to send.
 ```
 
 The reason for a new key rather than bundling the events into `events` is that
-existing appservices may mistake them for PDUs and could cause undefined behaviour.
+existing appservices may mistake them for PDUs and might behave erratically.
 While `events` may now be a somewhat misleading name, this is an acceptable tradeoff.
 
 Note that the EDU is otherwise formatted as it would for client-server API transport.
