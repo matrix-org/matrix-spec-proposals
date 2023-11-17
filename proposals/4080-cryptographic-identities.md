@@ -25,13 +25,13 @@ to another.
 
 ## Proposal
 
-PseudoIDs are generated and stored by the client. When joining a room for the first time, a pseudoID should be
-generated for that room. All events are signed by the client using their pseudoID and are no longer signed by the
+CryptoIDs are generated and stored by the client. When joining a room for the first time, a cryptoID should be
+generated for that room. All events are signed by the client using their cryptoID and are no longer signed by the
 user’s homeserver with the exception of the mxid_mapping in the m.room.member event.
 
 ### Event Signing
 
-Events are required to be signed by the pseudoID. In order for this to work with client-owned keys, clients need to
+Events are required to be signed by the cryptoID. In order for this to work with client-owned keys, clients need to
 obtain the full version of events before they can be signed. This proposal introduces a few changes to the C-S API
 endpoints used to send events between the client and the server. Any C-S API endpoint which previously was used to
 send events, now returns the fully formed version of those event/s to the client (minus the signatures block). The
@@ -53,7 +53,7 @@ Fully formed PDUs are sent to this endpoint to be committed to a room DAG. Clien
 events sent to this endpoint. Homeservers should reject any event which isn’t properly signed by the client.
 
 Events sent to this endpoint are processed in the order they are received. A homeserver should check the validity of
-each event before sending it to the room. This includes verifying the signature of the event matches the pseudoID
+each event before sending it to the room. This includes verifying the signature of the event matches the cryptoID
 found in the `sender` field of the event. If the event is for a `remote` invite or join, the relevant `/send_invite`
 or `/send_join` over federation should be performed prior to adding the event to the room.
 
@@ -98,7 +98,7 @@ be added to the room DAG.
 Room creation adds a new `sender_id` field to the request body. The `sender_id` must be valid [Unpadded Base64](https://spec.matrix.org/v1.8/appendices/#unpadded-base64)
 and 32 bytes in size in order to be a valid ed25519 public key. This field is used for the homeserver to be able to
 fully create all the necessary room creation events on behalf of the client. Since this is a new room the homeserver
-needs to be told which pseudoID to correlate to this room for this user.
+needs to be told which cryptoID to correlate to this room for this user.
 
 The response includes the new fields: `room_version` and `pdus`.
 
@@ -121,21 +121,21 @@ Request:
 
 ##### POST /_matrix/client/v4/rooms/{roomId}/invite
 
-Inviting users to a room has a number of changes in order to make it work. First, since the pseudoID for a given user
+Inviting users to a room has a number of changes in order to make it work. First, since the cryptoID for a given user
 and room needs to be created by the client, we cannot rely on the existing invite sequence which relies on the invited
 user’s homeserver to fully populate the invite event. Instead we need a way for the invited user to be part of the
-loop and provide a pseudoID in order to finalize the event. It would not be acceptable to require the invited client
+loop and provide a cryptoID in order to finalize the event. It would not be acceptable to require the invited client
 to be available at all times in order to respond to an invite request in real time. Matrix does not currently have a
 requirement that client communications be synchronous and this proposal seeks to preserve asynchronous communications
-when participants are unreachable. Instead, this proposal introduces the concept of one-time pseudoIDs.
+when participants are unreachable. Instead, this proposal introduces the concept of one-time cryptoIDs.
 
-One-time pseudoIDs are uploaded to the user’s homeserver so that they can be claimed and used whenever that user
-receives a room invite. In order for a user to be available for invite, one-time pseudoIDs should be created and
+One-time cryptoIDs are uploaded to the user’s homeserver so that they can be claimed and used whenever that user
+receives a room invite. In order for a user to be available for invite, one-time cryptoIDs should be created and
 uploaded to a user’s current homeserver. This should take the same shape as one-time keys for encryption do today.
-The one-time pseudoIDs should be signed by the device’s ed25519 key to verify they were created by that device.
+The one-time cryptoIDs should be signed by the device’s ed25519 key to verify they were created by that device.
 
 When a client wants to invite a new user to a room for the first time, they need to query the invited user’s
-homeserver for one of the invited user’s one-time pseudoIDs. They can then use that pseudoID to create an invite
+homeserver for one of the invited user’s one-time cryptoIDs. They can then use that cryptoID to create an invite
 event for the user.
 
 The invite response includes a new `pdu` field.
@@ -194,14 +194,14 @@ The `/send` & `/state` endpoints are extended to return the `pdu` in the respons
 
 ##### POST /_matrix/client/v4/keys/upload
 
-A `one_time_pseudoids` field is added to the `/keys/upload` endpoint in order to upload new `one_time_pseudoids` for
+A `one_time_cryptoids` field is added to the `/keys/upload` endpoint in order to upload new `one_time_cryptoids` for
 the purposes of inviting the user to new rooms.
 
 Request:
 ```
 {
     ...,
-    one_time_pseudoids: map[string]OneTimePseudoID
+    one_time_cryptoids: map[string]OneTimeCryptoID
 }
 ```
 
@@ -209,11 +209,11 @@ Request:
 ```
 {
     ...,
-    one_time_pseudoid_counts: map[string]int
+    one_time_cryptoid_counts: map[string]int
 }
 ```
 
-OneTimePseudoID: 
+OneTimeCryptoID: 
 ```
 “algorithm:KeyID”: {
     “key”: ”base64_bytes”
@@ -222,29 +222,29 @@ OneTimePseudoID:
 
 ##### GET /_matrix/client/v4/sync
 
-The `/sync` endpoint will need to be extended to report the one-time pseudoID count. In the response, a
-`one_time_pseudoids_count` field is added. This is a mapping of pseudoID algorithm (ie. ed25519) to the count of
-`one_time_pseudoids` for that algorithm.
+The `/sync` endpoint will need to be extended to report the one-time cryptoID count. In the response, a
+`one_time_cryptoids_count` field is added. This is a mapping of cryptoID algorithm (ie. ed25519) to the count of
+`one_time_cryptoids` for that algorithm.
 
 200 OK Response:
 ```
 {
     ...,
-    one_time_pseudoids_count: map[string]int
+    one_time_cryptoids_count: map[string]int
 }
 ```
 
-The `/sync` endpoint also requires an extension of the `InvitedRoom` parameter to include a `one_time_pseudoid` field
-which is the pseudoID that was selected by the user’s homeserver when creating the invite event. This field is
-necessary in order to inform the client which pseudoID was used to create the invite event since homeservers translate
-all pseudoIDs to regular mxids when sending events to the client. Then the client can track this association
+The `/sync` endpoint also requires an extension of the `InvitedRoom` parameter to include a `one_time_cryptoid` field
+which is the cryptoID that was selected by the user’s homeserver when creating the invite event. This field is
+necessary in order to inform the client which cryptoID was used to create the invite event since homeservers translate
+all cryptoIDs to regular mxids when sending events to the client. Then the client can track this association
 internally in order to correctly sign future events sent to the room.
 
 200 OK Response (InvitedRoom JSON Object):
 ```
 {
     invite_state:  InviteState,
-    one_time_pseudoid: string
+    one_time_cryptoid: string
 }
 ```
 
@@ -303,26 +303,26 @@ unroutable since that field contains the user’s homeserver information.
 
 ### User Attestation (Optional)
 
-To attest that a pseudoID belongs to a specific user, the client `master_signing_key` could sign the join event
-containing their generated  pseudoID, verifying they are that identity, to prevent a server from spoofing a user
-joining a new room by having the malicious server generate a pseudoID themselves to create & sign events with.
+To attest that a cryptoID belongs to a specific user, the client `master_signing_key` could sign the join event
+containing their generated  cryptoID, verifying they are that identity, to prevent a server from spoofing a user
+joining a new room by having the malicious server generate a cryptoID themselves to create & sign events with.
 
-Linking the pseudoID with the `master_signing_key` will remove the deniability aspect of messages since you are now
-cryptographically linking your `master_signing_key` which is synonymous with a user’s identity, with each pseudoID.
+Linking the cryptoID with the `master_signing_key` will remove the deniability aspect of messages since you are now
+cryptographically linking your `master_signing_key` which is synonymous with a user’s identity, with each cryptoID.
 
 This extension is effectively what is proposed in [MSC3917 - Cryptographic Room Memberships](https://github.com/matrix-org/matrix-spec-proposals/pull/3917).
 
 An alternative to using the `master_signing_key` would be to use some other client generated key & include that in
-the attestation of the pseudoID. A client could choose whether to use different room signing keys per room (the
+the attestation of the cryptoID. A client could choose whether to use different room signing keys per room (the
 benefit of doing this would be to ensure that knowing a user’s identity in one room did not lead to knowing that
 same user’s identity in another room), or use the same room signing key for all rooms. Then at a later time clients
 could use some out of band attestation mechanism to “cross-sign” in order to verify the user/s are who they say they
 are. This has the additional benefit of not needing to enter the user’s recovery passphrase to provide the attestation
 as clients could store these room signing keys.
 
-### Pseudonymous Identity Sharing Between Devices
+### Identity Sharing Between Devices
 
-The pseudoIDs of a user are shared between devices using secret storage similar to the way encryption keys are shared.
+The cryptoIDs of a user are shared between devices using secret storage similar to the way encryption keys are shared.
 This leverages server-side key backups for key recovery. 
 
 #### Server-Side Key Backups
@@ -346,11 +346,11 @@ In order to mitigate this, a server should perform validation of each event bein
 endpoint. A homeserver could do this by storing the hash of an event prior to sending it to a client, then ensure
 any event received by the `/send_pdus` endpoint has a matching hash to one stored previously.
 
-A homeserver can run out of one-time pseudoIDs used during invites. Homeservers should protect against this by
-attempting to detect malicious activity which seeks to deplete the one-time pseudoID reserves for a user. An
-alternative would be to have a fallback one-time pseudoID. The issue with relying on this mitigation is that it
-could quickly become the case that a client ends up with the same pseudoID in many rooms. This is not necessarily an
-issue unless that user wants to keep their pseudoIDs separate in order to maintain the pseudonymity they provide.
+A homeserver can run out of one-time cryptoIDs used during invites. Homeservers should protect against this by
+attempting to detect malicious activity which seeks to deplete the one-time cryptoID reserves for a user. An
+alternative would be to have a fallback one-time cryptoID. The issue with relying on this mitigation is that it
+could quickly become the case that a client ends up with the same cryptoID in many rooms. This is not necessarily an
+issue unless that user wants to keep their cryptoIDs separate in order to maintain the pseudonymity they provide.
 
 ## Alternatives
 
@@ -370,7 +370,7 @@ to replay events on a client's behalf, thus minimizing the benefits of cryptogra
 In this model the client would be responsible for creating a full event (including `prev_events` and `auth_events`) 
 by tracking and resolving the room’s state.
 
-This has the advantage of events being fully signed by the pseudoID and avoiding a second round trip.
+This has the advantage of events being fully signed by the cryptoID and avoiding a second round trip.
 
 This has the disadvantage of requiring clients to do state resolution.
 
