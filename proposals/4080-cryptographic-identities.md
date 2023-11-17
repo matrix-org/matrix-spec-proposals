@@ -287,20 +287,14 @@ internally in order to correctly sign future events sent to the room.
 
 A new room version will be required to account for the modifications to the auth rules.
 
-The check to validate the signature on the `m.room.member` field `mxid_mapping` should be modified to allow the case
-where no `mxid_mapping` is present. This is done to allow redacting `m.room.member` events without causing those
-events to be rejected. In the case of a redacted `m.room.member` event, the user will need to send a new
-`m.room.member` event into the room with their `mxid_mapping` in order to continue receiving events from other room
-members over federation. Clients should be updated to alert the user if this ever happens in order for the user to
-take appropriate action and avoid silently missing events.
-
 Invite events no longer require a signature from the invited user’s homeserver. This signature requirement does not
 appear to have an obvious benefit and would make invite events overly onerous with the new room invite process.
 
 ### Redaction Rules
 
-Redacting an `m.room.member` event will also remove the `mxid_mapping` field which results in that user being
-unroutable since that field contains the user’s homeserver information.
+A new room version will be required to account for the modifications to the redaction rules.
+
+The `m.room.member` event content object allows the `mxid_mapping` key.
 
 ### User Attestation (Optional)
 
