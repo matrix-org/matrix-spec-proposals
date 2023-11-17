@@ -1,4 +1,4 @@
-# MSC4079: Server-Defined User Home Pages
+# MSC4079: Server-Defined Client Landing Pages
 
 ## Abstract 
 
