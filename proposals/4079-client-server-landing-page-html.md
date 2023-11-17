@@ -68,7 +68,7 @@ Example formatting using a file URI:
             "body": "# Visit https://your.domain/user-home.html for the latest server announcements."
         },
         {
-            "mimetype": "text/html",
+            "mimetype": "application/http",
             "body": "https://your.domain/user-home.html"
         }
     ]
