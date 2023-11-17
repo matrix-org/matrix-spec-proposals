@@ -75,13 +75,17 @@ The `session_data` is constructed as follows:
 5. Encode the `session_data` as canonical JSON, as would be done when [signing
    JSON](https://spec.matrix.org/unstable/appendices/#signing-details), and
    calculate the HMAC-SHA-256 MAC using the backup MAC key.  The MAC is
-   base64-encoded (unpadded), and becomes the `hmac-sha-256:1` property of the
-   `signatures` property of `session_data`.
+   base64-encoded (unpadded), and becomes the
+   {user_id}.`hmac-sha-256:backup_mac_key` property of the `signatures`
+   property of `session_data`.  That is, the MAC is added to the object as a
+   signature with `hmac-sha-256` as the signing algorithm and `backup_mac_key`
+   as the key identifier.
 
 Thus the `session_data` property has `ephemeral`, `ciphertext`, and
-`signatures` properties, with the `signatures` property having a
-`hmac-sha-256:1` property.  Keys without a `signatures`.`hmac-sha-256:1`
-property must be ignored.
+`signatures` properties, with the `signatures` property having a {user_id}
+property with a `hmac-sha-256:backup_mac_key` property.  Keys without a
+`signatures`.{user_id}.`hmac-sha-256:backup_mac_key` property, or with an
+incorrect MAC, must be ignored.
 
 When verifying the MAC, the `session_data` is encoded as canonical JSON,
 following the procedure as when signing JSON.  That is, any additional
@@ -104,16 +108,18 @@ properties.  The algorithm-independent properties are:
   ([MSC3879](https://github.com/matrix-org/matrix-spec-proposals/pull/3879)),
   or c) the key was downloaded from the key backup where it is marked as
   authenticated, and the data can be authenticated (for example using the
-  method from this proposal).  If the key is not considered to be
-  authenticated, this property indicates the source of the key.  Currently
-  defined values are: `m.undefined`, which indicates that the source is not
-  specified; `m.legacy-v1`, which indicates that the key was an unauthenticated
-  key from a `m.megolm_backup.v1.curve25519-aes-sha2` backup ([see
+  method from this proposal).
+
+  If the key is not considered to be authenticated, this property indicates the
+  source of the key.  Currently defined values are: `m.undefined`, which
+  indicates that the source is not specified; `m.legacy-v1`, which indicates
+  that the key was an unauthenticated key from a
+  `m.megolm_backup.v1.curve25519-aes-sha2` backup ([see
   below](#migrating-keys)); and `m.forwarded_room_key`, which indicates that
   the key came from an untrusted key forward.  (FIXME: do we also want to
   encode the source of the key forward?)  Clients may create other values to
   specify other sources, using the Java package naming convention; clients
-  should consider unknown values to be `m.undefined`.
+  should treat unknown values as `m.undefined`.
 
 For the `m.megolm.v1.aes-sha2` algorithm, the algorithm-dependent properties
 are the `forwarding_curve25519_key_chain`, `sender_claimed_keys`, `sender_key`,
@@ -151,34 +157,37 @@ thus becomes:
 6. Encode the `session_data` as canonical JSON, as would be done when [signing
    JSON](https://spec.matrix.org/unstable/appendices/#signing-details), and
    calculate the HMAC-SHA-256 MAC using the backup MAC key.  The MAC is
-   base64-encoded (unpadded), and becomes the `hmac-sha-256:1` property of the
-   `signatures` property of `session_data`.
+   base64-encoded (unpadded), and becomes the
+   {user_id}.`hmac-sha-256:backup_mac_key` property of the `signatures`
+   property of `session_data`.
 
-FIXME: should the server compare the `signatures`.`hmac-sha-256:1` property
-when a client uploads a key to the backup, when deciding whether to keep the
-existing key or replace it with a new key?
+FIXME: should the server compare the
+`signatures`.{user_id}.`hmac-sha-256:backup_mac_key` property when a client
+uploads a key to the backup, when deciding whether to keep the existing key or
+replace it with a new key?
 
 To simplify logic, clients may treat `m.backup.v2.curve25519-aes-sha2`-format
 keys with the same semantics as `m.megolm_backup.v1.curve25519-aes-sha2` keys
 when they are in a `m.megolm_backup.v1.curve25519-aes-sha2` backup.  That is,
 clients may treat all keys in a `m.megolm_backup.v1.curve25519-aes-sha2` backup
 as being unauthenticated, regardless of the presence or absence of the
-`signatures`.`hmac-sha-256:1` property in the cleartext `session_data`
-property.
+`signatures`.{user_id}.`hmac-sha-256:backup_mac_key` property in the cleartext
+`session_data` property.
 
 #### Migrating keys
 
 When migrating keys from a `m.megolm_backup.v1.curve25519-aes-sha2` backup to a
 `m.backup.v2.curve25519-aes-sha2` backup, keys without a
-`signatures`.`hmac-sha-256:1` property in the cleartext `session_data` property
-must have the `unauthenticated` property set to `m.legacy-v1` in the encrypted
-`SessionData`, regardless of whether the key originally had an
-`unauthenticated` property, and a `signatures`.`hmac-sha-256:1` property added
-to the cleartext `session_data`.  If the same backup decryption key is used for
-the old and new backups, keys that have an existing
-`signatures`.`hmac-sha-256:1` property may be uploaded to the new backup
-unchanged, as they will be valid `m.backup.v2.curve25519-aes-sha2`-format
-keys.
+`signatures`.{user_id}.`hmac-sha-256:backup_mac_key` property in the cleartext
+`session_data` property, or with an invalid MAC, must have the
+`unauthenticated` property set to `m.legacy-v1` in the encrypted `SessionData`,
+regardless of whether the key originally had an `unauthenticated` property, and
+a `signatures`.{user_mac}.`hmac-sha-256:backup_mac_key` property added to the
+cleartext `session_data`.  If the same backup decryption key is used for the
+old and new backups, keys that have an existing
+`signatures`.{user_id}.`hmac-sha-256:backup_mac_key` property with a valid MAC
+may be uploaded to the new backup unchanged, as they will be valid
+`m.backup.v2.curve25519-aes-sha2`-format keys.
 
 ## Potential issues
 
@@ -250,8 +259,9 @@ Until this MSC is accepted, the following unstable names should be used:
   be used in place of the name `m.backup.v2.curve25519-aes-sha2`.
 - the property name `org.matrix.msc4048.unauthenticated` should be used in place
   of `unauthenticated` in the `SessionData` object,
-- the property name `org.matrix.msc4048.hmac-sha-256:1` should be used in place
-  of `hmac-sha-256:1` in the `signatures` property,
+- the property name `org.matrix.msc4048.hmac-sha-256:backup_mac_key` should be
+  used in place of `hmac-sha-256:backup_mac_key` in the `signatures`.{user_id}
+  property,
 - the SSSS identifier `org.matrix.msc4048.mac` should be used in place of
   `m.megolm_backup.v1.mac`.
 
