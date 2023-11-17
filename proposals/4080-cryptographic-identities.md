@@ -157,7 +157,8 @@ the event to the invited user’s homeserver.
 
 A number of fields are added to the response of the `/join` endpoints: `room_version`, `via_server`, and `pdu`.
 These are added to help the client when sending the join event to the `/send_pdus` endpoint. The `via_server` is the
-server chosen by the homeserver to perform the join via.
+server chosen by the homeserver to perform the join via. The `via_server` should be passed along to the `/send_pdus`
+endpoint with the fully signed version of this event.
 
 200 OK Response:
 ```
