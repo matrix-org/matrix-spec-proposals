@@ -157,11 +157,14 @@ way:
  updates should not interrupt long polling. aggregate updates should only
  be included into sync response, whenever long polling timeout is reached
 
-Servers should filter out events with relation of type "m.annotation"
-from the main and thread timelines by default. These events should only
-be delivered in their full form whenever requested explicitly via client 
-API ([`relations`](https://spec.matrix.org/v1.8/client-server-api/#relationships-api), [`get event by id`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomideventeventid), [`context`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)) or
-via server-server API (federation API)
+## Filtering out aggregated annotations
+
+`RoomEventsFilter` format should be extended to include new flag
+`filter_unencrypted_annotations`. If this flag is set, events with relation of type
+"m.annotation" from the main and thread timelines. These events should
+only be delivered in their full form whenever requested explicitly via
+client API ([`relations`](https://spec.matrix.org/v1.8/client-server-api/#relationships-api), [`get event by id`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomideventeventid),
+[`context`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)) or via server-server API (federation API)
 
 
 ## Benefits of the proposal
@@ -204,8 +207,9 @@ can decide what security levels they want.
  relations.
 
 In order not to silently break clients with the new server side
-aggregation, new aggregation behaviour should only be introduced with a
-new room version. Older (existing) rooms should be left intact.
+aggregation, new annotation filtering behaviour should be explicitly
+requested by clients via the added `filter_unencrypted_annotations`
+filtering flag.
 
 ## Alternatives
 
@@ -226,8 +230,9 @@ This limits room scalability for large rooms, where people potentially
 
 ### Client opt-in
 
-Given the new room version introduction, no additional feature switches
-seem to be needed.
+The proposed change is fully backwards compatible. Clients supporting the
+change will be able to opt-in and pass `filter_unencrypted_annotations`
+flag via `RoomEventsFilter`
 
 ## Security considerations
 
