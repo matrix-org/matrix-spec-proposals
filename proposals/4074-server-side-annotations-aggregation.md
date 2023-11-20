@@ -160,11 +160,13 @@ way:
 ## Filtering out aggregated annotations
 
 `RoomEventsFilter` format should be extended to include new flag
-`filter_unencrypted_annotations`. If this flag is set, events with relation of type
-"m.annotation" from the main and thread timelines. These events should
-only be delivered in their full form whenever requested explicitly via
-client API ([`relations`](https://spec.matrix.org/v1.8/client-server-api/#relationships-api), [`get event by id`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomideventeventid),
-[`context`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)) or via server-server API (federation API)
+`filter_server_aggregated_events`. If this flag is set, events with
+relation of type "m.annotation" (along with others server side
+aggregation may support in the future) from the main and thread
+timelines. These events should only be delivered in their full form
+whenever requested explicitly via client API ([`relations`](https://spec.matrix.org/v1.8/client-server-api/#relationships-api),
+[`get event by id`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomideventeventid),[`context`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)) or via server-server API
+(federation API)
 
 
 ## Benefits of the proposal
@@ -208,8 +210,10 @@ can decide what security levels they want.
 
 In order not to silently break clients with the new server side
 aggregation, new annotation filtering behaviour should be explicitly
-requested by clients via the added `filter_unencrypted_annotations`
-filtering flag.
+requested by clients via the added `filter_server_aggregated_events`
+filtering flag. This new flag can later be reused for the same purpose
+to hide other server aggregated events as soon as more relation type
+aggregates are supported.
 
 ## Alternatives
 
@@ -231,7 +235,7 @@ This limits room scalability for large rooms, where people potentially
 ### Client opt-in
 
 The proposed change is fully backwards compatible. Clients supporting the
-change will be able to opt-in and pass `filter_unencrypted_annotations`
+change will be able to opt-in and pass `filter_server_aggregated_events`
 flag via `RoomEventsFilter`
 
 ## Security considerations
