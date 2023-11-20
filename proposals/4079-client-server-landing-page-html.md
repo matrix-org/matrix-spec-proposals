@@ -51,6 +51,9 @@ MSC](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/176
   clients may choose to load and reload this content more frequently.
 - Clients may choose to implement this feature as a "home" button or as default content in the main
   view when no conversation is active.
+- Clients that support this functionality must at minimum support a plaintext formatting for minimum
+  functionality. Additional formats and mimetypes are optional but may provide a superior user
+  experience.
 
 ## Examples
 
