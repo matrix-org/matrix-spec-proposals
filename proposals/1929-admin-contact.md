@@ -50,6 +50,8 @@ that the value be namespaced to prevent collisions. A value for `role` MUST be s
 `support_page` is an optional property to specify a affiliated page of the homserver to give users help
 specific to the homeserver, like extra login/registration steps.
 
+At least one valid key should be provided. This means `contacts` should have at least one entry, or the `support_page` should be defined. An empty object is not considered valid, however both `contacts `and `support_page` may be specified together. 
+
 ## Alternative solutions
 
 Hardcode a given user localpart that should be used as an admin address.
