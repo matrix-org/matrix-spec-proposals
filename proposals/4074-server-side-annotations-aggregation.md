@@ -159,11 +159,12 @@ way:
 
 ## Filtering out aggregated annotations
 
-`RoomEventsFilter` format should be extended to include new flag
-`filter_server_aggregated_events`. If this flag is set, events with
-relation of type "m.annotation" (along with others server side
-aggregation may support in the future) from the main and thread
-timelines. These events should only be delivered in their full form
+`RoomEventsFilter` format should be extended to include new filter param
+`filter_server_aggregated_relation_types` ([]string).
+Server should filter out events having relation types to their parents
+specified in this array if these events are aggregated by the server.
+Filtering should work for the main and thread timelines.
+Such filtered events should only be delivered in their full form
 whenever requested explicitly via client API ([`relations`](https://spec.matrix.org/v1.8/client-server-api/#relationships-api),
 [`get event by id`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomideventeventid),[`context`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixclientv3roomsroomidcontexteventid)) or via server-server API
 (federation API)
@@ -210,8 +211,9 @@ can decide what security levels they want.
 
 In order not to silently break clients with the new server side
 aggregation, new annotation filtering behaviour should be explicitly
-requested by clients via the added `filter_server_aggregated_events`
-filtering flag. This new flag can later be reused for the same purpose
+requested by clients via the added
+`filter_server_aggregated_relation_types` filtering param.
+This filtering param can later be reused for the same purpose
 to hide other server aggregated events as soon as more relation type
 aggregates are supported.
 
@@ -235,8 +237,8 @@ This limits room scalability for large rooms, where people potentially
 ### Client opt-in
 
 The proposed change is fully backwards compatible. Clients supporting the
-change will be able to opt-in and pass `filter_server_aggregated_events`
-flag via `RoomEventsFilter`
+change will be able to opt-in and pass 
+`filter_server_aggregated_relation_types` param via `RoomEventsFilter`
 
 ## Security considerations
 
