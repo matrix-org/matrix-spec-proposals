@@ -251,15 +251,40 @@ internally in order to correctly sign future events sent to the room.
 
 ##### POST /_matrix/client/v4/rooms/{roomId}/kick
 
-**TODO**
+The kick endpoint is extended to return a `pdu` for the client to sign.
+
+200 OK Response:
+```
+{
+    pdu:  PDU 
+}
+```
+
+**TODO: How to handle external users**
 
 ##### POST /_matrix/client/v4/rooms/{roomId}/ban
 
-**TODO**
+The ban endpoint is extended to return a `pdu` for the client to sign.
+
+200 OK Response:
+```
+{
+    pdu:  PDU 
+}
+```
+
+**TODO: How to handle external users**
 
 ##### POST /_matrix/client/v4/rooms/{roomId}/unban
 
-**TODO**
+The unban endpoint is extended to return a `pdu` for the client to sign.
+
+200 OK Response:
+```
+{
+    pdu:  PDU 
+}
+```
 
 ##### PUT /_matrix/client/v4/rooms/{roomId}/redact/{eventId}/{txnId}
 
