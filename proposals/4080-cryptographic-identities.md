@@ -146,6 +146,25 @@ the event to the invited user’s homeserver.
 
 **TODO**: document /make_invite & /send_invite endpoints
 
+```mermaid
+sequenceDiagram
+participant Alice
+participant Alice HS
+participant Bob HS
+participant Bob
+Bob ->> Bob HS: /keys_upload (one-time cryptoID)
+Note over Bob, Bob HS: Occurs separately, when one-time<br/>cryptoID count is low.
+Alice ->> Alice HS: /invite:@bob:bob_hs
+Alice HS ->> Bob HS: /make_invite
+Bob HS ->> Bob HS: Claim one-time cryptoID
+Note right of Bob HS: A valid one-time cryptoID is required<br/>to create the full invite event.
+Bob HS ->> Alice HS: (proto pdu)
+Alice HS ->> Alice: (proto pdu)
+Alice ->> Alice: Sign PDU
+Alice ->> Alice HS: /send_pdus
+Alice HS ->> Bob HS: /send_invite
+```
+
 200 OK Response:
 ```
 {
