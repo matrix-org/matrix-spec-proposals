@@ -395,23 +395,119 @@ issue unless that user wants to keep their cryptoIDs separate in order to mainta
 
 ### Clients delegate event signing on a per-event basis
 
-In this alternative, events would add a field to event content specifying the event signing delegate (such as the
+In this alternative, all events would add a field to event `content` specifying the event signing delegate (such as the
 user's homeserver). All events would be expected to be signed by this delegate.
 
-This has the advantage of avoiding a second round trip.
+**Advantages**: This has the advantage of avoiding a second round trip for normal messaging.
 
-This has the disadvantage of the added complexity of trying to protect event content such that only a client is
-allowed to specify a signing delegate. This ends up leading to a number of issues where homeservers could be able
-to replay events on a client's behalf, thus minimizing the benefits of cryptographic identities.
+**Disadvantages**: This has the disadvantage of the added complexity of trying to protect event content such that 
+only a client is allowed to specify a signing delegate. This ends up leading to a number of issues where homeservers 
+could be able to replay events on a client's behalf, thus minimizing the benefits of cryptographic identities.
+
+#### Details
+
+##### Event Signing
+
+In order to ensure the `allowed_signing_keys` was actually specified by the client, clients now sign the `content` 
+section of all events. Events are modified to add `nonce`, `allowed_signing_keys`, `hash` and `signatures` fields. These 
+fields are used to prevent malicious homeservers from spoofing events on a client’s behalf. The signature is created 
+by signing the combination of `type`, `state_key` and redacted `content`. Signing the `room_id` is not required since 
+cryptoIDs are already unique per room but could be added if necessary. The `nonce` value should be generated as a 
+random 128-bit integer (or UUIDv4?), encoded as unpadded base64 (or hex for UUID?). It is especially important for 
+the `nonce` to be unique for each `type` and `state_key` pairing in order to ensure events cannot be replayed by a 
+malicious homeserver. The hash is the sha-256 hash, encoded as unpadded base64, of the `content` fields before 
+`signatures` have been added (including the new `nonce`, and `allowed_signing_keys` fields). The `hash` is required in 
+order to be able to verify the event `signature` if the event `content` is ever redacted.
+
+All events are now required to possess the above mentioned fields inside of `content`.
+
+An example event would look like:
+
+```json
+{
+  "msgtype": "m.text",
+  "body": "hello world!",
+  "m.client_signatures": {
+    "nonce": "random_number",
+    "allowed_signing_keys": {
+      "ed25519":"some+server+key"
+    },
+    "hash": "hash_of_content_without_signatures",
+    "signatures": {
+      "ed25519:base64+cryptoid": "signature+of+cryptoid"
+    }
+  }
+}
+```
+
+##### Auth Rules
+
+Both clients and servers should now check the `content` signatures to validate whether the `type` + `state_key` + 
+redacted `content` was signed by the `sender`. Only the redacted `content` needs to be signed since that will contain 
+a `hash` of the full contents that can be used to verify the full event. Signing the redacted `content` instead 
+of just the `hash` allows for further field validation (ie. fields from `m.room.member`, `m.room.join_rules`, and 
+`m.room.power_levels` to name a few). If a server detects the `signature` is wrong it should reject the event. If a 
+client detects the `signature` is wrong it should alert the user who can then decide what further action to take, if 
+any. A client detecting an invalid `signature` means their homeserver either didn’t check the `signature` or did 
+check the `signature` and didn’t reject the event.
+
+Servers should also check that the full event was signed by one of the keys present in the `allowed_signing_keys` 
+field, or by the cryptoID itself. If the event was not signed by one of these keys, the server should reject the 
+event. Allowing events to be signed by the cryptoID keeps the possibility of clients to perform state resolution 
+and generate full events if they should choose to do so. 
+
+To further validate the event, new rules need to be added to verify the `nonce` field. Homeservers should ensure 
+that the `nonce` is unique for events from that user in this room. It is most important to ensure that the `nonce` 
+value is unique per `type` and `state_key` pairing. Duplicate `nonce` values that are used for different rooms or 
+`type`/`state_key` pairings aren’t an issue since the event signatures protect against replay attacks where these 
+values have been modified. If a homeserver receives an event with a `nonce` that is identical to another event with 
+the same `type` and `state_key`, that event should be rejected. Clients have the option to also perform `nonce` 
+validation in this way if the possibility of colluding homeservers is suspected. When sending an event via the C-S 
+API, a homeserver should verify that the `nonce` of the new event is unique or reject the event from the client. 
+If the event is rejected in this way, the homeserver should return a response status of 400 with an errcode of 
+`M_DUPLICATE_NONCE`.
+
+**Problem**: How can a client generate a usable nonce? 
+
+**Problem**: How could a homeserver validate a nonce as being unique without requiring them to know the entire room DAG?
+
+##### Redaction Rules
+
+The following fields should be preserved during redaction for all event types:
+- `nonce`
+- `allowed_signing_key`
+- `hash`
+- `signature`
+
+##### Replay Attacks
+
+Clients are now responsible for signing the `content` field of events but they don’t sign the full event. This means 
+that a malicious homeserver could take the contents of an existing room event and replace everything else in the 
+event without anyone knowing. This could include fields such as `type`, `state_key`, `prev_events`, and `room_id`. 
+In order to minimize the effects of a replay attack, the client should sign the combination of `type`, `state_key`, 
+and `content`. Signing `type` prevents reusing the contents in an event of another event `type`. Signing `state_key` 
+prevents attacks such as changing the `membership` state of another user. Signing `content` prevents a malicious 
+homeserver from generating arbitrary `content` on behalf of a client. 
+
+Even with the above mitigation, a malicious homeserver could still replay an event in the same room, with the same 
+`content`, `type` and `state_key` at a different location in the DAG. That is to say, a homeserver can replay the 
+same event with different values for `prev_events` and `auth_events`. An example of this could take the form of 
+changing the power levels earlier or later in time.
+
+A further mitigation could be to use the make/send event, double round trip, approach where a client first requests 
+the full event from their homeserver, then signs the full event before sending that into the room. This could be 
+done only for state events since the effects of replay attacks on state events is much more devastating to a room 
+and state events occur infrequently. This would add an additional level of security while keeping the normal event 
+sending flow fast since non-state events wouldn’t have the additional client-server round trip.
 
 ### Clients sign full events via room extremity tracking
 
 In this model the client would be responsible for creating a full event (including `prev_events` and `auth_events`) 
 by tracking and resolving the room’s state.
 
-This has the advantage of events being fully signed by the cryptoID and avoiding a second round trip.
+**Advantages**: This has the advantage of events being fully signed by the cryptoID and avoiding a second round trip.
 
-This has the disadvantage of requiring clients to do state resolution.
+**Disadvantages**: This has the disadvantage of requiring clients to do state resolution.
 
 ### Clients delegate event signing in their m.room.member event
 
@@ -419,11 +515,11 @@ In this model the client would add a `allowed_signing_keys` field to their `m.ro
 event signing to another party. Homeservers still have full authority over a client’s events in this scenario since 
 the client doesn’t sign any part of each event to verify they are the sender.
 
-This has the advantage of not adding additional size to each event.
+**Advantages**: This has the advantage of not adding additional size to each event.
 
-This has the disadvantage of giving over full event control to the delegated homeserver. It also has the disadvantage 
-of trying to resolve `allowed_signing_keys` if a client wants to remove authority from a homeserver or there are 
-conflicts in the room DAG. Revocation of a delegated key is known to be extremely problematic.
+**Disadvantages**: This has the disadvantage of giving over full event control to the delegated homeserver. It also has 
+the disadvantage of trying to resolve `allowed_signing_keys` if a client wants to remove authority from a homeserver 
+or there are conflicts in the room DAG. Revocation of a delegated key is known to be extremely problematic.
 
 ## Unstable prefix
 
