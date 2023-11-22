@@ -404,6 +404,8 @@ user's homeserver). All events would be expected to be signed by this delegate.
 only a client is allowed to specify a signing delegate. This ends up leading to a number of issues where homeservers 
 could be able to replay events on a client's behalf, thus minimizing the benefits of cryptographic identities.
 
+This also increases the size of every single event due to the addition of required `content` fields.
+
 #### Details
 
 ##### Event Signing
