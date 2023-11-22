@@ -168,60 +168,63 @@ integrate into existing client and homeserver implementations:
 Typical usage flow of Oblivious MoH:
 1. A client has an identity on Homeserver A, but would like to connect through
    Homeserver B. It knows the domain name of both.
-2. The client first needs to initialize OMoH by obtaining a trusted private key
-   from Homeserver A.
+2. The client first needs to initialize OMoH by obtaining a trusted ephemeral
+   public key from Homeserver A.
    * First, as a sanity check the client will query Homeserver B for its OMoH
      capabilities.
      `GET /.well-known/matrix/moh` -> `200 OK; application/json`
    * Verifying that Homeserver B declares support for both the `/relay` and
      `/getCapabilities` endpoint, the client requests Homeserver B to fetch OMoH
-     capabilities from Homeserver A. This also includes Homeserver A's TLS
-     certificate.
+     capabilities from Homeserver A. The response is signed using the X.509 TLS
+     certificate of Homeserver A.
      `GET /_matrix/client/v1/obliviousMoh/getCapabilities` ->
      `200 OK; application/json`
-   * The client verifies that the TLS certificate is valid and does match
-     Homeserver A's domain, and caches the public key contained within.
+   * The client verifies that the cryptographic signature is valid, does match
+     Homeserver A's domain, and is issued by a trusted Certificate Authority. It
+     then caches the returned ephemeral public key.
 3. The client initializes a OMoH request by encapsulating a regular Matrix API
    request inside a JSON container which details the nature of the HTTP request
-   (method, MIME, path). It then genereates an ephemeral asymmetric keypair of
-   its own, and attaches the public key and ciphersuite string to the container.
-   The container is then encrypted using Homeserver A's public key, and
-   forwarded to Homeserver B's OMoH relay endpoint as a blob. The client
-   specifies Homeserver A's domain as the target homeserver in a HTTP header,
-   "Target".
+   (method, headers, MIME, path). It encrypts this payload with AES, and
+   attaches the randomly generated key and IV / nonce to the container. It is
+   then encrypted a second time with RSA using Homeserver A's ephemeral public
+   key, and forwarded to Homeserver B's OMoH relay endpoint as a blob. The
+   client specifies Homeserver A's domain as the target homeserver in a HTTP
+   header, "Target".
    `POST /_matrix/client/v1/obliviousMoh/relay;`
    `application/oblivious-moh-request`
    * Homeserver B now decides whether the request should be forwarded. It first
      checks a cached list of homeservers recently queried via `/getCapabilities`
      for a valid match, and failing that, queries the target homeserver directly
-     for its well-known MoH capabilities before proceeding. It will forward the
+     for its `.well-known` MoH capabilities before proceeding. It will forward the
      request only if the target homeserver validly declares support for the
      `/incoming` endpoint; otherwise the request is dropped and a 502 Bad
      Gateway is returned.
-   * Homeserver B now relays the OMoH request to Homeserver A.
+   * Homeserver B relays the OMoH request to Homeserver A.
      `POST /_matrix/server/v1/obliviousMoh/incoming;`
      `application/oblivious-moh-request`
 4. Homeserver A has now received an anonymous OMoH request and attempts to
-   decrypt it via its TLS private key. It then validates that the content is
+   decrypt it using every ephemeral keypair it currently considers valid. If a
+   valid OMoH header is detected, it will attempt to decrypt the payload using
+   the specified key and nonce.It then validates that the plaintext content is
    indeed valid JSON, and converts the container back to a normal HTTP request.
-   The request is then looped back into the destination API endpoint.
+   The request is then looped back to the destination API endpoint.
 5. The endpoint returns a response to the request, which is then encapsulated
-   inside a JSON container similar to before, and encrypted using the private
-   key and ciphersuite requested by the client. The homeserver returns the
-   encrypted blob as a response to Homeserver B's OMoH request.
+   inside a JSON container similar to before, and encrypted using the key and
+   ciphersuite requested by the client. The homeserver returns the encrypted
+   blob as a response to Homeserver B's OMoH request.
    `200 OK; application/oblivious-moh-request`
 6. Homeserver B passes the response back to the client.
    `200 OK; application/oblivious-moh-request`
-7. The client decrypts the blob using its ephemeral private key, and converts
-   the container back to a normal HTTP response, which is then transparently
+7. The client decrypts the blob using the key specified in the request, and
+   converts the container back to a normal HTTP response, which is transparently
    returned to the function or program which initiated the request.
 
 The OMoH endpoints are stateless throughout. One to two requests occur when a
 client attempts OMoH connection to a homeserver domain which it does not have
-the TLS certificate for. Afterwards, all Matrix client requests are translated
-transparently into OMoH requests, which makes a client using OMoH functionally
-almost indistinguishable compared to a client using the relay homeserver
-directly without Oblivious MoH.
+a current ephemeral key for. Afterwards, all Matrix client requests are
+translated transparently into OMoH requests, which makes a client using OMoH
+functionally almost indistinguishable compared to a client using the relay
+homeserver directly without Oblivious MoH.
 
 ```
 |Alice              |                   |
@@ -967,7 +970,7 @@ homeserver administrators to configure which `path`s on the homeserver's domain
 are be reachable via Oblivious MoH should be exposed via the homeserver's
 configurations. A whitelist approach is recommended (such as by default only
 allowing `/.well-known/matrix/*` and `/_matrix/client/*` except for
-`/_matrix/client/*/obliviouosMoh/*`). Although a homeserver *may* expose
+`/_matrix/client/*/obliviousMoh/*`). Although a homeserver *may* expose
 non-Matrix HTTP endpoints through Oblivious MoH, this is not recommended for
 security and implementation parity reasons.
 
@@ -1008,9 +1011,9 @@ nature of the traffic.
 
 Oblivious MoH relays may receive 422 Too Many Request responses in plaintext.
 In these cases, the relay *should* temporarily block `/relay` requests from the
-client's IP until the specified time indicated within the response is reached.
-Individual blocks **MUST** be limited to 1 hour or less to minimize data
-retention.
+client's IP to the remote homeserver's host until the specified time indicated
+within the response is reached. Individual blocks **MUST** be limited to 1 hour
+or less to minimize data retention.
 
 Homeservers which implement Oblivious MoH `/incoming` *should* ideally first
 rate-limit users by their `Authorization` token whenever available. For
