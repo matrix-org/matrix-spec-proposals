@@ -1,5 +1,9 @@
 # MSC4081: Claim fallback key on network failures
 
+*Abstract: This MSC aims to increase the robustness of the Olm session setup protocol over federation.
+With this MSC, transient network failures over federation will not cause undecryptable messages due to
+failing to claim OTKs.*
+
 In order for clients to establish secure communication channels between devices, they need to "claim" one-time keys
 (OTKs) that were previously uploaded by the device they wish to talk to. One-time keys, as the name suggests, must
 only be used once. However, this presents several problems:
