@@ -15,7 +15,7 @@ which can be claimed when OTKs are exhausted. Fallback keys provide weaker secur
 specifically impacting forward secrecy, which protects past sessions against future compromises of keys or passwords.
 The risk is that if the private part of the fallback key is exposed, an attacker may use the key to decrypt earlier
 sessions. This can be mitigated by cycling the fallback key (and hence deleting the private key) once it has been
-used, with some lag time to account for slow networks.
+"used", with some lag time to account for slow networks.
 
 ## Proposal
 
@@ -58,11 +58,20 @@ An example of the new field:
 }
 ```
 
-As a reminder, clients SHOULD rotate their fallback key when they realise it has been used, with some lag time
+As a reminder, clients SHOULD rotate their fallback key when they realise it has been "used", with some lag time
 to account for federation. As per MSC2732, 1 hour is recommended. When clients change their fallback key, a new
 `m.device_list_update` EDU MUST be sent.
 
-This proposal has no client-side changes.
+The definition of when a fallback key is "used" also needs to change. Previously, a key is "used"
+_if it is claimed by another device_. When this happens, the client is told this via `/sync`, either by reducing
+the one-time key count by 1, or by removing the algorithm from the `device_unused_fallback_key_types`. This proposal
+makes it impossible to know if the fallback key has been claimed by another device, as it is sent eagerly over
+federation. Therefore, this changes the fallback key semantics to be "when the device receives and successfully
+decrypts an initial pre-key to-device event which uses that key". As per the specification, this is identified as
+`type: 0` messages. This will require client-side changes to change when new fallback keys get uploaded.
+
+Due to this change, it is recommended that the fallback key is _also cycled periodically_, e.g once per week.
+This ensures that any sessions the client is unaware of will eventually expire.
 
 ## Comparisons with X3DH (Signal)
 
