@@ -64,14 +64,15 @@ to account for federation. As per MSC2732, 1 hour is recommended. When clients c
 
 The definition of when a fallback key is "used" also needs to change. Previously, a key is "used"
 _if it is claimed by another device_. When this happens, the client is told this via `/sync`, either by reducing
-the one-time key count by 1, or by removing the algorithm from the `device_unused_fallback_key_types`. This proposal
+the one-time key count by 1, or by removing the algorithm from the `device_unused_fallback_key_types` array. This proposal
 makes it impossible to know if the fallback key has been claimed by another device, as it is sent eagerly over
-federation. Therefore, this changes the fallback key semantics to be "when the device receives and successfully
+federation. Therefore, this changes the definition of "used" to be "when the device receives and successfully
 decrypts an initial pre-key to-device event which uses that key". As per the specification, this is identified as
 `type: 0` messages. This will require client-side changes to change when new fallback keys get uploaded.
 
-Due to this change, it is recommended that the fallback key is _also cycled periodically_, e.g once per week.
-This ensures that any sessions the client is unaware of will eventually expire.
+Due to this change, it is recommended that the fallback key is also **cycled periodically**
+_even if the key isn't "used"_, e.g once per week. This reduces the risk of >1 session being established with the same
+key, but for some reason the client isn't able to detect it.
 
 ## Comparisons with X3DH (Signal)
 
