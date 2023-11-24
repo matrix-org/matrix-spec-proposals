@@ -509,7 +509,9 @@ by tracking and resolving the room’s state.
 
 **Advantages**: This has the advantage of events being fully signed by the cryptoID and avoiding a second round trip.
 
-**Disadvantages**: This has the disadvantage of requiring clients to do state resolution.
+**Disadvantages**: This has the disadvantage of requiring clients to do state resolution which cannot reasonably be
+done by clients due to `/sync` not returning information in such a way that forward extremities can be properly 
+tracked.
 
 ### Clients delegate event signing in their m.room.member event
 
