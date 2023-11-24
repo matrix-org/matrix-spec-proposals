@@ -187,6 +187,20 @@ These are added to help the client when sending the join event to the `/send_pdu
 server chosen by the homeserver to perform the join via. The `via_server` should be passed along to the `/send_pdus`
 endpoint with the fully signed version of this event.
 
+Room joining adds a new `cryptoid` field to the request body. The `cryptoid` must be valid [Unpadded Base64](https://spec.matrix.org/v1.8/appendices/#unpadded-base64)
+and 32 bytes in size in order to be a valid ed25519 public key. This field is used for the homeserver to be able to
+create the join event on behalf of the client and for the homeserver to validate the user is joining with the 
+correct cryptoID if the join follows an invite event. If this is a join without a matching invite, the homeserver
+needs to be told which cryptoID to correlate to this room for this user.
+
+Request:
+```
+{
+    ...,
+    cryptoid: string
+}
+```
+
 200 OK Response:
 ```
 {
