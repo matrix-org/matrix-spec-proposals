@@ -65,6 +65,14 @@ will be returned. As well as the normal common error codes, other reasons for re
 
 -   M_DUPLICATE_ANNOTATION: The request is an attempt to send a [duplicate annotation](https://spec.matrix.org/v1.8/client-server-api/#avoiding-duplicate-annotations).
 
+A homeserver should also protect against clients who modify events sent by the homeserver before signing them. If a 
+client modifies an event, such as changing `prev_events` to force costly state resolution, then we should reject that 
+event. A homeserver can do this by storing the hash of the proto event in a database, and then on `/send_pdus`, remove 
+the `signatures` key and check if the hash exists in the DB (i.e the homeserver sent the client this exact proto event). 
+The homeserver can also then expire the proto event in a timely manner which helps alleviate issues of costly state
+resolution due to the likelihood of `prev_events` changing as time passes. Any kind of client event signing is going to 
+add latency to creating events, which is going to increase the chance of increasing the number of forward extremities.
+
 A `txn_id` is added to the request parameters. Clients should generate an ID unique across requests with the same
 access token; it will be used by the server to ensure idempotency of requests.
 
