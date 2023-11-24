@@ -103,7 +103,7 @@ be added to the room DAG.
 
 ##### POST /_matrix/client/v4/createRoom
 
-Room creation adds a new `sender_id` field to the request body. The `sender_id` must be valid [Unpadded Base64](https://spec.matrix.org/v1.8/appendices/#unpadded-base64)
+Room creation adds a new `cryptoid` field to the request body. The `cryptoid` must be valid [Unpadded Base64](https://spec.matrix.org/v1.8/appendices/#unpadded-base64)
 and 32 bytes in size in order to be a valid ed25519 public key. This field is used for the homeserver to be able to
 fully create all the necessary room creation events on behalf of the client. Since this is a new room the homeserver
 needs to be told which cryptoID to correlate to this room for this user.
@@ -114,7 +114,7 @@ Request:
 ```
 {
     ...,
-    sender_id: string
+    cryptoid: string
 }
 ```
 
