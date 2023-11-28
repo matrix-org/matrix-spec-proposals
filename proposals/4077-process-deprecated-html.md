@@ -6,7 +6,7 @@ Cross-Site Scripting (XSS) and similar attacks. Clients are always welcome to us
 in both their send and receive paths, however in practice the recommended set of HTML has become the
 baseline standard for support among Matrix client developers.
 
-Additionally, to fix issues like [a tag being deprecated](https://github.com/matrix-org/matrix-spec/issues/1492),
+Additionally, to fix issues like [tags being deprecated](https://github.com/matrix-org/matrix-spec/issues/1492),
 the existing spec process would require an entire MSC to add or remove the tag. This has precedent
 through [MSC2422](https://github.com/matrix-org/matrix-spec-proposals/pull/2422) and
 [MSC2184](https://github.com/matrix-org/matrix-spec-proposals/pull/2184), where additional HTML
@@ -14,12 +14,12 @@ features are analyzed from a security perspective. For example, whether XSS atta
 or flooding/disruption attempts are made easier.
 
 This proposal adjusts the MSC process to explicitly allow changes to the supported HTML tags where
-the W3C has deprecated a feature in favour of another, enabling more rapid iteration and reducing
+the WHATWG has deprecated a feature in favour of another, enabling more rapid iteration and reducing
 paperwork for everyone involved.
 
 ## Proposal
 
-Where the W3C has deprecated a feature of the HTML specification, a Matrix spec PR *may* bypass the
+Where the WHATWG has deprecated a feature of the HTML specification, a Matrix spec PR *may* bypass the
 MSC process to use the modern feature instead. In the case of [issue#1492](https://github.com/matrix-org/matrix-spec/issues/1492),
 the spec PR is explicitly able to add the `s` tag and remove the `strike` tag. Note that such changes
 can also bypass the [deprecation policy](https://spec.matrix.org/v1.8/#deprecation-policy) in this way.
