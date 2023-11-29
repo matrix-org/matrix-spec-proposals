@@ -6,13 +6,116 @@ To be able to initiate an OAuth 2.0 login flow to use a Matrix server, the clien
 
 ## Proposal
 
+This introduces a new Client-Server API endpoint to discover the authentication server used by the homeserver.
+
+
+### `GET /auth_issuer`
+
+A request on this endpoint should return a JSON object with the following fields:
+
+ - *REQUIRED* `issuer`: the OpenID Connect Provider that is trusted by the homeserver
+ - *OPTIONAL* `account`: an object describing the account management capabilities of the OpenID Connect Provider, with the following fields:
+     - `uri`: the absolute URI where the user is able to access the account management capabilities of the OpenID Connect Provider
+     - `actions_supported`: a list of well-known actions supported by the account management URL. The following actions are defined:
+         - `profile`: the user wishes to view their profile (name, avatar, contact details).
+         - `sessions_list`: the user wishes to view a list of their sessions.
+         - `session_view`: the user wishes to view the details of a session.
+         - `session_end`: the user wishes to end/logout a session.
+
+For example:
+
+```http
+GET /_matrix/client/v3/auth_issuer
+Host: example.com
+Accept: application/json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+    "issuer": "https://account.example.com/",
+    "account": {
+        "uri": "https://account.example.com/myaccount",
+        "actions_supported": ["profile", "sessions_list", "session_view", "session_end"]
+    }
+}
+```
+
+The Matrix client can then discover the OpenID Connect Provider configuration by using [OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
+
+```http
+GET /.well-known/openid-configuration
+Host: account.example.com
+Accept: application/json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json5
+{
+  "issuer": "https://account.example.com/",
+  "authorization_endpoint": "https://account.example.com/oauth2/auth",
+  "token_endpoint": "https://account.example.com/oauth2/token",
+  "registration_endpoint": "https://account.example.com/oauth2/clients/register",
+  "end_session_endpoint": "https://account.example.com/oauth2/logout",
+  "jwks_uri": "https://account.example.com/oauth2/keys",
+  "response_types_supported": ["code"],
+  "grant_types_sypported": ["authorization_code", "refresh_token"],
+  "response_mode_sypported": ["query", "fragment"]
+  // some fields omitted
+}
+```
+
+### Account management URL parameters
+
+The account management URL may accept the following additional query parameters:
+
+- `id_token_hint` - An ID Token that was previously issued to the client; the issuer uses it as a hint for which user is requesting to manage their account.
+  If the requesting user is not logged in then it is used as a login hint; if a different user/identity is already logged in then warn the user that they are accessing a different account.
+- `action` - Can be used to indicate the action that the user wishes to take:
+  - `profile` - The user wishes to view their profile (name, avatar, contact details).
+  - `sessions_list` - The user wishes to view a list of their sessions.
+  - `session_view` - The user wishes to view the details of a session.
+  - `session_end` - The user wishes to end/logout a session.
+- `device_id` - This can be used to identify a particular session for `session_view` and `session_end`. This is the Matrix device ID.
+
+For example, if a user wishes to sign out a session for the device `ABCDEFGH` where the advertised account management URL was `https://account.example.com/myaccount` the client could open a link to `https://account.example.com/myaccount?action=session_end&device_id=ABCDEFGH`.
+
+Not all actions need to be supported by the account management URL, and the client should only use the actions advertised in the `actions_supported` field.
+
+## Potential issues
+
+Using a separate endpoint for discovery makes the request chain to initiate a login flow longer.
+A full discovery flow would be as follows:
+
+ - `GET [domain]/.well-known/matrix/client` to discover the homeserver
+ - `GET [homeserver]/_matrix/client/v3/auth_issuer` to discover the issuer
+ - `GET [issuer]/.well-known/openid-configuration` to discover the OpenID Connect Provider configuration
+ - `POST [issuer client registration endpoint]` to register the OAuth 2.0 client 
+   (see [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966))
+ - Redirect to `[issuer authorization endpoint]` to initiate the login flow
+
+## Alternatives
+
+The authentication server discovery could be done by other mechanisms.
+
+### Discovery via the well-known client discovery
+
+A previous version of this proposal suggested using the well-known client discovery mechanism to discover the authentication server.
 Clients already discover the homeserver when doing a server discovery via the well-known document.
 
-A new `m.authentication` field is added to this document to support OpenID Provider (OP) discovery.
+A new `m.authentication` field is added to this document to support OpenID Connect Provider (OP) discovery.
 It is an object containing two fields:
 
-- REQUIRED `issuer` - the OpenID Provider that is trusted by the homeserver
-- OPTIONAL `account` - the URL where the user is able to access the account management capabilities of the OpenID Provider
+- REQUIRED `issuer` - the OpenID Connect Provider that is trusted by the homeserver
+- OPTIONAL `account` - the URL where the user is able to access the account management capabilities of the OpenID Connect Provider
 
 For example:
 
@@ -42,61 +145,6 @@ Content-Type: application/json
 }
 ```
 
-The authentication server metadata can then be discovered by the client using [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html) against the `issuer` field.
-
-```http
-GET /.well-known/openid-configuration
-Host: account.example.com
-Accept: application/json
-```
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-```
-
-```json5
-{
-  "issuer": "https://account.example.com/",
-  "authorization_endpoint": "https://account.example.com/oauth2/auth",
-  "token_endpoint": "https://account.example.com/oauth2/token",
-  "registration_endpoint": "https://account.example.com/oauth2/clients/register",
-  "end_session_endpoint": "https://account.example.com/oauth2/logout",
-  "jwks_uri": "https://account.example.com/.well-known/jwks.json",
-  "response_types_supported": ["code"],
-  "grant_types_sypported": ["authorization_code", "refresh_token"],
-  "response_mode_sypported": ["query", "fragment"]
-  // some fields omitted
-}
-```
-
-### Account management URL parameters
-
-The account management URL may accept the following additional query parameters:
-
-- `id_token_hint` - An ID Token that was previously issued to the client; the issuer uses it as a hint for which user is requesting to manage their account. If the requesting user is not logged in then it is used as a login hint; if a different user/identity is already logged in then warn the user that they are accessing a different account.
-- `action` - Can be used to indicate the action that the user wishes to take:
-  - `profile` - The user wishes to view their profile (name, avatar, contact details).
-  - `sessions_list` - The user wishes to view a list of their sessions.
-  - `session_view` - The user wishes to view the details of a session.
-  - `session_end` - The user wishes to end/logout a session.
-- `device_id` - This can be used to identify a particular session for `session_view` and `session_end`. This is the Matrix device ID.
-
-For example, if a user wishes to sign out a session for the device `ABCDEFGH` where the advertised account management URL was `https://account.example.com/myaccount` the client could open a link to `https://account.example.com/myaccount?action=session_end&device_id=ABCDEFGH`.
-
-## Potential issues
-
-Not all Matrix servers have the well-known client discovery mechanism setup.
-Unlike the identity server, the authentication server is necessary to login against a Matrix server.
-Being unable to discover the authorization server from the Matrix Client API might be an issue in some cases.
-
-## Alternatives
-
-The authorization server discovery could be done by other mechanisms.
-
-### Discovery via a new client API endpoint
-
-The Matrix Client API could have a new endpoint to discover the issuer, e.g. `/_matrix/client/r0/auth_issuer`.
 
 ### Discovery via the `m.login.oauth2` authentication method
 
@@ -105,7 +153,8 @@ The downside of this approach is that the plan is to deprecate the old login mec
 
 ### Discovery via WebFinger
 
-OIDC already has a standard way to discover OP from an identifier: WebFinger. This is already adopted by Mastodon, and might help solving logging in via 3PIDs like emails.
+OIDC already has a standard way to discover OP from an identifier: WebFinger.
+This is already adopted by Mastodon, and might help solve logging in via 3PIDs like emails.
 
 Sample exchange:
 
@@ -131,7 +180,8 @@ Host: example.com
 The `mxid` scheme is a bit arbitrary here.
 The parameters in the URL should be percent-encoded, this was left unencoded for clarity.
 
-The benefits of this approach are that it is standard and decouples the authentication server from the Matrix server: different authentication servers could be used by different accounts on the server.
+The benefits of this approach are that it is standard and decouples the authentication server from the Matrix server:
+different authentication servers could be used by different accounts on the server.
 
 The downsides of this approach are:
 
@@ -140,7 +190,7 @@ The downsides of this approach are:
 
 ### Account management URL
 
-There is no standard in OIDC for the `account` field. If one was to be standardised in future then it would make sense to use that instead.
+There is no standard in OIDC for the `account` field. If one was to be standardised in the future then it would make sense to use that instead.
 
 ## Security considerations
 
@@ -148,4 +198,6 @@ None relevant.
 
 ## Unstable prefix
 
-While this MSC is not in a released version of the specification, clients should use the `org.matrix.msc2965.authentication` field in the client well-known discovery document instead of `m.authentication`.
+While this MSC is not in a released version of the specification,
+clients should use the `org.matrix.msc2965` unstable prefix for the endpoint,
+e.g. `GET /_matrix/client/unstable/org.matrix.msc2965/auth_issuer`.
