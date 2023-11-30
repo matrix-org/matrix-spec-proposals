@@ -78,7 +78,10 @@ easily compare whether an event is before or after a receipt.
 
 This order should be a number that is attached to an event by the server before
 it sends it to any client, and it should never change. It should,
-loosely-speaking, increase for "newer" messages within the same room. It may be
+loosely-speaking, increase for "newer" messages within the same room.
+
+The order of an event may be negative, and if so it is understood that this
+event is always read. The order included with a receipt should never be
 negative.
 
 The ordering must be consistent between a user's homeserver and all of that
@@ -167,6 +170,10 @@ should send the receipt at that time. Rationale: without the order, a receipt is
 not useful to the client since it is not able to use it to determine which
 events are read. If a receipt points at an unknown event, the safest assumption
 is that other events in the room are unread i.e. there is no receipt.
+
+If a receipt is received for an event with negative order, the server should set
+the order in the receipt to zero. All events with negative order are understood
+to be read.
 
 Note that the `order` property for a particular event will probably be the same
 for every user, so will be repeated multiple times in an aggregated receipt
