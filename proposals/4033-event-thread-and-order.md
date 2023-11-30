@@ -200,6 +200,9 @@ clarification:
 > there is no need to examine the pointed-to event: it is sufficient to compare
 > the `order` of the event in question with the `order` in the receipt.)
 
+Further, it should be stated that events with negative order are always read,
+even if no receipt exists.
+
 ### Redacted events
 
 Existing servers already include an `unsigned` section with redacted events,
