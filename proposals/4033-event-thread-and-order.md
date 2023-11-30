@@ -7,6 +7,10 @@ so it is difficult to decide whether an event is before or after a receipt.
 We propose adding an explicit order number to all events, so that it is clear
 which events are read.
 
+This proposal covers receipts, and not fully-read markers. Fully-read markers
+have the same issue in terms of ordering, and should probably be fixed in a
+similar way, but they are not addressed here.
+
 ## Motivation
 
 To decide whether a room is unread, a Matrix client must decide whether it
