@@ -61,7 +61,7 @@ An alternative would be to remove the current push rules API and have clients
 store all push rules in bulk. This would be subject to race conditions between
 clients.
 
-A sleight variation of the above would be to *additionally* define the `/account_data/m.push_rules`
+A slight variation of the above would be to *additionally* define the `/account_data/m.push_rules`
 endpoint as bulk modifying the push rules data. This could be seen as an alternative
 to [MSC3934](https://github.com/matrix-org/matrix-spec-proposals/pull/3934).
 
