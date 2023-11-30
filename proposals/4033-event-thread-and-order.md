@@ -203,6 +203,32 @@ clarification:
 Further, it should be stated that events with negative order are always read,
 even if no receipt exists.
 
+### Order does not have to be unique
+
+If this proposal required the `order` property to be unique within a room, it
+might inadvertantly put constraints on the implementation of servers since some
+linearised process would need to be involved.
+
+So, we do not require that `order` should be unique within a room. Instead, if
+two events have the same `order`, they are both marked as read by a receipt with
+that order.
+
+Events with identical order introduce some imprecision into the process of
+marking events as read, so they should be minimised where possible, but some
+overlap is tolerable where the server implementation requires it.
+
+So, a server might choose to use the epoch millisecond at which it received a
+message as its order. However, if a server receives a large batch of messages in
+the same millisecond, this might cause undesirable behaviour, so a refinement
+might be the millisecond as the integer part and a fractional part that
+increases as the batch is processed, preserving the order in which the server
+receives the messages in the batch.
+
+If a server were processing multiple batches in parallel, it could implement
+this in each process separately, and accept that some events would receive
+identical orders, but this would be rare in practice and have little effect on
+end users' experience of unread markers.
+
 ### Redacted events
 
 Existing servers already include an `unsigned` section with redacted events,
