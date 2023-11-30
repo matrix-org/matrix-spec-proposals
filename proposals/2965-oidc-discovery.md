@@ -145,6 +145,10 @@ Content-Type: application/json
 }
 ```
 
+This proposal, although implemented in some clients and in Synapse, has the downside of making the well-known discovery mandatory.
+When implemented in clients, in many circumstances it was hard to go back and use well-known discovery, as they may already know the homeserver URL.
+Since the authentication server is always tightly coupled to the homeserver (as opposed to the identity server), it makes sense to discover it via a Client-Server API endpoint.
+
 
 ### Discovery via the `m.login.oauth2` authentication method
 
