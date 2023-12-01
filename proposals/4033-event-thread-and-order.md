@@ -206,7 +206,7 @@ even if no receipt exists.
 ### Order does not have to be unique
 
 If this proposal required the `order` property to be unique within a room, it
-might inadvertantly put constraints on the implementation of servers since some
+might inadvertently put constraints on the implementation of servers since some
 linearised process would need to be involved.
 
 So, we do not require that `order` should be unique within a room. Instead, if
