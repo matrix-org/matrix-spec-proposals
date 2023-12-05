@@ -71,6 +71,9 @@ With consideration for extensible events, a new `m.poll` content block is define
   blocks might be added in the future. Clients should treat each entry similar to how they would an
   `m.message` event. The array is truncated to 20 maximum options.
 
+  Note that arrays are inherently ordered. Clients *should* render options in the order presented in
+  the array - a future MSC may add a flag to permit rendering in a different or random order.
+
 Together with content blocks from other proposals, an `m.poll.start` is described as:
 
 * **Required** - An `m.text` block to act as a fallback for clients which can't process polls.
@@ -121,10 +124,13 @@ additional blocks, however as per the extensible events system, receivers which 
 should not honour them.
 
 There is deliberately no textual or renderable fallback on poll responses: the intention is that clients
-which don't understand how to process these events will hide/ignore them.
+which don't understand how to process these events will hide/ignore them. This is to mirror what a
+client which *does* support polls would do: they wouldn't render each vote as a new message, but would
+aggregate them into a single result at the end of the poll. By not having a text fallback, the vote
+is only revealed when the poll ends, which does have a text fallback.
 
-Only a user's most recent vote (by `origin_server_ts`) is accepted, even if that event is invalid or
-redacted. Votes with timestamps after the poll has closed are ignored, as if they never happened. Note
+Only a user's most recent vote (by `origin_server_ts`) is accepted, even if that event is invalid.
+Votes with timestamps after the poll has closed are ignored, as if they never happened. Note
 that redaction currently removes the `m.relates_to` information from the event, causing the vote to be
 detached from the poll. In this scenario, the user's vote is *reverted* to its previous state rather
 than explicitly spoiled. To "unvote" or otherwise override the previous vote state, clients should send
@@ -171,7 +177,9 @@ Together with content blocks from other proposals, an `m.poll.end` is described 
 
 * **Required** - An `m.relates_to` block to form a reference relationship to the poll start event.
 * **Required** - An `m.text` block to act as a fallback for clients which can't process polls.
-* **Optional** - An `m.poll.results` block to show the sender's perspective of the vote results.
+* **Optional** - An `m.poll.results` block to show the sender's perspective of the vote results. This
+  should not be used as a trusted block, but rather as a placeholder while the client's local results
+  are tabulated.
 
 The above describes the minimum requirements for sending an `m.poll.end` event. Senders can add additional
 blocks, however as per the extensible events system, receivers which understand poll events should not
@@ -382,7 +390,8 @@ and naming of fields changed. The differences are:
 * For `m.poll.start` / `org.matrix.msc3381.poll.start`:
   * `m.text` throughout becomes a single string, represented as `org.matrix.msc1767.text`
   * `m.poll` becomes `org.matrix.msc3381.poll.start`, retaining all other fields as described. Note the `m.text`
-    under `question` and `answers`, and the `org.matrix.msc3381.poll` prefix for `kind` enum values.
+    under `question` and `answers`, and the `org.matrix.msc3381.poll` prefix for `kind` enum values. `m.id` under
+    `answers` additionally becomes `id`, without prefix.
 * For `m.poll.response` / `org.matrix.msc3381.poll.response`:
   * `m.selections` becomes an `org.matrix.msc3381.poll.response` object with a single key `answers` being the
     array of selections.
@@ -444,3 +453,15 @@ Examples of unstable events are:
   }
 }
 ```
+
+### Implementation considerations
+
+Client authors should note that as a feature using the Extensible Events system,
+usage of the *stable* event types in regular room versions is not permitted. As
+of writing (December 2023), Extensible Events does not have a *stable* room version
+which supports such events, therefore meaning that clients will have to use the
+*unstable* event types if they intend to support polls in existing room versions.
+
+When Extensible Events as a system is released in a dedicated room version, clients
+will be able to use the stable event types there. The unstable event types should
+not be used in that dedicated room version.
