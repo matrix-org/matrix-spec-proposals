@@ -211,7 +211,8 @@ The downsides of this approach are:
 
 ### Account management URL
 
-There is no standard in OIDC for the `account` field. If one was to be standardised in the future then it would make sense to use that instead.
+There is no current OIDC standard for account management URLs.
+If one gets defined, this proposal could be extended to use it instead of defining a new one.
 
 ## Security considerations
 
