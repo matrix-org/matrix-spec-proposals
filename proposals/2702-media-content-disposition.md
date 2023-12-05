@@ -40,13 +40,11 @@ For `/thumbnail`:
 * `Content-Disposition` SHOULD include a server-generated `filename`. For example, `thumbnail.png`.
 
 Note that in both endpoints `Content-Disposition` becomes required, though the legal set of parameters is
-intentionally different. Note also that by restricting `/thumbnail` to `inline` it reduces the allowed set
-of `Content-Type` options the server can use, as per below.
+intentionally different. Specifically, because `/thumbnail` returns server-generated content, that content
+is safe to serve inline relative to a given user upload and therefore can be inline. It is however atypical
+for a client to link to `/thumbnail` directly, but in the event they do we provide a safe default.
 
-It's not typical for a client to link to `/thumbnail` in a way which makes use of `Content-Disposition`, but
-in the event that a client does (and for consistency within the spec), we ensure a safe default is used.
-
-When `Content-Disposition` is `inline`, the `Content-Type` MUST be one of the following mimetypes:
+When `Content-Disposition` is `inline`, the `Content-Type` SHOULD be one of the following mimetypes:
 
 * `text/css`
 * `text/plain`
@@ -75,15 +73,12 @@ When `Content-Disposition` is `inline`, the `Content-Type` MUST be one of the fo
 * `audio/flac`
 * `audio/x-flac`
 
-If the content to be returned does *not* match these types, it MUST be returned as `attachment` (or in the
+If the content to be returned does *not* match these types, it SHOULD be returned as `attachment` (or in the
 case of `/thumbnail`, not returned at all).
 
-Servers SHOULD NOT rely on the `Content-Type` supplied to `/upload` to determine `Content-Disposition`. Instead,
-the content should be "sniffed" to determine appropriate type. To effect this layered protection, servers which
-do not sniff for `Content-Type` SHOULD NOT use `Content-Disposition: inline`.
-
 `Content-Type` additionally becomes a required header on both `/download` and `/thumbnail`, as `Content-Disposition`
-without `Content-Type` is effectively useless in HTTP.
+without `Content-Type` is effectively useless in HTTP. The `Content-Type` header is the `Content-Type` supplied by
+the client during `/upload`.
 
 For clarity, a server is *not* required to use `inline` on `/download`. Clients SHOULD assume that a server will
 always use `attachment` instead.
