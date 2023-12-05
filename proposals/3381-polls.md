@@ -143,17 +143,17 @@ To close a poll, a user sends an `m.poll.end` event into the room. An example be
       "rel_type": "m.reference",
       "event_id": "$poll_start_event_id"
     },
-  },
-  "m.text": [{
-    // Simple text is used as a fallback for text-only clients which don't understand polls. Specific formatting is
-    // not specified, however something like the following is likely best.
-    "body": "The poll has closed. Top answer: Poutine 🍟"
-  }],
-  "m.poll.results": { // optional
-    "pizza": 5,
-    "poutine": 8,
-    "italian": 7,
-    "wings": 6
+    "m.text": [{
+      // Simple text is used as a fallback for text-only clients which don't understand polls. Specific formatting is
+      // not specified, however something like the following is likely best.
+      "body": "The poll has closed. Top answer: Poutine 🍟"
+    }],
+    "m.poll.results": { // optional
+      "pizza": 5,
+      "poutine": 8,
+      "italian": 7,
+      "wings": 6
+    }
   }
 }
 ```
