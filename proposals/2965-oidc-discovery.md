@@ -59,7 +59,8 @@ Content-Type: application/json
   "grant_types_sypported": ["authorization_code", "refresh_token"],
   "response_mode_sypported": ["query", "fragment"],
   "account_management_uri": "https://account.example.com/myaccount",
-  "account_management_actions_supported": ["org.matrix.profile", "org.matrix.sessions_list", "org.matrix.session_view", "org.matrix.session_end"],
+  "account_management_actions_supported": ["org.matrix.profile", "org.matrix.sessions_list", 
+                                           "org.matrix.session_view", "org.matrix.session_end"],
   // some fields omitted
 }
 ```
