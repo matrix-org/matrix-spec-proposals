@@ -1,26 +1,29 @@
 # MSC4023: Thread ID for second-order relation
 
-[MSC3981](https://github.com/matrix-org/matrix-spec-proposals/pull/3981) defines
-a way to recursively load relations in a thread context. However this does not
-let clients determine with certainty in what timeline an event coming from a `/sync`
-should end up in.
-
-If the related event is unknown to the client, the only way to partition things
-correctly is to fetch the related event and confirm whether this event belongs to
-a thread or not.
+Events that have a non-thread relation to other events (eg. reactions) are
+considered to be in the thread that their parent event is in.
+[MSC3981](https://github.com/matrix-org/matrix-spec-proposals/pull/3981)
+defines a way to recursively load such relations with the `/relations` API
+but for such events, it is impossible for a client to know what thread the
+event is in when it arrives from `/sync` unless it already has, or fetches,
+the parent event. This means performing another client-server API request to
+fetch the parent event which is inefficient.
 
 This proposal wants to reduce the amount of work required for clients to partition
-events with certainty in a time efficient manner.
+events with certainty.
 
 ## Proposal
 
-All events in a thread and the second-order relation events should add a `thread_id`
-property in their `unsigned` field definition, referencing the thread root – as
-defined in MSC3440.
+Whenever a server returns events in the client-server API, it adds a `thread_id`
+property to the `unsigned` field of the event with the ID of the event's thread root
+as defined in MSC3440. This applies to any endpoint that returns events including
+`/sync` and `/messages`.
 
 ```jsonc
 {
-  "thread_id": "$event_id"
+  "unsigned": {
+    "thread_id": "$event_id"
+  }
 }
 ```
 
@@ -28,9 +31,7 @@ All events that are not part of a thread should fill the `thread_id` property wi
 the special value `main` – as defined in MSC3771.
 
 If a server does not have the first-order event, the unsigned `thread_id` property
-should be filled with a `null` value. When the server gets a hold of the first-order
-event, it should retroactively update the `thread_id` property and communicate the
-change to clients.
+should be filled with a `null` value.
 
 ## Potential issues
 
@@ -48,7 +49,9 @@ yet received the event being reacted to).
 ## Alternatives
 
 If "[MSC3051: A scalable relation format](https://github.com/matrix-org/matrix-spec-proposals/pull/3051)"
-was to be adopted, this MSC would be nulled.
+were to be adopted, second-order relations could specify their thread directly as one of the relationships,
+in which case this MSC would become unnecessary. However, that MSC is a longer term evolution of the protocol
+and will take time for the ecosystem to adopt. This MSC is intended as a much shorter term fix.
 
 ## Security considerations
 
