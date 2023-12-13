@@ -10,27 +10,23 @@ Threads was one of the first usages of this API that allowed nested relations -
 an event may have an [`m.reaction`] or [`m.replace`] relation to another event, 
 which in turn may have an `m.thread` relation to the thread root.
 
-This forms a tree of relations, which can currently only be traversed 
-efficiently in hierarchical, but not in chronological order. Yet, for some
-functionality – e.g., to determine which event a read receipt should 
-reference as per [MSC3771] – chronological order is necessary.
+This forms a tree of relations. A client wanting to display a thread will want
+to display reactions and edits to messages in the thread, and will therefore need
+the second-order related events in addition to just the events with a direct thread
+relation to the root.
 
-Previously, clients would be unable to obtain a consistent ordering of
-events in threads or related to threads.  
-Workarounds such as sending a separate `/relations` request per individual 
-message in each thread are only able to approximate the actual ordering,
-as they rely on timestamps.
-
-If a homeserver announces support for this feature, a client can stop this 
-fallback behavior and instead just append the recurse parameter to the initial 
-request.
+Clients can recursively perform the /relations queries on each event but this is
+very slow and does not give the client any information on how the events are ordered
+for the purpose of sending read receipts.
 
 ## Proposal
 
 It is proposed to add the `recurse` parameter to the `/relations` API, defined
 as follows:
 
-> Whether to include events which relate only indirectly to the given event.
+> Whether to additionally include events which only relate indirectly to the
+> given event,
+> ie. events related to the root events via one or more direct relationships.
 > 
 > If set to false, only events which have direct a relation with the given 
 > event will be included.
@@ -39,34 +35,31 @@ as follows:
 > events that relate to the given event, will be included.
 >
 > It is recommended that at least 3 levels of relationships are traversed. 
-> Implementations should be careful to not infinitely recurse.
+> Implementations may perform more but should be careful to not infinitely recurse.
 >
 > One of: `[true false]`.
 
 In order to be backwards compatible the `recurse` parameter must be
 optional (defaulting to `false`).
 
-In this situation, topological ordering is intended to refer to the same
-ordering that would be applied to the events when requested via the `/messages`
-api given the same `dir` parameter.
-
 Regardless of the value of the `recurse` parameter, events will always be 
-returned in topological ordering. Pagination and limiting shall also apply to 
-topological ordering.
+returned in topological ordering, ie. the same order in which the `/messages` API
+would return them (given the same `dir` parameter).
 
-Filters specified via `event_type` or `rel_type` will be applied to leaves 
-and intermediate events on the graph formed by the related events.  
-Events that would match the filter, but whose only relation to the original 
-given event is through a non-matching intermediate event, will not be included.
+Filters specified via `event_type` or `rel_type` will be applied to all events
+returned, whether direct or indirect relations. Events that would match the filter,
+but whose only relation to the original given event is through a non-matching
+intermediate event, will not be included. This means that supplying a `rel_type`
+parameter of `m.thread` is not appropriate for fetching all events in a thread since
+relations to the threaded events would be filtered out. For this purpose, clients should
+omit the `rel_type` parameter and perform any necessary filtering on the client side.
 
 ## Potential issues
 
 Naive implementations might be tempted to provide support for this parameter
 through a thin shim which is functionally identical to the client doing 
-separate recursive `/relations` requests itself. This is ill-advised.
-
-Such an implementation would, given a specifically crafted set of events, 
-allow a client to cause unreasonable load.
+separate recursive `/relations` requests itself. However this would allow a
+client to craft a set of events that would cause unreasonable load.
 
 ## Alternatives
 
