@@ -126,7 +126,8 @@ return `[G, E]`.
 ### While the MSC is not yet part of a spec version
 
 During this period, to detect server support, clients should check for the
-presence of the `org.matrix.msc3981` flag in unstable_features on `/versions`.
+presence of the `org.matrix.msc3981` flag in the `unstable_features` map
+on [`/versions`](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclientversions).
 
 Clients are also required to use `org.matrix.msc3981.recurse` in place
 of `recurse` at this time.
