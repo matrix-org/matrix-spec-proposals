@@ -17,7 +17,7 @@ in good faith so far.
 
 ## Potential issues
 
-As mentioned, some media may have been uploaded with the wrong type or with an interpretted one. It
+As mentioned, some media may have been uploaded with the wrong type or with an interpreted one. It
 is presumed that media up until this point is roughly close enough to be considered backwards
 compatible.
 
