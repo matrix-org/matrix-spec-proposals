@@ -26,7 +26,7 @@ The content types which are able to be animated is left as an implementation det
 SHOULD be supported at a minimum, however:
 
 * `image/gif`
-* `image/png` ("APNG" format)
+* `image/png` or `image/apng` ("APNG" format)
 * `image/webp`
 
 The returned content type for an animated thumbnail is additionally left as an implementation detail,
