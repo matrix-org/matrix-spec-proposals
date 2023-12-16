@@ -7,7 +7,7 @@ the common ask is frequent enough to warrant an MSC.
 
 By specifying `animated=true` in the query string for a `/thumbnail`, the server SHOULD return
 an animated thumbnail for the media if possible. When the parameter is `false` the server SHOULD NOT
-attempt to generate a thumbnail, as many implementation do today.
+attempt to generate an animated thumbnail, as many implementations do today.
 
 If the server supports the flag, it MUST support animating the following mimetypes:
 * `image/gif`
