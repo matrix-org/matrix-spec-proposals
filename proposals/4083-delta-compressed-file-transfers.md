@@ -102,7 +102,7 @@ DoS by using async uploads to create a cycle
 
 ## Unstable prefix
 
-| Param        | Unstabled param                  | 
+| Param        | Unstable prefixed param          | 
 | ------------ | -------------------------------- |
 | delta_base   | org.matrix.msc4083.delta_base    |
 | delta_format | org.matrix.msc4083.delta_format  |
