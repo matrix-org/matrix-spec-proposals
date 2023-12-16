@@ -1,49 +1,59 @@
 # MSC2701: Media and the `Content-Type` relationship
 
-Currently clients and servers handle the `Content-Type` header differently depending on implementation.
-This proposal aims to simplify and standardize what they should be doing instead.
+The specification currently does not outline in great detail how `Content-Type` should be handled
+with respect to media, particularly around uploads. The [`POST /upload`](https://spec.matrix.org/v1.9/client-server-api/#post_matrixmediav3upload)
+and [`PUT /upload/:serverName/:mediaId`](https://spec.matrix.org/v1.9/client-server-api/#put_matrixmediav3uploadservernamemediaid)
+endpoints mention that `Content-Type` is a header that can be set, but does not list it as required,
+for example. Similarly, the `Content-Type` seems to entirely disappear when talking about
+[downloads](https://spec.matrix.org/v1.9/client-server-api/#get_matrixmediav3downloadservernamemediaid).
+
+This proposal clarifies how the `Content-Type` header is used on upload and download, in line with
+current best practices among server implementations.
 
 ## Proposal
 
-The `Content-Type` header becomes explicitly specified as the source of truth for the media which is
-being uploaded. When this is not provided, servers MUST assume the type is `application/octet-stream`.
+For `POST` and `PUT` `/upload`, the `Content-Type` header becomes explicitly *optional*, defaulting
+to `application/octet-stream`. [Synapse](https://github.com/element-hq/synapse/blob/742bae3761b7b2c638975f853ab6161527629240/synapse/rest/media/upload_resource.py#L91)
+and [MMR](https://github.com/turt2live/matrix-media-repo/blob/fdb434dfd8b7ef7d93401d7b86791610fed72cb6/api/r0/upload_sync.go#L33)
+both implement this behaviour. Clients SHOULD always supply a `Content-Type` header though, as this
+may change in future iterations of the endpoints.
 
-Servers can still sniff the content type for restriction purposes, however when serving the file back
-to callers the `Content-Type` header must remain intact.
+**Note**: Synapse's behaviour was changed in October 2021 with [PR #11200](https://github.com/matrix-org/synapse/pull/11200).
+Previously, Synapse required the header.
 
-The `Content-Type` header used during upload MUST be echoed back on `/download`. For existing media
-this obviously may not be possible, however most clients have uploaded media with the right `Content-Type`
-in good faith so far.
+For `GET /download`, the server MUST return a `Content-Type` which is either exactly the same as the
+original upload, or reasonably close. The bounds of "reasonable" are:
+
+* Adding a `charset` to `text/*` content types.
+* Detecting HTML and using `text/html` instead of `text/plain`.
+* Using `application/octet-stream` when the server determines the content type is obviously wrong. For
+  example, an encrypted file being claimed as `image/png`.
+* Returning `application/octet-stream` when the media has an unknown/unprovided `Content-Type`. For
+  example, being uploaded before the server tracked content types or when the remote server is non-compliantly
+  omitting the header entirely.
+
+Actions not in the spirit of the above are not considered "reasonable". Existing server implementations
+are encouraged to downgrade their behaviour to be in line with this guidance. [Synapse](https://github.com/element-hq/synapse/blob/742bae3761b7b2c638975f853ab6161527629240/synapse/media/_base.py#L154)
+already does very minimal post-processing while [MMR](https://github.com/turt2live/matrix-media-repo/blob/fdb434dfd8b7ef7d93401d7b86791610fed72cb6/api/_routers/98-use-rcontext.go#L110-L139)
+actively ignores the uploaded `Content-Type` (the incorrect thing to do under this MSC).
 
 ## Potential issues
 
-As mentioned, some media may have been uploaded with the wrong type or with an interpreted one. It
-is presumed that media up until this point is roughly close enough to be considered backwards
-compatible.
-
-Servers which do opt to sniff the content type will run into issues when the media is encrypted. Encrypted
-media has a possibility of falsely flagging as another content type even when specified by the caller
-as a binary blob.
+Some media may have already been uploaded to a server without a content type. Such media items are
+returned as `application/octet-stream` under this proposal.
 
 ## Alternatives
 
-We could continue to allow unexpected behaviour, however in the spririt of standardization this feels
-wrong.
+No significant alternatives.
 
 ## Security considerations
 
-Some content types have known or possible vulnerabilities when served with specific types. Servers
-SHOULD be cautious of potential mismatches, potentially blocking uploaders if the sniffed type does
-not reasonably match the provided type.
-
-The risk of a wrong `Content-Type` being used for malicious purposes is considered acceptable by this
-proposal due to the fact that an attacker can always package their content in an approved/plausible
-container, such as a ZIP file.
+No relevant security considerations, though server authors are encouraged to consider the impact of
+[MSC2702](https://github.com/matrix-org/matrix-spec-proposals/pull/2702) in their threat model.
 
 ## Unstable prefix
 
-No unstable prefix is required for this MSC thanks to backwards compatibility.
+This MSC is backwards compatible with existing specification and requires no particular unstable
+prefix. Servers are already able to implement this proposal's behaviour legally.
 
-## Implementations
-
-Currently matrix-media-repo and Synapse are both known to do this echoing.
+Additionally, cited in the proposal are examples of the behaviour being used in production today.
