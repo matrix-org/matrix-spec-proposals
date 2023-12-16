@@ -27,12 +27,17 @@ Upload endpoints:
 
 For `/download`:
 
-* `Content-Disposition` MUST be returned, and MUST be one of `inline` or `attachment` (see below).
-* `Content-Disposition` MUST include the `filename` from the originating `/upload` endpoint. If the media
-  being downloaded is remote, the `filename` from the remote server's `Content-Disposition` header MUST
-  be used.
+* `Content-Disposition` MUST be returned, and MUST be one of `inline` or `attachment`.
 
-  * For backwards compatibility reasons, clients cannot assume that a `filename` will be present.
+  * `inline` should be used when one of the "safe" content types listed below is being served.
+
+* When uploads are made with a `filename`, the `Content-Disposition` header MUST contain the same
+  `filename`. Otherwise, `filename` is excluded from the header.
+
+  * If the media being downloaded is remote, the remote server's `filename` in the `Content-Disposition`
+    header is used as the `filename` instead. When the header is not supplied, or does not supply a
+    `filename`, the local download response does not include a `filename` (though does still contain
+    a generated `Content-Disposition`).
 
 For `/thumbnail`:
 
@@ -44,7 +49,9 @@ intentionally different. Specifically, because `/thumbnail` returns server-gener
 is safe to serve inline relative to a given user upload and therefore can be inline. It is however atypical
 for a client to link to `/thumbnail` directly, but in the event they do we provide a safe default.
 
-When `Content-Disposition` is `inline`, the `Content-Type` SHOULD be one of the following mimetypes:
+The following content types are considered "safe" for `inline` usage. For `/download`, servers SHOULD
+use `attachment` if the returned `Content-Type` is not on the list. For `/thumbnail`, servers SHOULD
+only generate thumbnails with a `Content-Type` listed below.
 
 * `text/css`
 * `text/plain`
@@ -73,15 +80,13 @@ When `Content-Disposition` is `inline`, the `Content-Type` SHOULD be one of the 
 * `audio/flac`
 * `audio/x-flac`
 
-If the content to be returned does *not* match these types, it SHOULD be returned as `attachment` (or in the
-case of `/thumbnail`, not returned at all).
-
 `Content-Type` additionally becomes a required header on responses to both `/download` and `/thumbnail`, as `Content-Disposition`
 without `Content-Type` is effectively useless in HTTP. The `Content-Type` header is the `Content-Type` supplied by
-the client during `/upload`.
+the client during `/upload`. If no `Content-Type` was supplied during upload, `application/octet-stream` is used.
 
-For clarity, a server is *not* required to use `inline` on `/download`. Clients SHOULD assume that a server will
-always use `attachment` instead.
+Clients SHOULD NOT rely on servers returning `inline` rather than `attachment` on `/download`. Server
+implementations might decide out of an abundance of caution that all downloads are responded to with
+`attachment`, regardless of content type - clients should not be surprised by this behaviour.
 
 ## Potential issues
 
