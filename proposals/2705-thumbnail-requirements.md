@@ -1,60 +1,52 @@
 # MSC2705: Animated thumbnails
 
-Some clients would like animated versions of media for thumbnail purposes. The use cases vary, however
-the common ask is frequent enough to warrant an MSC.
+Users may already upload animated media to the media repository, such as gifs, webp images, and videos.
+When this media is used in an event or avatar, many clients are stuck with a static thumbnail until
+the user clicks on it to get the full, unedited, file. Some clients however would prefer to show an
+animated thumbnail in certain conditions, like when the user is hovering over the message or avatar.
+
+This proposal introduces a new query parameter to the [`GET /_matrix/media/v3/thumbnail`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)
+endpoint, allowing clients to specifically request an animated thumbnail.
 
 ## Proposal
 
-By specifying `animated=true` in the query string for a `/thumbnail`, the server SHOULD return
-an animated thumbnail for the media if possible. When the parameter is `false` the server SHOULD NOT
-attempt to generate an animated thumbnail, as many implementations do today.
+A new query parameter, `animated`, is added to the `/thumbnail` endpoint. It has the following behaviour:
 
-If the server supports the flag, it MUST support animating the following mimetypes:
+* When `true`: the server SHOULD return an animated thumbnail if possible/supported.
+* When `false`: the server MUST NOT return an animated thumbnail.
+* When not provided: the server SHOULD NOT return an animated thumbnail.
+
+The default case is a relaxed version of the `false` behaviour to allow server owners to customize the
+default behaviour when their users' clients do not support requesting animated thumbnails.
+
+Clients SHOULD respect a user's preference to [reduce motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+and request non-animated thumbnails in these cases.
+
+The content types which are able to be animated is left as an implementation detail. The following
+SHOULD be supported at a minimum, however:
+
 * `image/gif`
-* `image/png` (for animated PNGs - non-animated PNGs cannot be supported)
+* `image/png` ("APNG" format)
+* `image/webp`
 
-Other potential formats include videos and other image types - servers can support additional types
-at their discretion.
+The returned content type for an animated thumbnail is additionally left as an implementation detail,
+though servers SHOULD use `image/webp` whenever possible.
 
-If media cannot be animated, a static thumbnail should be returned instead. For example, if the client
-requests `?animated=true` on a JPEG the server should not error but instead just return the downsized
-JPEG as though the request was `?animated=false`.
-
-When thumbnailing, servers SHOULD return one of the following types:
-* `image/jpeg` (or `image/jpg`)
-* `image/png` (non-animated)
-* `image/gif` (animated)
-
-The server's discretion about which one to use is trusted here. Servers can return alternative formats,
-however currently it is strongly recommended that servers do not deviate from the set described here.
-
-The default for `animated` is intentionally left undefined due to a variety of use cases within the
-ecosystem which could demand that either `true` or `false` be preferred. Instead of picking a value,
-servers SHOULD NOT animate thumbnails by default, but are not required to respect this condition. An
-example use case would be a chat platform which is based on Matrix advertising the feature and wanting
-to use pre-existing clients. They could go around and fork all the Matrix clients out there, or they
-could have their server return a GIFs for everything.
-
-## Potential issues
-
-Server load could increase when the server tries to thumbnail a large file. Servers are expected to
-mitigate this on their own, such as by providing an option to disable the feature or limiting how/when
-they will animate the media.
+When media cannot be animated, such as a PDF or JPEG, the server should return a thumbnail as though
+`animated` was `false`.
 
 ## Alternatives
 
-None that have presented themselves as reasonable.
+No significant alternatives.
 
 ## Security considerations
 
-As mentioned, servers could face resource issues if this feature is left unchecked.
+Server load could increase when the server tries to thumbnail a large file. Servers are expected to
+mitigate this on their own by providing an option to disable the feature or limiting how/when
+they will animate the media.
 
 ## Unstable prefix
 
-While this MSC is not in a released version of the spec, implementations should use `org.matrix.msc2705`
-as a prefix. For example, `?org.matrix.msc2705.animated=true`. No unstable endpoints are required due
-to backwards compatibility.
-
-## Implementations
-
-This MSC is already implemented by matrix-media-repo.
+While this proposal is not considered stable, `animated` is specified as `org.matrix.msc2705.animated`
+on requests. No unstable endpoints are required due to backwards compatibility being built-in to the
+proposal.
