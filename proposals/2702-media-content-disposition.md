@@ -1,6 +1,6 @@
 # MSC2702: `Content-Disposition` usage in the media repo
 
-The current specification does not clarify how to treat `Content-Disposition` on
+The current specification does not clarify how to treat `Content-Disposition` on responses to
 [`/download`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3downloadservernamemediaid)
 and [`/thumbnail`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)
 requests. Some clients expect attachments to be `download` only (or don't care), while other applications
@@ -76,7 +76,7 @@ When `Content-Disposition` is `inline`, the `Content-Type` SHOULD be one of the 
 If the content to be returned does *not* match these types, it SHOULD be returned as `attachment` (or in the
 case of `/thumbnail`, not returned at all).
 
-`Content-Type` additionally becomes a required header on both `/download` and `/thumbnail`, as `Content-Disposition`
+`Content-Type` additionally becomes a required header on responses to both `/download` and `/thumbnail`, as `Content-Disposition`
 without `Content-Type` is effectively useless in HTTP. The `Content-Type` header is the `Content-Type` supplied by
 the client during `/upload`.
 
