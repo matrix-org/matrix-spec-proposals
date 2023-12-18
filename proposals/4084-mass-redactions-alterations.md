@@ -2,7 +2,7 @@
 
 [MSC2244](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2244-mass-redactions.md)
 introduces an idea of "mass redactions", where a single redaction event can target more than one event.
-This provides signficantly improved performance when dealing with large volumes of spam or redacting
+This provides significantly improved performance when dealing with large volumes of spam or redacting
 one's own messages, but is also irreversible.
 
 This proposal amends MSC2244 to accommodate previously-undisclosed security considerations.
