@@ -18,7 +18,7 @@ In Matrix, there are two types of thumbnails:
 
 This distinction exists because server-side generated thumbnails cannot be served in encrypted rooms or for media types other than `m.image`.
 
-### Reasons behind API changes
+### Reasons behind these changes
 
 The Matrix specification currently does not take into account that clients may benefit from receiving content in formats
 that align with their capabilities. By introducing media negotiation mechanisms, Matrix can enhance the client experience
