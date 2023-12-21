@@ -19,11 +19,26 @@ but that's no good if the token it's using is always the same.
 
 ## Proposal
 
-The most straight forward solution would be to directly expose the underlying errors on POST `/pushers`. We cannot know
-beforehand what the final service used is so we shouldn't attempt to wrap errors and just rely on HTTP semantics. 
+The most straight forward solution would be to expose the underlying errors on POST `/pushers` to the final clients. We cannot know
+beforehand what the actual push notification service used is so we shouldn't attempt to map errors but we should return Matrix specific ones.
 
-An alternative would be to keep current 400 error format but with an `M_UNKNOWN` `errcode` and `error` that contains the
-underlying response (if any). 
+As such, we introduce 2 new fields to the standard error response: 
+
+* `upstream_errcode` (String) - upstream error code. Intentionally generic to allow for error codes other than HTTP
+* `upstream_error` (String) - a description of the error, also generic. May not be a human readable string, such as HTML, XML, or encoded binary depending on the upstream system.
+
+Example: 
+
+```
+{
+  "errcode": "M_UNKNOWN",
+  "error": "Unable to register pusher",
+  "upstream_errcode": "410", // intentionally a string, to allow for `GOOG_FAIL` or whatever else goes on in the wild
+  "upstream_error": "Words from the upstream about what a 410 actually means"
+}
+```
+
+Homeservers can decide to sanitise the upstream errors but that normally shouldn't be the case.
 
 Exposing these errors would allow the application to handle token expirations every time it would normally register a
 pusher. For example if the app normally registers a pusher every time it becomes active then the number of users
