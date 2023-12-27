@@ -92,7 +92,7 @@ Some tips for MSC writing:
 
 * Please wrap your lines to 120 characters maximum.
   This allows readers to review your markdown without needing to horizontally
-  scroll back and forth. Many markdown text editors have this a feature.
+  scroll back and forth. Many markdown text editors have this feature.
 * If you are referencing an existing endpoint in the spec, or another MSC, it
   is very helpful to add a link to them so the reader does not need to search
   themselves. Examples:
