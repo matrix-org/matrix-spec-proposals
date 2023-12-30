@@ -1,51 +1,86 @@
-# WIP: MSC4016: Streaming E2EE file transfer with random access and zero latency
+# MSC4016: Streaming E2EE file transfer with random access and zero latency
 
 ## Problem
 
-* File transfers currently take twice as long as they could, as they must first be uploaded in their entirety to the sender’s server before being downloaded via the receiver’s server.
-* As a result, relative to a dedicated file-copying system (e.g. scp) they feel sluggish. For instance, you can’t incrementally view a progressive JPEG or voice or video file as it’s being uploaded for “zero latency” file transfers.
+* File transfers currently take twice as long as they could, as they must first be uploaded in their entirety to the
+  sender’s server before being downloaded via the receiver’s server.
+* As a result, relative to a dedicated file-copying system (e.g. scp) they feel sluggish. For instance, you can’t
+  incrementally view a progressive JPEG or voice or video file as it’s being uploaded for “zero latency” file
+  transfers.
 * You can’t skip within them without downloading the whole thing (if they’re streamable content, such as an .opus file)
-* For instance, you can’t do realtime broadcast of voice messages via Matrix, or skip within them (other than splitting them into a series of separate file transfers).
-* Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third Room to edit a scene, you want all participants to be able to receive the data and stream-decode it with minimal latency.
+* For instance, you can’t do realtime broadcast of voice messages via Matrix, or skip within them (other than splitting
+  them into a series of separate file transfers).
+* Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third
+  Room to edit a scene, you want all participants to be able to receive the data and stream-decode it with minimal
+  latency.
 
 Closes [https://github.com/matrix-org/matrix-spec/issues/432](https://github.com/matrix-org/matrix-spec/issues/432) 
 
-N.B. this MSC is *not* needed to do a streaming decryption or encryption of E2EE files (as opposed to streaming transfer).  The current APIs let you stream a download of AES-CTR data and incrementally decrypt it without loading the whole thing into RAM, calculating the hash as you go, and then either surfacing or deleting the decrypted result at the end if the hash matches.
+N.B. this MSC is *not* needed to do a streaming decryption or encryption of E2EE files (as opposed to streaming
+transfer).  The current APIs let you stream a download of AES-CTR data and incrementally decrypt it without loading the
+whole thing into RAM, calculating the hash as you go, and then either surfacing or deleting the decrypted result at the
+end if the hash matches.
 
-Relatedly, v2 MXC attachments can't be stream-transferred, even if combined with [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246), given you won't be able to send the hash in the event contents until you've uploaded the media.
+Relatedly, v2 MXC attachments can't be stream-transferred, even if combined with [MSC2246]
+(https://github.com/matrix-org/matrix-spec-proposals/pull/2246), given you won't be able to send the hash in the event
+contents until you've uploaded the media.
 
 ## Solution sketch
 
 * Upload content in a single file made up of contiguous blocks of AES-GCM content.
     * Typically constant block size (e.g. 32KB)
-    * Or variable block size (to allow time-based blocksize for low-latency seeking in streamable content) - e.g. one block per opus frame.  Otherwise a 32KB block ends up being 8s of typical opus latency.
-        * This would then require a registration sequence to identify the starts of blocks boundaries when seeking randomly (potentially escaping the bitstream to avoid registration code collisions).
-* Unlike today’s AES-CTR attachments, AES-GCM makes the content self-authenticating, in that it includes an authentication tag (AEAD) to hash the contents and protect against substitution attacks (i.e. where an attacker flips some bits in the encrypted payload to strategically corrupt the plaintext, and nobody notices as the content isn’t hashed).
-    * (The only reason Matrix currently uses AES-CTR is that native AES-GCM primitives weren’t widespread enough on Android back in 2016)
-* To prevent against reordering attacks, each AES-GCM block has to include an encrypted block header which includes a sequence number, so we can be sure that when we request block N, we’re actually getting block N back - or equivalent.
-    * XXX: is there still a vulnerability here? Other approaches use Merkle trees to hash the AEADs rather than simple sequence numbers, but why?
-* We then use normal [HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek while downloading
-* We could also use [Youtube-style](https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol) off-standard Content-Range headers on POST when uploading for resumable/incremental uploads.
+    * Or variable block size (to allow time-based blocksize for low-latency seeking in streamable content) - e.g. one
+      block per opus frame.  Otherwise a 32KB block ends up being 8s of typical opus latency.
+        * This would then require a registration sequence to identify the starts of blocks boundaries when seeking
+          randomly (potentially escaping the bitstream to avoid registration code collisions).
+* Unlike today’s AES-CTR attachments, AES-GCM makes the content self-authenticating, in that it includes an
+  authentication tag (AEAD) to hash the contents and protect against substitution attacks (i.e. where an attacker flips
+  some bits in the encrypted payload to strategically corrupt the plaintext, and nobody notices as the content isn’t
+  hashed).
+    * (The only reason Matrix currently uses AES-CTR is that native AES-GCM primitives weren’t widespread enough on
+      Android back in 2016)
+* To prevent against reordering attacks, each AES-GCM block has to include an encrypted block header which includes a
+  sequence number, so we can be sure that when we request block N, we’re actually getting block N back - or
+  equivalent.
+    * XXX: is there still a vulnerability here? Other approaches use Merkle trees to hash the AEADs rather than simple
+      sequence numbers, but why?
+* We then use normal [HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek while
+  downloading
+* We could also use [Youtube-style]
+  (https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol) off-standard Content-Range headers
+  on POST when uploading for resumable/incremental uploads.
 
 ## Advantages
 
 * Backwards compatible with current implementations at the HTTP layer
 * Fully backwards compatible for unencrypted transfers
-* Relatively minor changes needed from AES-CTR to sequence-of-AES-GCM-blocks for implementations like [https://github.com/matrix-org/matrix-encrypt-attachment](https://github.com/matrix-org/matrix-encrypt-attachment)  
-* We automatically maintain a serverside E2EE store of the file as normal, while also getting 1:many streaming semantics
+* Relatively minor changes needed from AES-CTR to sequence-of-AES-GCM-blocks for implementations like
+  [https://github.com/matrix-org/matrix-encrypt-attachment](https://github.com/matrix-org/matrix-encrypt-attachment)  
+* We automatically maintain a serverside E2EE store of the file as normal, while also getting 1:many streaming
+  semantics
 * Provides streaming transfer for any file type - not just media formats
-* Minimises memory usage in Matrix clients for large file transfers. Currently all(?) client implementations store the whole file in RAM in order to check hashes and then decrypt, whereas this would naturally lend itself to processing files incrementally in blocks.
+* Minimises memory usage in Matrix clients for large file transfers. Currently all(?) client implementations store the
+  whole file in RAM in order to check hashes and then decrypt, whereas this would naturally lend itself to processing
+  files incrementally in blocks.
 * Leverages AES-GCM’s existing primitives and hashing rather than inventing our own hashing strategy
-* We already had Range/Content-Range resumable/seekable zero-latency HTTP transfer implemented and working excellently pre-E2EE and pre-Matrix in our ‘glow’ codebase.
-* Random access could enable torrent-like semantics in future (i.e. servers doing parallel downloads of different chunks from different servers, with appropriate coordination)
+* We already had Range/Content-Range resumable/seekable zero-latency HTTP transfer implemented and working excellently
+  pre-E2EE and pre-Matrix in our ‘glow’ codebase.
+* Random access could enable torrent-like semantics in future (i.e. servers doing parallel downloads of different chunks
+  from different servers, with appropriate coordination)
 
 ## Limitations
 
-* Enterprisey features like content scanning and CDGs require visibility on the whole file, so would eliminate the advantages of streaming by having to buffering it up in order to scan it.  (Clientside scanners would benefit from file transfer latency halving but wouldn't be able to show mid-transfer files)
-* When applied to unencrypted files, server-side content scanning (for trust & safety etc) would be unable to scan until it’s too late.
-* Cancelled file uploads will still leak a partial file transfer to receivers who start to stream, which could be awkward if the sender sent something sensitive, and then can’t tell who downloaded what before they hit the cancel button
+* Enterprisey features like content scanning and CDGs require visibility on the whole file, so would eliminate the
+  advantages of streaming by having to buffering it up in order to scan it.  (Clientside scanners would benefit from
+  file transfer latency halving but wouldn't be able to show mid-transfer files)
+* When applied to unencrypted files, server-side content scanning (for trust & safety etc) would be unable to scan until
+  it’s too late.
+* Cancelled file uploads will still leak a partial file transfer to receivers who start to stream, which could be
+  awkward if the sender sent something sensitive, and then can’t tell who downloaded what before they hit the cancel
+  button
 * Small bandwidth overhead for the additional AEADs and block headers - probably ~16 bytes per block.
-* Out of the box it wouldn't be able to adapt streaming to network conditions (no HLS or DASH style support for multiple bitstreams)
+* Out of the box it wouldn't be able to adapt streaming to network conditions (no HLS or DASH style support for multiple
+  bitstreams)
 * Might not play nice with CDNs? (I haven't checked if they pass through Range headers properly)
 
 ## Detailed proposal
@@ -72,25 +107,37 @@ The encrypted file block looks like:
 },
 ```
 
-N.B. there is no longer a `hashes` key, as AES-GCM includes its own hashing to enforce the integrity of the file transfer.
-Therefore we can authenticate the transfer by the fact we can decrypt it using its key & IV (unless an attacker who controls
-the same key & IV has substituted it for another file - but the benefit of doing so is questionable).
+N.B. there is no longer a `hashes` key, as AES-GCM includes its own hashing to enforce the integrity of the file
+transfer. Therefore we can authenticate the transfer by the fact we can decrypt it using its key & IV (unless an
+attacker who controls the same key & IV has substituted it for another file - but the benefit of doing so is
+questionable).
 
 We split the file stream into blocks of AES-256-GCM, with the following simple framing:
 
  * File header with a magic number of: 0x4D, 0x58, 0x43, 0x03 ("MXC" 0x03) - just so `file` can recognise it.
  * 1..N blocks, each with a header of:
     * a 32-bit field: 0xFFFFFFFF (a registration code to let a parser handle random access within the file
-    * a 32-bit field: block sequence number (starting at zero, used to calculate the IV of the block, and to aid random access)
+    * a 32-bit field: block sequence number (starting at zero, used to calculate the IV of the block, and to aid random
+      access)
     * a 32-bit field: the length in bytes of the encrypted data in this block.
-    * a 32-bit field: a CRC32 checksum of the prior data. This is used when randomly seeking as a consistency check to confirm that the registration code really did indicate the beginning of a valid frame of data.  It is not used for cryptographic integrity.
+    * a 32-bit field: a CRC32 checksum of the prior data. This is used when randomly seeking as a consistency check to
+      confirm that the registration code really did indicate the beginning of a valid frame of data.  It is not used
+      for cryptographic integrity.
     * the actual AES-GCM bitstream for that block.
         * the plaintext block size can be variable; 32KB is a good default for most purposes.
-        * Audio streams may want to use a smaller block size (e.g. 1KB blocks for a CBR 32kbps Opus stream will give 250ms of streaming latency).  Audio streams should be CBR to avoid leaking audio waveform metadata via block size.
-        * The block is encrypted using an IV formed by concatenating the block sequence number of the `file` block with the IV from the `file` block (forming a 128-bit IV, which will be hashed down to 96-bit again within AES-GCM).  This avoids IV reuse (at least until it wraps after 2^32-1 blocks, which at 32KB per block is 137TB (18 hours of 8k raw video), or at 1KB per block is 4TB (34 years of 32kbps audio)).
+        * Audio streams may want to use a smaller block size (e.g. 1KB blocks for a CBR 32kbps Opus stream will give
+          250ms of streaming latency).  Audio streams should be CBR to avoid leaking audio waveform metadata via block
+          size.
+        * The block is encrypted using an IV formed by concatenating the block sequence number of the `file` block with
+          the IV from the `file` block (forming a 128-bit IV, which will be hashed down to 96-bit again within
+          AES-GCM).  This avoids IV reuse (at least until it wraps after 2^32-1 blocks, which at 32KB per block is
+          137TB (18 hours of 8k raw video), or at 1KB per block is 4TB (34 years of 32kbps audio)).
             * Implementations MUST terminate a stream if the seqnum is exhausted, to prevent IV reuse.
-            * XXX: Alternatively, we could use a 64-bit seqnum, spending 8 bytes of header on seqnums feels like a waste of bandwidth just to support massive transfers. And we'd have to manually hash it with the 96-bit IV rather than use the GCM implementation.
-        * The block is encrypted including the 32-bit block sequence number as Additional Authenticated Data, thus stopping encrypted blocks from impersonating each other.
+            * XXX: Alternatively, we could use a 64-bit seqnum, spending 8 bytes of header on seqnums feels like a waste
+              of bandwidth just to support massive transfers. And we'd have to manually hash it with the 96-bit IV
+              rather than use the GCM implementation.
+        * The block is encrypted including the 32-bit block sequence number as Additional Authenticated Data, thus
+          stopping encrypted blocks from impersonating each other.
 
 Or graphically, each frame is:
 
@@ -115,8 +162,8 @@ protocol "Registration Code (0xFFFFFFF):32,Block sequence number:32,Encrypted bl
 
 ```
 
-The actual file upload can then be streamed in blocks to the media server using `Content-Range` headers on the `PUT` method
-as https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol#Resume_Upload.
+The actual file upload can then be streamed in blocks to the media server using `Content-Range` headers on the `PUT`
+method as https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol#Resume_Upload.
 
 XXX: the media API needs to advertise that it supports streamed file transfer somehow.
 
@@ -126,16 +173,25 @@ receiver view it incrementally as the upload happens, providing "zero-latency".
 
 ## Alternatives
 
-* We could use an existing streaming encrypted framing format of some kind rather (SRTP perhaps, which would give us timestamps for easier random access for audio/video streams) - but this feels a bit strange for plain old file streams.
-* Alternatively, we could descope random access entirely, given it only makes sense for AV streams, and requires timestamps to work nicely - and simply being able to stream encryption/decryption is a win in its own right. For instance, glow doesn't let you seek randomly within files which are mid transfer; only tail.
-* Split files into a series of separate m.file uploads which the client then has to glue back together (as the [voice broadcast feature](https://github.com/vector-im/element-meta/discussions/632) does in Element today).
+* We could use an existing streaming encrypted framing format of some kind rather (SRTP perhaps, which would give us
+  timestamps for easier random access for audio/video streams) - but this feels a bit strange for plain old file
+  streams.
+* Alternatively, we could descope random access entirely, given it only makes sense for AV streams, and requires
+  timestamps to work nicely - and simply being able to stream encryption/decryption is a win in its own right. For
+  instance, glow doesn't let you seek randomly within files which are mid transfer; only tail.
+* Split files into a series of separate m.file uploads which the client then has to glue back together (as the
+  [voice broadcast feature](https://github.com/vector-im/element-meta/discussions/632) does in Element today).
     * Pros:
         * Works automatically with antivirus & CDGs
-        * Could be made to map onto HLS or DASH? (by generating an .m3u8 which contains a bunch of MXC urls? This could also potentially solve the glitching problems we’ve had, by reusing existing HLS players augmented with our E2EE support)
+        * Could be made to map onto HLS or DASH? (by generating an .m3u8 which contains a bunch of MXC urls? This could
+          also potentially solve the glitching problems we’ve had, by reusing existing HLS players augmented with our
+          E2EE support)
     * Cons:
-        * Is always going to be high latency (e.g. Element currently splits into ~30s chunks) given rate limits on sending file events
+        * Is always going to be high latency (e.g. Element currently splits into ~30s chunks) given rate limits on
+          sending file events
         * Can be a pain to glue media uploads back together without glitching
-* Transfer files via streaming P2P file transfer via WebRTC data channels (https://github.com/matrix-org/matrix-spec/issues/189)
+* Transfer files via streaming P2P file transfer via WebRTC data channels
+  (https://github.com/matrix-org/matrix-spec/issues/189)
     * Pros:
         * Easy to implement with Matrix’s existing WebRTC signalling
         * Could use MSC3898-inspired media control to seek in the stream
@@ -143,7 +199,7 @@ receiver view it incrementally as the upload happens, providing "zero-latency".
         * You don’t get a serverside copy of the data
         * Hard for clients to implement relative to a simple HTTP download
         * You expose client IPs to each other if going P2P rather than via TURN
-* Do streaming voice/video messages/broadcast via WebRTC media channels instead (as hinted in [MSC3888](https://github.com/matrix-org/matrix-spec-proposals/pull/3888))
+* Do streaming voice/video messages/broadcast via WebRTC media channels instead
     * Pros:
         * Lowest latency
         * Could use media control to seek
@@ -156,26 +212,43 @@ receiver view it incrementally as the upload happens, providing "zero-latency".
         * Requires client to have a WebRTC stack
         * A suitable SFU still doesn’t exist yet
 * Transfer files out of band using a protocol which already provides streaming transfers (e.g. IPFS?)
-* Could use tus.io as an almost-standard format for HTTP resumable uploads (PATCH + Upload-Offset headers) instead, although tus servers don't seem to stream.
+* Could use tus.io as an almost-standard format for HTTP resumable uploads (PATCH + Upload-Offset headers) instead,
+  although tus servers don't seem to stream.
 
 ## Security considerations
 
-* Variable size blocks could leak metadata for VBR audio.  Mitigation is to use CBR if you care about leaking voice traffic patterns (constant size blocks isn’t necessarily enough, as you’d still leak the traffic patterns)
-* Is encrypting a sequence number in block header (with authenticated encryption) sufficient to mitigate reordering attacks?
-* The resulting lack of atomicity on file transfer means that accidentally uploaded files may leak partial contents to other users, even if they're cancelled.
-* Clients may well wish to scan untrusted inbound file transfers for malware etc, which means buffering the inbound transfer and scanning it before presenting it to the user.
-* Removing the `hashes` entry on the EncryptedFile description means that an attacker who controls the key & IV of the original file transfer could strategically substitute the file contents.  This could be desirable for CDGs wishing to switch a file for a sanitised version without breaking the Matrix event hashes.  For other scenarios it could be undesirable.  An alternative might be for the sender to keep sending new hashes in related matrix events as the stream uploads, but it's unclear if this is worth it.
+* Variable size blocks could leak metadata for VBR audio.  Mitigation is to use CBR if you care about leaking voice
+  traffic patterns (constant size blocks isn’t necessarily enough, as you’d still leak the traffic patterns)
+* Is encrypting a sequence number in block header (with authenticated encryption) sufficient to mitigate reordering
+  attacks?
+* The resulting lack of atomicity on file transfer means that accidentally uploaded files may leak partial contents to
+  other users, even if they're cancelled.
+* Clients may well wish to scan untrusted inbound file transfers for malware etc, which means buffering the inbound
+  transfer and scanning it before presenting it to the user.
+* Removing the `hashes` entry on the EncryptedFile description means that an attacker who controls the key & IV of the
+  original file transfer could strategically substitute the file contents.  This could be desirable for CDGs wishing to
+  switch a file for a sanitised version without breaking the Matrix event hashes.  For other scenarios it could be
+  undesirable.  An alternative might be for the sender to keep sending new hashes in related matrix events as the
+  stream uploads, but it's unclear if this is worth it.
 
 ## Conclusion
 
-For the voice broadcast use case, it's a bit unclear whether this is actually an improvement over splitting files into multiple file uploads (or [MSC3888](https://github.com/matrix-org/matrix-spec-proposals/blob/weeman1337/voice-broadcast/proposals/3888-voice-broadcast.md)).  It's also unfortunate that the benefits of the MSC are reduced with content scanners and CDGs.  It’s also a bit unclear whether voice/video broadcast would be better served via MSC3888 style behaviour.
+For the voice broadcast use case, it's a bit unclear whether this is actually an improvement over splitting files into
+multiple file uploads (or [MSC3888](https://github.com/matrix-org/matrix-spec-proposals/blob/weeman1337/voice-broadcast/proposals/3888-voice-broadcast.md)).
+It's also unfortunate that the benefits of the MSC are reduced with content scanners and CDGs.  It’s also a bit unclear
+whether voice/video broadcast would be better served via MSC3888 style behaviour.
 
-However, for halving the transfer time for large videos and files (and the magic "zero latency" of being able to see file transfers instantly start to download as they upload) it still feels like a worthwhile MSC.  Switching to GCM is desirable too in terms of providing authenticated encryption and avoiding having to calculate out-of-band hashes for file transfer.  Finally, implementating this MSC will force implementations to stream their file encryption/decryption and avoid the temptation to load the whole file into RAM (which doesn't scale, especially in constrained environments such as iOS Share Extensions).
+However, for halving the transfer time for large videos and files (and the magic "zero latency" of being able to see
+file transfers instantly start to download as they upload) it still feels like a worthwhile MSC.  Switching to GCM is
+desirable too in terms of providing authenticated encryption and avoiding having to calculate out-of-band hashes for
+file transfer.  Finally, implementating this MSC will force implementations to stream their file encryption/decryption
+and avoid the temptation to load the whole file into RAM (which doesn't scale, especially in constrained environments
+such as iOS Share Extensions).
 
 ## Dependencies
 
-This MSC depends on [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246), which has now landed in the spec.
-Extends [MSC3469](https://github.com/matrix-org/matrix-spec-proposals/pull/3469).
+This MSC depends on [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246), which has now landed in
+the spec. Extends [MSC3469](https://github.com/matrix-org/matrix-spec-proposals/pull/3469).
 
 ## Unstable prefixes
 
