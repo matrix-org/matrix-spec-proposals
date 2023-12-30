@@ -165,11 +165,16 @@ protocol "Registration Code (0xFFFFFFF):32,Block sequence number:32,Encrypted bl
 The actual file upload can then be streamed in blocks to the media server using `Content-Range` headers on the `PUT`
 method as https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol#Resume_Upload.
 
-XXX: the media API needs to advertise that it supports streamed file transfer somehow.
+TODO: the media API needs to advertise that it supports streamed file transfer somehow.
 
 We then use normal [HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek and
 resume while downloading.  The actual download should stream as rapidly as possible from the media server, letting the
 receiver view it incrementally as the upload happens, providing "zero-latency".
+
+TODO: We need a way to mark a transfer as complete or cancelled (via a relation?).  If cancelled, the sender should
+delete the partial upload (but the partial contents will have already leaked to the other side, of course).
+
+TODO: While we're at it, let's actually let users DELETE their file transfers, at last.
 
 ## Alternatives
 
