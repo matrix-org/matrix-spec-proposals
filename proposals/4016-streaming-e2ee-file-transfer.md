@@ -246,7 +246,7 @@ whether voice/video broadcast would be better served via MSC3888 style behaviour
 However, for halving the transfer time for large videos and files (and the magic "zero latency" of being able to see
 file transfers instantly start to download as they upload) it still feels like a worthwhile MSC.  Switching to GCM is
 desirable too in terms of providing authenticated encryption and avoiding having to calculate out-of-band hashes for
-file transfer.  Finally, implementating this MSC will force implementations to stream their file encryption/decryption
+file transfer.  Finally, implementing this MSC will force implementations to stream their file encryption/decryption
 and avoid the temptation to load the whole file into RAM (which doesn't scale, especially in constrained environments
 such as iOS Share Extensions).
 
