@@ -133,6 +133,8 @@ We split the file stream into blocks of AES-256-GCM, with the following simple f
           AES-GCM).  This avoids IV reuse (at least until it wraps after 2^32-1 blocks, which at 32KB per block is
           137TB (18 hours of 8k raw video), or at 1KB per block is 4TB (34 years of 32kbps audio)).
             * Implementations MUST terminate a stream if the seqnum is exhausted, to prevent IV reuse.
+            * Receivers MUST terminate a stream if the seqnum does not sequentially increase (to prevent the server from
+              shuffling the blocks)
             * XXX: Alternatively, we could use a 64-bit seqnum, spending 8 bytes of header on seqnums feels like a waste
               of bandwidth just to support massive transfers. And we'd have to manually hash it with the 96-bit IV
               rather than use the GCM implementation.
@@ -230,6 +232,7 @@ TODO: While we're at it, let's actually let users DELETE their file transfers, a
   traffic patterns (constant size blocks isn’t necessarily enough, as you’d still leak the traffic patterns)
 * Is encrypting a sequence number in block header (with authenticated encryption) sufficient to mitigate reordering
   attacks?
+  * When doing random access, the reader has to trust the server to serve the right blocks after a discontinuity
 * The resulting lack of atomicity on file transfer means that accidentally uploaded files may leak partial contents to
   other users, even if they're cancelled.
 * Clients may well wish to scan untrusted inbound file transfers for malware etc, which means buffering the inbound
