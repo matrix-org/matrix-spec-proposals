@@ -75,6 +75,11 @@ contents until you've uploaded the media.
   file transfer latency halving but wouldn't be able to show mid-transfer files)
 * When applied to unencrypted files, server-side content scanning (for trust & safety etc) would be unable to scan until
   it’s too late.
+* For images & video, senders will still have to read (and decompress) enough of the file into RAM in order to thumbnail
+  it or calculate a blurhash, so the benefits of streaming in terms of RAM use on the sender are reduced.  One could
+  restrict thumbnailing to the first 500MB of the transfer (or however much available RAM the client has) though, and
+  still stream the file itself, which would be hopefully be enough to thumbnail the first frame of a video, or most
+  images, while still being able to transfer arbitrary length files.
 * Cancelled file uploads will still leak a partial file transfer to receivers who start to stream, which could be
   awkward if the sender sent something sensitive, and then can’t tell who downloaded what before they hit the cancel
   button
