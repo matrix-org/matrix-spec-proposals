@@ -78,7 +78,7 @@ client to craft a set of events that would cause unreasonable load.
 
 ## Security considerations
 
-None.
+Security considerations are discussed inline throughout this proposal.
 
 ## Examples
 
