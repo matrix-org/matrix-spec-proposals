@@ -46,6 +46,21 @@ Regardless of the value of the `recurse` parameter, events will always be
 returned in topological ordering, ie. the same order in which the `/messages` API
 would return them (given the same `dir` parameter).
 
+It is also proposed to add a response parameter, `recursion_depth` to the response
+which gives the actual depth limit the server used in its recursion. This key is mandatory if
+the `recurse` parameter was passed and is absent otherwise. eg:
+
+```json
+{
+    "chunk": [...],
+    "recursion_depth": 3
+}
+```
+
+Note that there no way in this MSC for a client to affect how much the server recurses.
+If the client decides that the server's recursion level is insufficient, it could, for example,
+perform the recursion manually, or disable whatever feature requires more recursion.
+
 Filters specified via `event_type` or `rel_type` will be applied to all events
 returned, whether direct or indirect relations. Events that would match the filter,
 but whose only relation to the original given event is through a non-matching
