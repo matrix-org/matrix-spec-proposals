@@ -140,6 +140,9 @@ on [`/versions`](https://spec.matrix.org/v1.7/client-server-api/#get_matrixclien
 Clients are also required to use `org.matrix.msc3981.recurse` in place
 of `recurse` at this time.
 
+`recursion_depth` is always used un-namespaced (it would only ever be sent
+if the client had already sent the recurse parameter).
+
 ### Once the MSC is in a spec version
 
 Once this MSC becomes a part of a spec version, clients should rely on the
