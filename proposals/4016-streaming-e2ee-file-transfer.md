@@ -83,16 +83,19 @@ contents until you've uploaded the media.
 * Cancelled file uploads will still leak a partial file transfer to receivers who start to stream, which could be
   awkward if the sender sent something sensitive, and then can’t tell who downloaded what before they hit the cancel
   button
-* Small bandwidth overhead for the additional AEADs and block headers - probably ~16 bytes per block.
+* Small bandwidth overhead for the additional AEADs and block headers - ~32 bytes per block.
 * Out of the box it wouldn't be able to adapt streaming to network conditions (no HLS or DASH style support for multiple
   bitstreams)
 * Might not play nice with CDNs? (I haven't checked if they pass through Range headers properly)
+* Recorded E2EE SFU streams (from a [MSC3898](https://github.com/matrix-org/matrix-spec-proposals/pull/3898) SFU or LiveKit SFU)
+  could be made available as live-streamed file transfers through this MSC. However, these streams would also have their
+  own S-Frame headers, whose keys would need to be added to the `EncryptedFile` block in addition to the AES-GCM layer.
 
 ## Detailed proposal
 
 The file is uploaded asynchronously using [MSC2246](https://github.com/matrix-org/matrix-spec-proposals/pull/2246).
 
-The encrypted file block looks like:
+The proposed v3 `EncryptedFile` block looks like:
 
 ```json5
 "file": {
@@ -114,7 +117,7 @@ The encrypted file block looks like:
 
 N.B. there is no longer a `hashes` key, as AES-GCM includes its own hashing to enforce the integrity of the file
 transfer. Therefore we can authenticate the transfer by the fact we can decrypt it using its key & IV (unless an
-attacker who controls the same key & IV has substituted it for another file - but the benefit of doing so is
+attacker who controls the same key & IV has substituted it for another file - but the benefit to them of doing so is
 questionable).
 
 We split the file stream into blocks of AES-256-GCM, with the following simple framing:
@@ -125,9 +128,9 @@ We split the file stream into blocks of AES-256-GCM, with the following simple f
     * a 32-bit field: block sequence number (starting at zero, used to calculate the IV of the block, and to aid random
       access)
     * a 32-bit field: the length in bytes of the encrypted data in this block.
-    * a 32-bit field: a CRC32 checksum of the prior data. This is used when randomly seeking as a consistency check to
-      confirm that the registration code really did indicate the beginning of a valid frame of data.  It is not used
-      for cryptographic integrity.
+    * a 32-bit field: a CRC32 checksum of the block, including headers. This is used when randomly seeking as a
+      consistency check to confirm that the registration code really did indicate the beginning of a valid frame of
+      data.  It is not used for cryptographic integrity.
     * the actual AES-GCM bitstream for that block.
         * the plaintext block size can be variable; 32KB is a good default for most purposes.
         * Audio streams may want to use a smaller block size (e.g. 1KB blocks for a CBR 32kbps Opus stream will give
@@ -179,13 +182,16 @@ can use `Content-Range` headers as per https://developers.google.com/youtube/v3/
 
 TODO: the media API needs to advertise if it supports resumable uploads.
 
-For resumable downloads, we then use normal [HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek and
-resume while downloading.
+For resumable downloads, we then use normal 
+[HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek and resume while downloading.
 
 TODO: We need a way to mark a transfer as complete or cancelled (via a relation?).  If cancelled, the sender should
 delete the partial upload (but the partial contents will have already leaked to the other side, of course).
 
 TODO: While we're at it, let's actually let users DELETE their file transfers, at last.
+
+N.B. Clients which implement displaying blurhashes should progressively load the thumbnail over the top of the blurhash,
+to make sure the detailed thumbnail streams in and is viewed as rapidly as possible.
 
 ## Alternatives
 
@@ -230,6 +236,8 @@ TODO: While we're at it, let's actually let users DELETE their file transfers, a
 * Transfer files out of band using a protocol which already provides streaming transfers (e.g. IPFS?)
 * Could use tus.io as an almost-standard format for HTTP resumable uploads (PATCH + Upload-Offset headers) instead,
   although tus servers don't seem to stream.
+* Could use ChaCha20-Poly1305 rather than AES-GCM, but no native webcrypto impl yet: https://github.com/w3c/webcrypto/issues/223
+  * See also https://soatok.blog/2020/05/13/why-aes-gcm-sucks/ and https://andrea.corbellini.name/2023/03/09/authenticated-encryption/
 
 ## Security considerations
 
