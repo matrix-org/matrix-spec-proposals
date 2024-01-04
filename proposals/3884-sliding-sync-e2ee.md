@@ -47,6 +47,13 @@ _changed_ fields are returned. That is to say, if `device_one_time_keys_count` h
 requests, it will be omitted which means to use the previous value. This deviates from the current
 `/sync` implementation which always includes this field. Likewise for `device_unused_fallback_key_types`.
 
+Particular care must be taken when a fallback key is used, as this will cause the response to be:
+```json
+"device_unused_fallback_key_types": []
+```
+which is not the same as the field being omitted/null. The empty array means the key was used. Omitted
+fields means no changes.
+
 ## Potential issues
 
 It's unclear if `device_unused_fallback_key_types` and `device_one_time_keys_count` should always be
