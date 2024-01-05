@@ -1,4 +1,4 @@
-# MSC4016: Streaming E2EE file transfer with random access and zero latency
+# MSC4016: Streaming and resumable E2EE file transfer with random access
 
 ## Problem
 
@@ -10,6 +10,7 @@
 * You can’t skip within them without downloading the whole thing (if they’re streamable content, such as an .opus file)
 * For instance, you can’t do realtime broadcast of voice messages via Matrix, or skip within them (other than splitting
   them into a series of separate file transfers).
+* You also can't resume uploads if they're interrupted.
 * Another example is sharing document snapshots for real-time collaboration. If a user uploads 100MB of glTF in Third
   Room to edit a scene, you want all participants to be able to receive the data and stream-decode it with minimal
   latency.
@@ -44,11 +45,11 @@ contents until you've uploaded the media.
   equivalent.
     * XXX: is there still a vulnerability here? Other approaches use Merkle trees to hash the AEADs rather than simple
       sequence numbers, but why?
+* We use streaming HTTP upload (https://developer.chrome.com/articles/fetch-streaming-requests/) and/or
+  [tus](https://tus.io/protocols/resumable-upload) resumable upload headers to incrementally send the file. This also
+  gives us resumable uploads.
 * We then use normal [HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek while
-  downloading
-* We could also use [Youtube-style]
-  (https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol) off-standard Content-Range headers
-  on POST when uploading for resumable/incremental uploads.
+  downloading.
 
 ## Advantages
 
@@ -63,10 +64,12 @@ contents until you've uploaded the media.
   whole file in RAM in order to check hashes and then decrypt, whereas this would naturally lend itself to processing
   files incrementally in blocks.
 * Leverages AES-GCM’s existing primitives and hashing rather than inventing our own hashing strategy
-* We already had Range/Content-Range resumable/seekable zero-latency HTTP transfer implemented and working excellently
+* We've already implemented this once before (pre-Matrix) in our 'glow' codebase, and it worked excellently.
   pre-E2EE and pre-Matrix in our ‘glow’ codebase.
 * Random access could enable torrent-like semantics in future (i.e. servers doing parallel downloads of different chunks
   from different servers, with appropriate coordination)
+* tus looks to be under consideration by the IETF HTTP working group, so we're hopefully picking the right protocol for
+  resumable uploads.
 
 ## Limitations
 
@@ -87,9 +90,10 @@ contents until you've uploaded the media.
 * Out of the box it wouldn't be able to adapt streaming to network conditions (no HLS or DASH style support for multiple
   bitstreams)
 * Might not play nice with CDNs? (I haven't checked if they pass through Range headers properly)
-* Recorded E2EE SFU streams (from a [MSC3898](https://github.com/matrix-org/matrix-spec-proposals/pull/3898) SFU or LiveKit SFU)
-  could be made available as live-streamed file transfers through this MSC. However, these streams would also have their
-  own S-Frame headers, whose keys would need to be added to the `EncryptedFile` block in addition to the AES-GCM layer.
+* Recorded E2EE SFU streams (from a [MSC3898](https://github.com/matrix-org/matrix-spec-proposals/pull/3898) SFU or
+  LiveKit SFU) could be made available as live-streamed file transfers through this MSC. However, these streams would
+  also have their own S-Frame headers, whose keys would need to be added to the `EncryptedFile` block in addition to
+  the AES-GCM layer.
 
 ## Detailed proposal
 
@@ -177,10 +181,8 @@ download can be streamed in the response body.  The download should stream as ra
 server, letting the receiver view it incrementally as the upload happens, providing "zero-latency" - while also storing
 the stream to disk.
 
-For resumable uploads (or to upload in blocks for HTTP clients which don't support streaming request bodies), the client
-can use `Content-Range` headers as per https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol#Resume_Upload.
-
-TODO: the media API needs to advertise if it supports resumable uploads.
+For resumable uploads (or to upload in blocks for HTTP clients which don't support streaming request bodies), we use
+[tus](https://tus.io/protocols/resumable-upload) 1.0.0.
 
 For resumable downloads, we then use normal 
 [HTTP Range](https://datatracker.ietf.org/doc/html/rfc2616#section-14.35.1) headers to seek and resume while downloading.
@@ -234,10 +236,12 @@ to make sure the detailed thumbnail streams in and is viewed as rapidly as possi
         * Requires client to have a WebRTC stack
         * A suitable SFU still doesn’t exist yet
 * Transfer files out of band using a protocol which already provides streaming transfers (e.g. IPFS?)
-* Could use tus.io as an almost-standard format for HTTP resumable uploads (PATCH + Upload-Offset headers) instead,
-  although tus servers don't seem to stream.
 * Could use ChaCha20-Poly1305 rather than AES-GCM, but no native webcrypto impl yet: https://github.com/w3c/webcrypto/issues/223
   * See also https://soatok.blog/2020/05/13/why-aes-gcm-sucks/ and https://andrea.corbellini.name/2023/03/09/authenticated-encryption/
+* We could use YouTube's resumable upload API via `Content-Range` headers from
+  https://developers.google.com/youtube/v3/guides/using_resumable_upload_protocol, but having implemented both it and
+  tus, tus feels inordinately simpler and less fiddly.  YouTube is likely to be well supported by proxies etc, but if
+  tus is ordained by the HTTP IETF WG, then it should be well supported too.
 
 ## Security considerations
 
