@@ -233,6 +233,10 @@ During development the new push rule shall use `org.matrix.msc4028.encrypted_eve
 Caution: this unstable push rule will be enabled by default like the stable push rule, the server owners should wait for
 the clients to support a minimum this MSC before enabling the MSC server side.
 
+To ensure the server supports the functionality before a spec release, clients should look for the unstable feature `org.matrix.msc4028` in the response of the `/_matrix/clients/versions` endpoint. Once released in the specification, clients should be checking for server support through advertised spec versions instead.
+
+Once this MSC has successfully passed a merge FCP, clients should use `.m.rule.encrypted_event` as the right push rule. The unstable `org.matrix.msc4028.encrypted_event` can be used only as a fallback if the right one is missing (backwards compatibility with slightly old servers).
+
 ## Dependencies
 
 None
