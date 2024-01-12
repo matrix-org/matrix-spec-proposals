@@ -58,8 +58,9 @@ Content-Type: application/json
 The server then implies `ts` and sends the resulting EDU to the target event's origin server. The
 delivery receipt must only be routed to the target event sender.
 
-An `m.read[.private]` receipt does *not* imply delivery, but rather that a client either does not
-support delivery receipts or was not able to decrypt the message.
+Receiving a `m.read[.private]` receipt without a delivery receipt does *not* imply
+delivery, but rather that a client either does not support delivery receipts or was not
+able to decrypt the message.
 
 Clients are welcome to implement additional requirements before sending a delivery receipt. For example,
 a user setting to disable delivery receipts in public rooms specifically, or all rooms the user is in.
