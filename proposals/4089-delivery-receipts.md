@@ -1,4 +1,4 @@
-# MSC4088: Delivery Receipts
+# MSC4089: Delivery Receipts
 
 A common feature among messaging clients is "delivery receipts". Similar to [read receipts](https://spec.matrix.org/v1.9/client-server-api/#receipts),
 delivery receipts denote when a client has received *and* decrypted a given message. They do not
@@ -99,12 +99,12 @@ public rooms.
 ## Unstable prefix
 
 Before FCP, clients use [`/versions`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientversions)
-to see if the server supports `org.matrix.msc4088` as an unstable feature. If the server *does* support
-the feature, clients can use `org.matrix.msc4088.delivery` in place of `m.delivery` throughout this MSC.
+to see if the server supports `org.matrix.msc4089` as an unstable feature. If the server *does* support
+the feature, clients can use `org.matrix.msc4089.delivery` in place of `m.delivery` throughout this MSC.
 
 After FCP, but before being released in the spec, clients can look for the same `/versions` feature
 flag and try to send `m.delivery` receipts to the server. If the server responds with an error, the
-client can fall back to `org.matrix.msc4088.delivery`.
+client can fall back to `org.matrix.msc4089.delivery`.
 
 After being released in the spec, clients can use that specification version in the `/versions` response
 to determine if the server supports `m.delivery` receipts. If the server does, the client can send
