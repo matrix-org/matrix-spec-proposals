@@ -112,4 +112,4 @@ delivery receipts as such. If not, the previous advice still applies regarding u
 
 ## Dependencies
 
-There are no depedencies.
+There are no dependencies.
