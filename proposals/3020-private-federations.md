@@ -30,7 +30,7 @@ For example, to indicate that a given server is able to participate in the
 [Tchap](https://www.numerique.gouv.fr/outils-agents/tchap-messagerie-instantanee-etat/) network
 and a hypothetical NATO network (but not the public internet), the capability would be:
 
-```json
+```json5
 'm.networks': [
     "fr.gouv.tchap",
     "int.nato"
