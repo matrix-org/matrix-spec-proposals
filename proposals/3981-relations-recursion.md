@@ -93,7 +93,11 @@ client to craft a set of events that would cause unreasonable load.
 
 ## Security considerations
 
-Security considerations are discussed inline throughout this proposal.
+Security considerations are discussed inline throughout this proposal. To summarise:
+ * Allowing a client to control recursion depth could allow a client to cause outsize
+   load on the server if the server doesn't check the recursion depth.
+ * Naive server implementations could allow a client to craft a set of events that would
+   cause high load.
 
 ## Examples
 
