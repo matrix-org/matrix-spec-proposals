@@ -14,7 +14,9 @@ the second message to be delayed or lost if something goes wrong.
 
 This proposal allows the `filename` field from [`m.file`], and the `format` and
 `formatted_body` fields from [`m.text`] for all media msgtypes (`m.image`,
-`m.audio`, `m.video`, `m.file`).
+`m.audio`, `m.video`, `m.file`). This proposal does not affect the `m.location`
+msgtype, nor the separate `m.sticker` event type: stickers already use `body`
+as a description, and locations don't have file names.
 
 If the `filename` field is present in a media message, clients should treat
 `body` as a caption instead of a file name. If the `format`/`formatted_body`
@@ -36,7 +38,7 @@ while [`m.audio`] describes it as
 > content description for accessibility e.g. ‘audio attachment’.
 
 In practice, clients (or at least Element) use it as the file name. As a part
-of adding captions, the `body` field for all message types is explicitly
+of adding captions, the `body` field for all media message types is explicitly
 defined to be used as the file name when the `filename` field is not present.
 
 For `m.file` messages, the [current (v1.9) spec][`m.file`] confusingly defines
