@@ -17,9 +17,10 @@ This proposal allows the `filename` field from [`m.file`], and the `format` and
 `m.audio`, `m.video`, `m.file`).
 
 If the `filename` field is present in a media message, clients should treat
-`body` as a caption instead of a file name. The `format`/`formatted_body`
-fields should also be supported and work the same way as they do in `m.text`
-messages.
+`body` as a caption instead of a file name. If the `format`/`formatted_body`
+fields are present in addition to `filename` and `body`, then they should take
+priority as the caption text. Formatted text in media captions is rendered the
+same way as formatted text in `m.text` messages.
 
 The current spec is somewhat ambiguous as to how `body` should be handled and
 the definition varies across different message types. The current spec for
@@ -29,6 +30,11 @@ the definition varies across different message types. The current spec for
 > image, the filename of the image, or some kind of content description for
 > accessibility e.g. ‘image attachment’.
 
+while [`m.audio`] describes it as
+
+> A description of the audio e.g. ‘Bee Gees - Stayin’ Alive’, or some kind of
+> content description for accessibility e.g. ‘audio attachment’.
+
 In practice, clients (or at least Element) use it as the file name. As a part
 of adding captions, the `body` field for all message types is explicitly
 defined to be used as the file name when the `filename` field is not present.
@@ -37,12 +43,13 @@ For `m.file` messages, the [current (v1.9) spec][`m.file`] confusingly defines
 `filename` as "The original filename of the uploaded file" and simultaneously
 recommends that `body` is "the filename of the original upload", effectively
 saying both fields should have the file name. In order to avoid (old) messages
-with both fields from being misinterpreted as having captions, the `body` field
+with both fields being misinterpreted as having captions, the `body` field
 should not be used as a caption when it's equal to `filename`.
 
 [`m.file`]: https://spec.matrix.org/v1.9/client-server-api/#mfile
 [`m.text`]: https://spec.matrix.org/v1.9/client-server-api/#mtext
 [`m.image`]: https://spec.matrix.org/v1.9/client-server-api/#mimage
+[`m.audio`]: https://spec.matrix.org/v1.9/client-server-api/#maudio
 
 ## Potential issues
 
