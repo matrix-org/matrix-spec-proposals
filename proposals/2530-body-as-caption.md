@@ -1,5 +1,15 @@
 # Body field as media caption
 
+When sending images or other attachments, users often want to include text to
+convey additional information. Most chat platforms offer media captions as a
+first-class feature, allowing users to choose the attachment and write text,
+then send both together in one message.
+
+Matrix currently does not enable this on the protocol level: at best, clients
+can emulate the behavior by sending two messages quickly; at worst, the user
+has to do that manually. Sending separate messages means it's possible for
+the second message to be delayed or lost if something goes wrong.
+
 ## Proposal
 
 This proposal allows the `filename` field from `m.file`, and the `format` and
