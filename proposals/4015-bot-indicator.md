@@ -24,7 +24,7 @@ to detect spambots. It doesn't come with guarantees.
 
 ### Details of the flag
 
-The flag consists of a boolean flag in the `content` of the event. It can therefore take either
+The flag consists of a boolean `bot` flag in the `content` of the event. It can therefore take either
 the values `true` or `false` but also can be omitted. In this case, the user should be considered
 `not a bot`.
 
