@@ -1,2 +1,10 @@
 [default]
 check-filename = true
+
+[default.extend-identifiers]
+OTK = "OTK"
+OTKs = "OTKs"
+
+[default.extend-words]
+OTK = "OTK"
+OTKs = "OTKs"
