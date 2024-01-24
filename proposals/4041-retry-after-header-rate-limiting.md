@@ -24,26 +24,23 @@ of `Retry-After` (in __seconds__) should be the calculated in order to comply wi
 
 ## Potential issues
 
+With the introduction of the http header `Retry-After` the usage of the `retry_after_ms` property in the response body becomes deprecated.
+
 Existing SDKs may use client libraries that might be able to honor the http header `Retry-After`. Since 
 this header is currently not part of the response developers might have created purpose-built functions
 in order to handle rate-limiting correctly.
 
-If the http header `Retry-After` is introduced existing SDKs might behave differently thus leading to an
-unexpected behaviour.
-
 In order to maintain backward compatibility home servers should use both the `Retry-After` header and the
-`retry_after_ms` property in the response body. 
+`retry_after_ms` property in the response body.
 
-In this case, client libraries are advised to use the values in this order:
+Client libraries are advised to use the values in this order:
 
 1) `Retry-After` http header.
 2) `retry_after_ms` property in the response body.
 
-
 ## Alternatives
 
 N/A
-
 
 ## Security considerations
 
