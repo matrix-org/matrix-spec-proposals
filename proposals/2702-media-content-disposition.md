@@ -3,8 +3,13 @@
 The current specification does not clarify how to treat `Content-Disposition` on responses to
 [`/download`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3downloadservernamemediaid)
 and [`/thumbnail`](https://spec.matrix.org/v1.8/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)
-requests. Some clients expect attachments to be `download` only (or don't care), while other applications
-like bridges rely on it sometimes being `inline` for user experience reasons.
+requests. This has led to clients (and most notably, IRC bridges) relying on implementation-specific
+behaviour for how their uploads will be represented. This reliance has caused issues in the past where
+a security decision was made to use an `attachment` disposition on the download endpoint, however this
+caused an IRC bridge's use of the media repo to break when trying to send large messages: users on the
+IRC side were forced to download and open a text file instead of seeing it in their browser. Similar
+problems have occurred in the past with respect to clients using the download endpoint as an "open in
+browser" button.
 
 This proposal clarifies the exact behaviour and introduces a set of suggestions for servers to follow
 with respect to `Content-Disposition`.
@@ -29,7 +34,7 @@ For `/download`:
 
 * `Content-Disposition` MUST be returned, and MUST be one of `inline` or `attachment`.
 
-  * `inline` should be used when one of the "safe" content types listed below is being served.
+  * `inline` *should* be used when one of the "safe" content types listed below is being served.
 
 * When uploads are made with a `filename`, the `Content-Disposition` header MUST contain the same
   `filename`. Otherwise, `filename` is excluded from the header.
@@ -102,9 +107,15 @@ No major alternatives identified.
 
 ## Security considerations
 
-This MSC fixes theoretical security issues relating to Cross-Site Scripting and similar. No new security issues
-are identified, and careful consideration was put into `inline` to ensure an extremely limited set of possible
-media types.
+This MSC fixes a theoretical Cross-Site Scripting issue where a browser improperly handling Content
+Security Policy headers or sandboxes *may* reveal sensitive information about the user, if the user's
+client is hosted at the same domain as the media download URL. This is mitigated by only suggesting
+`inline` as a disposition on content types which are not likely to execute code within the browser
+upon being viewed. A browser may still have further bugs which reveal information, though those issues
+quickly become impractical for the Matrix specification to mitigate.
+
+No new security issues are identified, and careful consideration was put into `inline` to ensure an
+extremely limited set of possible media types.
 
 The allowable content types for `inline` were inspired by [the react-sdk](https://github.com/matrix-org/matrix-react-sdk/blob/a70fcfd0bcf7f8c85986da18001ea11597989a7c/src/utils/blobs.ts#L51),
 and extended to include what is present in [a related Synapse PR](https://github.com/matrix-org/synapse/pull/15988).
