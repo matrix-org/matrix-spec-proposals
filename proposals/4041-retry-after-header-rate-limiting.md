@@ -30,10 +30,10 @@ Existing SDKs may use client libraries that might be able to honor the http head
 this header is currently not part of the response developers might have created purpose-built functions
 in order to handle rate-limiting correctly.
 
-In order to maintain backward compatibility home servers should use both the `Retry-After` header and the
+In order to maintain backward compatibility with existing client libraries home servers must use both the `Retry-After` header and the
 `retry_after_ms` property in the response body.
 
-Client libraries are advised to use the values in this order:
+Client libraries shall use the values in this order:
 
 1) `Retry-After` http header.
 2) `retry_after_ms` property in the response body.
