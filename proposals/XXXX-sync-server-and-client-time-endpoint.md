@@ -1,4 +1,4 @@
-# MSC0000: Sync Server and Client Times with endpoint
+# MSC4094: Sync Server and Client Times with endpoint
 
 Some functionality in matrix depend on all clients local clocks being in sync.
 Examples are:
