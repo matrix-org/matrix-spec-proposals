@@ -107,12 +107,11 @@ No major alternatives identified.
 
 ## Security considerations
 
-This MSC fixes a theoretical Cross-Site Scripting issue where a browser improperly handling Content
-Security Policy headers or sandboxes *may* reveal sensitive information about the user, if the user's
-client is hosted at the same domain as the media download URL. This is mitigated by only suggesting
-`inline` as a disposition on content types which are not likely to execute code within the browser
-upon being viewed. A browser may still have further bugs which reveal information, though those issues
-quickly become impractical for the Matrix specification to mitigate.
+This MSC fixes a possible Cross-Site Scripting issue in environments with insecure configurations.
+For example, if a Matrix web client is also hosted on the same domain as the media download URL. This
+is mitigated by only suggesting `inline` as a disposition on content types which are not likely to
+execute code within the browser upon being viewed. A browser may still have further bugs which reveal
+information, though those issues quickly become impractical for the Matrix specification to mitigate.
 
 No new security issues are identified, and careful consideration was put into `inline` to ensure an
 extremely limited set of possible media types.
