@@ -5,7 +5,7 @@
 Currently in matrix there is no canonical way to specify a desire to have an action that is coordinated via policy
 list to be temporary and expire.
 This proposal gives a field to express expiry within Policies which we hope will improve the user experience.
-We also believe expiry on policies will reduce the amount of attention maintaining lists,
+We also believe expiry on policies will reduce the amount of attention maintaining lists requires,
 as currently emulating an explicit expiry field to work with tools such as mjolnir requires manually
 removing policies after the expiry date.
 
@@ -81,7 +81,7 @@ directly into the DAG but these have been dismissed as completely insecure or ea
 It is clear to the authors of this MSC that the current consensus in parts of the community
 is that introducing dependencies on time into the authorization DAG is a no-go.
 In either case this MSC deliberately avoids the complexities of dealing with
-servers having different temporal perspective.
+servers having different temporal perspectives.
 
 ## Security considerations
 
