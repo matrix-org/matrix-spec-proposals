@@ -17,20 +17,15 @@ potential that current http libraries offer in terms of automated retry handling
 ## Proposal
 
 In order to allow developers to make use of the automated retry handling capabilities of http libraries
-home servers should add an http header `Retry-After` in case they respond with an http error 429.
-Since the body of the response already contains a property `retry_after_ms` (in __milliseconds__) the value 
-of `Retry-After` (in __seconds__) should be the calculated in order to comply with the specification in 
-[RFC 9119 - HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110#field.retry-after).
+home servers shall use the http header `Retry-After` in case they respond with an http error 429.
+The value of `Retry-After` (in __seconds__) is meant to be a delay after receiving the response and must be 
+calculated in order to comply with the specification in [RFC 9119 - HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110#field.retry-after).
+
+With the introduction of the http header `Retry-After` the usage of the existing `retry_after_ms` property in the response body becomes deprecated.
 
 ## Potential issues
 
-With the introduction of the http header `Retry-After` the usage of the `retry_after_ms` property in the response body becomes deprecated.
-
-Existing SDKs may use client libraries that might be able to honor the http header `Retry-After`. Since 
-this header is currently not part of the response developers might have created purpose-built functions
-in order to handle rate-limiting correctly.
-
-In order to maintain backward compatibility with existing client libraries home servers must use both the `Retry-After` header and the
+In order to maintain backward compatibility with existing client libraries home servers shall use both the `Retry-After` header and the
 `retry_after_ms` property in the response body.
 
 Client libraries shall use the values in this order:
