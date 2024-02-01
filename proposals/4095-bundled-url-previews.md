@@ -234,6 +234,22 @@ links to the user's homeserver, and prevents fake previews. However, this would
 leak the user's IP address to all links they receive, so it is not an
 acceptable solution.
 
+The original design notes for URL previews from 2016 also has a list of options
+that were considered at the time: <https://github.com/matrix-org/matrix-spec/blob/main/attic/drafts/url_previews.md>.
+Option 2 is what was implemented then, and this proposal adds option 4.
+The combination of options 2 and 4 is also mentioned as the probably best
+solution in that document.
+
+The document also mentions the possibility of an AS or HS scanning messages and
+injecting preview data, but that naturally won't function with encryption at all,
+and is therefore not an alternative.
+
+The fifth option mentioned in the document, a centralized previewing service
+which is configured per-room, could technically work, but would likely be worse
+than HS-generated previews in practice: users wouldn't know to configure a
+different previewing service, so clients would probably have to automatically
+pick one.
+
 ## Unstable prefix
 Until this MSC is accepted, implementations should apply the following renames:
 
