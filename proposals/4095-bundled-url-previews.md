@@ -85,7 +85,7 @@ The two above points effectively make this an alternative for
 }
 ```
 
-</summary>
+</details>
 <details>
 <summary>Preview with encrypted thumbnail image</summary>
 
@@ -147,6 +147,7 @@ The two above points effectively make this an alternative for
 ```
 
 </details>
+<details>
 <summary>Preview in extensible event</summary>
 
 ```json
