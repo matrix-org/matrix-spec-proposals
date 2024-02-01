@@ -41,7 +41,8 @@ and put them in the `matrix:image:encryption` field. Other `og:image:*` and the
 
 If clients use the `/preview_url` endpoint as a helper for generating preview
 data, they should reupload the thumbnail image (if there is one) to create a
-persistent `mxc://` URI, as well as encrypt it if applicable.
+persistent `mxc://` URI, as well as encrypt it if applicable. A future MSC
+could also extend `/preview_url` with a parameter to request a persistent URI.
 
 #### Receiving messages with `m.url_previews`
 If an object in the list contains only `matrix:matched_url` and no other fields,
