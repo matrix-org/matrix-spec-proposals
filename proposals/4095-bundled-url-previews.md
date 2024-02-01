@@ -27,6 +27,11 @@ similar to what the `/preview_url` endpoint currently returns:
 At least one of `matrix:matched_url` and `og:url` MUST be present. All other
 fields are optional.
 
+### Extensible events
+The definition of `matrix:matched_url` changes from "present in `body`" to
+"present in `m.text`", but otherwise the proposal is directly compatible with
+extensible events.
+
 ### Client behavior
 #### Sending preview data
 When sending previews to encrypted rooms, clients should encrypt preview images
@@ -51,6 +56,125 @@ clients should fall back to the searching behavior.
 
 The two above points effectively make this an alternative for
 [MSC2385](https://github.com/matrix-org/matrix-spec-proposals/pull/2385).
+
+### Examples
+<details>
+<summary>Normal preview</summary>
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "https://matrix.org",
+    "m.url_previews": [
+      {
+        "matrix:matched_url": "https://matrix.org",
+        "matrix:image:size": 16588,
+        "og:description": "Matrix, the open protocol for secure decentralised communications",
+        "og:image": "mxc://maunium.net/zeHhTqqUtUSUTUDxQisPdwZO",
+        "og:image:height": 400,
+        "og:image:type": "image/jpeg",
+        "og:image:width": 800,
+        "og:title": "Matrix.org",
+        "og:url": "https://matrix.org/"
+      }
+    ],
+    "m.mentions": {}
+  }
+}
+```
+
+</summary>
+<details>
+<summary>Preview with encrypted thumbnail image</summary>
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "https://matrix.org",
+    "m.url_previews": [
+      {
+        "matrix:matched_url": "https://matrix.org",
+        "og:url": "https://matrix.org/",
+        "og:title": "Matrix.org",
+        "og:description": "Matrix, the open protocol for secure decentralised communications",
+        "matrix:image:size": 16588,
+        "og:image:width": 800,
+        "og:image:height": 400,
+        "og:image:type": "image/jpeg",
+        "matrix:image:encryption": {
+          "key": {
+            "k": "GRAgOUnbbkcd-UWoX5kTiIXJII81qwpSCnxLd5X6pxU",
+            "alg": "A256CTR",
+            "ext": true,
+            "kty": "oct",
+            "key_ops": [
+              "encrypt",
+              "decrypt"
+            ]
+          },
+          "iv": "kZeoJfx4ehoAAAAAAAAAAA",
+          "hashes": {
+            "sha256": "WDOJYFegjAHNlaJmOhEPpE/3reYeD1pRvPVcta4Tgbg"
+          },
+          "v": "v2",
+          "url": "mxc://beeper.com/53207ac52ce3e2c722bb638987064bfdc0cc257b"
+        }
+      }
+    ],
+    "m.mentions": {}
+  }
+}
+```
+
+</details>
+<details>
+<summary>Message indicating it should not have any previews</summary>
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "https://matrix.org",
+    "m.url_previews": [],
+    "m.mentions": {}
+  }
+}
+```
+
+</details>
+<summary>Preview in extensible event</summary>
+
+```json
+{
+  "type": "m.message",
+  "content": {
+    "m.text": {
+      {"body": "matrix.org/support"}
+    ],
+    "m.url_previews": [
+      {
+        "matched_url": "matrix.org/support",
+        "matrix:image:size": 16588,
+        "og:description": "Matrix, the open protocol for secure decentralised communications",
+        "og:image": "mxc://maunium.net/zeHhTqqUtUSUTUDxQisPdwZO",
+        "og:image:height": 400,
+        "og:image:type": "image/jpeg",
+        "og:image:width": 800,
+        "og:title": "Support Matrix",
+        "og:url": "https://matrix.org/support/"
+      }
+    ],
+    "m.mentions": {}
+  }
+}
+```
+
+</details>
 
 ## Potential issues
 ### Fake preview data
