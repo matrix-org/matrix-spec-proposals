@@ -148,18 +148,38 @@ The two above points effectively make this an alternative for
 
 </details>
 <details>
+<summary>Message indicating a preview should be fetched from the homeserver</summary>
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "https://matrix.org",
+    "m.url_previews": [
+      {
+        "matrix:matched_url": "https://matrix.org"
+      }
+    ],
+    "m.mentions": {}
+  }
+}
+```
+
+</details>
+<details>
 <summary>Preview in extensible event</summary>
 
 ```json
 {
   "type": "m.message",
   "content": {
-    "m.text": {
+    "m.text": [
       {"body": "matrix.org/support"}
     ],
     "m.url_previews": [
       {
-        "matched_url": "matrix.org/support",
+        "matrix:matched_url": "matrix.org/support",
         "matrix:image:size": 16588,
         "og:description": "Matrix, the open protocol for secure decentralised communications",
         "og:image": "mxc://maunium.net/zeHhTqqUtUSUTUDxQisPdwZO",
