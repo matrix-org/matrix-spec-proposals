@@ -204,7 +204,7 @@ Alternatively, clients could simply not include preview data at all and have
 receiving clients fall back to the old behavior (meaning no previews in
 encrypted rooms unless the receiver opts in).
 
-### Security considerations
+## Security considerations
 Fake preview data as covered in potential issues.
 
 ## Alternatives
