@@ -219,3 +219,5 @@ Until this MSC is accepted, implementations should apply the following renames:
 * `com.beeper.linkpreviews` instead of `m.url_previews`
 * `beeper:image:encryption` instead of `matrix:image:encryption`
 * `matched_url` instead of `matrix:matched_url`
+  * note: this was implemented without a prefix before the MSC was made, which
+    is why the "unstable prefix" is no prefix in this case.
