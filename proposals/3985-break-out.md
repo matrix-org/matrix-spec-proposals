@@ -50,7 +50,7 @@ their client's choosing. A few common examples are:
 
 - The "child" room has a `join_rule` of `restricted` indicating that only the
   members of the "parent" room can join.
-- The "child" room has `join_rule` if `invite` indicating that only the invited
+- The "child" room has `join_rule` of `invite` indicating that only the invited
   users can join. In this case, the room information in the `m.breakout` event
   should include the list of users who are suggested to join the given room.
 - The "child" room has a `join_rule` of `public` indicating anyone can join.
