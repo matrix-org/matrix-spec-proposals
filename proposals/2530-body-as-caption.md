@@ -60,7 +60,7 @@ should not be used as a caption when it's equal to `filename`.
 ```json
 {
     "msgtype": "m.image",
-    "url": "mxc://maunium.net/HaIrXlnKfEEHvMNKzuExiYlv"
+    "url": "mxc://maunium.net/HaIrXlnKfEEHvMNKzuExiYlv",
     "filename": "cat.jpeg",
     "body": "this is a cat picture :3",
     "info": {
