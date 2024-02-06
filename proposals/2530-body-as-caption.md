@@ -53,12 +53,63 @@ should not be used as a caption when it's equal to `filename`.
 [`m.image`]: https://spec.matrix.org/v1.9/client-server-api/#mimage
 [`m.audio`]: https://spec.matrix.org/v1.9/client-server-api/#maudio
 
+### Examples
+<details>
+<summary>Image with caption</summary>
+
+```json
+{
+    "msgtype": "m.image",
+    "url": "mxc://maunium.net/HaIrXlnKfEEHvMNKzuExiYlv"
+    "filename": "cat.jpeg",
+    "body": "this is a cat picture :3",
+    "info": {
+        "w": 479,
+        "h": 640,
+        "mimetype": "image/jpeg",
+        "size": 27253
+    },
+    "m.mentions": {}
+}
+```
+
+</details>
+<details>
+<summary>File with formatted caption</summary>
+
+```json
+{
+    "msgtype": "m.file",
+    "url": "mxc://maunium.net/TizWsLhHfDCETKRXdDwHoAGn",
+    "filename": "hello.txt",
+    "body": "this caption is longer than the file itself 🤔",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "this <strong>caption</strong> is longer than the file itself 🤔",
+    "info": {
+        "mimetype": "text/plain",
+        "size": 14
+    },
+    "m.mentions": {}
+}
+```
+
+</details>
+
+### Summary
+* `filename` is defined for all media msgtypes.
+* `body` is defined to be a caption when `filename` is present and not equal to `body`.
+  * `format` and `formatted_body` are allowed as well for formatted captions.
+* `body` is defined to be the file name when `filename` is not present.
+
 ## Potential issues
 
 In clients that don't show the file name anywhere, the caption would not be
 visible at all. However, extensible events would run into the same issue.
 Clients having captions implemented beforehand may even help eventually
 implementing extensible events.
+
+Old clients may default to using the caption as the file name when the user
+wants to download a file, which will be somewhat weird UX.
 
 ## Alternatives
 
