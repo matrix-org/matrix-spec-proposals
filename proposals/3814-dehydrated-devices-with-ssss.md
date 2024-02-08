@@ -65,8 +65,8 @@ structure as for the [`/keys/upload`] request.
     "keys": {
         "<algorithm>:<device_id>": "<key_base64>",
     },
-    "signatures:" {
-        "<user_id>" {
+    "signatures": {
+        "<user_id>": {
             "<algorithm>:<device_id>": "<signature_base64>"
         }
     }
