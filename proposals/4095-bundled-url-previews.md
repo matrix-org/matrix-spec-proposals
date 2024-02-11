@@ -27,6 +27,10 @@ similar to what the `/preview_url` endpoint currently returns:
 At least one of `matrix:matched_url` and `og:url` MUST be present. All other
 fields are optional.
 
+URL previews are primarily meant for text-based message types (`m.text`,
+`m.notice`, `m.emote`), but they may be used with any message type, as even
+media messages may have captions in the future.
+
 ### Extensible events
 The definition of `matrix:matched_url` changes from "present in `body`" to
 "present in `m.text`", but otherwise the proposal is directly compatible with
