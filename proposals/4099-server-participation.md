@@ -128,6 +128,12 @@ soft fail these events (ignoring that we don't block them at the network level).
 While this is still a huge improvement over the exisitng situation but we need suggesstions for how
 to stop this at the event authoirzation level. I'm begging for advice.
 
+### Unclear if a joining server can recieve a PDU from a room that it is not joined to
+
+The amendments to the join handshake described in this MSC mean that a server has to wait
+for a PDU, `m.server.participation` before it has attmpted to join the room beyond sending an EDU.
+It's not clear to me whether this is currently possible or changes are required to federation send.
+
 ## Alternatives
 
 ## Security considerations
