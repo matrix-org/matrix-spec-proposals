@@ -104,7 +104,7 @@ This is a configuration event that uses the `m.server.participation` capability 
 the server's subscription to the event stream. This is NOT an authorization event.
 
 This is distinct from `m.server.participation` because this event is exclusively controlled
-by the participating server, and other server's cannot modify this event.
+by the participating server, and other server's cannot modify this event[^spec-discussion].
 This allows the server to have exclusive control over whether it is to be sent events (where
 its participation is still `permitted`). We specifically do not want to merge this with
 `participation` to avoid having to specialise state resolution for write conflicts,
@@ -116,14 +116,6 @@ room and delete all persistent data relating to it (should all clients have also
 
 All events that a server can send need to be authorized by an `m.server.participation` event
 with the field `participation` with a value of `permitted`.
-
-### Rethinking capabilities
-
-Can we make capabilities such that the auth rules themselves can be repesented as events
-e.g. `m.server.subscription` requires the presence of `m.server.participation` with
-the key for the server and a field with a specific value? Probably not in this MSC but it would
-make attenuating capabilities a lot cooler.
-
 
 ## Potential issues
 
@@ -138,12 +130,12 @@ to stop this at the event authoirzation level. I'm begging for advice.
 
 ## Alternatives
 
-
 ## Security considerations
-
 
 ## Unstable prefix
 
 ## Dependencies
 
 None.
+
+[^spec-discussion]: This was derived from the following spec discussion: https://matrix.to/#/!NasysSDfxKxZBzJJoE:matrix.org/$0pv9JVVKzuRE6mVBUGQMq44vNTZ1-l19yFcKgqt8Zl8?via=matrix.org&via=envs.net&via=element.io
