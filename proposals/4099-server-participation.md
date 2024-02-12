@@ -14,7 +14,7 @@ The key merits of this proposal are:
 Additional merits that can be explored as an indirect result of this proposal:
 - A way for servers to preemptively load and cache rooms that their users are likely to join.
 - A way for servers to advertise to other servers about rooms that their users are likely to join,
-so that these rooms can be optionally reloaded and cached.
+so that these rooms can be optionally pre-loaded and cached.
 
 This is a more specific component and redesign of the general idea of [MSC3953: Server capability DAG](https://github.com/Gnuxie/matrix-doc/blob/gnuxie/capability-dag/proposals/3953-capability-dag.md).
 
