@@ -1,7 +1,7 @@
 # MSC4099: Participation based authorization for servers in the Matrix DAG
 
 This is a proposal for the representation of servers and their basic responsibilities in the Matrix
-DAG. This MSC does not define or ammend a state resolution algorithm, since there are serveral possible
+DAG. This MSC does not define or amend a state resolution algorithm, since there are several possible
 routes that can be explored with other MSCs. We make considerations to  allow this proposal to be
 implemented on top of the existing `m.room.member`/`m.room.power_levels` centric authorization and
 state resolution algorithms.
@@ -9,12 +9,12 @@ state resolution algorithms.
 The key merits of this proposal are:
 - The ability to deny servers from adding events to the DAG.
 - The ability for clients and bots to examine joining servers before accepting any PDU from them into the room.
-- Arbritrary knock logic for servers.
+- Arbitrary knock logic for servers.
 
 Additional merits that can be explored as an indirect result of this proposal:
 - A way for servers to preemptively load and cache rooms that their users are likely to join.
 - A way for servers to advertise to other servers about rooms that their users are likely to join,
-so that these rooms can be optionally preloaded and cached.
+so that these rooms can be optionally reloaded and cached.
 
 This is a more specific component and redesign of the general idea of [MSC3953: Server capability DAG](https://github.com/Gnuxie/matrix-doc/blob/gnuxie/capability-dag/proposals/3953-capability-dag.md).
 
@@ -31,11 +31,11 @@ already has:
 being used to authorize the user's events.
 - The capability for the user to backfill in relation to visibility.
   + it is unclear to me whether `m.room.history_visibility` restricts a server's ability to backfill or not.
-- A reperesentation of the user's profile and participation information, who they are, why they are in the room, avatar, and displayname.
+- A representation of the user's profile and participation information, who they are, why they are in the room, avatar, and displayname.
 
 ## Proposal
 
-### Considerations for ammending the `make_join` handshake
+### Considerations for amending the `make_join` handshake
 
 When a joining server is instructed by a client to join a room, the joining server sends an
 EDU, `m.server.knock`, to any available resident server that the joining server is aware of. 
@@ -46,7 +46,7 @@ The `m.server.participation` event can be received from any resident server that
 in the room. However, the `m.server.participation` event should only be sent by the room admins.
 
 When `m.server.participation`'s `participation` field has the value `permitted`, then
-the joining server can begin to use `make_join` and `send_join`. However, `send_join` could be ammended
+the joining server can begin to use `make_join` and `send_join`. However, `send_join` could be amended
 in another MSC so that a server is able to produce an `m.server.subscription` configuration event,
 rather than an `m.room.member` event for a specific user. This is so that a server can begin the
 process of joining the room in advance of a user accepting or joining the room via a client,
@@ -62,7 +62,7 @@ possible for room operators to stop a new server from sending multiple PDUs to a
 knowing of, and anticipating a malicious server's existence. This is a fact which has already
 presented major problems in Matrix's history.
 
-This propsal does not just aim to remove the risk of spam joins for members from the same server,
+This proposal does not just aim to remove the risk of spam joins for members from the same server,
 but also spam joins from many servers at the same time. While it is seen as technically difficult
 to acquire user accounts from a large number of Matrix homeservers, it is still possible and
 has happened before. For example, servers could become compromised with a common exploit in a server
@@ -71,7 +71,7 @@ and this has happened already in Matrix's past.
 
 Having an EDU allows us to accept a knock arbitrarily with clients, and more accurately automated bots
 like Draupnir. We can then arbitrarily research the reputation of the server before deciding
-to accept. This also conveniently keeps auth_rules around retricted join rules clean and simple,
+to accept. This also conveniently keeps auth_rules around restricted join rules clean and simple,
 because all logic can be deferred to clients.
 
 The `m.server.knock` EDU can be treated as idempotent by the receiver, although the effect should
@@ -88,7 +88,7 @@ expire after a duration that is subjective to the receiver.
 
 ### The `m.server.participation` event, `state_key: ${serverName}`
 
-This is a capbility that allows the server named in the `state_key` to send `m.server.subscription`,
+This is a capability that allows the server named in the `state_key` to send `m.server.subscription`,
 it is sent to accept the `m.server.knock` EDU. The event can also be used to make a server aware of
 a room's existence, so that it can be optionally preload and cache a room before the server's users
 discover it.
@@ -131,13 +131,13 @@ around if the server manages to have their `participation` `permitted` at some p
 history. Since now they can create PDU's that reference this stale state, and all the other
 participating servers have no option but to soft fail these events
 (ignoring that we don't block them at the network level).
-While this is still a huge improvement over the exisitng situation, we need suggesstions for how
-to stop this at the event authoirzation level. I'm begging for advice.
+While this is still a huge improvement over the existing situation, we need suggestions for how
+to stop this at the event authorization level. I'm begging for advice.
 
-### Unclear if a joining server can recieve a PDU from a room that it is not joined to
+### Unclear if a joining server can receive a PDU from a room that it is not joined to
 
 The amendments to the join handshake described in this MSC mean that a server has to wait
-for a PDU, `m.server.participation` before it has attmpted to join the room beyond sending an EDU.
+for a PDU, `m.server.participation` before it has attempted to join the room beyond sending an EDU.
 It's not clear to me whether this is currently possible or changes are required to federation send.
 
 ### Surely the joining server needs to send the EDU via resident servers, so `make_join` has to be modified
