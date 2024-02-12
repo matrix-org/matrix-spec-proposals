@@ -1,4 +1,4 @@
-# MSC0000: Participation based authorization for servers in the Matrix DAG
+# MSC4099: Participation based authorization for servers in the Matrix DAG
 
 This is a proposal for the representation of servers and their basic responsibilities in the Matrix
 DAG. This MSC does not define or ammend a state resolution algorithm, since there are serveral possible
