@@ -315,8 +315,7 @@ will not be able to share megolm keys.  This issue is not unique to dehydrated
 devices; this also occurs when devices are offline for an extended period of
 time.
 
-This may be addressed by using fallback keys as described in
-[MSC2732](https://github.com/matrix-org/matrix-doc/pull/2732).
+This may be addressed by using [fallback keys](https://spec.matrix.org/v1.9/client-server-api/#one-time-and-fallback-keys).
 
 To reduce the chances of one-time key exhaustion, if the user has an active
 client, it can periodically replace the dehydrated device with a new dehydrated
