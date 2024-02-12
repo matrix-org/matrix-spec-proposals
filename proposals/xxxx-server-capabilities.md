@@ -1,8 +1,8 @@
-# MSC0000: Subscription based authorization of servers in the Matrix DAG 
+# MSC0000: Participation based authorization for servers in the Matrix DAG
 
 This is a proposal for the representation of servers and their basic responsibilities in the Matrix
-DAG. This MSC does not define a new state resoltion algorithm, since there are serveral routes,
-they will be done in other MSCs. 
+DAG. This MSC does not define or ammend a state resolution algorithm, since there are serveral possible
+routes that can be explored with other MSCs. 
 
 ## Context
 
@@ -10,44 +10,50 @@ they will be done in other MSCs.
 
 - Reperesents a desire for the user's server to be informed of new events.
 - Represents the capability for the server to participate in the room on behalf of the user by sending PDU/EDUs.
-- Represents the capability for the server to backfill in relation to visibility.
-- Reperesents presence information, who they are, why they are in the room, avatar, displayname.
+- Represents the capability for the user to backfill in relation to visibility.
+  + it is unclear to me whether `m.room.history_visibility` restricts a server's ability to backfill or not.
+- Reperesents profile and participation information, who they are, why they are in the room, avatar, displayname.
 
 ## Proposal
 
 
-### Joining a room
+### Considerations for ammending the make_join handshake
 
-When a server is instructed to join a room, it sends an EDU `m.server.knock` to the available resident
-servers that the joining server knows of. 
+When a joining server is instructed to join a room, the joining server sends an EDU `m.server.knock`
+to any available resident servers that the joining is aware of. 
 
-The server then waits until it receives an `m.server.is_able_to_subscribe` event with the state_key
-containing the joining server's name via federation send from any resident server tha
+The server then waits until it receives an `m.server.participation` event with the state_key
+containing the joining server's name from any resident server that is participating in the room.
 
-When `m.server.is_able_to_subscribe`'s `is_able_to_subscribe` field has the value `true`, then
+When `m.server.participation`'s `participation` field has the value `permitted`, then
 the can use `make_join` and `send_join`. However, `send_join` could be ammended in another MSC so
 that a server is able to produce an `m.server.subscription` configuration event, rather than an
-`m.room.member` event for a specific user.
+`m.room.member` event for a specific user. This is so that a server can begin the process of joining
+the room in advance of a user accepting or joining the room via a client, in order to improve the
+response time. 
 
-##### edu_type: `m.server.knock`
+### The: `m.server.knock` EDU
 
 Knock is an EDU to make a client in a resident server aware of the joining server's intent to join
 the room. A client can then arbritrarily research the reputation of the joining server before deciding
 whether resident servers of the room should accept any PDU whatsoever from the joining server.
 Currently in room V11 and below, it is not possible for room operators to stop a new server from
-sending PDU's to a room without first knowing of, and anticipating a malicious server's existence,
-which has presented major problems.
+sending multiple PDUs to a room without first knowing of, and anticipating a malicious server's existence.
+This is a fact which has already presented major problems in Matrix's history, and the only protection
+has been faith.
 
-We don't want to just get rid of spam joins for members, but also spam joins from servers.
-Since it is technically difficult to spin up 2000 servers, but it is still possible, they could
-just be compromised existing servers (including with weak registration requirements)
+This propsal does not just aim to remove the risk of spam joins for members from the same server,
+but also spam joins from many servers at the same time.
+While it is seen as technically difficult to accuire user accounts in a large number of Matrix
+homeservers, it is still possible and has happened before. For example, servers can be compromised
+via a common exploit or existing servers that have weak registration requirements can be exploited,
 and this has happened already in Matrix's history.
 
 Having an EDU allows us to accept a knock arbritrarily with a clients, probably automated bots
 like Draupnir. We can then arbitrarily research the reputation of the server before deciding
-to accept. This keeps auth_rules around retricted join rules clean.
+to accept. This also conveniently keeps auth_rules around retricted join rules clean and simple.
 
-The `knock` edu can be treated as idempotent by the receiver, although the effect should probably
+The `m.server.knock` EDU can be treated as idempotent by the receiver, although the effect should probably
 expire after some subjective (to the receiver) duration.
 
 ```
@@ -59,14 +65,11 @@ expire after some subjective (to the receiver) duration.
 }
 ```
 
-##### `m.server.is_able_to_subscribe` state_key: server
+### The `m.server.participation` event, `state_key: ${serverName}`
 
 This is a capbility that allows the state_key'd server to send `m.server.subscription`, it is sent
-to accept the `m.server.knock`. The event can also be used to a server aware of a room's existance,
-so that it can be optionally preload and cache a room before the server's users discover it.
-
-This can be treated like a server invitation if it is sent preemptively, and the server can choose
-to begin the authorization process so that it is ready to join the room when its users do.
+to accept the `m.server.knock` EDU. The event can also be used to make a server aware of a room's
+existance, so that it can be optionally preload and cache a room before the server's users discover it.
 
 Why ban is not required: maybe because policies can be used to ignore the `knock` EDU?
 We shouldn't call it membership anyhow, because being banned in current DAG implies membership,
@@ -77,22 +80,26 @@ letting them know about the rooms existence, only when they find the room should
 If they are already in the room, when they send federation events they could be told somehow,
 unsure if this requires s-s api changes though.
 
+`participation` can be one of `permitted` or `ban`. FIXME: figure out eager ban vs lazy ban for not
+alerting the joining server until necessary.
+
+
 ##### `m.server.subscription` state_key: server
 
-This is a configuration event that uses the `m.server.is_able_to_subscribe` capability to manage
+This is a configuration event that uses the `m.server.participation` capability to manage
 the server's subscription to the event stream. It is not an authorization event.
 
-FIXME: This can probably be merged with `m.server.is_able_to_subscribe`, since it would be
+FIXME: This can probably be merged with `m.server.participation`, since it would be
 kinda the same as membership's invite where initially it is sent by someone else and this isn't
 seen as an issue. We have to take note to avoid force join by only allowing the sender that doesn't
 match to set it to `ban` and `invite`. Actually, I don't know about this, it doesn't feel right
 there's something about having this be something that isn't an auth_event that makes it more elegant.
-I'm not sure about this, since if `m.server.is_able_to_subscribe` is rewritten to be something else
+I'm not sure about this, since if `m.server.participation` is rewritten to be something else
 
 ### Rethinking capabilities
 
 Can we make capabilities such that the auth rules themselves can be repesented as events
-e.g. `m.server.subscription` requires the presence of `m.server.is_able_to_subscribe` with
+e.g. `m.server.subscription` requires the presence of `m.server.participation` with
 the key for the server and a field with a specific value? Probably not in this MSC but it would
 make attenuating capabilities a lot cooler.
 
