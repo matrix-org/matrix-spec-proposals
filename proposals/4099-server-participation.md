@@ -13,6 +13,9 @@ until they have been explicitly named in a new authorization event, `m.room.serv
 origin server.
 - Room admins and their tools now have the ability to examine joining servers before making a decision
 to permit them to participate in the room. This can be thought of as the equivalent of "knocking for servers"[^knocking].
+- We envisage that for most rooms, permitting servers to participate will happen quickly and automatically,
+probably before the server even attempts to join the room if they already well known and trusted within
+the community[^tooling-for-accepting].
 
 Additional merits that can be explored as an indirect result of this proposal:
 - A way for servers to preemptively load and cache rooms that their users are likely to join.
@@ -162,3 +165,9 @@ None.
 
 [^knocking]: Although, knocking is implemented with the auth event `m.room.member` we don't want joining
 servers to be able to send any event to the room at all (other than the `m.server.knock` EDU).
+
+[^tooling-for-accepting]: Though now I say this, we probably need to be able to demonstrate that
+this will be the case. A lot of this is now looking obvious, why weren't we thinking about this
+years ago? Well, there's a lot of context. There always is buddy, you've got the easy view of hindsight.
+Someone had to both conceive and write this and get us out of the dark ages. Ths MSC looks poorer
+in my eyes by the minute.
