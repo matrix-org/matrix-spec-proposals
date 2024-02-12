@@ -2,7 +2,9 @@
 
 This is a proposal for the representation of servers and their basic responsibilities in the Matrix
 DAG. This MSC does not define or ammend a state resolution algorithm, since there are serveral possible
-routes that can be explored with other MSCs.
+routes that can be explored with other MSCs. We make considerations to  allow this proposal to be
+implemented on top of the existing `m.room.member`/`m.room.power_levels` centric authorization and
+state resolution algorithms.
 
 The key merits of this proposal are:
 - The ability to deny servers from adding events to the DAG.
@@ -33,16 +35,18 @@ being used to authorize the user's events.
 
 ## Proposal
 
-### Considerations for ammending the make_join handshake
+### Considerations for ammending the `make_join` handshake
 
-When a joining server is instructed to join a room, the joining server sends an EDU `m.server.knock`
-to any available resident servers that the joining is aware of. 
+When a joining server is instructed by a client to join a room, the joining server sends an
+EDU, `m.server.knock`, to any available resident server that the joining server is aware of. 
 
-The server then waits until it receives an `m.server.participation` event with the state_key
-containing the joining server's name from any resident server that is participating in the room.
+The server then waits until it receives an `m.server.participation` event, which will contain the
+joining server's name within the `state_key`. 
+The `m.server.participation` event can be received from any resident server that is participating
+in the room. However, the `m.server.participation` event should only be sent by the room admins.
 
 When `m.server.participation`'s `participation` field has the value `permitted`, then
-the joining server can use `make_join` and `send_join`. However, `send_join` could be ammended
+the joining server can begin to use `make_join` and `send_join`. However, `send_join` could be ammended
 in another MSC so that a server is able to produce an `m.server.subscription` configuration event,
 rather than an `m.room.member` event for a specific user. This is so that a server can begin the
 process of joining the room in advance of a user accepting or joining the room via a client,
@@ -50,27 +54,28 @@ in order to improve the response time.
 
 ### The: `m.server.knock` EDU
 
-`m.server.knock` is an EDU to make a client in a resident server aware of the joining server's intent to join
-the room. A client can then arbritrarily research the reputation of the joining server before deciding
-whether resident servers of the room should accept any PDU whatsoever from the joining server.
-Currently in room V11 and below, it is not possible for room operators to stop a new server from
-sending multiple PDUs to a room without first knowing of, and anticipating a malicious server's existence.
-This is a fact which has already presented major problems in Matrix's history.
+`m.server.knock` is an EDU to make a client in a resident server aware of the joining server's intent
+to join the room. This client will usually be a room admin. A client can then arbitrarily research
+the reputation of the joining server before deciding whether resident servers of the room should
+accept any PDU whatsoever from the joining server. Currently in room V11 and below, it is not
+possible for room operators to stop a new server from sending multiple PDUs to a room without first
+knowing of, and anticipating a malicious server's existence. This is a fact which has already
+presented major problems in Matrix's history.
 
 This propsal does not just aim to remove the risk of spam joins for members from the same server,
 but also spam joins from many servers at the same time. While it is seen as technically difficult
 to acquire user accounts from a large number of Matrix homeservers, it is still possible and
-has happened before. For example, servers can be compromised via a common exploit in server
-imlementations or existing servers that have weak registration requirements can be exploited,
-and this has happened already in Matrix's history.
+has happened before. For example, servers could become compromised with a common exploit in a server
+implementation. Existing servers that have weak registration requirements could also be exploited,
+and this has happened already in Matrix's past.
 
-Having an EDU allows us to accept a knock arbritrarily with clients, and more accurately automated bots
+Having an EDU allows us to accept a knock arbitrarily with clients, and more accurately automated bots
 like Draupnir. We can then arbitrarily research the reputation of the server before deciding
 to accept. This also conveniently keeps auth_rules around retricted join rules clean and simple,
 because all logic can be deferred to clients.
 
-The `m.server.knock` EDU can be treated as idempotent by the receiver, although the effect should probably
-expire after some subjective (to the receiver) duration.
+The `m.server.knock` EDU can be treated as idempotent by the receiver, although the effect should
+expire after a duration that is subjective to the receiver.
 
 ```
 {
@@ -83,19 +88,19 @@ expire after some subjective (to the receiver) duration.
 
 ### The `m.server.participation` event, `state_key: ${serverName}`
 
-This is a capbility that allows the state_key'd server to send `m.server.subscription`, it is sent
-to accept the `m.server.knock` EDU. The event can also be used to make a server aware of a room's
-existance, so that it can be optionally preload and cache a room before the server's users discover it.
+This is a capbility that allows the server named in the `state_key` to send `m.server.subscription`,
+it is sent to accept the `m.server.knock` EDU. The event can also be used to make a server aware of
+a room's existence, so that it can be optionally preload and cache a room before the server's users
+discover it.
 
-`participation` can be one of `permitted` or `deny`.
-When `participation` is `permitted`, the server is able to join the room.
-When `participation` is `denied`, then the server is not allowed to send any PDU's into the room.
-The denied server must not be sent the denied event unless it is already present within the room,
-or it has attempted to knock. This is to prevent malicious servers being made aware of rooms
-that they have not yet discovered.
+`participation` can be one of `permitted` or `deny`. When `participation` is `permitted`, the server
+is able to join the room. When `participation` is `denied`, then the server is not allowed to send
+any PDU's into the room. The denied server must not be sent a `m.server.participation` event unless
+the targeted is already present within the room, or it has attempted to knock.
+This is to prevent malicious servers being made aware of rooms that they have not yet discovered.
 
 A `reason` field can be present alongside `participation` in order to explain the reason why
-a server has been `denied`. This reason is to be shown to the knocking or previously present
+a server has been `denied`. This reason is to be shown to the knocking, or previously present
 server, so that they can understand what has happened.
 
 ### The `m.server.subscription` event, `state_key: ${serverName}`
@@ -104,7 +109,7 @@ This is a configuration event that uses the `m.server.participation` capability 
 the server's subscription to the event stream. This is NOT an authorization event.
 
 This is distinct from `m.server.participation` because this event is exclusively controlled
-by the participating server, and other server's cannot modify this event[^spec-discussion].
+by the participating server, and other servers cannot modify this event[^spec-discussion].
 This allows the server to have exclusive control over whether it is to be sent events (where
 its participation is still `permitted`). We specifically do not want to merge this with
 `participation` to avoid having to specialise state resolution for write conflicts,
@@ -121,11 +126,12 @@ with the field `participation` with a value of `permitted`.
 
 ### Permitting, then denying a malicious server.
 
-The property that a malicious server can never send a PDU into the room can be worked around if
-the server manages to have their `participation` `permitted`. Since now they can create PDU's
-that reference this stale state, and all the other participating servers have no option but to
-soft fail these events (ignoring that we don't block them at the network level).
-While this is still a huge improvement over the exisitng situation but we need suggesstions for how
+The feature in principle that a malicious server can never send a PDU into the room can be worked
+around if the server manages to have their `participation` `permitted` at some point in the room's
+history. Since now they can create PDU's that reference this stale state, and all the other
+participating servers have no option but to soft fail these events
+(ignoring that we don't block them at the network level).
+While this is still a huge improvement over the exisitng situation, we need suggesstions for how
 to stop this at the event authoirzation level. I'm begging for advice.
 
 ### Unclear if a joining server can recieve a PDU from a room that it is not joined to
@@ -133,6 +139,11 @@ to stop this at the event authoirzation level. I'm begging for advice.
 The amendments to the join handshake described in this MSC mean that a server has to wait
 for a PDU, `m.server.participation` before it has attmpted to join the room beyond sending an EDU.
 It's not clear to me whether this is currently possible or changes are required to federation send.
+
+### Surely the joining server needs to send the EDU via resident servers, so `make_join` has to be modified
+
+The EDU `m.server.knock` surely has to be sent via a resident server so that it can be received
+by all servers within the room.
 
 ## Alternatives
 
