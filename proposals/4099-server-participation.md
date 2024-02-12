@@ -7,9 +7,12 @@ implemented on top of the existing `m.room.member`/`m.room.power_levels` centric
 state resolution algorithms.
 
 The key merits of this proposal are:
-- The ability to deny servers from adding events to the DAG.
-- The ability for clients and bots to examine joining servers before accepting any PDU from them into the room.
-- Arbitrary knock logic for servers.
+- Authorization rules are changed so that there is no way for a server to append an event to the DAG
+until they have been explicitly named in a new authorization event, `m.room.server.participation`. 
+- All events have to be authorized with a corresponding `m.room.server.participation` event for their
+origin server.
+- Room admins and their tools now have the ability to examine joining servers before making a decision
+to permit them to participate in the room. This can be thought of as the equivalent of "knocking for servers"[^knocking].
 
 Additional merits that can be explored as an indirect result of this proposal:
 - A way for servers to preemptively load and cache rooms that their users are likely to join.
@@ -156,3 +159,6 @@ by all servers within the room.
 None.
 
 [^spec-discussion]: This was derived from the following spec discussion: https://matrix.to/#/!NasysSDfxKxZBzJJoE:matrix.org/$0pv9JVVKzuRE6mVBUGQMq44vNTZ1-l19yFcKgqt8Zl8?via=matrix.org&via=envs.net&via=element.io
+
+[^knocking]: Although, knocking is implemented with the auth event `m.room.member` we don't want joining
+servers to be able to send any event to the room at all (other than the `m.server.knock` EDU).
