@@ -1,4 +1,4 @@
-# Markup for mathematical messages
+# MSC2191: Markup for mathematical messages
 
 Some people write using an odd language that has strange symbols.  No, I'm not
 talking about computer programmers; I'm talking about mathematicians.  In order
@@ -83,11 +83,17 @@ version if possible, but if it contains unsupported commands, then it should
 display the fallback.  Thus, it is up to the receiving client to decide what
 commands it will support, rather than dictating what commands must be
 supported.  This comes at a cost of possible inconsistency between clients, but
-is somewhat mitigated by the use of a fallback.
+is somewhat mitigated by the use of a fallback.  Clients should, however,
+aim to support, at minimum, the basic LaTeX2e maths commands and the TeX maths
+commands, with the exception of commands that could be security risks (see
+below).
+
+To improve compatibility, the sender's client may warn the sender if they are
+using a command that comes from another package, such as AMS-LaTeX.
 
 ### Lack of libraries for displaying mathematics
 
-see the corresponding section in [MSC1722](https://github.com/matrix-org/matrix-doc/pull/1722/)
+see the corresponding section in [MSC1722](https://github.com/matrix-org/matrix-spec-proposals/pull/1722/files#diff-4a271297299040dbfa622bfc6d2aab02f9bc82be0b28b2a92ce30b14c5621f94R148-R164)
 
 
 ## Security considerations
@@ -104,18 +110,23 @@ Clients that use a rendering library should only use one that can process the
 LaTeX safely.
 
 Clients should not render mathematics by calling the `latex` executable without
-proper sandboxing, as `latex` was not written to handle untrusted input.  (see,
-for example, https://hovav.net/ucsd/dist/texhack.pdf,
-https://0day.work/hacking-with-latex/, and
-https://hovav.net/ucsd/dist/tex-login.pdf .)
+proper sandboxing, as the `latex` executable was not written to handle
+untrusted input.  (see, for example, <https://hovav.net/ucsd/dist/texhack.pdf>,
+<https://0day.work/hacking-with-latex/>, and
+<https://hovav.net/ucsd/dist/tex-login.pdf>.)  Some LaTeX rendering libraries
+are better suited for processing untrusted input.
 
-Certain commands such as `\newcommand` are potentially dangerous; clients
-should either decline to process those commands, or should take care to ensure
-that they are handled in safe ways.  In general, LaTeX commands should be
-filtered using a whitelist rather than blacklist.
+Certain commands, such as [those that can create
+macros](https://katex.org/docs/supported#macros), are potentially dangerous;
+clients should either decline to process those commands, or should take care to
+ensure that they are handled in safe ways (such as by limiting recursion).  In
+general, LaTeX commands should be filtered by allowing known-good commands
+rather than forbidding known-bad commands.  Some LaTeX libraries may have
+options for doing this.
 
 In general, LaTeX places a heavy burden on client authors to ensure that it is
-processed safely.
+processed safely.  Some LaTeX rendering libraries provide security advice, for
+example, <https://github.com/KaTeX/KaTeX/blob/main/docs/security.md>.
 
 
 ## Conclusion
