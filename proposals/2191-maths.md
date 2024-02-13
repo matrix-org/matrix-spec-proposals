@@ -83,10 +83,10 @@ version if possible, but if it contains unsupported commands, then it should
 display the fallback.  Thus, it is up to the receiving client to decide what
 commands it will support, rather than dictating what commands must be
 supported.  This comes at a cost of possible inconsistency between clients, but
-is somewhat mitigated by the use of a fallback.  Clients should, however,
-aim to support, at minimum, the basic LaTeX2e maths commands and the TeX maths
-commands, with the exception of commands that could be security risks (see
-below).
+is somewhat mitigated by the use of a fallback.  Clients should, however, aim
+to support, at minimum, the basic LaTeX2e maths commands and the TeX maths
+commands, with the possible exception of commands that could be security risks
+(see below).
 
 To improve compatibility, the sender's client may warn the sender if they are
 using a command that comes from another package, such as AMS-LaTeX.
