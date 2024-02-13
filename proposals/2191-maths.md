@@ -20,7 +20,7 @@ A new attribute `data-mx-maths` will be added for use in `<span>` or `<div>`
 elements.  Its value will be mathematical notation in LaTeX format.  `<span>`
 is used for inline math, and `<div>` for display math.  The contents of the
 `<span>` or `<div>` will be a fallback representation or the desired notation
-for clients that do no support mathematical display, or that are unable to
+for clients that do not support mathematical display, or that are unable to
 render the entire `data-mx-maths` attribute.  The fallback representation is
 left up to the sending client and could be, for example, an image, or an HTML
 approximation, or the raw LaTeX source.  When using an image as a fallback, the
