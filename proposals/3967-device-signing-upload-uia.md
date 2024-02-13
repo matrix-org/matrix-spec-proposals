@@ -23,9 +23,22 @@ issue with respect to setting up cross-signing.
 
 ## Proposal
 
-For the `POST /_matrix/client/v3/keys/device_signing/upload` endpoint the
-Homeserver should only require User-Interactive Authentication (UIA) if the user
-already has an existing cross-signing master key uploaded to the Homeserver.
+For the `POST /_matrix/client/v3/keys/device_signing/upload` endpoint, the
+Homeserver MUST require User-Interactive Authentication (UIA) _unless_:
+ - there is no existing cross-signing master key uploaded to the Homeserver, OR
+ - there is an existing cross-signing master key and it exactly matches the
+   cross-signing master key provided in the request body. If there are any additional
+   keys provided in the request (self signing key, user signing key) they MUST also
+   match the existing keys stored on the server. In other words, the request contains
+   no new keys. If there are new keys, UIA MUST be performed.
+
+In these scenarios, this endpoint is not protected by UIA. This means the client does not
+need to send an `auth` JSON object with their request.
+
+This change allows clients to freely upload 1 set of keys, but not modify/overwrite keys if
+they already exist. By allowing clients to upload the same set of keys more than once, this
+makes this endpoint idempotent in the case where the response is lost over the network, which
+would otherwise cause a UIA challenge upon retry.
 
 ## Potential issues
 
