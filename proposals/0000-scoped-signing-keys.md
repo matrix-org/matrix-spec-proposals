@@ -10,75 +10,169 @@ by several physical servers) may prefer to narrow the capabilities of a given ke
 can then be given to individual services within the overall homeserver system to perform exactly what
 is required.
 
-As an example, if a homeserver wishes to run an independent media repository service, that service
-does not require an ability to sign events. Having a key which *can* sign events is potentially a
-security risk if that system were to experience a breach of some kind.
+Few examples of this homeserver architecture exist today, however components are emerging: providers
+which use a detached media repository service within their infrastructure may reasonably expect that
+signing capabilities are limited. If the media repository is further responsible for multiple homeservers,
+multiple homeserver signing keys may be stored in a single place. It is therefore more desirable to
+have highly specific and narrowly scoped keys to limit the reach of a malicious actor, should they
+get access to the collection of signing keys.
 
-This proposal introduces a scope to signing keys, allowing large deployments to segment their infrastructure
-with narrow-access keys.
+This proposal introduces such scoped signing keys, allowing large deployments (when they exist) to
+segment their infrastructure with highly specific keys.
 
-**Note**: As of writing, there are very few if any servers which actually require this functionality.
-Deployments are typically monolothic, where a single (or localized to the physical server) signing
-key is required to operate the service. A more suitable infrastructure for this MSC would be a
-service-oriented deployment or one that uses AWS IAM to limit access to resources (for example).
+**Note**: Currently, the media repository does *not* need a signing key in order to function. With
+the introduction of [MSC3916](https://github.com/matrix-org/matrix-spec-proposals/pull/3916) and
+similar however, the service does need to be able to authenticate requests. The specific use case of
+the author's own [MMR](https://github.com/t2bot/matrix-media-repo) project wishing to support MSC3916
+is the (non-blocking) motivation for this MSC.
 
 ## Proposal
 
+A new [`GET /_matrix/key/v2/server`](https://spec.matrix.org/v1.9/server-server-api/#get_matrixkeyv2server)
+endpoint at `GET /_matrix/key/v3/server` is introduced. The existing endpoint returns keys which serve
+any purpose, and simply adding a `scope` to them could still cause events to be sent in existing room
+versions or wrongly authorize network requests against servers unaware of the `scope`. By introducing
+a new endpoint, servers must explicitly be aware of the keys, therefore allowing them to be properly
+scoped.
 
+The new `/server` endpoint takes the same request parameters as the old one. The response includes a
+`scope` on each of the keys, but is otherwise the same:
+
+```jsonc
+{
+  "server_name": "example.org",
+  "valid_until_ts": 1652262000000,
+  "verify_keys": {
+    "ed25519:abc123": {
+      "key": "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA",
+      "scope": ["m.events"] // NEW!
+    },
+    "ed25519:def456": {
+      "key": "ThisShouldBeABase64Key",
+      "scope": ["m.requests"] // NEW!
+    }
+  },
+  "old_verify_keys": {
+    "ed25519:0ldk3y": {
+      "expired_ts": 1532645052628,
+      "key": "VGhpcyBzaG91bGQgYmUgeW91ciBvbGQga2V5J3MgZWQyNTUxOSBwYXlsb2FkLg",
+      "scope": ["m.events"] // NEW!
+    }
+  },
+  "signatures": {
+    "example.org": {
+      "ed25519:abc123": "VGhpcyBzaG91bGQgYWN0dWFsbHkgYmUgYSBzaWduYXR1cmU",
+      "ed25519:def456": "VGhpcyBzaG91bGQgYWN0dWFsbHkgYmUgYSBzaWduYXR1cmU"
+    }
+  }
+}
+```
+
+> **TODO**: Make example truthful. Use real keys, valid signatures.
+
+`scope` is *required* and must be an array of [namespaced](https://spec.matrix.org/v1.9/appendices/#common-namespaced-identifier-grammar)
+identifiers. The key can only be used for the listed scopes (see below). The scopes *may* change over
+time, and should only be cached for as long as the response object is (typically half the lifetime of
+`valid_until_ts`).
+
+When a server is attempting to verify something, it will already know which scope is required. Therefore,
+unknown or empty scopes do not affect the validity of a given key.
+
+This proposal defines two scopes:
+
+* `m.events` - The key may be used to sign events.
+* `m.requests` - The key may be used to sign requests (`X-Matrix` authentication).
+
+> **TODO**: Consider further scoping `m.requests` and maybe `m.events` down into smaller parts. For
+> example, a key that can only sign `/_matrix/media/*` requests or `m.room.member` events.
+
+To match the new `/server` endpoint, v3 endpoints for [`POST /_matrix/key/v2/query`](https://spec.matrix.org/v1.6/server-server-api/#post_matrixkeyv2query)
+and [`GET /_matrix/key/v2/query/{serverName}`](https://spec.matrix.org/v1.6/server-server-api/#get_matrixkeyv2queryservername)
+are introduced. The endpoints both use the new `/_matrix/key/v3/server` endpoint, but otherwise remain
+unchanged in request and response behaviour.
+
+The legacy `/_matrix/key/v2/*` endpoints are deprecated and discouraged from use.
+
+> **TODO**: Do we need to list `m.requests`-only keys in `old_verify_keys` when they rotate, or can
+> we simply exclude them? `old_verify_keys` is typically used for proving old events are properly
+> signed, and those keys can't be used to verify requests anyways.
+
+### Backwards compatibility: requests
+
+[MSC4029](https://github.com/matrix-org/matrix-spec-proposals/pull/4029) clarifies how the `X-Matrix`
+authentication scheme is meant to work, and currently states that *if* a key is present then it *must*
+be valid. As part of a transition towards scoped signing keys, a server may expose a generic, all-purpose,
+key at `/v2/server` and a different, scoped, key at `/v3/server`. If the server included both keys in
+the `Authorization` headers, the request would fail when reaching a legacy server because that server
+would be unable to locate the newer signing key.
+
+To get around this, the `X-Matrix` auth scheme is duplicated to `X-Matrix-Scoped`. Only scoped signing
+keys may be used for `X-Matrix-Scoped`. `X-Matrix` thus becomes deprecated, and only capable of legacy
+non-scoped keys.
+
+Requests containing both `X-Matrix` and `X-Matrix-Scoped` auth *must* be valid in their respective
+schemes, otherwise the request is failed. Servers *should* send both if possible, or otherwise downgrade
+their requests to `X-Matrix` if an auth error is received for `X-Matrix-Scoped` alone.
+
+> **TODO**: Verify this approach is compatible with existing servers. ie: that they don't fail requests
+> due to unknown auth schemes being present (when combined with `X-Matrix`).
+
+### Backwards compatibility: events
+
+Similar to requests, using a scoped signing key in an existing room version will potentially cause
+older servers to reject the event due to being unable to locate the newer key. We fix this by introducing
+a room version which *requires* the use of scoped signing keys, banning the use of legacy all-purpose
+keys. Existing room versions enact the opposite, as we have today: events *must* be signed by all-purpose
+keys, not scoped keys.
+
+This sufficiently requires servers to become aware of scoped signing keys to continue participating
+in increasingly modern room versions.
 
 ## Potential issues
 
-*Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
-and they should be documented here. There should be some explanation for why the disadvantage is
-acceptable, however - just like in this example.*
-
-Someone is going to have to spend the time to figure out what the template should actually have in it.
-It could be a document with just a few headers or a supplementary document to the process explanation,
-however more detail should be included. A template that actually proposes something should be considered
-because it not only gives an opportunity to show what a basic proposal looks like, it also means that
-explanations for each section can be described. Spending the time to work out the content of the template
-is beneficial and not considered a significant problem because it will lead to a document that everyone
-can follow.
-
+This proposal does nothing to make a future breaking change to signing keys more manageable. Instead,
+this MSC attempts to diminish the impact of the change by providing fallback for requests and isolating
+event signing to dedicated room versions. This approach is awkward, however, and may need to be
+duplicated if the signing key scope/purpose were to ever change again in future.
 
 ## Alternatives
 
-*This is where alternative solutions could be listed. There's almost always another way to do things
-and this section gives you the opportunity to highlight why those ways are not as desirable. The
-argument made in this example is that all of the text provided by the template could be integrated
-into the proposals introduction, although with some risk of losing clarity.*
-
-Instead of adding a template to the repository, the assistance it provides could be integrated into
-the proposal process itself. There is an argument to be had that the proposal process should be as
-descriptive as possible, although having even more detail in the proposals introduction could lead to
-some confusion or lack of understanding. Not to mention if the document is too large then potential
-authors could be scared off as the process suddenly looks a lot more complicated than it is. For those
-reasons, this proposal does not consider integrating the template in the proposals introduction a good
-idea.
-
+Implied throughout is adding the `scope` to the existing signing key endpoints, however this can cause
+issues. Critically, a legacy server unaware of scopes could allow what is intended to be a scoped signing
+key to perform an action that is otherwise illegal in modern servers. This provides a high degree of
+backwards compatibility, but when a concern is that the media repo doesn't need to sign events, the
+security benefits of scoping are lost.
 
 ## Security considerations
 
-*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
-section is a great place to outline some of the security-sensitive components of your proposal, such as
-why a particular approach was (or wasn't) taken. The example here is a bit of a stretch and unlikely to
-actually be worthwhile of including in a proposal, but it is generally a good idea to list these kinds
-of concerns where possible.*
-
-By having a template available, people would know what the desired detail for a proposal is. This is not
-considered a risk because it is important that people understand the proposal process from start to end.
+This proposal theoretically increases security for distributed or partially distributed homeserver
+systems. Such systems are not currently prevalent in Matrix today, however.
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+**Before completing FCP**:
+
+* `X-Matrix-Scoped` becomes `X-MSC0000-Scoped`.
+* `/_matrix/key/v3/*` becomes `/_matrix/key/unstable/org.matrix.msc0000/*`.
+* The room version is `org.matrix.msc0000.11`, based on [room version 11](https://spec.matrix.org/v1.9/rooms/v11/).
+
+**After completing FCP, but before released in spec**:
+
+* `X-Matrix-Scoped` may be used as described.
+* `/_matrix/key/v3/*` may be used as described.
+* The room version remains `org.matrix.msc0000.11`.
+
+**After released in the spec**:
+
+* `X-MSC0000-Scoped` should no longer be used, except for backwards compatibility.
+* `/_matrix/key/unstable/org.matrix.msc0000/*` should no longer be used, except for backwards compatibility.
+* The room version remains `org.matrix.msc0000.11`.
+
+Note that for a room version to become 'stable', an MSC needs to incorporate the changes described by
+this MSC and assign it a stable identifier. See [MSC3820](https://github.com/matrix-org/matrix-spec-proposals/pull/3820)
+as an example of this process.
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
+This MSC would benefit from [MSC4029](https://github.com/matrix-org/matrix-spec-proposals/pull/4029)
+being merged, but does not require it.
