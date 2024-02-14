@@ -1,4 +1,4 @@
-# MSC0000: Scoped signing keys
+# MSC4100: Scoped signing keys
 
 Matrix uses signing keys to authorize [requests](https://spec.matrix.org/v1.9/server-server-api/#authentication)
 between servers and [events](https://spec.matrix.org/v1.9/server-server-api/#signing-events) in a room.
@@ -41,7 +41,7 @@ The new `/server` endpoint takes the same request parameters as the old one. The
 ```jsonc
 {
   "server_name": "example.org",
-  "valid_until_ts": 1652262000000,
+  "valid_until_ts": 1652262410000,
   "verify_keys": {
     "ed25519:abc123": {
       "key": "VGhpcyBzaG91bGQgYmUgYSByZWFsIGVkMjU1MTkgcGF5bG9hZA",
@@ -152,21 +152,21 @@ systems. Such systems are not currently prevalent in Matrix today, however.
 
 **Before completing FCP**:
 
-* `X-Matrix-Scoped` becomes `X-MSC0000-Scoped`.
-* `/_matrix/key/v3/*` becomes `/_matrix/key/unstable/org.matrix.msc0000/*`.
-* The room version is `org.matrix.msc0000.11`, based on [room version 11](https://spec.matrix.org/v1.9/rooms/v11/).
+* `X-Matrix-Scoped` becomes `X-MSC4100-Scoped`.
+* `/_matrix/key/v3/*` becomes `/_matrix/key/unstable/org.matrix.msc4100/*`.
+* The room version is `org.matrix.msc4100.11`, based on [room version 11](https://spec.matrix.org/v1.9/rooms/v11/).
 
 **After completing FCP, but before released in spec**:
 
 * `X-Matrix-Scoped` may be used as described.
 * `/_matrix/key/v3/*` may be used as described.
-* The room version remains `org.matrix.msc0000.11`.
+* The room version remains `org.matrix.msc4100.11`.
 
 **After released in the spec**:
 
-* `X-MSC0000-Scoped` should no longer be used, except for backwards compatibility.
-* `/_matrix/key/unstable/org.matrix.msc0000/*` should no longer be used, except for backwards compatibility.
-* The room version remains `org.matrix.msc0000.11`.
+* `X-MSC4100-Scoped` should no longer be used, except for backwards compatibility.
+* `/_matrix/key/unstable/org.matrix.msc4100/*` should no longer be used, except for backwards compatibility.
+* The room version remains `org.matrix.msc4100.11`.
 
 Note that for a room version to become 'stable', an MSC needs to incorporate the changes described by
 this MSC and assign it a stable identifier. See [MSC3820](https://github.com/matrix-org/matrix-spec-proposals/pull/3820)
