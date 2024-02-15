@@ -50,7 +50,7 @@ hypothetical problem: Element-Web will send both threaded and unthreaded receipt
 question is the most recent event in the room, which is fairly common.
 
 This becomes a major problem when the threaded receipt "wins" and is returned _instead of_ the unthreaded receipt.
-Some clients, such as Element X, do not handle threads and will ignore receipts with a `thread_id`, assuming that
+Some clients, such as Element X, do not handle threads and will ignore receipts with a non-main `thread_id`, assuming that
 clients will also be sending unthreaded receipts. When the threaded receipt "wins" however, these clients will simply
 not see the receipt, despite the sender sending it.
 
@@ -130,6 +130,12 @@ Note:
 Some data is lost when aggregating EDUs, as the fact that a threaded receipt was sent will be lost. This is not a
 problem in practice because an unthreaded receipt always takes precendence over a threaded receipt due to it
 being a superset of the same data.
+
+Thread-unaware clients need to inspect `thread_id: "main"` receipts to accurately get read receipts from thread-aware
+clients, as that is how thread-aware clients send receipts for unthreaded events. Despite this, the
+`main` thread ID has no significance in this proposal, and should be treated as any other thread ID when determining
+precedence. This is because an unthreaded receipt (no thread ID) is still a superset of the `main` thread, just like
+any other thread.
 
 ## Alternatives
 
