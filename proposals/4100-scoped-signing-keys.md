@@ -111,8 +111,9 @@ keys may be used for `X-Matrix-Scoped`. `X-Matrix` thus becomes deprecated, and 
 non-scoped keys.
 
 Requests containing both `X-Matrix` and `X-Matrix-Scoped` auth *must* be valid in their respective
-schemes, otherwise the request is failed. Servers *should* send both if possible, or otherwise downgrade
-their requests to `X-Matrix` if an auth error is received for `X-Matrix-Scoped` alone.
+schemes, otherwise the request is failed. Servers *should* use both in independent `Authorization`
+headers if possible, or otherwise downgrade their requests to `X-Matrix` if an auth error is received
+for `X-Matrix-Scoped` alone.
 
 > **TODO**: Verify this approach is compatible with existing servers. ie: that they don't fail requests
 > due to unknown auth schemes being present (when combined with `X-Matrix`).
