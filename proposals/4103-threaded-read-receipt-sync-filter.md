@@ -48,10 +48,10 @@ mean that [MSC4102](https://github.com/matrix-org/matrix-spec-proposals/pull/410
 would be clearly distinct).
 
 Instead, we propose that they continue to follow MSC3771 (i.e. putting a `thread_id` on the `m.read` RR).  However, we
-give threaded clients the ability to explicitly opt-in to threaded read receipts in the form of a new sync filter param.
-If clients explicitly include `threaded_read_receipts: true` on their sync filter, then the server will send them `m.read`
-events as received by the server.  If this filter is missing or false, then the server must only send the client `m.read` events
-whose `thread_id` is missing or `main`.
+give threaded clients the ability to explicitly opt-in to threaded read receipts in the form of a new sync filter
+param. If clients explicitly include `threaded_read_receipts: true` on their sync filter, then the server will send
+them `m.read` events as received by the server.  If this filter is missing or false, then the server must only send the
+client `m.read` events whose `thread_id` is missing or `main`.
 
 This means that non-thread-aware clients are not spammed or confused with irrelevant threaded read receipts, and can
 calculate read state purely based on main timeline activity.
@@ -61,9 +61,11 @@ calculate read state purely based on main timeline activity.
 We could split the event types into `m.read` and `m.read_thread` but instead have the server synthesise `m.read` events
 out of `m.read_thread` events with `thread_id: 'main'` when the `threaded_read_receipts` sync filter is false or
 absent. This would end up with the same end result, and would be cleaner in terms of type safety (and avoid the need
-for MSC4102), but would mean having to change every thread-aware client rather than just fixing it in servers, and back
-it out of the spec. So for pragmatism, this MSC proposes leaving MSC3771 as is, and instead let clients opt-in via sync
-filters to avoid breaking existing clients.
+for MSC4102), but would mean having to completely change the event type in every thread-aware client rather than just
+fixing it in servers, and back it out of the spec.  So for pragmatism, this MSC proposes leaving MSC3771 as is, and
+instead let thread-aware clients opt-in via sync filters to avoid breaking existing clients.  This can be done
+incrementally by thread-aware clients when they find themselves talking to a server which implements this MSC, thus
+avoiding breaking existing thread-aware clients.
 
 ## Security considerations
 
