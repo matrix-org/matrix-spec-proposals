@@ -128,7 +128,7 @@ Note:
 ## Potential issues
 
 Some data is lost when aggregating EDUs, as the fact that a threaded receipt was sent will be lost. This is not a
-problem in practice because an unthreaded receipt always takes precendence over a threaded receipt due to it
+problem in practice because an unthreaded receipt always takes precedence over a threaded receipt due to it
 being a superset of the same data.
 
 Thread-unaware clients need to inspect `thread_id: "main"` receipts to accurately get read receipts from thread-aware
