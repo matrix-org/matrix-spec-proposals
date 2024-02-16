@@ -74,4 +74,4 @@ can always expose threadedness as metadata to aid this if it were to happen.
 
 ## Unstable prefix
 
-`threaded_read_receipts` should be namespaced as `org.matrix.msc4013.threaded_read_receipts` while unstable.
+`threaded_read_receipts` should be namespaced as `org.matrix.msc4103.threaded_read_receipts` while unstable.
