@@ -9,9 +9,9 @@ read receipts are interpreted as unthreaded ones.
 For instance, let's assume Alice is logged in on two clients: a desktop client which is thread aware, and a mobile
 client which is not.
 
- * Alice has a bunch of unread msgs on her main timeline and a bunch of unread threads.
+ * Alice has a bunch of unread messages on her main timeline and a bunch of unread threads.
  * The threads are newer than the main timeline msgs.
- * She reads a the most recently active thread on desktop, which sends a threaded RR.
+ * She reads the most recently active thread on desktop, which sends a threaded RR.
  * Mobile interprets this as a normal RR, and so marks the room as read (despite she hasn't read main timeline msgs)
  * Desktop however correctly shows the room as still unread.
 
@@ -32,7 +32,7 @@ Another way of thinking of it which may or may not be helpful:
 
 ## Proposal
 
-Non-threade-aware clients should only act on unthreaded RRs.
+Non-thread-aware clients should only act on unthreaded RRs.
 
 Prior to this MSC, there is no way for non-thread-aware clients to determine which RRs are unthreaded, other than seeing
 if the `thread_id` field is missing on the RR or present and equal to `main`.
