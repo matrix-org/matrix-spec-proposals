@@ -65,7 +65,7 @@ for the new key, even if it required a higher level than what the user has.
 
 ## Unstable prefix
 While this MSC is not in a released version of the spec, implementations should
-use `fi.mau.msc2815.include_redacted_content` as the query parameter name, and
+use `fi.mau.msc2815.include_unredacted_content` as the query parameter name, and
 `fi.mau.msc2815.content_keep_ms` in the error response. The error codes should
 use `FI.MAU.MSC2815` as a prefix instead of `M`.
 
