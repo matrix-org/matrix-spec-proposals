@@ -1,4 +1,4 @@
-# MSCXXXX: Join as Muted
+# MSC4106: Join as Muted
 
 ## Introduction 
 
@@ -66,7 +66,7 @@ enabling more ways of screwing that up.
 
 ## Unstable prefix
 
-This MSC is not recommended to be implemented before Authorisation rules are properly specified but if implemented. Please use the version string of `support.feline.mute.msc3909+mscXXXX.v0`
+This MSC is not recommended to be implemented before Authorisation rules are properly specified but if implemented. Please use the version string of `support.feline.mute.msc3909+msc4106.v0`
 
 Once Authorisation rules are specified it's expected that the unstable version after that is v1. This is because the pre authorisation rules properly written down version cant be trusted to interoperate and this is why its NOT recommended to implement a version that is based on this MSC before that section is written.
 
