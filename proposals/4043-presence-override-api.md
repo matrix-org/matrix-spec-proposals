@@ -5,7 +5,7 @@ for presence. Where more important states overrule less important ones. This pro
 
 This proposal proposes a new API that you can call to set a authoritative presence state for your account. This
 state is always used negating all other ways to set presence. So if you set your state to `disabled` from
-MSC4042 then well then your state would always be `disabled`.
+[MSC4042](https://github.com/matrix-org/matrix-spec-proposals/pull/4042) then well then your state would always be `disabled`.
 
 Using a new API for this instead of recycling some old method does come at the benefit of that this just works.
 
