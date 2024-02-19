@@ -1,5 +1,10 @@
 # MSC4104: Auth Lock: Soft-failure-be-gone!
 
+This proposal aims to make soft failure redundant, by introducing
+`m.auth_lock` as a mechanism to stop authorising events that are
+crafted to reference previous state. All without disrupting the
+history of the room for new users.
+
 This MSC introduces a new authorization event, the auth-lock.
 When a server issues an authorization event that supersedes an existing
 event, for example by banning a user, the admin can can choose to
@@ -8,7 +13,7 @@ This can be thought of as a thread lock from forum software applied
 to a specific portion of the DAG. The auth-lock event not only
 specifies the authorization event to lock, but all forward
 extremities that reference the locked authorization event. Thus
-canonicalising the history of that part  of the DAG.
+canonicalising the history of that part of the DAG.
 
 Any further events that reference an authorization event that has been
 *locked* will then be rejected outright during authorization.
