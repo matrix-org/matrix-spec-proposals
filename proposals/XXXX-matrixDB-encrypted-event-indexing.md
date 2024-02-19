@@ -55,8 +55,12 @@ event is derived by other encrypted events. `m.index-descriptor`
         ...
     }
     "transform":{
-        "function":sin(x),
-        "offset":[103.2, 100]
+        //  Integral(sum_j(A_j*Re(e^(i*x_j*B_j))+C_j + A_j/2+1) + C_0)
+        "function": [(A_1,B_1,C_1), (A_2,B_2,C_2)],//<- random generated approx 100 el. 
+        // needs to be integrated before applying
+        "value_range": [-10, 10000]
+        "offset": [x,y],
+        "scale_x": number,
     } 
 }
 ```
