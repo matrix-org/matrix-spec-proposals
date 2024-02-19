@@ -38,7 +38,7 @@ If type is `m.auth_lock`:
 
 Considering the event's `auth_events`:
   1. if the considered auth_event's `event_id` matches a
-	 `locked_event_id` AND the `event_id` of the event is abscent
+	 `locked_event_id` AND the `event_id` of the event is absent
      from any `extremities` field AND the chain of `prev_events`
      from any event referenced by any `extremities` field, reject.
 
@@ -48,7 +48,7 @@ Considering the event's `auth_events`:
 
 Imagine that there are two admins in a room, Alice and Bob.
 Imagine that there is a malicious user Chelsea.
-Alice and Bob both ban chelsea.
+Alice and Bob both ban Chelsea.
 Alice sees Chelsea send events B -> A.
 Bob sees Chelsea send events C -> B -> A.
 Alice and Bob both issue auth_lock events for Chelsea's prior membership.
@@ -72,7 +72,7 @@ an `m.auth_lock` event.
 Joining servers will no longer be able to authorize large parts of the
 room's history.
 
-### Revising auth-lock to deliberatly encode less or no extremities
+### Revising auth-lock to deliberately encode less or no extremities
 
 We counteract this issue by encoding that only one auth_rule can exist
 for the same `state_key` in the room's history.
@@ -87,7 +87,7 @@ Alice is forced to reject event B.
 
 ### Resolution
 
-Bob receives Lock-P, and notices that B is abscent from the chain
+Bob receives Lock-P, and notices that B is absent from the chain
 specified in Lock-P's `extremities`.
 
 We would need a new MSC for bob to resend B as B' such that servers who
@@ -97,7 +97,7 @@ more recent authorization events.
 ### Redaction of the lock
 
 We probably do want the lock to be redactable.
-But how can you be sure that you're not opening pandora's box by
+But how can you be sure that you're not opening Pandora's box by
 allowing hidden malicious events residing on participating servers
 to suddenly be incorporated into the DAG?
 
