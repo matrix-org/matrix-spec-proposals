@@ -79,11 +79,6 @@ an `m.auth_lock` event.
 Joining servers will no longer be able to authorize large parts of the
 room's history.
 
-### Revising auth-lock to deliberately encode less or no extremities
-
-We counteract this issue by encoding that only one auth_rule can exist
-for the same `state_key` in the room's history.
-
 ### Split history for unprivileged users on unprivileged servers
 
 Imagine that Alice issues an `m.room.power_levels` event P.
