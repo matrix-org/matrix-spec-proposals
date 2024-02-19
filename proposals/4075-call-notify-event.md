@@ -19,7 +19,7 @@ mentions make sure no unnecessary push notification is sent.
 
 This event contains the following fields by leveraging intentional mentions.
 
-```
+```json
 {
   "content": {
     "application": "m.call | m.other_matrix_session_type | ...",
@@ -94,8 +94,7 @@ Sending a `m.call.notify` should happen only if all of these conditions apply:
 
 It would be possible to use the call member room state events to determine a call start.
 The logic would be as following:
-
-_If we receive an event we check if there is are already other members
+_If we receive an event we check if  are already other members
 (call.member events) for the call. In case there is not we make the phone ring._
 
 Pros:
@@ -105,10 +104,7 @@ Pros:
   start a new call. Because they would automatically send an event by joining.
 - There would be less traffic. With the proposed solution the first one who joins
   needs to send a `m.call.notify` event and a `m.call.member` state event.
-- Very flexible, since the `m.call.notify` event is separate from a call
-  participation. This allows an external instance (a meeting organizer bot) to
-  just ring all the users which are invited to a meeting without needing to be
-  part of the call.
+
 
 Cons
 
@@ -117,6 +113,11 @@ Cons
   (Consider a very large room where I want to start a call only for the interested
   ones who want to discuss a side project. It would be very annoying if the
   initiator could not control how and who is going to be informed about that call.)
+
+- Additionally, it is not as flexible as the proposed separate event.
+  Which allows an external instance (a meeting organizer bot) to
+  just ring all the users which are invited to a meeting without needing to
+  participate in the call with a `m.call.member` event of the call.
 - Push notifications would need to be sent for EVERY `m.call.member` state event
   update. For each joining and leaving user and for each membership update during
   a call (due to a SFU (single forwarding unit) change, changing devices
