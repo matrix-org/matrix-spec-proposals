@@ -37,10 +37,17 @@ If type is `m.auth_lock`:
 #### Authorizing other events
 
 Considering the event's `auth_events`:
-  1. if the considered auth_event's `event_id` matches a
-	 `locked_event_id` AND the `event_id` of the event is absent
-     from any `extremities` field AND the chain of `prev_events`
-     from any event referenced by any `extremities` field, reject.
+  1. For each `auth_event` all `m.auth_lock` events with a
+     `locked_event_id` matching the `event_id` of the `auth_event`
+     are found from the room's current state.
+     From each `m.auth_lock` event relevant to one `auth_event`, the
+     `extremities` fields are combined to form a set of all `extremities`
+     relevant to the `auth_event`.
+     If the considered auth_event's `event_id` matches any
+     `m.auth_lock`'s `locked_event_id` field AND the `event_id` of the
+     event being authorized is absent from both the `extremities` set
+     AND the `event_id` of any connected event referenced via each
+     extremity's `prev_events`, reject.
 
 ## Potential issues
 
