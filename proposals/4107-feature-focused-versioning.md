@@ -9,7 +9,7 @@ Reading material:
 
 Implementation of a feature in Matrix can span multiple different systems and require multiple different
 identifiers. Typically, a feature begins its implementation as an *unstable* feature flag attached to
-a particular MSC. As that MSC progresses, the feature flag may change to accomodate sub-versioning of
+a particular MSC. As that MSC progresses, the feature flag may change to accommodate sub-versioning of
 the proposed feature. When the MSC finally finishes a `merge` FCP, implementations can then use *stable*
 identifiers - the ones described in the actual normative sections of the MSC (`m.*`). Typically, clients
 require further feature negotiation to determine if they can actually use that feature though, because
@@ -23,7 +23,7 @@ There are several issues with this approach. Most obviously, clients want to kno
 mechanics outside the versioning scheme can ensure MSCs are written up as formal spec.
 
 In a related concern, server implementations *often* lag behind the spec release cycle due to the size
-and complexity of the spec. The spec itself is very monolothic, and that causes friction when a server
+and complexity of the spec. The spec itself is very monolithic, and that causes friction when a server
 wishes to support a given subset or limited scope, or when a server implementation is trying to get
 started and immediately falls behind on client support. Unfortunately, reducing the release cadence
 from quartly to biannually does not have an effect of easier releases to implement - the releases just
