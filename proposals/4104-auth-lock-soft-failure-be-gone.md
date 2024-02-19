@@ -2,7 +2,7 @@
 
 This MSC introduces a new authorization event, the auth-lock.
 When a server issues an authorization event that supersedes an existing
-event, for example by banning a user, the user can can choose to
+event, for example by banning a user, the admin can can choose to
 canonicalise their version of the room history by issuing an auth-lock.
 This can be thought of as a thread lock from forum software applied
 to a specific portion of the DAG. The auth-lock event not only
@@ -11,7 +11,7 @@ extremities that reference the locked authorization event. Thus
 canonicalising the history of that part  of the DAG.
 
 Any further events that reference an authorization event that has been
-*locked* will then be rejected outright in during authorization.
+*locked* will then be rejected outright during authorization.
 
 ## Proposal
 
@@ -58,7 +58,7 @@ Bob's `extremities` field includes `C`.
 The receiving server must combine the `extremities` from both events
 such that the canonical history becomes C -> B -> A.
 
-### Issuing auth-lock to deliberatly encode less or no extremities
+### Issuing auth-lock to deliberately encode less or no extremities
 
 #### Effects on participating servers 
 
