@@ -5,7 +5,7 @@ This proposal aims to make soft failure redundant, by introducing
 crafted to reference previous state. All without disrupting the
 history of the room for new users.
 
-This MSC introduces a new authorization event, the auth-lock.
+This MSC introduces a new authorization event, the `m.auth_lock` event.
 When a server issues an authorization event that supersedes an existing
 event, for example by banning a user, the admin can choose to
 canonicalise their version of the room history by issuing an auth-lock.
@@ -22,11 +22,24 @@ Any further events that reference an authorization event that has been
 
 ### The auth lock event `m.auth_lock`
 
+The `m.auth_lock` event can be issued in scenarios where room admins
+or their tooling detect or anticipate events referring to previous
+authorization events. This should only be done eagerly when there
+is reasonable risk. For example, it would be inappropriate to
+issue an `m.auth_lock` event after banning a spammer that
+resided on `matrix.org` as it is unlikely for matrix.org
+to attempt to maliciously reference old authorization events.
+By delaying the application of `m.auth_lock`, room administrators
+reduce the risk of divergence. This is something that currently
+occurs frequently with [soft failure](https://github.com/element-hq/synapse/issues/9329).
+
 #### Properties
 - `content`:
   + `locked_event_id`: The event_id of the authorization event to lock.
+    This is protected from redaction.
   + `extremities`: A list of extremities that should be shared to other
    servers representing the canonicalised version of the room history.
+   This is protected from redaction.
 
 - `state_key`: A sha256 of the `locked_event_id` concatenated with the
   mxid of the event sender. We do this so that different room admins
