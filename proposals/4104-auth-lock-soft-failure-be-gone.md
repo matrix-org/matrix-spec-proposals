@@ -23,13 +23,16 @@ Any further events that reference an authorization event that has been
 ### The auth lock event `m.auth_lock`
 
 #### Properties
-- content:
+- `content`:
   + `locked_event_id`: The event_id of the authorization event to lock.
   + `extremities`: A list of extremities that should be shared to other
    servers representing the canonicalised version of the room history.
 
-- state_key: A sha256 of the `locked_event_id` concatenated with the
-  mxid of the event sender.
+- `state_key`: A sha256 of the `locked_event_id` concatenated with the
+  mxid of the event sender. We do this so that different room admins
+  can optionally specify their own versions of the `extremities`
+  that will combine to form a complete set to be considered during
+  authorization. This also keeps `extremities` conflict free.
 
 ### Changes to auth_rules
 
