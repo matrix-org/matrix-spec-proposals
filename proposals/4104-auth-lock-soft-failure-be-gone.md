@@ -7,7 +7,7 @@ history of the room for new users.
 
 This MSC introduces a new authorization event, the auth-lock.
 When a server issues an authorization event that supersedes an existing
-event, for example by banning a user, the admin can can choose to
+event, for example by banning a user, the admin can choose to
 canonicalise their version of the room history by issuing an auth-lock.
 This can be thought of as a thread lock from forum software applied
 to a specific portion of the DAG. The auth-lock event not only
