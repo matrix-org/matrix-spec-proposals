@@ -65,7 +65,7 @@ Bob's `extremities` field includes `C`.
 The receiving server must combine the `extremities` from both events
 such that the canonical history becomes C -> B -> A.
 
-### Issuing auth-lock to deliberately encode less or no extremities
+### Issuing `m.auth_lock` to deliberately encode less or no extremities
 
 #### Effects on participating servers 
 
@@ -87,7 +87,7 @@ Alice issues an auth_lock for P, Lock-P.
 Imagine that Alice receives an event B from Bob that references P.
 Alice is forced to reject event B.
 
-### Resolution
+#### Resolution
 
 Bob receives Lock-P, and notices that B is absent from the chain
 specified in Lock-P's `extremities`.
@@ -96,7 +96,7 @@ We would need a new MSC for bob to resend B as B' such that servers who
 have accepted B would recognise B' to be a duplicate that references
 more recent authorization events.
 
-### Redaction of the lock
+### Redaction of `m.auth_lock`
 
 We probably do want the lock to be redactable.
 But how can you be sure that you're not opening Pandora's box by
