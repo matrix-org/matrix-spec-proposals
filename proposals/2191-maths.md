@@ -25,7 +25,7 @@ render the entire `data-mx-maths` attribute.  The fallback representation is
 left up to the sending client and could be, for example, an image, or an HTML
 approximation, or the raw LaTeX source.  When using an image as a fallback, the
 sending client should be aware of issues that may arise from the receiving
-client using a different background colours.
+client using a different background colour.
 
 Example (with line breaks and indentation added to `formatted_body` for clarity):
 
