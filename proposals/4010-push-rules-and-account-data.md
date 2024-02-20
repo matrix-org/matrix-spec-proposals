@@ -14,6 +14,8 @@ with the `m.push_rules` type leading to different behavior on different homeserv
   *won't use the data when evaluating push rules*.
 * Dendrite will return an HTTP 403 if you attempt to set `m.push_rules` via
   `/account_data`.
+* Conduit has no protections for special account data yet, will accept the data _and_ use those when
+  evaluating push rules.
 
 The [fully read marker](https://spec.matrix.org/v1.6/client-server-api/#fully-read-markers)
 operates in a similar way and
