@@ -41,7 +41,7 @@ is modified to add a new `features` key. The existing `unstable_features` and `v
 {
   // New field
   "features": {
-    "msc3440": ["org.matrix.msc3440", "fcp-stable", "v1.4", "v1.5", "v1.6"],
+    "msc3440": ["org.matrix.msc3440", "fcp-stable:msc3440", "v1.4", "v1.5", "v1.6"],
     "msc1772": ["org.matrix.msc1772"],
     "encryption": ["r0.0.0", /* ... */, "v1.9"],
     "msc2659": ["fcp-stable:msc2659"],
