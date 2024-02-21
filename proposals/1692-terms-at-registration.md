@@ -1,42 +1,26 @@
 # MSC1692: Terms of service at registration
 
-Homeservers may wish to force users to accept a set of policies or otherwise have
-users be aware of changes to the terms of service, privacy policy, or other document.
-This proposal describes how a server can present these documents during registration
-for users to accept before gaining access to the service.
+At registration, homeservers may wish to require the user to accept a given set of policy documents,
+such as a terms of service and privacy policy. There may be many different types of documents, all of
+which are versioned and presented in (potentially) multiple languages.
 
-**Note**: This proposal used to contain an entire TOS API for clients to interact with.
-This functionality has been moved to [MSC3012](https://github.com/matrix-org/matrix-doc/pull/3012).
+This proposal covers requiring users to accept the list of documents during registration. Future
+improvements could include informing the user *after* registration that a document has changed, which
+has been spun out to [MSC3012](https://github.com/matrix-org/matrix-spec-proposals/pull/3012).
 
-## General principles and motivation
+## Proposal
 
-* The homeserver should be able to support multiple documents (ie: a TOS, privacy policy,
-  and acceptable use policy).
-* The policies should be versioned.
-* The homeserver should be able to prevent use of the service if a given version of a document
-  has not been accepted.
+The [User-Interactive Authentication](https://spec.matrix.org/v1.9/client-server-api/#user-interactive-authentication-api)
+API (UIA) is currently used during registration to create a new account. In future, it is expected
+that OIDC will be used instead, which can include support for this MSC's principles without needing
+to change the Matrix specification itself. As a measure until OIDC is here though, this MSC exists
+to fill the need.
 
-The primary use of this functionality is to address a user experience issue in most clients
-where they are not aware of the terms of service until after they've registered. Given the
-terms of service can change at any time, having a versioned set of documents is required to
-ensure everyone has accepted the updated terms of service. Homeservers should additionally
-be able to decide if the given change to their terms of service requires everyone to accept
-the new terms or if no action is required by users, though this feature is covered by
-[MSC3012](https://github.com/matrix-org/matrix-doc/pull/3012) instead of here.
+A new `m.login.terms` authentication type is introduced, allowing servers to include it in registration
+flows if it desires. Servers which do not require policy acceptance at registration are not required
+to support this flow.
 
-The version for a policy should be arbitrary and potentially non-linear, similar to room
-versions. The acceptable range of characters for a version is `[a-zA-Z0-9.-]`.
-
-## UI authentication changes
-
-This API makes changes to the registration and login flows for UI auth, and makes use of UI
-auth at a later stage in this proposal.
-
-### Registration
-
-During registration it may be important to the homeserver that the user accepts a given policy.
-This is described as a `m.login.terms` authentication type. The parameters for this authentication
-type are:
+The parameters for the new authentication type look like the following:
 
 ```json
 {
@@ -67,14 +51,45 @@ type are:
 }
 ```
 
-Policies have a unique identifer represented by the key under `policies`. The `version` is
-provided as a convience to the client, and is alongside the different language options for
-each of the policies. The `name` of a policy is human-readable name for the document. The
-`url` may point to any location. The implicit ID may only contain characters in `[a-zA-Z0-9_]`.
+Each key under `policies` is a "Policy ID", and defined by the server. They are an opaque identifier
+(described later in this proposal). Each policy object associated with the policy ID has a required
+`version` as a convenience to the client, and is another opaque identifier. All other keys are language
+codes to represent the same document. The client picks the language which best suits the user.
 
-Policies supplied via this method are implied to be required and therefore blocking for the
-registration to continue.
+Language codes *should* be [ISO 639-1] codes combined with an [ISO 3166-1] region code, separated by
+an underscore. Servers may also wish to use [BCP 47] codes. This recommendation is to ensure maximum
+compatibility with existing conventions around language choices in (Matrix) clients.
 
-The client is not required to supply any additional information in the auth dict to complete
-this stage. The client should present the user with a checkbox to accept each policy with a
-link to said policy, or otherwise rely on the homeserver's fallback.
+[ISO 639-1]: https://en.wikipedia.org/wiki/ISO_639-1
+[ISO 3166-1]: https://en.wikipedia.org/wiki/ISO_3166-1
+[BCP 47]: https://en.wikipedia.org/wiki/IETF_language_tag
+
+`name` and `url` for each policy document are required, and are arbitrary strings with no maximum
+length. `url` *must* be a valid URI with scheme `https://` or `http://`. Insecure HTTP is discouraged.
+
+If a client encounters an invalid parameter, registration should stop with an error presented to the
+user.
+
+To complete the stage, accepting *all* of the listed documents, the client submits an empty `auth`
+dict. The client *should* present the user with a checkbox to accept each policy, including a link
+to the provided `url`, or otherwise rely on [fallback auth](https://spec.matrix.org/v1.9/client-server-api/#fallback).
+
+The server is expected to track which document versions it presented to the user during registration,
+if applicable.
+
+### Opaque identifier
+
+This definition is inherited from [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/pull/1597).
+
+> Opaque IDs must be strings consisting entirely of the characters
+> `[0-9a-zA-Z._~-]`. Their length must not exceed 255 characters and they must
+> not be empty.
+
+## Unstable prefix
+
+Regretfully, this MSC was implemented with *stable* identifiers before an unstable identifiers process
+was established. Implementation has existed in some capacity since 2018: https://github.com/matrix-org/synapse/pull/4004
+
+Noting that the modern MSC process forbids such behaviour, new implementations should use the stable
+`m.login.terms` identifier regardless of MSC status. If the MSC changes in a breaking way, a new
+identifier *must* be chosen, and *must* include a proper unstable prefix.
