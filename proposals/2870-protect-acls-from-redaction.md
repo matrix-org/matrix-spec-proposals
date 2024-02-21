@@ -47,4 +47,4 @@ changes (such as by clicking a 'show details' link).
 ## Unstable prefix
 
 Implementations looking to test this MSC before it lands in a released room version can use `org.matrix.msc2870`
-as the room version.
+as the room version, using [room version 11](https://spec.matrix.org/v1.9/rooms/v11/) as a base.
