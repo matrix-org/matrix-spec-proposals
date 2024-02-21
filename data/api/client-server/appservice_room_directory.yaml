@@ -43,7 +43,7 @@ paths:
         This API requires the use of an application service access token (`as_token`)
         instead of a typical client's access_token. This API cannot be invoked by
         users who are not identified as application services.
-      operationId: updateAppserviceRoomDirectoryVsibility
+      operationId: updateAppserviceRoomDirectoryVisibility
       parameters:
         - in: path
           type: string

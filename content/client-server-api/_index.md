@@ -4,7 +4,7 @@ weight: 10
 type: docs
 ---
 
-The client-server API provides a simple lightweight API to let clients
+The client-server API allows clients to
 send messages, control rooms and synchronise conversation history. It is
 designed to support both lightweight clients which store no state and
 lazy-load data from the server as required - as well as heavyweight
@@ -20,20 +20,15 @@ supported as optional extensions - e.g. a packed binary encoding over
 stream-cipher encrypted TCP socket for low-bandwidth/low-roundtrip
 mobile usage. For the default HTTP transport, all API calls use a
 Content-Type of `application/json`. In addition, all strings MUST be
-encoded as UTF-8. Clients are authenticated using opaque `access_token`
-strings (see [Client Authentication](#client-authentication) for
-details), passed as a query string parameter on all requests.
+encoded as UTF-8.
 
-The names of the API endpoints for the HTTP transport follow a
-convention of using underscores to separate words (for example
-`/delete_devices`). The key names in JSON objects passed over the API
-also follow this convention.
+Clients are authenticated using opaque `access_token` strings (see [Client
+Authentication](#client-authentication) for details).
 
-{{% boxes/note %}}
-There are a few historical exceptions to this rule, such as
-`/createRoom`. A future version of this specification will address the
-inconsistency.
-{{% /boxes/note %}}
+See also [Conventions for Matrix APIs](/appendices#conventions-for-matrix-apis)
+in the Appendices for conventions which all Matrix APIs are expected to follow.
+
+### Standard error response
 
 Any errors which occur at the Matrix API level MUST return a "standard
 error response". This is a JSON object which looks like:
@@ -46,15 +41,17 @@ error response". This is a JSON object which looks like:
 ```
 
 The `error` string will be a human-readable error message, usually a
-sentence explaining what went wrong. The `errcode` string will be a
-unique string which can be used to handle an error message e.g.
-`M_FORBIDDEN`. These error codes should have their namespace first in
-ALL CAPS, followed by a single \_ to ease separating the namespace from
-the error code. For example, if there was a custom namespace
-`com.mydomain.here`, and a `FORBIDDEN` code, the error code should look
-like `COM.MYDOMAIN.HERE_FORBIDDEN`. There may be additional keys
-depending on the error, but the keys `error` and `errcode` MUST always
-be present.
+sentence explaining what went wrong.
+
+The `errcode` string will be a unique string which can be used to handle an
+error message e.g.  `M_FORBIDDEN`. Error codes should have their namespace
+first in ALL CAPS, followed by a single `_`. For example, if there was a custom
+namespace `com.mydomain.here`, and a `FORBIDDEN` code, the error code should
+look like `COM.MYDOMAIN.HERE_FORBIDDEN`. Error codes defined by this
+specification should start `M_`.
+
+Some `errcode`s define additional keys which should be present in the error
+response object, but the keys `error` and `errcode` MUST always be present.
 
 Errors are generally best expressed by their error code rather than the
 HTTP status code returned. When encountering the error code `M_UNKNOWN`,
@@ -66,120 +63,126 @@ found. However, if the client were to receive an error code of
 `M_UNKNOWN` with a 400 Bad Request, the client should assume that the
 request being made was invalid.
 
-The common error codes are:
+#### Common error codes
 
-`M_FORBIDDEN`  
+These error codes can be returned by any API endpoint:
+
+`M_FORBIDDEN`
 Forbidden access, e.g. joining a room without permission, failed login.
 
-`M_UNKNOWN_TOKEN`  
+`M_UNKNOWN_TOKEN`
 The access token specified was not recognised.
 
 An additional response parameter, `soft_logout`, might be present on the
 response for 401 HTTP status codes. See [the soft logout
 section](#soft-logout) for more information.
 
-`M_MISSING_TOKEN`  
+`M_MISSING_TOKEN`
 No access token was specified for the request.
 
-`M_BAD_JSON`  
+`M_BAD_JSON`
 Request contained valid JSON, but it was malformed in some way, e.g.
 missing required keys, invalid values for keys.
 
-`M_NOT_JSON`  
+`M_NOT_JSON`
 Request did not contain valid JSON.
 
-`M_NOT_FOUND`  
+`M_NOT_FOUND`
 No resource was found for this request.
 
-`M_LIMIT_EXCEEDED`  
+`M_LIMIT_EXCEEDED`
 Too many requests have been sent in a short period of time. Wait a while
 then try again.
 
-`M_UNKNOWN`  
+`M_UNKNOWN`
 An unknown error has occurred.
 
-Other error codes the client might encounter are:
+#### Other error codes
 
-`M_UNRECOGNIZED`  
+The following error codes are specific to certain endpoints.
+
+<!-- TODO: move them to the endpoints that return them -->.
+
+`M_UNRECOGNIZED`
 The server did not understand the request.
 
-`M_UNAUTHORIZED`  
+`M_UNAUTHORIZED`
 The request was not correctly authorized. Usually due to login failures.
 
-`M_USER_DEACTIVATED`  
+`M_USER_DEACTIVATED`
 The user ID associated with the request has been deactivated. Typically
 for endpoints that prove authentication, such as `/login`.
 
-`M_USER_IN_USE`  
+`M_USER_IN_USE`
 Encountered when trying to register a user ID which has been taken.
 
-`M_INVALID_USERNAME`  
+`M_INVALID_USERNAME`
 Encountered when trying to register a user ID which is not valid.
 
-`M_ROOM_IN_USE`  
+`M_ROOM_IN_USE`
 Sent when the room alias given to the `createRoom` API is already in
 use.
 
-`M_INVALID_ROOM_STATE`  
+`M_INVALID_ROOM_STATE`
 Sent when the initial state given to the `createRoom` API is invalid.
 
-`M_THREEPID_IN_USE`  
+`M_THREEPID_IN_USE`
 Sent when a threepid given to an API cannot be used because the same
 threepid is already in use.
 
-`M_THREEPID_NOT_FOUND`  
+`M_THREEPID_NOT_FOUND`
 Sent when a threepid given to an API cannot be used because no record
 matching the threepid was found.
 
-`M_THREEPID_AUTH_FAILED`  
+`M_THREEPID_AUTH_FAILED`
 Authentication could not be performed on the third party identifier.
 
-`M_THREEPID_DENIED`  
+`M_THREEPID_DENIED`
 The server does not permit this third party identifier. This may happen
 if the server only permits, for example, email addresses from a
 particular domain.
 
-`M_SERVER_NOT_TRUSTED`  
+`M_SERVER_NOT_TRUSTED`
 The client's request used a third party server, e.g. identity server,
 that this server does not trust.
 
-`M_UNSUPPORTED_ROOM_VERSION`  
+`M_UNSUPPORTED_ROOM_VERSION`
 The client's request to create a room used a room version that the
 server does not support.
 
-`M_INCOMPATIBLE_ROOM_VERSION`  
+`M_INCOMPATIBLE_ROOM_VERSION`
 The client attempted to join a room that has a version the server does
 not support. Inspect the `room_version` property of the error response
 for the room's version.
 
-`M_BAD_STATE`  
+`M_BAD_STATE`
 The state change requested cannot be performed, such as attempting to
 unban a user who is not banned.
 
-`M_GUEST_ACCESS_FORBIDDEN`  
+`M_GUEST_ACCESS_FORBIDDEN`
 The room or resource does not permit guests to access it.
 
-`M_CAPTCHA_NEEDED`  
+`M_CAPTCHA_NEEDED`
 A Captcha is required to complete the request.
 
-`M_CAPTCHA_INVALID`  
+`M_CAPTCHA_INVALID`
 The Captcha provided did not match what was expected.
 
-`M_MISSING_PARAM`  
+`M_MISSING_PARAM`
 A required parameter was missing from the request.
 
-`M_INVALID_PARAM`  
+`M_INVALID_PARAM`
 A parameter that was specified has the wrong value. For example, the
 server expected an integer and instead received a string.
 
-`M_TOO_LARGE`  
+`M_TOO_LARGE`
 The request or entity was too large.
 
-`M_EXCLUSIVE`  
+`M_EXCLUSIVE`
 The resource being requested is reserved by an application service, or
 the application service making the request has not created the resource.
 
-`M_RESOURCE_LIMIT_EXCEEDED`  
+`M_RESOURCE_LIMIT_EXCEEDED`
 The request cannot be completed because the homeserver has reached a
 resource limit imposed on it. For example, a homeserver held in a shared
 hosting environment may reach a resource limit if it starts using too
@@ -189,7 +192,7 @@ Typically, this error will appear on routes which attempt to modify
 state (e.g.: sending messages, account data, etc) and not routes which
 only read state (e.g.: `/sync`, get account data, etc).
 
-`M_CANNOT_LEAVE_SERVER_NOTICE_ROOM`  
+`M_CANNOT_LEAVE_SERVER_NOTICE_ROOM`
 The user is unable to reject an invite to join the server notices room.
 See the [Server Notices](#server-notices) module for more information.
 
@@ -226,7 +229,7 @@ headers to be returned by servers on all requests are:
 
     Access-Control-Allow-Origin: *
     Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-    Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization
+    Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization
 
 ## Server Discovery
 
@@ -238,23 +241,23 @@ time.
 
 In this section, the following terms are used with specific meanings:
 
-`PROMPT`  
+`PROMPT`
 Retrieve the specific piece of information from the user in a way which
 fits within the existing client user experience, if the client is
 inclined to do so. Failure can take place instead if no good user
 experience for this is possible at this point.
 
-`IGNORE`  
+`IGNORE`
 Stop the current auto-discovery mechanism. If no more auto-discovery
 mechanisms are available, then the client may use other methods of
 determining the required parameters, such as prompting the user, or
 using default values.
 
-`FAIL_PROMPT`  
+`FAIL_PROMPT`
 Inform the user that auto-discovery failed due to invalid/empty data and
 `PROMPT` for the parameter.
 
-`FAIL_ERROR`  
+`FAIL_ERROR`
 Inform the user that auto-discovery did not return any usable URLs. Do
 not continue further with the current login process. At this point,
 valid data was obtained, but no server is available to serve the client.
@@ -297,9 +300,9 @@ specify parameter values. The flow for this method is as follows:
     6.  If the `m.identity_server` property is present, extract the
         `base_url` value for use as the base URL of the identity server.
         Validation for this URL is done as in the step above, but using
-        `/_matrix/identity/api/v1` as the endpoint to connect to. If the
+        `/_matrix/identity/v2` as the endpoint to connect to. If the
         `m.identity_server` property is present, but does not have a
-        `base_url` value, then `FAIL_ERROR`.
+        `base_url` value, then `FAIL_PROMPT`.
 
 {{% http-api spec="client-server" api="wellknown" %}}
 
@@ -606,7 +609,7 @@ flow with three stages will resemble the following diagram:
 
 #### Authentication types
 
-This specification defines the following auth types:  
+This specification defines the following auth types:
 -   `m.login.password`
 -   `m.login.recaptcha`
 -   `m.login.sso`
@@ -893,7 +896,7 @@ type of identifier being used, and depending on the type, has other
 fields giving the information required to identify the user as described
 below.
 
-This specification defines the following identifier types:  
+This specification defines the following identifier types:
 -   `m.id.user`
 -   `m.id.thirdparty`
 -   `m.id.phone`
@@ -1020,6 +1023,41 @@ client supports it, the client should redirect the user to the
 `/redirect` endpoint for [client login via SSO](#client-login-via-sso). After authentication
 is complete, the client will need to submit a `/login` request matching
 `m.login.token`.
+
+#### Appservice Login
+
+An appservice can log in by providing a valid appservice token and a user within the appservice's
+namespace. 
+
+{{% boxes/note %}}
+Appservices do not need to log in as individual users in all cases, as they
+can perform [Identity Assertion](/application-service-api#identity-assertion)
+using the appservice token. However, if the appservice needs a scoped token
+for a single user then they can use this API instead.
+{{% /boxes/note %}}
+
+This request must be authenticated by the [appservice `as_token`](/application-service-api#registration) 
+(see [Client Authentication](#client-authentication) on how to provide the token).
+
+To use this login type, clients should submit a `/login` request as follows:
+
+```json
+{
+  "type": "m.login.appservice",
+  "identifier": {
+    "type": "m.id.user",
+    "user": "<user_id or user localpart>"
+  }
+}
+```
+
+If the access token is not valid, does not correspond to an appservice
+or the user has not previously been registered then the homeserver will
+respond with an errcode of `M_FORBIDDEN`.
+
+If the access token does correspond to an appservice, but the user id does
+not lie within its namespace then the homeserver will respond with an
+errcode of `M_EXCLUSIVE`.
 
 {{% http-api spec="client-server" api="login" %}}
 
@@ -1211,88 +1249,6 @@ using an `unstable` version.
 When this capability is not listed, clients should use `"1"` as the
 default and only stable `available` room version.
 
-## Pagination
-
-{{% boxes/note %}}
-The paths referred to in this section are not actual endpoints. They
-only serve as examples to explain how pagination functions.
-{{% /boxes/note %}}
-
-Pagination is the process of dividing a dataset into multiple discrete
-pages. Matrix makes use of pagination to allow clients to view extremely
-large datasets. These datasets are not limited to events in a room (for
-example clients may want to paginate a list of rooms in addition to
-events within those rooms). Regardless of what is being paginated, there
-is a common approach which is used to give clients an easy way of
-selecting subsets of a potentially changing dataset. Each endpoint that
-uses pagination may use different parameters. However the theme among
-them is that they take a `from` and `to` token, and occasionally a
-`limit` and `dir`. Together, these parameters describe the position in a
-data set, where `from` and `to` are known as "stream tokens" matching
-the regular expression `[a-zA-Z0-9.=_-]+`. If supported, the `dir`
-defines the direction of events to return: either forwards (`f`) or
-backwards (`b`). The response may contain tokens that can be used for
-retrieving results before or after the returned set. These tokens may be
-called <span class="title-ref">start</span> or <span
-class="title-ref">prev\_batch</span> for retrieving the previous result
-set, or <span class="title-ref">end</span>, <span
-class="title-ref">next\_batch</span> or <span
-class="title-ref">next\_token</span> for retrieving the next result set.
-
-In the following examples, 'START' and 'END' are placeholders to signify
-the start and end of the data sets respectively.
-
-For example, if an endpoint had events E1 -&gt; E15. The client wants
-the last 5 events and doesn't know any previous events:
-
-```
-    S                                                    E
-    |-E1-E2-E3-E4-E5-E6-E7-E8-E9-E10-E11-E12-E13-E14-E15-|
-    |                               |                    |
-    |                          _____|  <--backwards--    |
-    |__________________       |         |        ________|
-                       |      |         |        |
-     GET /somepath?to=START&limit=5&dir=b&from=END
-     Returns:
-       E15,E14,E13,E12,E11
-```
-
-Another example: a public room list has rooms R1 -&gt; R17. The client
-is showing 5 rooms at a time on screen, and is on page 2. They want to
-now show page 3 (rooms R11 -&gt; 15):
-
-```
-    S                                                           E
-    |  0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16 | stream token
-    |-R1-R2-R3-R4-R5-R6-R7-R8-R9-R10-R11-R12-R13-R14-R15-R16-R17| room
-                      |____________| |________________|
-                            |                |
-                        Currently            |
-                        viewing              |
-                                             |
-                             GET /roomslist?from=9&to=END&limit=5
-                             Returns: R11,R12,R13,R14,R15
-```
-
-Note that tokens are treated in an *exclusive*, not inclusive, manner.
-The end token from the initial request was '9' which corresponded to
-R10. When the 2nd request was made, R10 did not appear again, even
-though from=9 was specified. If you know the token, you already have the
-data.
-
-Responses for pagination-capable endpoints SHOULD have a `chunk` array
-alongside the applicable stream tokens to represent the result set.
-
-In general, when the end of a result set is reached the applicable
-stream token will be excluded from the response. For example, if a user
-was backwards-paginating events in a room they'd eventually reach the
-first event in the room. In this scenario, the `prev_batch` token would
-be excluded from the response. Some paginated endpoints are open-ended
-in one direction, such as endpoints which expose an event stream for an
-active room. In this case, it is not possible for the client to reach
-the true "end" of the data set and therefore should always be presented
-with a token to keep moving forwards.
-
 ## Filtering
 
 Filters can be created on the server and can be passed as a parameter to
@@ -1381,6 +1337,18 @@ opaque string. No changes should be required to support the currently
 available room versions.
 {{% /boxes/warning %}}
 
+{{% boxes/warning %}}
+Event bodies are considered untrusted data. This means that any application using
+Matrix must validate that the event body is of the expected shape/schema
+before using the contents verbatim.
+
+**It is not safe to assume that an event body will have all the expected
+fields of the expected types.**
+
+See [MSC2801](https://github.com/matrix-org/matrix-doc/pull/2801) for more
+detail on why this assumption is unsafe.
+{{% /boxes/warning %}}
+
 ### Types of room events
 
 Room events are split into two categories:
@@ -1435,7 +1403,7 @@ following fields.
 
 ### Size limits
 
-The complete event MUST NOT be larger than 65535 bytes, when formatted
+The complete event MUST NOT be larger than 65536 bytes, when formatted
 as a [PDU for the Server-Server
 protocol](/server-server-api/#pdus), including any
 signatures, and encoded as [Canonical
@@ -1451,7 +1419,7 @@ There are additional restrictions on sizes per key:
 
 Some event types have additional size restrictions which are specified
 in the description of the event. Additional keys have no limit other
-than that implied by the total 65 KB limit on events.
+than that implied by the total 64 KiB limit on events.
 
 ### Room Events
 
@@ -1700,7 +1668,7 @@ event also has a `creator` key which contains the user ID of the room
 creator. It will also generate several other events in order to manage
 permissions in this room. This includes:
 
--   `m.room.power_levels` : Sets the power levels of users and required power  
+-   `m.room.power_levels` : Sets the power levels of users and required power
     levels for various actions within the room such as sending events.
 
 -   `m.room.join_rules` : Whether the room is "invite-only" or not.
@@ -1766,57 +1734,44 @@ in that room. There are several states in which a user may be, in
 relation to a room:
 
 -   Unrelated (the user cannot send or receive events in the room)
+-   Knocking (the user has requested to participate in the room, but has
+    not yet been allowed to)
 -   Invited (the user has been invited to participate in the room, but
     is not yet participating)
 -   Joined (the user can send and receive events in the room)
 -   Banned (the user is not allowed to join the room)
 
-There is an exception to the requirement that a user join a room before
-sending events to it: users may send an `m.room.member` event to a room
-with `content.membership` set to `leave` to reject an invitation if they
-have currently been invited to a room but have not joined it.
+There are a few notable exceptions which allow non-joined members of the
+room to send events in the room:
+
+- Users wishing to reject an invite would send `m.room.member` events with
+  `content.membership` of `leave`. They must have been invited first.
+
+- If the room allows, users can send `m.room.member` events with `content.membership`
+  of `knock` to knock on the room. This is a request for an invite by the user.
+
+- To retract a previous knock, a user would send a `leave` event similar to
+  rejecting an invite.
 
 Some rooms require that users be invited to it before they can join;
 others allow anyone to join. Whether a given room is an "invite-only"
 room is determined by the room config key `m.room.join_rules`. It can
 have one of the following values:
 
-`public`  
+`public`
 This room is free for anyone to join without an invite.
 
-`invite`  
+`invite`
 This room can only be joined if you were invited.
+
+`knock`
+This room can only be joined if you were invited, and allows anyone to
+request an invite to the room. Note that this join rule is only available
+to rooms based upon [room version 7](/rooms/v7).
 
 The allowable state transitions of membership are:
 
-```
-                                       /ban
-                  +------------------------------------------------------+
-                  |                                                      |
-                  |  +----------------+  +----------------+              |
-                  |  |    /leave      |  |                |              |
-                  |  |                v  v                |              |
-    /invite    +--------+           +-------+             |              |
-  ------------>| invite |<----------| leave |----+        |              |
-               +--------+  /invite  +-------+    |        |              |
-                 |                   |    ^      |        |              |
-                 |                   |    |      |        |              |
-           /join |   +---------------+    |      |        |              |
-                 |   | /join if           |      |        |              |
-                 |   | join_rules         |      | /ban   | /unban       |
-                 |   | public      /leave |      |        |              |
-                 v   v               or   |      |        |              |
-               +------+            /kick  |      |        |              |
-  ------------>| join |-------------------+      |        |              |
-   /join       +------+                          v        |              |
-   if             |                           +-----+     |              |
-   join_rules     +-------------------------->| ban |-----+              |
-   public                   /ban              +-----+                    |
-                                                ^ ^                      |
-                                                | |                      |
-  ----------------------------------------------+ +----------------------+
-                  /ban
-```
+![membership-flow-diagram](/diagrams/membership.png)
 
 {{% http-api spec="client-server" api="list_joined_rooms" %}}
 
@@ -1826,14 +1781,51 @@ The allowable state transitions of membership are:
 
 {{% http-api spec="client-server" api="joining" %}}
 
+##### Knocking on rooms
+
+<!--
+This section is here because it's most similar to being invited/joining a
+room, though has added complexity which needs to be explained. Otherwise
+this will have been just the API definition and nothing more (like invites).
+-->
+
+If the join rules allow, external users to the room can `/knock` on it to
+request permission to join. Users with appropriate permissions within the
+room can then approve (`/invite`) or deny (`/kick`, `/ban`, or otherwise
+set membership to `leave`) the knock. Knocks can be retracted by calling
+`/leave` or otherwise setting membership to `leave`.
+
+Users who are currently in the room, already invited, or banned cannot
+knock on the room.
+
+To accept another user's knock, the user must have permission to invite
+users to the room. To reject another user's knock, the user must have
+permission to either kick or ban users (whichever is being performed).
+Note that setting another user's membership to `leave` is kicking them.
+
+The knocking homeserver should assume that an invite to the room means
+that the knock was accepted, even if the invite is not explicitly related
+to the knock.
+
+Homeservers are permitted to automatically accept invites as a result of
+knocks as they should be aware of the user's intent to join the room. If
+the homeserver is not auto-accepting invites (or there was an unrecoverable
+problem with accepting it), the invite is expected to be passed down normally
+to the client to handle. Clients can expect to see the join event if the
+server chose to auto-accept.
+
+{{% http-api spec="client-server" api="knocking" %}}
+
 #### Leaving rooms
 
 A user can leave a room to stop receiving events for that room. A user
 must have been invited to or have joined the room before they are
 eligible to leave the room. Leaving a room to which the user has been
-invited rejects the invite. Once a user leaves a room, it will no longer
-appear in the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is explicitly
-requested via a filter with the `include_leave` field set to `true`.
+invited rejects the invite, and can retract a knock. Once a user leaves
+a room, it will no longer appear in the response to the
+[`/sync`](/client-server-api/#get_matrixclientr0sync) API unless it is
+explicitly requested via a filter with the `include_leave` field set
+to `true`.
 
 Whether or not they actually joined the room, if the room is an
 "invite-only" room the user will need to be re-invited before they can
@@ -1841,7 +1833,7 @@ re-join the room.
 
 A user can also forget a room which they have left. Rooms which have
 been forgotten will never appear the response to the [`/sync`](/client-server-api/#get_matrixclientr0sync) API,
-until the user re-joins or is re-invited.
+until the user re-joins, is re-invited, or knocks.
 
 A user may wish to force another user to leave a room. This can be done
 by 'kicking' the other user. To do so, the user performing the kick MUST

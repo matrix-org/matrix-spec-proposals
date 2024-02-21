@@ -96,7 +96,7 @@ paths:
                         "ed25519:base64+master+public+key": "base64+master+public+key",
                       }
                     }
-              self_signing_keys:
+              self_signing_key:
                 type: object
                 description: |-
                   The user\'s self-signing key.

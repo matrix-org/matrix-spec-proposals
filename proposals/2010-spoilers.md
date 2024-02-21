@@ -3,10 +3,10 @@ Sometimes, while you want to put text into a spoiler to not have people accident
 
 For example, when discussing a new movie or a TV series, not everyone might have watched it yet.
 In such cases it would make sense to add a spoiler so that only those who have seen the movie or
-don't mind spoilers read the content.  
+don't mind spoilers read the content.
 Another example would be e.g. in mental health communities where certain people have certain
 triggers. People could put talking about abuse or the like into a spoiler, to not accidentally
-trigger anyone just reading along the conversation.  
+trigger anyone just reading along the conversation.
 Furthermore this is helpful for bridging to other networks that already have a spoiler feature.
 
 To render the spoiler the content is hidden and then revealed once interacted somehow
@@ -14,13 +14,16 @@ To render the spoiler the content is hidden and then revealed once interacted so
 
 ## Proposal
 This proposal is about adding a new attribute to the `formatted_body` of messages with type
-`m.room.message` and msgtype `m.text`.
+`m.room.message` and message types which support the `org.matrix.custom.html` format.
 
 It adds a new attribute, `data-mx-spoiler`, to the `<span>` tag. If the attribute is present the
 contents of the span tag should be rendered as a spoiler. Optionally, you can specify a reason for
 the spoiler by setting the attribute string. It could be rendered, for example, similar to this:
 
 ![Spoiler rendering idea](images/2010-spoiler-example.gif)
+
+The plaintext fallback supported by the `body` is optional. A recommendation for clients is included
+below.
 
 To preserve the semantics of a spoiler in the plaintext fallback it is recommended to upload the contents of the spoiler
 as a text file and then link this: `[Spoiler](mxc://someserver/somefile)` and

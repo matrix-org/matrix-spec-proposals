@@ -53,7 +53,7 @@ tags to permit, denying the use and rendering of anything else, is:
 `font`, `del`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `blockquote`, `p`,
 `a`, `ul`, `ol`, `sup`, `sub`, `li`, `b`, `i`, `u`, `strong`, `em`,
 `strike`, `code`, `hr`, `br`, `div`, `table`, `thead`, `tbody`, `tr`,
-`th`, `td`, `caption`, `pre`, `span`, `img`.
+`th`, `td`, `caption`, `pre`, `span`, `img`, `details`, `summary`.
 
 Not all attributes on those tags should be permitted as they may be
 avenues for other disruption attempts, such as adding `onclick` handlers
@@ -63,10 +63,11 @@ are listed, clients should translate the value (a 6-character hex color
 code) to the appropriate CSS/attributes for the tag.
 
 `font`  
-`data-mx-bg-color`, `data-mx-color`
+`data-mx-bg-color`, `data-mx-color`, `color`
 
 `span`  
-`data-mx-bg-color`, `data-mx-color`
+`data-mx-bg-color`, `data-mx-color`, `data-mx-spoiler` (see 
+[spoiler messages](#spoiler-messages))
 
 `a`  
 `name`, `target`, `href` (provided the value is not relative and has a
@@ -298,7 +299,7 @@ when using the `m.heroes` to calculate the name. Clients SHOULD use
 minimum 5 heroes to calculate room names where possible, but may use
 more or less to fit better with their user experience.
 
-##### Forming relationships between events
+##### Rich replies
 
 In some cases, events may wish to reference other events. This could be
 to form a thread of messages for the user to follow along with, or to
@@ -310,14 +311,6 @@ Relationships are defined under an `m.relates_to` key in the event's
 `content`. If the event is of the type `m.room.encrypted`, the
 `m.relates_to` key MUST NOT be covered by the encryption and instead be
 put alongside the encryption information held in the `content`.
-
-###### Rich replies
-
-Users may wish to reference another message when forming their own
-message, and clients may wish to better embed the referenced message for
-the user to have a better context for the conversation being had. This
-sort of embedding another message in a message is known as a "rich
-reply", or occasionally just a "reply".
 
 A rich reply is formed through use of an `m.relates_to` relation for
 `m.in_reply_to` where a single key, `event_id`, is used to reference the
@@ -351,7 +344,7 @@ An `m.in_reply_to` relationship looks like the following:
 }
 ```
 
-####### Fallbacks and event representation
+##### Fallbacks for rich replies
 
 Some clients may not have support for rich replies and therefore need a
 fallback to use instead. Clients that do not support rich replies should
@@ -385,7 +378,7 @@ If the related event does not have a `formatted_body`, the event's
 Note that the `href` in both of the anchors use a [matrix.to
 URI](/appendices#matrixto-navigation).
 
-######## Stripping the fallback
+###### Stripping the fallback
 
 Clients which support rich replies MUST strip the fallback from the
 event before rendering the event. This is because the text provided in
@@ -405,7 +398,7 @@ a line is encountered without the prefix. This prefix is known as the
 To strip the fallback on the `formatted_body`, the client should remove
 the entirety of the `mx-reply` tag.
 
-######## Fallback for `m.text`, `m.notice`, and unrecognised message types
+###### Fallback for `m.text`, `m.notice`, and unrecognised message types
 
 Using the prefix sequence, the first line of the related event's `body`
 should be prefixed with the user's ID, followed by each line being
@@ -418,7 +411,7 @@ prefixed with the fallback prefix sequence. For example:
 
 The `formatted_body` uses the template defined earlier in this section.
 
-######## Fallback for `m.emote`
+###### Fallback for `m.emote`
 
 Similar to the fallback for `m.text`, each line gets prefixed with the
 fallback prefix sequence. However an asterisk should be inserted before
@@ -441,7 +434,7 @@ asterisk is also inserted ahead of the user's ID:
     </mx-reply>
     This is where the reply goes.
 
-######## Fallback for `m.image`, `m.video`, `m.audio`, and `m.file`
+###### Fallback for `m.image`, `m.video`, `m.audio`, and `m.file`
 
 The related event's `body` would be a file name, which may not be very
 descriptive. The related event should additionally not have a `format`
@@ -468,6 +461,52 @@ to the following:
 For `m.image`, the text should be `"sent an image."`. For `m.video`, the
 text should be `"sent a video."`. For `m.audio`, the text should be
 `"sent an audio file"`.
+
+##### Spoiler messages
+
+Parts of a message can be hidden visually from the user through use of spoilers. 
+This does not affect the server's representation of the event content - it 
+is simply a visual cue to the user that the message may reveal important 
+information about something, spoiling any relevant surprise.
+
+To send spoilers clients MUST use the `formatted_body` and therefore the 
+`org.matrix.custom.html` format, described above. This makes spoilers valid on
+any `msgtype` which can support this format appropriately. 
+
+Spoilers themselves are contained with `span` tags, with the reason (optionally)
+being in the `data-mx-spoiler` attribute. Spoilers without a reason must at least
+specify the attribute, though the value may be empty/undefined.
+
+An example of a spoiler is:
+
+```json
+{
+  "msgtype": "m.text",
+  "format": "org.matrix.custom.html",
+  "body": "Alice [Spoiler](mxc://example.org/abc123) in the movie.",
+  "formatted_body": "Alice <span data-mx-spoiler>lived happily ever after</span> in the movie."
+}
+```
+
+If a reason were to be supplied, it would look like:
+
+```json
+{
+  "msgtype": "m.text",
+  "format": "org.matrix.custom.html",
+  "body": "Alice [Spoiler for health of Alice](mxc://example.org/abc123) in the movie.",
+  "formatted_body": "Alice <span data-mx-spoiler='health of alice'>lived happily ever after</span> in the movie."
+}
+```
+
+When sending a spoiler, clients SHOULD provide the plain text fallback in the `body`
+as shown above (including the reason). The fallback SHOULD omit the spoiler text verbatim
+since `body` might show up in text-only clients or in notifications. To prevent spoilers
+showing up in such situations, clients are strongly encouraged to first upload the plaintext
+to the media repository then reference the MXC URI in a markdown-style link, as shown above.
+
+Clients SHOULD render spoilers differently with some sort of disclosure. For example, the
+client could blur the actual text and ask the user to click on it for it to be revealed.
 
 #### Server behaviour
 

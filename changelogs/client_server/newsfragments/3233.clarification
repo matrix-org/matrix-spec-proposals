@@ -1,0 +1,1 @@
+Explicitly state that `replacment_room` is a room ID in `m.room.tombstone` events.

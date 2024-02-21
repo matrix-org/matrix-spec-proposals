@@ -25,3 +25,4 @@ properties:
       - origin_server_ts
     type: array
 type: object
+title: RoomEventBatch

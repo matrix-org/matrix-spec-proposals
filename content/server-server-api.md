@@ -18,7 +18,7 @@ signatures in HTTP Authorization headers at the HTTP layer.
 There are three main kinds of communication that occur between
 homeservers:
 
-Persisted Data Units (PDUs):  
+Persisted Data Units (PDUs):
 These events are broadcast from one homeserver to any others that have
 joined the same room (identified by Room ID). They are persisted in
 long-term storage and record the history of messages and state for a
@@ -29,12 +29,12 @@ to deliver that event to its recipient servers. However PDUs are signed
 using the originating server's private key so that it is possible to
 deliver them through third-party servers.
 
-Ephemeral Data Units (EDUs):  
+Ephemeral Data Units (EDUs):
 These events are pushed between pairs of homeservers. They are not
 persisted and are not part of the history of a room, nor does the
 receiving homeserver have to reply to them.
 
-Queries:  
+Queries:
 These are single request/response interactions between a given pair of
 servers, initiated by one side sending an HTTPS GET request to obtain
 some information, and responded by the other. They are not persisted and
@@ -133,6 +133,15 @@ to send. The process overall is as follows:
     records. Requests are made to the resolved IP address using port
     8448 and a `Host` header containing the `<hostname>`. The target
     server must present a valid certificate for `<hostname>`.
+
+{{% boxes/note %}}
+The reasons we require `<hostname>` rather than `<delegated_hostname>` for SRV
+delegation are:
+  1. DNS is insecure (not all domains have DNSSEC), so the target of the delegation
+      must prove that it is a valid delegate for `<hostname>` via TLS.
+  2. Consistency with the recommendations in [RFC6125](https://datatracker.ietf.org/doc/html/rfc6125#section-6.2.1)
+     and other applications using SRV records such [XMPP](https://datatracker.ietf.org/doc/html/rfc6120#section-13.7.2.1).
+{{% /boxes/note %}}
 
 The TLS certificate provided by the target server must be signed by a
 known Certificate Authority. Servers are ultimately responsible for
@@ -324,15 +333,16 @@ after all other known events.
 
 For example, consider a room whose events form the DAG shown below. A
 server creating a new event in this room should populate the new event's
-`prev_events` field with `E4` and `E5`, since neither event yet has a
-child:
+`prev_events` field with both `E4` and `E6`, since neither event yet has
+a child:
 
     E1
     ^
     |
-    +-> E2 <-+
-    |        |
-    E3       E5
+    E2 <--- E5
+    ^       ^
+    |       |
+    E3      E6
     ^
     |
     E4
@@ -365,19 +375,19 @@ them.
 
 #### Definitions
 
-Required Power Level  
+Required Power Level
 A given event type has an associated *required power level*. This is
 given by the current `m.room.power_levels` event. The event type is
 either listed explicitly in the `events` section or given by either
 `state_default` or `events_default` depending on if the event is a state
 event or not.
 
-Invite Level, Kick Level, Ban Level, Redact Level  
+Invite Level, Kick Level, Ban Level, Redact Level
 The levels given by the `invite`, `kick`, `ban`, and `redact` properties
 in the current `m.room.power_levels` state. Each defaults to 50 if
 unspecified.
 
-Target User  
+Target User
 For an `m.room.member` state event, the user given by the `state_key` of
 the event.
 
@@ -500,15 +510,15 @@ Example
 
 As an example consider the event graph:
 
-    A
-    /
+      A
+     /
     B
 
 where `B` is a ban of a user `X`. If the user `X` tries to set the topic
 by sending an event `C` while evading the ban:
 
-    A
-    / \
+      A
+     / \
     B   C
 
 servers that receive `C` after `B` should soft fail event `C`, and so
@@ -518,11 +528,11 @@ will neither relay `C` to its clients nor send any events referencing
 If later another server sends an event `D` that references both `B` and
 `C` (this can happen if it received `C` before `B`):
 
-    A
-    / \
+      A
+     / \
     B   C
-    \ /
-    D
+     \ /
+      D
 
 then servers will handle `D` as normal. `D` is sent to the servers'
 clients (assuming `D` passes auth checks). The state at `D` may resolve
@@ -539,18 +549,18 @@ state of the `C` branch.
 
 Let's go back to the graph before `D` was sent:
 
-    A
-    / \
+      A
+     / \
     B   C
 
 If all the servers in the room saw `B` before `C` and so soft fail `C`,
 then any new event `D'` will not reference `C`:
 
-    A
-    / \
+      A
+     / \
     B   C
     |
-    D
+    D'
 
 #### Retrieving event authorization information
 
@@ -584,15 +594,15 @@ state.
 For example, consider the following event graph (where the oldest event,
 E0, is at the top):
 
-    E0
-    |
-    E1
-    /  \
+      E0
+      |
+      E1
+     /  \
     E2  E4
     |    |
     E3   |
-    \  /
-    E5
+     \  /
+      E5
 
 Suppose E3 and E4 are both `m.room.name` events which set the name of
 the room. What should the name of the room be at E5?
@@ -720,6 +730,24 @@ other servers participating in the room.
 
 {{% http-api spec="server-server" api="joins-v2" %}}
 
+## Knocking upon a room
+
+Rooms can permit knocking through the join rules, and if permitted this
+gives users a way to request to join (be invited) to the room. Users who
+knock on a room where the server is already a resident of the room can
+just send the knock event directly without using this process, however
+much like [joining rooms](/server-server-api/#joining-rooms) the server
+must handshake their way into having the knock sent on its behalf.
+
+The handshake is largely the same as the joining rooms handshake, where
+instead of a "joining server" there is a "knocking server", and the APIs
+to be called are different (`/make_knock` and `/send_knock`).
+
+Servers can retract knocks over federation by leaving the room, as described
+below for rejecting invites.
+
+{{% http-api spec="server-server" api="knocks" %}}
+
 ## Inviting to a room
 
 When a user on a given homeserver invites another user on the same
@@ -728,6 +756,10 @@ the process defined here. However, when a user invites another user on a
 different homeserver, a request to that homeserver to have the event
 signed and verified must be made.
 
+Note that invites are used to indicate that knocks were accepted. As such,
+receiving servers should be prepared to manually link up a previous knock
+to an invite if the invite event does not directly reference the knock.
+
 {{% http-api spec="server-server" api="invites-v1" %}}
 
 {{% http-api spec="server-server" api="invites-v2" %}}
@@ -735,10 +767,10 @@ signed and verified must be made.
 ## Leaving Rooms (Rejecting Invites)
 
 Normally homeservers can send appropriate `m.room.member` events to have
-users leave the room, or to reject local invites. Remote invites from
-other homeservers do not involve the server in the graph and therefore
-need another approach to reject the invite. Joining the room and
-promptly leaving is not recommended as clients and servers will
+users leave the room, to reject local invites, or to retract a knock.
+Remote invites/knocks from other homeservers do not involve the server in the
+graph and therefore need another approach to reject the invite. Joining
+the room and promptly leaving is not recommended as clients and servers will
 interpret that as accepting the invite, then leaving the room rather
 than rejecting the invite.
 
@@ -1009,6 +1041,8 @@ The following endpoint prefixes MUST be protected:
 -   `/_matrix/federation/v2/send_leave`
 -   `/_matrix/federation/v1/invite`
 -   `/_matrix/federation/v2/invite`
+-   `/_matrix/federation/v1/make_knock`
+-   `/_matrix/federation/v1/send_knock`
 -   `/_matrix/federation/v1/state`
 -   `/_matrix/federation/v1/state_ids`
 -   `/_matrix/federation/v1/backfill`
