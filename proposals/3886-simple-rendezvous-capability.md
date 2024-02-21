@@ -17,7 +17,7 @@ To enable [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/390
 establish a direct communication channel between two IP connected devices.
 
 This channel [SHOULD be considered untrusted](#confidentiality-of-data)
-by both devices, and SHOULD NOT be used to transmit sensitive data in plaintext.
+by both devices, and SHOULD NOT be used to transmit sensitive data in cleartext.
 
 It will work with devices behind NAT. It doesn't require homeserver administrators to deploy a separate server.
 
