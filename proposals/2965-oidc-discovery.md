@@ -80,6 +80,7 @@ The following actions are defined by this MSC:
 - `org.matrix.session_view` - The user wishes to view the details of a specific session.
 - `org.matrix.session_end` - The user wishes to end/logout a specific session.
 - `org.matrix.account_deactivate` - The user wishes to deactivate their account.
+- `org.matrix.cross_signing_reset` - The user wishes to reset their cross-signing keys.
 
 Subsequent MSCs may extend this list.
 
