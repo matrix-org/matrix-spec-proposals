@@ -18,7 +18,7 @@ A request on this endpoint should return a JSON object with one field:
 For example:
 
 ```http
-GET /_matrix/client/v3/auth_issuer
+GET /_matrix/client/v1/auth_issuer
 Host: example.com
 Accept: application/json
 ```
@@ -112,7 +112,7 @@ Using a separate endpoint for discovery makes the request chain to initiate a lo
 A full discovery flow would be as follows:
 
 - `GET [domain]/.well-known/matrix/client` to discover the homeserver
-- `GET [homeserver]/_matrix/client/v3/auth_issuer` to discover the issuer
+- `GET [homeserver]/_matrix/client/v1/auth_issuer` to discover the issuer
 - `GET [issuer]/.well-known/openid-configuration` to discover the OpenID Connect Provider configuration
 - `POST [issuer client registration endpoint]` to register the OAuth 2.0 client
   (see [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966))
