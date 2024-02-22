@@ -2,8 +2,11 @@
 
 ## Introduction 
 
-Currently in matrix we lack the ability to implement proper membership screening mechanisms. This is
-due to that we cant use PL based screening as it has all the problems that MSC3909 and MSC3907 covers.
+Currently Matrix lacks the ability to implement proper membership screening mechanisms. This is
+due to being unable to use power levels based screening, see
+[MSC3909](https://github.com/matrix-org/matrix-spec-proposals/pull/3909) and
+[MSC3907](https://github.com/matrix-org/matrix-spec-proposals/pull/3907) for a description of
+the problems.
 
 This proposal aims to by extending MSC3909 solve this problem as membership screening is a function that
 is desired by some end users. Stakeholders like The Draupnir Project that the Author does participate
