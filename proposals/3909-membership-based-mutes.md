@@ -16,7 +16,8 @@ relevant example of why this MSC matters.
 ## Proposal
 
 This proposal defines the `mute` membership type. If a user has this membership type in a room they
-are restricted to exclusively sending the read marker EDUs, leaving via setting
+are restricted to exclusively sending receipts, leaving via setting
+
 their membership to `leave-mute` as defined later and `m.room.redaction` events.
 
 This proposal also introduces the new membership type of `leave-mute` this special membership
