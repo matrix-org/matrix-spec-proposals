@@ -39,18 +39,18 @@ an admin will have a "backup" contact address if the server is down, like an ema
 Entries may have a `matrix_id` OR an `email_address`, but at least one MUST be specified.
 
 `role` is an informal description of what the address(es) are used for. The only two specified in this
-proposal are `m.role.admin` and `m.role.security`. 
+proposal are `m.role.admin` and `m.role.security`.
 
  - `m.role.admin` is a catch-all user for any queries.
  - `m.role.security` is intended for sensitive requests
 
-Implementors may use custom values for role for other purposes, but it's suggested
-that the value be namespaced to prevent collisions. A value for `role` MUST be specified.
+A value for `role` MUST be specified. Custom values are permitted using the
+[common namespaced identifier format](https://spec.matrix.org/v1.8/appendices/#common-namespaced-identifier-grammar).
 
-`support_page` is an optional property to specify a affiliated page of the homserver to give users help
+`support_page` is an optional property to specify an affiliated page of the homeserver to give users help
 specific to the homeserver, like extra login/registration steps.
 
-At least one valid key should be provided. This means `contacts` should have at least one entry, or the `support_page` should be defined. An empty object is not considered valid, however both `contacts `and `support_page` may be specified together. 
+At least one valid key should be provided. This means `contacts` should have at least one entry, or the `support_page` should be defined. An empty object is not considered valid, however both `contacts `and `support_page` may be specified together.
 
 ## Alternative solutions
 
@@ -61,7 +61,7 @@ Hardcode a given user localpart that should be used as an admin address.
 Specify the same content inside a homeserver endpoint, rather than use `.well-known`.
  - This requires the homeserver to be up or responsive, which might be not very useful if trying to report issues with
    connectivity.
-   
+
 Use vCards.
  - vCards would add bloat, as the vast majority of a vcards contents is not useful for contacting an admin.
 
