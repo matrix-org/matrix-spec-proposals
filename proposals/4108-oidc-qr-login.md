@@ -1,4 +1,4 @@
-# MSC0000: Mechanism to allow OIDC sign in and E2EE set up via QR code
+# MSC4108: Mechanism to allow OIDC sign in and E2EE set up via QR code
 
 ## Proposal
 
