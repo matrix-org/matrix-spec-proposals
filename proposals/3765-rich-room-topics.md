@@ -63,48 +63,9 @@ the same need for rich room topics as users who are inside the room.
 
 ## Transition
 
-The same transition mechanism as in [MSC1767] is proposed. In
-particular, this means a new room version N is introduced. Starting from
-N clients are not permitted to send `m.room.topic` events anymore and
-MUST treat `m.room.topic` as an invalid event type. Instead the new
-`m.topic` event type is to be used.
-
-Similarly, servers use the `m.topic` event type instead of
-`m.room.topic` when creating rooms with a room version greater or equal
-to N.
-
-Specific care should be taken when rooms are upgraded via
-[`/rooms/{roomId}/upgrade`]. If the new room version is greater or
-equal to N, an existing `m.room.topic` event in the old room
-
-``` json5
-{
-  "type": "m.room.topic",
-  "state_key": "",
-  "content": {
-    "topic": "All about pizza"
-  },
-  ...
-}
-```
-
-should be migrated to an `m.topic` event with a single plain-text entry
-in `m.text` in the new room
-
-``` json5
-{
-  "type": "m.topic",
-  "state_key": "",
-  "content": {
-    "m.topic": {
-      "m.text": [{
-          "body": "All about pizza"
-      }]
-    }
-  },
-  ...
-}
-```
+As this MSC replaces `m.room.topic` for an extensible alternative,
+clients and servers are expected to treat `m.room.topic` as invalid in
+extensible event-supporting room versions.
 
 ## Potential issues
 
