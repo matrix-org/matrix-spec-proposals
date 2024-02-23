@@ -15,37 +15,40 @@ options.
 
 Drawing from extensible events as described in [MSC1767],
 `m.room.topic` is formally deprecated and replaced with a new `m.topic`
-event type. The latter contains an `m.markup` content block representing
-the room topic in different mime types.
+event type. The latter contains a new content block `m.topic` which wraps
+an `m.text` content block that allows representing the room topic in
+different mime types.
 
 ``` json5
 {
-    "type": "m.topic",
-    "state_key": "",
-    "content": {
-        "m.markup": [{
-            "mimetype": "text/html",
-            "body": "All about <b>pizza</b> | <a href=\"https://recipes.pizza.net\">Recipes</a>"
-        }, {
-            "mimetype": "text/plain",
-            "body": "All about **pizza** | [Recipes](https://recipes.pizza.net)"
-        }],
-    },
-    ...
+  "type": "m.topic",
+  "state_key": "",
+  "content": {
+    "m.topic": {
+      "m.text": [{
+          "body": "All about **pizza** | [Recipes](https://recipes.pizza.net)"
+      }, {
+          "mimetype": "text/html",
+          "body": "All about <b>pizza</b> | <a href=\"https://recipes.pizza.net\">Recipes</a>"
+      }]
+    }
+  },
+  ...
 }
 ```
 
-Details of how `m.markup` works may be found in [MSC1767] and are not
+Details of how `m.text` works may be found in [MSC1767] and are not
 repeated here.
+
+The wrapping `m.topic` content block is similar to `m.caption` for file
+uploads as defined in [MSC3551]. It avoids clients accidentally rendering
+the topic state event as a room message.
 
 In order to prevent formatting abuse in room topics, clients are
 encouraged to treat the first two lines as the shorthand topic and the
 remainder as additional information. Specifically, this means that
 things like headings and enumerations should be ignored (or formatted
 as regular text) unless they occur after the second line.
-
-While the content of `m.topic` is currently identical to `m.message`, a
-dedicated event type allows the two to diverge in the future.
 
 A change to `/_matrix/client/v3/createRoom` is not necessary. The
 endpoint has a plain text `topic` parameter but also allows to specify a
@@ -76,29 +79,30 @@ equal to N, an existing `m.room.topic` event in the old room
 
 ``` json5
 {
-    "type": "m.room.topic",
-    "state_key": "",
-    "content": {
-        "topic": "All about pizza"
-    },
-    ...
+  "type": "m.room.topic",
+  "state_key": "",
+  "content": {
+    "topic": "All about pizza"
+  },
+  ...
 }
 ```
 
-should be migrated to an `m.topic` event with a single plain-text markup
-in the new room
+should be migrated to an `m.topic` event with a single plain-text entry
+in `m.text` in the new room
 
 ``` json5
 {
-    "type": "m.topic",
-    "state_key": "",
-    "content": {
-        "m.markup": [{
-            "mimetype": "text/plain",
-            "body": "All about pizza"
-        }],
-    },
-    ...
+  "type": "m.topic",
+  "state_key": "",
+  "content": {
+    "m.topic": {
+      "m.text": [{
+          "body": "All about pizza"
+      }]
+    }
+  },
+  ...
 }
 ```
 
@@ -130,4 +134,5 @@ as `org.matrix.msc3765.topic`.
 
   [plain text]: https://spec.matrix.org/v1.2/client-server-api/#mroomtopic
   [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+  [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
   [`/rooms/{roomId}/upgrade`]: https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3roomsroomidupgrade
