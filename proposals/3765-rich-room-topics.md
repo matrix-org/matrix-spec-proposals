@@ -59,52 +59,17 @@ responses of `/_matrix/client/v3/publicRooms` and
 `/_matrix/client/v1/rooms/{roomId}/hierarchy`. The topic can be kept
 plain text here because this data should commonly only be displayed to
 users that are *not* a member of the room yet. These users will not have
-the same need for rich room topics as users who are inside the room.
+the same need for rich room topics as users who are inside the room. If
+no plain text topic exists, home servers should return an empty topic
+string from these end points. Since this will inevitably lead to bad UX,
+client implementations are encouraged to always include a plain text
+variant when sending `m.topic` events.
 
 ## Transition
 
-The same transition mechanism as in [MSC1767] is proposed. In
-particular, this means a new room version N is introduced. Starting from
-N clients are not permitted to send `m.room.topic` events anymore and
-MUST treat `m.room.topic` as an invalid event type. Instead the new
-`m.topic` event type is to be used.
-
-Similarly, servers use the `m.topic` event type instead of
-`m.room.topic` when creating rooms with a room version greater or equal
-to N.
-
-Specific care should be taken when rooms are upgraded via
-[`/rooms/{roomId}/upgrade`]. If the new room version is greater or
-equal to N, an existing `m.room.topic` event in the old room
-
-``` json5
-{
-  "type": "m.room.topic",
-  "state_key": "",
-  "content": {
-    "topic": "All about pizza"
-  },
-  ...
-}
-```
-
-should be migrated to an `m.topic` event with a single plain-text entry
-in `m.text` in the new room
-
-``` json5
-{
-  "type": "m.topic",
-  "state_key": "",
-  "content": {
-    "m.topic": {
-      "m.text": [{
-          "body": "All about pizza"
-      }]
-    }
-  },
-  ...
-}
-```
+As this MSC replaces `m.room.topic` for an extensible alternative,
+clients and servers are expected to treat `m.room.topic` as invalid in
+extensible event-supporting room versions.
 
 ## Potential issues
 
