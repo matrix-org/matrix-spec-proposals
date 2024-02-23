@@ -59,7 +59,11 @@ responses of `/_matrix/client/v3/publicRooms` and
 `/_matrix/client/v1/rooms/{roomId}/hierarchy`. The topic can be kept
 plain text here because this data should commonly only be displayed to
 users that are *not* a member of the room yet. These users will not have
-the same need for rich room topics as users who are inside the room.
+the same need for rich room topics as users who are inside the room. If
+no plain text topic exists, home servers should return an empty topic
+string from these end points. Since this will inevitably lead to bad UX,
+client implementations are encouraged to always include a plain text
+variant when sending `m.topic` events.
 
 ## Transition
 
