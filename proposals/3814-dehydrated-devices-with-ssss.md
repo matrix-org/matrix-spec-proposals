@@ -45,6 +45,21 @@ encoded as unpadded Base64, as the device ID.
 The `device_keys`, `one_time_keys`, and `fallback_keys` fields use the same
 structure as for the [`/keys/upload`] request.
 
+We add a new optional property to the device keys: `dehydrated`, which is set
+to `true` for dehydrated devices.  Defaults to `false`.  Clients can use this
+flag to handle the dehydrated device specially.  For example:
+
+- display dehydrated devices differently from normal devices, to avoid
+  confusing from users who do not expect to see another device
+- don't send key forwarding requests to the dehydrated device, since it will
+  not respond to them
+- don't send room keys to the dehydrated device if the user has a sufficient
+  number of other devices, with the assumption that if the user logs in to a
+  new device, they can get the room keys from one of their other devices and/or
+  from key backup.  This will reduce the chances that the dehydrated device
+  will run out of one-time keys, and reduce the number of events that the
+  dehydrated device will need to decrypt.
+
 `PUT /dehydrated_device`
 
 ```jsonc
@@ -59,6 +74,7 @@ structure as for the [`/keys/upload`] request.
     "user_id": "<user_id>",
     "device_id": "<device_id>",
     "valid_until_ts": <millisecond_timestamp>,
+    "dehydrated": true,
     "algorithms": [
         "m.olm.curve25519-aes-sha2",
     ]
