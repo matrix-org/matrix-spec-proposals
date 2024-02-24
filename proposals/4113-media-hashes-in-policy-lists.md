@@ -22,6 +22,13 @@ An object approach is choosen to make sure that in the future the events can be
 easily upgraded while staying backwards compatible with old implementations.
 For example when there are issues with hash algos discovered in the future.
 
+The reason field is expected like in the other policy events.
+
+Recommendations might depend on thresholds that are implementation specific.
+Hence these are nested in the hash implementation.
+In some cases like pdqhashes they are also defined for the whole data and therefor
+not included in the event as this would be not useful.
+
 Such an event in full would look like this:
 
 ```json
@@ -30,7 +37,8 @@ Such an event in full would look like this:
     "m.pdqhash": {
       "hash": "d8f8f0cce0f4a84f0e370a22028f67f0b36e2ed596623e1d33e6b39c4e9c9b22",
       "quality": "100"
-    }
+    },
+    "reason": "Meow"
   },
   "event_id": "$143273582443PhrSn:example.org",
   "origin_server_ts": 1432735824653,
@@ -53,7 +61,10 @@ From the document itself:
 - `Quality` Threshold where we recommend discarding hashes: <=49
 
 This means that for the hash type `m.pdqhash` the content MUST include at 
-least these 2 fields: `hash` and `quality`.
+least these 2 fields: `hash` and `quality` for the implementation itself.
+
+A `recommendation` field is not included as instead the implementation should define
+global thresholds as suggested by https://github.com/facebook/ThreatExchange/tree/main/pdq#matching
 
 ## Potential issues
 Since there might be multiple implementations there might be multiple hash types 
