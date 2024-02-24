@@ -13,19 +13,24 @@ The MSC recommends that the hash itself is used for the state_key as it
 should be sufficiently unique.
 
 In the content of the event, there are expected to be hash implementation-specific 
-values. Therefore the event has a mandatory `type` key which differentiates the 
+values. Therefore the event has a mandatory typekey which differentiates the 
 various types of hashes. Each of the types MUST follow the in matrix common java 
 style namespace format. For example, a pdqhash type would look like `m.pdqhash` 
 where `m` is your namespace and `pdqhash` is the hash type.
+
+An object approach is choosen to make sure that in the future the events can be 
+easily upgraded while staying backwards compatible with old implementations.
+For example when there are issues with hash algos discovered in the future.
 
 Such an event in full would look like this:
 
 ```json
 {
   "content": {
-    "type": "m.pdqhash",
-    "hash": "d8f8f0cce0f4a84f0e370a22028f67f0b36e2ed596623e1d33e6b39c4e9c9b22",
-    "quality": "100"
+    "m.pdqhash": {
+      "hash": "d8f8f0cce0f4a84f0e370a22028f67f0b36e2ed596623e1d33e6b39c4e9c9b22",
+      "quality": "100"
+    }
   },
   "event_id": "$143273582443PhrSn:example.org",
   "origin_server_ts": 1432735824653,
