@@ -1,0 +1,479 @@
+# \[WIP]MSC3262: aPAKE authentication
+
+Like most password authentication, matrix's 
+[login](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-login) 
+requires sending the password in plain text (though usually encrypted in transit with https). 
+This requirement has as (obvious) downside that a man in the middle attack would allow reading the password,
+but also requires that the server has temporary access to the plaintext password 
+(which will subsequently be hashed before storage).
+
+A Password Authenticated Key Exchange (PAKE) can prevent the need for sending the password in plaintext for login,
+and an aPAKE (asymmetric or augmented) allows for safe authentication without the server ever needing
+access to the plaintext password. OPAQUE is a modern implementation of an aPAKE that is
+[currently an ietf draft](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-opaque-05), 
+but as it's still pending and doesn't have many open source implementations using it would 
+require implementing it ourselves. As such choosing to use SRP 
+([rfc2945](https://datatracker.ietf.org/doc/html/rfc2945)) makes more sense. 
+SRP has as downside that the salt is transmitted to the client before authentication, 
+allowing a precomputation attack which would speed up a followup attack after a server compromise.
+However, should a server be compromised, 
+it is probably simpler to generate an access token and impersonate the target that way.
+
+## Proposal
+
+Add support for the SRP 6a login flow, as `"type": "m.login.srp6a"`.
+
+### Registration flow
+
+Registration follows the UIA flow, which means the client starts with sending a `POST`
+with the requested username to ``
+this allow clients to discover the supported groups (and whether srp6a is supported).
+
+`POST /_matrix/client/r0/register`
+```
+{
+  username: "cheeky_monkey"
+}
+```
+
+To which the server reponds with:
+
+```
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "flows": [
+    {
+      "stages": [ "m.login.srp6a.register"]
+    }
+  ],
+  "session": "xxxxx",
+  "params": {
+    "m.login.srp6a.register": {
+      "groups": [supported groups],
+      "passwordhash": [supported hashes], 
+      "hash": [supported hashes] 
+	  }
+    }		
+}
+```  
+Here the server sends it's supported authentication types (in this example only password and srp6a)
+and if applicable it sends the supported SRP groups, as specified by the 
+[SRP specification](https://datatracker.ietf.org/doc/html/rfc5054#page-16) or 
+[rfc3526](https://datatracker.ietf.org/doc/html/rfc3526). 
+The groups are referenced by name as:
+
+```
+["2048","3072","4096","6144","8192","1536MODP","2048MODP","3072MODP","4096MODP","6144MODP","8192MODP"]
+```
+
+Note that the `"1024"` and `"1536"` are explicitly excluded as they are now too small to provide practical security.
+
+The supported password hashes are a list of supported password hashes by the server, referred to as `PH()` throughout this MSC.
+Initially for this MSC we suggest supporting pbkdf2 and bcrypt, though this may change over time.
+The supported hashes are the hashfunctions used for all other hash calculations, referred to as `H()` throughout this MSC.
+Initially we suggest at least supporting `SHA256` and `SHA512`.
+
+The client then chooses a supported srp group from the SRP specification,
+and a hash function from the supported list and generates a random salt `s`.
+The client then calculates the verifier `v` as:
+
+	x = PH(p, s)  
+	v = g^x
+
+Here PH() is the chosen secure password hash function, p is the user specified password, 
+and `g` is the generator of the selected srp group.  
+Note that all values are calculated modulo N (of the selected srp group).
+
+This is then sent (base64 encoded) to the server, otherwise mimicking the password registration, through:
+
+`POST /_matrix/client/r0/register?kind=user`
+
+```
+{
+  "auth": {
+    "type": "m.login.srp6a",
+    "session": "xxxxx",
+    "example_credential": "verypoorsharedsecret"
+  },
+  "auth_type": "srp6a",
+  "username": "cheeky_monkey",
+  "verifier": v,
+  "salt": s,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
+  "device_id": "GHTYAJCE",
+  "initial_device_display_name": "Jungle Phone",
+  "inhibit_login": false
+}
+```
+
+The server stores the verifier, salt, hash function, hash iterations, and group next to the username.
+
+### Convert from password to SRP
+
+To convert to SRP we'll use the [change password endpoint](https://matrix.org/docs/spec/client_server/r0.6.1#post-matrix-client-r0-account-password).
+This uses the UIA flow to authenticate which as the first step return the flows, with srp support as defined in register above.
+
+After the initial UIA the last step is to send the new credentials to be stored with
+`"auth_type": "m.login.srp6a"` added, and the required `verifier`, `group`, and `salt`.
+
+`POST /_matrix/client/r0/account/password HTTP/1.1`
+
+```
+{
+  "auth_type": "m.login.srp6a",
+  "verifier": v,
+  "salt": s,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
+  "logout_devices": false,
+  "auth": {
+    "type": "m.login.password",
+    "session": "xxxxx",
+    "example_credential": "verypoorsharedsecret"
+  }
+}
+```
+
+The server then removes the old password (or old verifier, hash function, hash iterations, group, and salt) and stores the new values.
+
+### Login flow
+
+To start the login flow the client sends a GET request to `/_matrix/client/r0/login`, the server responds with:
+
+```
+{
+  "flows": [
+    {
+      "type": "m.login.srp6a"
+    }
+  ]
+}
+```
+(and any other supported login flows)
+
+Next the client sends its username to obtain the salt and SRP group as:
+
+`POST /_matrix/client/r0/login`
+
+```
+{
+  "type": "m.login.srp6a.init",
+  "username": "cheeky_monkey"
+}
+```
+
+If the user hasn't registered with SRP the server responds with:
+
+`Status code: 403`
+
+```
+{
+  "errcode": "M_UNAUTHORIZED",
+  "error": "User has not registered with SRP."
+}
+```
+
+The server responds with the salt and SRP group (looked up from the database), and public value `B`:
+
+```
+{
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
+  "salt": s,
+  "server_value": B,
+  "session": "12345"
+}
+```
+The client looks up N (the prime) and g (the generator) of the selected SRP group as sent by the server,
+`PH` is the hash algorithm used with `i` iterations.
+s is the stored salt for the user as supplied during registration, B is the public server value,
+and `session` is the session id of this authentication flow, can be any unique random string,
+used for the server to keep track of the authentication flow.
+
+the server calculates B as:
+
+	B = kv + g^b 
+
+where b is a private randomly generated value for this session (server side) and k is given as:
+
+	k = H(N, g) 
+
+Here H() is a secure hash function
+The client then calculates:
+
+	A = g^a 
+where a is a private randomly generated value for this session (client side).
+
+Both then calculate:
+
+	u = H(A, B) 
+
+Next the client calculates:
+
+	x = PH(p, s)  
+	S = (B - kg^x) ^ (a + ux)  
+	K = H(S)
+
+The server calculates:
+
+	S = (Av^u) ^ b  
+	K = H(S)
+
+Resulting in the shared session key K.
+
+To complete the authentication we need to prove to the server that the session key K is the same.
+
+The client calculates:
+
+	M1 = H(H(N) xor H(g), H(I), s, A, B, K)
+
+The client will then respond with:
+
+`POST /_matrix/client/r0/login`
+
+```
+{
+  "type": "m.login.srp6a.verify",
+  "evidence_message": M1,
+  "client_value": A,
+  "session": "12345"
+}
+```
+Here `M1` is the (base64 encoded) client evidence message, and A is the public client value.
+Upon successful authentication (ie M1 matches) the server will respond with the regular login success status code 200:
+
+To prove the identity of the server to the client we can send back M2 (base64 encoded) as:
+
+	M2 = H(A, M1, K)
+
+```
+{
+  "user_id": "@cheeky_monkey:matrix.org",
+  "access_token": "abc123",
+  "device_id": "GHTYAJCE",
+  "evidence_message": M2
+  "well_known": {
+    "m.homeserver": {
+      "base_url": "https://example.org"
+    },
+    "m.identity_server": {
+      "base_url": "https://id.example.org"
+    }
+  }
+}
+```
+
+The client verifies that M2 matches, and is subsequently logged in.
+
+### UIA flow
+
+The client starts the UIA flow by sending a post without the `auth` object, to which the server reponds with:
+
+```
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json
+
+{
+  "flows": [
+    {
+      "stages": [ "m.login.srp6a.init", "m.login.srp6a.verify" ]
+    }
+  ],
+  "session": "12345"
+}
+```
+
+The client then sends its username to obtain the salt and SRP group as:
+
+`POST`
+
+```
+auth: {
+  "type": "m.login.srp6a.init",
+  "username": "cheeky_monkey"
+  "session": "12345"
+  }
+```
+
+If the user hasn't registered with SRP the server responds with:
+
+`Status code: 403`
+
+```
+auth: {
+  "errcode": "M_UNAUTHORIZED",
+  "error": "User has not registered with SRP."
+  }
+```
+
+The server responds with the salt and SRP group (looked up from the database), and public value `B`:
+
+```
+auth: {
+  "salt": s,
+  "params": {
+    "group": "selected group",
+    "passwordhash": "PH",
+    "hash_iterations": i,
+    "hash": "H"
+    },
+  "server_value": B,
+  "session": "12345"
+  }
+```
+The client looks up N (the prime) and g (the generator) of the selected SRP group as sent by the server,
+`H` is the has algorithm used with `i` iterations.
+s is the stored salt for the user as supplied during registration, B is the public server value,
+and `session` is the session id of this authentication flow, can be any unique random string,
+used for the server to keep track of the authentication flow.
+
+the server calculates B as:
+
+	B = kv + g^b 
+
+where b is a private randomly generated value for this session (server side) and k is given as:
+
+	k = H(N, g) 
+
+The client then calculates:
+
+	A = g^a 
+where a is a private randomly generated value for this session (client side).
+
+Both then calculate:
+
+	u = H(A, B) 
+
+Next the client calculates:
+
+	x = PH(p, s)  
+	S = (B - kg^x) ^ (a + ux)  
+	K = H(S)
+
+The server calculates:
+
+	S = (Av^u) ^ b  
+	K = H(S)
+
+Resulting in the shared session key K.
+
+To complete the authentication we need to prove to the server that the session key K is the same.
+
+The client calculates:
+
+	M1 = H(H(N) xor H(g), H(I), s, A, B, K)
+
+The client will then respond with:
+
+`POST`
+
+```
+auth: {
+  "type": "m.login.srp6a.verify",
+  "evidence_message": M1,
+  "client_value": A,
+  "session": "12345"
+  }
+```
+Here `M1` is the (base64 encoded) client evidence message, and A is the public client value.
+Upon successful authentication (ie M1 matches) the server will respond with the regular login success status code 200:
+
+To prove the identity of the server to the client we can send back M2 (base64 encoded) as:
+
+	M2 = H(A, M1, K)
+
+```
+{
+  "evidence_message": M2
+}
+```
+
+Along with any other data expected returned by the API endpoint.
+
+The client verifies that M2 matches, and is subsequently authenticated.
+
+
+
+## Potential issues
+
+Adding this authentication method requires client developers to implement this in all matrix clients.
+
+As long as the plain password login remains available it is not trivial to allow clients to
+assume the server never learns the password, since an evil server can say to a new client that it
+doesn't support SRP and learn the password that way. And with the client not being authenticated
+before login there's no easy way for the client to know whether the user expects SRP to be used.
+The long-term solution to this is to declare the old password authentication as deprecated and
+have all matrix clients refuse to login with `m.password`. This may take a long time; "the best
+moment to plant a tree is 10 years ago, the second best is today."
+The short term solution requires a good UX in clients to notify the user that they expect to
+login with SRP but the server doesn't support this.
+
+SRP is vulnerable to precomputation attacks and it is incompatible with elliptic-curve cryptography.
+Matthew Green judges it as 
+["It’s not ideal, but it’s real." and "not obviously broken"](https://blog.cryptographyengineering.com/2018/10/19/lets-talk-about-pake/)
+and it's a fairly old protocol.
+
+## Alternatives
+
+OPAQUE is the more modern protocol, which has the added benefit of not sending the salt in plain text to the client,
+but rather uses an 'Oblivious Pseudo-Random Function' and can use elliptic curves.
+
+[SCRAM](https://www.isode.com/whitepapers/scram.html) serves a similar purpose and is used by (amongst others) XMPP. 
+SRP seems superior here because it does not store enough information server-side to make a valid authentication 
+against the server in case the database is somehow leaked without the server being otherwise compromised.
+
+The UIA `/login` flow as proposed by [MSC2835](https://github.com/matrix-org/matrix-doc/pull/2835) would basically remove 
+the whole `/login` part of this MSC, making it a lot simpler.
+
+## Security considerations
+
+SRP uses the discrete logarithm problem, deemed unsolved, though Shor's algorithm can become an
+issue when quantum computers get scaled up. Work seems to have been done to create a quantum-safe
+SRP version, see [here](https://eprint.iacr.org/2017/1196.pdf), though I lack the credentials to
+determine whether or not this holds water.
+
+
+This whole scheme only works if the user can trust the client, which may be an issue
+in the case of a 'random' javascript hosted matrix client, though this is out of scope for this MSC.
+
+## Outlook
+This MSC allows for authentication without the server learning the password, and authenticating
+both the server and the client to each other. This may prevent a few security issues, such as
+a CDN learning the users password. The main reason for this MSC is that later this may allow 
+the reuse of the same password for both authentication and SSSS encryption while remaining secure.
+
+Phasing out the old plain password login will take time, as older clients may still immediately
+`POST` the plaintext password to `/login` invisibly to the end user, without any checks.
+The server should then just respond with a `HTTP Status code 403`:
+
+```
+{  
+  "errcode": "M_UNAUTHORIZED",  
+  "error": "Password authentication is not supported."  
+}
+```
+
+But then the server still has access to the plain text password.
+
+## Unstable prefix
+The following mapping will be used for identifiers in this MSC during development:
+
+
+Proposed final identifier       | Purpose | Development identifier
+------------------------------- | ------- | ----
+`m.login.srp6a.*` | login type | `com.vgorcum.msc3262.login.srp6a.*`
