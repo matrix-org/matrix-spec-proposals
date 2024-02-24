@@ -153,7 +153,7 @@ data of vaults and secrets.
 
 ## Unstable prefix
 
-Until this proposal is accepted into the spec implemenations should refer to:
+Until this proposal is accepted into the spec implementations should refer to:
 
 - `m.vault` as `org.matrix.mscXXXX.vault`
 - `m.vault.secret` as `org.matrix.mscXXXX.vault.secret`
