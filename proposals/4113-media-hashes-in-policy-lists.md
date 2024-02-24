@@ -18,7 +18,7 @@ various types of hashes. Each of the types MUST follow the in matrix common java
 style namespace format. For example, a pdqhash type would look like `m.pdqhash` 
 where `m` is your namespace and `pdqhash` is the hash type.
 
-An object approach is choosen to make sure that in the future the events can be 
+An object approach is chosen to make sure that in the future the events can be 
 easily upgraded while staying backwards compatible with old implementations.
 For example when there are issues with hash algos discovered in the future.
 
