@@ -20,8 +20,9 @@ with `m.room.power_levels` which prohibit normal events by setting
 `events_default` to a suitably high number. In the default power level
 structure, this would be 100.
 
-Additionally, vault- and secret-rooms should be created with a join rule of
-`invite` to prevent unintended access without explicit sharing.
+Additionally, vault- and secret-rooms should be created with encryption enabled
+and a join rule of `invite` to prevent unintended access without explicit
+sharing.
 
 To include a secret (or another vault) in a vault, an `m.vault.child` state
 event is introduced. The state key of the event is the room ID of the secret
