@@ -135,6 +135,11 @@ password managers anyway.
 
 ## Alternatives
 
+Instead of dedicated space-like `m.vault` rooms, normal [spaces] could be used to
+group secret-rooms. This has the downside that secret-rooms and other room types
+can mingle in the hierarchy which makes it harder for clients to recognise spaces
+devoted exclusively to storing secrets.
+
 Multiple `m.secret` events could be stored in the same room, eliminating the
 need to have different room types for vaults and secrets. However, this doesn't
 allow for fine-grained sharing of secrets with other users and would make it
