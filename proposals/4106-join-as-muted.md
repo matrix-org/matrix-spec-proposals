@@ -56,6 +56,13 @@ a v11 situation. (Room version 11 caused Element iOS to crash when trying to ope
 A separate state event was dismissed due to that it makes the most sense to put this in the join rules to the author.
 This is a weak alternatives case the author does recognise and is therefore left open as a possible alternative for now.
 
+Knocking on rooms as an alternative has been dismissed by the author due to that it requires the solving of peeking over
+federation to enable you to view the room contents before you attempt to pass membership screening. It also is not a viable
+alternative for rooms that want to have members only membership due to wanting to give all users the ability to see 
+what users have access to their messages when no server or user is acting in bad faith. Services like view.matrix.org existing
+shows how world readable history visibility is not acceptable to force users into just to enable Screening of members while
+maintaining read only mode as a capability. 
+
 ## Security considerations
 
 Alternatives section does go into Security Considerations a bit and so does this proposals Relatives in MSC3909 and MSC3907
