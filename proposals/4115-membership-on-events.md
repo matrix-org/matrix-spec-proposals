@@ -125,6 +125,8 @@ None foreseen.
 
 ## Unstable prefix
 
+While this proposal is in development, the name `io.element.msc4115.membership`
+should be used in place of `membership`.
 
 ## Dependencies
 
