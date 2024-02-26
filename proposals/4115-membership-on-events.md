@@ -49,7 +49,7 @@ In other words: servers should follow the following algorithm when serving an
 event E to a user Alice:
 
 1. Consider the room state just *before* event E landed (accounting for state
-   resolution accross E's `prev_events`, but not E itself).
+   resolution across E's `prev_events`, but not E itself).
 2. Within the state, find the event M with type `m.room.member` and `state_key`
    set to Alice's user ID.
 3. * If no such event exists, set `membership` to `leave`.
