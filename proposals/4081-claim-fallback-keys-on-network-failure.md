@@ -23,7 +23,7 @@ Currently, fallback keys are _only_ claimed on key exhaustion, not due to transi
 proposes to change the semantics to allow fallback keys to be returned by the `/keys/claim` endpoint if the server
 the target device is on is unreachable. In order for servers to return fallback keys during the network failure,
 the fallback keys must be cached _in advance_ on the claiming user's homeserver. This MSC proposes adding a new
-key `fallback_keys` to the `m.device_list_update` EDU. This MSC proposes changing the spec wording (bold is new):
+key `fallback_keys` to the [`m.device_list_update` EDU](https://spec.matrix.org/v1.9/server-server-api/#definition-mdevice_list_update). This MSC proposes changing the spec wording (bold is new):
 
 > Servers must send `m.device_list_update` EDUs to all the servers who share a room with a given local user, and
 > must be sent whenever that user’s device list changes (i.e. for new or deleted devices, when that user joins a
@@ -106,8 +106,8 @@ opt-in, and hence require client-side changes. However, a malicious server can t
 return the fallback key anyway, and the client would not be able to detect this. For this reason, it feels like
 security theater to add this flag.
 
-A malicious actor who can control network conditions can force a client to use a fallback key by temporarily
-preventing two homeservers from communicating. Previously, the only way a malicious actor could force a client to
+A malicious actor who can control network conditions (but not the servers themselves) can force a client to use a fallback key by temporarily
+preventing two homeservers from communicating. Previously, the only way such an actor could force a client to
 use a fallback key would be to claim all the OTKs before the client had a chance to upload more. Therefore, this
 MSC increases the ways attackers can force clients to use fallback keys. Fallback keys weaken forward secrecy. It
 is assumed that "most" sessions will be set up using OTKs and not the fallback key. If this assumption holds,
