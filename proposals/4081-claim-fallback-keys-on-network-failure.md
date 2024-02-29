@@ -40,7 +40,7 @@ endpoint with a new request body parameter, `eager_share_fallback_keys`, as foll
 | `device_keys`         | `DeviceKeys`              | Identity keys for the device. May be absent if no new identity keys are required.
 | `fallback_keys`       | `OneTimeKeys`	            | The public key which should be used if the device’s one-time keys are exhausted, **or if the user's homeserver is unreachable**. [etc]
 | `one_time_keys`       | `OneTimeKeys`	            | One-time public keys for “pre-key” messages. The names of the properties should be in the format <algorithm>:<key_id>. The format of the key is determined by the key algorithm. May be absent if no new one-time keys are required.
-| **`eager_share_fallback_keys`** | **`boolean`**   | **Whether the `fallback_keys` should immediately be sent to other homeservers which have a user which share a room with this user. Omitting this property is the same as setting it to `false`.
+| **`eager_share_fallback_keys`** | **`boolean`**   | **Whether the `fallback_keys` should immediately be sent to other homeservers which have a user which share a room with this user. Omitting this property is the same as setting it to `false`.**
 
 ### Extend `m.device_list_update` EDU
 
@@ -85,11 +85,11 @@ An example of an EDU with the new property:
         "ed25519:JLAFKJWSCS": "lEuiRJBit0IG6nUf5pUzWTUEsRVVe/HJkoKuEww9ULI"
       },
       "signatures": {
-        "@alice:example.com": {
+        "@john:example.com": {
           "ed25519:JLAFKJWSCS": "dSO80A01XiigH3uBiDVx/EjzaoycHcjq9lfQX0uWsqxl2giMIiSPR8a4d291W1ihKJL/a+myXS367WT6NAIcBA"
         }
       },
-      "user_id": "@alice:example.com"
+      "user_id": "@john:example.com"
     },
     "prev_id": [
       5
