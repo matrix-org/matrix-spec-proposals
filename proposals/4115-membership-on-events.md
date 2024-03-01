@@ -30,7 +30,7 @@ This issue is discussed in more detail at
 https://github.com/element-hq/element-meta/issues/2268.
 
 As a partial solution to this problem, we propose a mechanism for servers to
-inform clients of room membership at each event.
+inform clients of their room membership at each event.
 
 ## Proposal
 
