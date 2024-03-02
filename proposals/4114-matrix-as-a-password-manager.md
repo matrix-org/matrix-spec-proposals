@@ -135,6 +135,10 @@ When sharing _and_ federating, secrets can end up being stored on different home
 servers over time. However, federation is probably not a desirable feature of
 password managers anyway.
 
+When not sharing, UTDs on encrypted secrets would be fatal and result in loss
+of access to the secret. Clients might be able to mitigate this by offering
+offline encrypted backups.
+
 ## Alternatives
 
 Instead of dedicated space-like `m.vault` rooms, normal [spaces] could be used to
