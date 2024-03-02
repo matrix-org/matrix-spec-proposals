@@ -77,6 +77,8 @@ Fields in turn have the following properties:
     put into the `title` field.
 - `value` – The content stored (required). For fields of type `date`, this is an
   integer, otherwise a string.
+- `conceal` – Display hint indicating whether or not clients should obscure the value
+  by default (optional). Defaults to `false` for all field type except `password`.
 
 ```
 {
