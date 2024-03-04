@@ -76,7 +76,7 @@ the information required to validate the event. Those conditions are:
 
 If any of the conditions cannot be met, the reinstate event is withheld. Servers *may* wish to
 [soft-fail](https://spec.matrix.org/v1.9/server-server-api/#soft-failure) the event if it can never
-be satisified, such as in the case of condition 2 or 3.
+be satisfied, such as in the case of condition 2 or 3.
 
 Once the conditions are met, the reinstate event is applied to the target events as a virtual layer
 similar to [message edits](https://spec.matrix.org/v1.9/client-server-api/#event-replacements). This
