@@ -167,11 +167,11 @@ data of vaults and secrets.
 
 Until this proposal is accepted into the spec implementations should refer to:
 
-- `m.vault` as `org.matrix.mscXXXX.vault`
-- `m.vault.secret` as `org.matrix.mscXXXX.vault.secret`
-- `m.vault.child` as `org.matrix.mscXXXX.vault.child`
-- `m.secret` as `org.matrix.mscXXXX.secret`
-- `m.secret.sections` as `org.matrix.mscXXXX.secret.sections`
+- `m.vault` as `org.matrix.msc4114.vault`
+- `m.vault.secret` as `org.matrix.msc4114.vault.secret`
+- `m.vault.child` as `org.matrix.msc4114.vault.child`
+- `m.secret` as `org.matrix.msc4114.secret`
+- `m.secret.sections` as `org.matrix.msc4114.secret.sections`
 
 ## Dependencies
 
