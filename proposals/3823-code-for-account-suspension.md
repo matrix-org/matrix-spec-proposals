@@ -45,7 +45,7 @@ Returning a static page:
 {
   "errcode": "M_USER_ACCOUNT_SUSPENDED",
   "error": "The user account has been suspended, see link for details",
-  "href": "https://example.org/help/my-account-is-suspended-what-can-i-do
+  "href": "https://example.org/help/my-account-is-suspended-what-can-i-do"
 }
 ```
 
@@ -55,7 +55,7 @@ Returning a dynamic page customized for this specific user:
 {
   "errcode": "M_USER_ACCOUNT_SUSPENDED",
   "error": "The user account has been suspended, see link for details",
-  "href": "https://example.org/action-needed/please-redact-events?event-id=$event_1:example.org&event-id=$event_2:example.org
+  "href": "https://example.org/action-needed/please-redact-events?event-id=$event_1:example.org&event-id=$event_2:example.org"
 }
 ```
 
