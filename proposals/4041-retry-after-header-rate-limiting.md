@@ -5,7 +5,7 @@ being overloaded by enforcing rate-limits to selected API calls.
 If homeservers limit access to an API they respond with an http error code 429 and a response body
 that includes a property `retry_after_ms` to indicate how long a client has to wait before retrying.
 
-Some http libraries (like [Ky](https://github.com/sindresorhus/ky), [got](https://github.com/sindresorhus/got
+Some http libraries (like [Ky](https://github.com/sindresorhus/ky), [got](https://github.com/sindresorhus/got)
 and [urllib3](https://urllib3.readthedocs.io/en/stable/reference/urllib3.util.html#urllib3.util.Retry)) ease
 the burden of handling retries by honoring the http header `Retry-After`. As explained in
 [RFC 9119 - HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110#field.retry-after) this header is optional
