@@ -87,7 +87,7 @@ This definition is inherited from [MSC1597](https://github.com/matrix-org/matrix
 
 ## Unstable prefix
 
-Regretfully, this MSC was implemented with *stable* identifiers before an unstable identifiers process
+Regrettably, this MSC was implemented with *stable* identifiers before an unstable identifiers process
 was established. Implementation has existed in some capacity since 2018: https://github.com/matrix-org/synapse/pull/4004
 
 Noting that the modern MSC process forbids such behaviour, new implementations should use the stable
