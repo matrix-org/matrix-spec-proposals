@@ -1,54 +1,66 @@
 # MSC3939: Account locking
 
-There are legitimate cases where server administrators might want the ability to
-temporarily lock users out of their account. For example, server administrators
-might require users to go through a regular, out-of-bounds verification check in
-order to keep using their account, and temporarily lock a user out of their
-account if they do not complete this check in time.
+Account locking is a common safety and security tool where server administrators
+can prevent a user from usefully using their account. For example, too many failed
+login attempts, escalation in moderation action, or out of band verification
+needing to be completed.
 
-At the time of writing this proposal, the only option for a server administrator
-to prevent a user from accessing their account is to deactivate it. However,
-this is a pretty destructive operation. Ideally, a locked account could be
-unlocked without any visible impact on the account itself (joined rooms,
-associated 3PIDs, etc).
+Currently, Matrix only supports deactivating an account. This is a destructive
+action which often leads to the account leaving all joined rooms, among other
+details. With account locking, the effect of making the user unable to access
+their account is achieved without destroying that same account - the account
+can always be unlocked.
+
+This proposal covers account locking, though leaves the specifics of use as an
+implementation detail. Self-serve locking APIs are additionally not provided.
 
 ## Proposal
 
-A new `M_USER_LOCKED` is introduced, which is communicated to clients in
-`401 Unauthorized` HTTP responses with `soft_logout` set to `true`.
+When an account is locked, clients receive a `401 Unauthorized` error response
+to most APIs with an `M_USER_LOCKED` error code and `soft_logout` set to `true`.
+Excluded APIs are described below. We enable `soft_logout` to encourage clients
+to make use of the [soft logout](https://spec.matrix.org/v1.9/client-server-api/#soft-logout)
+semantics: keep encryption state, but otherwise render the account unusable. 401
+is used to support legacy clients by giving the user semantically meaningful
+experience: they may need to try logging in again, and when they do they may get
+a more useful error message about their account status.
 
-When an account is locked:
+Clients MAY prevent actually logging the user out until the error code or response
+changes. This is to allow the client to emit a few more requests after receiving
+the error, as may be the case with a very active `/sync` loop. Once the error code
+changes (but remains a 401 otherwise, regardless of soft logout), the client
+should proceed with the logout. Similarly, if the response changes from an error
+to a successful response, the client can assume the account has been unlocked and
+return to normal operation without needing to get a new access token.
 
-* homeservers must respond to any authenticated request from the user with
-  `M_USER_LOCKED`, _except_ for requests to `/logout` and `/logout/all`.
-* homeservers must not automatically invalidate existing access tokens for the
-  user.
-* clients should keep data that has already been locally persisted, unless the
-  user manually logs out.
+Upon receiving the `M_USER_LOCKED` error, clients SHOULD retain session information
+including encryption state and inform the user that their account has been locked.
+Details about *why* the user's account is locked are not formally described by
+this proposal, though future MSCs which cover informing users about actions taken
+against their account should have such details. Clients may wish to make use of
+[server contact discovery](https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport)
+in the meantime.
 
-When an account is unlocked, clients and the homeserver can start interacting
-again as if nothing happened, similarly to when a client recovers after loss of
-connection.
+> *TODO*: MSC1929 was adopted into Matrix 1.10 - the link needs updating upon release.
 
-Using 401 return code allows the user to be aware of the fact that something wrong is
-happening, since the app will be logged out.
-Using `soft_logout` allows to keep everything encryption related in the client until
-the user logs again (after being unlocked).
+Locked accounts are still permitted to access the following API endpoints:
+
+* [`POST /logout`](https://spec.matrix.org/v1.9/client-server-api/#post_matrixclientv3logout)
+* [`POST /logout/all`](https://spec.matrix.org/v1.9/client-server-api/#post_matrixclientv3logoutall)
+
+Servers SHOULD NOT invalidate an account's access tokens in case the account becomes
+unlocked: the user should be able to retain their sessions without having to log
+back in. However, if a client requests a logout (using the above endpoints), the
+associated access tokens should be invalidated as normal.
 
 ## Alternatives
 
-This proposal could be merged with
-[MSC3823](https://github.com/matrix-org/matrix-spec-proposals/pull/3823), which
-describes a similar concept coming from a content moderation perspective.
-However, locking and suspending an account are semantically different enough
-that the author of this proposal thinks that it makes sense for those two cases
-to be described differently in the API.
+[MSC3823](https://github.com/matrix-org/matrix-spec-proposals/pull/3823) covers
+a similar concept, though is semantically different. See [matrix-org/glossary](https://github.com/matrix-org/glossary)
+for details.
 
-Another option for merging this proposal with MSC3823 would be adding a
-`suspended` boolean property and an optional `href` string property (which would
-be required if `suspended` is `true`) to errors bearing the `M_USER_LOCKED`
-error code. Opinions are welcome on whether this is a better solution than using
-two distincts error codes.
+Another similar concept would be "shadow banning", though this only applies to
+moderation use cases.
 
 Another option is to use 403 responses instead of 401 and `soft_logout`. We choose this
 so that existing apps provide some feedback to the user without explicit support for
@@ -56,5 +68,5 @@ this MSC.
 
 ## Unstable prefix
 
-Until this proposal is accepted, implementations must use
+Until this proposal is considered stable, implementations must use
 `ORG_MATRIX_MSC3939_USER_LOCKED` instead of `M_USER_LOCKED`.
