@@ -1,4 +1,4 @@
-# MSC0000: `HEAD` HTTP method on `/download`
+# MSC4120: Allow `HEAD` on `/download`
 
 Most servers have a media upload size limit in place which gets applied to remote downloads as well,
 ideally preventing "excessively" large media from transiting through the server. Unfortunately, the
