@@ -21,7 +21,7 @@ to most APIs with an `M_USER_LOCKED` error code and `soft_logout` set to `true`.
 Excluded APIs are described below. We enable `soft_logout` to encourage clients
 to make use of the [soft logout](https://spec.matrix.org/v1.9/client-server-api/#soft-logout)
 semantics: keep encryption state, but otherwise render the account unusable. 401
-is used to support legacy clients by giving the user semantically meaningful
+is used to support legacy clients by giving the user a semantically meaningful
 experience: they may need to try logging in again, and when they do they may get
 a more useful error message about their account status, though their session data
 may be deleted by the client if it doesn't recognize the error code. Soft logout
