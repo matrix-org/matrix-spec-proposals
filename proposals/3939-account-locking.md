@@ -27,14 +27,6 @@ a more useful error message about their account status, though their session dat
 may be deleted by the client if it doesn't recognize the error code. Soft logout
 aims to prevent total destruction of this data, however.
 
-Clients MAY prevent actually logging the user out until the error code or response
-changes. This is to allow the client to emit a few more requests after receiving
-the error, as may be the case with a very active `/sync` loop. Once the error code
-changes (but remains a 401 otherwise, regardless of soft logout), the client
-should proceed with the logout. Similarly, if the response changes from an error
-to a successful response, the client can assume the account has been unlocked and
-return to normal operation without needing to get a new access token.
-
 Upon receiving the `M_USER_LOCKED` error, clients SHOULD retain session information
 including encryption state and inform the user that their account has been locked.
 Details about *why* the user's account is locked are not formally described by
@@ -42,6 +34,18 @@ this proposal, though future MSCs which cover informing users about actions take
 against their account should have such details. Clients may wish to make use of
 [server contact discovery](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport)
 in the meantime.
+
+Clients SHOULD hide the normal UI from the user when informing them that their
+account is locked, preventing general use of the account.
+
+Clients SHOULD continue to `/sync` and make other API calls to more quickly detect
+when the lock has been lifted. If unlocked, the APIs will either return a different
+error code or a normal 200 OK/successful response. For example, `/sync` will return
+to working as though nothing ever happened. If the error code changes to
+`M_UNKNOWN_TOKEN`, the client should delete local session data as it normally
+would when seeing the error code (and use soft logout as it normally would). This
+is typically expected if the server admin logged the user out or the user logged
+themselves out.
 
 Locked accounts are still permitted to access the following API endpoints:
 
