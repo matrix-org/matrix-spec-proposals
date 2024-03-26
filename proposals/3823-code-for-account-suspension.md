@@ -1,85 +1,66 @@
-# MSC3823: A code for account suspension
+# MSC3823: Account Suspension
 
-This MSC introduces a new error code that servers may send to clarify that an account has been
-suspended *temporarily* but may still be reactivated.
+Unlike [account locking](https://github.com/matrix-org/matrix-spec-proposals/pull/3939), suspension
+allows the user to have a (largely) readonly view of their account. Homeserver administrators and
+moderators may use this functionality to temporarily deactivate an account, or place conditions on
+the account's experience. Critically, like locking, account suspension is reversible, unlike the
+deactivation mechanism currently available in Matrix - a destructive, irreversible, action.
+
+This proposal introduces an error code for communicating suspension to a user, alongside some
+guidelines for how suspension could be implemented by a server. APIs to invoke or clear suspension
+are not introduced, and left as an implementation detail. These will typically be done through an
+administrator-only API.
 
 ## Proposal
 
-### Introduction
+When an account is suspended, any [Client-Server API](https://spec.matrix.org/v1.10/client-server-api/)
+endpoint MAY return a 403 HTTP status code with `errcode` of `M_USER_SUSPENDED`. This indicates to
+the user that the associated action is unavailable.
 
-Matrix has a code `M_USER_DEACTIVATED` that a server may return to describe an account that has been
-deactivated. So far, this code has been used to represent accounts that have been *permanently*
-deactivated. In particular, clients that interpret this error code display it imply that the account
-has been *permanently* deactivated.
+Clients should note that for more general endpoints, like `/send/:eventType`, suspension MAY only be
+applied to a subset of request parameters. For example, a user may be allowed to *redact* events but
+not send messages.
 
-However, some countries (e.g. UK) have laws that require the ability to appeal account
-deactivations. This requires the ability to specify that an account is *reversibly*
-suspended and let users know about the appeals procedure.
+The specific list of permitted actions during suspension is left as a deliberate implementation
+detail, however a server SHOULD permit the user to:
 
-This MSC simply introduces a new error code `M_USER_ACCOUNT_SUSPENDED` that servers may send to
-clarify that an account has been suspended but that the solution may still be resolved either by
-an appeal or by e.g. clearing up some abusive messages.
+* Log in/create additional sessions (which should also behave as suspended).
+* See and receive messages, particularly via `/sync` and `/messages`.
+* [Verify their other devices](https://spec.matrix.org/v1.10/client-server-api/#device-verification)
+  and write associated [cross-signing data](https://spec.matrix.org/v1.10/client-server-api/#cross-signing).
+* [Populate their key backup](https://spec.matrix.org/v1.10/client-server-api/#server-side-key-backups).
+* Leave rooms & reject invites.
+* Redact events.
+* Log out/delete any device of theirs, including the current session.
+* Deactivate their account, potentially with a deliberate time delay to discourage making a new
+  account right away.
+* Change or add [admin contacts](https://spec.matrix.org/v1.10/client-server-api/#adding-account-administrative-contact-information),
+  but not remove.
 
-This MSC does *not* specify a mechanism to suspend or unsuspend the account or to handle appeals.
+The suggested set of explicitly forbidden actions is:
 
-### Proposal
+* Joining or knocking on rooms, including accepting invites.
+* Sending messages.
+* Sending invites.
+* Changing profile data (display name and avatar).
 
-Introduce a new error code `M_USER_ACCOUNT_SUSPENDED`. This error code MAY be sent by the server
-whenever a client attempts to use an API on behalf of a user whose account has been suspended.
+## Potential issues
 
-| Name | Type | Value |
-|------|------|-------|
-| `href` | string | (optional) If specified, a URL containing more information for the user, such as action needed. |
+This proposal does not communicate *why* a user's account is restricted. The human-readable `error`
+field may contain some information, though anything comprehensive may not be surfaced to the user.
+A future MSC is expected to build a system for both informing the user of the action taken against
+their account and allow the user to appeal that action.
 
-The client is in charge of displaying an error message understandable by the user in case of `M_USER_ACCOUNT_SUSPENDED`,
-as well as a link to `href`.
+## Alternatives
 
-The web server serving `href` is in charge of localizing the message, using existing HTTP mechanisms,
-to adapt the page to the end user's locale.
+No significant alternatives are plausible. `M_USER_DEACTIVATED` could be expanded with a `permanent`
+flag, though ideally each error code should provide meaning on its own.
 
-#### Examples
+The related concept of locking, as discussed in places like [MSC3939](https://github.com/matrix-org/matrix-spec-proposals/pull/3939)
+and [matrix-org/glossary](https://github.com/matrix-org/glossary), is semantically different from
+suspension.
 
-Returning a static page:
+## Unstable prefixes
 
-```json
-{
-  "errcode": "M_USER_ACCOUNT_SUSPENDED",
-  "error": "The user account has been suspended, see link for details",
-  "href": "https://example.org/help/my-account-is-suspended-what-can-i-do"
-}
-```
-
-Returning a dynamic page customized for this specific user:
-
-```json
-{
-  "errcode": "M_USER_ACCOUNT_SUSPENDED",
-  "error": "The user account has been suspended, see link for details",
-  "href": "https://example.org/action-needed/please-redact-events?event-id=$event_1:example.org&event-id=$event_2:example.org"
-}
-```
-
-
-### Potential issues
-
-See security considerations.
-
-### Alternatives
-
-We could reuse `M_USER_DEACTIVATED` and introduce an additional field:
-
-| Name | Type | Value |
-|------|------|-------|
-| `permanent` | boolean | (optional) If `false`, the account may still be reactivated. |
-
-in addition to the fields mentioned previously.
-
-### Security considerations
-
-This has the potential to expose private data.
-
-To avoid this, any `M_USER_ACCOUNT_SUSPENDED` MUST NOT be sent without authentication.
-
-### Unstable prefixes
-
-During testing, `M_USER_ACCOUNT_SUSPENDED` will be prefixed as `ORG.MATRIX.MSC3823.USER_ACCOUNT_SUSPENDED`.
+Until this proposal is considered stable, implementations must use
+`ORG.MATRIX.MSC3823.USER_SUSPENDED` instead of `M_USER_SUSPENDED`.
