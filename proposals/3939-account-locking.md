@@ -53,6 +53,13 @@ unlocked: the user should be able to retain their sessions without having to log
 back in. However, if a client requests a logout (using the above endpoints), the
 associated access tokens should be invalidated as normal.
 
+## Potential issues
+
+This proposal does not communicate *why* a user's account is restricted. The human-readable `error`
+field may contain some information, though anything comprehensive may not be surfaced to the user.
+A future MSC is expected to build a system for both informing the user of the action taken against
+their account and allow the user to appeal that action.
+
 ## Alternatives
 
 [MSC3823](https://github.com/matrix-org/matrix-spec-proposals/pull/3823) covers
