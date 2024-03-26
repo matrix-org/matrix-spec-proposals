@@ -38,10 +38,8 @@ including encryption state and inform the user that their account has been locke
 Details about *why* the user's account is locked are not formally described by
 this proposal, though future MSCs which cover informing users about actions taken
 against their account should have such details. Clients may wish to make use of
-[server contact discovery](https://spec.matrix.org/unstable/client-server-api/#getwell-knownmatrixsupport)
+[server contact discovery](https://spec.matrix.org/v1.10/client-server-api/#getwell-knownmatrixsupport)
 in the meantime.
-
-> *TODO*: MSC1929 was adopted into Matrix 1.10 - the link needs updating upon release.
 
 Locked accounts are still permitted to access the following API endpoints:
 
