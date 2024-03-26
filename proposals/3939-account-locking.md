@@ -23,7 +23,9 @@ to make use of the [soft logout](https://spec.matrix.org/v1.9/client-server-api/
 semantics: keep encryption state, but otherwise render the account unusable. 401
 is used to support legacy clients by giving the user semantically meaningful
 experience: they may need to try logging in again, and when they do they may get
-a more useful error message about their account status.
+a more useful error message about their account status, though their session data
+may be deleted by the client if it doesn't recognize the error code. Soft logout
+aims to prevent total destruction of this data, however.
 
 Clients MAY prevent actually logging the user out until the error code or response
 changes. This is to allow the client to emit a few more requests after receiving
@@ -67,9 +69,17 @@ for details.
 Another similar concept would be "shadow banning", though this only applies to
 moderation use cases.
 
-Another option is to use 403 responses instead of 401 and `soft_logout`. We choose this
-so that existing apps provide some feedback to the user without explicit support for
-this MSC.
+A 403 HTTP status code was considered instead of 401 with a `soft_logout`. A 403
+would indicate that the given action is denied, but otherwise keep the user logged
+in. This could wrongly indicate [suspension](https://github.com/matrix-org/matrix-spec-proposals/pull/3823),
+confusing the user. Instead, we provide a semantically similar experience where
+the user gets soft logged out on legacy clients, preserving encryption and related
+session data (assuming the client also supports soft logout). This can result in
+some loss of other session data however, like device-specific settings. Users may
+also be differently confused when they try to log back in and get cryptic error
+messages (indicating wrong username/password), however as mentioned above in the
+Potential Issues section, communicating actions taken against an account is a
+concern for a future MSC.
 
 ## Unstable prefix
 
