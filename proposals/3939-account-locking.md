@@ -12,7 +12,7 @@ their account is achieved without destroying that same account - the account
 can always be unlocked.
 
 This proposal covers account locking, though leaves the specifics of use as an
-implementation detail. Self-serve locking APIs are additionally not provided.
+implementation detail. APIs for administration of locking are also not provided.
 
 ## Proposal
 
