@@ -56,13 +56,10 @@ Each key under `policies` is a "Policy ID", and defined by the server. They are 
 `version` as a convenience to the client, and is another opaque identifier. All other keys are language
 codes to represent the same document. The client picks the language which best suits the user.
 
-Language codes *should* be [ISO 639-1] codes combined with an [ISO 3166-1] region code, separated by
-an underscore. Servers may also wish to use [BCP 47] codes. This recommendation is to ensure maximum
-compatibility with existing conventions around language choices in (Matrix) clients.
-
-[ISO 639-1]: https://en.wikipedia.org/wiki/ISO_639-1
-[ISO 3166-1]: https://en.wikipedia.org/wiki/ISO_3166-1
-[BCP 47]: https://en.wikipedia.org/wiki/IETF_language_tag
+Language codes *should* be formatted as per [Section 2.2 of RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646#section-2.2),
+noting that some implementation *may* use an underscore instead of dash. For example, `en_US` instead
+of `en-US`. This recommendation is to ensure maximum compatibility with existing conventions around
+language choices in (Matrix) clients.
 
 `name` and `url` for each policy document are required, and are arbitrary strings with no maximum
 length. `url` *must* be a valid URI with scheme `https://` or `http://`. Insecure HTTP is discouraged.
