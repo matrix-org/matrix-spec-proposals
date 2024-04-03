@@ -1,13 +1,1179 @@
 # MSC4108: Mechanism to allow OIDC sign in and E2EE set up via QR code
 
+We propose a method to allow an existing authenticated Matrix client to sign in a new client by scanning a QR code. The
+new client will be a fully bootstrapped Matrix cryptographic device, possessing all the necessary secrets, namely the
+cryptographic user identity ("cross-signing") and the server-side key backup decryption key (if used).
+
+This MSC supersedes [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906),
+[MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903) and
+[MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) which achieved a similar feature but did not
+work with a homeserver using the delegated OIDC mechanism proposed by [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
+
 ## Proposal
+
+Depending on the pair of devices used, it may be preferable to scan the QR code on either the new or existing device,
+based on the availability of a camera. As such, this proposal allows for the generation of the QR on either device.
+
+In order for the new device to be fully set up, it needs to exchange information with an existing device such that:
+
+- The new device knows which homeserver to use
+- The existing device can facilitate the new device in getting an access token
+- The existing device shares the secrets necessary to set up end-to-end encryption
+
+### Insecure rendezvous session
+
+It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-directional communication session over
+which the two devices can exchange the necessary data. This session is described as "insecure" as it provides no
+end-to-end confidentiality nor authenticity by itself—these are layered on top of it.
+
+#### High-level description
+
+TODO
+
+#### The send mechanism
+
+Every send request MUST include an `ETag` header, whose value is supplied by the `ETag` header in the last `GET`
+response seen by the requester. (The initiating device may also use the `ETag` supplied in the initial `POST` response
+to immediately update the payload.) Updates will succeed only if the supplied `ETag` matches the server's current
+revision of the payload. This prevents concurrent writes to the payload.
+
+The `ETag` header is standard, described by [RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-etag). In this
+proposal we only accept strong, single-valued `ETag` values; anything else constitutes a malformed request.
+
+n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
+
+#### Expiry
+
+The rendezvous session (i.e. the payload) SHOULD expire after a period of time communicated to clients via the `Expires`
+header. After this point, any further attempts to query or update the payload MUST fail. The expiry time SHOULD be
+extended every time the payload is updated. The rendezvous session can be manually expired with a `DELETE` call to the
+rendezvous session.
+
+#### Threat analysis
+
+##### Denial of Service attack surface
+
+Because the rendezvous session protocol allows for the creation of arbitrary channels and storage of arbitrary data, it
+is possible to use it as a denial of service attack surface.
+
+As such, the following standard mitigations such as the following may be deemed appropriate by homeserver
+implementations and administrators:
+
+- rate limiting of requests
+- imposing a low maximum payload size (e.g. kilobytes not megabytes)
+- limiting the number of concurrent sessions
+
+##### Data exfiltration
+
+Because the rendezvous session protocol allows for the storage of arbitrary data, it
+is possible to use it to circumvent firewalls and other network security measures.
+
+Implementation may want to block their production IP addresses from being able to make requests to the rendezvous
+endpoints in order to avoid attackers using it as a dead-drop for exfiltrating data.
+
+#### API
+
+TODO
+
+### Secure channel
+
+The above rendezvous session is insecure, providing no confidentiality nor authenticity against the rendezvous server or
+even arbitrary network participants which possess the rendezvous session server and ID. To provide a secure channel on
+top of this insecure rendezvous session transport, we propose the following scheme.
+
+This scheme is essentially[ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
+instantiated with X25519, HKDF-SHA256 for the KDF and ChaCha20-Poly1305 (as specified by
+[RFC8439](https://datatracker.ietf.org/doc/html/rfc8439#section-2.8)) for the authenticated encryption. Therefore,
+existing security analyses of ECIES are applicable in this setting too. Nevertheless we include below a short
+description of our instantiation of ECIES and discuss some potential pitfalls and attacks.
+
+The primary limitation of ECIES is that there is no authentication for the initiating party (the one to send the first
+message; Device S in the text below). Thus the recipient party (the one to receive the first message; Device G in the
+text below) has no assurance as to who actually sent the message. In QR code login, we work around this problem by
+exploiting the fact that both of these devices are physically present during the exchange and offloading the check that
+they are both in the correct state to the user performing the QR code login process.
+
+#### Establishment
+
+Participants:
+
+- Device G (the device generating the QR code)
+- Device S (the device scanning the QR code)
+
+Regardless of which device generates the QR code, either device can be the existing (already signed in) device. The
+other device is then the new device (one seeking to be signed in).
+
+Symmetric encryption uses deterministic nonces, incrementing by `2` with each message. Device S starts with `0`, using only
+even nonces. Device A starts with `1`, using only odd nonces.
+
+1. **Ephemeral key pair generation**
+
+  Both devices generate an _ephemeral_ Curve25519 key pair:
+
+- Device G generates **(Gp, Gs)**, where **Gp** is its public key and **Gs** the private (secret) key.
+- Device S generates **(Sp, Ss)**, where **Sp** is its public key and **Ss** the private (secret) key.
+
+1. **Create rendezvous session**
+
+Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
+with an empty payload. It parses the **id** and **server** received.
+
+1. **Initial key exchange**
+
+Device G displays a QR code containing:
+
+- its public key **Gp**
+- the insecure rendezvous session **URL**
+- An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
+that wishes to "reciprocate" a login
+- If the intent is to reciprocate a login, then the **homeserver base URL**
+
+To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
+similar structure to that of the existing Device Verification QR code encoding described in [Client-Server API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
+
+This is defined in detail in a separate section of this proposal.
+
+Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the 
+**homeserver base URL**.
+
+At this point Device S should check that the received intent matches what the user has asked to do on the device.
+
+1. **Device S sends the initial message**
+
+Device S computes a shared secret **SH** using ECDH between **Ss** and **Gp**, thereby establishing a secure channel
+with Device G which can be layered on top of the insecure rendezvous session transport. It then discards **Ss** and
+derives a symmetric encryption **EncKey** from **SH** using HKDF_SHA256, each 32 bytes in length.
+
+Device S derives a confirmation message that Device G can use to confirm that the channel is secure. It contains:
+
+- The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305.
+- Its public ephemeral key **Sp**.
+
+```
+Nonce := 0
+SH := ECDH(Ss, Gp)
+EncKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN|" || Gp || "|" || Sp, salt=0, size=32)
+NonceBytes := ToLowEndianBytes(Nonce)[..12]
+TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey, NonceBytes, "MATRIX_QR_CODE_LOGIN_INITIATE")
+Nonce := Nonce + 2
+LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase64(Sp)
+```
+
+Device S then sends the **LoginInitiateMessage** as the payload to the rendezvous session using a `PUT` request with
+`Content-Type` header set to `text/plain`.
+
+1. **Device G confirms**
+
+Device G receives **LoginInitiateMessage** (potentially coming from Device S) from the insecure rendezvous session by
+polling with `GET` requests.
+
+It then does the reverse of the previous step, obtaining **Sp**, deriving the shared secret using **Gs** and **Sp**,
+discarding **Gs** and decrypting (and authenticating) the **TaggedCiphertext**, obtaining a plaintext.
+
+It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
+
+It then responds with a dummy message containing the string `MATRIX_QR_CODE_LOGIN_OK` encrypted with **SH** calculated
+as follows:
+
+```
+Nonce := 1
+NonceBytes := ToLowEndianBytes(Nonce)[..12]
+TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey, NonceBytes, "MATRIX_QR_CODE_LOGIN_OK")
+Nonce := Nonce + 2
+LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext)
+```
+
+Device G sends **LoginOkMessage** as the payload via `PUT` request with `Content-Type` header set to `text/plain` to the
+insecure rendezvous session.
+
+1. **Verification by Device S**
+
+Device S receives a response over the insecure rendezvous session by polling with `GET` requests, potentially from
+Device G.
+
+It decrypts (and authenticates) it using the previously computed encryption key, which will succeed provided the message
+was indeed sent by Device G. It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing otherwise.
+
+```
+Nonce_G := 1
+(TaggedCiphertext, Sp) := Unpack(Message)
+NonceBytes := ToLowEndianBytes(Nonce)[..12]
+Plaintext := ChaCha20Poly1305_Decrypt(EncKey, NonceBytes, TaggedCiphertext)
+Nonce_G := Nonce_G + 2
+
+unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
+     FAIL
+```
+
+If the above was successful, Device S then calculates a two digit **CheckCode** code derived from **SH**, **Gp** and **Sp**:
+
+```
+CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , salt=0, size=2)
+CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
+```
+
+Device S then displays an indication to the user that the secure channel has been established and that the **CheckCode**
+should be entered on the other device when prompted. e.g. wording to say "secure connection established"; enter the code
+XY on your other device;
+
+1. **Out-of-band confirmation**
+
+**Warning**: *This step is crucial for the security of the scheme since it overcomes the aforementioned limitation of ECIES.*
+
+Device G asks the user to enter the **CheckCode** that is being displayed on Device S.
+
+The purpose of the code being entered is to ensure that the user has actually checked their other device rather than
+just pressing "continue", and that the Device S has been able to determine that the channel is secure.
+
+Device G compares the code that the user has entered with the **CheckCode** that it calculates using the same mechanism
+as before:
+
+```
+CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , salt=0, size=2)
+CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
+```
+
+If the code that the user enters matches then the secure channel is established.
+
+Subsequent messages can be sent encrypted with **EncKey** with the nonces incremented as described above.
+
+#### Sequence diagram
+
+The sequence diagram for the above is as follows:
+
+```mermaid
+sequenceDiagram
+    participant G as Device G
+    participant Z as Rendezvous server
+    participant S as Device S
+
+    note over G,S: 1) Devices G and S each generate an ephemeral Curve25519 key pair
+
+    activate G
+    note over G: 2) Device G creates a rendezvous session as follows
+    G->>+Z: POST /_matrix/client/rendezvous
+    Z->>-G: 201 Created<br>Location: /_matrix/client/rendezvous/abc-def<br>ETag: 1
+
+    note over G: 3) Device G generates and displays a QR code containing<br>its ephemeral public key and the rendezvous session URL
+
+    G-->>S: Device S scans the QR code shown by Device G
+    deactivate G
+
+    activate S
+    note over S: Device S validates QR scanned and the rendezvous session URL
+
+    S->>+Z: GET /_matrix/client/rendezvous/abc-def
+    Z->>-S: 200 OK<br>ETag: 1
+
+    note over S: 4) Device S computes SH, EncKey and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
+    S->>+Z: PUT /_matrix/client/rendezvous/abc-def<br>If-Match: 1<br>Body: LoginInitiateMessage
+    Z->>-S: 202 Accepted<br>ETag: 2
+    deactivate S
+
+    G->>+Z: GET /_matrix/client/rendezvous/abc-def<br>If-None-Match: 1
+    activate G
+    Z->>-G: 200 OK<br>ETag: 2<br>Body: Data
+
+    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH and EncKey
+    note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
+
+    note over G: Device G computes LoginOkMessage and sends to the rendezvous session
+
+    G->>+Z: PUT /_matrix/client/rendezvous/abc-def<br>If-Match: 2<br>Body: LoginOkMessage
+    Z->>-G: 202 Accepted<br>ETag: 3
+    deactivate G
+
+    activate S
+    S->>+Z: GET /_matrix/client/rendezvous/abc-def<br>If-None-Match: 2
+    Z->>-S: 200 OK<br>ETag: 3<br>Body: Data
+
+    note over S: 6) Device S attempts to parse Data as LoginOkMessage
+    note over S: Device S checks that the plaintext matches MATRIX_QR_CODE_LOGIN_OK
+
+    note over S: If okay, Device S calculates the CheckCode to be displayed
+    note over S: Device S displays a green checkmark, "secure connection established" and the CheckCode
+    note over S: Device S knows that the channel is secure
+    deactivate S
+
+    note over G: 7) Device G asks the user to confirm that the other device is showing a green checkmark and enter the CheckCode
+    note over G: If the user enters the correct CheckCode and confirms that a green checkmark is shown then Device G knows that the channel is secure
+```
+
+#### Secure operations
+
+Conceptually, once established, the secure channel offers two operations, `SecureSend` and `SecureReceive`, which wrap
+the `Send` and `Receive` operations offered by the rendezvous session API to securely send and receive data between two devices.
+
+At the end of the establishment phase, the next nonce for Device G should be `3` and the next nonce for Device S should
+be `2`.
+
+Device G sets:
+
+```
+Nonce := 3
+NonceOther = 2
+```
+
+Device S sets:
+
+```
+Nonce := 2
+NonceOther := 3
+```
+
+#### Threat analysis
+
+In an attack scenario, we add a participant called Specter with the following capabilities:
+
+- Specter is present for QR code generation/scanning ("shoulder-surfing") and can scan the code themselves.
+- Specter has full control over the network (in a Dolev-Yao sense), being able to observe and modify all traffic.
+- Specter controls both the homeserver and the rendezvous server.
+
+##### Replay protection
+
+Due to use of ephemeral key pairs which are immediately discarded after use, each QR code login session derives a unique
+secret so messages from earlier sessions cannot be replayed. Each message in the session is unique and expected only
+once. Finally, the use of deterministic nonces prevents any possibility of replay.
+
+##### Pure Dolev-Yao attacker
+
+An attacker with control over the network but _not_ present for the QR code scanning cannot thwart the process since
+they are unable to obtain the ephemeral key **Gp** of Device G.
+
+##### Shoulder-surfing attacker (Specter)
+
+Since Device G has no way of authenticating Device S, an attacker present for the QR code scanning can learn **Gp** and
+attempt to mimic Device S in order to get their Device S signed in instead.
+
+- In step 3, Specter can shoulder surf the QR code scanning to obtain **Gp**.
+- In step 4, Specter can intercept S’s message and replace it with a message of their own, replacing  **Sp** with its
+own key.
+- The attack is only thwarted in step 7, because Device S won’t ever display the indicator of success to the user. The
+user then must cancel the process on Device G, preventing it from sharing any sensitive material.
+
+### The OIDC login part and set up of E2EE
+
+Once the secure channel has been established, the two devices can then communicate securely.
+
+#### Login via OIDC Device Authorization Grant
+
+In this section the sequence of steps depends on whether the new device generated or scanned the QR code.
+
+For example, in the case that the new device scanned the QR code it is the first to do a `SecureSend` whereas if the new
+device generated the QR then the existing device is the first to do a `SecureSend`.
+
+This can make it hard to read what is going on.
+
+1. **Homeserver discovery**
+
+The new device needs to know which homeserver it will be authenticating with.
+
+In the case that the new device scanned the QR code then the homeserver base URL can be taken from the QR code and the
+new device proceeds to step 2 immediately.
+
+Otherwise the new device waits to be informed by receiving an `m.login.protocols` message from the existing device.
+
+The existing device would need to determine which "protocols" are available for the new device to use.
+
+Currently this could only be device_authorization_grant meaning the OIDC Provider supports the
+`urn:ietf:params:oauth:grant-type:device_code` grant type.
+
+If it is available then the existing device informs the new device by sending the `m.login.protocols` message with the
+homeserver specified:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+ "type": "m.login.protocols",
+ "protocols": ["device_authorization_grant"],
+ "homeserver": "https://synapse-oidc.lab.element.dev"
+}
+```
+
+1. **New device checks if it can use an available protocol**
+
+Once the existing device knows which homeserver it is to use it then:
+
+- checks that the homeserver is using delegated OIDC by calling `GET /_matrix/client/v1/auth_issuer` from [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965):
+
+*New device => Homeserver via HTTP*
+
+```http
+GET /_matrix/client/v1/auth_issuer HTTP/1.1
+Host: synapse-oidc.lab.element.dev
+Accept: application/json
+```
+
+With response like:
+
+```http
+200 OK
+Content-Type: application/json
+
+{
+  "issuer": "https://auth-oidc.lab.element.dev/"
+}
+```
+
+- parses the OIDC Provider (`issuer`) from the response
+- fetches the OIDC Provider metadata as per [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965):
+
+*New device => OIDC Provider via HTTP*
+
+```http
+GET /.well-known/openid-configuration HTTP/1.1
+Host: auth-oidc.lab.element.dev
+Accept: application/json
+```
+
+With response like:
+
+```http
+200 OK
+Content-Type: application/json
+
+{
+  "issuer": "https://auth-oidc.lab.element.dev/",
+  "authorization_endpoint": "https://auth-oidc.lab.element.dev/authorize",
+  "token_endpoint": "https://auth-oidc.lab.element.dev/oauth2/token",
+  "jwks_uri": "https://auth-oidc.lab.element.dev/oauth2/keys.json",
+  "registration_endpoint": "https://auth-oidc.lab.element.dev/oauth2/registration",
+  "scopes_supported": ["openid", "email"],
+  "response_types_supported": [...],
+  "response_modes_supported": [...],
+  "grant_types_supported": [
+    "authorization_code",
+    "refresh_token",
+    "client_credentials",
+    "urn:ietf:params:oauth:grant-type:device_code"
+  ],
+ ...
+  "device_authorization_endpoint": "https://auth-oidc.lab.element.dev/oauth2/device"
+}
+```
+
+- either does Dynamic Client Registration as per [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966)
+or uses a static OIDC client_id. We will use `my_client_id` as an example `client_id`.
+
+- sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the OIDC
+Provider using the `device_authorization_endpoint`:
+
+*New device => OIDC Provider via HTTP*
+
+```http
+POST /oauth2/device HTTP/1.1
+Host: auth-oidc.lab.element.dev
+Content-Type: application/x-www-form-urlencoded
+
+client_id=my_client_id&scope=openid%20urn%3Amatrix%3Aclient%3Aapi%3A%2A%20urn%3Amatrix%3Aclient%3Adevice%3AABCDEGH
+```
+
+With response like:
+
+```http
+200 OK
+Content-Type: application/json
+
+{
+  "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
+  "user_code": "123456",
+  "verification_uri": "https://auth-oidc.lab.element.dev/link",
+  "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
+  "expires_in": 1800,
+  "interval": 5
+}
+```
+
+- parses the [Device Authorization Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.2) above
+
+At this point the new device knows that, subject to the user consenting, it should be able to complete the login
+
+1. **New device informs existing device that it wants to use the device_authorization_grant**
+
+The new device send the `verification_uri` and, if present, the `verification_uri_complete` over to the existing device and
+indicates that want to use protocol `device_authorization_grant` along with the `device_id` that will be used:
+
+*New device => Existing device via secure channel*
+
+```json
+{
+ "type": "m.login.protocol",
+  "protocol": "device_authorization_grant",
+ "device_authorization_grant": {
+  "verification_uri": "https://auth-oidc.lab.element.dev/link",
+  "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
+ },
+ "device_id": "ABCDEFGH"
+}
+```
+
+The sequence for steps 1 to 3 is as follows: (the sequence depending on which device  has scanned the code varies for readability)
+
+_New device scanned QR code:_
+
+```mermaid
+sequenceDiagram
+    title: Variant: New device scanned QR code
+    participant E as Existing device <br>already signed in
+    participant Z as Rendezvous server
+    participant N as New device <br>wanting to sign in
+    participant OP as OIDC Provider
+    participant HS as Homeserver
+
+
+    rect rgba(255,0,0, 0.1)
+    #alt if New device scanned QR code
+        note over N: New device completes checks from secure channel establishment step 6 - it now trusts the channel
+        note over N: 1) New device got Homeserver base URL from QR code
+
+    #else if Existing device scanned QR code
+    #    note over E: Existing device completes step 6
+    #    note over E: Existing device displays checkmark and CheckCode
+    #    note over E: 1) Existing device sends m.login.protocols message
+    #    E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"})
+    #    note over N: New device waits for user to confirm secure channel from step 7
+    #    Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"}
+    #    note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
+    end
+
+
+    rect rgba(0,255,0, 0.1)
+    note over N: 2) New device checks if it can use an available protocol:
+
+        N->>+HS: GET /_matrix/client/v1/auth_issuer
+    activate N
+        HS-->>-N: 200 OK {"issuer": "https://id.matrix.org"}
+        Note over N: New device checks that it can communicate<br> with the issuer (OIDC Provider). Completing dynamic registration if needed 
+        N->>+OP: GET /.well-known/openid-configuration
+        OP->>-N: 200 OK {..., "device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
+        Note over N: Device now knows the OP and what the endpoint is, so then attempts to start the login
+        N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
+        OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
+        note over N: 3) New device informs existing device of choice of protocol:
+        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
+
+    deactivate N
+    end
+
+    rect rgba(255,0,0, 0.1)
+    # alt if New device scanned QR code
+        note over N: New device displays checkmark and CheckCode
+        note over E: Existing device waits for user to enter CheckCode<br>and confirm secure channel from step 7
+    end
+
+    rect rgba(0,255,0, 0.1)
+        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
+    end
+
+    rect rgba(255,0,0, 0.1)
+    # alt if New device scanned QR code
+        note over E: If user entered correct CheckCode<br>and confirms checkmark then existing device now trusts the channel
+    end
+
+
+    rect rgba(0,255,0, 0.1)
+    note over E: Existing device checks that requested protocol is supported
+
+    alt if requested protocol is not valid
+        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported",<br>"homeserver": "https://matrix-client.matrix.org})
+    end
+    end
+```
+
+_Existing device scanned QR code:_
+
+```mermaid
+sequenceDiagram
+    title: Variant: Existing device scanned QR code
+    participant E as Existing device <br>already signed in
+    participant Z as Rendezvous server
+    participant N as New device <br>wanting to sign in
+    participant OP as OIDC Provider
+    participant HS as Homeserver
+
+
+    #alt if New device scanned QR code
+    #    note over N: New device completes checks from secure channel establishment step 6 - it now trusts the channel
+    #    note over N: 1) New device got Homeserver base URL from QR code
+
+    rect rgba(0,0,255, 0.1)
+    #else if Existing device scanned QR code
+        note over E: Existing device completes step 6
+        note over E: Existing device displays checkmark and CheckCode
+        note over E: 1) Existing device sends m.login.protocols message
+        E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"})
+        note over N: New device waits for user to confirm secure channel from step 7
+        Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"}
+        note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
+    end
+
+
+    rect rgba(0,255,0, 0.1)
+    note over N: 2) New device checks if it can use an available protocol:
+        N->>+HS: GET /_matrix/client/v1/auth_issuer
+    activate N
+        HS-->>-N: 200 OK {"issuer": "https://id.matrix.org"}
+        Note over N: New device checks that it can communicate<br> with the issuer (OIDC Provider). Completing dynamic registration if needed 
+        N->>+OP: GET /.well-known/openid-configuration
+        OP->>-N: 200 OK {..., "device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
+        Note over N: Device now knows the OP and what the endpoint is, so then attempts to start the login
+        N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
+        OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
+        note over N: 3) New device informs existing device of choice of protocol:
+        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
+
+    deactivate N
+    end
+
+    # alt if New device scanned QR code
+    #    note over N: New device displays checkmark and CheckCode
+    #    note over E: Existing device waits for user to enter CheckCode<br>and confirm secure channel from step 7
+    #end
+
+    rect rgba(0,255,0, 0.1)
+        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
+    end
+
+    # alt if New device scanned QR code
+    #    note over E: If user entered correct CheckCode<br>and confirms checkmark then existing device now trusts the channel
+    #end
+
+
+    rect rgba(0,255,0, 0.1)
+    note over E: Existing device checks that requested protocol is supported
+
+    alt if requested protocol is not valid
+        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported",<br>"homeserver": "https://matrix-client.matrix.org})
+    end
+    end
+```
+
+Then we continue with the actual login:
+
+1. **New device waits for approval from OIDC Provider**
+
+On receipt of the `m.login.protocol_accepted` message:
+
+- In accordance with [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.3.1) the new device must display
+the user_code in order that the user can confirm it on the OIDC Provider if required.
+- The new device then starts to poll the OIDC Provider by making
+[Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the interval and bounded
+by expires_in.
+
+*New device => OIDC Provider via HTTP*
+
+```http
+POST /oauth2/token HTTP/1.1
+Host: auth-oidc.lab.element.dev
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+      &device_code=GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS
+      &client_id=my_client_id
+```
+
+- It then parses the [Device Access Token Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.5) and
+handles the different responses
+- If the user consents in the next step then the new device will receive an `access_token` and `refresh_token` etc. as
+normal for OIDC with MSC3861.
+
+1. **User is asked by OIDC Provider to consent on existing device**
+
+On receipt of the `m.login.protocol` message above, and having completed step 7 of the secure channel establishment, the
+existing device then asserts that there is no existing device corresponding to the `device_id` from the
+`m.login.protocol` message.
+
+It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
+and expecting to receive an HTTP 404 response.
+
+If the device already exists then the login request should be rejected with an `m.login.failure`.
+
+If no existing device was found then the existing device opens the `verification_uri_complete` - falling back to the
+`verification_uri`, if `verification_uri_complete` isn’t present - in a system browser.
+
+Ideally this is in a trusted/secure environment where the cookie jar and password manager features are available. e.g.
+on iOS this could be a `ASWebAuthenticationSession`
+
+The existing device then sends an acknowledgement message to let the other device know that the consent process is in progress:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+ "type": "m.login.protocol_accepted"
+}
+```
+
+The user is then prompted to consent by the OIDC Provider. They may be prompted to undertake additional actions by the
+OIDC Provider such as 2FA, but this is all handled within the browser.
+
+Note that the existing device does not see the new access token. This is one of the benefits of the OIDC architecture.
+
+The sequence diagram for steps 4 and 5 is as follows:
+
+```mermaid
+sequenceDiagram
+    participant E as Existing device <br>already signed in
+    participant UA as Web Browser
+    participant N as New device <br>wanting to sign in
+    participant OP as OIDC Provider
+    participant HS as Homeserver
+
+    rect rgba(0,255,0, 0.1)
+
+        par
+            E->>N: SecureSend({"type":"m.login.protocol_accepted"})
+        note over N: 4) New device polls the OIDC Provider awaiting the outcome as per RFC8628 OIDC
+            loop Poll for result at interval <interval> seconds
+                N->>OP: POST /token client_id=xyz<br>&grant_type=urn:ietf:params:oauth:grant-type:device_code<br>&device_code=XYZ
+                alt pending
+                    OP-->>N: 400 Bad Request {"error": "authorization_pending"}
+                else granted
+                    OP-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
+                else denied
+                    OP-->>N: 400 Bad Request {"error": "authorization_declined"}
+                else expired
+                    OP-->>N: 400 Bad Request {"error": "expired_token"}
+                end
+            end
+        and
+            E->>UA: 5) Existing device opens <br>verification_uri_complete (with fallback to verification_uri)<br> in the system web browser/ASWebAuthenticationSession:
+            Note over E: n.b. in the case of a Web Browser the user needs to have<br> clicked a button in order for the navigation to happen
+            rect rgba(240,240,240,0.5)
+                UA->>OP: GET https://id.matrix.org/device/abcde
+                OP->>UA: <html/> consent screen showing the user_code
+                UA->>OP: POST /allow or /deny
+            end
+            Note over UA: User closes browser
+        end
+        
+        alt declined
+            Note over E: or can the OP tell the existing device the outcome?
+            N->>E: SecureSend({"type":"m.login.declined"})
+        else approved
+            Note over N: Device now has an access_token and can start to talk to the homeserver
+            N->>E: SecureSend({ "type": "m.login.success" })
+        end
+    end
+```
+
+#### Secret sharing and device verification
+
+Once the new device has logged in and obtained an access token it will want to obtain the secrets necessary to set up
+end-to-end encryption on the device and make itself cross-signed.
+
+Before sharing the end-to-end encryption secrets the existing device should validate that the new device has
+successfully obtained an access token from the OIDC Provider. The purpose of this is so that, if the user or OIDC
+Provider has disallowed the login, the secrets are not leaked.
+
+If checked successfully then the existing device sends the following secrets to the new device:
+
+- The private cross-signing key triplet: MSK, SSK, USK
+- The backup recovery key and the currently used backup version.
+
+This is achieved as following:
+
+1. **Existing device confirms that the new device has indeed logged in successfully**
+
+On receipt of an m.login.success message the existing device queries the homeserver to check that the is a device online
+with the corresponding device_id (from the `m.login.protocol` message).
+
+It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
+and expecting to receive an HTTP 200 response.
+
+If the device isn’t immediately visible it can repeat the `GET` request for up to, say, 10 seconds to allow for any latency.
+
+If no device is found then the process should be stopped.
+
+1. **Existing device shares secrets with new device**
+
+The existing device sends a `m.login.secrets` message via the secure channel:
+
+```json
+{
+  "type": "m.login.secrets",
+  "cross_signing": {
+          "master_key": "$base64_of_the_key",
+          "self_signing_key": "$base64_of_the_key",
+          "user_signing_key": "$base64_of_the_key"
+  },
+  "backup": {
+       "algorithm": "foobar",
+       "key": "base64_of_the_backup_recovery_key",
+       "backup_version": "version_string"
+  }
+}
+```
+
+1. **New device cross-signs itself and uploads device keys**
+
+On receipt of the m.login.secrets message the new device can store the secrets locally
+
+The new device can then generate the cross-signing signature for itself.
+
+It can then use a single request to upload the device keys and cross signing signature. This removes the chance of other
+devices seeing the new device as unverified, incorrectly prompting the user to verify the already verified device.
+
+The request would look just like any other `/keys/upload` request, it would just include one additional signature, the
+one from the self-signing key. The request would look like follows:
+
+```http
+POST /_matrix/client/v3/keys/upload HTTP/1.1
+Host: synapse-oidc.lab.element.dev
+Content-Type: application/json
+
+{
+    "device_keys": {
+        "algorithms": [ 
+            "m.olm.v1.curve25519-aes-sha2",
+            "m.megolm.v1.aes-sha2"
+        ],
+        "device_id": "SGKMSRAGBF",
+        "keys": {
+            "curve25519:SGKMSRAGBF": "I11VOe5quKuH/YjdOqn5VcW06fvPIJQ9JX8ryj6ario",
+            "ed25519:SGKMSRAGBF": "b8gROFh+UIHLD/obY0+IlxoWiGtYVhKdqixvw4QHcN8"
+        },
+        "signatures": {
+            "@testing_35:morpheus.localhost": {
+                "ed25519:SGKMSRAGBF": "ziHEUIsHnrYBH4CqYpN1JC/ex3t4VG3zvo16D8ORqN6yAErpsKsnd/5LDdZERIOB1MGffKGfCL6ny5V7rT9FCQ",
+                "ed25519:bkYgAVUNqvuyy8b1w09utJNJxBvK3hZB65xxoLPVzFo": "p257k0tfPF98OIDuXnFSJS2DmVlxO4sgTHdF41DTdZBCpTZfPwok6iASo3xMRKdyy3WMEgkQ6lzhEyRKKZBGBQ"
+            }
+        },
+        "user_id": "@testing_35:morpheus.localhost"
+    }
+}
+```
+
+The sequence diagram for this would look as follows:
+
+```mermaid
+sequenceDiagram
+    participant E as Existing device <br>already signed in
+    participant N as New device <br>wanting to sign in
+    participant OP as OIDC Provider
+    participant HS as Homeserver
+
+    rect rgba(0,255,0, 0.1)
+
+            rect rgb(191, 223, 255)
+note over N,E: This step is duplicated from the previous section for readability
+              N-->>+E: { "type": "m.login.success" }
+            end
+
+            Note over E: 1) Existing device checks that the device is actually online:
+
+            E->>HS: GET /_matrix/client/v3/devices/{device_id}
+activate HS
+
+            alt is device not found
+              HS->>E: 404 Not Found
+              E->>N: { "type": "m.login.failed", "reason": "TODO" }
+            else is device found
+              HS->>E: 200 OK
+deactivate HS
+
+Note over E: TODO: how do we check that this is actually the newly signed in device?
+
+              E->>-N: 2) { "type": "m.login.secrets", "cross_signing": {...}, "backup": {...} }
+
+              activate N
+              note over N: 3) New device stores the secrets locally
+              
+alt is cross_signing present in m.login.secrets?
+note over N: New device signs itself
+              note over N: New device uploads device keys and cross-signing signature:
+              N->>+HS: POST /_matrix/client/v3/keys/upload
+              HS->>-N: 200 OK
+
+else
+              note over N: New device uploads device keys only:
+              N->>+HS: POST /_matrix/client/v3/keys/upload
+              HS->>-N: 200 OK
+end
+
+alt is backup present in m.login.secrets?
+              note over N: New device connects to room-key backup
+end
+
+note over N: All done!
+              deactivate N
+            end
+    end
+```
+
+#### Message reference
+
+These are the messages that are exchanged between the devices to negotiate the sign in and set up of E2EE.
+
+##### `m.login.protocols`
+
+Sent by: existing device
+
+Purpose: to state the available protocols for signing in. At the moment only "`device_authorization_grant` is supported
+
+Fields:
+
+|Field|Type||
+|--- |--- |--- |
+|`type`|required `string`|`m.login.protocols`|
+|`protocols`|required `string[]`|Array of: one of: `device_authorization_grant` |
+|`homeserver`|required `string`|The base URL of the homeserver|
+
+```json
+{
+ "type": "m.login.protocols",
+ "protocols": ["device_authorization_grant"],
+ "homeserver": "https://matrix-client.matrix.org"
+}
+```
+
+##### `m.login.protocol`
+
+Sent by: new device
+
+Purpose: the new device sends this to indicate which protocol it intends to use
+
+Fields:
+
+|Field|Type||
+|--- |--- |--- |
+|`type`|required `string`|`m.login.protocol`|
+|`protocol`|required `string`|One of: `device_authorization_grant`|
+|`device_authorization_grant`|Required `object` where `protocol` is `device_authorization_grant`|These values are taken from the RFC8628 Device Authorization Response that the new device received from the OIDC Provider: <table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> </tr> <tr> <td><code>verification_uri</code> </td> <td>required <code>string</code> </td> </tr> <tr> <td><code>verification_uri_complete</code> </td> <td><code>string</code> </td> </tr></table>|
+|`device_id`|required `string`|The device ID that the new device will use|
+
+Example:
+
+```json
+{
+ "type": "m.login.protocol",
+  "protocol": "device_authorization_grant",
+ "device_authorization_grant": {
+  "verification_uri_complete": "https://id.matrix.org/device/abcde",
+  "verification_uri": "..."
+ },
+ "device_id": "ABCDEFGH"
+}
+```
+
+##### `m.login.protocol_accepted`
+
+Sent by: existing device
+
+Purpose: Indicates that the existing device has accepted the protocol request and will open the `verification_uri` (or
+`verification_uri_complete`) for the user to grant consent
+
+Example:
+
+```json
+{
+ "type":"m.login.protocol_accepted"
+}
+```
+
+##### `m.login.failure`
+
+Sent by: either device
+
+Purpose: used to indicate a failure
+
+Fields:
+
+|Field|Type||
+|--- |--- |--- |
+|`type`|required `string`|`m.login.failure`|
+|`reason`|required `string`| One of: `TODO`|
+|`homeserver`|`string`| When the existing device is sending this it can include the Base URL of the homeserver so that the new device can at least save the user the hassle of typing it in|
+
+Example:
+
+```json
+{
+ "type":"m.login.failure",
+"reason": "unsupported",
+ "homeserver": "https://matrix-client.matrix.org"
+}
+```
+
+##### `m.login.declined`
+
+Sent by: existing device
+
+Purpose: Indicates that the user declined the request
+
+Fields:
+
+|Field|Type||
+|--- |--- |--- |
+|`type`|required `string`|`m.login.declined`|
+
+
+Example:
+
+```json
+{
+ "type":"m.login.declined"
+}
+```
+
+##### `m.login.success`
+
+Sent by: new device
+
+Purpose: to inform the existing device that it has successfully obtained an access token.
+
+Fields:
+
+|Field|Type||
+|--- |--- |--- |
+|`type`|required `string`|`m.login.success`|
+
+Example:
+
+```json
+{
+ "type": "m.login.success"
+}
+```
+
+##### `m.login.secrets`
+
+Sent by: existing device
+
+Purpose: Shares the secrets used for cross-signing and room key backups
+
+Fields:
+
+|Field|Type||
+|--- |--- |--- |
+|`type`|required `string`|`m.login.secrets`|
+|`cross_signing`|`object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
+|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>TODO </td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>TODO </td> </tr></table>|
+
+Example:
+
+```json
+{
+  "type": "m.login.secrets",
+  "cross_signing": {
+          "master_key": "$base64_of_the_key",
+          "self_signing_key": "$base64_of_the_key",
+     "user_signing_key": "$base64_of_the_key"
+  },
+  "backup": {
+       "algorithm": "foobar",
+       "key": "base64_of_the_backup_recovery_key",
+       "backup_version": "version_string"
+  }
+}
+```
+
+### QR code format
+
+TODO
+
+### Discoverability of the capability
+
+Before offering this capability it would make sense that the device can check the availability of the feature.
+
+Where the homeserver is known:
+
+1. Check if the homeserver has a rendezvous session API available (/versions) from this MSC
+1. Check that the homeserver is using the OIDC architecture (/auth_issuer) from MSC2965
+1. Check that the Device Authorization Grant is available on the OIDC Provider from MSC2965
+
+For a new device it would need to know the homeserver ahead of time in order to do these checks.
+
+Additionally the new device needs to either have an existing (i.e. static) OIDC client registered with the OIDC Provider
+already, or the OIDC Provider must support and allow dynamic client registration as described in [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966).
 
 ## Potential issues
 
+Because this is an entirely new set of functionality it should not cause issue with any existing Matrix functions or capabilities.
+
+The proposed protocol requires the devices to have IP connectivity to the server which might not be the case in P2P scenarios.
+
 ## Alternatives
+
+### Alternative to the rendezvous session protocol
+
+#### Send-to-Device messaging
+
+If you squint then this proposal looks similar in some regards to the existing
+[Send-to-device messaging](https://spec.matrix.org/v1.9/client-server-api/#send-to-device-messaging) capability.
+
+Whilst to-device messaging already provides a mechanism for secure communication between two Matrix clients/devices, a
+key consideration for the anticipated login with QR capability is that one of the clients is not yet authenticated with
+a homeserver.
+
+Furthermore the client might not know which homeserver the user wishes to connect to.
+
+Conceptually, one could create a new type of "guest" login that would allow the unauthenticated client to connect to a
+homeserver for the purposes of communicating with an existing authenticated client via to-device messages.
+
+Some considerations for this:
+
+Where the "actual" homeserver is not known then the "guest" homeserver nominated by the new client would need to be
+federated with the "actual" homeserver.
+
+The "guest" homeserver would probably want to automatically clean up the "guest" accounts after a short period of time.
+
+The "actual" homeserver operator might not want to open up full "guest" access so a second type of "guest" account might
+be required.
+
+Does the new device/client need to accept the T&Cs of the "guest" homeserver?
+
+#### Other existing protocols
+
+One could try and do something with STUN or TURN or [COAP](http://coap.technology/).
+
+#### Implementation details
+
+Rather than requiring the devices to poll for updates, "long-polling" could be used instead similar to `/sync`. Or WebSockets.
+
+### Alternative method of secret sharing
+
+Instead of the existing device sharing the secrets bundle instead the existing device could cross-sign the new device
+and then use to-device messaging for sharing the secrets.
+
+For:
+
+- You re-use existing secret sharing
+
+Against:
+
+- The existing device needs to wait for the new device to upload the device keys for it to sign the new device.
+- Takes several round-trips for the secrets to be be shared which will add latency to the overall flow
+- The backup cannot be immediately enabled since we received the backup version as well, something the `m.secret.send`
+mechanism does not offer.
+- The new device cannot upload the cross-signing signature with the device keys in a single request. This introduces a
+chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
+will soon be verified.
 
 ## Security considerations
 
+See individual threat analysis sections above.
+
 ## Unstable prefix
 
+While this feature is in development the new `POST` endpoint should be exposed using the following unstable prefix:
+
+- `/_matrix/client/unstable/org.matrix.msc4108/rendezvous`
+
+Additionally, the feature is to be advertised as unstable feature in the GET /_matrix/client/versions response, with the
+key org.matrix.msc4108 set to true. So, the response could look then as following:
+
+```json
+{
+    "versions": ["..."],
+    "unstable_features": {
+        "org.matrix.msc4108": true
+    }
+}
+```
+
 ## Dependencies
+
+This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
+proposes the adoption of OIDC for authentication in Matrix.
