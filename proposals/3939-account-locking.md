@@ -52,7 +52,7 @@ Locked accounts are still permitted to access the following API endpoints:
 * [`POST /logout`](https://spec.matrix.org/v1.9/client-server-api/#post_matrixclientv3logout)
 * [`POST /logout/all`](https://spec.matrix.org/v1.9/client-server-api/#post_matrixclientv3logoutall)
 
-Servers SHOULD NOT invalidate an account's access tokens in case the account becomes
+When a user's account is locked, servers SHOULD NOT invalidate an account's access tokens in case the account becomes
 unlocked: the user should be able to retain their sessions without having to log
 back in. However, if a client requests a logout (using the above endpoints), the
 associated access tokens should be invalidated as normal.
