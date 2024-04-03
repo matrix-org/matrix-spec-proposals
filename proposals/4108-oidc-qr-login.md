@@ -113,12 +113,12 @@ even nonces. Device A starts with `1`, using only odd nonces.
 - Device G generates **(Gp, Gs)**, where **Gp** is its public key and **Gs** the private (secret) key.
 - Device S generates **(Sp, Ss)**, where **Sp** is its public key and **Ss** the private (secret) key.
 
-1. **Create rendezvous session**
+2. **Create rendezvous session**
 
 Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
 with an empty payload. It parses the **id** and **server** received.
 
-1. **Initial key exchange**
+3. **Initial key exchange**
 
 Device G displays a QR code containing:
 
@@ -138,7 +138,7 @@ Device S scans and parses the QR code to obtain **Gp**, the rendezvous session *
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
 
-1. **Device S sends the initial message**
+4. **Device S sends the initial message**
 
 Device S computes a shared secret **SH** using ECDH between **Ss** and **Gp**, thereby establishing a secure channel
 with Device G which can be layered on top of the insecure rendezvous session transport. It then discards **Ss** and
@@ -162,7 +162,7 @@ LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase6
 Device S then sends the **LoginInitiateMessage** as the payload to the rendezvous session using a `PUT` request with
 `Content-Type` header set to `text/plain`.
 
-1. **Device G confirms**
+5. **Device G confirms**
 
 Device G receives **LoginInitiateMessage** (potentially coming from Device S) from the insecure rendezvous session by
 polling with `GET` requests.
@@ -186,7 +186,7 @@ LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext)
 Device G sends **LoginOkMessage** as the payload via `PUT` request with `Content-Type` header set to `text/plain` to the
 insecure rendezvous session.
 
-1. **Verification by Device S**
+6. **Verification by Device S**
 
 Device S receives a response over the insecure rendezvous session by polling with `GET` requests, potentially from
 Device G.
@@ -216,7 +216,7 @@ Device S then displays an indication to the user that the secure channel has bee
 should be entered on the other device when prompted. e.g. wording to say "secure connection established"; enter the code
 XY on your other device;
 
-1. **Out-of-band confirmation**
+7. **Out-of-band confirmation**
 
 **Warning**: *This step is crucial for the security of the scheme since it overcomes the aforementioned limitation of ECIES.*
 
@@ -391,7 +391,7 @@ homeserver specified:
 }
 ```
 
-1. **New device checks if it can use an available protocol**
+2. **New device checks if it can use an available protocol**
 
 Once the existing device knows which homeserver it is to use it then:
 
@@ -489,7 +489,7 @@ Content-Type: application/json
 
 At this point the new device knows that, subject to the user consenting, it should be able to complete the login
 
-1. **New device informs existing device that it wants to use the device_authorization_grant**
+3. **New device informs existing device that it wants to use the `device_authorization_grant`**
 
 The new device send the `verification_uri` and, if present, the `verification_uri_complete` over to the existing device and
 indicates that want to use protocol `device_authorization_grant` along with the `device_id` that will be used:
@@ -651,7 +651,7 @@ sequenceDiagram
 
 Then we continue with the actual login:
 
-1. **New device waits for approval from OIDC Provider**
+4. **New device waits for approval from OIDC Provider**
 
 On receipt of the `m.login.protocol_accepted` message:
 
@@ -678,7 +678,7 @@ handles the different responses
 - If the user consents in the next step then the new device will receive an `access_token` and `refresh_token` etc. as
 normal for OIDC with MSC3861.
 
-1. **User is asked by OIDC Provider to consent on existing device**
+5. **User is asked by OIDC Provider to consent on existing device**
 
 On receipt of the `m.login.protocol` message above, and having completed step 7 of the secure channel establishment, the
 existing device then asserts that there is no existing device corresponding to the `device_id` from the
@@ -786,7 +786,7 @@ If the device isn’t immediately visible it can repeat the `GET` request for up
 
 If no device is found then the process should be stopped.
 
-1. **Existing device shares secrets with new device**
+2. **Existing device shares secrets with new device**
 
 The existing device sends a `m.login.secrets` message via the secure channel:
 
@@ -806,7 +806,7 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 }
 ```
 
-1. **New device cross-signs itself and uploads device keys**
+3. **New device cross-signs itself and uploads device keys**
 
 On receipt of the m.login.secrets message the new device can store the secrets locally
 
