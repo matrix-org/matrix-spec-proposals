@@ -1088,25 +1088,22 @@ sequenceDiagram
     participant HS as Homeserver
 
     rect rgba(0,255,0, 0.1)
-
             rect rgb(191, 223, 255)
 note over N,E: This step is duplicated from the previous section for readability
               N-->>+E: { "type": "m.login.success" }
             end
 
-            Note over E: 1) Existing device checks that the device is actually online:
-
+            Note over E: 1) Existing device checks that the device is actually online
             E->>HS: GET /_matrix/client/v3/devices/{device_id}
 activate HS
 
             alt is device not found
+              note over E: We should wait and retry for 10 seconds
               HS->>E: 404 Not Found
               E->>N: { "type": "m.login.failed", "reason": "TODO" }
             else is device found
               HS->>E: 200 OK
 deactivate HS
-
-Note over E: TODO: how do we check that this is actually the newly signed in device?
 
               E->>-N: 2) { "type": "m.login.secrets", "cross_signing": {...}, "backup": {...} }
 
@@ -1282,7 +1279,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.secrets`|
 |`cross_signing`|`object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
-|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>TODO </td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>TODO </td> </tr></table>|
+|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3room_keysversion)</td> </tr></table>|
 
 Example:
 
