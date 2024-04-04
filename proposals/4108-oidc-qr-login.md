@@ -28,7 +28,19 @@ end-to-end confidentiality nor authenticity by itself—these are layered on top
 
 #### High-level description
 
-TODO
+Suppose that Device A wants to establish communications with Device B. Device A can do so by creating a
+_rendezvous session_ via a `POST /_matrix/client/v1/rendezvous` call to an appropriate homeserver. Its response includes
+an HTTP _rendezvous URL_ which should be shared out-of-band with Device B. (This URL may be located on a different
+domain to the initial `POST`.)
+
+The rendezvous URL points to an arbitrary data resource (the "payload"), which is initially populated using data from
+A's initial `POST` request. There are no restrictions on the payload itself, but the rendezvous server SHOULD impose a
+maximum size limit.
+
+Anyone who is able to reach the rendezvous URL - including: Device A; Device B; or a third party; - can then "receive"
+the payload by polling via a `GET` request, and "send" a new a new payload by making a `PUT` request.
+
+In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous URL.
 
 #### The send mechanism
 
@@ -88,8 +100,8 @@ existing security analyses of ECIES are applicable in this setting too. Neverthe
 description of our instantiation of ECIES and discuss some potential pitfalls and attacks.
 
 The primary limitation of ECIES is that there is no authentication for the initiating party (the one to send the first
-message; Device S in the text below). Thus the recipient party (the one to receive the first message; Device G in the
-text below) has no assurance as to who actually sent the message. In QR code login, we work around this problem by
+payload; Device S in the text below). Thus the recipient party (the one to receive the first payload; Device G in the
+text below) has no assurance as to who actually sent the payload. In QR code login, we work around this problem by
 exploiting the fact that both of these devices are physically present during the exchange and offloading the check that
 they are both in the correct state to the user performing the QR code login process.
 
@@ -103,7 +115,7 @@ Participants:
 Regardless of which device generates the QR code, either device can be the existing (already signed in) device. The
 other device is then the new device (one seeking to be signed in).
 
-Symmetric encryption uses deterministic nonces, incrementing by `2` with each message. Device S starts with `0`, using only
+Symmetric encryption uses deterministic nonces, incrementing by `2` with each payload. Device S starts with `0`, using only
 even nonces. Device A starts with `1`, using only odd nonces.
 
 1. **Ephemeral key pair generation**
@@ -138,13 +150,13 @@ Device S scans and parses the QR code to obtain **Gp**, the rendezvous session *
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
 
-4. **Device S sends the initial message**
+4. **Device S sends the initial payload**
 
 Device S computes a shared secret **SH** using ECDH between **Ss** and **Gp**, thereby establishing a secure channel
 with Device G which can be layered on top of the insecure rendezvous session transport. It then discards **Ss** and
 derives a symmetric encryption **EncKey** from **SH** using HKDF_SHA256, each 32 bytes in length.
 
-Device S derives a confirmation message that Device G can use to confirm that the channel is secure. It contains:
+Device S derives a confirmation payload that Device G can use to confirm that the channel is secure. It contains:
 
 - The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305.
 - Its public ephemeral key **Sp**.
@@ -172,7 +184,7 @@ discarding **Gs** and decrypting (and authenticating) the **TaggedCiphertext**, 
 
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
-It then responds with a dummy message containing the string `MATRIX_QR_CODE_LOGIN_OK` encrypted with **SH** calculated
+It then responds with a dummy payload containing the string `MATRIX_QR_CODE_LOGIN_OK` encrypted with **SH** calculated
 as follows:
 
 ```
@@ -191,7 +203,7 @@ insecure rendezvous session.
 Device S receives a response over the insecure rendezvous session by polling with `GET` requests, potentially from
 Device G.
 
-It decrypts (and authenticates) it using the previously computed encryption key, which will succeed provided the message
+It decrypts (and authenticates) it using the previously computed encryption key, which will succeed provided the payload
 was indeed sent by Device G. It then verifies the plaintext matches `MATRIX_QR_CODE_LOGIN_OK`, failing otherwise.
 
 ```
@@ -235,7 +247,7 @@ CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 
 If the code that the user enters matches then the secure channel is established.
 
-Subsequent messages can be sent encrypted with **EncKey** with the nonces incremented as described above.
+Subsequent payloads can be sent encrypted with **EncKey** with the nonces incremented as described above.
 
 #### Sequence diagram
 
@@ -332,7 +344,7 @@ In an attack scenario, we add a participant called Specter with the following ca
 ##### Replay protection
 
 Due to use of ephemeral key pairs which are immediately discarded after use, each QR code login session derives a unique
-secret so messages from earlier sessions cannot be replayed. Each message in the session is unique and expected only
+secret so payloads from earlier sessions cannot be replayed. Each payload in the session is unique and expected only
 once. Finally, the use of deterministic nonces prevents any possibility of replay.
 
 ##### Pure Dolev-Yao attacker
@@ -346,7 +358,7 @@ Since Device G has no way of authenticating Device S, an attacker present for th
 attempt to mimic Device S in order to get their Device S signed in instead.
 
 - In step 3, Specter can shoulder surf the QR code scanning to obtain **Gp**.
-- In step 4, Specter can intercept S’s message and replace it with a message of their own, replacing  **Sp** with its
+- In step 4, Specter can intercept S’s payload and replace it with a payload of their own, replacing  **Sp** with its
 own key.
 - The attack is only thwarted in step 7, because Device S won’t ever display the indicator of success to the user. The
 user then must cancel the process on Device G, preventing it from sharing any sensitive material.
@@ -904,7 +916,8 @@ note over N: All done!
 
 #### Message reference
 
-These are the messages that are exchanged between the devices to negotiate the sign in and set up of E2EE.
+These are the messages that are exchanged between the devices via the secure channel to negotiate the sign in and set up
+of E2EE.
 
 ##### `m.login.protocols`
 
