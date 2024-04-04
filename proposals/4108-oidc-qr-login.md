@@ -85,7 +85,9 @@ HTTP response codes, and Matrix error codes:
 - `429 Too Many Requests` (``M_UNKNOWN``) - the request has been rate limited
 - `307 Temporary Redirect` - if the request should be served from somewhere else specified in the `Location` response header
 
-n.b. the [`307 Temporary Redirect`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) response code has been chosen explicitly for the behaviour of ensuring that the method and body will not change whilst the user-agent follows the redirect. For this reason, no other `30x` response codes are allowed.
+n.b. the [`307 Temporary Redirect`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) response code has been
+chosen explicitly for the behaviour of ensuring that the method and body will not change whilst the user-agent follows
+the redirect. For this reason, no other `30x` response codes are allowed.
 
 HTTP response headers for `201 Created`:
 
@@ -124,7 +126,9 @@ HTTP response codes, and Matrix error codes:
 
 - `202 Accepted` - payload updated
 - `400 Bad Request` (`M_MISSING_PARAM`) - a required header was not provided.
-- `400 Bad Request` (`M_INVALID_PARAM`) - a malformed [`ETag`](https://github.com/matrix-org/matrix-spec-proposals/blob/hughns/simple-rendezvous-capability/proposals/3886-simple-rendezvous-capability.md#the-update-mechanism) header was provided.
+- `400 Bad Request` (`M_INVALID_PARAM`) - a malformed 
+[`ETag`](https://github.com/matrix-org/matrix-spec-proposals/blob/hughns/simple-rendezvous-capability/proposals/3886-simple-rendezvous-capability.md#the-update-mechanism)
+header was provided.
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `412 Precondition Failed` (`M_CONCURRENT_WRITE`, a new error code) - when the ETag does not match
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
@@ -140,7 +144,8 @@ HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
 
 HTTP request headers:
 
-- `If-None-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-none-match) server will only return data if given ETag does not match
+- `If-None-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-none-match) server will
+only return data if given ETag does not match
 
 HTTP response codes, and Matrix error codes:
 
@@ -158,7 +163,8 @@ HTTP response headers for `200 OK` and `304 Not Modified`:
 
 HTTP response body:
 
-- The payload last set for this rendezvous session, either via the creation POST request or a subsequent PUT request, up to the maximum size allowed by the server.
+- The payload last set for this rendezvous session, either via the creation POST request or a subsequent PUT request, up
+to the maximum size allowed by the server.
 
 ##### Cancel a rendezvous session: `DELETE <rendezvous session URL>`
 
@@ -170,7 +176,8 @@ HTTP response codes:
 
 ##### Authentication
 
-These API endpoints do not require authentication because trust is established at the secure channel layer which is described later.
+These API endpoints do not require authentication because trust is established at the secure channel layer which is
+described later.
 
 ##### Maximum payload size
 
@@ -188,13 +195,16 @@ The ETag generated should be unique to the rendezvous session and the last modif
 
 ###### CORS
 
-For the POST /_matrix/client/rendezvous API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients) headers, the ETag response header should also be allowed by exposing the following CORS header:
+For the POST /_matrix/client/rendezvous API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients)
+headers, the ETag response header should also be allowed by exposing the following CORS header:
 
 ```http
 Access-Control-Expose-Headers: ETag
 ```
 
-To support usage from web browsers the rendezvous URLs should allow CORS requests from any origin and expose the headers which aren’t on the CORS [request header safelist](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and [response header safelist](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header):
+To support usage from web browsers the rendezvous URLs should allow CORS requests from any origin and expose the headers
+which aren’t on the CORS [request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and 
+[response header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header) safelists:
 
 ```http
 Access-Control-Allow-Headers: If-Match,If-None-Match
@@ -207,7 +217,8 @@ Access-Control-Expose-Headers: ETag
 
 Ultimately it will be up to the Matrix client implementation to decide which rendezvous server to use.
 
-However, it is suggested that the following logic is used by the device/client to choose the rendezvous server in order of preference:
+However, it is suggested that the following logic is used by the device/client to choose the rendezvous server in order
+of preference:
 
 1. If the client is already logged in: try and use the current homeserver.
 1. If the client is not logged in and it is known which homeserver the user wants to connect to: try and use that homeserver.
@@ -296,10 +307,6 @@ is possible to use it to circumvent firewalls and other network security measure
 
 Implementation may want to block their production IP addresses from being able to make requests to the rendezvous
 endpoints in order to avoid attackers using it as a dead-drop for exfiltrating data.
-
-#### API
-
-TODO
 
 ### Secure channel
 
