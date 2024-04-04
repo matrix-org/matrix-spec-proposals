@@ -1297,7 +1297,68 @@ Example:
 
 ### QR code format
 
-TODO
+The proposed format of the QR code intends to be similar to that which is already described in the Client-Server API for
+[device verification](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
+
+Additional modes are added to the byte used for "QR code verification mode" to allow for the two login intents: initiate
+on a new device; reciprocate on an existing device;
+
+The QR codes to be displayed and scanned using this format will encode binary strings in the general form:
+
+- the ASCII string `MATRIX`
+- one byte indicating the QR code version (must be `0x02`)
+- one byte indicating the QR code intent/mode. Should be one of the following values:
+  - `0x03` a new device wishing to initiate a login and self-verify
+  - `0x04` an existing device wishing to reciprocate the login of a new device and self-verify that other device
+- the ephemeral Curve25519 public key, as 32 bytes
+- the rendezvous session URL encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session URL as a UTF-8
+  string
+  - the rendezvous session URL as a UTF-8 string
+- If the QR code intent/mode is `0x04` then the homeserver base URL encode as:
+  - two bytes in network byte order (big-endian) indicating the length in bytes of the homeserver base URL as a UTF-8 string
+  - the homeserver base URL as a UTF-8 string
+
+For example, if Alice displays a QR code encoding the following binary string:
+
+This indicates that Alice is a new device that wishes to initiate a login using her ephemeral public key of 
+`0001020304050607...` (which is `AAECAwQFBg…` in base64), via the rendezvous session at URL `https:/…`.
+
+#### Example for QR code generated on new device
+
+A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded) at rendezvous session `https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668` is as follows: 
+(Whitespace is for readability only)
+
+```
+4D 41 54 52 49 58 02  03
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 47
+68 74 74 70 73 3a 2f 2f 72 65 6e 64 65 7a 76 6f 75 73 2e 6c 61 62 2e 65 6c 65 6d 65 6e 74 2e 64 65 76 2f 65 38 64 61 36 33 35 35 2d 35 35 30 62 2d 34 61 33 32 2d 61 31 39 33 2d 31 36 31 39 64 39 38 33 30 36 36 38
+```
+
+Which looks as follows as a QR with error correction level Q:
+
+![Example QR for mode 0x03](images/4108-qr-mode03.png)
+
+#### Example for QR code generated on existing device
+
+A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded), at rendezvous session `https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`https://matrix-client.matrix.org` is as follows: (Whitespace is for readability only)
+
+```
+4D 41 54 52 49 58 02  04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 47
+68 74 74 70 73 3a 2f 2f 72 65 6e 64 65 7a 76 6f 75 73 2e 6c 61 62 2e 65 6c 65 6d 65 6e 74 2e 64 65 76 2f 65 38 64 61 36 33 35 35 2d 35 35 30 62 2d 34 61 33 32 2d 61 31 39 33 2d 31 36 31 39 64 39 38 33 30 36 36 38
+00 20
+68 74 74 70 73 3a 2f 2f 6d 61 74 72 69 78 2d 63 6c 69 65 6e 74 2e 6d 61 74 72 69 78 2e 6f 72 67
+```
+
+Which looks as follows as a QR with error correction level Q:
+
+![Example QR for mode 0x04](images/4108-qr-mode04.png)
 
 ### Discoverability of the capability
 
