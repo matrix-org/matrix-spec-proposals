@@ -61,6 +61,220 @@ header. After this point, any further attempts to query or update the payload MU
 extended every time the payload is updated. The rendezvous session can be manually expired with a `DELETE` call to the
 rendezvous session.
 
+####  API
+
+A new endpoint for the Client-Server API:
+
+##### Create a rendezvous session and send initial payload: `POST /_matrix/client/v1/rendezvous`
+
+HTTP request headers:
+
+- `Content-Length` - required
+- `Content-Type` - required
+
+HTTP request body:
+
+- any data up to maximum size allowed by the server
+
+HTTP response codes, and Matrix error codes:
+
+- `201 Created` - rendezvous session created
+- `400 Bad Request` (``M_MISSING_PARAM``) - no `Content-Length` was provided.
+- `403 Forbidden` (``M_FORBIDDEN``) - forbidden by server policy
+- `413 Payload Too Large` (``M_TOO_LARGE``) - the supplied payload is too large
+- `429 Too Many Requests` (``M_UNKNOWN``) - the request has been rate limited
+- `307 Temporary Redirect` - if the request should be served from somewhere else specified in the `Location` response header
+
+n.b. the [`307 Temporary Redirect`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) response code has been chosen explicitly for the behaviour of ensuring that the method and body will not change whilst the user-agent follows the redirect. For this reason, no other `30x` response codes are allowed.
+
+HTTP response headers for `201 Created`:
+
+- `Content-Type`- required, application/json
+- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+
+Example response:
+
+```
+HTTP 201 Created
+ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
+Expires: Wed, 07 Sep 2022 14:28:51 GMT
+Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
+Content-Type: application/json
+
+{
+    "url": "http://example.org/abcdEFG12345"
+}
+```
+
+##### Send a payload to the rendezvous session: `PUT <rendezvous session URL>`
+
+HTTP request headers:
+
+- `Content-Length` - required
+- `Content-Type` - required
+- `If-Match` - required. The ETag of the last payload seen by the requesting device.
+
+HTTP request body:
+
+- any data up to maximum size allowed by the server
+
+HTTP response codes, and Matrix error codes:
+
+- `202 Accepted` - payload updated
+- `400 Bad Request` (`M_MISSING_PARAM`) - a required header was not provided.
+- `400 Bad Request` (`M_INVALID_PARAM`) - a malformed [`ETag`](https://github.com/matrix-org/matrix-spec-proposals/blob/hughns/simple-rendezvous-capability/proposals/3886-simple-rendezvous-capability.md#the-update-mechanism) header was provided.
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `412 Precondition Failed` (`M_CONCURRENT_WRITE`, a new error code) - when the ETag does not match
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
+- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
+
+HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
+
+- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous session as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+
+##### Receive a payload from the rendezvous session: `GET <rendezvous session URL>`
+
+HTTP request headers:
+
+- `If-None-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-none-match) server will only return data if given ETag does not match
+
+HTTP response codes, and Matrix error codes:
+
+- `200 OK` - payload returned
+- `304 Not Modified` - when `If-None-Match` is supplied and the ETag does not match
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
+- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
+
+HTTP response headers for `200 OK` and `304 Not Modified`:
+
+- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous session as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+- `Content-Type` - required for `200 OK`
+
+HTTP response body:
+
+- The payload last set for this rendezvous session, either via the creation POST request or a subsequent PUT request, up to the maximum size allowed by the server.
+
+##### Cancel a rendezvous session: `DELETE <rendezvous session URL>`
+
+HTTP response codes:
+
+- `204 No Content` - rendezvous session cancelled
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
+
+##### Authentication
+
+These API endpoints do not require authentication because trust is established at the secure channel layer which is described later.
+
+##### Maximum payload size
+
+The server should allow a minimum payload size of 10KB and enforce a maximum payload size which is recommended to be 100KB.
+
+###### Maximum duration of a rendezvous
+
+The rendezvous session only needs to persist for the duration of the handshake. So a timeout such as 30 seconds is adequate.
+
+Clients should handle the case of the rendezvous session being cancelled or timed out by the server.
+
+###### ETags
+
+The ETag generated should be unique to the rendezvous session and the last modified time so that two clients can distinguish between identical payloads sent by either client.
+
+###### CORS
+
+For the POST /_matrix/client/rendezvous API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients) headers, the ETag response header should also be allowed by exposing the following CORS header:
+
+```http
+Access-Control-Expose-Headers: ETag
+```
+
+To support usage from web browsers the rendezvous URLs should allow CORS requests from any origin and expose the headers which aren’t on the CORS [request header safelist](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and [response header safelist](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header):
+
+```http
+Access-Control-Allow-Headers: If-Match,If-None-Match
+Access-Control-Allow-Methods: GET, PUT, DELETE
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: ETag
+```
+
+##### Choice of server
+
+Ultimately it will be up to the Matrix client implementation to decide which rendezvous server to use.
+
+However, it is suggested that the following logic is used by the device/client to choose the rendezvous server in order of preference:
+
+1. If the client is already logged in: try and use the current homeserver.
+1. If the client is not logged in and it is known which homeserver the user wants to connect to: try and use that homeserver.
+1. Otherwise use a default server.
+
+#### Example API usage
+
+```mermaid
+sequenceDiagram
+  participant A as Device A
+  participant HS as Homeserver
+  participant R as Rendezvous Server<br>https://rz.example.com
+  participant B as Device B
+  Note over A: Device A determines which rendezvous server to use
+
+  A->>+HS: POST /_matrix/client/rendezvous<br>Content-Type: text/plain<br>"Hello from A"
+  HS->>-A: 307 https://rz.example.com/foo
+  A->>+R: POST /foo<br>Content-Type: text/plain<br>"Hello from A"
+  R->>-A: 201 Created<br>ETag: 1<br>{"url":"https://rz.example.com/abc-def-123-456"}
+
+  A-->>B: Rendezvous URL shared out of band as QR code: e.g. https://rz.example.com/abc-def-123-456
+
+  Note over A: Device A starts polling for new payloads at the<br>rendezvous session using the returned ETag
+  activate A
+
+  B->>+R: GET /abc-def-123-456
+  R->>-B: 200 OK<br>ETag: 1<br>Content-Type: text/plain<br>"Hello from A"
+
+  loop Device A polls the rendezvous session for a new payload
+    A->>+R: GET /abc-def-123-456<br>If-None-Match: 1
+    alt is not modified
+      R->>-A: 304 Not Modified
+    end
+  end
+
+  note over B: Device B sends a new payload
+  B->>+R: PUT /abc-def-123-456<br>If-Match: 1<br>Content-Type: text/plain<br>"Hello from B"
+  R->>-B: 202 Accepted<br>ETag: 2
+
+  Note over B: Device B starts polling for new payloads at the<br>rendezvous session using the new ETag
+  activate B
+
+  loop Device B polls the rendezvous session for a new payload
+    B->>+R: GET /abc-def-123-456<br>If-None-Match: 2
+    alt is not modified
+      R->>-B: 304 Not Modified
+    end
+  end
+
+  note over A: Device A then receives the new payload
+  opt modified
+      R->>A: 200 OK<br>ETag: 2<br>Content-Type: text/plain<br>"Hello from B"
+  end
+  deactivate A
+
+  note over A: Device A sends a new payload
+    A->>+R: PUT /abc-def-123-456<br>If-None-Match: 2<br>Content-Type: text/plain<br>"Hello again from A"
+    R->>-A: 202 Accepted<br>ETag: 3
+
+  note over B: Device B then receives the new payload
+  opt modified
+      R->>B: 200 OK<br>ETag: 3<br>Content-Type: text/plain<br>...
+  end
+
+  deactivate B
+```
+
 #### Threat analysis
 
 ##### Denial of Service attack surface
@@ -90,7 +304,7 @@ TODO
 ### Secure channel
 
 The above rendezvous session is insecure, providing no confidentiality nor authenticity against the rendezvous server or
-even arbitrary network participants which possess the rendezvous session server and ID. To provide a secure channel on
+even arbitrary network participants which possess the rendezvous session URL. To provide a secure channel on
 top of this insecure rendezvous session transport, we propose the following scheme.
 
 This scheme is essentially[ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
@@ -145,7 +359,7 @@ similar structure to that of the existing Device Verification QR code encoding d
 
 This is defined in detail in a separate section of this proposal.
 
-Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the 
+Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the
 **homeserver base URL**.
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
@@ -1020,7 +1234,6 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.declined`|
-
 
 Example:
 
