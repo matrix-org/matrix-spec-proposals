@@ -1420,7 +1420,7 @@ Does the new device/client need to accept the T&Cs of the "guest" homeserver?
 
 #### Other existing protocols
 
-One could try and do something with STUN or TURN or [COAP](http://coap.technology/).
+One could try and do something with STUN or TURN or [COAP](https://datatracker.ietf.org/doc/html/rfc7252).
 
 #### Implementation details
 
