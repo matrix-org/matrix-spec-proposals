@@ -1,7 +1,7 @@
 # MSC3916: Authentication for media access, and new endpoint names
 
 Currently, access to media in Matrix has a number of problems including the following:
- 
+
 * The only protection for media is the obscurity of the URL, and URLs are
   easily leaked (eg accidental sharing, access
   logs). [synapse#2150](https://github.com/matrix-org/synapse/issues/2150)
@@ -46,6 +46,12 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    is **not** modified by this MSC: it is intended that it be brought into line with the other
    endpoints by a future MSC, such as [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
 
+   After this proposal is released in a stable version of the specification, servers
+   which support the new `download` and `thumbnail` endpoints should cease to serve
+   newly uploaded media from the unauthenticated versions. This includes media
+   uploaded by local users and requests for not-yet-cached remote media. This is
+   done with a 404 `M_NOT_FOUND` error, as though the media doesn't exist.
+
 2. Removal of `allow_remote` parameter from `/download`
 
    The current
@@ -63,7 +69,7 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
 
    `/_matrix/client/v1/media/download` and
    `/_matrix/client/v1/media/thumbnail` should return remote media as normal.
-   
+
 3. Authentication on all endpoints
 
    Currently, the `/download` and `/thumbnail` endpoints have no authentication
@@ -103,14 +109,14 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
 
      --gc0p4Jq0M2Yt08jU534c0p
      ```
-     
+
 5. Backwards compatibility mechanisms
 
    a. Backwards compatibility with older servers: if a client or requesting
    server receives a 404 error with a non-JSON response, or a 400 or 404 error with
    `{"errcode": "M_UNRECOGNIZED"}`, in response to a request to one of the new
    endpoints, they may retry the request using the original endpoint.
-   
+
    b. Backwards compatibility with older clients and federating servers:
    servers may for a short time choose to allow unauthenticated access via the
    deprecated endpoints.
@@ -193,7 +199,7 @@ specifically for access to these icon.
   the proportion of clients which have been updated, and it is a good
   opportunity to bring these endpoints into line with the rest of the
   client-server and federation APIs.
-  
+
 * There's no real need to rename `GET /_matrix/media/v3/preview_url` and `GET
   /_matrix/media/v3/config` at present, and we could just leave them in
   place. However, changing them at the same time makes the API more consistent.
