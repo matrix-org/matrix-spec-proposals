@@ -24,7 +24,7 @@ In order for the new device to be fully set up, it needs to exchange information
 
 It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-directional communication session over
 which the two devices can exchange the necessary data. This session is described as "insecure" as it provides no
-end-to-end confidentiality nor authenticity by itself—these are layered on top of it.
+end-to-end confidentiality nor authenticity by itself---these are layered on top of it.
 
 #### High-level description
 
@@ -242,7 +242,7 @@ Access-Control-Expose-Headers: ETag
 ```
 
 To support usage from web browsers the rendezvous URLs should allow CORS requests from any origin and expose the headers
-which aren’t on the CORS [request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and 
+which aren't on the CORS [request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and 
 [response header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header) safelists:
 
 ```http
@@ -394,14 +394,15 @@ with an empty payload. It parses the **id** and **server** received.
 
 Device G displays a QR code containing:
 
-- its public key **Gp**
-- the insecure rendezvous session **URL**
+- Its public key **Gp**
+- The insecure rendezvous session **URL**
 - An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
 that wishes to "reciprocate" a login
 - If the intent is to reciprocate a login, then the **homeserver base URL**
 
 To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
-similar structure to that of the existing Device Verification QR code encoding described in [Client-Server API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
+similar structure to that of the existing Device Verification QR code encoding described in [Client-Server
+API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
 
 This is defined in detail in a separate section of this proposal.
 
@@ -414,7 +415,7 @@ At this point Device S should check that the received intent matches what the us
 
 Device S computes a shared secret **SH** using ECDH between **Ss** and **Gp**, thereby establishing a secure channel
 with Device G which can be layered on top of the insecure rendezvous session transport. It then discards **Ss** and
-derives a symmetric encryption **EncKey** from **SH** using HKDF_SHA256, each 32 bytes in length.
+derives a symmetric encryption **EncKey** from **SH** using HKDF-SHA256, each 32 bytes in length.
 
 Device S derives a confirmation payload that Device G can use to confirm that the channel is secure. It contains:
 
@@ -618,9 +619,9 @@ Since Device G has no way of authenticating Device S, an attacker present for th
 attempt to mimic Device S in order to get their Device S signed in instead.
 
 - In step 3, Specter can shoulder surf the QR code scanning to obtain **Gp**.
-- In step 4, Specter can intercept S’s payload and replace it with a payload of their own, replacing  **Sp** with its
+- In step 4, Specter can intercept S's payload and replace it with a payload of their own, replacing  **Sp** with its
 own key.
-- The attack is only thwarted in step 7, because Device S won’t ever display the indicator of success to the user. The
+- The attack is only thwarted in step 7, because Device S won't ever display the indicator of success to the user. The
 user then must cancel the process on Device G, preventing it from sharing any sensitive material.
 
 ### The OIDC login part and set up of E2EE
@@ -962,7 +963,7 @@ and expecting to receive an HTTP 404 response.
 If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`.
 
 If no existing device was found then the existing device opens the `verification_uri_complete` - falling back to the
-`verification_uri`, if `verification_uri_complete` isn’t present - in a system browser.
+`verification_uri`, if `verification_uri_complete` isn't present - in a system browser.
 
 Ideally this is in a trusted/secure environment where the cookie jar and password manager features are available. e.g.
 on iOS this could be a `ASWebAuthenticationSession`
@@ -1050,7 +1051,7 @@ with the corresponding device_id (from the `m.login.protocol` message).
 It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 200 response.
 
-If the device isn’t immediately visible it can repeat the `GET` request for up to, say, 10 seconds to allow for any latency.
+If the device isn't immediately visible it can repeat the `GET` request for up to, say, 10 seconds to allow for any latency.
 
 If no device is found then the process should be stopped.
 
@@ -1068,7 +1069,7 @@ The existing device sends a `m.login.secrets` message via the secure channel:
   },
   "backup": {
        "algorithm": "foobar",
-       "key": "base64_of_the_backup_recovery_key",
+       "key": "$base64_of_the_backup_recovery_key",
        "backup_version": "version_string"
   }
 }
@@ -1144,7 +1145,7 @@ deactivate HS
 
               activate N
               note over N: 3) New device stores the secrets locally
-              
+
 alt is cross_signing present in m.login.secrets?
 note over N: New device signs itself
               note over N: New device uploads device keys and cross-signing signature:
@@ -1513,3 +1514,4 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
 
 This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
 proposes the adoption of OIDC for authentication in Matrix.
+
