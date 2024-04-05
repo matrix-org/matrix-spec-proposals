@@ -96,9 +96,13 @@ HTTP response headers for `201 Created`:
 - `Expires` - required, the expiry time of the rendezvous as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.expires)
 - `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
 
+HTTP response body for `201 Created`:
+
+- a JSON object with a single key `url` whose value is the absolute URL of the rendezvous session
+
 Example response:
 
-```
+```http
 HTTP 201 Created
 ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
 Expires: Wed, 07 Sep 2022 14:28:51 GMT
