@@ -27,7 +27,7 @@ In a new room version, we make `knock` -> `join` a valid transition, as it would
 easier to handle, as an unnecessary `knock` -> `leave` transition would no longer need to be sent.
 
 When it comes to authorizing a `knock` -> `join` transition, the same logic can be used as a `leave` -> `join`
-transition, as the same could be achived with a `knock` -> `leave` -> `join` transition.
+transition, as the same could be achieved with a `knock` -> `leave` -> `join` transition.
 
 ## Potential issues
 
@@ -37,7 +37,7 @@ the upside of not making redundant transitions, so it is worth it.
 
 ## Alternatives
 
-Keep using the `knock` -> `leave` -> `join` transition instead, but the reasons this is undesireable
+Keep using the `knock` -> `leave` -> `join` transition instead, but the reasons this is undesirable
 are stated above.
 
 ## Security considerations
