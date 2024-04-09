@@ -63,9 +63,17 @@ rendezvous session.
 
 ####  API
 
-A new endpoint for the Client-Server API:
+##### Common HTTP response headers
+
+- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
+- `Expires` - required, the expiry time of the rendezvous as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.expires)
+- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+- `Cache-Control` - required, `no-store` as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.cache-control)
+- `Pragma` - required, `no-cache` as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.pragma)
 
 ##### Create a rendezvous session and send initial payload: `POST /_matrix/client/v1/rendezvous`
+
+This would be part of the Client-Server API.
 
 HTTP request headers:
 
@@ -92,9 +100,7 @@ the redirect. For this reason, no other `30x` response codes are allowed.
 HTTP response headers for `201 Created`:
 
 - `Content-Type`- required, application/json
-- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
-- `Expires` - required, the expiry time of the rendezvous as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.expires)
-- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+- common headers as defined above
 
 HTTP response body for `201 Created`:
 
@@ -104,10 +110,12 @@ Example response:
 
 ```http
 HTTP 201 Created
+Content-Type: application/json
 ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
 Expires: Wed, 07 Sep 2022 14:28:51 GMT
 Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
-Content-Type: application/json
+Cache-Control: no-store
+Pragma: no-cache
 
 {
     "url": "http://example.org/abcdEFG12345"
@@ -140,9 +148,7 @@ header was provided.
 
 HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
 
-- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
-- `Expires` - required, the expiry time of the rendezvous session as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
-- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
+- common headers as defined above
 
 ##### Receive a payload from the rendezvous session: `GET <rendezvous session URL>`
 
@@ -158,17 +164,42 @@ HTTP response codes, and Matrix error codes:
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
-HTTP response headers for `200 OK` and `304 Not Modified`:
+HTTP response headers for `200 OK`:
 
-- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
-- `Expires` - required, the expiry time of the rendezvous session as per [RFC7233](https://httpwg.org/specs/rfc7234.html#header.expires)
-- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
-- `Content-Type` - required for `200 OK`
+- `Content-Type` - required
+- common headers as defined above
 
-HTTP response body:
+HTTP response headers for `304 Not Modified`:
+
+- common headers as defined above
+
+HTTP response body for `200 OK`::
 
 - The payload last set for this rendezvous session, either via the creation POST request or a subsequent PUT request, up
 to the maximum size allowed by the server.
+
+Example responses:
+
+```http
+HTTP 200 OK
+Content-Type: text/plain
+ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
+Expires: Wed, 07 Sep 2022 14:28:51 GMT
+Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
+Cache-Control: no-store
+Pragma: no-cache
+
+foo
+```
+
+```http
+HTTP 304 Not Modified
+ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
+Expires: Wed, 07 Sep 2022 14:28:51 GMT
+Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
+Cache-Control: no-store
+Pragma: no-cache
+```
 
 ##### Cancel a rendezvous session: `DELETE <rendezvous session URL>`
 
@@ -195,11 +226,15 @@ Clients should handle the case of the rendezvous session being cancelled or time
 
 ###### ETags
 
-The ETag generated should be unique to the rendezvous session and the last modified time so that two clients can distinguish between identical payloads sent by either client.
+The ETag generated should be unique to the rendezvous session and the last modified time so that two clients can 
+distinguish between identical payloads sent by either client.
+
+In order to make sure that no intermediate caches manipulate the ETags, the rendezvous server MUST include the HTTP
+`Cache-Control` response header with a value of `no-store` and  `Pragma` response header with a value of `no-cache`.
 
 ###### CORS
 
-For the POST /_matrix/client/rendezvous API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients)
+For the `POST /_matrix/client/rendezvous` API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients)
 headers, the ETag response header should also be allowed by exposing the following CORS header:
 
 ```http
