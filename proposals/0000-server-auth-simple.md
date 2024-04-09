@@ -10,7 +10,7 @@ This MSC was also created in reaction to [MSC2870](https://github.com/matrix-org
 that describes itself as stop gap to cover what the MSC has described
 short comings of `m.room.server_acl`. We also agree that MSC2870 is
 a stop gap and that the `m.room.server_acl` has severe shortcomings,
-but we take the view that after 4 years of proposed stop-gapping,
+but we take the view that after 4 years of proposed stop-gaping,
 there is enough time to introduce a more complete solution.
 
 Related issues:
@@ -26,7 +26,7 @@ for `m.room.create`'s content field `m.federate`.
 1. If the type is `m.server.subscription`:
    1. If the `state_key` does not contain the server name for the
       origin server, reject.
-   2. If the origin servers's current participation is `permitted`, allow.
+   2. If the origin server's current participation is `permitted`, allow.
    2. If the `m.server.subscription_rule` is `deny`, reject.
    3. If the origin server's current participation is `deny`, reject.
    4. Otherwise allow.
@@ -34,7 +34,7 @@ for `m.room.create`'s content field `m.federate`.
 The purpose of this rule is to allow a server to send a subscription
 event, even if the `sender` has no membership event.
 
-### The participation authroziation rule
+### The participation authorization rule
 
 This rule is to be inserted before rule 4 in version 11,
 the check for `m.room.member`, and after the subscription rule
@@ -47,7 +47,7 @@ described in this proposal.
 
 ### The `m.server.participation` authorization event, `state_key: ${origin_server_name}`
 
-This is an authorization event that is used to authrorize events
+This is an authorization event that is used to authorize events
 originating from the server named in the `state_key`.
 
 `participation` can be one of `permitted` or `deny`.
@@ -90,7 +90,7 @@ being joined to the room, without forcing room admins to `deny` the
 entire server from participating. Room admins should `deny`
 the server if they continue to modify the reason maliciously or
 fail to perform the aforementioned check. This will prevent the server
-from sending furhter `m.server.subscription` events.
+from sending further `m.server.subscription` events.
 
 ## Potential issues
 
