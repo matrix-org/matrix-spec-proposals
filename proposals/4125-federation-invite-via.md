@@ -10,6 +10,10 @@ However, the server of the user who sent the invite may not be online, meaning t
 join the room they are invited to until the `sender`'s server comes online, if it ever does. If they do not
 know anyone else in the room, they cannot even ask out-of-bounds for someone else to invite them to the room.
 
+In the case of rejecting invites, it can lead to users of the room believing that the invited user has neither
+accepted nor rejected the invite, while it might have been locally rejected by the invited user's homeserver due
+to it being unable to reach the sender's homeserver.
+
 ## Proposal
 
 The proposed fix is to create a new version of the `PUT /_matrix/federation/*/invite` endpoint based on
@@ -61,6 +65,9 @@ future.
 
 When accepting an invite, the server should attempt to use the `/make_join` and `/send_join` endpoints on each
 of the specified servers until either it is able to join or gets a `403 M_FORBIDDEN` response.
+
+When rejecting an invite, the server should also do the same as above but for the `/make_leave` and `/send_leave`
+endpoints, iterating over the servers until it either is able to leave or gets a `403 M_FORBIDDEN` response.
 
 ## Potential issues
 
