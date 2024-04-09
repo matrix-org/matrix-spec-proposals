@@ -74,8 +74,24 @@ This event has one field, `rule` which can be one of the following:
   server.
 - `passive`: Users can send the `m.server.subscription` event without
   corresponding membership or server participation.
+- `active`: Users can send the `m.server.subscription` event but
+  cannot send any other event without a corresponding
+  participation of `permitted`.
 
 `rule` is protected from redaction.
+
+The `passive` state allows for rooms to operate as they do today,
+new servers can freely join a room and start sending events without
+prior approval from the administrators
+
+The `active` state allows for a much safer way to run public Matrix rooms,
+new servers can join a room, send the `m.srever.subscription` event
+but cannot do more until a room administrator permits the new joiner with
+an `m.server.participation` event. We expect that in practice automated
+tooling will perform a simple reputation check and immediately permit
+a new server to participate. This is an essential part of the proposal
+as the `active` mechanism eliminates a current shortfall that
+`m.room.server_acl` is a purely reactive tool in a join wave attack.
 
 ### The `m.server.subscription` event, `state_key: ${origin_server_name}`
 
