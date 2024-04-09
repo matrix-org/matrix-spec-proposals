@@ -1,4 +1,4 @@
-# MSC4124: Specify servers to join via when inviting over federation
+# MSC4125: Specify servers to join via when inviting over federation
 
 ## Introduction
 
@@ -79,7 +79,7 @@ undesireable if the room is private.
 ## Unstable prefix
 
 While this MSC is not considered stable, implementations should use
-`/_matrix/federation/unstable/org.matrix.msc4124/invite` as the endpoint. The body stays as proposed.
+`/_matrix/federation/unstable/org.matrix.msc4125/invite` as the endpoint. The body stays as proposed.
 
 ## Dependencies
 
