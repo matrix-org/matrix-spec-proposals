@@ -112,13 +112,19 @@ is provided.
 The intent of the event is to only let the room administrators
 explicitly aware of the server's existence.
 
-### The `make_server_knock` handshake 💀
+### The `make_server_knock` handshake
 
-TBC.
+This MSC requires a very simple clone of the `make_knock` handshake
+for the purpose of signing and creating the `m.server.knock` event.
 
-This is needed because otherwise any server can send the
-`m.server.knock` event for any other server, including random garbage
-for server names and users that do not exist.
+The details of this handshake are left outside the scope of the MSC,
+as it may be decided that an API providing an agnostic unification of
+`make_knock` and `make_join` should be used instead that signs
+both the membership event and the `m.server.knock` event templates.
+
+We believe that the open choice here should not alone be a reason
+to block this MSC from consideration. But we will follow up
+with a clone of the `make_knock` handshake if requested.
 
 ## Potential issues
 
@@ -154,4 +160,5 @@ None considered.
 
 ## Dependencies
 
-No dependencies
+No direct dependencies
+See `make_server_knock` handshake.
