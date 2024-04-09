@@ -13,6 +13,9 @@ a stop gap and that the `m.room.server_acl` has severe shortcomings,
 but we take the view that after 4 years of proposed stop-gapping,
 there is enough time to introduce a more complete solution.
 
+Related issues:
+- https://github.com/matrix-org/matrix-spec/issues/928
+
 ## Proposal
 
 ### The subscription authorization rule
