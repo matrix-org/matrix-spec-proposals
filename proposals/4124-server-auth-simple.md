@@ -1,4 +1,4 @@
-# MSC0000: Simple server authorization
+# MSC4124: Simple server authorization
 
 This MSC proposes simple authorization rules that consider the origin
 server of a given event, with the aim of replacing `m.room.server_acl`.
