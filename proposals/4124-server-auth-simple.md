@@ -137,13 +137,22 @@ that there might be without elaboration is not helpful, I'd need to
 know how the race works. If there is insistence, then we will embed
 within the `m.room.create` event.
 
-### Soft failure of backfilled messages
+### Soft failure of messages
 
 Servers that had `participation` of `permitted` that are later
-denied via `deny`, will have their historical messages soft failed by
-servers which later join.
+denied via `deny`, can have some of their messages soft failed
+while the forks synchronise similar to https://github.com/matrix-org/synapse/issues/9329.
 
-This should be addressed with [MSC4104](https://github.com/matrix-org/matrix-spec-proposals/pull/4104).
+This could be addressed with [MSC4104](https://github.com/matrix-org/matrix-spec-proposals/pull/4104).
+
+### Mismatch with `m.room.power_levels`
+
+There is an argument to be made that the ability to manage
+`m.server.participation` should not be flat in the way that
+`m.room.server_acl` is. Consider Alice being the room creator
+and Bob being an admin. Bob could create an `m.server.participation`
+event that denies Alice's server from participating, even if Alice
+is the same or a higher power level.
 
 ## Alternatives
 
