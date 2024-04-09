@@ -142,7 +142,7 @@ None considered.
 
 ## Unstable prefix
 
-`me.marewolf.msc0000.*`
+`me.marewolf.msc4124.*`
 
 ## Dependencies
 
