@@ -76,6 +76,11 @@ of the specified servers until either it is able to join or gets a `403 M_FORBID
 When rejecting an invite, the server should also do the same as above but for the `/make_leave` and `/send_leave`
 endpoints, iterating over the servers until it either is able to leave or gets a `403 M_FORBIDDEN` response.
 
+In the case where multiple users on the same server have recieved invites to the same room over federation, servers
+in the most recent invite should be attempted first, and should work through invities in reverse chronological order,
+attempting the servers specified in each as explained above. Servers should only be attempted on their most recent
+appearence.
+
 ## Potential issues
 
 None foreseen.
