@@ -222,22 +222,22 @@ stateDiagram-v2
 title: Joining the room with "active" knock rule
 ---
 stateDiagram-v2
-    create: Alice creates the room and sets the knock rule to "passive"
-    bobKnock: Bob sends a knock event for his server
+    create: @alice#colon;matrix.org creates the room and sets the knock rule to "passive"
+    bobKnock: @bob#colon;example.com sends a knock event for his server#colon; example.com
     create --> bobKnock
     state aliceChoice <<choice>>
-    aliceChoiceText: Alice decides whether to explicitly set Bob's participation
+    aliceChoiceText: @alice#colon;matrix.org decides whether to explicitly set example.com's participation
     bobKnock --> aliceChoiceText
     aliceChoiceText --> aliceChoice
-    aliceDeny: Alice sets Bob's participation to "deny"
-    alicePermit: Alice sets Bob's participation to "permitted"
-    aliceImplicit: Alice does not make a decision
+    aliceDeny: @alice#colon;matrix.org sets example.com's participation to "deny"
+    alicePermit: @alice#colon;matrix.org sets example.com's participation to "permitted"
+    aliceImplicit: @alice#colon;matrix.org does not make a decision
     aliceChoice --> aliceDeny
     aliceChoice --> alicePermit
     aliceChoice --> aliceImplicit
-    bobJoin: Bob sends a membership event with membership join
-    bobHello: Bob sends m.room.message "Hello!"
-    bobCannotParticipate: Bob cannot participate
+    bobJoin: @bob#colon;example.com sends a membership event with membership join
+    bobHello: @bob#colon;example.com sends m.room.message "Hello!"
+    bobCannotParticipate: @bob#colon;example.com cannot participate and example.com <br>  cannot craft any authorizable event anywhere in the DAG
     aliceDeny --> bobCannotParticipate
     aliceImplicit --> bobCannotParticipate
     alicePermit --> bobJoin
