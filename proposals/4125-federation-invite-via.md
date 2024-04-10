@@ -66,7 +66,8 @@ future.
 
 This field should be optional for backwards compatibility. When the key is not present, servers should attempt
 to join or leave via the `sender`'s server, and if that fails with an error other than `403 M_FORBIDDEN`, it can
-optionally retry with the servers mentioned in the `invite_room_state` array.
+optionally retry with the servers mentioned in the `invite_room_state` array. Future versions of this endpoint
+(if any) should make this field mandatory.
 
 When accepting an invite, the server should attempt to use the `/make_join` and `/send_join` endpoints on each
 of the specified servers until either it is able to join or gets a `403 M_FORBIDDEN` response.
