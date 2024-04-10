@@ -17,45 +17,46 @@ to it being unable to reach the sender's homeserver.
 ## Proposal
 
 The proposed fix is to create a new version of the `PUT /_matrix/federation/*/invite` endpoint based on
-`PUT /_matrix/federation/v2/invite`, with the only change being an additional unsigned `via` field in the request
-body to inform the server it is inviting of possible servers it can join via. This endpoint would be denoted as
+`PUT /_matrix/federation/v2/invite`, with the only change being an additional `via` field in the request body to
+inform the server it is inviting of possible servers it can join via. This endpoint would be denoted as
 `PUT /_matrix/federation/v3/invite`. Here is an example of this new body:
 
 ```json
 {
-  "content": {
-    "membership": "invite"
+  "event": {
+    "content": {
+      "membership": "invite"
+    },
+    "origin": "matrix.org",
+    "origin_server_ts": 1234567890,
+    "sender": "@alice:matrix.org",
+    "state_key": "@bob:example.org",
+    "type": "m.room.member",
   },
-  "origin": "matrix.org",
-  "origin_server_ts": 1234567890,
-  "sender": "@alice:matrix.org",
-  "state_key": "@bob:example.org",
-  "type": "m.room.member",
-  "unsigned": {
-    "invite_room_state": [
-      {
-        "content": {
-          "name": "Example Room"
-        },
-        "sender": "@alice:matrix.org",
-        "state_key": "",
-        "type": "m.room.name"
+  "invite_room_state": [
+    {
+      "content": {
+        "name": "Example Room"
       },
-      {
-        "content": {
-          "join_rule": "invite"
-        },
-        "sender": "@alice:matrix.org",
-        "state_key": "",
-        "type": "m.room.join_rules"
-      }
-    ],
-    "via": [
-      "matrix.org",
-      "elsewhere.chat",
-      "another-server.net"
-    ]
-  }
+      "sender": "@alice:matrix.org",
+      "state_key": "",
+      "type": "m.room.name"
+    },
+    {
+      "content": {
+        "join_rule": "invite"
+      },
+      "sender": "@alice:matrix.org",
+      "state_key": "",
+      "type": "m.room.join_rules"
+    }
+  ],
+  "via": [
+    "matrix.org",
+    "elsewhere.chat",
+    "another-server.net"
+  ],
+  "room_version": "10"
 }
 ```
 
