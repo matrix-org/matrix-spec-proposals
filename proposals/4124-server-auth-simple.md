@@ -19,13 +19,13 @@ Related issues:
 
 ### The `m.server.knock` authorization rule
 
-This rule is be inserted after rule 3 in version 11, the check
-for `m.room.create`'s content field `m.federate`.
+This rule is be inserted after rule 3 in [version 11](https://spec.matrix.org/v1.10/rooms/v11/#authorization-rules),
+the check for `m.room.create`'s content field `m.federate`.
 
 1. If the type is `m.server.knock`:
    1. If the `state_key` does not contain the server name for the
       origin server, reject.
-   2. If there is existing state for the origin server's `m.server.knock`, reject.
+   2. If there is any current state for the origin server's `m.server.knock`, reject.
    3. If the origin server's current participation is `permitted`, allow.
    4. If the `m.server.knock_rule` is `deny`, reject.
    5. If the origin server's current participation is `deny`, reject.
@@ -46,7 +46,7 @@ rule 1.2.
 
 ### The `m.server.participation` authorization rule
 
-This rule is to be inserted before rule 4 in version 11,
+This rule is to be inserted before rule 4 in [version 11](https://spec.matrix.org/v1.10/rooms/v11/#authorization-rules),
 the check for `m.room.member`, and after the `m.server.knock` rule
 described in this proposal.
 
@@ -57,8 +57,9 @@ described in this proposal.
 
 ### The `m.server.participation` authorization event, `state_key: ${origin_server_name}`
 
-This is an authorization event that is used to authorize events
-originating from the server named in the `state_key`.
+This is an [authorization event](https://spec.matrix.org/v1.10/server-server-api/#auth-events-selection)
+that is used to authorize events originating from the server named in
+the `state_key`.
 
 `participation` can be one of `permitted` or `deny`.
 `participation` is protected from redaction.
