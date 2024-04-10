@@ -29,7 +29,7 @@ on [matrix-spec#1780](https://github.com/matrix-org/matrix-spec/issues/1780):
   is effectively unused code.
 
 * Matrix has [decided](https://matrix.org/blog/2023/09/matrix-2-0/) to adopt OIDC for authentication,
-  which [does not allow](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.3.2)
+  which is based on OAuth 2.0, which [advises against](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.3.2)
   the query string approach.
 
 With these conditions in mind, this proposal sets the query string approach on a path towards removal
