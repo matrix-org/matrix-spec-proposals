@@ -62,7 +62,8 @@ this new field. Here is an example of this new body:
 
 This field would be similar to the `via` field of the `m.space.child` and `m.space.content` event content,
 where there is simply an array of server names which are likely to be online and be in the room in the distant
-future.
+future. Similarly with the `m.space` events, the `via` field must have at least one server listed. If it does not,
+the server the request is being sent to should respond with `400 M_INVALID_PARAM`.
 
 This field should be optional for backwards compatibility. When the key is not present, servers should attempt
 to join or leave via the `sender`'s server, and if that fails with an error other than `403 M_FORBIDDEN`, it can
