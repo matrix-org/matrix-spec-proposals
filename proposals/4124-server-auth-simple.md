@@ -52,8 +52,28 @@ described in this proposal.
 
 1. If the origin server's current `participation` state is not `permitted`:
    1. If the `participation` state is `deny`, reject.
-   2. If the `m.server.knock_rule` is `deny`, reject.
-   3. If the `m.server.knock_rule` is anything other than `passive`, reject.
+   2. If the sender is the same sender of m.room.create, the state_key
+      of the considered event is the sender's origin server, and the
+	  `participation` field of the considered event is `permitted`,
+	  then allow.
+   3. If the sender's origin server matches the state_key of the
+	  considered event, and the `participation` field of the considered
+	  event is not `permitted`, reject.
+   3. If the `m.server.knock_rule` is `deny`, reject.
+   4. If the `m.server.knock_rule` is anything other than `passive`, reject.
+
+We allow the room creator to set their own participation and bypass
+the `m.server.knock_rule` provided their server has not been explicitly
+denied. This is because we want them to be able to set their
+participation at room creation without being unable to do when the
+`m.server.knock_rule` is `active`.
+
+We allow senders to add the `participation` of their own server,
+provided that they only do so to `permit` their own server (and not
+deny themselves as a footgun). This is useful in cases where a
+room has a `passive` `m.server.knock_rule` and the room admins need
+to explicitly permit their own servers before changing the knock
+rule to `active`.
 
 ### The `m.server.participation` authorization event, `state_key: ${origin_server_name}`
 
@@ -137,6 +157,11 @@ about this conflicting with `m.server.participation`. However, stating
 that there might be without elaboration is not helpful, I'd need to
 know how the race works. If there is insistence, then we will embed
 within the `m.room.create` event.
+
+### Changing the `m.server.knock_rule` from `passive` to `active` or `deny`
+
+Server admins can unintentionally lock themselves out of their room
+unless they are the room creator under the current proposal.
 
 ### Soft failure of messages
 
