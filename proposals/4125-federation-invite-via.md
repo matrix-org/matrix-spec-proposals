@@ -18,7 +18,7 @@ to it being unable to reach the sender's homeserver.
 
 The proposed fix is to add an additional `via` field in the request body of `PUT /_matrix/federation/v2/invite`
 to inform the server it is inviting of possible servers it can join via. The same is **not** done for `v1` of this
-endpoint as `v2` should be used by default, and a server that only implemnts `v1` is unlikely to update to support
+endpoint as `v2` should be used by default, and a server that only implements `v1` is unlikely to update to support
 this new field. Here is an example of this new body:
 
 ```json
