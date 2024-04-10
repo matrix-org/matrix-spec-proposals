@@ -52,13 +52,14 @@ described in this proposal.
 
 1. If the origin server's current `participation` state is not `permitted`:
    1. If the `participation` state is `deny`, reject.
-   2. If the sender is the same sender of m.room.create, the state_key
-      of the considered event is the sender's origin server, and the
-	  `participation` field of the considered event is `permitted`,
-	  then allow.
-   3. If the sender's origin server matches the state_key of the
-	  considered event, and the `participation` field of the considered
-	  event is not `permitted`, reject.
+   2. If the type is `m.server.participation`:
+	  1. If the sender is the same sender of m.room.create, the state_key
+	     of the considered event is the sender's origin server, and the
+		 `participation` field of the considered event is `permitted`,
+	     then allow.
+	  2. If the sender's origin server matches the state_key of the
+	     considered event, and the `participation` field of the considered
+	     event is not `permitted`, reject.
    3. If the `m.server.knock_rule` is `deny`, reject.
    4. If the `m.server.knock_rule` is anything other than `passive`, reject.
 
