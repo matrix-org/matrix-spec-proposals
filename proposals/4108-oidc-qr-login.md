@@ -848,7 +848,7 @@ sequenceDiagram
     note over E: Existing device checks that requested protocol is supported
 
     alt if requested protocol is not valid
-        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported",<br>"homeserver": "https://matrix-client.matrix.org})
+        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "https://matrix-client.matrix.org})
     end
     end
 ```
@@ -916,7 +916,7 @@ sequenceDiagram
     note over E: Existing device checks that requested protocol is supported
 
     alt if requested protocol is not valid
-        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported",<br>"homeserver": "https://matrix-client.matrix.org})
+        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "https://matrix-client.matrix.org})
     end
     end
 ```
@@ -959,7 +959,7 @@ existing device then asserts that there is no existing device corresponding to t
 It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 404 response.
 
-If the device already exists then the login request should be rejected with an `m.login.failure`.
+If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`.
 
 If no existing device was found then the existing device opens the `verification_uri_complete` - falling back to the
 `verification_uri`, if `verification_uri_complete` isn’t present - in a system browser.
@@ -1003,10 +1003,14 @@ sequenceDiagram
                     OP-->>N: 400 Bad Request {"error": "authorization_pending"}
                 else granted
                     OP-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
+                    N->>E: SecureSend({ "type": "m.login.success" })
+                    Note over N: Device now has an access_token and can start to talk to the homeserver
                 else denied
                     OP-->>N: 400 Bad Request {"error": "authorization_declined"}
+                    N->>E: SecureSend({"type":"m.login.declined"})
                 else expired
                     OP-->>N: 400 Bad Request {"error": "expired_token"}
+                    N->>E: SecureSend({"type":"m.login.failure", "reason": "authorization_expired"})
                 end
             end
         and
@@ -1018,14 +1022,6 @@ sequenceDiagram
                 UA->>OP: POST /allow or /deny
             end
             Note over UA: User closes browser
-        end
-        
-        alt declined
-            Note over E: or can the OP tell the existing device the outcome?
-            N->>E: SecureSend({"type":"m.login.declined"})
-        else approved
-            Note over N: Device now has an access_token and can start to talk to the homeserver
-            N->>E: SecureSend({ "type": "m.login.success" })
         end
     end
 ```
@@ -1048,7 +1044,7 @@ This is achieved as following:
 
 1. **Existing device confirms that the new device has indeed logged in successfully**
 
-On receipt of an m.login.success message the existing device queries the homeserver to check that the is a device online
+On receipt of an `m.login.success` message the existing device queries the homeserver to check that the is a device online
 with the corresponding device_id (from the `m.login.protocol` message).
 
 It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
@@ -1080,7 +1076,7 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 
 3. **New device cross-signs itself and uploads device keys**
 
-On receipt of the m.login.secrets message the new device can store the secrets locally
+On receipt of the `m.login.secrets` message the new device can store the secrets locally
 
 The new device can then generate the cross-signing signature for itself.
 
@@ -1139,7 +1135,7 @@ activate HS
             alt is device not found
               note over E: We should wait and retry for 10 seconds
               HS->>E: 404 Not Found
-              E->>N: { "type": "m.login.failed", "reason": "TODO" }
+              E->>N: { "type": "m.login.failure", "reason": "device_not_found" }
             else is device found
               HS->>E: 200 OK
 deactivate HS
@@ -1253,9 +1249,9 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.failure`|
-|`reason`|required `string`| One of: `TODO`|
+|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
 |`homeserver`|`string`| When the existing device is sending this it can include the Base URL of the homeserver so that the new device can at least save the user the hassle of typing it in|
-
+    
 Example:
 
 ```json
