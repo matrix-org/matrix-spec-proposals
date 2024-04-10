@@ -16,10 +16,10 @@ to it being unable to reach the sender's homeserver.
 
 ## Proposal
 
-The proposed fix is to create a new version of the `PUT /_matrix/federation/*/invite` endpoint based on
-`PUT /_matrix/federation/v2/invite`, with the only change being an additional `via` field in the request body to
-inform the server it is inviting of possible servers it can join via. This endpoint would be denoted as
-`PUT /_matrix/federation/v3/invite`. Here is an example of this new body:
+The proposed fix is to add an additional `via` field in the request body of `PUT /_matrix/federation/v2/invite`
+to inform the server it is inviting of possible servers it can join via. The same is **not** done for `v1` of this
+endpoint as `v2` should be used by default, and a sever that only impelemnts `v1` is unlikely to update to support
+this new field. Here is an example of this new body:
 
 ```json
 {
@@ -64,6 +64,10 @@ This field would be similar to the `via` field of the `m.space.child` and `m.spa
 where there is simply an array of server names which are likely to be online and be in the room in the distant
 future.
 
+This field should be optional for backwards compatibility. When the key is not present, servers should attempt
+to join or leave via the `sender`'s server, and if that fails with an error other than `403 M_FORBIDDEN`, it can
+optionally retry with the servers mentioned in the `invite_room_state` array.
+
 When accepting an invite, the server should attempt to use the `/make_join` and `/send_join` endpoints on each
 of the specified servers until either it is able to join or gets a `403 M_FORBIDDEN` response.
 
@@ -86,8 +90,8 @@ undesireable if the room is private.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, implementations should use
-`/_matrix/federation/unstable/org.matrix.msc4125/invite` as the endpoint. The body stays as proposed.
+While this MSC is not considered stable, implementations should still use
+`/_matrix/federation/v2/invite` as the endpoint, but use `org.matrix.msc4125.via` instead of `via` in the body.
 
 ## Dependencies
 
