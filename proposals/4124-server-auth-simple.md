@@ -145,6 +145,105 @@ We believe that the open choice here should not alone be a reason
 to block this MSC from consideration. But we will follow up
 with a clone of the `make_knock` handshake if requested.
 
+## Diagrams
+
+These diagrams do not specify any behaviour and are provided only to
+help explain the proposal. Do not write any part of the specification
+based upon the diagram, only what you have read from the authorization
+rules.
+
+### Room creation flow
+
+```mermaid
+---
+title: Room creation as of v1.10
+---
+stateDiagram-v2
+    create: Alice creates the room
+    aliceMembership: Alice joins the room
+    create --> aliceMembership
+    alicePL: Alice sends the default power levels event from the createRoom template
+    aliceMembership --> alicePL
+    aliceJoinRules: Alice sets the join rules
+    alicePL --> aliceJoinRules
+```
+
+```mermaid
+---
+title: Room creation with simple server authorization
+---
+stateDiagram-v2
+    create: Alice creates the room
+    aliceServerParticipation: Alice permits her server to participate
+    aliceMembership: Alice joins the room
+    create --> aliceServerParticipation
+    aliceServerParticipation --> aliceMembership
+    alicePL: Alice sends the default power levels event from the createRoom template
+    aliceMembership --> alicePL
+    aliceJoinRules: Alice sets the join rules
+    alicePL --> aliceJoinRules
+    aliceKnockRule: Alice sets the server knock rule
+    alicePL --> aliceKnockRule
+```
+
+### Join flow
+
+This explains the order of events for joining the room, it does
+not explain how the `make_join` handshake is amended.
+
+
+```mermaid
+---
+title: Joining the room with "passive" knock rule
+---
+stateDiagram-v2
+    create: Alice creates the room and sets the knock rule to "passive"
+    bobJoin: Bob sends a membership event with membership join
+    create --> bobJoin
+    bobHey: Bob sends m.room.message "Hello!"
+    bobJoin --> bobHey
+    state aliceChoice <<choice>>
+    aliceChoiceText: Alice decides whether to explicitly set Bob's participation
+    bobHey --> aliceChoiceText
+    aliceChoiceText --> aliceChoice
+    aliceDeny: Alice sets Bob's participation to "deny"
+    alicePermit: Alice sets Bob's participation to "permitted"
+    aliceImplicit: Alice does not make a decision
+    aliceChoice --> aliceDeny
+    aliceChoice --> alicePermit
+    aliceChoice --> aliceImplicit
+    bobCoolRoom: Bob sends m.room.message "This is a cool room!"
+    alicePermit --> bobCoolRoom
+    aliceImplicit --> bobCoolRoom
+```
+
+```mermaid
+---
+title: Joining the room with "active" knock rule
+---
+stateDiagram-v2
+    create: Alice creates the room and sets the knock rule to "passive"
+    bobKnock: Bob sends a knock event for his server
+    create --> bobKnock
+    state aliceChoice <<choice>>
+    aliceChoiceText: Alice decides whether to explicitly set Bob's participation
+    bobKnock --> aliceChoiceText
+    aliceChoiceText --> aliceChoice
+    aliceDeny: Alice sets Bob's participation to "deny"
+    alicePermit: Alice sets Bob's participation to "permitted"
+    aliceImplicit: Alice does not make a decision
+    aliceChoice --> aliceDeny
+    aliceChoice --> alicePermit
+    aliceChoice --> aliceImplicit
+    bobJoin: Bob sends a membership event with membership join
+    bobHello: Bob sends m.room.message "Hello!"
+    bobCannotParticipate: Bob cannot participate
+    aliceDeny --> bobCannotParticipate
+    aliceImplicit --> bobCannotParticipate
+    alicePermit --> bobJoin
+    bobJoin --> bobHello
+```
+
 ## Potential issues
 
 ### Racing with `m.server.knock_rule`?
