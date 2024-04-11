@@ -422,13 +422,13 @@ The keys are generated with the following HKDF parameters:
 
 **EncKey_S**
 
-- `MATRIX_QR_CODE_LOGIN_ENCKEY_S|Gp|Sp` as the info the info, where Gp and Sp stand for the generating
+- `MATRIX_QR_CODE_LOGIN_ENCKEY_S|Gp|Sp` as the info, where **Gp** and **Sp** stand for the generating
   device's and the scanning device's ephemeral public keys, encoded as unpadded base64.
 - An all-zero salt.
 
 **EncKey_G**
 
-- `MATRIX_QR_CODE_LOGIN_ENCKEY_G|Gp|Sp` as the info the info, where Gp and Sp stand for the generating
+- `MATRIX_QR_CODE_LOGIN_ENCKEY_G|Gp|Sp` as the info, where **Gp** and **Sp** stand for the generating
   device's and the scanning device's ephemeral public keys, encoded as unpadded base64.
 - An all-zero salt.
 
