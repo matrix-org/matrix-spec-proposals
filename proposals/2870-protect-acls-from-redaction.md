@@ -38,11 +38,27 @@ administrator or client implementation, where possible. They are more intended t
 algorithms, like the redaction algorithm, to change the functionality under the hood without impacting
 the room administrator's understanding of their room's function.
 
+Another possible approach is to have servers prevent sending faulty ACL events by preventing their
+local clients from doing so, such as by rejecting redaction requests. This doesn't solve the issue
+over federation, but can reduce the liklihood of such events making it to the federation layer. This
+is what Synapse currently does to help mitigate the issue. This is only effective if the server (or
+client, locally) implements it - it's common for both clients and servers to forget to add these checks
+during development, leading to occasional room breakage. This MSC instead tries to resolve the issue
+more completely for future room versions, pending replacement of ACLs entirely.
+
+Meanwhile, [MSC4124](https://github.com/matrix-org/matrix-spec-proposals/pull/4124) exists as a possible
+permanent replacement for ACLs.
+
 ## Security considerations
 
 It may be desirable to redact server ACLs due to abusive server names needing to be banned. Clients
 are encouraged to *not* display the differences to the ACLs without the user opting in to seeing the
 changes (such as by clicking a 'show details' link).
+
+Of particular note is that redacted events may be provided to future users/servers, regardless of the
+history visibility settings. If fields are protected from redaction, this means they will be visible
+to those future joiners. This may be undesirable in some circumstances. This MSC does not attempt to
+address this concern.
 
 ## Unstable prefix
 
