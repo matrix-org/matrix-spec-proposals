@@ -413,19 +413,23 @@ At this point Device S should check that the received intent matches what the us
 
 4. **Device S sends the initial payload**
 
-Device S computes a shared secret **SH** using ECDH between **Ss** and **Gp**, thereby establishing a secure channel
-with Device G which can be layered on top of the insecure rendezvous session transport. It then discards **Ss** and
-derives a symmetric encryption **EncKey** from **SH** using HKDF-SHA256, each 32 bytes in length.
+Device S computes a shared secret **SH** by performing ECDH between **Ss** and **Gp**. It then discards **Ss** and
+derives a 32-byte symmetric encryption **EncKey** from **SH** using HKDF-SHA256 with the following parameters:
 
-Device S derives a confirmation payload that Device G can use to confirm that the channel is secure. It contains:
+- `MATRIX_QR_CODE_LOGIN_ENCRYPTION|Gp|Sp` as the info the info, where Gp and Sp stand for the generating device's and
+  the scanning device's ephemeral public keys, encoded as unpadded base64.
+- An all-zero salt.
 
-- The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305.
+With this, Device S has established its side of the secure channel. Device S then derives a confirmation payload that
+Device G can use to confirm that the channel is secure. It contains:
+
+- The string `MATRIX_QR_CODE_LOGIN_ENCRYPTION`, encrypted and authenticated with ChaCha20-Poly1305.
 - Its public ephemeral key **Sp**.
 
 ```
 Nonce := 0
 SH := ECDH(Ss, Gp)
-EncKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN|" || Gp || "|" || Sp, salt=0, size=32)
+EncKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCRYPTION|" || Gp || "|" || Sp, salt=0, size=32)
 NonceBytes := ToLowEndianBytes(Nonce)[..12]
 TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey, NonceBytes, "MATRIX_QR_CODE_LOGIN_INITIATE")
 Nonce := Nonce + 2
@@ -1514,4 +1518,3 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
 
 This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
 proposes the adoption of OIDC for authentication in Matrix.
-
