@@ -353,7 +353,7 @@ The above rendezvous session is insecure, providing no confidentiality nor authe
 even arbitrary network participants which possess the rendezvous session URL. To provide a secure channel on
 top of this insecure rendezvous session transport, we propose the following scheme.
 
-This scheme is essentially[ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
+This scheme is essentially [ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
 instantiated with X25519, HKDF-SHA256 for the KDF and ChaCha20-Poly1305 (as specified by
 [RFC8439](https://datatracker.ietf.org/doc/html/rfc8439#section-2.8)) for the authenticated encryption. Therefore,
 existing security analyses of ECIES are applicable in this setting too. Nevertheless we include below a short
@@ -375,8 +375,9 @@ Participants:
 Regardless of which device generates the QR code, either device can be the existing (already signed in) device. The
 other device is then the new device (one seeking to be signed in).
 
-Symmetric encryption uses deterministic nonces, incrementing by `2` with each payload. Device S starts with `0`, using only
-even nonces. Device A starts with `1`, using only odd nonces.
+Symmetric encryption uses a separate encryption key for each sender, both derived from a shared secret using HKDF. A
+separate deterministic, monotonically-incrementing nonce is used for each sender. Devices initially set both nonces to
+`0` and increment the corresponding nonce by `1` for each message sent and received.
 
 1. **Ephemeral key pair generation**
 
@@ -414,25 +415,40 @@ At this point Device S should check that the received intent matches what the us
 4. **Device S sends the initial payload**
 
 Device S computes a shared secret **SH** by performing ECDH between **Ss** and **Gp**. It then discards **Ss** and
-derives a 32-byte symmetric encryption **EncKey** from **SH** using HKDF-SHA256 with the following parameters:
+derives two 32-byte symmetric encryption keys from **SH** using HKDF-SHA256. One of those keys, **EncKey_S** is
+used for messages encrypted by device S, while the other, **EncKey_G** is used for encryption by device G.
 
-- `MATRIX_QR_CODE_LOGIN_ENCRYPTION|Gp|Sp` as the info the info, where Gp and Sp stand for the generating device's and
-  the scanning device's ephemeral public keys, encoded as unpadded base64.
+The keys are generated with the following HKDF parameters:
+
+**EncKey_S**
+
+- `MATRIX_QR_CODE_LOGIN_ENCKEY_S|Gp|Sp` as the info the info, where Gp and Sp stand for the generating
+  device's and the scanning device's ephemeral public keys, encoded as unpadded base64.
+- An all-zero salt.
+
+**EncKey_G**
+
+- `MATRIX_QR_CODE_LOGIN_ENCKEY_G|Gp|Sp` as the info the info, where Gp and Sp stand for the generating
+  device's and the scanning device's ephemeral public keys, encoded as unpadded base64.
 - An all-zero salt.
 
 With this, Device S has established its side of the secure channel. Device S then derives a confirmation payload that
 Device G can use to confirm that the channel is secure. It contains:
 
-- The string `MATRIX_QR_CODE_LOGIN_ENCRYPTION`, encrypted and authenticated with ChaCha20-Poly1305.
+- The string `MATRIX_QR_CODE_LOGIN_ENCKEY_S`, encrypted and authenticated with ChaCha20-Poly1305.
 - Its public ephemeral key **Sp**.
 
 ```
-Nonce := 0
+Nonce_S := 0
 SH := ECDH(Ss, Gp)
-EncKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCRYPTION|" || Gp || "|" || Sp, salt=0, size=32)
-NonceBytes := ToLowEndianBytes(Nonce)[..12]
-TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey, NonceBytes, "MATRIX_QR_CODE_LOGIN_INITIATE")
-Nonce := Nonce + 2
+EncKey_S := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_S|" || Gp || "|" || Sp, salt=0, size=32)
+
+// Stored, but not yet used
+EncKey_G := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_S|" || Gp || "|" || Sp, salt=0, size=32)
+
+NonceBytes_S := ToLowEndianBytes(Nonce_S)[..12]
+TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey_S, NonceBytes_S, "MATRIX_QR_CODE_LOGIN_INITIATE")
+Nonce_S := Nonce_S + 1
 LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase64(Sp)
 ```
 
@@ -445,7 +461,8 @@ Device G receives **LoginInitiateMessage** (potentially coming from Device S) fr
 polling with `GET` requests.
 
 It then does the reverse of the previous step, obtaining **Sp**, deriving the shared secret using **Gs** and **Sp**,
-discarding **Gs** and decrypting (and authenticating) the **TaggedCiphertext**, obtaining a plaintext.
+discarding **Gs**, deriving the two symmetric encryption keys **EncKey_S** and **EncKey_G**, then finally
+decrypting (and authenticating) the **TaggedCiphertext** using **EncKey_S**, obtaining a plaintext.
 
 It checks that the plaintext matches the string `MATRIX_QR_CODE_LOGIN_INITIATE`, failing and aborting if not.
 
@@ -453,10 +470,10 @@ It then responds with a dummy payload containing the string `MATRIX_QR_CODE_LOGI
 as follows:
 
 ```
-Nonce := 1
-NonceBytes := ToLowEndianBytes(Nonce)[..12]
-TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey, NonceBytes, "MATRIX_QR_CODE_LOGIN_OK")
-Nonce := Nonce + 2
+Nonce_G := 1
+NonceBytes_G := ToLowEndianBytes(Nonce_G)[..12]
+TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey_G, NonceBytes_G, "MATRIX_QR_CODE_LOGIN_OK")
+Nonce_G := Nonce_G + 1
 LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext)
 ```
 
@@ -475,27 +492,29 @@ was indeed sent by Device G. It then verifies the plaintext matches `MATRIX_QR_C
 Nonce_G := 1
 (TaggedCiphertext, Sp) := Unpack(Message)
 NonceBytes := ToLowEndianBytes(Nonce)[..12]
-Plaintext := ChaCha20Poly1305_Decrypt(EncKey, NonceBytes, TaggedCiphertext)
-Nonce_G := Nonce_G + 2
+Plaintext := ChaCha20Poly1305_Decrypt(EncKey_G, NonceBytes, TaggedCiphertext)
+Nonce_G := Nonce_G + 1
 
 unless Plaintext == "MATRIX_QR_CODE_LOGIN_OK":
      FAIL
 ```
 
-If the above was successful, Device S then calculates a two digit **CheckCode** code derived from **SH**, **Gp** and **Sp**:
+If the above was successful, Device S then calculates a two digit **CheckCode** code derived from **SH**, **Gp** and
+**Sp**:
 
 ```
 CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , salt=0, size=2)
 CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 ```
 
-Device S then displays an indication to the user that the secure channel has been established and that the **CheckCode**
-should be entered on the other device when prompted. e.g. wording to say "secure connection established"; enter the code
-XY on your other device;
+Device S then displays an indicator to the user that the secure channel has been established and that the **CheckCode**
+should be entered on the other device when prompted. Example wording could say "Secure connection established. Enter the
+code XY on your other device."
 
 7. **Out-of-band confirmation**
 
-**Warning**: *This step is crucial for the security of the scheme since it overcomes the aforementioned limitation of ECIES.*
+**Warning**: *This step is crucial for the security of the scheme since it overcomes the aforementioned limitation of
+ECIES.*
 
 Device G asks the user to enter the **CheckCode** that is being displayed on Device S.
 
@@ -512,7 +531,8 @@ CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 
 If the code that the user enters matches then the secure channel is established.
 
-Subsequent payloads can be sent encrypted with **EncKey** with the nonces incremented as described above.
+Subsequent payloads sent from G should be encrypted using **EncKey_G**, while payloads sent from S should be
+encrypted with **EncKey_S**, incrementing the corresponding nonce for each message sent/received.
 
 #### Sequence diagram
 
@@ -542,7 +562,7 @@ sequenceDiagram
     S->>+Z: GET /_matrix/client/rendezvous/abc-def
     Z->>-S: 200 OK<br>ETag: 1
 
-    note over S: 4) Device S computes SH, EncKey and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
+    note over S: 4) Device S computes SH, EncKey_S, EncKey_G and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
     S->>+Z: PUT /_matrix/client/rendezvous/abc-def<br>If-Match: 1<br>Body: LoginInitiateMessage
     Z->>-S: 202 Accepted<br>ETag: 2
     deactivate S
@@ -551,7 +571,8 @@ sequenceDiagram
     activate G
     Z->>-G: 200 OK<br>ETag: 2<br>Body: Data
 
-    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH and EncKey
+    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH, EncKey_S and
+    EncKey_G
     note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
 
     note over G: Device G computes LoginOkMessage and sends to the rendezvous session
@@ -581,21 +602,20 @@ sequenceDiagram
 Conceptually, once established, the secure channel offers two operations, `SecureSend` and `SecureReceive`, which wrap
 the `Send` and `Receive` operations offered by the rendezvous session API to securely send and receive data between two devices.
 
-At the end of the establishment phase, the next nonce for Device G should be `3` and the next nonce for Device S should
-be `2`.
+At the end of the establishment phase, the next nonce for each device should be `1`.
 
 Device G sets:
 
 ```
-Nonce := 3
-NonceOther = 2
+Nonce_G := 1
+Nonce_S := 1
 ```
 
 Device S sets:
 
 ```
-Nonce := 2
-NonceOther := 3
+Nonce_G := 1
+Nonce_S := 1
 ```
 
 #### Threat analysis
