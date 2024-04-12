@@ -444,7 +444,7 @@ SH := ECDH(Ss, Gp)
 EncKey_S := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_S|" || Gp || "|" || Sp, salt=0, size=32)
 
 // Stored, but not yet used
-EncKey_G := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_S|" || Gp || "|" || Sp, salt=0, size=32)
+EncKey_G := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_G|" || Gp || "|" || Sp, salt=0, size=32)
 
 NonceBytes_S := ToLowEndianBytes(Nonce_S)[..12]
 TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey_S, NonceBytes_S, "MATRIX_QR_CODE_LOGIN_INITIATE")
@@ -1092,7 +1092,7 @@ If no device is found then the process should be stopped.
 
 2. **Existing device confirms that the new device owns the private part of the committed-to device identity key**
 
-The new device then proves it controls the public key to which it previously committed. It does this by doing an ECDH
+The new device then proves it controls the private key to which it previously committed. It does this by doing an ECDH
 between the committed-to identity key and the other device's secure channel ephemeral key to derive a shared secret,
 which is used to construct a proof of ownership. Due to the properties of ECDH, the other device knows that the new
 device can only do this if it possesses the private part of the committed-to identity key.
