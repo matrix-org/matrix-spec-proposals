@@ -1126,14 +1126,14 @@ channel:
 {
   "type": "m.login.secrets",
   "cross_signing": {
-          "master_key": "$base64_of_the_key",
-          "self_signing_key": "$base64_of_the_key",
-          "user_signing_key": "$base64_of_the_key"
+      "master_key": "$base64_of_the_key",
+      "self_signing_key": "$base64_of_the_key",
+      "user_signing_key": "$base64_of_the_key"
   },
   "backup": {
-       "algorithm": "foobar",
-       "key": "$base64_of_the_backup_recovery_key",
-       "backup_version": "version_string"
+      "algorithm": "foobar",
+      "key": "$base64_of_the_backup_recovery_key",
+      "backup_version": "version_string"
   }
 }
 ```
@@ -1320,9 +1320,9 @@ Example:
 
 ```json
 {
- "type":"m.login.failure",
-"reason": "unsupported",
- "homeserver": "https://matrix-client.matrix.org"
+    "type":"m.login.failure",
+    "reason": "unsupported",
+    "homeserver": "https://matrix-client.matrix.org"
 }
 ```
 
@@ -1342,7 +1342,7 @@ Example:
 
 ```json
 {
- "type":"m.login.declined"
+    "type":"m.login.declined"
 }
 ```
 
@@ -1362,7 +1362,7 @@ Example:
 
 ```json
 {
- "type": "m.login.success"
+    "type": "m.login.success",
 }
 ```
 
@@ -1386,14 +1386,14 @@ Example:
 {
   "type": "m.login.secrets",
   "cross_signing": {
-          "master_key": "$base64_of_the_key",
-          "self_signing_key": "$base64_of_the_key",
-     "user_signing_key": "$base64_of_the_key"
+      "master_key": "$base64_of_the_key",
+      "self_signing_key": "$base64_of_the_key",
+      "user_signing_key": "$base64_of_the_key"
   },
   "backup": {
-       "algorithm": "foobar",
-       "key": "base64_of_the_backup_recovery_key",
-       "backup_version": "version_string"
+      "algorithm": "foobar",
+      "key": "base64_of_the_backup_recovery_key",
+      "backup_version": "version_string"
   }
 }
 ```
@@ -1577,4 +1577,5 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
 
 This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
 proposes the adoption of OIDC for authentication in Matrix.
+
 
