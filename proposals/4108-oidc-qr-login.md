@@ -1094,16 +1094,15 @@ If no device is found then the process should be stopped.
 
 The new device then proves it controls the private key to which it previously committed. It does this by doing an ECDH
 between the committed-to identity key and the other device's secure channel ephemeral key to derive a shared secret,
-which is used to construct a proof of ownership. Due to the properties of ECDH, the other device knows that the new
-device can only do this if it possesses the private part of the committed-to identity key.
+which is used to construct a proof of ownership based on HMAC-SHA256. Due to the properties of ECDH, the other device
+knows that the new device can only do this if it possesses the private part of the committed-to identity key.
 
 The new device does:
 
 ```
 SH := ECDH(Is, Ep)
-EncKey_Proof := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_PROOF|" || Ip || "|" || Ep, salt=0, size=32)
-NonceBytes := ToLowEndianBytes(0)[..12]
-Proof := ChaCha20Poly1305_Encrypt(EncKey_Proof, NonceBytes, "MATRIX_QR_CODE_PROOF_OF_POSSESSION")
+ProofKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_PROOFKEY|" || Ip || "|" || Ep, salt=0, size=32)
+Proof := HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION")
 ```
 
 And sends the **Proof** to the existing device.
@@ -1112,11 +1111,9 @@ The existing device does the following to verify the proof:
 
 ```
 SH := ECDH(Es, Ip)
-EncKey_Proof := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_ENCKEY_PROOF|" || Ip || "|" || Ep, salt=0, size=32)
-NonceBytes := ToLowEndianBytes(0)[..12]
-Plaintext := ChaCha20Poly1305_Decrypt(EncKey_Proof, NonceBytes, Proof)
+ProofKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_PROOFKEY|" || Ip || "|" || Ep, salt=0, size=32)
 
-unless Plaintext == "MATRIX_QR_CODE_PROOF_OF_POSSESSION":
+unless HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION") == Proof:
     FAIL
 ```
 
@@ -1160,7 +1157,7 @@ Content-Type: application/json
 
 {
     "device_keys": {
-        "algorithms": [ 
+        "algorithms": [
             "m.olm.v1.curve25519-aes-sha2",
             "m.megolm.v1.aes-sha2"
         ],
@@ -1580,3 +1577,4 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
 
 This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
 proposes the adoption of OIDC for authentication in Matrix.
+
