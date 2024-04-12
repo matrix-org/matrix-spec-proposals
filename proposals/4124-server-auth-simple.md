@@ -15,6 +15,117 @@ there is enough time to introduce a more complete solution.
 Related issues:
 - https://github.com/matrix-org/matrix-spec/issues/928
 
+## Context
+
+NOTE: This context was added retroactively
+
+[Server Access Control Lists](https://spec.matrix.org/v1.10/server-server-api/#server-access-control-lists-acls)
+and their associated [event](https://spec.matrix.org/v1.10/client-server-api/#mroomserver_acl),
+`m.room.server_acl`, are intended to control which servers can interact
+with a Matrix room
+
+### Problem: ambient room access
+
+Overwhelmingly server ACL use in the federation is as a
+reactive measure to servers which are known to proliferate abuse.
+These servers are often added to the `deny` list, and it is the author's
+subjective understanding that the majority of public Matrix rooms
+use an allow list of `["*"]`. For any room with an `allow` literal of
+`["*"]`, servers are given unrestricted authority to interact with
+the room, even poison the DAG, before a room administrator is even
+aware of the attacking server's existence[^room-admin]. As the
+the room admin is unaware of the existence of the attacking server,
+this means that they or their tooling will be unable to research
+the reputation of the server and determine whether to `deny` them
+until an attack is already underway, which is too late.
+This is why we are introducing the `m.server.knock_rule` later in this
+proposal. DO NOT assume this is comparable to `membership` knocking
+until you have read the proposal.
+
+### Problem: leaky servers
+
+Server ACLs are specified as restricting which requests a server
+can make in relation to a room from the [server-server API](https://spec.matrix.org/v1.10/server-server-api/#server-access-control-lists-acls).
+
+> The ACLs are applied to servers when they make requests
+
+> Note: Server ACLs do not restrict the events relative to the room DAG via authorisation rules, but instead act purely at the network layer to determine which servers are allowed to connect and interact with a given room.
+
+There is one notable exception to this, which is currently
+[poorly specified](https://github.com/matrix-org/matrix-spec/issues/1784),
+in that when a denied server uses `/federation/v1/send`, any PDUs
+that originate from the denied server are failed. Note, these PDUs
+are only failed when the denied server is the sender and origin of the
+transaction.
+
+Server ACL is currently effective even when the denied server is not
+cooperative. However, if there is a distinct uncooperative server in
+the room, the uncooperative server can leak events from the denied
+server to all other servers, either by using leaked events as forward
+extremities or including them in responses to `/get_missing_events`.
+
+Mitigating this problem is hard, because as the `m.room.server_acl`
+event is specified to restrict servers at the "request" level,
+there is no restriction on events themselves. If servers were to
+naively apply server ACL to events, they would likely soft fail
+all the events that the denied server sent throughout the room's
+history. This is because `m.room.server_acl` is intentionally
+not specified with any consideration of DAG semantics. We believe
+the intention of this is to stop a malicious server being able to add a
+boundless number of soft failed events to the DAG. Which we believe
+would be possible with current soft fail checks and a DAG based server
+access system like the one within this proposal.
+
+It should be clear that servers can leak events to conforming
+implementations unintentionally, depending on whether the implementers
+have implemented server access control in a conforming way.
+
+### Problem: size limit
+
+It is theorized by me completely from thin air that the server ACL
+event can contain roughly `512` entries before a limit to the
+event size is reached. A survey of #matrix-org-coc-bl:matrix.org
+suggests that most ACL events contain `150`~ deny entries.
+However, there have been unstable periods in Matrix's history
+due to vulnerability of servers where the number of deny entries
+has been much greater. For example, Synapse previously had weak
+registration requirements by default that was exploited in a major
+incident. There could be a need to protect rooms from vulnerable
+servers again in the future.
+
+### Workaround for ambient room access: explicit allow list
+
+An explicit allow list can be used to work around the issue of
+ambient room access. This means that only servers that are known
+to room admins can interact with the room.
+
+#### Bootstrapping
+
+This workaround has a bootstrapping problem, because any server,
+either well established or completely new will be unable to join
+a community unless they can contact room admins or their tooling
+out of band to request access.
+
+For large public rooms with reputation, this is problematic as these
+out of band channels to request access are now the next target of abuse.
+Typically requesting access in this way requires manual intervention
+from the joining user and is slow.
+
+#### Public Rooms
+
+This work around represents a serious user experience issue for
+both the users and the room administrators public rooms, since
+vetting new users is time consuming for both parties.
+
+### Workaround for leaky servers: banning, kicking, redacting
+
+A work around for leaky servers is falling back to the existing room
+level user controls such as banning, kicking and redacting.
+Though it is possible for room administrators to become overwhelmed
+if the leaking is part of an intentional attack. They could then
+change the join rule for the room, but this would provide a disruption
+to their service that outlives the attack.
+
 ## Proposal
 
 ### The `m.server.knock` authorization rule
@@ -68,7 +179,7 @@ participation at room creation without being unable to do when the
 
 We allow senders to add the `participation` of their own server,
 provided that they only do so to `permit` their own server (and not
-deny themselves as a footgun). This is useful in cases where a
+deny themselves as a foot gun). This is useful in cases where a
 room has a `passive` `m.server.knock_rule` and the room admins need
 to explicitly permit their own servers before changing the knock
 rule to `active`.
@@ -294,3 +405,8 @@ None considered.
 
 No direct dependencies
 See `make_server_knock` handshake.
+
+[^room-admin]: It is possible to craft and send events initially to
+servers that room admins do not reside on.
+Though most rooms are probably vulnerable to less than this,
+and somewhat simnple spam join attacks.
