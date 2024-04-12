@@ -126,6 +126,21 @@ if the leaking is part of an intentional attack. They could then
 change the join rule for the room, but this would provide a disruption
 to their service that outlives the attack.
 
+### Theorized workaround for leaky servers: leak detection
+
+It has been suggested that it is possible to detect a leak by
+forensically analyzing the DAG in order to find which servers
+are accepting a denied server's events by analyzing which
+servers have used them as forward extremities.
+
+The author does not consider this to be an acceptable workaround,
+because it is possible for a malicious leaking server to poison
+`/get_missing_events` and other endpoints to get spec conforming
+servers to accept events from denied servers without the malicious
+leaking server generating any suspicious PDUs themselves.
+In this instance, a naive leak detection tool would likely incriminate
+the wrong server.
+
 ## Proposal
 
 ### The `m.server.knock` authorization rule
