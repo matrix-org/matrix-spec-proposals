@@ -1036,7 +1036,7 @@ sequenceDiagram
                     OP-->>N: 400 Bad Request {"error": "authorization_pending"}
                 else granted
                     OP-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
-                    N->>E: SecureSend({ "type": "m.login.success", "proof": proof_of_identity_key_ownership })
+                    N->>E: SecureSend({ "type": "m.login.success", "proof": base64_encoded_proof_of_identity_key_ownership })
                     Note over N: Device now has an access_token and can start to talk to the homeserver
                 else denied
                     OP-->>N: 400 Bad Request {"error": "authorization_declined"}
@@ -1102,7 +1102,8 @@ The new device does:
 ```
 SH := ECDH(Is, Ep)
 ProofKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_PROOFKEY|" || Ip || "|" || Ep, salt=0, size=32)
-Proof := HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION")
+ProofBytes := HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION")
+Proof := UnpaddedBase64Encode(ProofBytes)
 ```
 
 And sends the **Proof** to the existing device.
@@ -1110,11 +1111,20 @@ And sends the **Proof** to the existing device.
 The existing device does the following to verify the proof:
 
 ```
+ProofBytes := UnpaddedBase64_Decode(Proof)
+
 SH := ECDH(Es, Ip)
 ProofKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_PROOFKEY|" || Ip || "|" || Ep, salt=0, size=32)
 
-unless HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION") == Proof:
+unless HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION") == ProofBytes:
     FAIL
+```
+
+```json
+{
+    "type": "m.login.success",
+    "proof": "$Proof"
+}
 ```
 
 3. **Existing device shares secrets with new device**
@@ -1357,12 +1367,14 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.success`|
+|`proof`|required `string`|New device's proof of identity key ownership, base64-encoded|
 
 Example:
 
 ```json
 {
     "type": "m.login.success",
+    "proof": base64_encoded_proof_of_identity_key_ownership
 }
 ```
 
@@ -1577,5 +1589,3 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
 
 This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
 proposes the adoption of OIDC for authentication in Matrix.
-
-
