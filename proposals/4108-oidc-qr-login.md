@@ -571,8 +571,7 @@ sequenceDiagram
     activate G
     Z->>-G: 200 OK<br>ETag: 2<br>Body: Data
 
-    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH, EncKey_S and
-    EncKey_G
+    note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH, EncKey_S and EncKey_G
     note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
 
     note over G: Device G computes LoginOkMessage and sends to the rendezvous session
