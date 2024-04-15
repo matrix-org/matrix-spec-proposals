@@ -104,7 +104,7 @@ it is possible to write a LaTeX document that contains an infinite loop, or
 that will require large amounts of memory.  While it may be fun to write a
 [LaTeX file that can control a Mars
 Rover](https://wiki.haskell.org/wikiupload/8/85/TMR-Issue13.pdf#chapter.2), it
-is not desireable for a mathematical formula embedded in a Matrix message to
+is not desirable for a mathematical formula embedded in a Matrix message to
 control a Mars Rover.  Clients should take precautions when rendering LaTeX.
 Clients that use a rendering library should only use one that can process the
 LaTeX safely.
