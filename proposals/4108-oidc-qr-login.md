@@ -24,7 +24,7 @@ In order for the new device to be fully set up, it needs to exchange information
 
 It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-directional communication session over
 which the two devices can exchange the necessary data. This session is described as "insecure" as it provides no
-end-to-end confidentiality nor authenticity by itself—these are layered on top of it.
+end-to-end confidentiality nor authenticity by itself---these are layered on top of it.
 
 #### High-level description
 
@@ -242,7 +242,7 @@ Access-Control-Expose-Headers: ETag
 ```
 
 To support usage from web browsers the rendezvous URLs should allow CORS requests from any origin and expose the headers
-which aren’t on the CORS [request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and 
+which aren't on the CORS [request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and 
 [response header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header) safelists:
 
 ```http
@@ -394,8 +394,8 @@ with an empty payload. It parses the **id** and **server** received.
 
 Device G displays a QR code containing:
 
-- its public key **Gp**
-- the insecure rendezvous session **URL**
+- Its public key **Gp**
+- The insecure rendezvous session **URL**
 - An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
 that wishes to "reciprocate" a login
 - If the intent is to reciprocate a login, then the **homeserver base URL**
@@ -618,9 +618,9 @@ Since Device G has no way of authenticating Device S, an attacker present for th
 attempt to mimic Device S in order to get their Device S signed in instead.
 
 - In step 3, Specter can shoulder surf the QR code scanning to obtain **Gp**.
-- In step 4, Specter can intercept S’s payload and replace it with a payload of their own, replacing  **Sp** with its
+- In step 4, Specter can intercept S's payload and replace it with a payload of their own, replacing  **Sp** with its
 own key.
-- The attack is only thwarted in step 7, because Device S won’t ever display the indicator of success to the user. The
+- The attack is only thwarted in step 7, because Device S won't ever display the indicator of success to the user. The
 user then must cancel the process on Device G, preventing it from sharing any sensitive material.
 
 ### The OIDC login part and set up of E2EE
@@ -657,9 +657,9 @@ homeserver specified:
 
 ```json
 {
- "type": "m.login.protocols",
- "protocols": ["device_authorization_grant"],
- "homeserver": "https://synapse-oidc.lab.element.dev"
+    "type": "m.login.protocols",
+    "protocols": ["device_authorization_grant"],
+    "homeserver": "https://synapse-oidc.lab.element.dev"
 }
 ```
 
@@ -684,7 +684,7 @@ With response like:
 Content-Type: application/json
 
 {
-  "issuer": "https://auth-oidc.lab.element.dev/"
+    "issuer": "https://auth-oidc.lab.element.dev/"
 }
 ```
 
@@ -706,22 +706,22 @@ With response like:
 Content-Type: application/json
 
 {
-  "issuer": "https://auth-oidc.lab.element.dev/",
-  "authorization_endpoint": "https://auth-oidc.lab.element.dev/authorize",
-  "token_endpoint": "https://auth-oidc.lab.element.dev/oauth2/token",
-  "jwks_uri": "https://auth-oidc.lab.element.dev/oauth2/keys.json",
-  "registration_endpoint": "https://auth-oidc.lab.element.dev/oauth2/registration",
-  "scopes_supported": ["openid", "email"],
-  "response_types_supported": [...],
-  "response_modes_supported": [...],
-  "grant_types_supported": [
-    "authorization_code",
-    "refresh_token",
-    "client_credentials",
-    "urn:ietf:params:oauth:grant-type:device_code"
-  ],
- ...
-  "device_authorization_endpoint": "https://auth-oidc.lab.element.dev/oauth2/device"
+    "issuer": "https://auth-oidc.lab.element.dev/",
+    "authorization_endpoint": "https://auth-oidc.lab.element.dev/authorize",
+    "token_endpoint": "https://auth-oidc.lab.element.dev/oauth2/token",
+    "jwks_uri": "https://auth-oidc.lab.element.dev/oauth2/keys.json",
+    "registration_endpoint": "https://auth-oidc.lab.element.dev/oauth2/registration",
+    "scopes_supported": ["openid", "email"],
+    "response_types_supported": [...],
+    "response_modes_supported": [...],
+    "grant_types_supported": [
+        "authorization_code",
+        "refresh_token",
+        "client_credentials",
+        "urn:ietf:params:oauth:grant-type:device_code"
+    ],
+    ...
+    "device_authorization_endpoint": "https://auth-oidc.lab.element.dev/oauth2/device"
 }
 ```
 
@@ -748,12 +748,12 @@ With response like:
 Content-Type: application/json
 
 {
-  "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
-  "user_code": "123456",
-  "verification_uri": "https://auth-oidc.lab.element.dev/link",
-  "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
-  "expires_in": 1800,
-  "interval": 5
+    "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
+    "user_code": "123456",
+    "verification_uri": "https://auth-oidc.lab.element.dev/link",
+    "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
+    "expires_in": 1800,
+    "interval": 5
 }
 ```
 
@@ -770,13 +770,13 @@ indicates that want to use protocol `device_authorization_grant` along with the 
 
 ```json
 {
- "type": "m.login.protocol",
-  "protocol": "device_authorization_grant",
- "device_authorization_grant": {
-  "verification_uri": "https://auth-oidc.lab.element.dev/link",
-  "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
- },
- "device_id": "ABCDEFGH"
+    "type": "m.login.protocol",
+    "protocol": "device_authorization_grant",
+    "device_authorization_grant": {
+        "verification_uri": "https://auth-oidc.lab.element.dev/link",
+        "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
+    },
+    "device_id": "ABCDEFGH"
 }
 ```
 
@@ -928,10 +928,10 @@ Then we continue with the actual login:
 On receipt of the `m.login.protocol_accepted` message:
 
 - In accordance with [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.3.1) the new device must display
-the user_code in order that the user can confirm it on the OIDC Provider if required.
+the `user_code` in order that the user can confirm it on the OIDC Provider if required.
 - The new device then starts to poll the OIDC Provider by making
 [Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the interval and bounded
-by expires_in.
+by `expires_in`.
 
 *New device => OIDC Provider via HTTP*
 
@@ -962,7 +962,7 @@ and expecting to receive an HTTP 404 response.
 If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`.
 
 If no existing device was found then the existing device opens the `verification_uri_complete` - falling back to the
-`verification_uri`, if `verification_uri_complete` isn’t present - in a system browser.
+`verification_uri`, if `verification_uri_complete` isn't present - in a system browser.
 
 Ideally this is in a trusted/secure environment where the cookie jar and password manager features are available. e.g.
 on iOS this could be a `ASWebAuthenticationSession`
@@ -973,7 +973,7 @@ The existing device then sends an acknowledgement message to let the other devic
 
 ```json
 {
- "type": "m.login.protocol_accepted"
+    "type": "m.login.protocol_accepted"
 }
 ```
 
@@ -1050,7 +1050,7 @@ with the corresponding device_id (from the `m.login.protocol` message).
 It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 200 response.
 
-If the device isn’t immediately visible it can repeat the `GET` request for up to, say, 10 seconds to allow for any latency.
+If the device isn't immediately visible it can repeat the `GET` request for up to, say, 10 seconds to allow for any latency.
 
 If no device is found then the process should be stopped.
 
@@ -1060,17 +1060,17 @@ The existing device sends a `m.login.secrets` message via the secure channel:
 
 ```json
 {
-  "type": "m.login.secrets",
-  "cross_signing": {
-          "master_key": "$base64_of_the_key",
-          "self_signing_key": "$base64_of_the_key",
-          "user_signing_key": "$base64_of_the_key"
-  },
-  "backup": {
-       "algorithm": "foobar",
-       "key": "base64_of_the_backup_recovery_key",
-       "backup_version": "version_string"
-  }
+    "type": "m.login.secrets",
+    "cross_signing": {
+        "master_key": "$base64_of_the_key",
+        "self_signing_key": "$base64_of_the_key",
+        "user_signing_key": "$base64_of_the_key"
+    },
+    "backup": {
+        "algorithm": "foobar",
+        "key": "base64_of_the_backup_recovery_key",
+        "backup_version": "version_string"
+    }
 }
 ```
 
@@ -1144,7 +1144,7 @@ deactivate HS
 
               activate N
               note over N: 3) New device stores the secrets locally
-              
+
 alt is cross_signing present in m.login.secrets?
 note over N: New device signs itself
               note over N: New device uploads device keys and cross-signing signature:
@@ -1188,9 +1188,9 @@ Fields:
 
 ```json
 {
- "type": "m.login.protocols",
- "protocols": ["device_authorization_grant"],
- "homeserver": "https://matrix-client.matrix.org"
+    "type": "m.login.protocols",
+    "protocols": ["device_authorization_grant"],
+    "homeserver": "https://matrix-client.matrix.org"
 }
 ```
 
@@ -1213,13 +1213,13 @@ Example:
 
 ```json
 {
- "type": "m.login.protocol",
-  "protocol": "device_authorization_grant",
- "device_authorization_grant": {
-  "verification_uri_complete": "https://id.matrix.org/device/abcde",
-  "verification_uri": "..."
- },
- "device_id": "ABCDEFGH"
+    "type": "m.login.protocol",
+    "protocol": "device_authorization_grant",
+    "device_authorization_grant": {
+        "verification_uri_complete": "https://id.matrix.org/device/abcde",
+        "verification_uri": "..."
+    },
+    "device_id": "ABCDEFGH"
 }
 ```
 
@@ -1234,7 +1234,7 @@ Example:
 
 ```json
 {
- "type":"m.login.protocol_accepted"
+    "type":"m.login.protocol_accepted"
 }
 ```
 
@@ -1251,14 +1251,14 @@ Fields:
 |`type`|required `string`|`m.login.failure`|
 |`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
 |`homeserver`|`string`| When the existing device is sending this it can include the Base URL of the homeserver so that the new device can at least save the user the hassle of typing it in|
-    
+
 Example:
 
 ```json
 {
- "type":"m.login.failure",
-"reason": "unsupported",
- "homeserver": "https://matrix-client.matrix.org"
+    "type":"m.login.failure",
+    "reason": "unsupported",
+    "homeserver": "https://matrix-client.matrix.org"
 }
 ```
 
@@ -1278,7 +1278,7 @@ Example:
 
 ```json
 {
- "type":"m.login.declined"
+    "type":"m.login.declined"
 }
 ```
 
@@ -1298,7 +1298,7 @@ Example:
 
 ```json
 {
- "type": "m.login.success"
+    "type": "m.login.success"
 }
 ```
 
@@ -1320,17 +1320,17 @@ Example:
 
 ```json
 {
-  "type": "m.login.secrets",
-  "cross_signing": {
-          "master_key": "$base64_of_the_key",
-          "self_signing_key": "$base64_of_the_key",
-     "user_signing_key": "$base64_of_the_key"
-  },
-  "backup": {
-       "algorithm": "foobar",
-       "key": "base64_of_the_backup_recovery_key",
-       "backup_version": "version_string"
-  }
+    "type": "m.login.secrets",
+    "cross_signing": {
+        "master_key": "$base64_of_the_key",
+        "self_signing_key": "$base64_of_the_key",
+        "user_signing_key": "$base64_of_the_key"
+    },
+    "backup": {
+        "algorithm": "foobar",
+        "key": "base64_of_the_backup_recovery_key",
+        "backup_version": "version_string"
+    }
 }
 ```
 
