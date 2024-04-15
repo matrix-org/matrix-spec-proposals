@@ -6,19 +6,13 @@
 to the `/versions` endpoint, the first of the spec to do so. However, this MSC did not specify the behaviour
 of servers in cases where the authentication failed.
 
-Similarly, endpoints like `POST /login` and `POST /register` accept authentication only from appservices, and
-the behaviour of cases where either the authentication failed and/or the user to be accessed was unavailable
-(user does not exist, user is deactivated, etc.).
-
 This has lead to some implementations of the spec expecting the request to go through even when the auth is
 invalid, while some servers respond with an error in the above cases, damaging interoperability.
 
 ## Proposal
 
 In cases where authentication is optional and provided, servers should respond with an error when the authentication
-token is invalid, and/or
-[the user the appservice is acting as](https://spec.matrix.org/v1.10/application-service-api/#identity-assertion)
-is unavailable.
+token is invalid.
 
 ## Potential issues
 
