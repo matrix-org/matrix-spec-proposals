@@ -1068,7 +1068,7 @@ The existing device sends a `m.login.secrets` message via the secure channel:
     },
     "backup": {
         "algorithm": "foobar",
-        "key": "base64_of_the_backup_recovery_key",
+        "key": "$base64_of_the_backup_recovery_key",
         "backup_version": "version_string"
     }
 }
@@ -1093,7 +1093,7 @@ Content-Type: application/json
 
 {
     "device_keys": {
-        "algorithms": [ 
+        "algorithms": [
             "m.olm.v1.curve25519-aes-sha2",
             "m.megolm.v1.aes-sha2"
         ],
@@ -1328,7 +1328,7 @@ Example:
     },
     "backup": {
         "algorithm": "foobar",
-        "key": "base64_of_the_backup_recovery_key",
+        "key": "$base64_of_the_backup_recovery_key",
         "backup_version": "version_string"
     }
 }
