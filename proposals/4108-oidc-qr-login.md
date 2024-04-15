@@ -682,9 +682,9 @@ homeserver specified:
 
 ```json
 {
- "type": "m.login.protocols",
- "protocols": ["device_authorization_grant"],
- "homeserver": "https://synapse-oidc.lab.element.dev"
+    "type": "m.login.protocols",
+    "protocols": ["device_authorization_grant"],
+    "homeserver": "https://synapse-oidc.lab.element.dev"
 }
 ```
 
@@ -709,7 +709,7 @@ With response like:
 Content-Type: application/json
 
 {
-  "issuer": "https://auth-oidc.lab.element.dev/"
+    "issuer": "https://auth-oidc.lab.element.dev/"
 }
 ```
 
@@ -731,22 +731,22 @@ With response like:
 Content-Type: application/json
 
 {
-  "issuer": "https://auth-oidc.lab.element.dev/",
-  "authorization_endpoint": "https://auth-oidc.lab.element.dev/authorize",
-  "token_endpoint": "https://auth-oidc.lab.element.dev/oauth2/token",
-  "jwks_uri": "https://auth-oidc.lab.element.dev/oauth2/keys.json",
-  "registration_endpoint": "https://auth-oidc.lab.element.dev/oauth2/registration",
-  "scopes_supported": ["openid", "email"],
-  "response_types_supported": [...],
-  "response_modes_supported": [...],
-  "grant_types_supported": [
-    "authorization_code",
-    "refresh_token",
-    "client_credentials",
-    "urn:ietf:params:oauth:grant-type:device_code"
-  ],
- ...
-  "device_authorization_endpoint": "https://auth-oidc.lab.element.dev/oauth2/device"
+    "issuer": "https://auth-oidc.lab.element.dev/",
+    "authorization_endpoint": "https://auth-oidc.lab.element.dev/authorize",
+    "token_endpoint": "https://auth-oidc.lab.element.dev/oauth2/token",
+    "jwks_uri": "https://auth-oidc.lab.element.dev/oauth2/keys.json",
+    "registration_endpoint": "https://auth-oidc.lab.element.dev/oauth2/registration",
+    "scopes_supported": ["openid", "email"],
+    "response_types_supported": [...],
+    "response_modes_supported": [...],
+    "grant_types_supported": [
+        "authorization_code",
+        "refresh_token",
+        "client_credentials",
+        "urn:ietf:params:oauth:grant-type:device_code"
+    ],
+    ...
+    "device_authorization_endpoint": "https://auth-oidc.lab.element.dev/oauth2/device"
 }
 ```
 
@@ -773,12 +773,12 @@ With response like:
 Content-Type: application/json
 
 {
-  "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
-  "user_code": "123456",
-  "verification_uri": "https://auth-oidc.lab.element.dev/link",
-  "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
-  "expires_in": 1800,
-  "interval": 5
+    "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
+    "user_code": "123456",
+    "verification_uri": "https://auth-oidc.lab.element.dev/link",
+    "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456",
+    "expires_in": 1800,
+    "interval": 5
 }
 ```
 
@@ -803,13 +803,13 @@ It then sends a `m.login.protocol` message to the existing device, containing:
 
 ```json
 {
- "type": "m.login.protocol",
-  "protocol": "device_authorization_grant",
- "device_authorization_grant": {
-  "verification_uri": "https://auth-oidc.lab.element.dev/link",
-  "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
- },
- "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"
+    "type": "m.login.protocol",
+    "protocol": "device_authorization_grant",
+    "device_authorization_grant": {
+        "verification_uri": "https://auth-oidc.lab.element.dev/link",
+        "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
+    },
+    "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"
 }
 ```
 
@@ -1006,7 +1006,7 @@ The existing device then sends an acknowledgement message to let the other devic
 
 ```json
 {
- "type": "m.login.protocol_accepted"
+    "type": "m.login.protocol_accepted"
 }
 ```
 
@@ -1134,17 +1134,17 @@ channel:
 
 ```json
 {
-  "type": "m.login.secrets",
-  "cross_signing": {
-      "master_key": "$base64_of_the_key",
-      "self_signing_key": "$base64_of_the_key",
-      "user_signing_key": "$base64_of_the_key"
-  },
-  "backup": {
-      "algorithm": "foobar",
-      "key": "$base64_of_the_backup_recovery_key",
-      "backup_version": "version_string"
-  }
+    "type": "m.login.secrets",
+    "cross_signing": {
+        "master_key": "$base64_of_the_key",
+        "self_signing_key": "$base64_of_the_key",
+        "user_signing_key": "$base64_of_the_key"
+    },
+    "backup": {
+        "algorithm": "foobar",
+        "key": "$base64_of_the_backup_recovery_key",
+        "backup_version": "version_string"
+    }
 }
 ```
 
@@ -1262,9 +1262,9 @@ Fields:
 
 ```json
 {
- "type": "m.login.protocols",
- "protocols": ["device_authorization_grant"],
- "homeserver": "https://matrix-client.matrix.org"
+    "type": "m.login.protocols",
+    "protocols": ["device_authorization_grant"],
+    "homeserver": "https://matrix-client.matrix.org"
 }
 ```
 
@@ -1287,13 +1287,13 @@ Example:
 
 ```json
 {
- "type": "m.login.protocol",
-  "protocol": "device_authorization_grant",
- "device_authorization_grant": {
-  "verification_uri_complete": "https://id.matrix.org/device/abcde",
-  "verification_uri": "..."
- },
- "device_id": "ABCDEFGH"
+    "type": "m.login.protocol",
+    "protocol": "device_authorization_grant",
+    "device_authorization_grant": {
+        "verification_uri_complete": "https://id.matrix.org/device/abcde",
+        "verification_uri": "..."
+    },
+    "device_id": "ABCDEFGH"
 }
 ```
 
@@ -1308,7 +1308,7 @@ Example:
 
 ```json
 {
- "type":"m.login.protocol_accepted"
+    "type":"m.login.protocol_accepted"
 }
 ```
 
@@ -1396,17 +1396,17 @@ Example:
 
 ```json
 {
-  "type": "m.login.secrets",
-  "cross_signing": {
-      "master_key": "$base64_of_the_key",
-      "self_signing_key": "$base64_of_the_key",
-      "user_signing_key": "$base64_of_the_key"
-  },
-  "backup": {
-      "algorithm": "foobar",
-      "key": "base64_of_the_backup_recovery_key",
-      "backup_version": "version_string"
-  }
+    "type": "m.login.secrets",
+    "cross_signing": {
+        "master_key": "$base64_of_the_key",
+        "self_signing_key": "$base64_of_the_key",
+        "user_signing_key": "$base64_of_the_key"
+    },
+    "backup": {
+        "algorithm": "foobar",
+        "key": "$base64_of_the_backup_recovery_key",
+        "backup_version": "version_string"
+    }
 }
 ```
 
