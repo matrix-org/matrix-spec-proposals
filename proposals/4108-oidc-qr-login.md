@@ -353,7 +353,7 @@ The above rendezvous session is insecure, providing no confidentiality nor authe
 even arbitrary network participants which possess the rendezvous session URL. To provide a secure channel on
 top of this insecure rendezvous session transport, we propose the following scheme.
 
-This scheme is essentially[ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
+This scheme is essentially [ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
 instantiated with X25519, HKDF-SHA256 for the KDF and ChaCha20-Poly1305 (as specified by
 [RFC8439](https://datatracker.ietf.org/doc/html/rfc8439#section-2.8)) for the authenticated encryption. Therefore,
 existing security analyses of ECIES are applicable in this setting too. Nevertheless we include below a short
