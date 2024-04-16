@@ -1018,6 +1018,13 @@ sequenceDiagram
 
     rect rgba(0,255,0, 0.1)
 
+        E->>HS: GET /_matrix/client/v3/devices/{device_id}
+        alt device already exists
+            HS->>E: 200 OK
+            E->>N: SecureSend({ "type": "m.login.failure", "reason": "device_already_exists" })
+        else device not found
+            HS->>E: 404 Not Found
+        end
         par
             E->>N: SecureSend({"type":"m.login.protocol_accepted"})
         note over N: 4) New device polls the OIDC Provider awaiting the outcome as per RFC8628 OIDC
