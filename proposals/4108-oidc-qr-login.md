@@ -771,14 +771,16 @@ It then sends a `m.login.protocol` message to the existing device, containing:
 - An indicator that it wants to use protocol `device_authorization_grant`
 - The `verification_uri`
 - The `verification_uri_complete`, if present
-- The device ID it will be using, which MUST equal the unpadded base64-encoded form of the Curve25519 identity key of
-  the new device
+- The device ID it will be using, which MUST equal the unpadded base64-encoded form of the public part of the Curve25519
+identity key that the new device has generated
 - A proof of ownership of the device ID, which is a base64-encoded form of the proof described below
 
-The new device then proves it controls the private key to which it previously committed. It does this by doing an ECDH
-between the committed-to identity key and the other device's secure channel ephemeral key to derive a shared secret,
-which is used to construct a proof of ownership based on HMAC-SHA256. Due to the properties of ECDH, the other device
-knows that the new device can only do this if it possesses the private part of the committed-to identity key.
+The new device proves it controls the Curve25519 key - with public part `Ip` and private part `Is` - by doing an ECDH
+between the private part of the Curve25519 identity key and the other device's secure channel ephemeral public key (`Ep`
+) to derive a shared secret.  `Ep` equates to either `Gp` or `Sp` from the secure channel set up depending on which
+device did the QR code scanning. This derived secret is then used to to construct a proof of ownership based on
+HMAC-SHA256. Due to the properties of ECDH, the existing device knows that the new device can only do this if it
+possesses the private part of the Curve25519 identity key.
 
 TODO: a paragraph to say why we do this
 
@@ -994,7 +996,7 @@ unless HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION") == ProofBytes
     FAIL
 ```
 
-If the proof does not match then the login request should be rejected with an `m.login.failure` and reason `device_proof_invalid`.
+If the proof does not match then the login request should be rejected with an `m.login.failure` and reason `device_proof_failed`.
 
 To asset the device does not already exist it calls [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expects to receive an HTTP 404 response.
@@ -1034,6 +1036,18 @@ sequenceDiagram
 
     rect rgba(0,255,0, 0.1)
 
+        note over E: Existing device validates the proof of device key ownership
+        alt proof invalid
+            E->>N: SecureSend({ "type": "m.login.failure", "reason": "device_proof_failed" })
+        end
+
+        E->>HS: GET /_matrix/client/v3/devices/{device_id}
+        alt device already exists
+            HS->>E: 200 OK
+            E->>N: SecureSend({ "type": "m.login.failure", "reason": "device_already_exists" })
+        else device not found
+            HS->>E: 404 Not Found
+        end
         par
             E->>N: SecureSend({"type":"m.login.protocol_accepted"})
         note over N: 4) New device polls the OIDC Provider awaiting the outcome as per RFC8628 OIDC
@@ -1291,7 +1305,7 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.failure`|
-|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
+|`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_proof_failed</code></td><td>The proof of device key ownership failed</td></tr><tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
 |`homeserver`|`string`| When the existing device is sending this it can include the Base URL of the homeserver so that the new device can at least save the user the hassle of typing it in|
 
 Example:
