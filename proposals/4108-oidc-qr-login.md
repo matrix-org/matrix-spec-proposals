@@ -787,16 +787,8 @@ At this point the new device knows that, subject to the user consenting, it shou
 
 3. **New device informs existing device that it wants to use the `device_authorization_grant`**
 
-At this point, the new device should ensure it has generated its Olm account, so that it has its Curve25519 and Ed25519
-device identity keys.
-
-It then sends a `m.login.protocol` message to the existing device, containing:
-
-- An indicator that it wants to use protocol `device_authorization_grant`
-- The `verification_uri`
-- The `verification_uri_complete`, if present
-- The device ID it will be using, which MUST equal the unpadded base64-encoded form of the Curve25519 identity key of
-  the new device
+The new device send the `verification_uri` and, if present, the `verification_uri_complete` over to the existing device and
+indicates that want to use protocol `device_authorization_grant` along with the `device_id` that will be used:
 
 *New device => Existing device via secure channel*
 
@@ -808,7 +800,7 @@ It then sends a `m.login.protocol` message to the existing device, containing:
         "verification_uri": "https://auth-oidc.lab.element.dev/link",
         "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
     },
-    "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"
+    "device_id": "ABCDEFGH"
 }
 ```
 
@@ -855,7 +847,7 @@ sequenceDiagram
         N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
         OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...,<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"})
+        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
     deactivate N
     end
@@ -867,7 +859,7 @@ sequenceDiagram
     end
 
     rect rgba(0,255,0, 0.1)
-        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"}
+        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
     end
 
     rect rgba(255,0,0, 0.1)
@@ -925,7 +917,7 @@ sequenceDiagram
         N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
         OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"})
+        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
     deactivate N
     end
@@ -936,7 +928,7 @@ sequenceDiagram
     #end
 
     rect rgba(0,255,0, 0.1)
-        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI"}
+        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
     end
 
     # alt if New device scanned QR code
@@ -1035,7 +1027,7 @@ sequenceDiagram
                     OP-->>N: 400 Bad Request {"error": "authorization_pending"}
                 else granted
                     OP-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
-                    N->>E: SecureSend({ "type": "m.login.success", "proof": base64_encoded_proof_of_identity_key_ownership })
+                    N->>E: SecureSend({ "type": "m.login.success" })
                     Note over N: Device now has an access_token and can start to talk to the homeserver
                 else denied
                     OP-->>N: 400 Bad Request {"error": "authorization_declined"}
@@ -1058,9 +1050,6 @@ sequenceDiagram
     end
 ```
 
-The reader will note that the `m.login.success` contains a proof that the new device owns the identity key it had
-previously committed to, in the `m.login.protocol` step. This is explained in the next section.
-
 #### Secret sharing and device verification
 
 Once the new device has logged in and obtained an access token it will want to obtain the secrets necessary to set up
@@ -1077,7 +1066,7 @@ If checked successfully then the existing device sends the following secrets to 
 
 This is achieved as following:
 
-1. **Existing device confirms that a device with the previously committed-to device ID (device identity key) has indeed logged in successfully**
+1. **Existing device confirms that the new device has indeed logged in successfully**
 
 On receipt of an `m.login.success` message the existing device queries the homeserver to check that the is a device online
 with the corresponding device_id (from the `m.login.protocol` message).
@@ -1089,47 +1078,9 @@ If the device isn't immediately visible it can repeat the `GET` request for up t
 
 If no device is found then the process should be stopped.
 
-2. **Existing device confirms that the new device owns the private part of the committed-to device identity key**
+2. **Existing device shares secrets with new device**
 
-The new device then proves it controls the private key to which it previously committed. It does this by doing an ECDH
-between the committed-to identity key and the other device's secure channel ephemeral key to derive a shared secret,
-which is used to construct a proof of ownership based on HMAC-SHA256. Due to the properties of ECDH, the other device
-knows that the new device can only do this if it possesses the private part of the committed-to identity key.
-
-The new device does:
-
-```
-SH := ECDH(Is, Ep)
-ProofKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_PROOFKEY|" || Ip || "|" || Ep, salt=0, size=32)
-ProofBytes := HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION")
-Proof := UnpaddedBase64Encode(ProofBytes)
-```
-
-And sends the **Proof** to the existing device.
-
-The existing device does the following to verify the proof:
-
-```
-ProofBytes := UnpaddedBase64_Decode(Proof)
-
-SH := ECDH(Es, Ip)
-ProofKey := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_PROOFKEY|" || Ip || "|" || Ep, salt=0, size=32)
-
-unless HMAC_SHA256(ProofKey, "MATRIX_QR_CODE_PROOF_OF_POSSESSION") == ProofBytes:
-    FAIL
-```
-
-```json
-{
-    "type": "m.login.success",
-    "proof": "$Proof"
-}
-```
-
-3. **Existing device shares secrets with new device**
-
-If both previous steps succeeded, the existing device proceeds to send a `m.login.secrets` message via the secure
-channel:
+The existing device sends a `m.login.secrets` message via the secure channel:
 
 ```json
 {
@@ -1170,14 +1121,14 @@ Content-Type: application/json
             "m.olm.v1.curve25519-aes-sha2",
             "m.megolm.v1.aes-sha2"
         ],
-        "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
+        "device_id": "SGKMSRAGBF",
         "keys": {
-            "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
-            "ed25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "b8gROFh+UIHLD/obY0+IlxoWiGtYVhKdqixvw4QHcN8"
+            "curve25519:SGKMSRAGBF": "I11VOe5quKuH/YjdOqn5VcW06fvPIJQ9JX8ryj6ario",
+            "ed25519:SGKMSRAGBF": "b8gROFh+UIHLD/obY0+IlxoWiGtYVhKdqixvw4QHcN8"
         },
         "signatures": {
             "@testing_35:morpheus.localhost": {
-                "ed25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "ziHEUIsHnrYBH4CqYpN1JC/ex3t4VG3zvo16D8ORqN6yAErpsKsnd/5LDdZERIOB1MGffKGfCL6ny5V7rT9FCQ",
+                "ed25519:SGKMSRAGBF": "ziHEUIsHnrYBH4CqYpN1JC/ex3t4VG3zvo16D8ORqN6yAErpsKsnd/5LDdZERIOB1MGffKGfCL6ny5V7rT9FCQ",
                 "ed25519:bkYgAVUNqvuyy8b1w09utJNJxBvK3hZB65xxoLPVzFol": "p257k0tfPF98OIDuXnFSJS2DmVlxO4sgTHdF41DTdZBCpTZfPwok6iASo3xMRKdyy3WMEgkQ6lzhEyRKKZBGBQ"
             }
         },
@@ -1366,14 +1317,12 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.success`|
-|`proof`|required `string`|New device's proof of identity key ownership, base64-encoded|
 
 Example:
 
 ```json
 {
-    "type": "m.login.success",
-    "proof": base64_encoded_proof_of_identity_key_ownership
+    "type": "m.login.success"
 }
 ```
 
