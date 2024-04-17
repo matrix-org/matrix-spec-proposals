@@ -2,8 +2,8 @@
 
 ## Introduction
 
-The spec supports 2 types of URI, the [Matrix scheme](https://spec.matrix.org/unstable/appendices/#matrix-uri-scheme)
-and [matrix.to](https://spec.matrix.org/unstable/appendices/#matrixto-navigation) links which allow deep linking to
+The spec supports 2 types of URI, the [Matrix scheme](https://spec.matrix.org/v1.10/appendices/#matrix-uri-scheme)
+and [matrix.to](https://spec.matrix.org/v1.10/appendices/#matrixto-navigation) links which allow deep linking to
 Matrix users, rooms and events. Event URIs can be constructed against either a room ID or a room alias the latter of
 which is fragile issue as a room's alias is mutable and so event links may be broken by changes to the alias. Users
 expect deep links to continue working so that older links continue to show the correct content. Therefore it is proposed
