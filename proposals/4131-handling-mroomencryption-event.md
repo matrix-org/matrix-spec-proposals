@@ -1,4 +1,4 @@
-# MSCxxxx: Handling `m.room.encryption` events
+# MSC4131: Handling `m.room.encryption` events
 
 The `m.room.encryption` event type indications whether encryption is enabled in
 a room, and if so, what encryption algorithm to use and what parameters to use
