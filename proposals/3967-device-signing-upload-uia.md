@@ -14,7 +14,7 @@ The issue is that the client will immediately need the user to re-authenticate
 even though the user just authenticated.
 
 This usability issue has given rise to workarounds such as a
-[configurable grace period](https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ui_auth)
+[configurable grace period](https://matrix-org.github.io/synapse/v1.98/usage/configuration/config_documentation.html#ui_auth)
 (`ui_auth`.`session_timeout`) in Synapse whereby UIA will not be required for
 uploading cross-signing keys where authentication has taken place recently.
 
