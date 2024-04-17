@@ -18,16 +18,20 @@ the homeserver. In contrast, event URIs built against a room alias can break und
   ancestor.
 - The alias is removed/changed resulting in a dead link that can't be resolved.
 
-The proposal would deprecate the 2 following URIs:
+The proposal would [deprecate](https://spec.matrix.org/v1.10/#deprecation-policy) the 2 following URIs:
 - Link to `$event` in `#somewhere:example.org`: `matrix:r/somewhere:example.org/e/event`
 - Link to `$event` in `#somewhere:example.org`: `https://matrix.to/#/%23somewhere:example.org/%24event%3Aexample.org`
+
+Specifically this means it would be marked in the spec as not to be used in future and clients should:
+1. Stop making new event URIs with room aliases.
+2. Continue to accept them as it will take time for other clients to update and legacy events will continue to exist.
 
 
 ## Potential issues
 
 Whilst most clients do take the sensible route and generate event URIs against a room ID (even when it has an alias), as
-it is part of the spec these kinds of links likely exist somewhere in room history. This would mean that after
-deprecation clients may still want to handle these URIs when tapped.
+it is part of the spec these kinds of links likely exist somewhere in room history and on the World Wide Web. This would
+mean that after deprecation clients may still want to handle these URIs when received.
 
 
 ## Alternatives
@@ -37,9 +41,7 @@ An alternative would be to leave things as they are, although this wouldn't be t
 
 ## Security considerations
 
-It is unlikely that accepting this change would introduce any security considerations. If anything, it may improve the
-hypothetical situation where a deep link could be being redirected to modified content by moving an existing room alias
-to a malicious room.
+It is unlikely that accepting this change would introduce any security considerations.
 
 
 ## Dependencies
