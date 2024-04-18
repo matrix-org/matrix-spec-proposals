@@ -141,7 +141,7 @@ HTTP response codes, and Matrix error codes:
 - `400 Bad Request` (`M_INVALID_PARAM`) - a malformed 
 [`ETag`](https://github.com/matrix-org/matrix-spec-proposals/blob/hughns/simple-rendezvous-capability/proposals/3886-simple-rendezvous-capability.md#the-update-mechanism)
 header was provided.
-- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
 - `412 Precondition Failed` (`M_CONCURRENT_WRITE`, a new error code) - when the ETag does not match
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
@@ -206,7 +206,7 @@ Pragma: no-cache
 HTTP response codes:
 
 - `204 No Content` - rendezvous session cancelled
-- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
 ##### Authentication
@@ -389,7 +389,7 @@ separate deterministic, monotonically-incrementing nonce is used for each sender
 2. **Create rendezvous session**
 
 Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
-with an empty payload. It parses the **id** and **server** received.
+with an empty payload. It parses the **url** received.
 
 3. **Initial key exchange**
 
