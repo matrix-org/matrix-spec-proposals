@@ -234,7 +234,7 @@ In order to make sure that no intermediate caches manipulate the ETags, the rend
 
 ###### CORS
 
-For the `POST /_matrix/client/rendezvous` API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients)
+For the `POST /_matrix/client/v1/rendezvous` API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients)
 headers, the ETag response header should also be allowed by exposing the following CORS header:
 
 ```http
@@ -265,6 +265,8 @@ of preference:
 
 #### Example API usage
 
+n.b. This example demonstrates how the 307 response can be used to delegate the rendezvous session to a different server.
+
 ```mermaid
 sequenceDiagram
   participant A as Device A
@@ -273,8 +275,8 @@ sequenceDiagram
   participant B as Device B
   Note over A: Device A determines which rendezvous server to use
 
-  A->>+HS: POST /_matrix/client/rendezvous<br>Content-Type: text/plain<br>"Hello from A"
-  HS->>-A: 307 https://rz.example.com/foo
+  A->>+HS: POST /_matrix/client/v1/rendezvous<br>Content-Type: text/plain<br>"Hello from A"
+  HS->>-A: 307 Temporary Redirect<br>Location: https://rz.example.com/foo
   A->>+R: POST /foo<br>Content-Type: text/plain<br>"Hello from A"
   R->>-A: 201 Created<br>ETag: 1<br>{"url":"https://rz.example.com/abc-def-123-456"}
 
@@ -541,15 +543,15 @@ The sequence diagram for the above is as follows:
 ```mermaid
 sequenceDiagram
     participant G as Device G
-    participant Z as Rendezvous server
+    participant Z as Homeserver with embedded Rendezvous Server<br>matrix.example.com
     participant S as Device S
 
     note over G,S: 1) Devices G and S each generate an ephemeral Curve25519 key pair
 
     activate G
     note over G: 2) Device G creates a rendezvous session as follows
-    G->>+Z: POST /_matrix/client/rendezvous
-    Z->>-G: 201 Created<br>Location: /_matrix/client/rendezvous/abc-def<br>ETag: 1
+    G->>+Z: POST /_matrix/client/v1/rendezvous
+    Z->>-G: 201 Created<br>ETag: 1<br>{"url": "https://matrix.example.com/_synapse/client/rendezvous/abc-def"}
 
     note over G: 3) Device G generates and displays a QR code containing<br>its ephemeral public key and the rendezvous session URL
 
@@ -559,15 +561,15 @@ sequenceDiagram
     activate S
     note over S: Device S validates QR scanned and the rendezvous session URL
 
-    S->>+Z: GET /_matrix/client/rendezvous/abc-def
+    S->>+Z: GET /_synapse/client/rendezvous/abc-def
     Z->>-S: 200 OK<br>ETag: 1
 
     note over S: 4) Device S computes SH, EncKey_S, EncKey_G and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
-    S->>+Z: PUT /_matrix/client/rendezvous/abc-def<br>If-Match: 1<br>Body: LoginInitiateMessage
+    S->>+Z: PUT /_synapse/client/rendezvous/abc-def<br>If-Match: 1<br>Body: LoginInitiateMessage
     Z->>-S: 202 Accepted<br>ETag: 2
     deactivate S
 
-    G->>+Z: GET /_matrix/client/rendezvous/abc-def<br>If-None-Match: 1
+    G->>+Z: GET /_synapse/client/rendezvous/abc-def<br>If-None-Match: 1
     activate G
     Z->>-G: 200 OK<br>ETag: 2<br>Body: Data
 
@@ -576,12 +578,12 @@ sequenceDiagram
 
     note over G: Device G computes LoginOkMessage and sends to the rendezvous session
 
-    G->>+Z: PUT /_matrix/client/rendezvous/abc-def<br>If-Match: 2<br>Body: LoginOkMessage
+    G->>+Z: PUT /_synapse/client/rendezvous/abc-def<br>If-Match: 2<br>Body: LoginOkMessage
     Z->>-G: 202 Accepted<br>ETag: 3
     deactivate G
 
     activate S
-    S->>+Z: GET /_matrix/client/rendezvous/abc-def<br>If-None-Match: 2
+    S->>+Z: GET /_synapse/client/rendezvous/abc-def<br>If-None-Match: 2
     Z->>-S: 200 OK<br>ETag: 3<br>Body: Data
 
     note over S: 6) Device S attempts to parse Data as LoginOkMessage
