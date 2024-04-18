@@ -67,7 +67,7 @@ the `unsigned.membership` property on an event E and serving it to a user Alice:
    * Otherwise, set `membership` to the value of the `membership` property of
      the content of M.
 
-It is recommended that homeservers populate the new property whereever
+It is recommended that homeservers populate the new property wherever
 practical, but they may omit it if necessary (for example, if calculating the
 value is expensive, servers might choose to only implement it in encrypted
 rooms). Clients must in any case treat the new property as optional.
