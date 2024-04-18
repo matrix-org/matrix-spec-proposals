@@ -54,13 +54,13 @@ according to the state of the room at the time of the event being returned. If
 the user had no membership at that point (ie, they had yet to join or be
 invited), `membership` is set to `leave`.  Any changes caused by the event
 itself (ie, if the event itself is a `m.room.member` event for the requesting
-user) are *excluded*.
+user) are *included*.
 
 In other words: servers should follow the following algorithm when populating
 the `unsigned.membership` property on an event E and serving it to a user Alice:
 
-1. Consider the room state just *before* event E landed (accounting for state
-   resolution across E's `prev_events`, but not E itself).
+1. Consider the room state just *after* event E landed (accounting for E
+   itself, but not any other events in the DAG which are not ancestors of E).
 2. Within the state, find the event M with type `m.room.member` and `state_key`
    set to Alice's user ID.
 3. * If no such event exists, set `membership` to `leave`.
