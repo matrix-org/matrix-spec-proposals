@@ -24,12 +24,22 @@ timestamp than Bob's join.
 
 Unfortunately, there is no way for Bob's client to reliably distinguish events
 such as `A` and `C` that were sent "before" he joined (and he should therefore
-not expect to decrypt) from those such as `D` that were sent later.
-
-This issue is discussed in more detail at
+not expect to decrypt) from those such as `D` that were sent later. This
+situation is discussed in more detail at
 https://github.com/element-hq/element-meta/issues/2268.
 
-As a partial solution to this problem, we propose a mechanism for servers to
+A similar scenario can arise even in the absence of a forked DAG: clients
+see events sent when the user was not in the room if the room has [History
+Visibility](https://spec.matrix.org/v1.10/client-server-api/#room-history-visibility)
+set to `shared`. (This is fairly common even in encrypted rooms, partly because
+that is the default state for new rooms even using the `private_chat` preset
+for the [`/createRoom`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3createroom)
+request, and also because history-sharing solutions such as
+[MSC3061](https://github.com/matrix-org/matrix-spec-proposals/pull/3061) rely
+on it.
+
+As a partial solution to the forked-DAG problem, which will also solve the
+problem of historical message visibility, we propose a mechanism for servers to
 inform clients of their room membership at each event.
 
 ## Proposal
@@ -38,15 +48,16 @@ The `unsigned` structure contains data added to an event by a homeserver when
 serving an event over the client-server API.  (See
 [specification](https://spec.matrix.org/v1.9/client-server-api/#definition-clientevent)).
 
-We propose adding a new property, `membership`, which should contain the
-membership of the user making the request, according to the state of the room
-at the time of the event being returned. If the user had no membership at that
-point (ie, they had yet to join or be invited), `membership` is set to `leave`.
-Any changes caused by the event itself (ie, if the event itself is a
-`m.room.member` event for the requesting user) are *excluded*.
+We propose adding a new optional property, `membership`. If returned by the
+server, it should contain the membership of the user making the request,
+according to the state of the room at the time of the event being returned. If
+the user had no membership at that point (ie, they had yet to join or be
+invited), `membership` is set to `leave`.  Any changes caused by the event
+itself (ie, if the event itself is a `m.room.member` event for the requesting
+user) are *excluded*.
 
-In other words: servers should follow the following algorithm when serving an
-event E to a user Alice:
+In other words: servers should follow the following algorithm when populating
+the `unsigned.membership` property on an event E and serving it to a user Alice:
 
 1. Consider the room state just *before* event E landed (accounting for state
    resolution across E's `prev_events`, but not E itself).
@@ -56,10 +67,10 @@ event E to a user Alice:
    * Otherwise, set `membership` to the value of the `membership` property of
      the content of M.
 
-The new property should be *required* for all servers implementing a version of
-the spec that includes this MSC. However, clients needing to maintain
-compatibility with earlier versions of the spec will need to consider it as
-optional.
+It is recommended that homeservers populate the new property whereever
+practical, but they may omit it if necessary (for example, if calculating the
+value is expensive, servers might choose to only implement it in encrypted
+rooms). Clients must in any case treat the new property as optional.
 
 For the avoidance of doubt, the new `membership` property is added to all
 Client-Server API endpoints that return events, including
@@ -114,10 +125,14 @@ Example event including the new property:
 
 ## Alternatives
 
-https://github.com/element-hq/element-meta/issues/2268#issuecomment-1904069895
-proposes use of a Bloom filter — or possibly several Bloom filters — to
-mitigate this problem in a more general way. It is the opinion of the author of
-this MSC that there is room for both approaches.
+1. https://github.com/element-hq/element-meta/issues/2268#issuecomment-1904069895
+   proposes use of a Bloom filter — or possibly several Bloom filters — to
+   mitigate this problem in a more general way. It is the opinion of the author of
+   this MSC that there is room for both approaches.
+
+2. We could attempt to calculate the membership state on the client side. This
+   might help in a majority of cases, but it will be unreliable in the presence
+   of forked DAGs, state resolution, etc.
 
 ## Security considerations
 
