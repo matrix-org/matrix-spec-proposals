@@ -413,6 +413,13 @@ alternative would be to have a fallback one-time cryptoID. The issue with relyin
 could quickly become the case that a client ends up with the same cryptoID in many rooms. This is not necessarily an
 issue unless that user wants to keep their cryptoIDs separate in order to maintain the pseudonymity they provide.
 
+### Identity/Key Migration
+
+This MSC currently does not account for the possibility of either changing a cryptoID key, or of changing the cryptoID
+key algorithm. This would potentially involve some manner of distinguishing the cryptoID algorithm in use and of being 
+able to change a user's associated cryptoID key in a room. Both use cases are important in their own right and need 
+further consideration before this MSC can be considered for acceptance.
+
 ## Alternatives
 
 ### Clients delegate event signing on a per-event basis
