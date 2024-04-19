@@ -13,6 +13,10 @@ The Matrix protocol's current user profile structure supports very limited field
 `avatar_url`). This proposal suggests expanding this structure to include an `extended` object capable of
 storing arbitrary key:value pairs, thus allowing for a more versatile user profile.
 
+This proposal does not seek to enforce the content or usage of these key:value pairs, but rather add a
+framework to for users to have extra data that can be further clarified and extended in the future as
+community usage of these fields grows.
+
 ### Client-Server API Changes
 
 1. **GET `/_matrix/client/v3/profile/{userId}`**: This endpoint will be extended to include an `extended`
@@ -57,6 +61,8 @@ storing arbitrary key:value pairs, thus allowing for a more versatile user profi
   disruption to existing deployments.
 - The extended profile data will be public by default, and compliance with GDPR and other privacy regulations
   will be enforced, particularly in terms of data deletion and retention policies.
+- The `extended` object will not be copied into `m.room.member` events to allow for account-wide metadata to
+  be published by the user about themselves without creating state events or other moderation issues.
 
 ## Potential Issues
 
@@ -67,6 +73,11 @@ languages before communicating with them, but the sender's server does not suppo
 As such, this MSC is designed to be as simple as possible to get initial functionality and data structures
 implemented widely in both clients and servers, so further extensions can be debated, implemented, and tested
 over time in the future.
+
+As this data is stored only at the global level, it won't allow users to modify fields per-room, or track
+historical changes in profile fields. However, this is for performance and moderation reasons, as many users
+will struggle to maintain many fields of personal data between different rooms, and publishing state events
+for every field change could become an additional burden on servers and moderators.
 
 ## Alternatives
 
