@@ -57,9 +57,8 @@ n.b. Once a new payload has been sent there is no mechanism to retrieve previous
 #### Expiry
 
 The rendezvous session (i.e. the payload) SHOULD expire after a period of time communicated to clients via the `Expires`
-header. After this point, any further attempts to query or update the payload MUST fail. The expiry time SHOULD be
-extended every time the payload is updated. The rendezvous session can be manually expired with a `DELETE` call to the
-rendezvous session.
+header. After this point, any further attempts to query or update the payload MUST fail. The rendezvous session can be
+manually expired with a `DELETE` call to the rendezvous session.
 
 ####  API
 
@@ -220,7 +219,10 @@ The server should allow a minimum payload size of 10KB and enforce a maximum pay
 
 ###### Maximum duration of a rendezvous
 
-The rendezvous session only needs to persist for the duration of the handshake. So a timeout such as 30 seconds is adequate.
+The rendezvous session needs to persist for the duration of the login. So a timeout such as 60 seconds should be adequate.
+
+It does need to allow the user another time to confirm that the secure channel has been established and complete any extra
+OIDC Provider mandated login steps such as MFA.
 
 Clients should handle the case of the rendezvous session being cancelled or timed out by the server.
 
