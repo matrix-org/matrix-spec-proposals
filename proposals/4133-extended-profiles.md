@@ -98,6 +98,20 @@ persistence.
 
 ## Unstable prefix
 
-Until this proposal is accepted and finalized within the Matrix specification, implementers are encouraged to
-use the `/unstable` prefix (see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324)) for endpoints
-and a feature flag to manage client support.
+The [current Matrix specification](https://spec.matrix.org/v1.10/#profiles) technically already allows extra
+custom fields to be published in a user's profile, however as this field has a special purpose, an unstable
+prefix should be used on the object until this proposal has entered the API as stable:
+
+```json
+{
+    "avatar_url": "mxc://matrix.org/MyC00lAvatar",
+    "displayname": "John Doe",
+    "uk.tcpip.msc4133.extended": {
+        "field_name": "field_value",
+        "field_2": ["one value", "another value"]
+    }
+}
+```
+
+The new endpoints would be on the `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/extended`
+unstable version, before promoting to `/_matrix/client/v3/profile/{userId}/extended` when this is stable.
