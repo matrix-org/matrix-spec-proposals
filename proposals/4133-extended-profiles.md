@@ -11,11 +11,17 @@ experience without impacting existing functionalities.*
 
 The Matrix protocol's current user profile structure supports very limited fields (`displayname` and
 `avatar_url`). This proposal suggests expanding this structure to include an `extended` object capable of
-storing arbitrary key:value pairs, thus allowing for a more versatile user profile.
+storing arbitrary user-entered key:value pairs, thus allowing for a more versatile user profile.
 
 This proposal does not seek to enforce the content or usage of these key:value pairs, but rather add a
 framework to for users to have extra data that can be further clarified and extended in the future as
 community usage of these fields grows.
+
+Homeservers could disable the ability for users to update these fields, or require a specific list of fields,
+but the intention of this proposal is that users will be presented with a form to entering their own freetext
+fields and values. After using these very flexible fields, the community may opt to request a further
+extension to promote one or more fields to the "root" level of the profile and have them replicated per-room
+via member events.
 
 ### Client-Server API Changes
 
@@ -37,9 +43,20 @@ community usage of these fields grows.
    backward compatibility, it should *always* return an object when this user can update an extended profile,
    and return a 403 or 404 error when the server either will not allow or does not support them.
 
-3. **PUT `/_matrix/client/v3/profile/{userId}/extended`** will accept a JSON object to replace the entire
-   `extended` object, simplifying data management by allowing bulk updates instead of individual key
-   modifications:
+3. **PUT `/_matrix/client/v3/profile/{userId}/extended`** will *merge* a JSON object over the existing
+   object, thereby allowing a subset of keys to be updated without replacing any unchanged ones:
+
+    ```json
+    {
+      "extended": {
+        "new_field": "updated_value"
+      }
+    }
+    ```
+
+4. **POST `/_matrix/client/v3/profile/{userId}/extended`** will accept a complete JSON object to replace the
+   entire `extended` object, allowing a client to remove any keys it doesn't specifically include in this
+   payload:
 
     ```json
     {
