@@ -1,4 +1,4 @@
-# MSC0000: Extending User Profile API with Key:Value Pairs
+# MSC4133: Extending User Profile API with Key:Value Pairs
 
 *This proposal aims to enhance the usability and richness of user profiles within the Matrix ecosystem by
 introducing additional, customizable key:value pairs. This feature will facilitate the sharing of more
