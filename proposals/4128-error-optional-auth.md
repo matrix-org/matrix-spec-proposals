@@ -4,7 +4,7 @@
 
 [MSC4026](https://github.com/matrix-org/matrix-spec-proposals/pull/4026) added optional authentication
 to the `/versions` endpoint, the first of the spec to do so. However, this MSC did not specify the behaviour
-of servers in cases where the authentication failed.
+of servers in cases where the authentication or identity assertion failed .
 
 This has lead to some implementations of the spec expecting the request to go through even when the auth is
 invalid, while some servers respond with an error in the above cases, damaging interoperability.
@@ -12,7 +12,9 @@ invalid, while some servers respond with an error in the above cases, damaging i
 ## Proposal
 
 In cases where authentication is optional and provided, servers should respond with an error when the authentication
-token is invalid.
+token is invalid. Appservice identity assertion should also not happen on endpoints with optional authentication, as
+homeserver administrators are not likely to treat some appservice users differently to others for endpoints where
+authentication is not required in the first place.
 
 ## Potential issues
 
