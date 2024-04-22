@@ -216,7 +216,7 @@ described later.
 
 ##### Maximum payload size
 
-The server enforce a maximum payload size of 1KB.
+The server enforce a maximum payload size of 4KB.
 
 ###### Maximum duration of a rendezvous
 
