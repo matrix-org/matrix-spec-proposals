@@ -1562,6 +1562,26 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
 }
 ```
 
+Furthermore, where a new `errcode` is being introduced the existing `M_UNKNOWN` code should be used instead, with the new
+code placed in a `org.matrix.msc4108.errcode` field instead. For example, instead of:
+
+```json
+{
+    "errcode": "M_CONCURRENT_WRITE",
+    "error": "Data was modified"
+}
+```
+
+The server should send:
+
+```json
+{
+    "errcode": "M_UNKNOWN",
+    "org.matrix.msc4108.errcode": "M_CONCURRENT_WRITE",
+    "error": "Data was modified"
+}
+```
+
 ## Dependencies
 
 This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
