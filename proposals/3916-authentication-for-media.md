@@ -41,12 +41,16 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    | [`GET /_matrix/media/v3/config`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3config) | `GET /_matrix/client/v1/media/config` | - |
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)            | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`            | `GET /_matrix/federation/v1/media/download/{serverName}/{mediaId}`  |
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaidfilename) | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}` | -                                                                 |
-   | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | `GET /_matrix/federation/v1/media/thumbnail/{serverName}/{mediaId}` |
+   | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | - |
 
    **Note**: [`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixmediav3upload)
    is **not** modified by this MSC: it is intended that it be brought into line with the other
    endpoints by a future MSC, such as [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
    It is subsequently **not** deprecated either.
+
+   **Note**: `/thumbnail` does not have a federation endpoint. It appears as though
+   no servers request thumbnails over federation, and so it is not supported here.
+   A later MSC may introduce such an endpoint.
 
    The new `/download` and `/thumbnail` endpoints additionally drop the `?allow_redirect`
    query parameters. Instead, the endpoints behave as though `allow_redirect=true` was
@@ -72,13 +76,11 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    server should request remote media from other servers. This is redundant
    with the new endpoints, so will not be supported.
 
-   Servers should never return remote media from `GET
-   /_matrix/federation/v1/media/download` or `GET
-   /_matrix/federation/v1/media/thumbnail`; indeed, the `serverName` is
-   included in the URI only for consistency with the CS-API.
+   Servers MUST never return remote media from `GET /_matrix/federation/v1/media/download`;
+   indeed, the `serverName` is included in the URI only for consistency with the CS-API.
 
    `/_matrix/client/v1/media/download` and
-   `/_matrix/client/v1/media/thumbnail` should return remote media as normal.
+   `/_matrix/client/v1/media/thumbnail` return remote media as normal.
 
 3. Authentication on all endpoints
 
@@ -253,8 +255,7 @@ specifically for access to these icon.
 
 * Rather than messing with multipart content, have a separate endpoint for
   servers to get the metadata for a media item. That would mean two requests,
-  but might make more sense than both `/thumbnail` and `/download` providing
-  the info.
+  but might make more sense than `/download` providing the info directly.
 
 ## Unstable prefix
 
@@ -266,7 +267,11 @@ While this proposal is in development, the new endpoints should be named as foll
 * `GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}/{fileName}`
 * `GET /_matrix/client/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`
 * `GET /_matrix/federation/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}`
-* `GET /_matrix/federation/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`
+
+In a prior version of this proposal, the federation API included a thumbnail endpoint.
+It was removed due to lack of perceived usage. Servers which implemented the unstable
+version will have done so under `GET /_matrix/federation/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`.
+The client-server thumbnail endpoint is unaffected by this change.
 
 ## Dependencies
 
