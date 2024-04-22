@@ -28,13 +28,14 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
 
 1. New endpoints
 
-   The existing `/_matrix/media/v3/` endpoints are to be deprecated, and replaced
-   by new endpoints under the `/_matrix/client` and `/_matrix/federation`
-   hierarchies.
+   The existing `/_matrix/media/v3/` endpoints become deprecated, and new
+   endpoints under the `/_matrix/client` and `/_matrix/federation`
+   hierarchies are introduced. Removal of the deprecated endpoints would be a
+   later MSC under [the deprecation policy](https://spec.matrix.org/v1.10/#deprecation-policy).
 
-   The table below shows a mapping between old and new endpoint:
+   The following table below shows a mapping between deprecated and new endpoint:
 
-   | Old                                                                                                                                                              | Client-Server                                                             | Federation                                                          |
+   | Deprecated                                                                                                                                                       | Client-Server                                                             | Federation                                                          |
    | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
    | [`GET /_matrix/media/v3/preview_url`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3preview_url) | `GET /_matrix/client/v1/media/preview_url` | - |
    | [`GET /_matrix/media/v3/config`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3config) | `GET /_matrix/client/v1/media/config` | - |
@@ -45,12 +46,21 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    **Note**: [`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixmediav3upload)
    is **not** modified by this MSC: it is intended that it be brought into line with the other
    endpoints by a future MSC, such as [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
+   It is subsequently **not** deprecated either.
+
+   The new `/download` and `/thumbnail` endpoints additionally drop the `?allow_redirect`
+   query parameters. Instead, the endpoints behave as though `allow_redirect=true` was
+   set, regardless of actual value. See [this comment on MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860/files#r1005176480)
+   for details.
 
    After this proposal is released in a stable version of the specification, servers
-   which support the new `download` and `thumbnail` endpoints should cease to serve
+   which support the new `download` and `thumbnail` endpoints SHOULD cease to serve
    newly uploaded media from the unauthenticated versions. This includes media
    uploaded by local users and requests for not-yet-cached remote media. This is
-   done with a 404 `M_NOT_FOUND` error, as though the media doesn't exist.
+   done with a 404 `M_NOT_FOUND` error, as though the media doesn't exist. Servers
+   SHOULD consider their local ecosystem impact before freezing the endpoints. For
+   example, ensuring that common bridges and clients will continue to work, and
+   encouraging updates to those affected projects as needed.
 
 2. Removal of `allow_remote` parameter from `/download`
 
@@ -78,6 +88,8 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    which must be `Bearer {accessToken}` for `/_matrix/client`, or the signature
    for `/_matrix/federation`.
 
+   **Note**: This fixes [matrix-spec#313](https://github.com/matrix-org/matrix-spec/issues/313).
+
 4. Updated response format
 
    * For the new `/_matrix/client` endpoints, the response format is the same as
@@ -86,11 +98,12 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    * To enable future expansion, for the new `/_matrix/federation` endpoints,
      the response is
      [`multipart/mixed`](https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)
-     content with two parts: the first must be a JSON object (and should have a
-     `Content-type: application/json` header), and the second is the media item
+     content with exactly two parts: the first MUST be a JSON object (and should have a
+     `Content-type: application/json` header), and the second MUST be the media item
      as per the original endpoints.
 
-     No properties are yet specified for the JSON object to be returned.
+     No properties are yet specified for the JSON object to be returned. One
+     possible use is described by [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
 
      An example response:
 
@@ -112,14 +125,18 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
 
 5. Backwards compatibility mechanisms
 
-   a. Backwards compatibility with older servers: if a client or requesting
-   server receives a 404 error with a non-JSON response, or a 400 or 404 error with
-   `{"errcode": "M_UNRECOGNIZED"}`, in response to a request to one of the new
-   endpoints, they may retry the request using the original endpoint.
+   a. Backwards compatibility with older servers: if a client or requesting server
+   receives a 404 error with `M_UNRECOGNIZED` error code in response to a request
+   using the new endpoints, they may retry the request using the deprecated
+   endpoint. Servers and clients should note the [`M_UNRECOGNIZED`](https://spec.matrix.org/v1.10/client-server-api/#common-error-codes)
+   error code semantics.
 
-   b. Backwards compatibility with older clients and federating servers:
-   servers may for a short time choose to allow unauthenticated access via the
-   deprecated endpoints.
+   b. Backwards compatibility with older clients and federating servers: mentioned
+   in Part 1 of this proposal, servers *may* freeze unauthenticated media access
+   once stable authenticated endpoints are available. This may lead to client and
+   server errors for new media. Both clients and servers are strongly encouraged
+   to update as soon as possible, before servers freeze unauthenticated media
+   access.
 
 ### Effects on client applications
 
@@ -176,11 +193,34 @@ specifically for access to these icon.
 
 ## Potential issues
 
-* Setting the `Authorization` header is going to be annoying for web clients. Service workers
-  might be needed.
+* Setting the `Authorization` header is particularly annoying for web clients.
+  Service workers are seemingly the best option, though other options include
+  locally-cached `blob:` URIs. Clients should note that caching media can lead
+  to significant memory usage, particularly for large media. Service workers by
+  comparison allow for proxy-like behaviour.
 
 * Users will be unable to copy links to media from web clients to share out of
   band. This is considered a feature, not a bug.
+
+* Over federation, the use of the `Range` request header on `/download` becomes
+  unclear as it could affect either or both parts of the response. There does not
+  appear to be formal guidance in [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#field.range)
+  either. There are arguments for affecting both and either part equally. Typically,
+  such a header would be used to resume failed downloads, though servers are
+  already likely to discard received data and fail the associated client requests
+  when the federation request fails. Therefore, servers are unlikely to use `Range`
+  at all. As such, this proposal does not make a determination on how `Range`
+  should be handled, and leaves it as an HTTP specification interpretation problem
+  instead.
+
+* [MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860)-style
+  redirects are harder to implement for the federation endpoints. It's presumed
+  that CDNs can either cache the multipart type (later to be combined with linked
+  media authentication, like [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911)),
+  or the CDN can be somehow told the parameters it needs to return. For example,
+  `Location: https://cdn.example.org/media?mx_json={}`. Popular CDN providers
+  support this sort of request rewriting. Relatedly, [MSC4097](https://github.com/matrix-org/matrix-spec-proposals/pull/4097)
+  may be of interest to readers.
 
 ## Alternatives
 
@@ -192,7 +232,7 @@ specifically for access to these icon.
   The danger with this is that is that there's little stopping clients
   continuing to upload media as "public", negating all of the benefits in this
   MSC. It might be ok if media upload it was restricted to certain privileged
-  users.
+  users, or applied after the fact by a server administrator.
 
 * We could simply require that `Authorization` headers be given when calling
   the existing endpoints. However, doing so would make it harder to evaluate
@@ -207,9 +247,9 @@ specifically for access to these icon.
   Conversely, we should make sure to rename `POST
   /_matrix/media/v3/upload`. The reason to delay doing so is because MSC3911
   will make more substantial changes to this endpoint, requiring another
-  rename, and it is expected that both proposals will be mergeed at the same
-  time (so a double rename will be confusing and unnecessary). However, if
-  MSC3911 is delayed or rejected, we should reconsider this.
+  rename, and it is expected that both proposals will be mergeed near to the same
+  time as each other (so a double rename will be confusing and unnecessary). However,
+  if MSC3911 is delayed or rejected, we should reconsider this.
 
 * Rather than messing with multipart content, have a separate endpoint for
   servers to get the metadata for a media item. That would mean two requests,
