@@ -77,7 +77,7 @@ This would be part of the Client-Server API.
 HTTP request headers:
 
 - `Content-Length` - required
-- `Content-Type` - required
+- `Content-Type` - required, must be `text/plain`
 
 HTTP request body:
 
@@ -86,7 +86,8 @@ HTTP request body:
 HTTP response codes, and Matrix error codes:
 
 - `201 Created` - rendezvous session created
-- `400 Bad Request` (``M_MISSING_PARAM``) - no `Content-Length` was provided.
+- `400 Bad Request` (``M_MISSING_PARAM``) - either `Content-Length` and/or `Content-Type` was not provided.
+- `400 Bad Request` (`M_INVALID_PARAM`) - an invalid `Content-Type` was given.
 - `403 Forbidden` (``M_FORBIDDEN``) - forbidden by server policy
 - `413 Payload Too Large` (``M_TOO_LARGE``) - the supplied payload is too large
 - `429 Too Many Requests` (``M_UNKNOWN``) - the request has been rate limited
@@ -126,7 +127,7 @@ Pragma: no-cache
 HTTP request headers:
 
 - `Content-Length` - required
-- `Content-Type` - required
+- `Content-Type` - required, must be `text/plain`
 - `If-Match` - required. The ETag of the last payload seen by the requesting device.
 
 HTTP request body:
@@ -139,7 +140,7 @@ HTTP response codes, and Matrix error codes:
 - `400 Bad Request` (`M_MISSING_PARAM`) - a required header was not provided.
 - `400 Bad Request` (`M_INVALID_PARAM`) - a malformed 
 [`ETag`](https://github.com/matrix-org/matrix-spec-proposals/blob/hughns/simple-rendezvous-capability/proposals/3886-simple-rendezvous-capability.md#the-update-mechanism)
-header was provided.
+header was provided or invalid `Content-Type`.
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
 - `412 Precondition Failed` (`M_CONCURRENT_WRITE`, a new error code) - when the ETag does not match
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
@@ -165,7 +166,7 @@ HTTP response codes, and Matrix error codes:
 
 HTTP response headers for `200 OK`:
 
-- `Content-Type` - required
+- `Content-Type` - required, `text/plain`
 - common headers as defined above
 
 HTTP response headers for `304 Not Modified`:
@@ -215,7 +216,7 @@ described later.
 
 ##### Maximum payload size
 
-The server should allow a minimum payload size of 10KB and enforce a maximum payload size which is recommended to be 100KB.
+The server enforce a maximum payload size of 4KB.
 
 ###### Maximum duration of a rendezvous
 
@@ -350,6 +351,21 @@ is possible to use it to circumvent firewalls and other network security measure
 
 Implementation may want to block their production IP addresses from being able to make requests to the rendezvous
 endpoints in order to avoid attackers using it as a dead-drop for exfiltrating data.
+
+##### Unsafe content
+
+Because the rendezvous session is not authenticated, it is possible for an attacker to use it to distribute malicious
+content.
+
+This could lead to a reputational problem for the homeserver domain or IPs, as well as potentially causing harm to users.
+
+Mitigations that are included in this proposal:
+
+- the low maximum payload size
+- restricted allowed content type
+- the rendezvous session should be short-lived
+- the ability for the rendezvous session to be hosted on a different domain to the homeserver (via
+the `307 Temporary Redirect` response behaviour)
 
 ### Secure channel
 
