@@ -20,6 +20,12 @@ In order for the new device to be fully set up, it needs to exchange information
 - The existing device can facilitate the new device in getting an access token
 - The existing device shares the secrets necessary to set up end-to-end encryption
 
+This proposal is split into three parts:
+
+1. An insecure rendezvous session API to allow the two devices to exchange the necessary data
+2. A secure channel to protect the data exchanged over the rendezvous session
+3. The OIDC login part and set up of E2EE
+
 ### Insecure rendezvous session
 
 It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-directional communication session over
@@ -1196,17 +1202,10 @@ deactivate HS
               activate N
               note over N: 3) New device stores the secrets locally
 
-alt is cross_signing present in m.login.secrets?
 note over N: New device signs itself
               note over N: New device uploads device keys and cross-signing signature:
               N->>+HS: POST /_matrix/client/v3/keys/upload
               HS->>-N: 200 OK
-
-else
-              note over N: New device uploads device keys only:
-              N->>+HS: POST /_matrix/client/v3/keys/upload
-              HS->>-N: 200 OK
-end
 
 alt is backup present in m.login.secrets?
               note over N: New device connects to room-key backup
@@ -1364,7 +1363,7 @@ Fields:
 |Field|Type||
 |--- |--- |--- |
 |`type`|required `string`|`m.login.secrets`|
-|`cross_signing`|`object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
+|`cross_signing`|required `object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
 |`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3room_keysversion)</td> </tr></table>|
 
 Example:
@@ -1464,6 +1463,9 @@ For a new device it would need to know the homeserver ahead of time in order to 
 
 Additionally the new device needs to either have an existing (i.e. static) OIDC client registered with the OIDC Provider
 already, or the OIDC Provider must support and allow dynamic client registration as described in [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966).
+
+The feature is also only available where a user has cross-signing set up and the existing device to be used has the
+Master Signing Key, Self Signing Key and User Signing Key stored locally so that they can be shared with the new device.
 
 ## Potential issues
 
