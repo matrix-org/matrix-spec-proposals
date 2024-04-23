@@ -12,7 +12,7 @@ manager by borrowing from built-in concepts such as encryption, rooms and
 spaces. The underlying premise of this is that if it's secure enough to handle
 personal communication, it should be secure enough to store passwords. Or put
 another way, if you cannot trust Matrix to store your passwords, how can you
-trust it to store your potentially equally sensitive private communcation? The
+trust it to store your potentially equally sensitive private communication? The
 truthiness of this assumption is underpinned later in this proposal by
 comparing the cryptographic primitives used in Matrix and Bitwarden.
 
@@ -28,7 +28,7 @@ undesirable to have vaults constantly unlocked. Therefore, the messaging
 capabilities should only be used for things like service announcements
 and not for general chatting.
 
-Federation is explicitily excluded from this proposal to reduce its scope.
+Federation is explicitly excluded from this proposal to reduce its scope.
 
 ### Vaults as spaces / secrets as rooms
 
