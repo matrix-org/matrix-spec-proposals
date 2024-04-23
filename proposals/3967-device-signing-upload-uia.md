@@ -92,6 +92,9 @@ usability because:
    the HS configuration is for the time delay. This is seen already due to the use (or non-use)
    of `ui_auth.session_timeout`.
 
+For these reasons, this MSC does not specify a grace period or treat some user accounts
+without existing cross-signing keys as special.
+
 ## Unstable prefix
 
 Not applicable as client behaviour need not change.
