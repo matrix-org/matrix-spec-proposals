@@ -827,7 +827,7 @@ Proof := UnpaddedBase64Encode(ProofBytes)
         "verification_uri": "https://auth-oidc.lab.element.dev/link",
         "verification_uri_complete": "https://auth-oidc.lab.element.dev/link?code=123456"
     },
-    "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
+    "device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
     "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"
 }
 ```
@@ -875,7 +875,7 @@ sequenceDiagram
         N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
         OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...,<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"})
+        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...,<br>"device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"})
 
     deactivate N
     end
@@ -887,7 +887,7 @@ sequenceDiagram
     end
 
     rect rgba(0,255,0, 0.1)
-        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"}
+        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"}
     end
 
     rect rgba(255,0,0, 0.1)
@@ -945,7 +945,7 @@ sequenceDiagram
         N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
         OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"})
+        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"})
 
     deactivate N
     end
@@ -956,7 +956,7 @@ sequenceDiagram
     #end
 
     rect rgba(0,255,0, 0.1)
-        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"}
+        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...},<br>"device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI", "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"}
     end
 
     # alt if New device scanned QR code
@@ -1175,14 +1175,14 @@ Content-Type: application/json
             "m.olm.v1.curve25519-aes-sha2",
             "m.megolm.v1.aes-sha2"
         ],
-        "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
+        "device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
         "keys": {
-            "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
-            "ed25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "b8gROFh+UIHLD/obY0+IlxoWiGtYVhKdqixvw4QHcN8"
+            "curve25519:curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
+            "ed25519:curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "b8gROFh+UIHLD/obY0+IlxoWiGtYVhKdqixvw4QHcN8"
         },
         "signatures": {
             "@testing_35:morpheus.localhost": {
-                "ed25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "ziHEUIsHnrYBH4CqYpN1JC/ex3t4VG3zvo16D8ORqN6yAErpsKsnd/5LDdZERIOB1MGffKGfCL6ny5V7rT9FCQ",
+                "ed25519:curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI": "ziHEUIsHnrYBH4CqYpN1JC/ex3t4VG3zvo16D8ORqN6yAErpsKsnd/5LDdZERIOB1MGffKGfCL6ny5V7rT9FCQ",
                 "ed25519:bkYgAVUNqvuyy8b1w09utJNJxBvK3hZB65xxoLPVzFol": "p257k0tfPF98OIDuXnFSJS2DmVlxO4sgTHdF41DTdZBCpTZfPwok6iASo3xMRKdyy3WMEgkQ6lzhEyRKKZBGBQ"
             }
         },
@@ -1298,7 +1298,7 @@ Example:
         "verification_uri_complete": "https://id.matrix.org/device/abcde",
         "verification_uri": "..."
     },
-    "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
+    "device_id": "curve25519:3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
     "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"
 }
 ```
