@@ -61,6 +61,37 @@ However, this degradation needs to be weighed against the typical real world
 situation where a Homeserver will be applying a grace period and so allow a
 malicious actor to bypass UIA for a period of time after each authentication.
 
+### Existing users without E2EE keys
+
+Existing user accounts who do not already have cross-signing keys set up will
+now be able to upload keys without UIA. If such a user has their access token
+compromised, an attacker will be able to upload a `master_key`, `self_signing_key`
+and `user_signing_key`. This is a similar threat model to a malicious server admin
+replacing these keys in the homeserver database.
+
+This does not mean:
+ - the attacker can "take over the account". Device login/logout endpoints are
+   still protected via UIA.
+ - the device will appear as verified. This requires out-of-band verification e.g
+   emoji comparison, which will correctly detect the MITM'd key.
+
+The main usability issue around this endpoint is requiring UIA, so it is critical
+that we only require UIA when absolutely necessary for the security of the account.
+In practice, this means requiring UIA when keys are _replaced_. There have been
+suggestions to reintroduce a grace period (e.g after initial device login) or just
+mandate it entirely for these old existing accounts. This would negatively impact
+usability because:
+ - it introduces temporal variability which becomes difficult to debug.
+ - it introduces configuration variability which becomes difficult to debug. It's not
+   clear what the grace period should actually be. Anything less than 1 hour risks
+   catching initial x-signing requests from users who are on particularly awful networks.
+   However, even increasing this to 1 hour poses the risk that we incorrectly catch the
+   initial upload (e.g the client logs in on a bad GSM connection, then give up waiting
+   for it to login and close the app, only reopening it the next day). This becomes
+   difficult to debug in bug reports, as they just report HTTP 401s and it is unknown what
+   the HS configuration is for the time delay. This is seen already due to the use (or non-use)
+   of `ui_auth.session_timeout`.
+
 ## Unstable prefix
 
 Not applicable as client behaviour need not change.
