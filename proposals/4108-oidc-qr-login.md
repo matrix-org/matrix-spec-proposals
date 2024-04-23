@@ -50,9 +50,9 @@ In this way, Device A and Device B can communicate by repeatedly inspecting and 
 
 #### The send mechanism
 
-Every send request MUST include an `ETag` header, whose value is supplied by the `ETag` header in the last `GET`
+Every send request MUST include an `If-Match` header whose value is the `ETag` header in the last `GET`
 response seen by the requester. (The initiating device may also use the `ETag` supplied in the initial `POST` response
-to immediately update the payload.) Updates will succeed only if the supplied `ETag` matches the server's current
+to immediately update the payload.) Sends will succeed only if the supplied `ETag` matches the server's current
 revision of the payload. This prevents concurrent writes to the payload.
 
 The `ETag` header is standard, described by [RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-etag). In this
