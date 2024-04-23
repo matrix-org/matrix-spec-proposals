@@ -180,7 +180,7 @@ number of iterations is [configurable].
 In summary, Matrix can be configured to provide a similar level of brute-force
 login protection as Bitwarden using key stretching on multiple levels.
 
-### Encryption
+#### Encryption
 
 Bitwarden uses a single 512-bit key, consisting of a 256-bit encryption key
 and a 256-bit MAC key, to symmetrically encrypt all vault items using
@@ -201,7 +201,7 @@ backup.
 To sum up, the main difference here is that Bitwarden uses a single symmetric
 key to encrypt everything whereas Matrix uses per-event keys.
 
-### Sharing
+#### Sharing
 
 Bitwarden only allows sharing vault items through organizations. Like users,
 organizations have a single symmetric key that is used to encrypt all vault
