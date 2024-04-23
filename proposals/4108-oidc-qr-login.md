@@ -1298,7 +1298,7 @@ Example:
         "verification_uri_complete": "https://id.matrix.org/device/abcde",
         "verification_uri": "..."
     },
-    "device_id": "ABCDEFGH",
+    "device_id": "3C5BFWi2Y8MaVvjM8M22DBmh24PmgR0nPvJOIArzgyI",
     "device_id_proof": "$base64_encoded_proof_of_identity_key_ownership"
 }
 ```
