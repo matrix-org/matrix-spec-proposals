@@ -257,6 +257,26 @@ specifically for access to these icon.
   servers to get the metadata for a media item. That would mean two requests,
   but might make more sense than `/download` providing the info directly.
 
+### Compared to MSC3796 (MSC701)
+
+[MSC701/3796](https://github.com/matrix-org/matrix-spec-proposals/issues/3796)
+introduces a concept of "content tokens" which have authentication tie-in to
+prevent anonymous users from accessing media. This is a similar problem space
+to this proposal, though deals more in the event-to-media linking space instead.
+Although the MSC is an early sketch, it's unclear if the problems noted on the
+MSC itself are feasibly resolvable.
+
+### Compared to MSC2461
+
+[MSC2461](https://github.com/matrix-org/matrix-spec-proposals/pull/2461) adds
+authentication to the existing media endpoints, which as noted here in the
+Alternatives is not likely to roll out quickly and leaves an inconsistency in
+the spec. MSC2461 also introduces a client-visible flag for which kinds of media
+may require authentication, making it similar to the alternative listed above
+where on the federation side we could have two endpoints: one for information
+and one for the media itself. MSC2461 simply makes the information client-visible
+instead of server-visible.
+
 ## Unstable prefix
 
 While this proposal is in development, the new endpoints should be named as follows:
