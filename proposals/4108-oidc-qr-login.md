@@ -806,7 +806,16 @@ device did the QR code scanning. This derived secret is then used to to construc
 HMAC-SHA256. Due to the properties of ECDH, the existing device knows that the new device can only do this if it
 possesses the private part of the Curve25519 identity key.
 
-TODO: a paragraph to say why we do this
+By requiring the device ID to equal the device identity key, we reduce the number of (unnecessarily) free parameters,
+allowing a user's E2EE devices to be uniquely identified only by their identity key, rather than by a (device ID,
+identity key) 2-tuple. This paves the way for potentially making this a strict requirement for all E2EE-supporting
+devices in a future iteration of the Matrix E2EE protocol. This would provide a marked increase in protocol robustness
+and reduces potential for implementation errors.
+
+Separately, the proof of ownership of the identity key ensures that the new device cannot submit a key it does not
+control, either by accident or maliciously. While this scenario doesn't represent an outright security
+compromise---because a device cannot decrypt traffic for an identity key it does not control---it further reduces the
+margin for implementation error.
 
 To calculate the proof the new device does:
 
