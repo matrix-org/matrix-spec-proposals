@@ -26,8 +26,8 @@ If no hint is provided for a given domain, the retry hint MUST be considered to 
 should be provided whether or not the request had `omit_members` specified (i.e. whether or not faster remote room
 joins are in use).
 
-If the joining server is already communicating with a given domain (and so maintaining its own retry schedule), it MUST
-ignore the `retry_hints` provided by the resident server for that domain.
+If the joining server has already established a retry schedule for a given domain, it MUST ignore the `retry_hints`
+provided by the resident server for that domain.
 
 As an example `/send_join` response:
 
