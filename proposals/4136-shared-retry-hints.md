@@ -11,6 +11,8 @@ rapidly as possible (both SRV and .well-known lookups, and then /send attempts) 
 dead servers (e.g. domains which no longer run Matrix servers) will be [hammered]
 (https://mastodon.matrix.org/@mnot@techpolicy.social/112319234007365786) by connection attempts.
 
+Hopefully solves https://github.com/matrix-org/matrix-spec/issues/117
+
 ## Proposal
 
 When joining a room, the server which facilitates the join ('resident server' in spec parlance) should propose a retry
