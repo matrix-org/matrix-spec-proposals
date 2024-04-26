@@ -8,8 +8,8 @@ first principles.
 This is far from ideal, as joining a room with many participating servers (e.g. 10K in #matrix:matrix.org right now) is
 incredibly heavy on the connecting server as the newly joined server will have to make 10K connection attempts as
 rapidly as possible (both SRV and .well-known lookups, and then /send attempts) to identify alive servers.  Meanwhile,
-dead servers (e.g. domains which no longer run Matrix servers) will be [hammered]
-(https://mastodon.matrix.org/@mnot@techpolicy.social/112319234007365786) by connection attempts.
+dead servers (e.g. domains which no longer run Matrix servers) will be
+[hammered](https://mastodon.matrix.org/@mnot@techpolicy.social/112319234007365786) by connection attempts.
 
 Hopefully solves https://github.com/matrix-org/matrix-spec/issues/117
 
