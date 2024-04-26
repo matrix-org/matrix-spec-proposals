@@ -36,18 +36,19 @@ As an example `/send_join` response:
     "example.com",
     "element.io"
   ],
-  "retry_hints": [
-    {
-      "example.com": {
-        "retry_after": 3600000,
-      }
+  "retry_hints": {
+    "example.com": {
+      "retry_after": 3600000,
+    },
+    "element.io": {
+      "retry_after": 604800000000,
     }
-  ]
+  }
 ```
 
 This means that the joined room has three participating servers, but `example.com` is not reliably responding over
 federation, and the resident server recommends that the joining server should wait 1 hour before retrying to connect to
-it.
+it.  Similarly the recommendation is to wait 1 week before retrying element.io if it's down.
 
 The spec currently does not specify anything about how federation retry schedules: as part of this change, we propose
 explicitly adding that:
