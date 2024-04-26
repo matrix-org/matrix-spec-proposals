@@ -15,7 +15,7 @@ Hopefully solves https://github.com/matrix-org/matrix-spec/issues/117
 
 ## Proposal
 
-When joining a room, the server which facilitates the join ('resident server' in spec parlance) should propose a retry
+When joining a room, the server which facilitates the join ('resident server' in spec parlance) should propose retry
 intervals to the joining server in the `/send_join` response.
 
 Specifically, we add an optional `retry_hints` field to the `/send_join` response which provides optional
@@ -25,9 +25,6 @@ given domain.  As the field is optional, it does not require a new room version.
 If no hint is provided for a given domain, the retry hint MUST be considered to be zero milliseconds.  Retry hints
 should be provided whether or not the request had `omit_members` specified (i.e. whether or not faster remote room
 joins are in use).
-
-If the joining server has already established a retry schedule for a given domain, it MUST ignore the `retry_hints`
-provided by the resident server for that domain.
 
 As an example `/send_join` response:
 
@@ -55,13 +52,17 @@ it.  Similarly the recommendation is to wait 1 week before retrying element.io i
 The spec currently does not specify anything about how federation retry schedules: as part of this change, we propose
 explicitly adding that:
 
- * Servers should follow exponential or geometric backoff schedules (and MUST NOT retry linearly)
+ * Servers SHOULD follow exponential or geometric backoff schedules (and MUST NOT retry linearly)
  * Servers SHOULD reset their retry schedule for a given domain if they receive traffic from that domain, and immediately retry.
- * On joining a room, servers SHOULD attempt to federate with all newfound servers, connecting in reverse order of `retry_after`.
+ * On joining a room, servers SHOULD attempt to connect to all newfound servers (sending a no-op transaction if there are
+   no other events to be sent), but queued in such a way to prioritise servers with lower `retry_after` value first,
+   ensuring alive servers are prioritised over likely dead servers.
      * In other words: first attempting servers without a `retry_hint`, and then attempting servers with lower
        `retry_after` values, and then finally the servers with the largest `retry_after` values.
      * However, if federation fails, then the joining server should seed its retry algorithm with the `retry_after`
-       value for that server (rather than starting anew).
+       value for that destination (rather than starting a fresh retry schedule).
+ * If the joining server has already established a retry schedule for a given domain, it MUST ignore the `retry_hints`
+   provided by the resident server for that domain.
 
 ## Alternatives
 
