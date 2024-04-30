@@ -39,7 +39,7 @@ Clients SHOULD hide the normal UI from the user when informing them that their
 account is locked, preventing general use of the account.
 
 Clients SHOULD continue to `/sync` and make other API calls to more quickly detect
-when the lock has been lifted. If unlocked, the APIs will either return a different
+when the lock has been lifted.  However, clients should rate-limit their requests. If unlocked, the APIs will either return a different
 error code or a normal 200 OK/successful response. For example, `/sync` will return
 to working as though nothing ever happened. If the error code changes to
 `M_UNKNOWN_TOKEN`, the client should delete local session data as it normally
