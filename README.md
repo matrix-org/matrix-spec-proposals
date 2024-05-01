@@ -92,7 +92,7 @@ Some tips for MSC writing:
 
 * Please wrap your lines to 120 characters maximum.
   This allows readers to review your markdown without needing to horizontally
-  scroll back and forth. Many markdown text editors have this a feature.
+  scroll back and forth. Many markdown text editors have this feature.
 * If you are referencing an existing endpoint in the spec, or another MSC, it
   is very helpful to add a link to them so the reader does not need to search
   themselves. Examples:
@@ -108,6 +108,9 @@ Some tips for MSC writing:
   effort using [Mermaid](https://mermaid-js.github.io/mermaid/#/). See [this
   guide](https://github.blog/2022-02-14-include-diagrams-markdown-files-mermaid/)
   for more information.
+* Take a look at the [MSC Checklist](MSC_CHECKLIST.md). When it comes time for
+  the Spec Core Team to review your MSC for acceptance, they'll use the items
+  on this checklist as a guide.
 
 #### 2. Submitting a Pull Request
 
@@ -184,19 +187,94 @@ like help with writing spec PRs, feel free to join and ask questions in the
 
 #### Unstable prefixes
 
-*Unstable* prefixes are the namespaces which are used before an MSC has
-completed FCP (see above). While the MSC might propose that a `m.space` or
-`/_matrix/client/v1/account/whoami` endpoint should exist, the implementation
-cannot use a *stable* identifier such as `/v1/` or `m.space` prior to the MSC
-being accepted: it needs unstable prefixes.
+"Unstable prefixes" are the namespaces which are used by implementations while
+an MSC is not yet accepted.
 
-Typically for MSCs, one will use `org.matrix.msc0000` (using the real MSC
-number once known) as a prefix. For the above examples, this would mean
-`org.matrix.msc0000.space` and
-`/_matrix/client/unstable/org.matrix.msc0000/account/whoami` to allow for
-breaking compatibility changes between edits of the MSC itself, or indeed
-another competing MSC that's attempting to add the same identifiers.
+For instance, an MSC might propose that a `m.space`
+event type or an `/_matrix/client/v1/account/whoami` endpoint should exist.
+However, implementations cannot use these *stable* identifiers until the MSC
+has been accepted, as the underlying design may change at any time; the design is
+*unstable*.
 
+Instead, an MSC can define a namespace such as `org.matrix.msc1234` (using the real
+MSC number once known) which is added to the stable identifier, allowing for
+breaking changes between edits of the MSC itself, and preventing clashes with other
+MSCs that might attempt to add the same stable identifiers. 
+
+For the above examples, this would mean using `org.matrix.msc1234.space` and
+`/_matrix/client/unstable/org.matrix.msc1234/account/whoami`. It is also fine to
+use more traditional forms of namespace prefixes, such as `com.example.*` (e.g.
+`com.example.space`).
+
+Note: not all MSCs need to make use of unstable prefixes. They are only needed if
+implementations of your MSC need to exist in the wild before your MSC is accepted,
+*and* the MSC defines new endpoints, field names, etc.
+
+#### Unstable feature flags
+
+It is common when implementing support for an MSC that a client may wish to check
+if the homeserver it is communicating with supports an MSC.
+Typically, this is handled by the MSC defining an
+entry in the `unstable_features` dictionary of the
+[`/_matrix/client/versions`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixclientversions)
+endpoint, in the form of a new entry:
+
+```json5
+{
+  "unstable_features": {
+    "org.matrix.msc1234": true
+  }
+}
+```
+
+... with a value of `true` indicating that the feature is supported, and `false`
+or lack of the field altogether indicating the feature is not supported.
+
+#### When can I use stable identifiers?
+
+[According to the spec
+process](https://spec.matrix.org/proposals/#early-release-of-an-mscidea): once
+an MSC has been accepted, implementations are allowed to switch to *stable*
+identifiers. However, the MSC is still not yet part of a released spec version.
+
+In most cases, this is not an issue. For instance, if your MSC specifies a new
+event type, you can now start sending events with those types!
+
+Some MSCs introduce functionality where coordination between implementations is
+needed. For instance, a client may want to know whether a homeserver supports
+the stable version of a new endpoint before actually attempting to request it.
+Or perhaps the new event type you're trying to send relies on the homeserver
+recognising that new event type, and doing some work when it sees it.
+
+At this point, it may be best to wait until a new spec version is released with
+your changes. Homeservers that support the changes will eventually advertise
+that spec version under `/versions`, and your client can check for that.
+
+But if you really can't wait, then there is another option: the homeserver can
+tell clients that it supports *stable* indentifiers for your MSC before it
+enters a spec version, using yet another `unstable_features` flag:
+
+```json5
+{
+  "unstable_features": {
+    "org.matrix.msc1234": true,
+    "org.matrix.msc1234.stable": true
+  }
+}
+```
+
+If a client sees that `org.matrix.msc1234.stable` is `true`, it knows that it
+can start using stable identifiers for the new MSC, and the homeserver will
+accept and act on them accordingly.
+
+Note: While the general pattern of using the text ".stable" has emerged from
+previous MSCs, you can pick any name you like. You need only to clearly state
+their meaning, usually under an "Unstable prefixes" header in your MSC.
+
+See
+[MSC3827](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3827-space-explore.md#unstable-prefix)
+for a good example of an MSC that wanted to use such a flag to speed up
+implementation rollout, and how it did so.
 
 #### Room versions
 

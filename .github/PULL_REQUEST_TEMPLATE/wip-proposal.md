@@ -16,5 +16,6 @@ assignees: ''
 * [ ] Pull request includes a [sign off](https://github.com/matrix-org/matrix-spec-proposals/blob/master/CONTRIBUTING.md#sign-off)
 * [ ] Update the title and file name of your proposal to match this PR's number (after opening).
 * [ ] Pull request includes a ['Rendered' link](https://matrix.org/docs/spec/proposals#process) above.
+* [ ] Have a look at the [MSC Checklist](MSC_CHECKLIST.md) for guidelines on various aspects of your MSC.
 
 <!-- Once the proposal is ready for review, ask in [#matrix-spec:matrix.org](https://matrix.to/#/#matrix-spec:matrix.org) to get it marked as such. -->
