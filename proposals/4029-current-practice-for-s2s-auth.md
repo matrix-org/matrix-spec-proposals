@@ -5,11 +5,12 @@ works in the real world. Details like how the query string for a request is hand
 considerations, error/failure conditions, how to handle multiple headers, when to *expect* multiple
 headers, etc are all lacking in the specification.
 
-This proposal covers those details, using what is currently implemented in servers as a starting
-principle. Normally, these sorts of changes would be considered bug fixes against the spec itself,
-however with an MSC it allows an opportunity to question the motivation for doing something. If
-this MSC ultimately diverges from what is done in practice, backwards compatibility becomes a major
-requirement.
+This proposal refers to existing server implementations to introduce standardized behaviour for the
+above concerns. Some of these details may be acceptable as regular spec PRs to clarify the spec itself,
+though an MSC allows an opportunity to ensure common behaviour should be standard behaviour.
+
+Backwards compatibility with the current common behaviour is a key requirement for this MSC, for areas
+it does stray from the common behaviour for.
 
 Issues relating to this problem space are:
 
@@ -34,16 +35,18 @@ a server *verifying* a signature can use the normal [`GET /_matrix/key/v2/server
 endpoint to fetch that server's keys.
 
 Servers SHOULD NOT [query keys through another server](https://spec.matrix.org/v1.9/server-server-api/#querying-keys-through-another-server)
-when validating a request signature. Instead, the server's local cache and any direct requests SHOULD
-be used instead.
+when validating a request signature. Instead, the server's local cache and direct requests to the
+origin server SHOULD be used instead.
 
 Note that it's possible for a remote server to be able to send outbound requests, but not respond to
-`GET /_matrix/key/v2/server` itself. Servers in this failure state (assuming the receiver doesn't
-have the key cached) SHOULD fail the request as an invalid signature.
+`GET /_matrix/key/v2/server`. This will result in a signature error if the destination server doesn't
+have the key cached already.
 
 **Implementation notes**:
 
-* Synapse already does this. ***TODO: Evidence.***
+* Synapse already does this.
+  * Start of verification: https://github.com/matrix-org/synapse/blame/be65a8ec0195955c15fdb179c9158b187638e39a/synapse/federation/transport/server/_base.py#L125
+  * Direct request (post cache): https://github.com/matrix-org/synapse/blame/be65a8ec0195955c15fdb179c9158b187638e39a/synapse/crypto/keyring.py#L280-L296
 * Dendrite?
 * Conduit?
 
@@ -88,7 +91,7 @@ verified. This includes when the sender is not revealing their public keys, per 
 
 **Implementation notes**:
 
-* Synapse [returns 401 for both cases](https://github.com/matrix-org/synapse/blob/v1.97.0/synapse/crypto/keyring.py#L340-L350),
+* Synapse [returns 401 for both cases](https://github.com/matrix-org/synapse/blame/d75d6d65d1681889db05b077e97fc2ddf123b757/synapse/crypto/keyring.py#L340-L350),
   but should be able to support a 403 too.
 * Dendrite?
 * Conduit?
