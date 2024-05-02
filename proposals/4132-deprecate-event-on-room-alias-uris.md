@@ -40,7 +40,7 @@ mean that after deprecation clients may still want to handle these URIs when rec
 
 Additionally, whilst not a new problem some clients don't always update the `via` fields, which poses a problem for
 rooms that have lots of single user homeservers: A single user leaving can result in the `via` to become non functional
-(which is essentially the equivalent of the alias being removed) and over time this can result in unreachable room IDs.
+which over time can result in unreachable room IDs (this is essentially the equivalent of the alias being removed).
 
 
 ## Alternatives
