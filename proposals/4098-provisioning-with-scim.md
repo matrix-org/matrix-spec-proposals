@@ -208,6 +208,8 @@ RFC7644.
 ## Unstable prefix
 
 The unstable prefix to use for the root SCIM endpoint is `/_matrix/client/unstable/coop.yaal/scim/`.
+The stable prefix to use for the root SCIM endpoint is `/_scim/`.
+[RFC7644 §3.13](https://www.rfc-editor.org/rfc/rfc7644#section-3.13) indicates that endpoint versioning is optional.
 
 ## Dependencies
 
