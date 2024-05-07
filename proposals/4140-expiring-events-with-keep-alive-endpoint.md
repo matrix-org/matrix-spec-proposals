@@ -1,4 +1,4 @@
-# MSC0000: Expiring events with keep alive functionality
+# MSC4140: Expiring events with keep alive endpoint
 
 Currently there is not mechanism for a client to provide a reliable way of
 communicating that an event is still valid. The best expiration method is to post
