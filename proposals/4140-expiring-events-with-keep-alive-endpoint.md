@@ -31,22 +31,21 @@ Request
 
 ```json
 {
-  "content": {
     "m.will_expire": 10,
-    "other_content": "hello"
-  }
+    "body": "hello"
 }
 ```
 
 If the homeserver detects a `m.expired` field it will store and distribute the
-event as:
+event as hiding the timeout duration:
 
 ```json
 {
-  "content": {
+  "content":{
     "m.will_expire": "running",
-    "other_content": "hello"
-  }
+    "body": "hello",
+  },
+  "other_fields":"sender, origin_server_ts ..."
 }
 ```
 
@@ -72,8 +71,8 @@ The body contains the refresh token so the homeserver knows what to refresh.
 }
 ```
 
-The information of this endpoint is very limited so that almost no metadata is
-leaked when using this endpoint. This allows to share a refresh link to a different
+The information required to call this endpoint is very limited so that almost
+no metadata is leaked when. This allows to share a refresh link to a different
 service (an SFU for instance) that can track the current client connection state,
 and pings the HS to refresh and informs the HS about a disconnect.
 
@@ -126,6 +125,28 @@ proposes a way to make call memberships reliable. It uses the client sync loop a
 an indicator to determine if the event is expired. Instead of letting the SFU
 inform about the call termination or using the call app ping loop like we propose
 here.
+
+---
+It might not be necessary to change the value of `"m.will_expire" = 10` to
+`"m.will_expire" = "running"` it makes it easier to understand and also
+hides more potential metadata but it is questionable if that bring any benefit.
+
+---
+The name `m.will_expire` has been chosen since it communicates that it becomes
+invalid. And that it is an event that automatically changes state
+(`will_expire` vs `expired`). But it does not imply what expired vs non expired
+means, it is flexible in how can be used.
+Alternatives could by:
+
+- `m.alive`
+  - pro: communicates it might change (alive is always temporal)
+  - con: ver strong bias on how to use it `valid/invalid`
+- `m.timeout`
+  - pro: very unbiased in how its used - timeout over can also mean the client
+  will show a reminder.
+  - pro: clear that it has something to do with time.
+  - con: not so clear the homeserver will automatically do sth.
+  - con: not so clear that this timeout can be refreshed?
 
 ## Security considerations
 
