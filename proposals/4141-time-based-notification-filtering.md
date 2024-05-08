@@ -1,4 +1,4 @@
-# MSC3XXXX: Time based notification filtering
+# MSC4141: Time based notification filtering
 Do not disturb / focus features are becoming standard across operating systems and networking products. Users expect to
 be able to manage the level of noisiness from an application based on day and time.
 
@@ -130,7 +130,7 @@ days with a DST jump and are less intuitive.
 
 ## Unstable prefix
 
-- While this MSC is not considered stable `time_and_day` should be referred to as `org.matrix.mscxxxx.time_and_day`
+- While this MSC is not considered stable `time_and_day` should be referred to as `org.matrix.msc4141.time_and_day`
 
 ## Dependencies
 None.
