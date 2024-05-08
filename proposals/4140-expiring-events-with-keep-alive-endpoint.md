@@ -19,12 +19,12 @@ time window after a user disconnected.
 
 ## Proposal
 
-Events can contain a `m.will_expire: "running" | "expired" | "ended"` field.
-This is an enum marking the event as
-expired `m.will_expire: "expired" | "ended"` or still alive `m.will_expire: "running"`.
+Events can contain a `"m.will_expire": "running" | "expired" | "ended"` field.
+This is marking the event as expired `"m.will_expire": "expired" | "ended"` or as
+still alive `"m.will_expire": "running"`.
 This field lives outside the ciphertext content (hence it also works for encrypted
 events) and is set via the usual `PUT` request if the content contains the additional
-`m.will_expire: 10` field (similar how it is done with relations), with the desired
+`"m.will_expire": 10` field (similar how it is done with relations), with the desired
 timeout duration in seconds.
 
 Request
@@ -36,7 +36,7 @@ Request
 }
 ```
 
-If the homeserver detects a `m.expired` field it will store and distribute the
+If the homeserver detects a `m.will_expire` field it will store and distribute the
 event as hiding the timeout duration:
 
 ```json
@@ -53,8 +53,8 @@ The response to the client will be:
 
 ```json
 {
-  "eventId": "hash_id",
-  "expire_refresh_token": "hash_refresh",
+  "eventId": "id_hash",
+  "expire_refresh_token": "refresh_hash",
 }
 ```
 
@@ -62,34 +62,34 @@ The default response is extended with the `expire_refresh_token` which
 can be used to reset the expiration timeout (in this example 10 seconds).
 A new unauthenticated endpoint is introduced:
 `PUT /_matrix/client/v3/expiration/{refresh_method}`
-where the `refresh_method` is either: `refresh`, `end`
+where the `refresh_method` is one of: `[refresh, end]`
 The body contains the refresh token so the homeserver knows what to refresh.
 
 ```json
 {
-  "expire_refresh_token": "hash_refresh",
+  "expire_refresh_token": "refresh_hash",
 }
 ```
 
 The information required to call this endpoint is very limited so that almost
-no metadata is leaked when. This allows to share a refresh link to a different
+no metadata is leaked. This allows to share a refresh link to a different
 service (an SFU for instance) that can track the current client connection state,
 and pings the HS to refresh and informs the HS about a disconnect.
 
-The homeserver does the following when receiving an event with `m.expired`
+The homeserver does the following when receiving an event with `m.will_expire`
 
 - It generates a token and stores it alongside with the time of retrieval,
 the eventId and the expire duration.
-- Starts a counter for the stored expiation token.
+- Starts a timer for the stored expiration token.
   - If a `PUT /_matrix/client/v3/expiration/refresh` is received, the
   timer is restarted with the stored expire duration.
   - If a `PUT /_matrix/client/v3/expiration/end` is received, the
   event _gets ended_.
   - If the timer times out, the event _gets expired_.
   - If the event is a state event only the latest/current state is considered. If
-  the homeserver receives a new state event without `m.expires` but with the same
-  state key, the expire_refresh_token gets invalidated and the associated timer is
-  stopped.
+  the homeserver receives a new state event without `m.will_expire` but with the
+  same state key, the expire_refresh_token gets invalidated and the associated timer
+  is stopped.
 
 The event _gets expired_/_gets ended_ means:
 
