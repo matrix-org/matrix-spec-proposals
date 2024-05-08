@@ -1,4 +1,4 @@
-# MSC3767: Time based notification filtering
+# MSC3XXXX: Time based notification filtering
 Do not disturb / focus features are becoming standard across operating systems and networking products. Users expect to
 be able to manage the level of noisiness from an application based on day and time.
 
@@ -21,10 +21,10 @@ to filter based on time of day and day of week.
 
 **Time matching interval definition**
 
-| key | type | value | description | Required |
-| ---- | ----| ----- | ----------- | -------- |
+| key | type | value                 | description                                                                                                                                                                                                                                             | Required |
+| ---- | ----|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -------- |
 | `time_of_day` | string[] | tuple of `hh:mm` time | Tuple representing start and end of a time interval in which the rule should match. Times are [ISO 8601 formatted times](https://en.wikipedia.org/wiki/ISO_8601#:~:text=As%20of%20ISO%208601%2D1,minute%20between%2000%20and%2059.). Times are inclusive | Optional. When omitted all times are matched.  |
-| `day_of_week` | number[] | array of integers 0-7 | An array of integers representing days of the week on which the rule should match, where 0 = Sunday, 1 = Monday, 7 = Sunday | **Required** |
+| `day_of_week` | number[] | array of integers 0-6 | An array of integers representing days of the week on which the rule should match, where 0 = Sunday, 1 = Monday, .., 6 = Saturday                                                                                                                       | **Required** |
 
 
 - `time_of_day` condition is met when the server's timezone-adjusted time is between the values of the tuple, or when no
@@ -49,19 +49,20 @@ to true.
         },
         {
             // no time_of_day, all day is matched
-            "day_of_week": [6, 7] // Weekend
+            "day_of_week": [0, 6] // Weekend
         }
-},
+    ]
+}
 ```
 
-A primary usecase for this condition is creating 'do not disturb' behaviour.
+A primary use case for this condition is creating 'do not disturb' behaviour.
 For example, Wednesday morning focus time rule:
 ```json5
 {
     "rule_id": ".m.rule.master",
     "default": true,
     "enabled": true,
-    "conditions": [
+    "conditions": {
         "kind": "time_and_day",
         "timezone": "Europe/Berlin",
         "intervals": [
@@ -69,7 +70,8 @@ For example, Wednesday morning focus time rule:
                 "time_of_day": ["09:00", "11:00"],
                 "day_of_week": [3] // Wednesday
             },
-    ],
+        ]
+    },
     "actions": [
         "dont_notify" // See note below
     ]
@@ -96,7 +98,8 @@ be configured per device.
 
 #### `room_member_count` style comparison
 ```json5
-"conditions": [
+{
+    "conditions": [
         {
             "kind": "time_of_day",
             "is": ">=18000000" // 17:00 NZST, 5:00 UTC 
@@ -105,8 +108,8 @@ be configured per device.
             "kind": "time_of_day",
             "is": "<=75600000" // 9:00 NZST, 21:00 UTC
         },
-        
     ]
+}
 ```
 As only one rule per `kind` + `rule_id` is allowed and rule conditions are an `AND` this allows only one contiguous
 range to be defined. This precludes one of the main usecases for the feature - ignoring notifications outside of
@@ -127,7 +130,7 @@ days with a DST jump and are less intuitive.
 
 ## Unstable prefix
 
-- While this MSC is not considered stable `time_and_day` should be referred to as `org.matrix.msc3767.time_and_day`
+- While this MSC is not considered stable `time_and_day` should be referred to as `org.matrix.mscxxxx.time_and_day`
 
 ## Dependencies
 None.
