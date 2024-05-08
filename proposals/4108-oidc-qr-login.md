@@ -166,7 +166,7 @@ only return data if given ETag does not match
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload returned
-- `304 Not Modified` - when `If-None-Match` is supplied and the ETag does not match
+- `304 Not Modified` - when `If-None-Match` is supplied and the ETag matched the existing payload
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
