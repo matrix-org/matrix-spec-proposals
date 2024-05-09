@@ -24,6 +24,10 @@ object of replies should only contain explicit mentions in the new message,
 plus the sender of the replied-to message. The mentions in the replied-to
 message are ignored.
 
+Clients are still free to add other mentions to the list as they see fit. For
+example, a client could offer a button to mention all users in a reply chain.
+This proposal simply changes the default behavior recommended in the spec.
+
 ## Potential issues
 Users who have already got used to the new behavior may be surprised when they
 don't get mentioned by reply chains.
