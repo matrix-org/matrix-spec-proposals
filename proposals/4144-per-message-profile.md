@@ -108,7 +108,9 @@ Implementing encrypted avatars could cause difficulty for clients that assume
 that avatars are always unencrypted mxc URIs.
 
 ## Alternatives
-None.
+Per-message profiles could be transmitted more compactly by defining the profile
+in a new state event and only referencing the state key in the message event.
+However, that approach wouldn't enable encrypting per-message profiles.
 
 ## Security considerations
 
