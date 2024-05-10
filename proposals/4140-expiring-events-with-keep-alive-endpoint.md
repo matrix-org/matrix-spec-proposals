@@ -19,102 +19,124 @@ time window after a user disconnected.
 
 ## Proposal
 
-Events can contain a `"m.will_expire": "running" | "expired" | "ended"` field.
-This is marking the event as expired `"m.will_expire": "expired" | "ended"` or as
-still alive `"m.will_expire": "running"`.
-This field lives outside the ciphertext content (hence it also works for encrypted
-events) and is set via the usual `PUT` request if the content contains the additional
-`"m.will_expire": 10` field (similar how it is done with relations), with the desired
-timeout duration in seconds.
+The proposed solution is to allow sending multiple presigned events and delegate
+the control of when to actually send these events to an external services.
 
-Request
+We call those events `Futures`.
+
+A new endpoint is introduced:
+`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}/future`
+and
+`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}/future`
+It behaves exactly like the normal send endpoint except that that it allows
+to send a list of event contents. The body looks as following:
 
 ```json
 {
-    "m.will_expire": 10,
-    "body": "hello"
+  "m.timeout": 10,
+  "m.send_on_timeout": {...sendEventBody},
+  
+  "m.send_on_action:${actionName}": {...sendEventBody},
+
+  // optional
+  "m.send_now": {...sendEventBody},
 }
 ```
 
-If the homeserver detects a `m.will_expire` field it will store and distribute the
-event as hiding the timeout duration:
+Each of the `sendEventBody` objects are exactly the same as sending a normal
+event.
+
+There can be an arbitrary amount of `actionName`s.
+
+All of the fields are optional except the `timeout` and the `send_on_timeout`.
+This guarantees that all tokens will expire eventually.
+
+The homeserver can set a limit to the timeout and return an error if the limit
+is exceeded.
+
+The response will mimic the request:
 
 ```json
 {
-  "content":{
-    "m.will_expire": "running",
-    "body": "hello",
+
+  "m.send_on_timeout": {
+    "eventId": "id_hash"
   },
-  "other_fields":"sender, origin_server_ts ..."
+  "m.send_on_action:${actionName}": {
+    "eventId": "id_hash"
+  },
+  
+  "timeout_refresh_token": "refresh_token",
+  
+  // optional
+  "m.send_now": { "eventId": "id_hash"},
 }
 ```
 
-The response to the client will be:
+The `refresh_token` can be used to call another future related endpoint:
+`PUT /_matrix/client/v3/futures/refresh` and `PUT /_matrix/client/v3/futures/action/${actionName}`.
+where the body is:
 
 ```json
 {
-  "eventId": "id_hash",
-  "expire_refresh_token": "refresh_hash",
-}
-```
-
-The default response is extended with the `expire_refresh_token` which
-can be used to reset the expiration timeout (in this example 10 seconds).
-A new unauthenticated endpoint is introduced:
-`PUT /_matrix/client/v3/expiration/{refresh_method}`
-where the `refresh_method` is one of: `[refresh, end]`
-The body contains the refresh token so the homeserver knows what to refresh.
-
-```json
-{
-  "expire_refresh_token": "refresh_hash",
+  "timeout_refresh_token":"refresh_token"
 }
 ```
 
 The information required to call this endpoint is very limited so that almost
 no metadata is leaked. This allows to share a refresh link to a different
 service (an SFU for instance) that can track the current client connection state,
-and pings the HS to refresh and informs the HS about a disconnect.
+and pings the HS to refresh and call a dedicated action to communicate
+that the user has intentionally left the conference.
 
-The homeserver does the following when receiving an event with `m.will_expire`
+The homeserver does the following when receiving a Future.
 
-- It generates a token and stores it alongside with the time of retrieval,
-the eventId and the expire duration.
-- Starts a timer for the stored expiration token.
-  - If a `PUT /_matrix/client/v3/expiration/refresh` is received, the
-  timer is restarted with the stored expire duration.
-  - If a `PUT /_matrix/client/v3/expiration/end` is received, the
-  event _gets ended_.
-  - If the timer times out, the event _gets expired_.
-  - If the event is a state event only the latest/current state is considered. If
-  the homeserver receives a new state event without `m.will_expire` but with the
-  same state key, the expire_refresh_token gets invalidated and the associated timer
-  is stopped.
+- It sends the optional `m.send_now` event.
+- It generates a `timeout_refresh_token` and stores it alongside with the time
+of retrieval, the event list and the timeout duration.
+- Starts a timer for the stored `timeout_refresh_token`.
+  - If a `PUT /_matrix/client/v3/futures/refresh` is received, the
+  timer is restarted with the stored timeout duration.
+  - If a `PUT /_matrix/client/v3/futures/action/${actionName}` is received, one of
+  the associated `m.action:${actionName}`
+  event will be send.
+  - If the timer times out, the one of the `m.send_timeout` event will be sent.
+  - If the future
+    - is a state event (`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}/future`)
+    - and includes a `m.send_now` event
 
-The event _gets expired_/_gets ended_ means:
+    the future is only valid while the `m.send_now`
+    is still the current state. This means, if the homeserver receives
+    a new state event for the same state key, the `timeout_refresh_token`
+    gets invalidated and the associated timer is stopped.
+    - There is no race condition here since a possible race between timeout and
+    new event will always converge to the new event:
+      - Timeout -> new event: the room state will be updated twice. once by
+      the content of the `m.send_on_timeout` event but later with the new event.
+      - new event -> timeout: the new event will invalidate the future. No
+- When a timeout or action future is sent, the homeserver stops the associated
+timer and invalidates (deletes) the `timeout_refresh_token`.
 
-- The homeserver **sends a new event** that is a copy of the previous event but:
-  - If it gets _expired_ the event will include: `"m.will_expire": "expired"`
-  - If it gets _ended_ the event will include: `"m.will_expire": "ended"`.
-  - Additionally it includes a relation to the original event with `rel_type: "m.expire.relationship"`
-  
-    ```json
-    "m.relates_to": {
-      "event_id": "$original_event",
-      "rel_type": "m.expire.relationship"
-    },
-    "m.will_expire": "ended" | "expired",
-    ```
+So for each Future the client sends, the homeserver will send one event
+conditionally at an unknown time that can trigger logic on the client.
+This allows for any generic timeout logic.
 
-- The homeserver stops the associated timer and invalidates (deletes) the `expire_refresh_token`
+  Timed messages/reminders or ephemeral events could be implemented using this where
+  clients send a redact as a future or a room event with intentional mentions.
 
-So for each event that is sent with `m.will_expire: X` where X is duration in
-seconds > 0. The homeserver will sent another event which can be used to trigger
-logic on the client. This allows for any generic timeout logic.
+In some scenarios it is important to allow to send an event with an associated
+future at the same time.
 
-Timed messages/reminders could also be implemented using this where clients ignore
-the `"will_expire":"running"` events for a specific event type but render the
-`"will_expire":"expired"` events.
+- One example would be redacting an event. It only makes sense to redact the event
+  if it exists.
+  It might be important to have the guarantee, that the redact is received
+  by the server at the time where the original message is sent.
+- In the case of a state event we might want to set the state to `A` and after a
+  timeout reset it to `{}`. If we have two separate request sending `A` could work
+  but the event with content `{}` could fail. The state would not automatically
+  reset to `{}`.
+
+For this usecase an optional `m.send_now` field can be added to the body.
 
 ## Potential issues
 
@@ -126,43 +148,22 @@ an indicator to determine if the event is expired. Instead of letting the SFU
 inform about the call termination or using the call app ping loop like we propose
 here.
 
----
-It might not be necessary to change the value of `"m.will_expire" = 10` to
-`"m.will_expire" = "running"` it makes it easier to understand and also
-hides more potential metadata but it is questionable if that bring any benefit.
-
----
-The name `m.will_expire` has been chosen since it communicates that it becomes
-invalid. And that it is an event that automatically changes state
-(`will_expire` vs `expired`). But it does not imply what expired vs non expired
-means, it is flexible in how can be used.
-Alternatives could by:
-
-- `m.alive`
-  - pro: communicates it might change (alive is always temporal)
-  - con: ver strong bias on how to use it `valid/invalid`
-- `m.timeout`
-  - pro: very unbiased in how its used - timeout over can also mean the client
-  will show a reminder.
-  - pro: clear that it has something to do with time.
-  - con: not so clear the homeserver will automatically do sth.
-  - con: not so clear that this timeout can be refreshed?
-
 ## Security considerations
 
-We are using unauthenticated endpoint to refresh the expirations. Since we use
-the token it is hard to guess a correct endpoint and randomly end `will_expire`
-events.
+We are using an unauthenticated endpoint to refresh the expirations. Since we use
+the token it is hard to guess a correct request and force one of the actions
+events of the Future.
 
 It is an intentional decision to not provide an endpoint like
-`PUT /_matrix/client/v3/expiration/room/{roomId}/event/{eventId}`
+`PUT /_matrix/client/v3/futures/room/{roomId}/event/{eventId}`
 where any client with access to the room could also `end` or `refresh`
 the expiration. With the token the client sending the event has ownership
 over the expiration and only intentional delegation of that ownership
 (sharing the token) is possible.
 
 On the other hand the token makes sure that the instance gets as little
-information about the matrix metadata of the associated `will_expire` event.
+information about the matrix metadata of the associated `future` event. It cannot
+even tell with which room or user it is interacting.
 
 ## Unstable prefix
 
