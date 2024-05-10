@@ -87,16 +87,24 @@ allow per-message profiles to specify which extensible profile is used.
 ### Bridging
 Per-message profiles will allow making "lighter-weight" bridges that don't need
 appservice access. Currently the only option for such bridges is to prepend the
-displayname to the message, which is extremely ugly.
+displayname to the message, which is extremely ugly. Even though they're ugly,
+there are still rooms that use bot-based bridges like matterbridge, which shows
+there's demand for bridging without requiring server admin access.
 
 Such bridges would obviously have downsides, like not being able to start chats
 via standard mechanisms, and not being able to see the member list on Matrix.
 However, those may be acceptable compromises for non-puppeting bridges that
 only operate in specific predetermined rooms.
 
+This method also allows encrypting profile info, which reduces metadata leaked
+by bridging.
+
 ### Feature-parity with other platforms
 Other chat applications such as Slack and Discord have "webhooks" which allow
 per-message profile overrides. This MSC effectively enables the same on Matrix.
+
+For example, Discord's [execute webhook](https://discord.com/developers/docs/resources/webhook#execute-webhook)
+API takes `username` and `avatar_url` as optional parameters.
 
 ### Roleplaying, plural users, etc
 Some users want to be able to switch between profiles quickly, which would be
