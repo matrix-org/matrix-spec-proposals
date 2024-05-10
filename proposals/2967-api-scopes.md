@@ -51,13 +51,13 @@ MSC2964 proposes that the Matrix client is responsible for generating/allocating
 
 This also has a nice side-effect: if the device asked was never used by the client making the request, the authorization server will ask for explicit consent from the user.
 
-The client can then bind the device ID to the grant by requesting a scope with the format:
+The client can then bind the device ID to the grant by requesting a scope comprising of a [RFC3986](https://datatracker.ietf.org/doc/html/rfc3986) URN in the format:
 
 | Scope | Purpose | Implementation notes |
 | - | - | - |
 | `urn:matrix:client:device:<device ID>` | bind the given device ID to the grant/access token | The OIDC Provider must only grant exactly one device scope for a token. |
 
-For the purpose of this MSC we are assuming that device IDs are as per [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/pull/1597) and, as such, are already URL safe and so can be represented as a scope without modification.
+Note that currently the Matrix specification doesn't specify a format for the device ID itself. If the device ID were constrained as per [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/pull/1597) then it could be directly represented within a URN without further encoding.
 
 ### Future scopes
 
