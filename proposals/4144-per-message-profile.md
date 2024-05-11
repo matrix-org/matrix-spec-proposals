@@ -116,9 +116,21 @@ Implementing encrypted avatars could cause difficulty for clients that assume
 that avatars are always unencrypted mxc URIs.
 
 ## Alternatives
+### New state events
 Per-message profiles could be transmitted more compactly by defining the profile
 in a new state event and only referencing the state key in the message event.
-However, that approach wouldn't enable encrypting per-message profiles.
+However, that approach wouldn't enable encrypting per-message profiles without
+inventing encrypted state events. Additionally, even with encrypted state
+events, some kind of sender identifiers would be leaked via state keys.
+
+### Appservices
+Appservices work perfectly fine for bridging already now, but they require
+admin access to a server, which is not available for everyone. Additionally,
+they have similar metadata issues as the "New state events" alternative above.
+
+For use cases involving a single human user, having multiple mxids (regardless
+of whether they're registered manually or via an appservice) complicates things
+unnecessarily.
 
 ## Security considerations
 
