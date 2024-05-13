@@ -90,9 +90,33 @@ Sending a `m.call.notify` should happen only if all of these conditions apply:
   participate but the other condition applies. (So the obvious case is, that this
   is the first user in a new call session).
 
+### Limitations and recommendations
+
+- Encrypted rooms configured as `mentions only` are currently not sending push
+  notifications for encrypted events. Hence the client would not ring even though
+  the ring event contains `m.mentions`.
+  - As a stop gat, it is recommended, that the client sends unencrypted `m.call.notify`
+    events in such rooms.
+  - As soon as [MSC3996: Encrypted mentions-only rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/3996)
+    is supported `m.has_mentions` should be used instead of unencrypted call
+    notify events.
+- Wanting to ring a user who you do not have a shared room with is not possible.
+  It might be an undesired capability that your device can be started to ring
+  by users you have not yet interacted on matrix.
+  On the other hand this might be desired to mimic what ppl expect from using
+  the telephone network.
+  Entering a matrix userId allows to call someone (Ring their phone).
+  (It would be possible to disable/configure this on the receiving
+  device)
+  - The location to put this information would be the invite event.
+    This would be an edge case and only required for the specific usecase
+    of being able to ring without a shared DM/Room.
+    It should be discussed in an additional MSC and is not part of this proposal.
+
 ## Alternatives
 
-It would be possible to use the call member room state events to determine a call start.
+It would be possible to use the call member room state events to determine a call
+start.
 The logic would be as following:
 _If we receive an event we check if  are already other members
 (call.member events) for the call. In case there is not we make the phone ring._
@@ -104,7 +128,6 @@ Pros:
   start a new call. Because they would automatically send an event by joining.
 - There would be less traffic. With the proposed solution the first one who joins
   needs to send a `m.call.notify` event and a `m.call.member` state event.
-
 
 Cons
 
@@ -131,7 +154,7 @@ Cons
 
 ### Explicitly unspecified conditions
 
-- The duration of the ring sound is a deliberately chosen
+- The duration of the ring sound is deliberately chosen
  to be a clients decision.
 - The ring sound is a client choice as well. (It was considered to
  add the ring sound to the notify event but how "ringing" actually should
