@@ -70,10 +70,16 @@ and `user_signing_key`. This is a similar threat model to a malicious server adm
 replacing these keys in the homeserver database.
 
 This does not mean:
- - the attacker can "take over the account". Device login/logout endpoints are
-   still protected via UIA.
- - the device will appear as verified. This requires out-of-band verification e.g
-   emoji comparison, which will correctly detect the MITM'd key.
+ - the attacker can "take over the account". It does not allow the attacker to
+   [login](https://spec.matrix.org/latest/client-server-api/#login) as they need to
+   know the password to the account. Likewise, an attacker cannot [logout all devices](https://spec.matrix.org/latest/client-server-api/#post_matrixclientv3logoutall)
+   nor can they [logout specific devices](https://spec.matrix.org/latest/client-server-api/#delete_matrixclientv3devicesdeviceid)
+   as these also go through UIA prompts.
+ - the device will appear as verified to other users. Other users need to verify the
+   public key [out-of-band](https://spec.matrix.org/latest/client-server-api/#short-authentication-string-sas-verification).
+   As the true owner of the account is not performing this verification, if an attacker
+   physically met up with other users it would become obvious that this is not the true owner,
+   and hence no verification would be performed.
 
 The main usability issue around this endpoint is requiring UIA, so it is critical
 that we only require UIA when absolutely necessary for the security of the account.
@@ -81,7 +87,14 @@ In practice, this means requiring UIA when keys are _replaced_. There have been
 suggestions to reintroduce a grace period (e.g after initial device login) or just
 mandate it entirely for these old existing accounts. This would negatively impact
 usability because:
- - it introduces temporal variability which becomes difficult to debug.
+ - it introduces temporal variability which becomes difficult to debug. Not all users
+   would be subject to these timers/mandates. As a result, it needs to be possible
+   to detect in a bug report if the client is one of these special cases, and this is hard to do
+   reliably, particularly when bug reports from other servers are involved. The kinds of
+   bugs being debugged are typically around encryption, where there are complex interactions
+   between different devices and continually changing server-side state. These kinds of bugs
+   are incredibly time-sensitive as it is, and adding more temporal variability makes it even
+   harder to debug correctly.
  - it introduces configuration variability which becomes difficult to debug. It's not
    clear what the grace period should actually be. Anything less than 1 hour risks
    catching initial x-signing requests from users who are on particularly awful networks.
@@ -90,7 +103,11 @@ usability because:
    for it to login and close the app, only reopening it the next day). This becomes
    difficult to debug in bug reports, as they just report HTTP 401s and it is unknown what
    the HS configuration is for the time delay. This is seen already due to the use (or non-use)
-   of `ui_auth.session_timeout`.
+   of `ui_auth.session_timeout`. A spec-mandated grace period would mitigate some of these
+   concerns, which could be further improved by adding special error codes indicating that
+   the grace period had expired. However, this adds extra API surface that will likely be
+   poorly tested in clients, as it's unreasonable to wait 1+ hours in a test, hence some
+   configuration would be likely included for testing purposes anyway.
 
 For these reasons, this MSC does not specify a grace period or treat some user accounts
 without existing cross-signing keys as special.
