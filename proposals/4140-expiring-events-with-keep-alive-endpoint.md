@@ -66,20 +66,20 @@ The response will mimic the request:
     "eventId": "id_hash"
   },
   
-  "timeout_refresh_token": "refresh_token",
+  "future_token": "token",
   
   // optional
   "m.send_now": { "eventId": "id_hash"},
 }
 ```
 
-The `refresh_token` can be used to call another future related endpoint:
+The `token` can be used to call another future related endpoint:
 `PUT /_matrix/client/v3/futures/refresh` and `PUT /_matrix/client/v3/futures/action/${actionName}`.
 where the body is:
 
 ```json
 {
-  "timeout_refresh_token":"refresh_token"
+  "future_token":"token"
 }
 ```
 
@@ -92,9 +92,9 @@ that the user has intentionally left the conference.
 The homeserver does the following when receiving a Future.
 
 - It sends the optional `m.send_now` event.
-- It generates a `timeout_refresh_token` and stores it alongside with the time
+- It generates a `future_token` and stores it alongside with the time
 of retrieval, the event list and the timeout duration.
-- Starts a timer for the stored `timeout_refresh_token`.
+- Starts a timer for the stored `future_token`.
   - If a `PUT /_matrix/client/v3/futures/refresh` is received, the
   timer is restarted with the stored timeout duration.
   - If a `PUT /_matrix/client/v3/futures/action/${actionName}` is received, one of
@@ -107,7 +107,7 @@ of retrieval, the event list and the timeout duration.
 
     the future is only valid while the `m.send_now`
     is still the current state. This means, if the homeserver receives
-    a new state event for the same state key, the `timeout_refresh_token`
+    a new state event for the same state key, the `future_token`
     gets invalidated and the associated timer is stopped.
     - There is no race condition here since a possible race between timeout and
     new event will always converge to the new event:
@@ -115,7 +115,7 @@ of retrieval, the event list and the timeout duration.
       the content of the `m.send_on_timeout` event but later with the new event.
       - new event -> timeout: the new event will invalidate the future. No
 - When a timeout or action future is sent, the homeserver stops the associated
-timer and invalidates (deletes) the `timeout_refresh_token`.
+timer and invalidates (deletes) the `future_token`.
 
 So for each Future the client sends, the homeserver will send one event
 conditionally at an unknown time that can trigger logic on the client.
