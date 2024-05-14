@@ -1,20 +1,20 @@
 # MSC4143: MatrixRTC
 
-This MSC defines the modules with which the matrix real time system is build with.
+This MSC defines the modules with which the matrix real time system is build.
 
 The MatrixRTC specification is separated into different modules.
 
 - The MatrixRTC room state that defines the state of the real time application.\
- It is the source of truth for:
+  It is the source of truth for:
   - Who is part of a session
   - Who is connected via what technology/backend
   - Metadata per device used by other participants to decide whether the streams
-  from this source are of interest / need to be subscribed.
+    from this source are of interest / need to be subscribed.
 - The RTC backend.
   - It defines how to connect the participating peers.
   - Livekit is the standard for this as of writing.
   - Defines how to connect to a server/other peers, how to update the connection,
-  how to subscribe to different streams...
+    how to subscribe to different streams...
   - Another planned backend is a full mesh implementation based on MSC3401.
 - The RTCSession types (application) have their own per application spec.
   - Calls can be done with an application of type `m.call` see (TODO: link call msc)
@@ -57,6 +57,13 @@ A complete `m.rtc.member` state event looks like this:
 }
 ```
 
+> [!NOTE]  
+> This relies on [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757).
+> We need to have one state event per device, hence multiple "non-overwritable" state
+> events per user.
+>
+> More specifically this uses the approach outlined in this [comment](https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-2099010555).
+
 giving us the information, that user: `@user:matrix.domain` with device `DEVICEID`
 is part of an RTCSession of type `m.call` in the scope/sub-session `""` (empty
 string as call id) connected over `FOCUS_A`. This is all information that is needed
@@ -75,8 +82,8 @@ Based on the value of `m.application`, the event might include additional parame
 required to provide additional session parameters.
 
 > A thirdRoom like experience could include the information of an approximate position
-on the map, so that clients can omit connecting to participants that are not in their
-area of interest.
+> on the map, so that clients can omit connecting to participants that are not in their
+> area of interest.
 
 #### Historic sessions
 
@@ -86,12 +93,12 @@ historic sessions need to be computed and most likely cached on the client.
 Each state event can either mark a join or leave:
 
 - join: `prev_state.m.application != current_state.m.application` &&
- `prev_state.m.call_id != current_state.m.call_id` &&
- `current_state.m.application != undefined`
+  `prev_state.m.call_id != current_state.m.call_id` &&
+  `current_state.m.application != undefined`
   (where an empty `m.rtc.member` event would imply `state.m.application == undefined`)
 - leave: `prev_state.m.application != current_state.m.application` &&
- `prev_state.m.call_id != current_state.m.call_id` &&
- `current_state.m.application == undefined`
+  `prev_state.m.call_id != current_state.m.call_id` &&
+  `current_state.m.application == undefined`
 
 Based on this one can find user sessions. (The range between a join and a leave
 event) of specific times.
@@ -121,8 +128,8 @@ participants is explained.
 
 - [`livekit`](www.example.com) TODO: create `livekit` focus MSC and add link here.
 - [`full_mesh`](https://github.com/matrix-org/matrix-spec-proposals/pull/3401)
-TODO: create `full-mesh` focus MSC based on[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401)
-and add link here.
+  TODO: create `full-mesh` focus MSC based on[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401)
+  and add link here.
 
 ### The RTCSession types (application)
 
@@ -146,5 +153,7 @@ defined:
 - [`m.call`](www.example.com) TODO: create `m.call` MSC and add link here.
 
 ## Potential issues
+
 ## Alternatives
+
 ## Security considerations
