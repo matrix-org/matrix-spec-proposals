@@ -1,26 +1,31 @@
-# MSC4140: Expiring events with keep alive endpoint
+# MSC4140: Delayed events (Futures)
 
-Currently there is no mechanism for a client to provide a reliable way of
-communicating that an event is still valid. The best expiration method is to post
-another event that is stores that it is expired.
-In some situations the client just looses connection or fails to sent the expired
-version of the event.
-A generic way is desired in which the event gets marked as expired by the homeserver.
-
-Clients can then perform custom logic based on if the event is in valid or
-expired state.
-
-This is particularly interesting in the context of matrixRTC where we want
+In the context of matrixRTC where we want
 to ignore expired state events of users who left the call without sending a new
 state empty `m.call.member` event.
 
-We would like the homeserver to mark this event as expired in a reasonable
-time window after a user disconnected.
+We would like the homeserver to mark this event as expired/send an expired version
+in a reasonable time window after a user disconnected.
+
+Currently there is no mechanism for a client to provide a reliable way of
+communicating that an event is still valid.
+The only way to update an event is to post a new one.
+In some situations the client just looses connection or fails to sent the expired
+version of the event.
+
+A generic way in which one can automate expirations is desired.
+
+The described usecase is solved if we allow to send an event in advance
+to the homeserver but let the homeserver compute when its actually added to the
+dag.
+The condition for actually sending the delayed event would could be a timeout.
 
 ## Proposal
 
-The proposed solution is to allow sending multiple presigned events and delegate
-the control of when to actually send these events to an external services.
+To make this as generic as possible, the proposed solution is to allow sending
+multiple presigned events and delegate the control of when to actually send these
+events to an external services. This allows to exactly define what expiration means,
+since any event that will be sent once expired can be defined.
 
 We call those events `Futures`.
 
@@ -147,6 +152,14 @@ proposes a way to make call memberships reliable. It uses the client sync loop a
 an indicator to determine if the event is expired. Instead of letting the SFU
 inform about the call termination or using the call app ping loop like we propose
 here.
+
+---
+
+The following names for the endpoint are considered
+
+- Future
+- DelayedEvents
+- RetardedEvents
 
 ## Security considerations
 
