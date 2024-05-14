@@ -60,6 +60,10 @@ There are multiple possible alternatives here;
       care about and rooms which were manually marked as such and thus should be shown much more prominently.
     * When trying to work around this, by setting the marker at a special location like the room creation event, we completely
       lose the user's actual read position in a room whenever they use this feature.
+* Read receipts could be allowed to go "backwards" to restore notification
+  counts, though this is likely to be riddled with bugs and unexpected
+  behaviour for users. It's better for everyone to keep read receipts linearly
+  progressing forwards.
 
 ## Security considerations
 
