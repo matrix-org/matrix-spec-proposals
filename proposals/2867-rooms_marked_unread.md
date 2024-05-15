@@ -48,7 +48,7 @@ This proposal has no support for marking threads as unread, this should be handl
 
 ## Alternatives
 
-There are multiple possible alternatives here;
+There are multiple possible alternatives here:
 
 * Marking individual messages as unread as discussed [here](https://github.com/matrix-org/matrix-doc/issues/2506):
   This is a far more complex feature that has possible interactions with server-side implementations and notification
