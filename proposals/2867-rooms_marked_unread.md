@@ -44,6 +44,8 @@ Client not aware of this feature will not clear the unread flag, when reading th
 not show the room with a special badge. This seems preferable to the alternative of clearing the unread flag of a room
 without intending to because it didn't actually show up as unread.
 
+This proposal has no support for marking threads as unread, this should be handled in a future MSC.
+
 ## Alternatives
 
 There are multiple possible alternatives here;
