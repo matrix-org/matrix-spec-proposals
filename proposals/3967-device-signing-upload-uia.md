@@ -112,24 +112,6 @@ usability because:
 For these reasons, this MSC does not specify a grace period or treat some user accounts
 without existing cross-signing keys as special.
 
-#### Interactions with MSC3882
-
-[MSC3882](https://github.com/matrix-org/matrix-spec-proposals/pull/3882) allows clients to
-mint login tokens for new clients. However, the wording on the MSC is too weak (lacking 'MUST')
-to state that User-Interactive Authentication will _always_ be performed when minting the token.
-This means if a user's access token is compromised and that server has enabled
-[the setting](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#login_via_existing_session)
-then an attacker can provision new devices. These new devices can then upload the master/x-signing key
-without needing User-Interactive Authentication. This does not appear to materially change the
-outcome (the keys are still untrusted due to lack of out-of-band verification) but it does allow
-more of an account takeover than if this "feature" is not enabled.
-
-It's worth noting MSC3882 landed in the specification in Matrix v1.7 and is supported on major homeservers.
-The intention of this MSC was for an [earlier version of QR code login](https://github.com/matrix-org/matrix-spec-proposals/pull/3906),
-which was superseded by [MSC4108](https://github.com/matrix-org/matrix-spec-proposals/pull/4108). Due to this,
-in theory MSC3882 serves no purpose anymore, but it is now part of the specification and hence needs to be supported
-for a certain amount of time until it can be deprecated.
-
 
 ## Unstable prefix
 
