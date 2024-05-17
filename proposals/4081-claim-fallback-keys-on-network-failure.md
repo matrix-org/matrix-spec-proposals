@@ -132,7 +132,7 @@ created and uploaded via `/keys/upload`. (As above, this will then trigger `m.de
 
 We also add a recommendation that the fallback key is also **rotated periodically** _even if the key isn't "used"_,
 e.g once per week. This reduces the risk of the key being used without the client knowing about it (such as a
-networking problem).
+networking problem). Some clients [already do this](https://github.com/matrix-org/matrix-rust-sdk/pull/3151).
 
 Once a new key has been uploaded, the private part of the old key should be scheduled for deletion. This cannot
 happen immediately, since there may be other messages in flight which rely on the old key. This was also true of
