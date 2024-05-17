@@ -47,8 +47,10 @@ A complete `m.rtc.member` state event looks like this:
 // event type: m.rtc.member
 // event key: ["@user:matrix.domain", "DEVICEID"]
 {
-  "m.application": "m.my_session_type",
-  "m.call_id": "",
+  "application": "m.my_session_type",
+  "call_id": "",
+  "device_id": "DEVICEID",
+  "created_ts": Time | undefined,
   "focus_active": {...FOCUS_A},
   "foci_preferred": [
     {...FOCUS_1},
@@ -69,16 +71,24 @@ is part of an RTCSession of type `m.call` in the scope/sub-session `""` (empty
 string as call id) connected over `FOCUS_A`. This is all information that is needed
 for another room member to detect the running session and join it.
 
+We include the device_id in the member content to not rely on the exact format of the state key.
+In case [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757) is used it would not
+be the second element of the state key array.
+
+`created_ts` is an optional property that caches the time of creation. It is not required
+for an event that, has not yet been updated, there the `origin_server_ts` is used.
+Once the event gets updated the origin_server_ts needs to be copied into the `created_ts` field.
+
 There is **no event** to represent a session. This event would include shared
 information where it is not trivial to decide who has authority over it.
 Instead the session is a computed value based on `m.rtc.member` events.
-The list of events with the same `m.application` and `m.call_id` represent one session.
+The list of events with the same `application` and `m.call_id` represent one session.
 This array allows to compute fields like participant count, start time ...
 
 Sending an empty `m.rtc.member` event represents a leave action.
 Sending a well formatted `m.rtc.member` represents a join action.
 
-Based on the value of `m.application`, the event might include additional parameters
+Based on the value of `application`, the event might include additional parameters
 required to provide additional session parameters.
 
 > A thirdRoom like experience could include the information of an approximate position
@@ -92,13 +102,13 @@ historic sessions need to be computed and most likely cached on the client.
 
 Each state event can either mark a join or leave:
 
-- join: `prev_state.m.application != current_state.m.application` &&
+- join: `prev_state.application != current_state.application` &&
   `prev_state.m.call_id != current_state.m.call_id` &&
-  `current_state.m.application != undefined`
-  (where an empty `m.rtc.member` event would imply `state.m.application == undefined`)
-- leave: `prev_state.m.application != current_state.m.application` &&
+  `current_state.application != undefined`
+  (where an empty `m.rtc.member` event would imply `state.application == undefined`)
+- leave: `prev_state.application != current_state.application` &&
   `prev_state.m.call_id != current_state.m.call_id` &&
-  `current_state.m.application == undefined`
+  `current_state.application == undefined`
 
 Based on this one can find user sessions. (The range between a join and a leave
 event) of specific times.
@@ -135,7 +145,7 @@ participants is explained.
 
 Each session type might have its own specification in how the different streams
 are interpreted and even what focus type to use. This makes this proposal extremely
-flexible. A Jitsi conference could be added by introducing a new `m.application`
+flexible. A Jitsi conference could be added by introducing a new `application`
 and a new focus type and would be MatrixRTC compatible. It would not be compatible
 with applications that do not use the Jitsi focus but clients would know that there
 is an ongoing session of unknown type and unknown focus and could display/represent
