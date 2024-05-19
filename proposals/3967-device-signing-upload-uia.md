@@ -74,7 +74,7 @@ This does not mean:
    [login](https://spec.matrix.org/v1.10/client-server-api/#login) as they need to
    know the password to the account. Likewise, an attacker cannot [logout all devices](https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3logoutall)
    nor can they [logout specific devices](https://spec.matrix.org/v1.10/client-server-api/#delete_matrixclientv3devicesdeviceid)
-   as these also go through UIA prompts. **See notes on MSC3882**.
+   as these also go through UIA prompts.
  - the device will appear as verified to other users. Other users need to verify the
    public key [out-of-band](https://spec.matrix.org/v1.10/client-server-api/#short-authentication-string-sas-verification).
    As the true owner of the account is not performing this verification, if an attacker
