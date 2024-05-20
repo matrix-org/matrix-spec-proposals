@@ -72,12 +72,8 @@ The response will mimic the request:
 
 ```json
 {
-  "m.send_on_timeout": {
-    "eventId": "id_hash"
-  },
-  "m.send_on_action:${actionName}": {
-    "eventId": "id_hash"
-  },
+  "m.send_on_timeout": { "eventId": "id_hash" },
+  "m.send_on_action:${actionName}": { "eventId": "id_hash" },
 
   "future_token": "token",
 
@@ -153,6 +149,30 @@ future at the same time.
   reset to `{}`.
 
 For this usecase an optional `m.send_now` field can be added to the body.
+
+### Getting running futures
+
+Using `GET /_matrix/client/v3/futures` it is possible to get the list of all running futures.
+This is an authenticated endpoint. It sends back the json
+of the final events how they will end up in the DAG with the associated `future_token`.
+
+```json
+[
+  {
+    "m.send_now": finalEvent_0,
+    "m.send_on_timeout": finalEvent_1,
+    ...,
+
+    "future_token":"token"
+  },
+]
+```
+
+This can be used so clients can optionally display events
+that will be send in the future.
+For self destructing messages it is recommanded to include
+this information in the event itself so that the usage of
+this endpoint can be minimized.
 
 ## Usecase specific considerations
 
