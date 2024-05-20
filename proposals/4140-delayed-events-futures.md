@@ -17,7 +17,7 @@ A generic way in which one can automate expirations is desired.
 
 The described usecase is solved if we allow to send an event in advance
 to the homeserver but let the homeserver compute when its actually added to the
-dag.
+DAG.
 The condition for actually sending the delayed event would could be a timeout.
 
 ## Proposal
@@ -30,21 +30,28 @@ since any event that will be sent once expired can be defined.
 We call those events `Futures`.
 
 A new endpoint is introduced:
-`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}/future`
-and
-`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}/future`
+`PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
 It behaves exactly like the normal send endpoint except that that it allows
 to send a list of event contents. The body looks as following:
 
 ```json
 {
   "m.timeout": 10,
-  "m.send_on_timeout": {...sendEventBody},
-  
-  "m.send_on_action:${actionName}": {...sendEventBody},
+  "m.send_on_timeout": {
+    "content": sendEventBody0,
+    "type": "m.room.message",
+  },
+
+  "m.send_on_action:${actionName}": {
+    "content": sendEventBody1,
+    "type": "m.room.message"
+  },
 
   // optional
-  "m.send_now": {...sendEventBody},
+  "m.send_now": {
+    "content": sendEventBody2,
+    "type": "m.room.message"
+    },
 }
 ```
 
@@ -59,24 +66,27 @@ This guarantees that all tokens will expire eventually.
 The homeserver can set a limit to the timeout and return an error if the limit
 is exceeded.
 
+### Response
+
 The response will mimic the request:
 
 ```json
 {
-
   "m.send_on_timeout": {
     "eventId": "id_hash"
   },
   "m.send_on_action:${actionName}": {
     "eventId": "id_hash"
   },
-  
+
   "future_token": "token",
-  
+
   // optional
-  "m.send_now": { "eventId": "id_hash"},
+  "m.send_now": { "eventId": "id_hash" }
 }
 ```
+
+### Delegating futures
 
 The `token` can be used to call another future related endpoint:
 `PUT /_matrix/client/v3/futures/refresh` and `PUT /_matrix/client/v3/futures/action/${actionName}`.
@@ -84,50 +94,51 @@ where the body is:
 
 ```json
 {
-  "future_token":"token"
+  "future_token": "token"
 }
 ```
 
 The information required to call this endpoint is very limited so that almost
 no metadata is leaked. This allows to share a refresh link to a different
-service (an SFU for instance) that can track the current client connection state,
+service. This allows to delegate the send time. An SFU for instance, that tracks the current client connection state,
 and pings the HS to refresh and call a dedicated action to communicate
 that the user has intentionally left the conference.
 
 The homeserver does the following when receiving a Future.
 
-- It sends the optional `m.send_now` event.
-- It generates a `future_token` and stores it alongside with the time
-of retrieval, the event list and the timeout duration.
-- Starts a timer for the stored `future_token`.
-  - If a `PUT /_matrix/client/v3/futures/refresh` is received, the
-  timer is restarted with the stored timeout duration.
-  - If a `PUT /_matrix/client/v3/futures/action/${actionName}` is received, one of
-  the associated `m.action:${actionName}`
-  event will be send.
-  - If the timer times out, the one of the `m.send_timeout` event will be sent.
-  - If the future
-    - is a state event (`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}/future`)
-    - and includes a `m.send_now` event
+- It **sends** the optional `m.send_now` event.
+- It **generates** a `future_token` and stores it alongside with the time
+  of retrieval, the event list and the timeout duration.
+- **Starts a timer** for the stored `future_token`.
 
+  - If a `PUT /_matrix/client/v3/futures/refresh` is received, it
+    **restarts the timer** with the stored timeout duration.
+  - If a `PUT /_matrix/client/v3/futures/action/${actionName}` is received, it **sends the associated action event**
+    `m.action:${actionName}`.
+  - If the timer times out, **it sends the timeout event** `m.send_timeout`.
+  - If the future is a state event and includes a `m.send_now` event
     the future is only valid while the `m.send_now`
-    is still the current state. This means, if the homeserver receives
-    a new state event for the same state key, the `future_token`
-    gets invalidated and the associated timer is stopped.
+    is still the current state:
+
+    - This means, if the homeserver receives
+      a new state event for the same state key, the **`future_token`**
+      **gets invalidated and the associated timer is stopped**.
+
     - There is no race condition here since a possible race between timeout and
-    new event will always converge to the new event:
+      new event will always converge to the new event:
       - Timeout -> new event: the room state will be updated twice. once by
-      the content of the `m.send_on_timeout` event but later with the new event.
+        the content of the `m.send_on_timeout` event but later with the new event.
       - new event -> timeout: the new event will invalidate the future. No
-- When a timeout or action future is sent, the homeserver stops the associated
-timer and invalidates (deletes) the `future_token`.
+
+- After the homeservers sends a timeout or action future event, the associated
+  timer and `future_token` is canceled/invalidated.
 
 So for each Future the client sends, the homeserver will send one event
 conditionally at an unknown time that can trigger logic on the client.
 This allows for any generic timeout logic.
 
-  Timed messages/reminders or ephemeral events could be implemented using this where
-  clients send a redact as a future or a room event with intentional mentions.
+Timed messages/reminders or ephemeral events could be implemented using this where
+clients send a redact as a future or a room event with intentional mentions.
 
 In some scenarios it is important to allow to send an event with an associated
 future at the same time.
@@ -142,6 +153,78 @@ future at the same time.
   reset to `{}`.
 
 For this usecase an optional `m.send_now` field can be added to the body.
+
+## Usecase specific considerations
+
+### MatrixRTC
+
+We want can use the actions and the timeout for matrix rtc for the following situations
+
+- If the client takes care of its membership, we use a short timeout value (around 5-20 seconds)
+  The client will have to ping the refresh endpoint approx every 2-19 seconds.
+- When the SFU is capable of taking care of managing our connection state and we trust the SFU to
+  not disconnect a really long value can be chosen (approx. 2-10hours). The SFU will then only send
+  an action once the user disconnects or looses connection (it could even be a different action for both cases
+  handling them differently on the client)
+  This significantly reduces the amount of calls for the `/future` endpoint since the sfu only needs to ping
+  once per session (per user) and every 2-5hours (instead of every `X` seconds.)
+
+### Self destructing messages
+
+This MSC also allows to implement self destructing messages:
+
+`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`
+
+```json
+{
+  "m.text": "my msg"
+}
+```
+
+`PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
+
+```json
+{
+  "m.timeout": 10*60,
+  "m.send_on_timeout": {
+    "type":"m.room.readact",
+    "content":{
+      "redacts": "EvId"
+    }
+  }
+}
+```
+
+## EventId template variable
+
+It would be useful to be able to send redactions and edits as one http request.
+This would make sure that the client cannot loose connection after sending the first event.
+For instance sending a self destructing message without the redaction.
+
+The optional proposal is to introduce template variables that are only valid in `Future` events.
+`$m.send_now.event_id` in the content of one of the `m.send_on_action:${actionName}` and
+`m.send_on_timeout` contents this template variable can be used.
+The **Self destructing messages** example would simplify to:
+
+`PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
+
+```json
+{
+  "m.send_now":{
+    "type":"m.room.message",
+    "content":{
+      "m.text": "my msg"
+    }
+  },
+  "m.timeout": 10*60,
+  "m.send_on_timeout": {
+    "type":"m.room.readact",
+    "content":{
+      "redacts": "$m.send_now.event_id"
+    }
+  }
+}
+```
 
 ## Potential issues
 
@@ -181,4 +264,3 @@ even tell with which room or user it is interacting.
 ## Unstable prefix
 
 ## Dependencies
-
