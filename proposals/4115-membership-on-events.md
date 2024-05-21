@@ -79,7 +79,7 @@ value is expensive, servers might choose to only implement it in encrypted
 rooms). Clients must in any case treat the new property as optional.
 
 For the avoidance of doubt, the new `membership` property is added to all
-Client-Server API endpoints that return events, including
+Client-Server API endpoints that return events, including, but not limited to,
 [`/sync`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3sync),
 [`/messages`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3roomsroomidmessages),
 [`/state`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3roomsroomidstate),
