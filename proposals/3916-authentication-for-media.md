@@ -39,7 +39,7 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
    | [`GET /_matrix/media/v3/preview_url`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3preview_url) | `GET /_matrix/client/v1/media/preview_url` | - |
    | [`GET /_matrix/media/v3/config`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3config) | `GET /_matrix/client/v1/media/config` | - |
-   | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)            | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`            | `GET /_matrix/federation/v1/media/download/{serverName}/{mediaId}`  |
+   | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)            | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`            | `GET /_matrix/federation/v1/media/download/{mediaId}`  |
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaidfilename) | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}` | -                                                                 |
    | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | - |
    | [`GET /_matrix/media/v1/create`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixmediav1create) | `GET /_matrix/client/v1/media/create` | - |
@@ -76,8 +76,9 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    server should request remote media from other servers. This is redundant
    with the new endpoints, so will not be supported.
 
-   Servers MUST never return remote media from `GET /_matrix/federation/v1/media/download`;
-   indeed, the `serverName` is included in the URI only for consistency with the CS-API.
+   Servers MUST NOT return remote media from `GET /_matrix/federation/v1/media/download`. The
+   `serverName` is omitted from the endpoint's path to strongly enforce this - the `mediaId` in
+   a request is assumed to be scoped to the target server.
 
    `/_matrix/client/v1/media/download` and
    `/_matrix/client/v1/media/thumbnail` return remote media as normal.
@@ -291,7 +292,13 @@ While this proposal is in development, the new endpoints should be named as foll
 * `GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}`
 * `GET /_matrix/client/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}/{fileName}`
 * `GET /_matrix/client/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`
-* `GET /_matrix/federation/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}`
+* `GET /_matrix/federation/unstable/org.matrix.msc3916.v2/media/download/{mediaId}`
+  * **Note**: This endpoint has a `.v2` in its unstable identifier due to the MSC changing after
+    initial implementation. The original unstable endpoint has a `serverName` and may still be
+    supported by some servers: `GET /_matrix/federation/unstable/org.matrix.msc3916/media/download/{serverName}/{mediaId}`
+
+    The `serverName` was later dropped in favour of explicit scoping. See `allow_remote` details
+    in the MSC body for details.
 
 In a prior version of this proposal, the federation API included a thumbnail endpoint.
 It was removed due to lack of perceived usage. Servers which implemented the unstable
