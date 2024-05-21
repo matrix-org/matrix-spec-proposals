@@ -191,9 +191,9 @@ icons are displayed).
 
 This remains a somewhat unsolved problem. Possibly the clients can continue
 to call the legacy `/_matrix/media/v3/download` URI for now: ultimately this
-problem will be solved by the transition to OIDC. Alternatively, we may need
-to provide an alternative `/_matrix/client/v3/login/sso/icon/{idpId}` API
-specifically for access to these icon.
+problem will be solved by the transition to OIDC. Alternatively, a dedicated
+API could be provided or permission to use HTTP(S) URLs to access the icons.
+This support would come from a different MSC.
 
 (This was previously discussed in
 [MSC2858](https://github.com/matrix-org/matrix-spec-proposals/pull/2858#discussion_r543513811).)
@@ -300,4 +300,4 @@ The client-server thumbnail endpoint is unaffected by this change.
 
 ## Dependencies
 
-None at present.
+None.
