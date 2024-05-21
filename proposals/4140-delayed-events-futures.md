@@ -1,33 +1,31 @@
 # MSC4140: Delayed events (Futures)
 
-In the context of matrixRTC where we want
-to ignore expired state events of users who left the call without sending a new
-state empty `m.call.member` event.
+Allowing to schdule/delay events would solve numerous issues in
+matrix.
 
-We would like the homeserver to mark this event as expired/send an expired version
-in a reasonable time window after a user disconnected.
+- Updating call member events after the user disconnected.
+- Sending scheduled messages (send at a specific time)
+- Creating self destructing events (By sending a delayed redact)
 
-Currently there is no mechanism for a client to provide a reliable way of
-communicating that an event is still valid.
+Currently there is no mechanism for a client to reliably that an event is still valid.
 The only way to update an event is to post a new one.
 In some situations the client just looses connection or fails to sent the expired
-version of the event.
+version of the event. This proposal also includes a expiration/timeout
+system so that those scenarios are also covered.
 
-A generic way in which one can automate expirations is desired.
-
-The described usecase is solved if we allow to send an event in advance
-to the homeserver but let the homeserver compute when its actually added to the
+We want to send an event in advance
+to the homeserver but let the homeserver decide the time when its actually added to the
 DAG.
-The condition for actually sending the delayed event would could be a timeout.
+The condition for actually sending the delayed event would could be a timeout or a external trigger via a synapse endpoint.
 
 ## Proposal
 
 To make this as generic as possible, the proposed solution is to allow sending
 multiple presigned events and delegate the control of when to actually send these
-events to an external services. This allows to exactly define what expiration means,
-since any event that will be sent once expired can be defined.
+events to an external services. This allows to a very flexible way to mark events as expired,
+since the sender can choose what event will be sent once expired.
 
-We call those events `Futures`.
+We call those delayed events `Futures`.
 
 A new endpoint is introduced:
 `PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
