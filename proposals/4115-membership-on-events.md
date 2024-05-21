@@ -24,9 +24,15 @@ timestamp than Bob's join.
 
 Unfortunately, there is no way for Bob's client to reliably distinguish events
 such as `A` and `C` that were sent "before" he joined (and he should therefore
-not expect to decrypt) from those such as `D` that were sent later. This
-situation is discussed in more detail at
-https://github.com/element-hq/element-meta/issues/2268.
+not expect to decrypt) from those such as `D` that were sent later.
+
+(Aside: there are two parts to a complete resolution of this "forked-DAG"
+problem. The first part is making sure that the *sender* of an encrypted event
+has a clear idea of who was a member at the point of the event; the second part
+is making sure that the *recipient* knows whether or not they were a member at
+the point of the event and should therefore expect to receive keys for it. This
+MSC deals only with the second part. The whole situation is discussed in more
+detail at https://github.com/element-hq/element-meta/issues/2268.)
 
 A similar scenario can arise even in the absence of a forked DAG: clients
 see events sent when the user was not in the room if the room has [History
@@ -36,7 +42,7 @@ that is the default state for new rooms even using the `private_chat` preset
 for the [`/createRoom`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3createroom)
 request, and also because history-sharing solutions such as
 [MSC3061](https://github.com/matrix-org/matrix-spec-proposals/pull/3061) rely
-on it.
+on it.)
 
 As a partial solution to the forked-DAG problem, which will also solve the
 problem of historical message visibility, we propose a mechanism for servers to
