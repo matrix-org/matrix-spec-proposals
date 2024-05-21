@@ -45,9 +45,8 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    | [`GET /_matrix/media/v1/create`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixmediav1create) | `GET /_matrix/client/v1/media/create` | - |
 
    **Note**: [`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixmediav3upload)
-   is **not** modified by this MSC: it is intended that it be brought into line with the other
+   is **not** modified or deprecated by this MSC: it is intended that it be brought into line with the other
    endpoints by a future MSC, such as [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
-   It is subsequently **not** deprecated either.
 
    **Note**: `/thumbnail` does not have a federation endpoint. It appears as though
    no servers request thumbnails over federation, and so it is not supported here.
