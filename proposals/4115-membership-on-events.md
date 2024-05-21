@@ -126,8 +126,7 @@ Example event including the new property:
 
 ## Potential issues
 
- * Depending on server implementation, it may be expensive or difficult to
-   implement? Feedback welcome from HS authors on this point.
+None foreseen.
 
 ## Alternatives
 
