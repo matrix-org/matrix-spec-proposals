@@ -137,7 +137,7 @@ None foreseen.
 
 2. We could attempt to calculate the membership state on the client side. This
    might help in a majority of cases, but it will be unreliable in the presence
-   of forked DAGs. It would require clients ti implement the [state resolution
+   of forked DAGs. It would require clients to implement the [state resolution
    algorithm](https://spec.matrix.org/v1.10/rooms/v11/#state-resolution), which
    would be prohibitively complicated for most clients.
 
