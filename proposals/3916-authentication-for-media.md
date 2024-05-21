@@ -42,6 +42,7 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)            | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`            | `GET /_matrix/federation/v1/media/download/{serverName}/{mediaId}`  |
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaidfilename) | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}` | -                                                                 |
    | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | - |
+   | [`GET /_matrix/media/v1/create`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixmediav1create) | `GET /_matrix/client/v1/media/create` | - |
 
    **Note**: [`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixmediav3upload)
    is **not** modified by this MSC: it is intended that it be brought into line with the other
