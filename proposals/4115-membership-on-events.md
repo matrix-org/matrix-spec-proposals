@@ -55,14 +55,14 @@ serving an event over the client-server API.  (See
 [specification](https://spec.matrix.org/v1.9/client-server-api/#definition-clientevent)).
 
 We propose adding a new optional property, `membership`. If returned by the
-server, it should contain the membership of the user making the request,
+server, it MUST contain the membership of the user making the request,
 according to the state of the room at the time of the event being returned. If
 the user had no membership at that point (ie, they had yet to join or be
 invited), `membership` is set to `leave`.  Any changes caused by the event
 itself (ie, if the event itself is a `m.room.member` event for the requesting
 user) are *included*.
 
-In other words: servers should follow the following algorithm when populating
+In other words: servers MUST follow the following algorithm when populating
 the `unsigned.membership` property on an event E and serving it to a user Alice:
 
 1. Consider the room state just *after* event E landed (accounting for E
@@ -73,10 +73,10 @@ the `unsigned.membership` property on an event E and serving it to a user Alice:
    * Otherwise, set `membership` to the value of the `membership` property of
      the content of M.
 
-It is recommended that homeservers populate the new property wherever
-practical, but they may omit it if necessary (for example, if calculating the
+It is recommended that homeservers SHOULD populate the new property wherever
+practical, but they MAY omit it if necessary (for example, if calculating the
 value is expensive, servers might choose to only implement it in encrypted
-rooms). Clients must in any case treat the new property as optional.
+rooms). Clients MUST in any case treat the new property as optional.
 
 For the avoidance of doubt, the new `membership` property is added to all
 Client-Server API endpoints that return events, including, but not limited to,
@@ -147,7 +147,7 @@ None foreseen.
 ## Unstable prefix
 
 While this proposal is in development, the name `io.element.msc4115.membership`
-should be used in place of `membership`.
+MUST be used in place of `membership`.
 
 ## Dependencies
 
