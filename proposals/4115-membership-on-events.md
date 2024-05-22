@@ -89,9 +89,9 @@ and
 [`/initialSync`](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3events).
 
 
-Example event including the new property:
+Example event including the new property, as seen in the response to a request made by `@user:example.org`:
 
-```json
+```json5
 {
   "content": {
     "membership": "join"
@@ -100,11 +100,12 @@ Example event including the new property:
   "origin_server_ts": 1632489532305,
   "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
   "sender": "@example:example.org",
-  "state_key": "@user:example.org",
+  "state_key": "@example:example.org",
   "type": "m.room.member",
   "unsigned": {
     "age": 1567437,
-    "membership": "join",
+    // @user:example.org's membership at the time this event was sent 
+    "membership": "leave",
     "redacted_because": {
       "content": {
         "reason": "spam"
@@ -116,13 +117,13 @@ Example event including the new property:
       "sender": "@moderator:example.org",
       "type": "m.room.redaction",
       "unsigned": {
-        "membership": "leave",
+        // @user:example.org's membership at the time the redaction was sent
+        "membership": "join",
         "age": 1257
       }
     }
   }
 }
-```
 
 ## Potential issues
 
