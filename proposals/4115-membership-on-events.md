@@ -104,7 +104,7 @@ Example event including the new property:
   "type": "m.room.member",
   "unsigned": {
     "age": 1567437,
-    "membership": "leave",
+    "membership": "join",
     "redacted_because": {
       "content": {
         "reason": "spam"
