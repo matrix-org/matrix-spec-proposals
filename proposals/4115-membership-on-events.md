@@ -124,6 +124,7 @@ Example event including the new property, as seen in the response to a request m
     }
   }
 }
+```
 
 ## Potential issues
 
