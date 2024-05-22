@@ -262,6 +262,20 @@ The following names for the endpoint are considered
 - DelayedEvents
 - RetardedEvents
 
+---
+
+The `m.send_now` field could not be part of the future. This would also
+mitigate the need for the `$m.send_now.event_id` template variable.
+
+It would come with the cost that there is no way to guarantee, taht the current state and the future are recieved by the homeserver.
+The client would need to send the events in sequence, so the
+connection could be lost between the now event and the future.
+It is expected that this is a very rare case.
+
+Sequence wise it might make sense to not include the `m.send_now` in this
+msc and solve the topic by a good and flexible batch sending solution
+independent of this PR. (then the future and the event could be sent in one batch giving the same result as the `m.send_now` field)
+
 ## Security considerations
 
 We are using an unauthenticated endpoint to refresh the expirations. Since we use
@@ -280,5 +294,7 @@ information about the matrix metadata of the associated `future` event. It canno
 even tell with which room or user it is interacting.
 
 ## Unstable prefix
+
+use `io.element.` instead of `m.` as long as the msc is not stable.
 
 ## Dependencies
