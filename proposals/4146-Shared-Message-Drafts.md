@@ -92,7 +92,7 @@ Proposed unstable prefixes for `m.drafts` and `m.draft_in` would be:
 | prefix                        | description                       |
 |-------------------------------|-----------------------------------|
 | `org.matrix.msc4146.drafts`   | For the room type                 |
-| `org.matrix.msc4146.draft_in` | For the actual events in the room |
+| `org.matrix.msc4146.draft_in` | For the room ID information on the events |
 
 ## Dependencies
 
