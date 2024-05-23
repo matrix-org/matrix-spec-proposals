@@ -40,6 +40,8 @@ This could be done something like this, with a field to indicate what room it re
 }
 ```
 
+The format of the event should be somewhat compatible with clients that do not implement the MSC, so that in those clients the draft gets displayed as a message that the user could still manually copy or edit to also edit the draft. Theoretically there could be an extra field, say `m.draft_full_event` that contains a full event with intentional mentions, media and more, but this is an idea that I am still exploring.
+
 When a user is in multiple `m.drafts` rooms, the client should take whatever draft is chronologically the newest for a given room from any `m.drafts` room, unless there is two or more drafts with the same timestamp. When there is two or more drafts with the same timestamp, the client should give the user the option of which draft to keep, redacting the other drafts in whatever room the drafts are in.
 
 The Client should also only import it's own events when checking `m.drafts` rooms, unless explicitly requested otherwise by the user.
