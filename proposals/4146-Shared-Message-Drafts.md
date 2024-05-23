@@ -42,9 +42,6 @@ This could be done something like this, with a field to indicate what room it re
 
 ## Potential issues
 
-*Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
-and they should be documented here. There should be some explanation for why the disadvantage is
-acceptable, however - just like in this example.*
 
 There are some issues with both approaches, notably I thought of:
 
