@@ -1,4 +1,4 @@
-# MSCXXXX: Shared Message Drafts
+# MSC4146: Shared Message Drafts
 
 In Matrix, most clients support saving drafts, either in LocalStorage or some other platform-specific storage so that you can come back to writing a message later if you have not finished it, however this information does not carry over between clients, meaning you can only continue your draft or send it on the device that you initially started writing it in.
 
@@ -91,8 +91,8 @@ Proposed unstable prefixes for `m.drafts` and `m.draft_in` would be:
 
 | prefix                        | description                       |
 |-------------------------------|-----------------------------------|
-| `org.matrix.mscXXXX.drafts`   | For the room type                 |
-| `org.matrix.mscXXXX.draft_in` | For the actual events in the room |
+| `org.matrix.msc4146.drafts`   | For the room type                 |
+| `org.matrix.msc4146.draft_in` | For the actual events in the room |
 
 ## Dependencies
 
