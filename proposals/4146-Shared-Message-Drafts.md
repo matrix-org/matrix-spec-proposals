@@ -40,15 +40,17 @@ This could be done something like this, with a field to indicate what room it re
 }
 ```
 
+When a user is in multiple `m.drafts` rooms, the client should take whatever draft is chronologically the newest for a given room from any `m.drafts` room, unless there is two or more drafts with the same timestamp. When there is two or more drafts with the same timestamp, the client should give the user the option of which draft to keep, redacting the other drafts in whatever room the drafts are in.
+
+The Client should also only import it's own events when checking `m.drafts` rooms, unless explicitly requested otherwise by the user.
+
 ## Potential issues
 
-
-There are some issues with both approaches, notably I thought of:
+There are some issues with this approach, notably I thought of:
 
 - If the room is encrypted to allow privacy for these drafts, then the drafts would be unavailable to a client that has just authenticated but has not been verified yet, and as such cannot get the keys for the messages in the room and decrypt any of the drafts.
 - Clients that do not support this MSC might display the drafts room normally, allowing the user to send arbitrary messages into the room, which might become messy. 
-- If a client removes the `m.draft_in` as part of an edit the draft would no longer be associated with a room, causing confusion on the users' end as to where their draft went.
-
+- If a client removes the `m.draft_in` as part of an edit the draft would no longer be associated with a room, causing confusion on the users' end as to where their draft went. 
 
 ## Alternatives
 
