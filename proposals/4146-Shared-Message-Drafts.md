@@ -2,11 +2,6 @@
 
 In Matrix, most clients support saving drafts, either in LocalStorage or some other platform-specific storage so that you can come back to writing a message later if you have not finished it, however this information does not carry over between clients, meaning you can only continue your draft or send it on the device that you initially started writing it in.
 
-This proposal aims to address that problem by sharing ideas on a mechanism to share message drafts between devices, and serves as a place of discussion for such a feature.
-
-This being my first MSC, without having read the entire spec there will be mistakes and oversights I've made as to how Matrix operates and how a feature like this may be implemented, so I'd very much appreciate some pointers or help if I got anything wrong :)
-
-
 ## Proposal
 
 In Matrix, especially when used in work environments, there is often the need to draft out a message before sending it out, like wanting someone else to proofread it first, writing a message about an ongoing event, or a plethora of other scenarios where a message should just remain unsent until the time comes. However the experience is frustrating because you are limited only to one device, or even just one client on the same device. 
