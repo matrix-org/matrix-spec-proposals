@@ -1,10 +1,10 @@
 # MSC4146: Shared Message Drafts
 
-In Matrix, most clients support saving drafts, either in LocalStorage or some other platform-specific storage so that you can come back to writing a message later if you have not finished it, however this information does not carry over between clients, meaning you can only continue your draft or send it on the device that you initially started writing it in.
+In Matrix, most clients support saving drafts, yet there is no way to share this data. This proposal outlines how such data could be shared.
 
 ## Proposal
 
-In Matrix, especially when used in work environments, there is often the need to draft out a message before sending it out, like wanting someone else to proofread it first, writing a message about an ongoing event, or a plethora of other scenarios where a message should just remain unsent until the time comes. However the experience is frustrating because you are limited only to one device, or even just one client on the same device. 
+There is often the need to draft out a message before sending it out, like wanting someone else to proofread it first, writing a message about an ongoing event, or a plethora of other scenarios where a message should just remain unsent until the time comes. However the experience is frustrating because you are limited only to one device, or even just one client on the same device. 
 
 If you're ever in a situation where you want to send the message, edit it, or maybe even delete the draft, you cannot do so without first going back to the device you initially wrote it on. This means you cannot carry over a draft from your Phone to your Computer to have a more comfortable typing experience, or to see the text on a bigger screen, and is generally just an inconvenience.
 
