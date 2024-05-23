@@ -1,14 +1,39 @@
-# MSC4146: Shared Message Drafts
+# MSCXXXX: Shared Message Drafts
 
-In Matrix, most clients support saving drafts, yet there is no way to share this data. This proposal outlines how such data could be shared.
+In Matrix, most clients support saving drafts, either in LocalStorage or some 
+other platform-specific storage so that you can come back to writing a message 
+later if you have not finished it, however this information does not carry over 
+between clients, meaning you can only continue your draft or send it on the 
+device that you initially started writing it in.
+
+This proposal aims to address that problem by sharing ideas on a mechanism to 
+share message drafts between devices, and serves as a place of discussion for 
+such a feature.
+
+This being my first MSC, without having read the entire spec there will be 
+mistakes and oversights I've made as to how Matrix operates and how a feature 
+like this may be implemented, so I'd very much appreciate some pointers or help 
+if I got anything wrong :)
 
 ## Proposal
 
-There is often the need to draft out a message before sending it out, like wanting someone else to proofread it first, writing a message about an ongoing event, or a plethora of other scenarios where a message should just remain unsent until the time comes. However the experience is frustrating because you are limited only to one device, or even just one client on the same device. 
+In Matrix, especially when used in work environments, there is often the need to 
+draft out a message before sending it out, like wanting someone else to 
+proofread it first, writing a message about an ongoing event, or a plethora of 
+other scenarios where a message should just remain unsent until the time comes. 
+However the experience is frustrating because you are limited only to one 
+device, or even just one client on the same device. 
 
-If you're ever in a situation where you want to send the message, edit it, or maybe even delete the draft, you cannot do so without first going back to the device you initially wrote it on. This means you cannot carry over a draft from your Phone to your Computer to have a more comfortable typing experience, or to see the text on a bigger screen, and is generally just an inconvenience.
+If you're ever in a situation where you want to send the message, edit it, or 
+maybe even delete the draft, you cannot do so without first going back to the 
+device you initially wrote it on. This means you cannot carry over a draft from 
+your Phone to your Computer to have a more comfortable typing experience, or to 
+see the text on a bigger screen, and is generally just an inconvenience.
 
-My first idea would be to repurpose rooms, similar to how it's proposed for Profiles-As-Rooms or how Spaces are implemented. A new room type, `m.drafts` or `m.draft` would be added, allowing the client to differentiate this room from DMs, Spaces or Groups. A creation event could look something like this:
+My first idea would be to repurpose rooms, similar to how it's proposed for 
+Profiles-As-Rooms or how Spaces are implemented. A new room type, `m.drafts` or 
+`m.draft` would be added, allowing the client to differentiate this room from 
+DMs, Spaces or Groups. A creation event could look something like this:
 
 ```json
 {
@@ -21,11 +46,16 @@ My first idea would be to repurpose rooms, similar to how it's proposed for Prof
 }
 ```
 
-In said room, the client would then send normal `m.text` events, optionally with a formatted body, and would edit the message every ´n´ seconds or once the user stops typing. <span style="color: grey">(This is more of a UI/UX implementation detail though)</span>
+In said room, the client would then send normal `m.text` events, optionally with 
+a formatted body, and would edit the message every ´n´ seconds or once the user 
+stops typing. <span style="color: grey">(This is more of a UI/UX implementation 
+detail though)</span>
 
-Another thing that would be introduced would be a field that defines what room this is supposed to be for / In which room this draft was written
+Another thing that would be introduced would be a field that defines what room 
+this is supposed to be for / In which room this draft was written
 
-This could be done something like this, with a field to indicate what room it relates to:
+This could be done something like this, with a field to indicate what room it 
+relates to:
 
 ```json
 {
@@ -40,25 +70,34 @@ This could be done something like this, with a field to indicate what room it re
 }
 ```
 
-The format of the event should be somewhat compatible with clients that do not implement the MSC, so that in those clients the draft gets displayed as a message that the user could still manually copy or edit to also edit the draft. Theoretically there could be an extra field, say `m.draft_full_event` that contains a full event with intentional mentions, media and more, but this is an idea that I am still exploring.
-
-When a user is in multiple `m.drafts` rooms, the client should take whatever draft is chronologically the newest for a given room from any `m.drafts` room, unless there is two or more drafts with the same timestamp. When there is two or more drafts with the same timestamp, the client should give the user the option of which draft to keep, redacting the other drafts in whatever room the drafts are in.
-
-The Client should also only import it's own events when checking `m.drafts` rooms, unless explicitly requested otherwise by the user.
-
 ## Potential issues
 
-There are some issues with this approach, notably I thought of:
+*Not all proposals are perfect. Sometimes there's a known disadvantage to 
+implementing the proposal, and they should be documented here. There should be 
+some explanation for why the disadvantage is acceptable, however - just like in 
+this example.*
 
-- If the room is encrypted to allow privacy for these drafts, then the drafts would be unavailable to a client that has just authenticated but has not been verified yet, and as such cannot get the keys for the messages in the room and decrypt any of the drafts.
-- Clients that do not support this MSC might display the drafts room normally, allowing the user to send arbitrary messages into the room, which might become messy. 
-- If a client removes the `m.draft_in` as part of an edit the draft would no longer be associated with a room, causing confusion on the users' end as to where their draft went. 
+There are some issues with both approaches, notably I thought of:
+
+- If the room is encrypted to allow privacy for these drafts, then the drafts 
+would be unavailable to a client that has just authenticated but has not been 
+verified yet, and as such cannot get the keys for the messages in the room and 
+decrypt any of the drafts. 
+- Clients that do not support this MSC might display 
+the drafts room normally, allowing the user to send arbitrary messages into the 
+room, which might become messy. 
+- If a client removes the `m.draft_in` as part 
+of an edit the draft would no longer be associated with a room, causing 
+confusion on the users' end as to where their draft went.
 
 ## Alternatives
 
-An alternative way to implement this would be to instead add this data to account data, adding a field similar to what Element does with `io.element.recent_emoji`
+An alternative way to implement this would be to instead add this data to 
+account data, adding a field similar to what Element does with 
+`io.element.recent_emoji`
 
-The field could be named something like `m.room_drafts` or `m.drafts` (just like the room type from idea #1) and could contain something like this:
+The field could be named something like `m.room_drafts` or `m.drafts` (just like 
+the room type from idea #1) and could contain something like this:
 
 ```json
 {
@@ -75,20 +114,25 @@ The field could be named something like `m.room_drafts` or `m.drafts` (just like
 
 This would cut the requirement for re-purposing a room (from what I understand).
 
-However, it would also mean that you cannot encrypt the drafts, and as such these drafts would be leaked metadata that the server can read. This should be avoided as drafts can belong to an encrypted room, which you do not want leaked.
+However, it would also mean that you cannot encrypt the drafts, and as such 
+these drafts would be leaked metadata that the server can read. This should be 
+avoided as drafts can belong to an encrypted room, which you do not want leaked.
 
 ## Security considerations
 
-By implementing this by repurposing an **encrypted** room you can avoid the drafts - and as such messages that might go into an encrypted room - being leaked to the homeserver. Encryption for a feature like this is a goal that should not be neglected.
+By implementing this by repurposing an **encrypted** room you can avoid the 
+drafts - and as such messages that might go into an encrypted room - being 
+leaked to the homeserver. Encryption for a feature like this is a goal that 
+should not be neglected.
 
 ## Unstable prefix
 
 Proposed unstable prefixes for `m.drafts` and `m.draft_in` would be:
 
 | prefix                        | description                       |
-|-------------------------------|-----------------------------------|
-| `org.matrix.msc4146.drafts`   | For the room type                 |
-| `org.matrix.msc4146.draft_in` | For the room ID information on the events |
+| ----------------------------- | --------------------------------- |
+| `org.matrix.mscXXXX.drafts`   | For the room type                 |
+| `org.matrix.mscXXXX.draft_in` | For the actual events in the room |
 
 ## Dependencies
 
