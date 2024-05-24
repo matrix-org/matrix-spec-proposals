@@ -191,6 +191,7 @@ Proposed unstable prefixes for `m.drafts` and `m.draft_in` would be:
 |-------------------------------|-----------------------------------|
 | `org.matrix.msc4146.drafts`   | For the room type                 |
 | `org.matrix.msc4146.draft_in` | For the room ID information on the events |
+| `org.matrix.msc4146.draft_full_event` | For storing a full event alongside the normal message body or media |
 
 ## Dependencies
 
