@@ -35,8 +35,8 @@ DMs, Spaces or Groups. A creation event could look something like this:
 
 In said room, the client would then send normal `m.text` events, optionally with
 a formatted body, and would edit the message every ´n´ seconds or once the user
-stops typing. <span style="color: grey">(This is more of a UI/UX implementation
-detail though)</span>
+stops typing. (This is more of a UI/UX implementation
+detail though)
 
 Another thing that would be introduced would be a field that defines what room
 this is supposed to be for / In which room this draft was written
@@ -57,12 +57,66 @@ relates to:
 }
 ```
 
+This format also works with media:
+
+```json
+{
+  "content": {
+    "body": "image.png",
+    "info": {
+      "h": ...,
+      "mimetype": "image/png",
+      "size": ...,
+      "w": ...,
+      "xyz.amorgan.blurhash": "..."
+    },
+    "msgtype": "m.image",
+    "url": "mxc://example.net/...",
+    "m.draft_in": "!ROOMID:example.com"
+  }
+}
+```
+
+In the case of Media, a client would take the `body`, `info` and `url` fields
+into account when importing it into the editor. In the case of text, a client
+would import the `body`, `formatted_body` and `format` fields
+
 The format of the event should be somewhat compatible with clients that do not
 implement the MSC, so that in those clients the draft gets displayed as a
 message that the user could still manually copy or edit to also edit the draft.
-Theoretically there could be an extra field, say `m.draft_full_event` that
-contains a full event with intentional mentions, media and more, but this is an
-idea that I am still exploring.
+
+Additionally, a client can include the `m.draft_full_event` field in the draft,
+which allows the client to upload a full event including media, intentional
+mentions and other metadata that are not contained in the `body` or
+`formatted_body` of an event. Such an event would look something like this:
+
+```json
+{
+  "type": "m.room.message",
+  "content": {
+    "msgtype": "m.text",
+    "body": "**test!!!**",
+    "format": "org.matrix.custom.html",
+    "formatted_body": "<strong>test!!!</strong>",
+    "m.draft_in": "!ROOMID:example.com",
+    "m.draft_full_event": {
+      ...
+      "m.mentions": {
+        "user_ids": [
+          "@1:example.com",
+          "@2:example.com"
+        ]
+      }
+    }
+  }
+}
+
+```
+
+This would be useful in events where a client may want to have more information
+in the draft than what fits into the existing body fields, like drafting a poll,
+drafting with intentional mentions (like in the example above) or drafting a
+custom event. This field is **not** required.
 
 When a user is in multiple `m.drafts` rooms, the client should take whatever
 draft is chronologically the newest for a given room from any `m.drafts` room,
@@ -123,6 +177,11 @@ By implementing this by repurposing an **encrypted** room you can avoid the
 drafts - and as such messages that might go into an encrypted room - being
 leaked to the homeserver. Encryption for a feature like this is a goal that
 should not be neglected.
+
+Clients should consider only uploading drafted media to the room if explicitly
+requested by the user, as this could otherwise lead to media that never gets
+deleted from the server; This could pose a threat to privacy if the `m.drafts`
+room is unencrypted.
 
 ## Unstable prefix
 
