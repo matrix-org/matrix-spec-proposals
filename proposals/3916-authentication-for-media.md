@@ -258,11 +258,12 @@ This support would come from a different MSC.
   place. However, changing them at the same time makes the API more consistent.
 
   Conversely, we should make sure to rename `POST
-  /_matrix/media/v3/upload`. The reason to delay doing so is because MSC3911
-  will make more substantial changes to this endpoint, requiring another
-  rename, and it is expected that both proposals will be mergeed near to the same
-  time as each other (so a double rename will be confusing and unnecessary). However,
-  if MSC3911 is delayed or rejected, we should reconsider this.
+  /_matrix/media/v3/upload` and `GET /_matrix/media/v3/create`. The reason to
+  delay doing so is because MSC3911 will make more substantial changes to these
+  endpoints, requiring another rename, and it is expected that both proposals
+  will be mergeed near to the same time as each other (so a double rename will
+  be confusing and unnecessary). However, if MSC3911 is delayed or rejected, we
+  should reconsider this.
 
 * Rather than messing with multipart content, have a separate endpoint for
   servers to get the metadata for a media item. That would mean two requests,
