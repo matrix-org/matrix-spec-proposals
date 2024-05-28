@@ -131,6 +131,41 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
      --gc0p4Jq0M2Yt08jU534c0p
      ```
 
+     The second part (media item bytes) MAY include a [`Location` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Location)
+     to point to the raw media object instead of having bytes itself. Servers
+     SHOULD NOT cache the `Location` header's value as the responding server may
+     have applied time limits on its validity. Servers which don't immediately
+     download the media from the provided URL should re-request the media and
+     metadata from the `/download` endpoint when ready for the media bytes.
+
+     The `Location` header's URL does *not* require authentication, as it will
+     typically be served by a CDN or other non-matrix server (thus being unable
+     to verify any `X-Matrix` signatures, for example).
+
+     An example response with a `Location` redirect would be:
+
+     ```
+     Content-Type: multipart/mixed; boundary=gc0p4Jq0M2Yt08jU534c0p
+
+     --gc0p4Jq0M2Yt08jU534c0p
+     Content-Type: application/json
+
+     {}
+
+     --gc0p4Jq0M2Yt08jU534c0p
+     Content-Type: text/plain
+     Location: https://cdn.example.org/ab/c1/2345.txt
+
+     --gc0p4Jq0M2Yt08jU534c0p
+     ```
+
+     If the server were to `curl https://cdn.example.org/ab/c1/2345.txt`, it'd
+     get:
+
+     ```
+     This media is plain text. Maybe somebody used it as a paste bin.
+     ```
+
 5. Backwards compatibility mechanisms
 
    a. Backwards compatibility with older servers: if a client or requesting server
@@ -145,6 +180,16 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    server errors for new media. Both clients and servers are strongly encouraged
    to update as soon as possible, before servers freeze unauthenticated media
    access.
+
+6. Removal of `allow_redirect` parameter from `/download` and `/thumbnail`
+
+   Clients MUST expect a 307 or 308 redirect when calling the new `/download`
+   and `/thumbnail` Client-Server API endpoints.
+
+   Servers MUST expect the `Location` header in the media part of the new Server-Server
+   API `/download` endpoint. Servers MUST NOT respond with a 307 or 308 redirect at
+   the top level for the endpoint - they can only redirect within the media part
+   itself.
 
 ### Effects on client applications
 
@@ -226,14 +271,11 @@ This support would come from a different MSC.
   should be handled, and leaves it as an HTTP specification interpretation problem
   instead.
 
-* [MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860)-style
-  redirects are harder to implement for the federation endpoints. It's presumed
-  that CDNs can either cache the multipart type (later to be combined with linked
-  media authentication, like [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911)),
-  or the CDN can be somehow told the parameters it needs to return. For example,
-  `Location: https://cdn.example.org/media?mx_json={}`. Popular CDN providers
-  support this sort of request rewriting. Relatedly, [MSC4097](https://github.com/matrix-org/matrix-spec-proposals/pull/4097)
-  may be of interest to readers.
+* The `Location` header support on the new `/download` endpoint could add a bit
+  of complexity to servers, though given the alternative of supporting CDNs and
+  similar is to place complexity into "edge workers" to mutate the response value.
+  Though the Matrix spec would be "simpler", the edge worker setup would be
+  fragmented where we have an opportunity for a common standard.
 
 ## Alternatives
 
@@ -268,6 +310,15 @@ This support would come from a different MSC.
 * Rather than messing with multipart content, have a separate endpoint for
   servers to get the metadata for a media item. That would mean two requests,
   but might make more sense than `/download` providing the info directly.
+
+  This is a plausible approach with no significant upsides or downsides when
+  compared to multipart responses.
+
+  Similarly, custom headers could be used to carry the metadata on the response,
+  though again, there are no significant upsides or downsides to doing so.
+
+  Readers may wish to refer to [this thread](https://github.com/matrix-org/matrix-spec-proposals/pull/3916/files#r1586878787)
+  on the MSC which covers the majority of the pros and cons for all 3 approaches.
 
 ### Compared to MSC3796 (MSC701)
 
