@@ -1307,7 +1307,7 @@ Example:
 ```json
 {
     "type":"m.login.failure",
-    "reason": "unsupported",
+    "reason": "unsupported_protocol",
     "homeserver": "https://matrix-client.matrix.org"
 }
 ```
