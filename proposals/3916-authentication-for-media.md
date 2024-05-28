@@ -207,6 +207,11 @@ This support would come from a different MSC.
   to significant memory usage, particularly for large media. Service workers by
   comparison allow for proxy-like behaviour.
 
+  Cookies are a plausible mechanism for sharing session information between
+  requests without having to set headers, though would be a relatively bespoke
+  authentication method for Matrix. Additionally, many Matrix users have cookies
+  disabled due to the advertising and tracking use cases common across the web.
+
 * Users will be unable to copy links to media from web clients to share out of
   band. This is considered a feature, not a bug.
 
