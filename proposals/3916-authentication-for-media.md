@@ -303,7 +303,7 @@ This support would come from a different MSC.
   /_matrix/media/v3/upload` and `GET /_matrix/media/v3/create`. The reason to
   delay doing so is because MSC3911 will make more substantial changes to these
   endpoints, requiring another rename, and it is expected that both proposals
-  will be mergeed near to the same time as each other (so a double rename will
+  will be merged near to the same time as each other (so a double rename will
   be confusing and unnecessary). However, if MSC3911 is delayed or rejected, we
   should reconsider this.
 
