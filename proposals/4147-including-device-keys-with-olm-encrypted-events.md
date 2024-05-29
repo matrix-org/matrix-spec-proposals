@@ -95,7 +95,7 @@ in the `device_keys` is meaningless.  The recipient will need to re-query the
 device keys, and will need to treat the sender as untrusted if it fails to do
 so.  The sender could include the self-signing key, signed by the
 master-signing key, in the plaintext event, so that if the user only resets
-their self-signing key but retains their masster-signing key, the recipient can
+their self-signing key but retains their master-signing key, the recipient can
 still check the sender's device keys.  However, this will further increase the
 size of the event, and it is not common for clients to reset the self-signing
 key without also resetting the master-signing key, so this is unlikely to give
