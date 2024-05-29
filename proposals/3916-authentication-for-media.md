@@ -52,15 +52,6 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    no servers request thumbnails over federation, and so it is not supported here.
    A later MSC may introduce such an endpoint.
 
-   After this proposal is released in a stable version of the specification, servers
-   which support the new `download` and `thumbnail` endpoints SHOULD cease to serve
-   newly uploaded media from the unauthenticated versions. This includes media
-   uploaded by local users and requests for not-yet-cached remote media. This is
-   done with a 404 `M_NOT_FOUND` error, as though the media doesn't exist. Servers
-   SHOULD consider their local ecosystem impact before freezing the endpoints. For
-   example, ensuring that common bridges and clients will continue to work, and
-   encouraging updates to those affected projects as needed.
-
 2. Removal of `allow_remote` parameter from `/download`
 
    The current
@@ -163,18 +154,51 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
 
 5. Backwards compatibility mechanisms
 
-   a. Backwards compatibility with older servers: if a client or requesting server
-   receives a 404 error with `M_UNRECOGNIZED` error code in response to a request
-   using the new endpoints, they may retry the request using the deprecated
-   endpoint. Servers and clients should note the [`M_UNRECOGNIZED`](https://spec.matrix.org/v1.10/client-server-api/#common-error-codes)
-   error code semantics.
+   Servers SHOULD *stop* serving new media as unauthenticated within 1 spec release
+   of this proposal being released itself using a standard `404 M_NOT_FOUND` response.
+   Existing media should continue to be served from the unauthenticated endpoints
+   indefinitely for backwards compatibility. For example, if this proposal is
+   released in Matrix 1.11, then by Matrix 1.12 servers should freeze the old
+   unauthenticated endpoints by only serving media known to exist from before the
+   freeze.
 
-   b. Backwards compatibility with older clients and federating servers: mentioned
-   in Part 1 of this proposal, servers *may* freeze unauthenticated media access
-   once stable authenticated endpoints are available. This may lead to client and
-   server errors for new media. Both clients and servers are strongly encouraged
-   to update as soon as possible, before servers freeze unauthenticated media
-   access.
+   "New media" is any media which local users upload after the freeze is put in
+   place, and any remote media which becomes cached after the freeze as well. This
+   could be marked by a configuration option within the server software, or as part
+   of a scheduled/dedicated release which enacts the freeze for everyone who updates
+   to that version.
+
+   This freeze schedule will have some undesirable side effects, particularly for
+   clients and servers which are slow to update or support the new endpoints. Newly
+   uploaded images, files, avatars, etc may appear "broken" or missing to users on
+   older software. Existing media should continue to work, however, reducing the
+   impact from 100% of media to a smaller percentage.
+
+   Servers SHOULD consider whether their users' typical clients will break as
+   part of the freeze before enacting the freeze. Clients SHOULD update as soon
+   as reasonably possible to support authenticated media, particularly following
+   the spec release containing this MSC. Other considerations may include bridges,
+   deployment-specific use cases, and patch availability.
+
+   It is worth noting that the matrix.org homeserver plans to freeze media relatively
+   quickly following this proposal's release in the specification. Details will be
+   published to the matrix.org blog closer to the spec release date.
+
+   The following are specific backwards compatibility cases:
+
+   a. New clients & servers with older servers: The [`M_UNRECOGNIZED`](https://spec.matrix.org/v1.10/client-server-api/#common-error-codes)
+      error behaviour should be followed to indicate that the server does not
+      support the new endpoints, particularly when partnered with a 404 HTTP status
+      code. Clients and servers should use the unauthenticated endpoints in this
+      case. The endpoints will not be frozen by the server, so should work for
+      'new' media.
+
+   b. Older clients & servers with newer servers: Mentioned above, servers are
+      strongly encouraged to freeze unauthenticated media access within a relatively
+      quick timeframe. Though media before the freeze should remain accessible,
+      clients and older federating servers may still see errors when accessing
+      new media, leading to client UI feeling "broken" or missing avatars. The
+      various considerations above are meant to reduce the impact of this case.
 
 6. Removal of `allow_redirect` parameter from `/download` and `/thumbnail`
 
