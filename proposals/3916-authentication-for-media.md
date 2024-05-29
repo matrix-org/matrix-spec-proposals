@@ -92,8 +92,10 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
      the response is
      [`multipart/mixed`](https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html)
      content with exactly two parts: the first MUST be a JSON object (and should have a
-     `Content-type: application/json` header), and the second MUST be the media item
-     as per the original endpoints.
+     `Content-type: application/json` header), and the second MUST be the media item.
+     The media item may be served inline, as shown in the first example below, or
+     be a pointer to a URL containing the media item's bytes instead, represented
+     by the `Location` header described further below.
 
      No properties are yet specified for the JSON object to be returned. One
      possible use is described by [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
@@ -127,6 +129,11 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
      typically be served by a CDN or other non-matrix server (thus being unable
      to verify any `X-Matrix` signatures, for example).
 
+     Note that all other headers besides `Location` for the media item part are
+     ignored when `Location` is present. The `Content-Type`, `Content-Disposition`,
+     etc headers will be served from the `Location`'s URL instead. Similarly,
+     the body for the media item part is ignored and SHOULD be empty.
+
      An example response with a `Location` redirect would be:
 
      ```
@@ -138,16 +145,17 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
      {}
 
      --gc0p4Jq0M2Yt08jU534c0p
-     Content-Type: text/plain
      Location: https://cdn.example.org/ab/c1/2345.txt
 
      --gc0p4Jq0M2Yt08jU534c0p
      ```
 
      If the server were to `curl https://cdn.example.org/ab/c1/2345.txt`, it'd
-     get:
+     get something similar to the following:
 
      ```
+     Content-Type: text/plain
+
      This media is plain text. Maybe somebody used it as a paste bin.
      ```
 
