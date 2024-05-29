@@ -52,11 +52,6 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    no servers request thumbnails over federation, and so it is not supported here.
    A later MSC may introduce such an endpoint.
 
-   The new `/download` and `/thumbnail` endpoints additionally drop the `?allow_redirect`
-   query parameters. Instead, the endpoints behave as though `allow_redirect=true` was
-   set, regardless of actual value. See [this comment on MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860/files#r1005176480)
-   for details.
-
    After this proposal is released in a stable version of the specification, servers
    which support the new `download` and `thumbnail` endpoints SHOULD cease to serve
    newly uploaded media from the unauthenticated versions. This includes media
@@ -190,6 +185,9 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    API `/download` endpoint. Servers MUST NOT respond with a 307 or 308 redirect at
    the top level for the endpoint - they can only redirect within the media part
    itself.
+
+   See [this comment on MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860/files#r1005176480)
+   for further context on this change.
 
 ### Effects on client applications
 
