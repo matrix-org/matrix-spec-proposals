@@ -77,10 +77,9 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    which must be `Bearer {accessToken}` for `/_matrix/client`, or the signature
    for `/_matrix/federation`.
 
-   The query string `?access_token` approach is not supported on the new endpoints,
-   as it is [deprecated](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4126-deprecate-query-string-auth.md)
-   and [pending removal](https://github.com/matrix-org/matrix-spec-proposals/pull/4127).
-   See those MSCs for details.
+   Clients SHOULD NOT use the [deprecated](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/4126-deprecate-query-string-auth.md)
+   `?access_token` query string authentication mechanism. The method is [pending removal](https://github.com/matrix-org/matrix-spec-proposals/pull/4127)
+   and is generally unsafe. See those MSCs for further details.
 
    **Note**: This fixes [matrix-spec#313](https://github.com/matrix-org/matrix-spec/issues/313).
 
