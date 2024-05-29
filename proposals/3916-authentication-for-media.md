@@ -264,11 +264,14 @@ icons for the login providers as `mxc:` media URIs. These must be accessible
 without authentication (because the client has no access token at the time the
 icons are displayed).
 
-This remains a somewhat unsolved problem. Possibly the clients can continue
-to call the legacy `/_matrix/media/v3/download` URI for now: ultimately this
-problem will be solved by the transition to OIDC. Alternatively, a dedicated
-API could be provided or permission to use HTTP(S) URLs to access the icons.
-This support would come from a different MSC.
+Servers MAY flag the media as exceptions to the freeze described in part 5 of
+this proposal ("Backwards compatibility mechanisms"). Clients SHOULD continue to
+use the unauthenticated media download/thumbnail endpoints to access these icons
+until a future MSC can improve the situation.
+
+The proposal author expects that the spec's transition to OIDC will ultimately
+replace this mechanism, or that an MSC could be opened to allow HTTP(S) URLs in
+place of `mxc:` URIs.
 
 (This was previously discussed in
 [MSC2858](https://github.com/matrix-org/matrix-spec-proposals/pull/2858#discussion_r543513811).)
