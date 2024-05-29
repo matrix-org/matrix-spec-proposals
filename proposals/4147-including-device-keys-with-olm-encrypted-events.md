@@ -1,4 +1,4 @@
-# MSCxxxx: Including device keys with Olm-encrypted events
+# MSC4147: Including device keys with Olm-encrypted events
 
 When a Megolm session is sent from one device to another via Olm, the recipient
 can
@@ -128,7 +128,7 @@ came from a deleted device.
 ## Unstable prefix
 
 Until this MSC is accepted, the new property should be named
-`org.matrix.mscxxxx.device_keys`.
+`org.matrix.msc4147.device_keys`.
 
 ## Dependencies
 
