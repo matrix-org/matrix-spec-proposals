@@ -25,7 +25,7 @@ field `m.marked_unread` which just stores the following:
 ```
 
 When this is true a client should show the room with an indeterminate unread marker. This marker should
-be of similar visual importance to a notification badge without the notification count. For example if 
+be of similar visual importance to a non-highlight notification badge without the notification count. For example if 
 you have a red circle with small numbers inside for counting notifications next to a room, then a room 
 without notifications but marked as unread should have just the red circle. If a client gets new 
 notifications after marking a room as unread the notification count should be displayed instead as normal.
