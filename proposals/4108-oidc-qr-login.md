@@ -1314,7 +1314,7 @@ Example:
 
 ##### `m.login.declined`
 
-Sent by: existing device
+Sent by: new device
 
 Purpose: Indicates that the user declined the request
 
