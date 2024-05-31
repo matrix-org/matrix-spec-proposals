@@ -83,7 +83,7 @@ The response will mimic the request:
 ### Delegating futures
 
 The `token` can be used to call another future related endpoint:
-`PUT /_matrix/client/v3/futures/refresh` and `PUT /_matrix/client/v3/futures/action/${actionName}`.
+`POST /_matrix/client/v3/futures/refresh` and `POST /_matrix/client/v3/futures/action/${actionName}`.
 where the body is:
 
 ```json
