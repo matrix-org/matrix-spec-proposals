@@ -9,7 +9,7 @@ matrix.
 
 Currently there is no mechanism for a client to reliably that an event is still valid.
 The only way to update an event is to post a new one.
-In some situations the client just looses connection or fails to sent the expired
+In some situations the client just loses connection or fails to sent the expired
 version of the event. This proposal also includes a expiration/timeout
 system so that those scenarios are also covered.
 
@@ -34,27 +34,27 @@ to send a list of event contents. The body looks as following:
 
 ```json
 {
-  "m.timeout": 10,
-  "m.send_on_timeout": {
-    "content": sendEventBody0,
-    "type": "m.room.message",
-  },
+  "timeout": 10,
+  "send_on_timeout": {...fullSignedEvent},
 
-  "m.send_on_action:${actionName}": {
-    "content": sendEventBody1,
-    "type": "m.room.message"
-  },
+  "send_on_action":{
+    "${action1}": {...fullSignedEvent},
+    "${action2}": {...fullSignedEvent},
+    ...
+  }
 
   // optional
-  "m.send_now": {
-    "content": sendEventBody2,
-    "type": "m.room.message"
-    },
+  "send_now": {...fullSignedEvent},
 }
 ```
 
 Each of the `sendEventBody` objects are exactly the same as sending a normal
 event.
+
+Power levels are evaluated once one of the events will be distributed/inserted into the DAG.
+This implies a future can fail if it violates power levels at the time it resolves.
+(Its also possible to successfylly send a future the user has no permission to at the time of sending
+if the power level situation has changed at the time the future resolves.)
 
 There can be an arbitrary amount of `actionName`s.
 
@@ -215,6 +215,10 @@ This MSC also allows to implement self destructing messages:
 
 ## EventId template variable
 
+> [!IMPORTANT]  
+> This proposes a stop gap solution. It is highly preferred to have a general batch sending solution.
+> Also see the **Alternatives** section
+
 It would be useful to be able to send redactions and edits as one http request.
 This would make sure that the client cannot loose connection after sending the first event.
 For instance sending a self destructing message without the redaction.
@@ -244,6 +248,12 @@ The **Self destructing messages** example would simplify to:
 }
 ```
 
+With cryptographic identities events would be presigned.
+The server will first send the finilized event to the client.
+At this point the client has the id but the event is not in the DAG.
+So it would be trivial to sign both the event and the redaction/related event
+and then send them.
+
 ## Potential issues
 
 ## Alternatives
@@ -272,9 +282,11 @@ The client would need to send the events in sequence, so the
 connection could be lost between the now event and the future.
 It is expected that this is a very rare case.
 
-Sequence wise it might make sense to not include the `m.send_now` in this
-msc and solve the topic by a good and flexible batch sending solution
+Sequence wise it makes sense to not include the `m.send_now` in this
+MSC and solve the topic by a good and flexible batch sending solution
 independent of this PR. (then the future and the event could be sent in one batch giving the same result as the `m.send_now` field)
+
+Especially when we use pre-signed events not having `$m.send_now.event_id` seems to be the sane solution.
 
 ## Security considerations
 
