@@ -6,7 +6,7 @@ of a replied to message. The fallback representation was meant to simplify
 supporting replies in a new client, but in practice they add complexity, are
 often implemented incorrectly and block new features.
 
-This MSC proposes to deprecate and eventually remove those fallbacks.
+This MSC proposes to **remove** those fallbacks from the specification.
 
 Some of the known issues include:
 * The content of reply fallback is [untrusted](https://spec.matrix.org/v1.10/client-server-api/#stripping-the-fallback).
