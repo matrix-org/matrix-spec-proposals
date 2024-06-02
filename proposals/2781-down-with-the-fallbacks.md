@@ -1,61 +1,72 @@
 # MSC2781: Remove reply fallbacks from the specification
 
-Currently replies require clients to send and parse a fallback representation
-of the replied to message. While at least in theory fallbacks should make it
-simpler to start supporting replies in a new client, they actually introduce a
-lot of complexity and implementation issues and block a few valuable features.
-This MSC proposes to deprecate and eventually remove those fallbacks. It was an
-alternative to [MSC2589](https://github.com/matrix-org/matrix-doc/pull/2589),
-which chose a different representation of the reply fallback, but was
-ultimately closed in favor of this proposal.
+Currently the specification suggest clients should send and strip a
+[fallback representation](https://spec.matrix.org/v1.10/client-server-api/#fallbacks-for-rich-replies)
+of a replied to message. The fallback representation was meant to simplify
+supporting replies in a new client, but in practice they add complexity, are
+often implemented incorrectly and block new features.
+
+This MSC proposes to deprecate and eventually remove those fallbacks.
+
+Some of the known issues include:
+* The content of reply fallback is [untrusted](https://spec.matrix.org/v1.10/client-server-api/#stripping-the-fallback).
+* Reply fallbacks may leak history. ([#368](https://github.com/matrix-org/matrix-spec/issues/368))
+* Parsing reply fallbacks can be tricky. ([#350](https://github.com/matrix-org/matrix-spec/issues/350))
+* It is unclear how to handle a reply to a reply. ([#372](https://github.com/matrix-org/matrix-spec/issues/372))
+* Localization of replies is not possible when the content is embedded into the event.
+* It is not possible to fully redact an event once it is replied to, this causes both trust & safety and right to be forgotten issues.
+* There are a variety of implementation bugs related to reply fallback handling.
+
+More details and considerations are provided in the appendices, but these are
+provided for convenience and aren't necessary to understand this proposal.
 
 ## Proposal
 
 Remove the [rich reply fallback from the
-specification](https://spec.matrix.org/v1.1/client-server-api/#fallbacks-for-rich-replies).
+specification](https://spec.matrix.org/v1.10/client-server-api/#fallbacks-for-rich-replies).
 Clients should stop sending them and should consider treating `<mx-reply>` parts
 as either something to be unconditionally stripped or as something to be escaped
-as invalid html. Clients may send replies without a formatted_body now using
-arbitrary message events (not state events), which is currently still disallowed
-by the
-[specification](https://spec.matrix.org/v1.1/client-server-api/#rich-replies).
+as invalid html.
 
-As a result of this, you would be able to reply with an image.  New clients
-would also be able to implement edits and replies more easily, as they can
-sidestep a lot of pitfalls.
+Clients are not required to include a fallback in a reply since version 1.3 of
+the
+[specification](https://spec.matrix.org/v1.10/client-server-api/#rich-replies).
+For this reason the reply fallbck can be removed from the specification without
+any additional deprecation period.
+
+An info box should be included to mention the historical use of the reply
+fallback, suggesting that clients may encounter such events sent by other
+clients and that clients may need to strip out such fallbacks.
 
 Given clients have had enough time to implement replies completely, the
 overall look & feel of replies should be unchanged or even improved by this
-proposal.
+proposal. Implementing replies in a client should also be a bit easier with this
+change.
 
 An extended motivation is provided at [the end of this document](#user-content-appendix-b-issues-with-the-current-fallbacks).
 
 ## Potential issues
 
-Obviously you can't remove the fallback from old events. As such clients would
-still need to do something with them in the near future. I'd say just not
-handling them in a special way should be okay after some unspecified period of
-time.
+Old events and events sent by clients implementing an older version of the
+Matrix specification might still contain a reply fallback. So for at least some
+period of time clients will still need to strip reply fallbacks from messages.
 
-Clients not implementing rich replies or edits may show some slightly more
-confusing messages to users as well. I'd argue though that in most cases, the
-reply is close enough to the replied to message, that you would be able to guess
-the correct context. Replies would also be somewhat easier to implement and
-worst case, a client could very easily implement a little "this is a reply"
-marker to at least mark replies visually. Not having a reply fallback might also
-prompt some clients to implement support for rich replies sooner. Users will now
-complain about no context. Previously there was some context for replies to text
-messages, which made it easy to accept the solution as good enough. However the
-experience with replies to images was not acceptable. Motivating clients to
-implement rich replies is a good thing in the long run and will improve the
-Matrix experience overall.
+Clients which don't implement rich replies or edits may see messages
+without context, confusing users. However, most replies and edits are
+in close proximity to the original message, making context likely to be
+nearby. Clients should also have enough information in the event to
+render helpful indications to users while they work on full support.
 
-You might not get notifications any more for replies to your messages. This was
-a feature of the reply fallback, because it included the username, but users had
-no control over it. Notifications can be added back by an MSC like
-[MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664) or a similar
-proposal and give the user more control over the notifications while also being
-an explicit solution.
+Clients which aren't using
+[intentional mentions](https://spec.matrix.org/v1.7/client-server-api/#mentioning-the-replied-to-user)
+may cause some missed notifications on the receiving side.
+[MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664) and similar aim to
+address this issue, as
+[MSC4142](https://github.com/matrix-org/matrix-spec-proposals/pull/4142) tries
+to improve the intentional mentions experience for replies generally.
+Because intentional mentions are already part of the Matrix specification since
+version 1.7, clients can be expected to implement those first, which should make
+the impact on notifications minimal in practice.
 
 ## Alternatives
 
@@ -83,6 +94,12 @@ client didn't already have from interpreting untrusted html, though. In all
 other cases this should **reduce** security issues (see
 https://github.com/vector-im/element-web/releases/tag/v1.7.3 or the appendix for
 examples).
+
+## Unstable prefix
+
+No unstable prefix should be necessary as clients aren't required to send reply
+fallbacks for all messages since version 1.3 of the Matrix specification, which
+changed the wording from "MUST" to "SHOULD".
 
 ## Appendix A: Support for rich replies in different clients
 
@@ -210,6 +227,9 @@ leak data to users, that joined this room at a later point, but shouldn't be
 able to see the event because of visibility rules or encryption. While this
 isn't a big issue, there is still an issue about it: https://github.com/matrix-org/matrix-doc/issues/1654
 
+This history leak can also cause abusive or redacted messages to remain visible
+to other room members, depending on the client implementation of replies.
+
 Historically clients have also sometimes localized the fallbacks. In those cases
 they leak the users language selection for their client, which may be personal
 information.
@@ -259,9 +279,3 @@ experience for casual users in non-english speaking countries. The specification
 currently requires them to not be translated (although some clients don't follow
 that), but not sending a fallback at all completely sidesteps the need for the
 spec to specify that and clients relying on an english only fallback.
-
-## Unstable prefix
-
-Clients should use the prefix `im.nheko.msc2781.` for all their event types, if
-they implement this MSC in a publicly available release or events may otherwise
-bleed into public rooms.
