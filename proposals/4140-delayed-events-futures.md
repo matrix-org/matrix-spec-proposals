@@ -1,7 +1,7 @@
 # MSC4140: Delayed events (Futures)
 
 Allowing to schdeule/delay events would solve numerous issues in
-matrix.
+Matrix.
 
 - Updating call member events after the user disconnected.
 - Sending scheduled messages (send at a specific time)
