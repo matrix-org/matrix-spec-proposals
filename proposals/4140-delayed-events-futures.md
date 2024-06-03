@@ -302,7 +302,7 @@ over the expiration and only intentional delegation of that ownership
 (sharing the token) is possible.
 
 On the other hand the token makes sure that the instance gets as little
-information about the matrix metadata of the associated `future` event. It cannot
+information about the Matrix metadata of the associated `future` event. It cannot
 even tell with which room or user it is interacting.
 
 ## Unstable prefix
