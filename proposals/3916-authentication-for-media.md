@@ -41,18 +41,14 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    | [`GET /_matrix/media/v3/config`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3config) | `GET /_matrix/client/v1/media/config` | - |
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)            | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`            | `GET /_matrix/federation/v1/media/download/{mediaId}`  |
    | [`GET /_matrix/media/v3/download/{serverName}/{mediaId}/{fileName}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaidfilename) | `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}` | -                                                                 |
-   | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | - |
+   | [`GET /_matrix/media/v3/thumbnail/{serverName}/{mediaId}`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3thumbnailservernamemediaid)          | `GET /_matrix/client/v1/media/thumbnail/{serverName}/{mediaId}`           | `GET /_matrix/federation/v1/media/thumbnail/{mediaId}` |
 
    **Note**: [`POST /_matrix/media/v3/upload`](https://spec.matrix.org/v1.6/client-server-api/#post_matrixmediav3upload)
    and [`POST /_matrix/media/v1/create`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixmediav1create)
    are **not** modified or deprecated by this MSC: it is intended that they be brought into line with the other
    endpoints by a future MSC, such as [MSC3911](https://github.com/matrix-org/matrix-spec-proposals/pull/3911).
 
-   **Note**: `/thumbnail` does not have a federation endpoint. It appears as though
-   no servers request thumbnails over federation, and so it is not supported here.
-   A later MSC may introduce such an endpoint.
-
-2. Removal of `allow_remote` parameter from `/download`
+2. Removal of `allow_remote` parameter from `/download` and `/thumbnail`
 
    The current
    [`/download`](https://spec.matrix.org/v1.6/client-server-api/#get_matrixmediav3downloadservernamemediaid)
@@ -62,9 +58,10 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    server should request remote media from other servers. This is redundant
    with the new endpoints, so will not be supported.
 
-   Servers MUST NOT return remote media from `GET /_matrix/federation/v1/media/download`. The
-   `serverName` is omitted from the endpoint's path to strongly enforce this - the `mediaId` in
-   a request is assumed to be scoped to the target server.
+   Servers MUST NOT return remote media from `GET /_matrix/federation/v1/media/download` or
+   `GET /_matrix/federation/v1/media/thumbnail`. The `serverName` is omitted from
+   the endpoint's path to strongly enforce this - the `mediaId` in a request is
+   assumed to be scoped to the target server.
 
    `/_matrix/client/v1/media/download` and
    `/_matrix/client/v1/media/thumbnail` return remote media as normal.
@@ -159,6 +156,9 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
      This media is plain text. Maybe somebody used it as a paste bin.
      ```
 
+     **Note**: For clarity, the above applies to the federation `/thumbnail` endpoint
+     as well as `/download`.
+
 5. Backwards compatibility mechanisms
 
    Servers SHOULD *stop* serving new media as unauthenticated within 1 spec release
@@ -213,7 +213,7 @@ This proposal supersedes [MSC1902](https://github.com/matrix-org/matrix-spec-pro
    and `/thumbnail` Client-Server API endpoints.
 
    Servers MUST expect the `Location` header in the media part of the new Server-Server
-   API `/download` endpoint. Servers MUST NOT respond with a 307 or 308 redirect at
+   API `/download` and `/thumbnail` endpoints. Servers MUST NOT respond with a 307 or 308 redirect at
    the top level for the endpoint - they can only redirect within the media part
    itself.
 
@@ -292,7 +292,7 @@ place of `mxc:` URIs.
 * Users will be unable to copy links to media from web clients to share out of
   band. This is considered a feature, not a bug.
 
-* Over federation, the use of the `Range` request header on `/download` becomes
+* Over federation, the use of the `Range` request header on the federation endpoints becomes
   unclear as it could affect either or both parts of the response. There does not
   appear to be formal guidance in [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#field.range)
   either. There are arguments for affecting both and either part equally. Typically,
@@ -303,7 +303,7 @@ place of `mxc:` URIs.
   should be handled, and leaves it as an HTTP specification interpretation problem
   instead.
 
-* The `Location` header support on the new `/download` endpoint could add a bit
+* The `Location` header support on the new federation endpoints could add a bit
   of complexity to servers, though given the alternative of supporting CDNs and
   similar is to place complexity into "edge workers" to mutate the response value.
   Though the Matrix spec would be "simpler", the edge worker setup would be
@@ -331,8 +331,8 @@ place of `mxc:` URIs.
   /_matrix/media/v3/config` at present, and we could just leave them in
   place. However, changing them at the same time makes the API more consistent.
 
-  Conversely, we should make sure to rename `POST
-  /_matrix/media/v3/upload` and `GET /_matrix/media/v3/create`. The reason to
+  Conversely, we should make sure to rename `POST /_matrix/media/v3/upload`
+  and `GET /_matrix/media/v3/create`. The reason to
   delay doing so is because MSC3911 will make more substantial changes to these
   endpoints, requiring another rename, and it is expected that both proposals
   will be merged near to the same time as each other (so a double rename will
@@ -341,7 +341,7 @@ place of `mxc:` URIs.
 
 * Rather than messing with multipart content, have a separate endpoint for
   servers to get the metadata for a media item. That would mean two requests,
-  but might make more sense than `/download` providing the info directly.
+  but might make more sense than the federation endpoints providing the info directly.
 
   This is a plausible approach with no significant upsides or downsides when
   compared to multipart responses.
@@ -388,11 +388,13 @@ While this proposal is in development, the new endpoints should be named as foll
 
     The `serverName` was later dropped in favour of explicit scoping. See `allow_remote` details
     in the MSC body for details.
+* `GET /_matrix/federation/unstable/org.matrix.msc3916.v2/media/thumbnail/{mediaId}`
+  * **Note**: This endpoint has a `.v2` in its unstable identifier due to the MSC changing after
+    initial implementation. The original unstable endpoint has a `serverName` and may still be
+    supported by some servers: `GET /_matrix/federation/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`
 
-In a prior version of this proposal, the federation API included a thumbnail endpoint.
-It was removed due to lack of perceived usage. Servers which implemented the unstable
-version will have done so under `GET /_matrix/federation/unstable/org.matrix.msc3916/media/thumbnail/{serverName}/{mediaId}`.
-The client-server thumbnail endpoint is unaffected by this change.
+    The `serverName` was later dropped in favour of explicit scoping. See `allow_remote` details
+    in the MSC body for details.
 
 ## Dependencies
 
