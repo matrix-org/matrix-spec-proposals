@@ -4,25 +4,25 @@ Allowing to schdeule/delay events would solve numerous issues in
 Matrix.
 
 - Updating call member events after the user disconnected.
-- Sending scheduled messages (send at a specific time)
-- Creating self destructing events (By sending a delayed redact)
+- Sending scheduled messages (send at a specific time).
+- Creating self-destructing events (by sending a delayed redact).
 
-Currently there is no mechanism for a client to reliably that an event is still valid.
+Currently there is no mechanism for a client to reliably determine that an event is still valid.
 The only way to update an event is to post a new one.
-In some situations the client just loses connection or fails to sent the expired
-version of the event. This proposal also includes a expiration/timeout
+In some situations the client just loses connection or fails to send the expired
+version of the event. This proposal also includes an expiration/timeout
 system so that those scenarios are also covered.
 
-We want to send an event in advance
-to the homeserver but let the homeserver decide the time when its actually added to the
+We want to send an event to the homeserver in advance,
+but let the homeserver decide the time when its actually added to the
 DAG.
-The condition for actually sending the delayed event would could be a timeout or a external trigger via a synapse endpoint.
+The condition for actually sending the delayed event could be a timeout or a external trigger via an unauthenticated Synapse endpoint.
 
 ## Proposal
 
 To make this as generic as possible, the proposed solution is to allow sending
 multiple presigned events and delegate the control of when to actually send these
-events to an external services. This allows to a very flexible way to mark events as expired,
+events to an external service. This allows a very flexible way to mark events as expired,
 since the sender can choose what event will be sent once expired.
 
 We call those delayed events `Futures`.
@@ -51,15 +51,15 @@ to send a list of event contents. The body looks as following:
 Each of the `sendEventBody` objects are exactly the same as sending a normal
 event.
 
-Power levels are evaluated once one of the events will be distributed/inserted into the DAG.
+Power levels are evaluated for each event only once the trigger has occurred and it will be distributed/inserted into the DAG.
 This implies a future can fail if it violates power levels at the time it resolves.
-(Its also possible to successfylly send a future the user has no permission to at the time of sending
+(Its also possible to successfully send a future the user has no permission to at the time of sending
 if the power level situation has changed at the time the future resolves.)
 
-There can be an arbitrary amount of `actionName`s.
+There can be an arbitrary number of `actionName`s.
 
 All of the fields are optional except the `timeout` and the `send_on_timeout`.
-This guarantees that all tokens will expire eventually.
+This guarantees that all tokens will eventually expire.
 
 The homeserver can set a limit to the timeout and return an error if the limit
 is exceeded.
@@ -108,7 +108,7 @@ The homeserver does the following when receiving a Future.
   - If a `PUT /_matrix/client/v3/futures/refresh` is received, it
     **restarts the timer** with the stored timeout duration.
   - If a `PUT /_matrix/client/v3/futures/action/${actionName}` is received, it **sends the associated action event**
-    `m.action:${actionName}`.
+    `m.send_on_action:${actionName}`.
   - If the timer times out, **it sends the timeout event** `m.send_timeout`.
   - If the future is a state event and includes a `m.send_now` event
     the future is only valid while the `m.send_now`
@@ -122,7 +122,7 @@ The homeserver does the following when receiving a Future.
       new event will always converge to the new event:
       - Timeout -> new event: the room state will be updated twice. once by
         the content of the `m.send_on_timeout` event but later with the new event.
-      - new event -> timeout: the new event will invalidate the future. No
+      - new event -> timeout: the new event will invalidate the future.
 
 - After the homeservers sends a timeout or action future event, the associated
   timer and `future_token` is canceled/invalidated.
@@ -168,7 +168,7 @@ of the final events how they will end up in the DAG with the associated `future_
 
 This can be used so clients can optionally display events
 that will be send in the future.
-For self destructing messages it is recommanded to include
+For self-destructing messages it is recommended to include
 this information in the event itself so that the usage of
 this endpoint can be minimized.
 
@@ -187,9 +187,9 @@ We want can use the actions and the timeout for matrix rtc for the following sit
   This significantly reduces the amount of calls for the `/future` endpoint since the sfu only needs to ping
   once per session (per user) and every 2-5hours (instead of every `X` seconds.)
 
-### Self destructing messages
+### Self-destructing messages
 
-This MSC also allows to implement self destructing messages:
+This MSC also allows to implement self-destructing messages:
 
 `PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`
 
@@ -219,14 +219,14 @@ This MSC also allows to implement self destructing messages:
 > This proposes a stop gap solution. It is highly preferred to have a general batch sending solution.
 > Also see the **Alternatives** section
 
-It would be useful to be able to send redactions and edits as one http request.
-This would make sure that the client cannot loose connection after sending the first event.
-For instance sending a self destructing message without the redaction.
+It would be useful to be able to send redactions and edits as one HTTP request.
+This would handle the situation where otherwise the client might lose it's connectionafter sending the first event.
+For instance, sending a self-destructing message without the redaction.
 
 The optional proposal is to introduce template variables that are only valid in `Future` events.
 `$m.send_now.event_id` in the content of one of the `m.send_on_action:${actionName}` and
 `m.send_on_timeout` contents this template variable can be used.
-The **Self destructing messages** example would simplify to:
+The **Self-destructing messages** example would simplify to:
 
 `PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
 
@@ -277,7 +277,7 @@ The following names for the endpoint are considered
 The `m.send_now` field could not be part of the future. This would also
 mitigate the need for the `$m.send_now.event_id` template variable.
 
-It would come with the cost that there is no way to guarantee, taht the current state and the future are recieved by the homeserver.
+It would come with the cost that there is no way to guarantee, that the current state and the future are received by the homeserver.
 The client would need to send the events in sequence, so the
 connection could be lost between the now event and the future.
 It is expected that this is a very rare case.
@@ -307,6 +307,6 @@ even tell with which room or user it is interacting.
 
 ## Unstable prefix
 
-use `io.element.` instead of `m.` as long as the msc is not stable.
+Use `io.element.` instead of `m.` as long as the MSC is not stable.
 
 ## Dependencies
