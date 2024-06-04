@@ -28,8 +28,8 @@ frame-ancestors 'none'; form-action 'none'; base-uri 'none';
 
 Modern browsers no longer use the `plugin-types` directive. It was originally intended for use with
 legacy plugins such as those for PDF viewing, which are no longer common practice. Furthermore,
-[MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702) explicitly disallows PDFs, making
-this directive unnecessary and potentially misleading.
+[MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702) recommends against the use of PDFs,
+making this directive unnecessary and potentially misleading.
 
 References:
 
@@ -112,5 +112,5 @@ once approved.
 ## Dependencies
 
 This MSC builds on the understanding and practices outlined in
-[MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702), which disallows the use of
-certain media types, such as PDFs. There are no other direct dependencies for this proposal.
+[MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702), which recommends against the use
+of certain media types, such as PDFs. There are no other direct dependencies for this proposal.
