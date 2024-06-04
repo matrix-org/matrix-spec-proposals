@@ -31,12 +31,22 @@ legacy plugins such as those for PDF viewing, which are no longer common practic
 [MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702) explicitly disallows PDFs, making
 this directive unnecessary and potentially misleading.
 
+References:
+
+- [CSP recommendations by Mozilla Security](https://infosec.mozilla.org/guidelines/web_security#content-security-policy)
+- [XMPP's XEP-0363 on CSP](https://xmpp.org/extensions/xep-0363.html#server)
+
 #### Remove `style-src 'unsafe-inline';`
 
 The directive `style-src 'unsafe-inline';` allows the use of inline styles. While this may be
 convenient, it poses a significant security risk by enabling potential Cross-Site Scripting (XSS)
 attacks. By removing this directive, we enforce the use of external stylesheets, which are safer
 and more manageable.
+
+References:
+
+- [Google's CSP validator](https://csp-evaluator.withgoogle.com/)
+- [internet.nl's website security tester on CSP](https://internet.nl/faqs/appsecpriv/)
 
 #### Remove `object-src 'self';`
 
@@ -45,13 +55,18 @@ feature. This directive is largely obsolete as modern web development practices 
 `<object>` elements. Additionally, removing this directive simplifies the CSP and eliminates
 potential attack vectors.
 
+References:
+
+- [CSP recommendations by Mozilla Security](https://infosec.mozilla.org/guidelines/web_security#content-security-policy)
+
 ### New CSP Directives
 
 The updated CSP directives aim to provide a more secure baseline by eliminating unnecessary and
 insecure directives. The new set of directives is:
 
 ```plaintext
-sandbox; default-src 'none'; font-src 'none'; script-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'none';
+sandbox; default-src 'none'; script-src 'none'; font-src 'none';
+frame-ancestors 'none'; form-action 'none'; base-uri 'none';
 ```
 
 These directives ensure that:
