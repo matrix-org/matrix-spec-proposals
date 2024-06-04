@@ -6,61 +6,71 @@ The current Content Security Policy (CSP) directives recommended for the media r
 Matrix specification contain outdated and potentially insecure directives. This proposal aims to
 update these directives to enhance security and align with modern web standards.
 
-The issues with the existing directives are as follows:
-
-1. `plugin-types application/pdf;` is a legacy directive that modern browsers do not use, and PDFs
-   are not allowed as per MSC2702.
-2. `style-src 'unsafe-inline';` allows inline CSS, which poses security risks.
-3. `object-src 'self';` relates to legacy web plugins and the `<object>` element, which are
-   deprecated and under consideration for removal.
-
-Updating these directives will improve the security posture of the Matrix media repository and
-ensure compliance with contemporary web practices.
-
 ## Proposal
 
-### Remove `plugin-types application/pdf;`
-
-Modern browsers no longer use the `plugin-types` directive. This directive is redundant given the
-deprecation of web plugins and is unnecessary since MSC2702 explicitly disallows PDFs.
-
-### Update `style-src` Directive
-
-The current directive is:
+The current CSP directives for the media repository are as follows:
 
 ```plaintext
-style-src 'unsafe-inline';
+sandbox; default-src 'none'; script-src 'none'; plugin-types application/pdf;
+style-src 'unsafe-inline'; object-src 'self';
 ```
 
-The proposed directive is:
+The proposed changes are to update the CSP directives to:
 
 ```plaintext
-style-src 'self';
+sandbox; default-src 'none'; script-src 'none'; font-src 'none';
+frame-ancestors 'none'; form-action 'none'; base-uri 'none';
 ```
 
-Allowing `'unsafe-inline'` poses a significant security risk by enabling inline CSS, which can be
-exploited for Cross-Site Scripting (XSS) attacks. Restricting `style-src` to `'self'` ensures that
-styles are only loaded from the same origin, enhancing security.
+### Details of the Proposal
 
-### Remove `object-src 'self';`
+#### Remove `plugin-types application/pdf;`
 
-The `object-src` directive pertains to legacy web plugins, which are deprecated. The use of
-`<object>` elements is being reconsidered for removal, rendering this directive obsolete.
+Modern browsers no longer use the `plugin-types` directive. It was originally intended for use with
+legacy plugins such as those for PDF viewing, which are no longer common practice. Furthermore,
+[MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702) explicitly disallows PDFs, making
+this directive unnecessary and potentially misleading.
 
-### Proposed CSP Directive
+#### Remove `style-src 'unsafe-inline';`
 
-After the proposed changes, the updated CSP directive for the media repository would be:
+The directive `style-src 'unsafe-inline';` allows the use of inline styles. While this may be
+convenient, it poses a significant security risk by enabling potential Cross-Site Scripting (XSS)
+attacks. By removing this directive, we enforce the use of external stylesheets, which are safer
+and more manageable.
+
+#### Remove `object-src 'self';`
+
+The `object-src` directive is related to the use of `<object>` elements, which are also a legacy
+feature. This directive is largely obsolete as modern web development practices do not rely on
+`<object>` elements. Additionally, removing this directive simplifies the CSP and eliminates
+potential attack vectors.
+
+### New CSP Directives
+
+The updated CSP directives aim to provide a more secure baseline by eliminating unnecessary and
+insecure directives. The new set of directives is:
 
 ```plaintext
-Content-Security-Policy: default-src 'self'; style-src 'self';
+sandbox; default-src 'none'; font-src 'none'; script-src 'none'; frame-ancestors 'none'; form-action 'none'; base-uri 'none';
 ```
 
-## Potential issues
+These directives ensure that:
 
-Updating CSP directives could potentially cause issues for implementations that rely on the
-outdated directives. However, these changes should not adversely impact existing implementations as
-the directives being removed or modified are related to deprecated features. Developers should
-verify that their applications do not rely on these outdated directives.
+- No content is allowed to load by default (`default-src 'none';`).
+- No fonts can be loaded (`font-src 'none';`).
+- No scripts can be executed (`script-src 'none';`).
+- The content cannot be embedded into other sites (`frame-ancestors 'none';`).
+- Forms cannot be submitted (`form-action 'none';`).
+- The document’s base URL cannot be overridden (`base-uri 'none';`).
+
+## Potential Issues
+
+### Developer Adaptation
+
+This Content Security Policy is already in use on a number of live homeservers as it reflects
+modern web application design, and specifically modern Matrix client usage. As such, it is not
+expected that developers will need to make any changes, and this policy may in fact protect users
+from developer error.
 
 ## Alternatives
 
@@ -71,18 +81,21 @@ improving the security posture of the Matrix media repository.
 Another alternative could be to adopt a more permissive CSP, but this would compromise security and
 increase the risk of XSS attacks and other vulnerabilities.
 
-## Security considerations
+## Security Considerations
 
-Removing outdated directives and disallowing inline styles reduces the attack surface and mitigates
-potential XSS attacks. These changes align with security best practices and ensure compliance with
-modern web standards.
+The primary goal of updating these CSP directives is to enhance security. By removing obsolete
+directives and disallowing insecure practices such as inline styles, we reduce the risk of XSS
+attacks and other vulnerabilities. The new directives provide a stricter and more secure baseline
+for handling content in the media repository.
 
-## Unstable prefix
+## Unstable Prefix
 
-As no actual functionality changes are proposed in any Matrix endpoints, it's not anticipated that
-an unstable prefix is necessary.
+This proposal does not introduce new endpoints or features requiring an unstable prefix.
+The changes are confined to the update of CSP directives, which should be implemented directly
+once approved.
 
 ## Dependencies
 
-This MSC builds on [MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702), which disallows
-PDFs. No additional dependencies are identified at the time of writing.
+This MSC builds on the understanding and practices outlined in
+[MSC2702](https://github.com/matrix-org/matrix-doc/pull/2702), which disallows the use of
+certain media types, such as PDFs. There are no other direct dependencies for this proposal.
