@@ -8,3 +8,4 @@ OTKs = "OTKs"
 [default.extend-words]
 OTK = "OTK"
 OTKs = "OTKs"
+Iy = "Iy"
