@@ -176,7 +176,40 @@ this endpoint can be minimized.
 
 ### MatrixRTC
 
-We want can use the actions and the timeout for matrix rtc for the following situations
+#### Background
+
+MatrixRTC makes it necessary to have real time information about the current matrixRTC session.
+To properly display room tiles and header in the room list (or compute a list of ongoing calls) need to know:
+
+- If there is a running session.
+- What type that session has.
+- Who and how many perople are currently participating.
+
+A particular delicat situation is that clients are not able to inform others if they loose connection.
+There are numerous approaches to solve such a situation. They split into two categories:
+
+- Polling based
+  - Ask the users if they are still connected.
+  - Ask an RTC backend (SFU) who is connected.
+- Timeout based
+  - Update the room state every x seconds. This allows clients to check how long an event has not been updated and ignore it if its expired.
+  - Use Future events with a 10s timeout to send the disconnected from call in less then 10s after the user is not anymore pingin the `/refresh` endpoint. (or delegate the disconnect action to a service attached to the SFU)
+
+Polling based solution have a big overhead in complexity and network requests on the clients.
+Example:
+
+> A room list with 100 rooms where there has been a call before in every room (or there is an ongoing call) would require the client to send a to-device message (or a request to the SFU) to every user that has an active state event to check if they are still online. Just to display the room tile properly.
+
+For displaying the room list timeout based approaches are much more reasonable because this allows computing matrixRTC metadata for a room to be synchronous.
+
+The current solution updates the room state every X minutes. This is not elegant since we basically resend room state with the same content. In large calls this could result in huge traffic/large DAGs (100 call members implies 100 state events every X minutes.) X cannot be a long duration because it is the duration after which we can consider the event as expired. Improper disconnects would result in the user being displayed as "still in the call" for X minutes (we want this to be as short as possible!)
+
+Additionally this approach requires perfect server client time synchronization to compute the expiration.
+This is currently not possible over federation since `unsigned.age` is not available over federation.
+
+#### Possible solution
+
+With this proposal we can provide an elegant solution using actions and timeouts to only send one event for joining and one for leaving (reliably)
 
 - If the client takes care of its membership, we use a short timeout value (around 5-20 seconds)
   The client will have to ping the refresh endpoint approx every 2-19 seconds.
