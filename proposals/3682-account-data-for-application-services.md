@@ -22,7 +22,7 @@ a mapping from User ID to Account Data object.
 
 **Example**
 `PUT /_matrix/app/v1/transactions/{txnId}`
-```json
+```json5
 {
     "events": [ ... ],
     "account_data": {
