@@ -44,7 +44,7 @@ require one event type.
 A complete `m.rtc.member` state event looks like this:
 
 ```json
-// event type: m.rtc.member
+// event type: "m.rtc.member"
 // event key: ["@user:matrix.domain", "DEVICEID"]
 {
   "application": "m.my_session_type",
@@ -66,7 +66,7 @@ A complete `m.rtc.member` state event looks like this:
 >
 > More specifically this uses the approach outlined in this [comment](https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-2099010555).
 
-giving us the information, that user: `@user:matrix.domain` with device `DEVICEID`
+This gives us the information, that user: `@user:matrix.domain` with device `DEVICEID`
 is part of an RTCSession of type `m.call` in the scope/sub-session `""` (empty
 string as call id) connected over `FOCUS_A`. This is all information that is needed
 for another room member to detect the running session and join it.
@@ -77,10 +77,18 @@ be the second element of the state key array.
 
 `created_ts` is an optional property that caches the time of creation. It is not required
 for an event that, has not yet been updated, there the `origin_server_ts` is used.
-Once the event gets updated the origin_server_ts needs to be copied into the `created_ts` field.
 
-There is **no event** to represent a session. This event would include shared
-information where it is not trivial to decide who has authority over it.
+> [!NOTE]
+> We introduce `created_ts()` as the notation for `created_ts ?? origin_server_ts`
+
+Once the event gets updated the origin_server_ts needs to be copied into the `created_ts` field.
+An existing `created_ts` field implies that this is a state event updating the current session
+and a missing `created_ts` field implies that it is a join state event.
+All membership events that belong to one member session can be grouped with the index
+`created_ts()`+`device_id`. This is why the `m.rtc.member` events deliberately do NOT include a `membership_id`.
+
+Other then the membership sessions, there is **no event** to represent a rtc session (containing all members).
+This event would include shared information where it is not trivial to decide who has authority over it.
 Instead the session is a computed value based on `m.rtc.member` events.
 The list of events with the same `application` and `m.call_id` represent one session.
 This array allows to compute fields like participant count, start time ...
