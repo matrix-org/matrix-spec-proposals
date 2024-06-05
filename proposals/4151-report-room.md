@@ -7,6 +7,13 @@ links to rooms, etc which all don't have an event ID to reference. If the client
 for the room, it can use the existing 'report event' API to report the room instead. However, this
 only works if the user has visibility on the event ID being reported too.
 
+These constraints are in addition to the legal obligations of clients to provide a safe user experience.
+In some countries, such as the UK, it is required that users be able to report *any* kind of content
+they see, and some app stores require similar reporting functionality for mobile apps. These obligations
+impose further obligations not discussed in this proposal. For example, actually handling the reports
+and informing the reporter how long it will take to process their request. These obligations are
+expected to be discussed in a future, larger, MSC series which revamps reporting in Matrix.
+
 This proposal introduces an endpoint for reporting rooms, expanding the capabilities of the reporting
 module. The scope of this proposal is intentionally narrow to ensure quick traversal of the MSC process.
 Other, future, MSCs may further expand the suite of endpoints available to clients (like reporting
