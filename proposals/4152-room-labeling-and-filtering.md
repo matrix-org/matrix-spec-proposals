@@ -178,6 +178,7 @@ While this proposal is not considered stable, clients should use the following m
   `?labels` and `?not_labels` query parameters.
 * `org.matrix.msc4152.labels` in place of `labels` on room results in `/publicRooms`.
 * `org.matrix.msc4152.label_interest` in place of `m.label_interest`.
+* `org.matrix.msc4152.nsfw` in place of the `m.nsfw` label.
 
 All other identifiers are as described in the MSC due to being namespaced at a higher level. For
 example, the `m.label_interest` account data event does *not* prefix the `labels` and `not_labels`
