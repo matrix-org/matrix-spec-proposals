@@ -78,6 +78,12 @@ Like `/report/:eventId`, handling of the report is left as a deliberate implemen
 
 * Reports are not federated. This is considered an issue for another MSC, like [MSC3843](https://github.com/matrix-org/matrix-spec-proposals/pull/3843).
 
+* Whether the local server is participating in a room is revealed through the new endpoint. The endpoint
+  is only available to local users however, and other ways of finding out the same information may
+  already be possible in Matrix (not verified). It is not immediately clear that disclosing this
+  information to local clients would cause harm to the server or its users. A future reporting over
+  federation proposal may wish to consider hiding the server's participation state, however.
+
 ## Alternatives
 
 * Mentioned in the introduction, if a client has an event ID for something in the room, it can typically
