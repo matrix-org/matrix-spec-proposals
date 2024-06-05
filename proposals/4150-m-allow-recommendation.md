@@ -10,8 +10,8 @@ to rules are denied.
 
 With only a single recommendation, however, it's not possible to _also_ support allow-list systems where
 every entity is denied by default and only those entities that match to rules are permitted. This is
-prominently evidenced by the fact that Mjolnir defines a custom [`org.matrix.mjolnir.allow`] recommendation
-to provide both block-list and allow-list semantics[^1].
+prominently evidenced by the fact that existing moderation tools such as [Mjolnir] and [Draupnir] use a
+custom `org.matrix.mjolnir.allow` recommendation[^1][^2] to provide both block-list and allow-list semantics[^3].
 
 The proposal at hand attempts to close this gap by standardizing an `m.allow` recommendation.
 
@@ -56,14 +56,17 @@ Until this proposal is accepted into the spec, implementations should refer to `
 None.
 
 
-[^1]: A concrete use case that requires both block-list and allow-list semantics can be found in the
+[^1]: https://github.com/matrix-org/mjolnir/blob/5e35efd1dbc0097a7c19bed2831a1308a29d7be7/src/models/ListRule.ts#L63
+[^2]: https://github.com/Gnuxie/matrix-protection-suite/blob/7fbf691f87056e01de7175b5322b25a901311409/src/PolicyList/PolicyRule.ts#L33
+[^3]: A concrete use case that requires both block-list and allow-list semantics can be found in the
       Gematik messenger specification for the healthcare sector in Germany. The latter currently depends
       on a custom state event to control invite permissions:
       https://github.com/gematik/api-ti-messenger/blob/9b9f21b87949e778de85dbbc19e25f53495871e2/src/schema/permissionConfig.json
 
 [`m.ban`]: https://spec.matrix.org/v1.10/client-server-api/#mban-recommendation
-[`org.matrix.mjolnir.allow`]: https://github.com/matrix-org/mjolnir/blob/5e35efd1dbc0097a7c19bed2831a1308a29d7be7/src/models/ListRule.ts#L63
 [listed]: https://spec.matrix.org/v1.10/client-server-api/#security-considerations-16
+[Draupnir]: https://github.com/the-draupnir-project/Draupnir
+[Mjolnir]: https://github.com/matrix-org/mjolnir
 [Mjolnir's implementation]: https://github.com/matrix-org/mjolnir/blob/5e35efd1dbc0097a7c19bed2831a1308a29d7be7/src/models/AccessControlUnit.ts#L266
 [moderation policy lists module]: https://spec.matrix.org/v1.10/client-server-api/#moderation-policy-lists
 [server access control lists]: https://spec.matrix.org/v1.10/client-server-api/#mroomserver_acl
