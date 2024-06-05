@@ -48,7 +48,7 @@ None on top of what's already [listed] in the spec.
 ## Unstable prefix
 
 Until this proposal is accepted into the spec, implementations should refer to `m.allow` as
-`org.matrix.msc4150.allow`.
+`org.matrix.mjolnir.allow`.
 
 
 ## Dependencies
