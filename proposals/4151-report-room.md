@@ -53,8 +53,8 @@ Like `/report/:eventId`, handling of the report is left as a deliberate implemen
   spoiler tags on report reasons/content.
 
 * Clients should hide rooms the user reports by default to both discourage duplicate reports and to
-  remove the harmful content from the user's view. This may require filtering room directory responses
-  and room lists for the user.
+  remove the harmful content from the user's view, where possible. This may require filtering room
+  directory responses and room lists for the user, or an "ignore room API" like [MSC3840](https://github.com/matrix-org/matrix-doc/pull/3840).
 
   If the user is joined to a room, the client may wish to offer the user an option to leave the room.
 
