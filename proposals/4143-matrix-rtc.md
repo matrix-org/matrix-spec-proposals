@@ -149,6 +149,50 @@ participants is explained.
   TODO: create `full-mesh` focus MSC based on[MSC3401](https://github.com/matrix-org/matrix-spec-proposals/pull/3401)
   and add link here.
 
+#### Sourcing `foci_preferred`
+
+At some point participants have to decide/propose which focus they use.
+Based on the focus type and usecase choosing a `foci_preferred` can be different.
+If possible these guidelines should be obeyed:
+
+- If there is a relation between the `focus_active` and a preferred focus (`type: livekit` is an example for this)
+  it is recommended to copy _the preferred focus that relates to the current `focus_active`_ of other participants to the start of the `foci_preferred` array of the member event.
+  (The exact definition of: _the preferred focus that relates to the current `focus_active`_ is part of the specification for each focus type. For `full_mesh` for example there is no such thing as: _the preferred focus that relates to the current `focus_active`_ )
+- Homeservers can proposes `preferred_foci` via the well known. An array of preferred foci is provided behind the well known key `m.rtc_foci`:
+  ```json
+  "m.rtc_foci": [
+        {
+            "type":"livekit",
+            "livekit_service_url":"https://my_livekit_focus.domain"
+        }
+    ]
+  ```
+  Those proposals from **your own** homeserver should come next in the `foci_preferred` list of the member event.
+- Clients also have the option to configure a preferred foci even though this is not recommended (see below).
+  Those come last in the list.
+
+The rational for those guidelines are as following:
+
+- It is always desired to have as little focus switches as possible.
+  That is why the highest priority is to prefer the focus that is already in use
+- MatrixRTC is designed around the same culture that makes matrix possible:
+  A large amount of infrastructure in form of homeservers is provided by the users.
+  For MatrixRTC the same is thea goal. To achieve a stable and healthy ecosystem
+  rtc infrastructure should be thought of as a part of a homeserver. It is very similar
+  to a turn server: mostly traffic and little cpu load.
+  To not end up in a world where each user is only using one central SFU but where the traffic
+  is split over multiple SFU's it is important that we leverage the SFU distribution on the
+  homeserver distribution.
+  For this reason the second guideline is to lookup the prefferred foci from the homeserver well_known
+- Looking up the prefferred foci from a client is toxic to a federated system. If the majority of users
+  decide to use the same client all of the users will use one Focus. This destroys the passive security mechanism, that each instance is not an interesting attack vector since it is only a fraction of the network.
+  Additionally it will result in poor performance if every user on matrix would use the same Focus.
+  There are cases where this is acceptable:
+  - Transitioning to MatrixRTC. Here it might be beneficial to have a client that has a fallback Focus
+    so calls also work with homeservers not supporting it.
+  - For testing purposes where a different Focus should be tested but one does not want to touch the .well_known
+  - For custom deployments that benefit from having the Focus configuration on a per client basis instead of per homeserver.
+
 ### The RTCSession types (application)
 
 Each session type might have its own specification in how the different streams
@@ -175,3 +219,11 @@ defined:
 ## Alternatives
 
 ## Security considerations
+
+## Unstable prefix
+
+The state events and the well_known key introduced in this MSC use the unstable prefix
+`org.matrix.msc4143.` instead of `m.` as used in the text.
+
+Possible values inside the `m.rtc.member` event (like `m.call`) will use a prefix defined in the
+related PR (TODO create and link `m.call` application type PR)
