@@ -20,8 +20,8 @@ community usage of these fields grows.
 Homeservers could disable the ability for users to update these fields, or require a specific list
 of fields, but the intention of this proposal is that users will be presented with a form to enter
 their own free-text fields and values. After using these very flexible fields, the community may
-opt to request a further extension to promote one or more fields to the "root" level of the profile
-and have them replicated per-room via member events.
+opt to request a further extension to promote one or more fields to be specified per-room via
+member events.
 
 ### Client-Server API Changes
 
@@ -94,6 +94,13 @@ storing metadata about the user that does not need to be replicated in each room
 - **Custom fields**: These are stored in the user's global profile and do not generate state events
   in rooms.
 
+### Size Limit
+
+To ensure efficient handling and storage of profile data, the entire user profile JSON object
+cannot exceed 64KiB. This follows the same size limit as events. Homeservers are allowed to limit
+the fields (or content) that their local users can set. However, the only limit they should impose
+on remote users is that the entire profile JSON block should not be larger than 64KiB.
+
 ### Server-Server API Changes
 
 1. **GET `/_matrix/federation/v1/query/profile/{userId}/{key_name}`** will mirror the client-server
@@ -128,8 +135,8 @@ servers and moderators.
 ## Alternatives
 
 An alternative could be to allow for more specific endpoint modifications or to introduce a
-completely new API specifically for extended information. However, these approaches could lead to
-more significant changes to the existing API and higher complexity for client developers.
+completely new API specifically for extended information. However, these approaches could lead
+to more significant changes to the existing API and higher complexity for client developers.
 
 ## Security Considerations
 
@@ -160,5 +167,5 @@ stable:
 ```
 
 The new endpoints would be on the
-`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` unstable version, before
-promoting to `/_matrix/client/v3/profile/{userId}/{key_name}` when this is stable.
+`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` unstable version,
+before promoting to `/_matrix/client/v3/profile/{userId}/{key_name}` when this is stable.
