@@ -13,6 +13,12 @@ The Matrix protocol's current user profile structure supports very limited field
 and `avatar_url`). This proposal suggests expanding this structure to include custom fields,
 allowing for a more versatile user profile.
 
+This proposal is designed to complement rather than replace
+[MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) (Extensible profiles as
+rooms). While [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) offers a more
+complex solution for extensible profiles, this proposal focuses on enabling the storage of small,
+arbitrary key:value pairs at the global level.
+
 This proposal does not seek to enforce the content or usage of these fields but rather to add a
 framework for users to have extra data that can be further clarified and extended in the future as
 community usage of these fields grows.
