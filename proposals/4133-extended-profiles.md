@@ -65,7 +65,10 @@ member events.
     }
     ```
 
-3. **GET `/_matrix/client/v3/profile/{userId}/`**: This endpoint will retrieve all profile fields:
+3. **DELETE `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will remove the key
+   (and associated value) from the profile, if permitted by the homeserver.
+
+4. **GET `/_matrix/client/v3/profile/{userId}/`**: This endpoint will retrieve all profile fields:
 
     ```json
     {
@@ -76,7 +79,7 @@ member events.
     }
     ```
 
-4. **POST `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
+5. **POST `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
    to replace the entire profile:
 
     ```json
@@ -87,25 +90,6 @@ member events.
       "custom_field2": ["new_value2", "new_value3"]
     }
     ```
-
-### Distinction Between Existing and Custom Fields
-
-The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
-room. These fields are replicated per-room via member events. Custom fields, however, will **not**
-trigger state events in rooms. They will exist solely at the global level and are intended for
-storing metadata about the user that does not need to be replicated in each room.
-
-- **avatar_url** and **displayname**: Changes to these fields will generate state events in all
-  rooms the user is a member of.
-- **Custom fields**: These are stored in the user's global profile and do not generate state events
-  in rooms.
-
-### Size Limit
-
-To ensure efficient handling and storage of profile data, the entire user profile JSON object
-cannot exceed 64KiB. This follows the same size limit as events. Homeservers are allowed to limit
-the fields (or content) that their local users can set. However, the only limit they should impose
-on remote users is that the entire profile JSON block should not be larger than 64KiB.
 
 ### Server-Server API Changes
 
@@ -128,6 +112,45 @@ Example capability object:
   }
 }
 ```
+
+### Distinction Between Existing and Custom Fields
+
+The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
+room. These fields are replicated per-room via member events. Custom fields, however, will **not**
+trigger state events in rooms. They will exist solely at the global level and are intended for
+storing metadata about the user that does not need to be replicated in each room.
+
+- **avatar_url** and **displayname**: Changes to these fields will generate state events in all
+  rooms the user is a member of.
+- **Custom fields**: These are stored in the user's global profile and do not generate state events
+  in rooms.
+
+### Key/Namespace Requirements for Custom Fields
+
+The namespace for field names is defined as follows:
+
+- The namespace `m.*` is reserved for fields defined in the Matrix specification. Clients should
+  ignore any fields in this namespace that they don't understand, as this field may have special
+  entry/display requirements that are defined in the Matrix specification.
+- The namespace `u.*` is reserved for user-defined fields. The portion of the string after the `u.`
+  is defined the display name of this field.
+
+For example, if a future MSC were to add a field for user pronouns (not included in this MSC) it
+might become `m.pronouns` after entering the spec, but during the unstable process it might be
+`org.matrix.msc9876.pronouns`. If the field did not exist in the Matrix spec at all, a user might
+add a "My Pronouns" field in their client which would be added to their profile as `u.My Pronouns`.
+
+### Size Limit
+
+The name of a field must not exceed 255 bytes.
+
+To ensure efficient handling and storage of profile data, the entire user profile JSON object
+cannot exceed 64KiB. This follows the same size limit as events. Homeservers are allowed to limit
+the fields (or content) that their local users can set. However, the only limit they should impose
+on remote users is that the entire profile JSON block should not be larger than 64KiB.
+
+The content of a field can be any valid JSON type, as long as the total size of the user profile
+does not exceed 64KiB.
 
 ### Implementation Details
 
@@ -176,18 +199,20 @@ of unintended data persistence.
 ## Unstable prefix
 
 The [current Matrix specification](https://spec.matrix.org/v1.10/#profiles) technically already
-allows extra custom fields to be published in a user's profile, however as this field has a special
-purpose, an unstable prefix should be used on the object until this proposal has entered the API as
-stable:
+allows extra custom fields to be published in a user's profile, however as this proposal introduces
+additional requirements and allows custom user-defined fields, an unstable prefix should be used on
+these fields until this proposal has entered the API as stable:
 
 ```json
 {
     "avatar_url": "mxc://matrix.org/MyC00lAvatar",
     "displayname": "John Doe",
-    "uk.tcpip.msc4133.custom_field1": "field_value",
-    "uk.tcpip.msc4133.custom_field2": ["one value", "another value"]
+    "uk.tcpip.msc4133.u.custom_field1": "field_value",
+    "uk.tcpip.msc4133.u.custom_field2": ["one value", "another value"]
 }
 ```
+
+**Note:** This example includes the `u.*` namespace to identify custom user-defined fields.
 
 The new endpoints would be on the
 `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` unstable version, before
