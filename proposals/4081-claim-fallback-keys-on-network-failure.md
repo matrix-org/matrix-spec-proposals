@@ -115,7 +115,10 @@ An example of an EDU with the new property:
 ### Changed semantics for `/keys/claim`
 
 [`POST /_matrix/client/v3/keys/claim`](https://spec.matrix.org/v1.9/client-server-api/#post_matrixclientv3keysclaim) can
-now respond with a cached fallback key if the remote server is unreachable.
+now respond with a cached fallback key if the remote server is unreachable. "Unreachable" includes:
+ - unable to connect to the server
+ - the sending server is backing off the remote server
+ - the remote server responded with an error code such as 429 Too Many Requests.
 
 ### Changed semantics for rotating fallback keys
 
