@@ -178,6 +178,11 @@ reasons, as many users will struggle to maintain many fields of personal data be
 rooms, and publishing state events for every field change could become an additional burden on
 servers and moderators.
 
+In a similar vein, this proposal offers no method to "broadcast" to other users or homeservers that
+changes have occurred. This is intentional to keep the scope of this change narrow and maximise
+compatibility with existing servers. A future proposal may wish to use an EDU (such as Presence) to
+notify users and homeservers that these custom fields have been updated.
+
 ## Alternatives
 
 An alternative could be to allow for more specific endpoint modifications or to introduce a
