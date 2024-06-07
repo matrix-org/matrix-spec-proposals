@@ -31,8 +31,8 @@ member events.
 
 ### Client-Server API Changes
 
-1. **GET `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will replace the
-   existing profile endpoints. It will return the value of the specified `key_name`:
+1. **GET `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will replace the existing
+   profile endpoints. It will return the value of the specified `key_name`:
 
     ```json
     {
@@ -48,8 +48,8 @@ member events.
     }
     ```
 
-2. **PUT `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will set the value of
-   the specified `key_name`:
+2. **PUT `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will set the value of the
+   specified `key_name`:
 
     ```json
     {
@@ -112,6 +112,23 @@ on remote users is that the entire profile JSON block should not be larger than 
 1. **GET `/_matrix/federation/v1/query/profile/{userId}/{key_name}`** will mirror the client-server
    API changes to ensure profile information is consistently available across the federated network.
 
+### Capabilities
+
+A new capability `m.set_profile_fields` will be introduced to control the ability to set custom
+profile fields. The client should assume setting fields is allowed when this capability is missing.
+
+Example capability object:
+
+```json
+{
+  "capabilities": {
+    "m.set_profile_fields": {
+      "enabled": false
+    }
+  }
+}
+```
+
 ### Implementation Details
 
 - This feature will be implemented as optional but recommended, enabling a smooth transition and
@@ -173,5 +190,17 @@ stable:
 ```
 
 The new endpoints would be on the
-`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` unstable version,
-before promoting to `/_matrix/client/v3/profile/{userId}/{key_name}` when this is stable.
+`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` unstable version, before
+promoting to `/_matrix/client/v3/profile/{userId}/{key_name}` when this is stable.
+
+Likewise, the client capability `m.set_profile_fields` should use this custom prefix until stable:
+
+```json
+{
+  "capabilities": {
+    "uk.tcpip.msc4133.set_profile_fields": {
+      "enabled": false
+    }
+  }
+}
+```
