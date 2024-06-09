@@ -93,7 +93,7 @@ member events.
 
 ### Server-Server API Changes
 
-**GET `/_matrix/federation/v1/query/profile/{userId}`** will mirror the client-server API changes
+**GET `/_matrix/federation/v1/query/profile`** will mirror the client-server API changes
 to ensure profile information is consistently available across the federated network.
 
 As per the current stable endpoint, it accepts an optional `field` query string parameter to
