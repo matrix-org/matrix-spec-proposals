@@ -93,8 +93,15 @@ member events.
 
 ### Server-Server API Changes
 
-1. **GET `/_matrix/federation/v1/query/profile/{userId}/{key_name}`** will mirror the client-server
-   API changes to ensure profile information is consistently available across the federated network.
+**GET `/_matrix/federation/v1/query/profile/{userId}`** will mirror the client-server API changes
+to ensure profile information is consistently available across the federated network.
+
+As per the current stable endpoint, it accepts an optional `field` query string parameter to
+request a single field.
+
+As there is no method to verify the history of these fields over federation, this endpoint must
+only accept requests for local users on the current homeserver, and homeservers must only request
+a profile from the homeserver specified in that user's MXID.
 
 ### Capabilities
 
