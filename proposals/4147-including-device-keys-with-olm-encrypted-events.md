@@ -72,7 +72,7 @@ plaintext payload will now look something like:
 
 If this property is present, the `keys`.`ed25519` property of the plaintext
 payload must be the same as the `device_keys`.`keys`.`ed25519:<DEVICEID>`
-property.
+property.  If they differ, the recipient should discard the event.
 
 As the `keys` property is now redundant, it may be removed in a future version
 of Olm.
