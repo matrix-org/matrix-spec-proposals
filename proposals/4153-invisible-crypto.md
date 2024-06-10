@@ -1,4 +1,4 @@
-# MSCxxxx: Invisible Cryptography
+# MSC4153: Invisible Cryptography
 
 End-to-end encryption was first introduced to Matrix in 2016. Over the years,
 more encryption-related features have been added, such as key verification,
