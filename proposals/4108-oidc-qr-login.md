@@ -425,7 +425,7 @@ Device G displays a QR code containing:
 - The insecure rendezvous session **URL**
 - An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
 that wishes to "reciprocate" a login
-- If the intent is to reciprocate a login, then the **homeserver base URL**
+- If the intent is to reciprocate a login, then the Matrix homeserver **[server name](https://spec.matrix.org/v1.10/appendices/#server-name)**
 
 To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
 similar structure to that of the existing Device Verification QR code encoding described in [Client-Server
@@ -433,8 +433,8 @@ API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
 
 This is defined in detail in a separate section of this proposal.
 
-Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the
-**homeserver base URL**.
+Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the Matrix homeserver
+**[server name](https://spec.matrix.org/v1.10/appendices/#server-name)**.
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
 
@@ -690,7 +690,7 @@ This can make it hard to read what is going on.
 
 The new device needs to know which homeserver it will be authenticating with.
 
-In the case that the new device scanned the QR code then the homeserver base URL can be taken from the QR code and the
+In the case that the new device scanned the QR code then the [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the Matrix homeserver can be taken from the QR code and the
 new device proceeds to step 2 immediately.
 
 Otherwise the new device waits to be informed by receiving an `m.login.protocols` message from the existing device.
@@ -709,14 +709,17 @@ homeserver specified:
 {
     "type": "m.login.protocols",
     "protocols": ["device_authorization_grant"],
-    "homeserver": "https://synapse-oidc.lab.element.dev"
+    "homeserver": "synapse-oidc.lab.element.dev"
 }
 ```
 
 2. **New device checks if it can use an available protocol**
 
-Once the existing device knows which homeserver it is to use it then:
+Once the existing device has determined the server name it then undertakes steps to determine if it is able to work with the homeserver.
 
+The steps are as follows:
+
+- use [Server Discovery](https://spec.matrix.org/v1.10/client-server-api/#server-discovery) to determine the `base_url` from the well-known URI
 - checks that the homeserver is using delegated OIDC by calling `GET /_matrix/client/v1/auth_issuer` from [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965):
 
 *New device => Homeserver via HTTP*
@@ -847,22 +850,22 @@ sequenceDiagram
     rect rgba(255,0,0, 0.1)
     #alt if New device scanned QR code
         note over N: New device completes checks from secure channel establishment step 6 - it now trusts the channel
-        note over N: 1) New device got Homeserver base URL from QR code
+        note over N: 1) New device got server name from the QR code
 
     #else if Existing device scanned QR code
     #    note over E: Existing device completes step 6
     #    note over E: Existing device displays checkmark and CheckCode
     #    note over E: 1) Existing device sends m.login.protocols message
-    #    E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"})
+    #    E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"})
     #    note over N: New device waits for user to confirm secure channel from step 7
-    #    Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"}
+    #    Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"}
     #    note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
 
 
     rect rgba(0,255,0, 0.1)
     note over N: 2) New device checks if it can use an available protocol:
-
+    note over N: Use well-known discovery to get the homeserver base URL
         N->>+HS: GET /_matrix/client/v1/auth_issuer
     activate N
         HS-->>-N: 200 OK {"issuer": "https://id.matrix.org"}
@@ -898,7 +901,7 @@ sequenceDiagram
     note over E: Existing device checks that requested protocol is supported
 
     alt if requested protocol is not valid
-        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "https://matrix-client.matrix.org})
+        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
     end
     end
 ```
@@ -917,22 +920,23 @@ sequenceDiagram
 
     #alt if New device scanned QR code
     #    note over N: New device completes checks from secure channel establishment step 6 - it now trusts the channel
-    #    note over N: 1) New device got Homeserver base URL from QR code
+    #    note over N: 1) New device got server name from the QR code
 
     rect rgba(0,0,255, 0.1)
     #else if Existing device scanned QR code
         note over E: Existing device completes step 6
         note over E: Existing device displays checkmark and CheckCode
         note over E: 1) Existing device sends m.login.protocols message
-        E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"})
+        E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"})
         note over N: New device waits for user to confirm secure channel from step 7
-        Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "https://matrix-client.matrix.org"}
+        Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"}
         note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
 
 
     rect rgba(0,255,0, 0.1)
     note over N: 2) New device checks if it can use an available protocol:
+    note over N: Use well-known discovery to get the homeserver base URL
         N->>+HS: GET /_matrix/client/v1/auth_issuer
     activate N
         HS-->>-N: 200 OK {"issuer": "https://id.matrix.org"}
@@ -966,7 +970,7 @@ sequenceDiagram
     note over E: Existing device checks that requested protocol is supported
 
     alt if requested protocol is not valid
-        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "https://matrix-client.matrix.org})
+        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
     end
     end
 ```
@@ -1234,13 +1238,13 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.protocols`|
 |`protocols`|required `string[]`|Array of: one of: `device_authorization_grant` |
-|`homeserver`|required `string`|The base URL of the homeserver|
+|`homeserver`|required `string`|The [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the Matrix homeserver|
 
 ```json
 {
     "type": "m.login.protocols",
     "protocols": ["device_authorization_grant"],
-    "homeserver": "https://matrix-client.matrix.org"
+    "homeserver": "matrix.org"
 }
 ```
 
@@ -1300,7 +1304,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.failure`|
 |`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
-|`homeserver`|`string`| When the existing device is sending this it can include the Base URL of the homeserver so that the new device can at least save the user the hassle of typing it in|
+|`homeserver`|`string`| When the existing device is sending this it can include the [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the Matrix homeserver so that the new device can at least save the user the hassle of typing it in|
 
 Example:
 
@@ -1308,7 +1312,7 @@ Example:
 {
     "type":"m.login.failure",
     "reason": "unsupported_protocol",
-    "homeserver": "https://matrix-client.matrix.org"
+    "homeserver": "matrix.org"
 }
 ```
 
@@ -1404,9 +1408,9 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session URL as a UTF-8
   string
   - the rendezvous session URL as a UTF-8 string
-- If the QR code intent/mode is `0x04` then the homeserver base URL encode as:
-  - two bytes in network byte order (big-endian) indicating the length in bytes of the homeserver base URL as a UTF-8 string
-  - the homeserver base URL as a UTF-8 string
+- If the QR code intent/mode is `0x04` then the [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the homeserver encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in bytes of the server name as a UTF-8 string
+  - the server name as a UTF-8 string
 
 For example, if Alice displays a QR code encoding the following binary string:
 
@@ -1434,15 +1438,15 @@ Which looks as follows as a QR with error correction level Q:
 
 A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
 encoded), at rendezvous session `https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`https://matrix-client.matrix.org` is as follows: (Whitespace is for readability only)
+`matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
 4D 41 54 52 49 58 02  04
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
 00 47
 68 74 74 70 73 3a 2f 2f 72 65 6e 64 65 7a 76 6f 75 73 2e 6c 61 62 2e 65 6c 65 6d 65 6e 74 2e 64 65 76 2f 65 38 64 61 36 33 35 35 2d 35 35 30 62 2d 34 61 33 32 2d 61 31 39 33 2d 31 36 31 39 64 39 38 33 30 36 36 38
-00 20
-68 74 74 70 73 3a 2f 2f 6d 61 74 72 69 78 2d 63 6c 69 65 6e 74 2e 6d 61 74 72 69 78 2e 6f 72 67
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67
 ```
 
 Which looks as follows as a QR with error correction level Q:
