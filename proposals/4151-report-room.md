@@ -108,7 +108,7 @@ Like `/report/:eventId`, handling of the report is left as a deliberate implemen
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `/_matrix/client/unstable/org.matrix.msc4151/report/:roomId`
+While this proposal is not considered stable, implementations should use `/_matrix/client/unstable/org.matrix.msc4151/rooms/:roomId/report`
 instead. Clients should note the [`M_UNRECOGNIZED` behaviour](https://spec.matrix.org/v1.10/client-server-api/#common-error-codes)
 for servers which do not support the (un)stable endpoint.
 
