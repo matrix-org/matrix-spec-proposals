@@ -40,7 +40,10 @@ Media may not be able to load if the appservice is unable to reach wherever remo
 
 ## Unstable prefix
 
-`org.eu.celery.msc3896.media` should be used instead of `media`
+While this MSC is not considered stable, implementations should use
+`/_matrix/app/unstable/org.eu.celery.msc3896/media/{mediaId}` instead of `/_matrix/app/v1/media/{mediaId}`
+to request media from the appservice, and `org.eu.celery.msc3896.media` instead of `media` in the
+appservice registration file.
 
 ## Dependencies
 
