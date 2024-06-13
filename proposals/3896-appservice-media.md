@@ -8,8 +8,9 @@ can cause a lot of storage usage. This MSC proposes a way for appservices to reg
 
 This proposal adds a new key (`media`) to the namespaces block of appservice registration.
 
-Whenever the homeserver gets a request that matches the regex, it should make a http GET request
-to `/_matrix/app/v1/media/{mediaId}`.
+Whenever the homeserver gets a request for a media ID that matches the regex and the requested
+`server_name` of the media is it's own, it should make a HTTP GET request to
+`/_matrix/app/v1/media/{mediaId}`.
 
 This request has no body nor query parameters. Servers MAY be redirected via HTTP 307/308 responses,
 which they should follow to obtain the content. `Content-Disposition` and `Content-Type` headers
