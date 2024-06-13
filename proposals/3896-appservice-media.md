@@ -11,6 +11,12 @@ This proposal adds a new key (`media`) to the namespaces block of appservice reg
 Whenever the homeserver gets a request that matches the regex, it should make a http GET request
 to `/_matrix/app/v1/media/{mediaId}`.
 
+This request has no body nor query parameters. Servers MAY be redirected via HTTP 307/308 responses,
+which they should follow to obtain the content. `Content-Disposition` and `Content-Type` headers
+SHOULD be set in the response, so that the server is made aware of the file name and content type
+of the media, although this is not always possible with the remote platform the appservice is
+fetching the media from.
+
 For example:
 
 ```yaml
