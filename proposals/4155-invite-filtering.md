@@ -109,7 +109,7 @@ None.
 Until this proposal is accepted into the spec, implementations should refer to `m.invite_permission_config`
 as `org.matrix.msc4155.invite_permission_config`. Note that the [gematik specification], which predates
 this MSC, uses an event type of `de.gematik.tim.account.permissionconfig.v1` and slightly different field
-names. Given that the general JSON scheme of the event is the same though, implemenations of the
+names. Given that the general JSON scheme of the event is the same though, implementations of the
 [gematik specification] should largely be equivalent to implementations of this MSC.
 
 
