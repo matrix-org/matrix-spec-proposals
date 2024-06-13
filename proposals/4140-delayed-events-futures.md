@@ -160,13 +160,13 @@ The homeserver does the following when receiving a Future:
   of retrieval and the `timeout_duration`.
 - If `future_timeout` was present, it **Starts a timer** for the `refresh_token`.
 
-  - If a `PUT /_matrix/client/v3/futures/{refresh_token}` is received, it
+  - If a `POST /_matrix/client/v3/futures/{refresh_token}` is received, it
     **restarts the timer** with the stored `timeout_duration` for the associated timeout future.
-  - If a `PUT /_matrix/client/v3/futures/{send_token}` is received, it **sends the associated action or timeout future**
+  - If a `POST /_matrix/client/v3/futures/{send_token}` is received, it **sends the associated action or timeout future**
     and deletes any stored futures with the `group_id` associated with that token.
-  - If a `PUT /_matrix/client/v3/futures/{cancel_token}` is received, it **does NOT send any future**
+  - If a `POST /_matrix/client/v3/futures/{cancel_token}` is received, it **does NOT send any future**
     and deletes/invalidates the associated stored future. This can mean that a whole future group gets deleted (see below).
-  - If a `PUT /_matrix/client/v3/futures/{unknown_token}` is received the server responds with a `410` (Gone).
+  - If a `POST /_matrix/client/v3/futures/{unknown_token}` is received the server responds with a `410` (Gone).
     An `unknown_token` either means that the service is making something up or that the service is using a
     token that is invalidated by now.
   - If a timer times out, **it sends the timeout future**.
