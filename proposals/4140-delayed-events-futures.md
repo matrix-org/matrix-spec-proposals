@@ -155,7 +155,7 @@ gets closed or looses connection and without knowing anything about the Matrix c
 The homeserver does the following when receiving a Future:
 
 - It checks for the validity of the request (based on the `future_timeout` and the `future_group_id` query parameters)
-  and returns a `409` or `400` if necessary.
+  and returns a `409`, `400` or `405` if necessary.
 - It **generates** a `send_token`, a `cancel_token` and if not provided in the request a `future_group_id` and a optionally `refresh_token` and stores them alongside the time
   of retrieval and the `timeout_duration`.
 - If `future_timeout` was present, it **Starts a timer** for the `refresh_token`.
@@ -186,6 +186,15 @@ So for each `future_group_id`, the homeserver will at most send one timeline eve
 
 - No timeline event will be send in case all of the timeout futures in a future group are cancelled via `/_matrix/client/v3/futures/{cancel_token}`.
 - Otherwise one of the timeout or action futures will be send.
+
+**Rate limiting** the `POST /_matrix/client/v3/futures/{token}`endpoint:
+
+- A malicious party can try to find a correct token by randomly sending requests to this endpoint.
+- Homeservers should rate limit this endpoint so that one can at
+  most send `N` invalid tokens in a row and then will get a `429` (Too Many Requests)
+  response for `T` seconds. We allow `N` invalid tokens because it is not
+  easy to compute if a token is still valid or not so it is useful to ask for this.
+- The recommended values for `T` are 10 seconds and for `N` 5. (It is spec conform to use other values.)
 
 Timed messages, tea timers, reminders or ephemeral events could be implemented
 using this where clients send room events with
