@@ -77,5 +77,5 @@ While this feature is not yet fully specced, implementers can use the `com.famed
 account data type.
 
 Implementations using this unstable prefix in a released version should automatically migrate 
-a users unread rooms to `m.marked_unread` when this is released as stable.
-This ensures the users unread rooms are not lost.
+user's unread rooms to `m.marked_unread` when this is released as stable.
+This ensures user's unread rooms are not lost.
