@@ -72,9 +72,9 @@ We call those delayed events `Futures`.
 
 New endpoints are introduced:
 
-`PUT /_matrix/client/v3/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}`
 
-`PUT /_matrix/client/v3/rooms/{roomId}/state_future/{eventType}/{stateKey}?future_timeout={timeout_duration}&future_group_id={group_id}`
+`PUT /_matrix/client/v1/rooms/{roomId}/state_future/{eventType}/{stateKey}?future_timeout={timeout_duration}&future_group_id={group_id}`
 
 Those behave like the normal `send`/`state` endpoints except that that they allow
 to define `future_timeout` and `future_group_id` in their query parameters.
@@ -140,7 +140,7 @@ The response will include a `send_token`, `cancel_token`, the associated `future
 
 This MSC also proposes a `futures` endpoint.
 The `token` can be used to call this public `futures` endpoint:
-`POST /_matrix/client/v3/future/{token}`
+`POST /_matrix/client/v1/future/{token}`
 
 The information required to call this endpoint is minimal so that
 no metadata is leaked when sharing the refresh/send url with a third party.
@@ -160,13 +160,13 @@ The homeserver does the following when receiving a Future:
   of retrieval and the `timeout_duration`.
 - If `future_timeout` was present, it **Starts a timer** for the `refresh_token`.
 
-  - If a `POST /_matrix/client/v3/future/{refresh_token}` is received, it
+  - If a `POST /_matrix/client/v1/future/{refresh_token}` is received, it
     **restarts the timer** with the stored `timeout_duration` for the associated timeout future.
-  - If a `POST /_matrix/client/v3/future/{send_token}` is received, it **sends the associated action or timeout future**
+  - If a `POST /_matrix/client/v1/future/{send_token}` is received, it **sends the associated action or timeout future**
     and deletes any stored futures with the `group_id` associated with that token.
-  - If a `POST /_matrix/client/v3/future/{cancel_token}` is received, it **does NOT send any future**
+  - If a `POST /_matrix/client/v1/future/{cancel_token}` is received, it **does NOT send any future**
     and deletes/invalidates the associated stored future. This can mean that a whole future group gets deleted (see below).
-  - If a `POST /_matrix/client/v3/future/{unknown_token}` is received the server responds with a `410` (Gone).
+  - If a `POST /_matrix/client/v1/future/{unknown_token}` is received the server responds with a `410` (Gone).
     An `unknown_token` either means that the service is making something up or that the service is using a
     token that is invalidated by now.
   - If a timer times out, **it sends the timeout future**.
@@ -184,10 +184,10 @@ The homeserver does the following when receiving a Future:
 
 So for each `future_group_id`, the homeserver will at most send one timeline event.
 
-- No timeline event will be send in case all of the timeout futures in a future group are cancelled via `/_matrix/client/v3/future/{cancel_token}`.
+- No timeline event will be send in case all of the timeout futures in a future group are cancelled via `/_matrix/client/v1/future/{cancel_token}`.
 - Otherwise one of the timeout or action futures will be send.
 
-**Rate limiting** the `POST /_matrix/client/v3/future/{token}`endpoint:
+**Rate limiting** the `POST /_matrix/client/v1/future/{token}`endpoint:
 
 - A malicious party can try to find a correct token by randomly sending requests to this endpoint.
 - Homeservers should rate limit this endpoint so that one can at
@@ -222,14 +222,14 @@ that proposes a future specific group sending endpoint in case this is required 
 
 ### Getting running futures
 
-Using `GET /_matrix/client/v3/future` it is possible to get the list of all running futures issues by the authenticated user.
+Using `GET /_matrix/client/v1/future` it is possible to get the list of all running futures issues by the authenticated user.
 This is an authenticated endpoint. It sends back the json
 of the final event content with the associated tokens.
 
 ```json
 [
   {
-    "url":"/_matrix/client/v3/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}",
+    "url":"/_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}",
     "body":{
       ...event_body
     },
@@ -327,7 +327,7 @@ This MSC also allows to implement self-destructing messages:
 First send (or generate the pdu when
 [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080)
 is available):
-`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{eventType}/{txnId}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/{eventType}/{eventType}/{txnId}`
 
 ```json
 {
@@ -336,7 +336,7 @@ is available):
 ```
 
 then send:
-`PUT /_matrix/client/v3/rooms/{roomId}/send_future/{eventType}/{txnId}?timeout={10*60}&future_group_id={XYZ}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?timeout={10*60}&future_group_id={XYZ}`
 
 ```json
 {
@@ -410,7 +410,7 @@ The widget driver would then take care of calling `send` or `send_future` based 
 
 An alternative to the proposed solution that allows this kind of batch sending would be to
 introduce this endpoint:
-`PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/future/{txnId}`
 It allows to send a list of event contents. The body looks as following:
 
 ```json
@@ -474,8 +474,8 @@ We do not need a `future_group_id` since we will send one group in one request.
 Working with futures is the same with this alternative.
 This means,
 
-- `GET /_matrix/client/v3/future` getting running futures
-- `POST /_matrix/client/v3/future/{token}` cancel, refreshing and sending futures
+- `GET /_matrix/client/v1/future` getting running futures
+- `POST /_matrix/client/v1/future/{token}` cancel, refreshing and sending futures
 
 uses the exact same endpoints.
 Also the behaviour of the homeserver on when to invalidate the furures is identical except, that
@@ -494,7 +494,7 @@ For this reason, template variables are introduced that are only valid in `Futur
 `send_on_timeout` this template variable can be used.
 The **Self-destructing messages** example be a single request:
 
-`PUT /_matrix/client/v3/rooms/{roomId}/send/future/{txnId}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/future/{txnId}`
 
 ```json
 {
@@ -545,7 +545,7 @@ of the Futures. (The homeserver has them but they can always send events in your
 as long as we do not have [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080))
 
 It is an intentional decision to not provide an endpoint like
-`PUT /_matrix/client/v3/future/room/{roomId}/event/{eventId}`
+`PUT /_matrix/client/v1/future/room/{roomId}/event/{eventId}`
 where any client with access to the room could also `end` or `refresh`
 the expiration. With the token the client creating the future has ownership
 over the expiration and only intentional delegation of that ownership
@@ -557,7 +557,7 @@ even tell with which room or user it is interacting or what the token does (refr
 
 ## Unstable prefix
 
-Use `io.element.msc3140.` instead of `m.` as long as the MSC is not stable.
-For the endpoints introduced in this MSC use the prefix `/io.element.msc3140/` and set the paths version string to unstable, instead of v#.
+Use `org.matrix.msc4140.` instead of `m.` as long as the MSC is not stable.
+For the endpoints introduced in this MSC use the prefix `/org.matrix.msc4140/` and set the paths version string to unstable, instead of v#.
 
 ## Dependencies
