@@ -158,15 +158,7 @@ If possible these guidelines should be obeyed:
 - If there is a relation between the `focus_active` and a preferred focus (`type: livekit` is an example for this)
   it is recommended to copy _the preferred focus that relates to the current `focus_active`_ of other participants to the start of the `foci_preferred` array of the member event.
   (The exact definition of: _the preferred focus that relates to the current `focus_active`_ is part of the specification for each focus type. For `full_mesh` for example there is no such thing as: _the preferred focus that relates to the current `focus_active`_ )
-- Homeservers can proposes `preferred_foci` via the well known. An array of preferred foci is provided behind the well known key `m.rtc_foci`:
-  ```json
-  "m.rtc_foci": [
-        {
-            "type":"livekit",
-            "livekit_service_url":"https://my_livekit_focus.domain"
-        }
-    ]
-  ```
+- Homeservers can proposes `preferred_foci` via the well known. An array of preferred foci is provided behind the well known key `m.rtc_foci`. This is defined in [MSC4158](https://github.com/matrix-org/matrix-spec-proposals/pull/4158). They are related and it is recommended to also read [MSC4158](https://github.com/matrix-org/matrix-spec-proposals/pull/4158) with this MSC.
   Those proposals from **your own** homeserver should come next in the `foci_preferred` list of the member event.
 - Clients also have the option to configure a preferred foci even though this is not recommended (see below).
   Those come last in the list.
