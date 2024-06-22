@@ -534,7 +534,6 @@ The following alternative names for this concept are considered
 
 - Future
 - DelayedEvents
-- RetardedEvents
 - PostponedEvents
 
 ## Security considerations
