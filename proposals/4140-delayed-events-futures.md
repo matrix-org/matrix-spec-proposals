@@ -14,7 +14,7 @@
     - [Self-destructing messages](#self-destructing-messages)
   - [Potential issues](#potential-issues)
   - [Alternatives](#alternatives)
-    - [Reusing the send/state endpoint](#reusing-the-sendstate-endpoint)
+    - [Not reusing the send/state endpoint](#not-reusing-the-sendstate-endpoint)
     - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
     - [MSC4018 use client sync loop](#msc4018-use-client-sync-loop)
     - [Naming](#naming)
@@ -73,14 +73,13 @@ anymore the timeout condition is met and the homeserver sends the event with the
 This translate to: _"only send the event when the client is not running its program anymore (not sending the heartbeat anymore)"_
 We call those delayed events `Futures`.
 
-New endpoints are introduced:
+Futures reuse the `send` and `state` endpoint and extend them with an optional `future_timeout` and an optional `future_group_id` query parameter
 
-`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}`
 
-`PUT /_matrix/client/v1/rooms/{roomId}/state_future/{eventType}/{stateKey}?future_timeout={timeout_duration}&future_group_id={group_id}`
+`PUT /_matrix/client/v1/rooms/{roomId}/state/{eventType}/{stateKey}?future_timeout={timeout_duration}&future_group_id={group_id}`
 
-Those behave like the normal `send`/`state` endpoints except that that they allow
-to define `future_timeout` and `future_group_id` in their query parameters.
+The two query parameters are used to configure the event scheduling:
 
 - `future_timeout: number` defines how long (in milliseconds) the homeserver will wait before sending
   the event into the room. **Note**, since the timeout can be refreshed and sending the future can be triggered via an endpoint (see: [Proposal/Delegating futures](#delegating-futures)) this value is not enough to predict the time this event will arrive in the room.
@@ -129,7 +128,33 @@ if the power level situation has changed at the time the future resolves.)
 
 ### Response
 
-The response will include a `send_token`, `cancel_token`, the associated `future_group_id` and an optional `refresh_token` but no `event_id` since the `event_id` depends on the `origin_server_ts` which is not yet determined. A timeout future will contain `refresh_token` but an action future will not.
+When sending a future the `event_id` would not be available:
+
+- The `event_id` is using the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids) which is
+  [calculated via the essential fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
+  of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
+- Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call duration computation)
+  we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
+
+So the response will include a `send_token`, `cancel_token`,
+the associated `future_group_id` and an optional `refresh_token` but no
+`event_id` if the request was sent with the `future_timeout` and or `future_group_id` parameters.
+A request without query parameters would
+get a response with an `event_id` (as before).
+
+As a result the return type would change to:
+
+```jsonc
+{
+  "event_id": string | undefined,
+  "future_group_id": string | undefined,
+  "send_token": string | undefined,
+  "refresh_token": string | undefined,
+  "cancel_token": "string | undefined
+}
+```
+
+For a future event the response looks as following:
 
 ```jsonc
 {
@@ -145,6 +170,10 @@ The response will include a `send_token`, `cancel_token`, the associated `future
 We define a `future_token` as one of `future_send_token, future_cancel_token, future_refresh_token`.
 Each `future_token` is a 128 bit Base64-encoded url safe UUID (It will be part of the url for sending updates to a future.)
 The `future_group_id` is of the same format. All these fields are generated on the homeserver.
+They can optionally be used to interact with futures and even delegate very fine grained control over the
+future send time to other services by only sharing the tokens.
+
+The exact usage of those tokens is covered in the next section.
 
 ### Delegating futures
 
@@ -355,47 +384,16 @@ This would redact the message with content: `"m.text": "my msg"` after 10minutes
 
 ## Alternatives
 
-### Reusing the `send`/`state` endpoint
+### Not reusing the `send`/`state` endpoint
 
-Since the `send_future` and `state_future` endpoints are almost identical to the
-normal `send` and `state` endpoints it comes to mind, that one could reuse them and allow adding the
-query parameters `?future_timeout={timeout_duration}&future_group_id={group_id}` directly to the
-`send` and `state` endpoint.
+Alternatively new endpoints could be introduced to not oveload the `send` and `state` endpoint.
+Those endpoints would be called:
+`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}`
 
-This would be elegant but since those two endpoint are core to Matrix, changes to them might  
-be controversial if their return value is altered.
+`PUT /_matrix/client/v1/rooms/{roomId}/state_future/{eventType}/{stateKey}?future_timeout={timeout_duration}&future_group_id={group_id}`
 
-Currently they always return
-
-```jsonc
-{
-  "event_id":string
-}
-```
-
-as a non optional field.
-
-When sending a future the `event_id` would not be available:
-
-- The `event_id` is using the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids) which is
-  [calculated via the essential fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
-  of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
-- Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call duration computation)
-  we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
-
-As a result the return type would change to:
-
-```jsonc
-{
-  "event_id": string | undefined,
-  "future_group_id": string | undefined,
-  "send_token": string | undefined,
-  "refresh_token": string | undefined,
-  "cancel_token": "string | undefined
-}
-```
-
-dependent on the query parameters.
+This keeps the response type of the `send` and `state` endpoint in tact and we get a different return type
+the new `send_future` and `state_future` endpoint.
 
 ### Batch sending futures with custom endpoint
 
