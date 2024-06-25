@@ -88,12 +88,9 @@ simpler than what this MSC proposes.
 
 ## Security considerations
 
-Removing the fallback from the spec may lead to issues, when clients experience
-the fallback in old events. This should not add any security issues the
-client didn't already have from interpreting untrusted html, though. In all
-other cases this should **reduce** security issues (see
-https://github.com/vector-im/element-web/releases/tag/v1.7.3 or the appendix for
-examples).
+Overall this should **reduce** security issues as the handling of untrusted
+HTML is simplified. For an example security issue that could be avoided, see
+https://github.com/vector-im/element-web/releases/tag/v1.7.3 and the appendix.
 
 ## Unstable prefix
 
