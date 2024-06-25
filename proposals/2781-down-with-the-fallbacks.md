@@ -61,7 +61,7 @@ Clients which aren't using
 [intentional mentions](https://spec.matrix.org/v1.7/client-server-api/#mentioning-the-replied-to-user)
 may cause some missed notifications on the receiving side.
 [MSC3664](https://github.com/matrix-org/matrix-doc/pull/3664) and similar aim to
-address this issue, as
+address this issue, and
 [MSC4142](https://github.com/matrix-org/matrix-spec-proposals/pull/4142) tries
 to improve the intentional mentions experience for replies generally.
 Because intentional mentions are already part of the Matrix specification since
