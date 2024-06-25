@@ -1,4 +1,4 @@
-# MSC4153: Invisible Cryptography
+# MSC4153: Exclude non-cross-signed devices
 
 End-to-end encryption was first introduced to Matrix in 2016. Over the years,
 more encryption-related features have been added, such as key verification,
@@ -25,14 +25,20 @@ The changes below only apply to clients that support encryption.
 Clients should create new cross-signing keys for users who do not yet have
 cross-signing keys.
 
-Users should have Secret Storage with a default key that encrypts the private
-cross-signing keys and key backup key (if available)
+### Users should have Secret Storage
+
+Secret Storage allows users to keep secrets on the server so that they are
+accessible when the user logs in to a new device.
 
 The spec currently does not give recommendations for what information is stored
 in Secret Storage, or even whether Secret Storage is available to users.  A
 user’s Secret Storage should contain the user’s cross-signing secret keys and
 the key backup decryption key (if the user is using key backup).  This ensures
-that users have a more consistent experience.
+that users use cross-signing and key backup on new devices.
+
+Users should have Secret Storage with a default key (a key referred to by
+`m.secret_storage.default_key`) that encrypts the private cross-signing keys
+and key backup key (if available).
 
 ### Verifying individual devices of other users is deprecated
 
@@ -71,7 +77,7 @@ know that Alice’s cross-signing keys had changed, even if Bob has other device
 that were previously logged in. Such a mechanism could be proposed by another
 MSC.
 
-### Room keys should by default not be sent to non-cross-signed devices
+### Room keys and secrets should by default not be sent to non-cross-signed devices
 
 Since non-cross-signed devices don’t provide any assurance that the device
 belongs to the user, and server admins can trivially create new devices for
@@ -79,17 +85,21 @@ users, clients should not send room keys to non-cross-signed devices by
 default. Clients may provide users the ability to encrypt to specific
 non-cross-signed devices, for example, for development or testing purposes.
 
-### Messages from non-cross-signed devices should be untrusted
+In addition, users should not send secrets (via Secret Sharing) to their own
+devices that are not cross-signed.
+
+### Messages from non-cross-signed devices should be ignored by default
 
 Similarly, clients have no assurance that encrypted messages sent from
 non-cross-signed devices were sent by the user, rather than an
 impersonator. Therefore messages sent from non-cross-signed devices cannot be
-trusted and should be displayed differently to the user. For example, the
-message could be displayed with a warning, or may be hidden completely from the
-user. Again, clients may be allow the user to override this behaviour for
-specific devices for development or testing purposes.
+trusted and should not be displayed differently to the user. Again, clients
+may be allow the user to override this behaviour for specific devices for
+development or testing purposes.
 
 ## Potential Issues
+
+### Client support
 
 If a user has devices that are not cross-signed, they will not be able to
 communicate with other users whose clients implement this proposal completely,
@@ -99,6 +109,17 @@ devices, and clients should delay the implementation of the last two points (or
 make it optional) until most clients have implemented cross-signing.
 
 TODO: status of cross-signing in clients
+
+### Bots and application services
+
+This is a special case to the issue above, but seems to be a large enough class
+that it deserves its own mention: support for cross-signing in bots and
+application services may be less common than in interactive clients.  When a
+client fully implements this proposal, users will be unable to interact with
+bots and application services in encrypted rooms if they do not support
+cross-signing.
+
+TODO: status of cross-signing in bots/application services
 
 ## Alternatives
 
@@ -111,7 +132,7 @@ No new names are introduced, so no unstable prefix is needed.
 ## Dependencies
 
 Though not strictly dependencies, other MSCs improve the behaviour of this MSC:
-- [authenticated backups
+- [Authenticated backups
   (MSC4048)](https://github.com/matrix-org/matrix-spec-proposals/pull/4048)
   will improve the user experience by ensuring that trust information is
   preserved when loading room keys from backup.  TODO: I think we also need to
