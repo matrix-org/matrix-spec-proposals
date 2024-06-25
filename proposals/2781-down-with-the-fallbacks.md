@@ -1,6 +1,6 @@
 # MSC2781: Remove reply fallbacks from the specification
 
-Currently the specification suggest clients should send and strip a
+Currently the specification suggests clients should send and strip a
 [fallback representation](https://spec.matrix.org/v1.10/client-server-api/#fallbacks-for-rich-replies)
 of a replied to message. The fallback representation was meant to simplify
 supporting replies in a new client, but in practice they add complexity, are
@@ -14,7 +14,7 @@ Some of the known issues include:
 * Parsing reply fallbacks can be tricky. ([#350](https://github.com/matrix-org/matrix-spec/issues/350))
 * It is unclear how to handle a reply to a reply. ([#372](https://github.com/matrix-org/matrix-spec/issues/372))
 * Localization of replies is not possible when the content is embedded into the event.
-* It is not possible to fully redact an event once it is replied to, this causes both trust & safety and right to be forgotten issues.
+* It is not possible to fully redact an event once it is replied to. This causes both trust & safety and right to be forgotten issues.
 * There are a variety of implementation bugs related to reply fallback handling.
 
 More details and considerations are provided in the appendices, but these are
@@ -31,7 +31,7 @@ as invalid html.
 Clients are not required to include a fallback in a reply since version 1.3 of
 the
 [specification](https://spec.matrix.org/v1.10/client-server-api/#rich-replies).
-For this reason the reply fallbck can be removed from the specification without
+For this reason the reply fallback can be removed from the specification without
 any additional deprecation period.
 
 An info box should be included to mention the historical use of the reply
@@ -105,7 +105,7 @@ changed the wording from "MUST" to "SHOULD".
 
 ### Clients without rendering support for rich replies
 
-Of the 23 clients listed in the [matrix client matrix](https://matrix.org/clients-matrix)
+Of the 23 clients listed in the [Matrix client matrix](https://matrix.org/clients-matrix)
 16 are listed as not supporting replies (updated January 2022):
 
 - Element Android: Relies on the reply fallback.
