@@ -62,7 +62,7 @@ condition, similar to an invalid TLS certificate.
 
 > "Ignoring 5 messages that were sent from a device that is not secure."
 
-> "Confim it's you" (when asking to verify a device during login)
+> "Confirm it's you" (when asking to verify a device during login)
 
 ⚠️ Avoid saying "secure device". All devices are considered secure by default;
 the user doesn't typically need to worry about the fact that insecure devices
