@@ -179,7 +179,7 @@ Your **message history** is a record of every message you have received or sent,
 and is particularly used to describe messages that are stored on the server
 rather than your device(s)
 
-###Key storage
+### Key storage
 
 **Key storage** means keeping cryptographic information on the server. This
 includes the user's cryptographic identity, and/or the message keys needed to
