@@ -19,7 +19,7 @@ widget the URL of the homeserver API the user is currently using:
 
 * `matrix_base_url`: The URL of the homeserver API.
 
-The widget API is extended with a two new interface to upload files into the content repository. The
+The widget API is extended with two new interfaces to upload files into the content repository. The
 user must manually approve the following capability before the actions can be used:
 
 - `m.upload_file`: Let the widget upload files.
