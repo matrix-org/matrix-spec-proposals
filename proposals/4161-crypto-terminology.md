@@ -219,8 +219,8 @@ specific meaning from cryptography.
 
 A **recovery key** is a way of regaining access to key storage if the user loses
 all their devices. Using key storage, they can preserve their cryptographic
-identity (meaning other people don't see "Alice has reset their encryption"
-messages), and also read old messages using the stored message keys.
+identity (meaning other people don't see "Alice's identity appears to have
+changed" messages), and also read old messages using the stored message keys.
 
 A **recovery passphrase** is an easier-to-remember way of accessing the recovery
 key and has the same purpose as the recovery key.
