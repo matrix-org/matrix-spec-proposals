@@ -61,13 +61,13 @@ This does not define a sort ordering (i.e _which_ key should be given out to the
 
 ### Rationale
 
-The primary motiviation of this endpoint is to provide a way for a client and server to resync OTKs. To do this, a client would call `/keys/reset` with `all: true` to delete all OTKs on the server. Once this 200 OKs, the client is then safe to perform `/keys/upload` with a fresh set of OTKs. This functionality is particularly important for existing clients who currently have desynced OTKs.
+The primary motivation of this endpoint is to provide a way for a client and server to resync OTKs. To do this, a client would call `/keys/reset` with `all: true` to delete all OTKs on the server. Once this 200 OKs, the client is then safe to perform `/keys/upload` with a fresh set of OTKs. This functionality is particularly important for existing clients who currently have desynced OTKs.
 
-A secondary motiviation of this endpoint is to provide a way for clients to tell servers to delete OTKs which the client has decided to delete (e.g due to low disk space). To do this, a client would call `/keys/reset` with `key_ids: [ the, keys, being, deleted, from, the, client ]`. Once this 200 OKs, the client is then safe to perform the deletion.
+A secondary motivation of this endpoint is to provide a way for clients to tell servers to delete OTKs which the client has decided to delete (e.g due to low disk space). To do this, a client would call `/keys/reset` with `key_ids: [ the, keys, being, deleted, from, the, client ]`. Once this 200 OKs, the client is then safe to perform the deletion.
 
 The introduction of a dedicated endpoint, as opposed to allowing OTKs to replace each other when performing `/keys/upload`, is to make it an explicit decision for clients to reset OTKs. This removes the risk of hiding client bugs, as the client will only know of the desync when `/keys/upload` returns an HTTP 400.
 
-Finally, the motiviation to change `/keys/claim` allows clients to detect and delete in-flight OTKs. They can do this by performing the following:
+Finally, the motivation to change `/keys/claim` allows clients to detect and delete in-flight OTKs. They can do this by performing the following:
 - Upload OTKs A,B,C,D.
 - 2 users claim OTKs for this device. The server MUST return A then B.
 - Client receives an encrypted message encrypted with B.
@@ -79,7 +79,7 @@ Finally, the motiviation to change `/keys/claim` allows clients to detect and de
 
 ### Security Considerations
 
-- If an access token is compromised, a malicous attacker can reset OTKs for that device. This would force the fallback key to be used when establishing Olm sessions.
+- If an access token is compromised, a malicious attacker can reset OTKs for that device. This would force the fallback key to be used when establishing Olm sessions.
 
 ### Unstable prefix
 
