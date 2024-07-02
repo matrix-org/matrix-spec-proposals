@@ -25,6 +25,9 @@
 <!-- /TOC -->
 
 The motivation for this MSC is: Updating call member events after the user disconnected by allowing to schedule/delay/timeout/expire events in a generic way.
+It is best to first read [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) and in particular
+the section: ["Reliability requirements for the room state"](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#reliability-requirements-for-the-room-state) to understand the MatrixRTC usecase of this MSC.
+
 It turns out that there is a big overlap to other usecases in Matrix which can also be implemented using the proposed concept:
 
 - Updating call member events after the user disconnected.
