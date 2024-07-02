@@ -103,6 +103,37 @@ required to provide additional session parameters.
 > on the map, so that clients can omit connecting to participants that are not in their
 > area of interest.
 
+#### Reliability requirements for the room state
+
+Room state is a very well suited place to store the data for a MatrixRTC session
+if allows:
+
+- The client to determine current ongoing sessions without loading history for every room.
+  Or doing additional work other then the sync loop that needs to run anyways.
+- The client can compute/access data of past sessions without any additional redundant data.
+- Sessions (start/end/participant count) are federated and there is not redundant data storage that
+  could result in conflicts, or can get out of sync. The room state events are part of the dag and this
+  is solved like any other PDU in matrix.
+
+A chellanging circumstance with using the room state to represent a session is
+the disconnection behaviour. If the client disconnects from a call because of a network issue,
+an application crash or a user forcefully quitting the client, the room state cannot be updated anymore.
+The client is required to leave by sending a new empty state which cannot happen once connection is lost.
+
+If the state is not updated correctly we end up with incorrect session end timestamps a room state that is not correctly representing the current RTC session state. Historic and current MatrixRTC session data would be broken.
+
+For an acceptable solution, the following requirements need to be taken into consideration:
+
+- Room state is set to empty if the client looses connection. (A heardbeat like system is desired)
+- The best source of truth for a call participation is a working connection to the SFU.
+  It is desired that the disconnect of the SFU is connected to the room state.
+- It should be possible to updated the room state without the client being online.
+- All this should be compatible when matrix uses cryptographic identities.
+
+[MSC4340](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) proposes a concept to
+delay the leave events until one of the leave conditions (heartbeat or SFU disconnect) occur
+and fulfil all of the these requirements.
+
 #### Historic sessions
 
 Since there is no singe entry for a historic session (because of the owner ship discussion),
@@ -185,7 +216,7 @@ The rational for those guidelines are as following:
   - For testing purposes where a different Focus should be tested but one does not want to touch the .well_known
   - For custom deployments that benefit from having the Focus configuration on a per client basis instead of per homeserver.
 
-### The RTCSession types (application)
+### The RTC Session types (application)
 
 Each session type might have its own specification in how the different streams
 are interpreted and even what focus type to use. This makes this proposal extremely
