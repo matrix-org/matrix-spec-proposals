@@ -39,7 +39,7 @@ In practice, OTKs desync for a myriad of reasons, some of which are outlined bel
  }
  ```
 - If `all` is `true`, all stored one-time keys for the calling device are deleted on the server, and `key_ids` is ignored.
-- If `key_ids` is not empty, every specified key ID is deleted from the database. An example key ID is `signed_curve25519:AAAAHQ`.
+- If `all` is `false`, every key specified in `key_ids` is deleted from the database. An example key ID is `signed_curve25519:AAAAHQ`.
 
 The server will then return the following response:
 ```js
