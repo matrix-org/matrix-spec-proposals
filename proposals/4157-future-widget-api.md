@@ -31,12 +31,12 @@ and the `"send_event"` response:
 ```
 {
     room_id: string;
-    event_id: string;
+    event_id?: string;
 
-    group_id: string;
-    send_token: string;
-    cancel_token: string;
-    refresh_token: string;
+    group_id?: string;
+    send_token?: string;
+    cancel_token?: string;
+    refresh_token?: string;
 }
 ```
 
