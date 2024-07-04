@@ -44,6 +44,8 @@ As "Client behaviour" indicates, using encrypted relationships for events means 
 want the relationships to be exposed to the server, so the relationships API, including aggregations,
 will not work. Clients SHOULD have their own way to build the event relationships from individual events.
 
+Users should be aware that, even though the event relationships are encrypted, there might be some other clues from which a homeserver can potentially find out the relationships between events. For example, when a client sees a reply to an event, it may try to fetch the event being replied to from the homeserver, and thus it can know the event being fetched is related to some other event in some way.
+
 ## Alternatives
 
 We could also just let the clients to decide (maybe by user's preferences) whether to send `m.relates_to`
