@@ -5,7 +5,7 @@
 covering many federation API endpoints, including
 [`/send`](https://spec.matrix.org/v1.11/server-server-api/#put_matrixfederationv1sendtxnid). However, while ACLs
 are applied on a per-PDU basis on this endpoint, they are not applied to EDUs at all. Considering that some EDUs
-are specific to certain rooms (e.g. read recipts & typing indicators), it makes sense to apply ACLs to them as well.
+are specific to certain rooms (e.g. read receipts & typing indicators), it makes sense to apply ACLs to them as well.
 
 
 ## Proposal
@@ -17,8 +17,8 @@ For
 the `room_id` field inside `content` should be checked, with the typing notification rejected if the `user_id`
 inside the `content` field is from a server which is forbidden by the room's ACL.
 
-For [read recipts (`m.recipt`)](https://spec.matrix.org/v1.11/server-server-api/#receipts), each `m.read`
-recipt for each `room_id` inside `content`, the read recipt should be rejected if the server of the `user_id`
+For [read receipts (`m.receipt`)](https://spec.matrix.org/v1.11/server-server-api/#receipts), each `m.read`
+receipt for each `room_id` inside `content`, the read receipt should be rejected if the server of the `user_id`
 is forbidden by the room's ACL.
 
 ## Potential issues
@@ -28,7 +28,7 @@ None considered.
 ## Alternatives
 
 Leave things as-is, which wouldn't be that big of a deal when you consider that this would only apply
-to typing notifcations and read recipts currently, which don't allow for very significant disruption inside
+to typing notifications and read receipts currently, which don't allow for very significant disruption inside
 a room. However, as ACLs are meant to prevent certain servers from participating in a room at all, it makes
 sense to apply ACLs to EDUs which are local to certain rooms, as they are a form of participation.
 
