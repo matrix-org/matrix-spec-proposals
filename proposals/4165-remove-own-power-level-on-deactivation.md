@@ -5,8 +5,8 @@ When an account is
 [`m.room.power_levels`](https://spec.matrix.org/v1.11/client-server-api/#mroompower_levels) in rooms the
 account is currently in is unmodified. If no other accounts have a higher power level than the deactivated
 account, the account cannot be deactivated without intervention of the server admin. This leads to potential
-security issues, such as if the server is comprimised or the domain is later bought by a bad actor, the rooms
-where deactivated users on that domain had elevated privileges could also become comprimised.
+security issues, such as if the server is compromised or the domain is later bought by a bad actor, the rooms
+where deactivated users on that domain had elevated privileges could also become compromised.
 
 ## Proposal
 
@@ -21,7 +21,7 @@ field:
 This adds additional complexity to the account deletion process, but as this has the potential to mitigate
 the effects of certain attacks, it is deemed worth it.
 
-This also can cause issues where the deactived account is the only account able to moderate a room, meaning
+This also can cause issues where the deactivated account is the only account able to moderate a room, meaning
 that the account cannot then be moderated by the server administrator, unlike now.
 
 ## Alternatives
