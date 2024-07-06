@@ -3,7 +3,7 @@
 Currently, there is no clear response specified for the
 [`/turnServer`](https://spec.matrix.org/v1.10/client-server-api/#get_matrixclientv3voipturnserver)
 endpoint when there are no TURN servers configured, leading to
-[inconsistant responses from server implementations](https://github.com/matrix-org/matrix-spec/issues/1795)
+[inconsistent responses from server implementations](https://github.com/matrix-org/matrix-spec/issues/1795)
 under these conditions.
 
 ## Proposal
@@ -19,7 +19,7 @@ None considered.
 
 - Use a new error code. This was not used as `M_NOT_FOUND` is not that bad of a fit, and an error code
   only usable for a single endpoint would be redundant.
-- Respond with a differnet `200 OK` response. THis would technically be a breaking change, whereas this
+- Respond with a different `200 OK` response. THis would technically be a breaking change, whereas this
   is not (to the same extent, as clients should already try to handle errors), hence it is not preferred.
 
 ## Security considerations
