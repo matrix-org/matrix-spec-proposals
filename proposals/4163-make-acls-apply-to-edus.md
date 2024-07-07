@@ -14,11 +14,11 @@ As EDUs aren't always local to a specific room, ACLs are applied differently dep
 
 For
 [typing notifications (`m.typing`)](https://spec.matrix.org/v1.11/server-server-api/#typing-notifications),
-the `room_id` field inside `content` should be checked, with the typing notification rejected if the `user_id`
-inside the `content` field is from a server which is forbidden by the room's ACL.
+the `room_id` field inside `content` should be checked, with the typing notification rejected if the `origin`
+of the request is a server which is forbidden by the room's ACL.
 
 For [read receipts (`m.receipt`)](https://spec.matrix.org/v1.11/server-server-api/#receipts), each `m.read`
-receipt for each `room_id` inside `content`, the read receipt should be rejected if the server of the `user_id`
+receipt for each `room_id` inside `content`, the read receipt should be rejected if the `origin` of the request
 is forbidden by the room's ACL.
 
 ## Potential issues
