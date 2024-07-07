@@ -6,6 +6,8 @@ The `/redact` endpoint is also forwards-compatible because it works in all room
 versions. However, `/send` was not made backwards-compatible. This means that
 clients can't switch to using `/send` unless they keep track of room versions.
 
+[MSC2174]: https://github.com/matrix-org/matrix-spec-proposals/pull/2174
+
 ## Proposal
 The proposed solution is to have the server adjust the content of
 `/send/m.room.redaction` calls based on the room version. To future-proof the
@@ -50,10 +52,12 @@ array may also feel less weird than the server modifying content in `/send`.
 Clients may accidentally send invalid redaction events if they try to redact
 using `/send` in an old room on a server that does not implement this MSC.
 
+TODO: find out what current servers do if you /send a redaction in old rooms.
+
 ## Unstable prefix
 
 ## Dependencies
 This MSC defines additional behavior for [MSC2244], which has been accepted,
-but not yet implemented.
-
-[MSC2174]: https://github.com/matrix-org/matrix-spec-proposals/pull/2174
+but not yet implemented. However, MSC2244 should not be considered to be a hard
+dependency: the post-MSC2244 room version behavior can simply be skipped until
+MSC2244 is implemented.
