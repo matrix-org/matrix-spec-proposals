@@ -27,8 +27,8 @@ that the account cannot then be moderated by the server administrator, unlike no
 ## Alternatives
 
 This same process can instead occur when rooms are left, which also fixes this issue for rooms which the
-account is not in at the time of deletion. However, leaving a room is not a perminant action, and the user
-may want to re-join, whereas account deactivation is perminant, so it may not make sense to do this process
+account is not in at the time of deletion. However, leaving a room is not a permanent action, and the user
+may want to re-join, whereas account deactivation is permanent, so it may not make sense to do this process
 when the room is left instead.
 
 ## Security considerations
