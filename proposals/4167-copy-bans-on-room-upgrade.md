@@ -7,6 +7,11 @@ to the new room due to technical limitations of servers not being able to impers
 homeservers". While this is most notably true for `join` membership events, this is not true for `ban`
 membership, which users likely want copied over to the new room.
 
+This behavior [has been part of Synapse](https://github.com/matrix-org/synapse/pull/4642) since only a
+few months after [support for room upgrades was added](https://github.com/matrix-org/synapse/pull/4091),
+with Dendrite doing this
+[ever since they had support for room upgrades](https://github.com/matrix-org/dendrite/pull/2307).
+
 ## Proposal
 
 When a room upgrade is performed, servers SHOULD copy membership states with the `ban` `membership` to
