@@ -1,9 +1,5 @@
 # MSC4164: Leave all rooms on deactivation
 
-There can never be enough templates in the world, and MSCs shouldn't be any different. The level
-of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
-
 When an account is
 [deactivated](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3accountdeactivate),
 it removes all ability for the user to login again. However, as the account is not removed from rooms
