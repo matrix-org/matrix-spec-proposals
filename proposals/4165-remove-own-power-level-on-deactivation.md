@@ -4,7 +4,7 @@ When an account is
 [deactivated](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3accountdeactivate), the
 [`m.room.power_levels`](https://spec.matrix.org/v1.11/client-server-api/#mroompower_levels) in rooms the
 account is currently in is unmodified. If no other accounts have a higher power level than the deactivated
-account, the account cannot be deactivated without intervention of the server admin. This leads to potential
+account, the account cannot be demoted without intervention of the server admin. This leads to potential
 security issues, such as if the server is compromised or the domain is later bought by a bad actor, the rooms
 where deactivated users on that domain had elevated privileges could also become compromised.
 
