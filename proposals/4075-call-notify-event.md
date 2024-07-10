@@ -35,7 +35,7 @@ This event contains the following fields by leveraging intentional mentions.
 }
 ```
 
-In the following we define **call** as any matrix RTC session with the
+In the following we define **call** as any MatrixRTC session with the
 same `"application"` and the same application specific data.
 In the case of `"m.call"`, the same `"call_id"`.
 
@@ -74,7 +74,7 @@ Ringing (or notifying) should happen only if all these conditions apply:\
 - If a notify event is received in "real time":\
   Notify events that are older then **10 seconds** are ignored (using the local
   timestamp computed via `unsigned.age`).\
-  Otherwise a clients syncing for the first time would ring for outdated call events.
+  Otherwise a client syncing for the first time would ring for outdated call events.
   In general ringing only makes sense in "real time". A 10 second syncing latency
   is allowed. Any client which is not able to receive the event in this period should
   not ring to prohibit (annoying/misleading/irrelevant) outdated rings.
