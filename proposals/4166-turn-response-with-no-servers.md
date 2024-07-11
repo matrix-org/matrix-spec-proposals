@@ -19,7 +19,7 @@ None considered.
 
 - Use a new error code. This was not used as `M_NOT_FOUND` is not that bad of a fit, and an error code
   only usable for a single endpoint would be redundant.
-- Respond with a different `200 OK` response. THis would technically be a breaking change, whereas this
+- Respond with a different `200 OK` response. This would technically be a breaking change, whereas this
   is not (to the same extent, as clients should already try to handle errors), hence it is not preferred.
 
 ## Security considerations
