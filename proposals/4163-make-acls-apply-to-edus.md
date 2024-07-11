@@ -11,15 +11,16 @@ are specific to certain rooms (e.g. read receipts & typing indicators), it makes
 ## Proposal
 
 All EDUs which are local to a specific room should have ACLs applied to them. This means that for the EDUs currently
-in the spec, ACLs would only apply to receipts and typing notifications. Examples of how ACLs should be enforced for
-those two types of EDUs are as follows:
+in the spec, ACLs would only apply to receipts and typing notifications. Examples of how ACLs should be enforced 
+at the point of receiving a transaction for those two types of EDUs are as follows:
   - For
 [typing notifications (`m.typing`)](https://spec.matrix.org/v1.11/server-server-api/#typing-notifications),
-the `room_id` field inside `content` should be checked, with the typing notification rejected if the `origin`
-of the request is a server which is forbidden by the room's ACL.
+the `room_id` field inside `content` should be checked, with the typing notification ignored if the `origin`
+of the request is a server which is forbidden by the room's ACL. Ignoring the typing notification means that the EDU
+MUST NOT be sent in any request or response.
   - For [read receipts (`m.receipt`)](https://spec.matrix.org/v1.11/server-server-api/#receipts), all receipts
-inside a `room_id` inside `content` should be rejected if the `origin` of the request is forbidden by the
-room's ACL.
+inside a `room_id` inside `content` should be ignored if the `origin` of the request is forbidden by the
+room's ACL. If ignored, the entire `room_id` field MUST be removed before sending the EDU in any request or response.
 
 ## Potential issues
 
