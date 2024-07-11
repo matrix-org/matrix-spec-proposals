@@ -38,7 +38,7 @@ None considered.
 
 ## Unstable prefix
 
-None required, as no new fields or endpoints were added.
+None required, as no new fields or endpoints are added.
 
 ## Dependencies
 
