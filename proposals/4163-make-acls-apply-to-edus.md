@@ -10,7 +10,7 @@ are specific to certain rooms (e.g. read receipts & typing indicators), it makes
 
 ## Proposal
 
-All EDUs which are local to a specific room should have ACLs applied to them. This means that for the EDUs currently
+All EDUs which are local to a specific room MUST have ACLs applied to them. This means that for the EDUs currently
 in the spec, ACLs would only apply to receipts and typing notifications. Examples of how ACLs should be enforced 
 at the point of receiving a transaction for those two types of EDUs are as follows:
   - For
