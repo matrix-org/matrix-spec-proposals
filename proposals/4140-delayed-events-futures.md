@@ -3,30 +3,36 @@
 <!-- TOC -->
 
 - [MSC4140: Delayed events Futures](#msc4140-delayed-events-futures)
-  - [Proposal](#proposal)
-    - [Response](#response)
-    - [Delegating futures](#delegating-futures)
-    - [Getting running futures](#getting-running-futures)
-  - [Usecase specific considerations](#usecase-specific-considerations)
-    - [MatrixRTC](#matrixrtc)
-      - [Background](#background)
-      - [How this MSC would be used for MatrixRTC](#how-this-msc-would-be-used-for-matrixrtc)
-    - [Self-destructing messages](#self-destructing-messages)
-  - [Potential issues](#potential-issues)
-  - [Alternatives](#alternatives)
-    - [Not reusing the send/state endpoint](#not-reusing-the-sendstate-endpoint)
-    - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
-    - [MSC4018 use client sync loop](#msc4018-use-client-sync-loop)
-    - [Naming](#naming)
-  - [Security considerations](#security-considerations)
-  - [Unstable prefix](#unstable-prefix)
-  - [Dependencies](#dependencies)
+    - [Proposal](#proposal)
+        - [Response](#response)
+        - [Interacting with futures](#interacting-with-futures)
+        - [Delegating futures](#delegating-futures)
+        - [Batch sending](#batch-sending)
+        - [Getting running futures](#getting-running-futures)
+    - [Usecase specific considerations](#usecase-specific-considerations)
+        - [MatrixRTC](#matrixrtc)
+            - [Background](#background)
+            - [How this MSC would be used for MatrixRTC](#how-this-msc-would-be-used-for-matrixrtc)
+        - [Self-destructing messages](#self-destructing-messages)
+    - [Potential issues](#potential-issues)
+    - [Alternatives](#alternatives)
+        - [Not reusing the send/state endpoint](#not-reusing-the-sendstate-endpoint)
+        - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
+            - [Batch Response](#batch-response)
+            - [EventId template variable](#eventid-template-variable)
+        - [MSC4018 use client sync loop](#msc4018-use-client-sync-loop)
+        - [Naming](#naming)
+    - [Security considerations](#security-considerations)
+    - [Unstable prefix](#unstable-prefix)
+    - [Dependencies](#dependencies)
 
 <!-- /TOC -->
 
-The motivation for this MSC is: Updating call member events after the user disconnected by allowing to schedule/delay/timeout/expire events in a generic way.
+The motivation for this MSC is: Updating call member events after the user disconnected by allowing to
+schedule/delay/timeout/expire events in a generic way.
 It is best to first read [MSC4143](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) and in particular
-the section: ["Reliability requirements for the room state"](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#reliability-requirements-for-the-room-state) to understand the MatrixRTC usecase of this MSC.
+the section: ["Reliability requirements for the room state"](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#reliability-requirements-for-the-room-state)
+to understand the MatrixRTC usecase of this MSC.
 
 It turns out that there is a big overlap to other usecases in Matrix which can also be implemented using the proposed concept:
 
@@ -43,7 +49,8 @@ without this devices call membership.
 The same happens if the user force quits the client without pressing the hangup button. (For example closing a browser tab.)
 
 There are numerous possible solution to solve the call member event expiration. They are covered in detail
-in the [Usecase specific considerations/MatrixRTC](#usecase-specific-considerations) section, because they are not part of the actual proposal.
+in the [Usecase specific considerations/MatrixRTC](#usecase-specific-considerations) section, because they are not part
+of the actual proposal.
 In the introduction only an overview of considered options is given:
 
 - expiration using timestamp logic.
@@ -51,97 +58,111 @@ In the introduction only an overview of considered options is given:
 - expiration with to-device messages/sfu polling.
 - expiration with custom synapse logic based on the client sync loop.
 
-This proposal covers queueing an event for later sending, the actual sending
-is configured with a timeout on the homeserver.
-This timeout can be altered by a synapse endpoint that can be used when
-knowing about the corresponding `future_token`.
-With this it is possible to restart the timer, to cancel sending the event and to send the event now.
+This covers how events can be queued for sending after a "passive termination" event.
+The client is not in a state anymore to actually send requests, the server detects this
+(by missing heartbeat pings) and sendes the pre-sent event.
+This is sometimes called "last will" in other technologies.
 
 ## Proposal
 
-When an event is scheduled for sending the client gets a list of server generated tokens to delegate
-the control of when to actually send these events to an external service.
-When not using the tokens the default will be to send the event once the
-timeout happens.
+When an event is scheduled for sending the client gets a temporal so called `future_id`
+to control of when to actually send these events.
 This allows a very flexible way to mark events as expired.
-The sender predefines the event that will be sent once the timeout condition is met.
-For call state events the timed out version of the event would
+The sender predefines the event that will be sent once the condition "the client does not sent heartbeat pings"
+anymore is met.
+For call state events the future/"last will" version of the event would
 be an event where the content communicates, that
 the users has left the call.
 
-This proposal also includes a way to refresh the timeout. Allowing to delay the event multiple times.
-A periodic ping of the refreshing can be used as a heartbeat mechanism. Once the refresh ping is not send
+Using the `future_id` the client can refresh the timeout. Allowing to delay the event multiple times.
+A periodic refresh ping using this `future_id` can be used as a heartbeat mechanism. Once the refresh ping is not send
 anymore the timeout condition is met and the homeserver sends the event with the expired content information.
 
 This translate to: _"only send the event when the client is not running its program anymore (not sending the heartbeat anymore)"_
 We call those delayed events `Futures`.
 
-Futures reuse the `send` and `state` endpoint and extend them with an optional `future_timeout` and an optional `future_group_id` query parameter
+Futures reuse the `send` and `state` endpoint and extend them with an optional `future_timeout` and an optional
+`parent_future_id` query parameter.
 
-`PUT /_matrix/client/v1/rooms/{roomId}/send/{eventType}/{txnId}?future_timeout={timeout_duration}&future_group_id={group_id}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/{eventType}/{txnId}?future_timeout={timeout_duration}&parent_future_id={future_id}`
 
-`PUT /_matrix/client/v1/rooms/{roomId}/state/{eventType}/{stateKey}?future_timeout={timeout_duration}&future_group_id={group_id}`
+`PUT /_matrix/client/v1/rooms/{roomId}/state/{eventType}/{stateKey}?future_timeout={timeout_duration}&parent_future_id={future_id}`
 
 The two query parameters are used to configure the event scheduling:
 
 - `future_timeout: number` defines how long (in milliseconds) the homeserver will wait before sending
-  the event into the room. **Note**, since the timeout can be refreshed and sending the future can be triggered via an endpoint (see: [Proposal/Delegating futures](#delegating-futures)) this value is not enough to predict the time this event will arrive in the room.
-  - If this query parameter is not added the future will never expire and can only be send by the [external delegation endpoint](#delegating-futures).
+  the event into the room. **Note**, since the timeout can be refreshed and sending the future can be triggered via an
+  endpoint (see: [Proposal/Delegating futures](#delegating-futures)) this value is not enough to predict the time this
+  event will arrive in the room.
+  - If this query parameter is not added the future will never expire and can only be send by the [future interaction endpoint](#interacting-with-futures).
     We call such a future **action future**.
   - If set to a `number` (ms) we call the future **timeout future**
-- `future_group_id: string` is optional if a `future_timeout` is a `number`. The purpose of this identifier is to group
+- `parent_future_id: string` is optional if a `future_timeout` is a `number`. The purpose of this identifier is to group
   **multiple futures in one mutually exclusive group**.
   - Only one of the events in such a group can ever reach the DAG/will be distributed by the homeserver.
     All other futures will be discarded.
   - Every future group needs at least one timeout future to guarantee that all future expire eventually.
-  - If a timeout future is sent without a `future_group_id` a unique identifier will be generated as the `future_group_id` by the
-    homeserver and is part of the `send_future` response.
-  - Group id's can only be used by one user. Reasons for this are, that this would basically allow full control over the events that are part
-    of a future group once another matrix user know the group id. It would also require to federate futures if the users are not on the same homeserver.
+  - The `parent_future_id` can only be set to a `future_id` that was created for a future form the same user.
+    Otherwise, this would allow full control over the events that are part
+    of a future group, other users could add optional futures, once another matrix user knows the `future_id`.
+    It would also require to federate futures if the users are not on the same homeserver.
 
 Both of the query parameters are optional but one of them has to be present.
-This gives us the following options:
+This gives the following options:
 
-```
+```url
 ?future_timeout=10 - a timeout future in a new future group
-?future_timeout=10&future_group_id="groupA" - a timeout future added to groupA
-?future_group_id="groupA" - an action future added to groupA
+?future_timeout=10&parent_future_id="groupA" - a timeout future added to groupA
+?parent_future_id="groupA" - an action future added to groupA
 ```
 
-Possible error responses are all error responses that can occur when using the `send` and `state` endpoint accordingly and:
+Two categories of futures arise:
+
+- `parent_future` vs `child_future`:\
+  If a future is send with a `parent_future_id` it is a child. A child `future_id` can never be used
+  as the `parent_future_id` property. (servers will respond with an error).
+- `timeout_future` vs `action_future`:\
+  If a timeout duration is set its a timeout future otherwise we call it an action future.
+  Parent futures can only be timeouts but child futures can also be actions.
+
+Possible error responses are all error responses that can occur when using the `send` and `state` endpoint accordingly:
 
 - The server will respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400)
-  if the client tries to send an action future without there being a timeout future with the same `future_group_id`.
-  The error code `M_UNKNOWN_FUTURE_GROUP`.
+  if the client tries to send an action future without there being a timeout future with the same `parent_future_id`.
+  The error code `M_UNKNOWN_FUTURE_PARENT_FUTURE_ID`.
 - The server can optionally configure a maximum `timeout_duration`
   (In the order of one week dependent on how long they want to track futures)
-  The server will respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) (`Bad Request`, with a matrix
-  error code `M_FUTURE_MAX_TIMEOUT_EXCEEDED`
+  The server will respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) (`Bad Request`,
+  with a matrix error code `M_FUTURE_MAX_TIMEOUT_EXCEEDED`
   containing the maximum allowed `timeout_duration`) if the
   client tries to send a timeout future with a larger `timeout_duration`.
-- The future is using a `future_group_id` that belongs to a future group from another user. In this case the homeserver sends a [`400`] (`Bad Request`)
-  with the matrix error code `M_FORBIDDEN` and a message that the user is not allowed to add another future to that future group.
+- The future is using a `parent_future_id` that belongs to a future from another user. In this case the homeserver
+  sends a [`400`] (`Bad Request`)
+  with the matrix error code `M_FORBIDDEN` and a message that the user is not allowed to add another future to that
+  future group.
 
-The body is the same as [sending a normal event](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid) or [sending a state event](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey).
+The body is the same as [sending a normal event](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
+or [sending a state event](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey).
 
-Power levels are evaluated for each event only once the trigger has occurred and it will be distributed/inserted into the DAG.
+Power levels are evaluated for each event only once the trigger has occurred and it will be distributed/inserted into the
+DAG.
 This implies a future can fail if it violates power levels at the time it resolves.
 (It's also possible to successfully send a future the user has no permission to at the time of sending
 if the power level situation has changed at the time the future resolves.)
 
 ### Response
 
-When sending a future the `event_id` would not be available:
+When sending a future the `event_id` is not yet available:
 
 - The `event_id` is using the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids) which is
   [calculated via the essential fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
   of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
-- Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call duration computation)
+- Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG
+  (required for call duration computation)
   we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
 
-So the response will include a `send_token`, `cancel_token`,
-the associated `future_group_id` and an optional `refresh_token` but no
-`event_id` if the request was sent with the `future_timeout` and or `future_group_id` parameters.
+So the response will include a custom `future_id` but no `event_id`,
+if the request was sent with the `future_timeout` and or `future_group_id` parameters.
 A request without query parameters would
 get a response with an `event_id` (as before).
 
@@ -149,11 +170,8 @@ As a result the return type would change to:
 
 ```jsonc
 {
-  "event_id": string | undefined,
-  "future_group_id": string | undefined,
-  "send_token": string | undefined,
-  "refresh_token": string | undefined,
-  "cancel_token": "string | undefined
+  "event_id": "1234", // string | undefined
+  "future_id": "2345" //string | undefined,
 }
 ```
 
@@ -161,57 +179,44 @@ For a future event the response looks as following:
 
 ```jsonc
 {
-  // always present
-  "send_token": "future_send_token",
-  "cancel_token": "future_cancel_token",
-  "future_group_id": "future_group_id",
-  // optional, only present if its a a timeout future response
-  "refresh_token": "future_refresh_token"
+  "future_id": "1234" // string,
 }
 ```
 
-We define a `future_token` as one of `future_send_token, future_cancel_token, future_refresh_token`.
-Each `future_token` is a 128 bit Base64-encoded url safe UUID (It will be part of the url for sending updates to a future.)
-The `future_group_id` is of the same format. All these fields are generated on the homeserver.
-They can optionally be used to interact with futures and even delegate very fine grained control over the
-future send time to other services by only sharing the tokens.
+Each `future_id` is a UUID similar to an `event_id`s. It is computed on the homeserver.
+It can optionally be used to interact with futures.
 
-The exact usage of those tokens is covered in the next section.
+### Interacting with futures
 
-### Delegating futures
+This MSC also proposes a authenticaed EDU endpoint: `update_future`.
+The `future_id` can be used to send an EDUs to the `update_future` endpoint:
+`POST /_matrix/client/v1/update_future`
+using the following EDU body:
 
-This MSC also proposes a `futures` endpoint.
-The `future_token`s can be used to call this `futures` endpoint:
-`POST /_matrix/client/v1/future/{future_token}`
-
-The information required to call this endpoint is minimal so that
-no metadata is leaked when sharing the refresh/send url with a third party.
-Since the refresh and send tokens are of the same format it is not even possible to evaluate
-what that token is for when reading the `https` request log.
-This endpoint allows to delegate resolving the future.
-It is not authenticated by a Matrix Auth Token. Instead the `future_token` itself is the authentication mechanism.
-An SFU for instance, that tracks the current client connection state, could be sent a url from the client that it
-needs to call every X hours while a user is connected and a url it has to call once the user disconnects (using a `future_refresh_token` and the `future_send_token`).
-This way the SFU can be used as the source of truth for the call member room state even if the client
-gets closed or looses connection and without knowing anything about the Matrix call.
+```jsonc
+{
+  "future_id": "1234567890", // UUID
+  "action": "send" // "send"|"cancel"|"refresh,
+}
+```
 
 The homeserver does the following when receiving a Future:
 
-- It checks for the validity of the request (based on the `future_timeout` and the `future_group_id` query parameters)
-  and returns a `409`, `400` or `405` if necessary.
-- It **generates** a `future_send_token`, a `future_cancel_token` and if not provided in the request a `future_group_id` and a optionally `refresh_token` and stores them alongside the time
-  of retrieval and the `timeout_duration`.
-- If `future_timeout` was present, it **Starts a timer** for the `refresh_token`.
+- It checks for the validity of the request (based on the `future_timeout` and the `parent_future_id` query parameters)
+  and returns a `409`, `400` or `405` if necessary. `future_id`s that already are connected to a parent cannot be used as
+  a `parent_future_id`.
+- It **generates** a `future_id`.
+- If `future_timeout` was present, it **Starts a timer** for the Future.
 
-  - If a `POST /_matrix/client/v1/future/{future_refresh_token}` is received, it
+  - If a `POST /_matrix/client/v1/update_future`, `{"action": "refresh"}` is received, it
     **restarts the timer** with the stored `timeout_duration` for the associated timeout future.
-  - If a `POST /_matrix/client/v1/future/{future_send_token}` is received, it **sends the associated action or timeout future**
-    and deletes any stored futures with the `future_group_id` associated with that token.
-  - If a `POST /_matrix/client/v1/future/{future_cancel_token}` is received, it **does NOT send any future**
+  - If a `POST /_matrix/client/v1/update_future`, `{"action": "send"}` is received, it
+    **sends the associated action or timeout future**
+    and deletes any related future group (futures with the same `parent_future_id` or `future_id`).
+  - If a `POST /_matrix/client/v1/update_future`, `{"action": "cancel"}` is received, it **does NOT send any future**
     and deletes/invalidates the associated stored future. This can mean that a whole future group gets deleted (see below).
-  - If a `POST /_matrix/client/v1/future/{unknown_token}` is received the server responds with a `410` (Gone).
-    An `unknown_token` either means that the service is making something up or that the service is using a
-    token that is invalidated by now.
+  - If a `POST /_matrix/client/v1/update_future` `{"future_id": "unknown"}` is received the server responds
+    with a `410` (Gone).
   - If a timer times out, **it sends the timeout future**.
   - If the homeserver receives a _new state event_ with the same state key as existing futures the
     **futures get invalidated and the associated timers are stopped**.
@@ -225,13 +230,26 @@ The homeserver does the following when receiving a Future:
 - After the homeservers sends a timeout future or action future, the associated
   timer and tokens is canceled/deleted.
 
-So for each `future_group_id`, the homeserver will at most send one timeline event.
+So for each `parent_future_id`, the homeserver will at most send one timeline event.
 
 - No timeline event will be send in case all of the timeout futures in a future group are cancelled via `/_matrix/client/v1/future/{cancel_token}`.
 - Otherwise one of the timeout or action futures will be send.
 
-Its particularly important to **rate limit** the `POST /_matrix/client/v1/future/{future_token}`endpoint.
-Otherwise, a malicious party can try to find a correct token by randomly sending requests to this endpoint.
+### Delegating futures
+
+It is useful for external services to also interact with futures. If a client disconnects an external service can
+be the best source to activate the Future/"last will".
+
+This is not covered in this MSC but could be realized with scoped access tokens.
+A scoped token for only the `update_future` endpoint and a subset of `future_id`s would be used.
+
+An SFU for instance, that tracks the current client connection state, could be sent a request from the client that it
+needs to call every X hours while a user is connected and a request it has to call once the user disconnects
+(using a `{"action": "refresh}` and a `{"action": "send"}` `future_update` request.).
+This way the SFU can be used as the source of truth for the call member room state even if the client
+gets closed or looses connection and without knowing anything about the Matrix call.
+
+### Batch sending
 
 Timed messages, tea timers, reminders or ephemeral events could be implemented
 using this where clients send room events with
@@ -255,13 +273,13 @@ We do not include batch sending in the proposal of this MSC however since batch 
 become a generic Matrix concept as proposed with `/send_pdus`. (see: [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080))
 
 There is a [batch sending version](#batch-sending-futures-with-custom-endpoint) in the Alternatives section
-that proposes a future specific group sending endpoint in case this is required sooner then its realistic to implement [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080).
+that proposes a future specific group sending endpoint in case this is required sooner then its realistic to implement
+[MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080).
 
 ### Getting running futures
 
-Using `GET /_matrix/client/v1/future` it is possible to get the list of all running futures issues by the authenticated user.
-This is an authenticated endpoint. It sends back the json
-of the final event content with the associated tokens.
+Using `GET /_matrix/client/v0/futures` it is possible to get the list of all running futures issues by the authenticated
+user. This is an authenticated endpoint. It sends back the json of the final event content with the associated tokens.
 
 ```jsonc
 [
@@ -271,12 +289,9 @@ of the final event content with the associated tokens.
       ...event_body
     },
     "response":{
-      // always present
-      "send_token": "future_send_token",
-      "cancel_token": "future_cancel_token",
-      "future_group_id": "future_group_id",
-      // optional if there is a timeout
-      "refresh_token": "future_refresh_token",
+      "future_id": UUID,
+      "last_refresh": Time,
+      "timeout": Number | undefined,
     }
   },
 ]
@@ -284,7 +299,6 @@ of the final event content with the associated tokens.
 
 This can be used so clients can optionally display events
 that will be send in the future.
-And to acquire cancel_tokens for then.
 
 For all usecases where the existence of a running future is also of interest for other room members,
 (like self-destructing messages) it is recommended to include
@@ -330,7 +344,8 @@ Example:
 > (or a request to the SFU) to every user that has an active state event to check if
 > they are still online. Just to display the room tile properly.
 
-For displaying the room list timeout based approaches are much more reasonable because this allows computing MatrixRTC metadata for a room to be synchronous.
+For displaying the room list timeout based approaches are much more reasonable because this allows computing MatrixRTC
+metadata for a room to be synchronous.
 
 The current solution updates the room state every X minutes.
 This is not elegant since we basically resend room state with the same content.
@@ -354,7 +369,7 @@ to only send one event for joining and one for leaving (reliably)
   not disconnect a really long value can be chosen (approx. 2-10hours). The SFU will then only send
   an action once the user disconnects or looses connection (it could even be a different action for both cases
   handling them differently on the client)
-  This significantly reduces the amount of calls for the `/future` endpoint since the sfu only needs to ping
+  This significantly reduces the amount of calls for the `/update_future` endpoint since the SFU only needs to ping
   once per session (per user) and every 2-5hours (instead of every `X` seconds.)
 
 ### Self-destructing messages
@@ -405,13 +420,15 @@ HTTPS request. This is desired for self-destructing events and for MatrixRTC roo
 we want the guarantee, that the event itself and the future removing the event both reach the homeserver
 with one request. Otherwise there is a risk for the client to lose connection or crash between sending the  
 event and the future which results in never expiring call membership or never destructing self-destructing messages.  
-This would be solved once [MSC4080](https://github.com/matrix-org/matrix-spec-proposals/pull/4080) and the `/send_pdus` endpoint is implemented.
+This would be solved once [MSC4080](https://github.com/matrix-org/matrix-spec-proposals/pull/4080) and the `/send_pdus`
+endpoint is implemented.
 (Then the `future_timeout` and `future_group_id` could be added
 to the `PDUInfo` instead of the query parameters and everything could be send at once.)
 
 This would be the preferred solution since we currently don't have any other batch sending mechanism.  
 It would however require lots of changes since a new widget action for futures would be needed.
-With the current main proposal it is enough to add a `future_timeout` and `future_group_id` parameter to the send message widget action.
+With the current main proposal it is enough to add a `future_timeout` and `future_group_id` parameter to the send message
+widget action.
 The widget driver would then take care of calling `send` or `send_future` based on the presence of those fields.
 
 An alternative to the proposed solution that allows this kind of batch sending would be to
@@ -453,21 +470,19 @@ event.
 
 This is a batch endpoint that sends timeout and action futures at the same time.
 
-**Response**
+#### Batch Response
 
 The response will be a collection of all the futures with the same fields as in the initial proposal:
 
 ```jsonc
 {
   "send_on_timeout": {
-    "send_token": "future_send_token",
-    "refresh_token": "future_refresh_token",
-    "cancel_token": "future_cancel_token"
+    "future_id": "future_id",
   },
   // optional
   "send_on_action": {
-    "${action1}": { "send_token": "future_send_token" },
-    "${action2}": { "send_token": "future_send_token" }
+    "${action1}": { "future_id": "future_id1" },
+    "${action2}": { "future_id": "future_id2" }
   },
 
   // optional
@@ -475,20 +490,18 @@ The response will be a collection of all the futures with the same fields as in 
 }
 ```
 
-We do not need a `future_group_id` since we will send one group in one request.
-
 Working with futures is the same with this alternative.
 This means,
 
-- `GET /_matrix/client/v1/future` getting running futures
-- `POST /_matrix/client/v1/future/{token}` cancel, refreshing and sending futures
+- `GET /_matrix/client/v1/futures` getting running futures
+- `POST /_matrix/client/v1/update_future` to canceling, refreshing and sending futures
 
 uses the exact same endpoints.
 Also the behaviour of the homeserver on when to invalidate the furures is identical except, that
 we don't need the error code `409` anymore since the events are sent as a batch and there cannot be
 an action future without a timeout future.
 
-**EventId template variable**
+#### EventId template variable
 
 It would be useful to be able to send redactions and edits as one HTTP request.
 This would handle the cases where the futures need to reference the `send_now` event.
@@ -534,6 +547,18 @@ an indicator to determine if the event is expired. Instead of letting the SFU
 inform about the call termination or using the call app ping loop like we propose
 here.
 
+The advantage is, that this does not require us to introduce a new refresh token type.
+With cryptographic identities we however need the client to create the leave event.
+
+The timeout for syncs are much slower than what would be desirable (30s vs 5s).
+
+With a widget implementation for calls we cannot guarantee that the widget is running during the sync loop.
+So one either has to move the hangup logic to the hosting client or let the widget run all the time.
+
+With a dedicated ping (independent to the sync loop) it is more felxibale and allows us to let the widget
+execute the refresh.
+If the widget dies, the call membership will disconnect.
+
 ### Naming
 
 The following alternative names for this concept are considered
@@ -541,30 +566,16 @@ The following alternative names for this concept are considered
 - Future
 - DelayedEvents
 - PostponedEvents
+- LastWill
 
 ## Security considerations
-
-We are using an unauthenticated endpoint to refresh the expirations. Since we use
-generated tokens it is hard to guess a correct request and force sending one
-of the Futures. (The homeserver has them but they can always send events in your name
-as long as we do not have [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080))
-
-It is an intentional decision to not provide an endpoint like
-`PUT /_matrix/client/v1/future/room/{roomId}/event/{eventId}`
-where any client with access to the room could also `end` or `refresh`
-the expiration. With the token the client creating the future has ownership
-over the expiration and only intentional delegation of that ownership
-(sharing the token) is possible.
-
-On the other hand the token makes sure that the instance gets as little
-information about the Matrix metadata of the associated `future` event. It cannot
-even tell with which room or user it is interacting or what the token does (refresh vs send).
 
 Servers SHOULD impose a maximum timeout value for future timeouts of not more than a month.
 
 ## Unstable prefix
 
 Use `org.matrix.msc4140.` instead of `m.` as long as the MSC is not stable.
-For the endpoints introduced in this MSC use the prefix `/org.matrix.msc4140/` and set the paths version string to unstable, instead of v#.
+For the endpoints introduced in this MSC use the prefix `/org.matrix.msc4140/` and set the paths version string to unstable,
+instead of v#.
 
 ## Dependencies
