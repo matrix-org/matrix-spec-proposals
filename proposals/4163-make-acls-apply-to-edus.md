@@ -20,7 +20,7 @@ of the request is a server which is forbidden by the room's ACL. Ignoring the ty
 MUST be dropped upon receipt.
   - For [read receipts (`m.receipt`)](https://spec.matrix.org/v1.11/server-server-api/#receipts), all receipts
 inside a `room_id` inside `content` should be ignored if the `origin` of the request is forbidden by the
-room's ACL. If ignored, the entire `room_id` field MUST be removed before sending the EDU in any request or response.
+room's ACL. If ignored, the entire `room_id` field MUST be removed before processing the EDU in any request or response.
 
 ## Potential issues
 
