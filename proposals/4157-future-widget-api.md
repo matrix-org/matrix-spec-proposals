@@ -20,9 +20,8 @@ We extend the send
     type: string;
     content: unknown;
     room_id?: string;
-
-    future_timeout?: number;
-    parent_future_id?: string;
+    future_timeout?: number; // new field
+    parent_future_id?: string; // new field
 }
 ```
 
@@ -31,9 +30,8 @@ and the `"send_event"` response:
 ```
 {
     room_id: string;
-    event_id?: string;
-
-    parent_future_id?: string;
+    event_id?: string; // now optional
+    parent_future_id?: string; // new field
 }
 ```
 
