@@ -22,7 +22,7 @@ We extend the send
     room_id?: string;
 
     future_timeout?: number;
-    future_group_id?: string;
+    parent_future_id?: string;
 }
 ```
 
@@ -33,18 +33,15 @@ and the `"send_event"` response:
     room_id: string;
     event_id?: string;
 
-    future_group_id?: string;
-    send_token?: string;
-    cancel_token?: string;
-    refresh_token?: string;
+    parent_future_id?: string;
 }
 ```
 
 to provide the same properties needed for [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140). The client is responsible to check
-for the field `future_timeout` or `future_group_id` of the widget action and send a `/send` or `/send_future` http request
+for the field `future_timeout` or `parent_future_id` of the widget action and send a `/send` or `/send_future` http request
 if one of them is present.
 
-Additionally the response is extended with the tokens and the `future_group_id`.
+Additionally the response is extended with the tokens and the `parent_future_id`.
 
 All other details about the future concept can be found in [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) so here we intentionally don't mention
 any of the details about futures.
