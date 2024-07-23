@@ -129,7 +129,7 @@ Content-Type: application/json
 
 ### Getting delayed events
 
-We propose adding a new authenticated endpoint `GET /_matrix/client/v0/futures` to the client-server API to allow clients to get a list of all the events that have been scheduled to send in the future.
+We propose adding a new authenticated endpoint `GET /_matrix/client/v1/futures` to the client-server API to allow clients to get a list of all the events that have been scheduled to send in the future.
 
 ```http
 HTTP 200 OK
@@ -173,18 +173,26 @@ For use cases where the existence of a delayed event is also of interest for oth
 
 ### Managing delayed events
 
-We propose adding a new authenticated client-server API endpoint `POST /_matrix/client/v1/update_future` to manage
+We propose adding a new authenticated client-server API endpoint at `POST /_matrix/client/v1/futures/{future_id}` to manage
 delayed events that have already been scheduled.
 
 The body of the request is a JSON object containing the following fields:
 
-- `future_id` - The `future_id` of the delayed event to update.
 - `action` - The action to take on the delayed event. Must be one of:
   - `send` - Send the delayed event immediately.
   - `cancel` - Cancel the delayed event so that it is never sent.
   - `refresh` - Restart the timeout of the delayed event.
 
-For example, the following would send the delayed event with `future_id` `1234567890` immediately:
+For example, the following would send the delayed event with future ID `1234567890` immediately:
+
+```http
+POST /_matrix/client/v1/futures/1234567890
+Content-Type: application/json
+
+{
+  "action": "send"
+}
+```
 
 ```http
 POST /_matrix/client/v1/update_future
@@ -552,8 +560,8 @@ Servers SHOULD impose a maximum timeout value for future timeouts of not more th
 Whilst the MSC is in the proposal stage, the following should be used:
 
 - `org.matrix.msc4140.future_timeout` should be used instead of the `future_timeout` query parameter.
-- `POST /_matrix/client/unstable/org.matrix.msc4140/update_future` should be used instead of the `POST /_matrix/client/v1/update_future` endpoint.
-- `GET /_matrix/client/unstable/org.matrix.msc4140/futures` should be used instead of the `GET /_matrix/client/v0/futures` endpoint.
+- `POST /_matrix/client/unstable/org.matrix.msc4140/futures/{future_id}` should be used instead of the `POST /_matrix/client/v1/futures/{future_id}` endpoint.
+- `GET /_matrix/client/unstable/org.matrix.msc4140/futures` should be used instead of the `GET /_matrix/client/v1/futures` endpoint.
 - The `M_UNKNOWN` `errcode` should be used instead of `M_FUTURE_MAX_TIMEOUT_EXCEEDED` as follows:
 
 ```json
