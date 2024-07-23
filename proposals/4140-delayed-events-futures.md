@@ -135,20 +135,36 @@ We propose adding a new authenticated endpoint `GET /_matrix/client/v0/futures` 
 HTTP 200 OK
 Content-Type: application/json
 
-[
-  {
-    "url":"/_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}",
-    "body":{
-      ...event_body
-    },
-    "response":{
+{
+  "futures": [
+    {
       "future_id": "1234567890",
-      "last_refresh": 1721732853284, // unix timestamp in milliseconds
-      "timeout": 15000 // milliseconds
+      "room_id": "!roomid:example.com",
+      "event_type": "m.room.message",
+      "timeout": 15000,
+      "running_since": 1721732853284,
+      "content":{
+        "msgtype": "m.text",
+        "body": "I am now offline"
+      }
+    },
+    {
+      "future_id": "abcdefgh",
+      "room_id": "!roomid:example.com",
+      "event_type": "m.call.member",
+      "state_key": "@user:example.com_DEVICEID",
+      "timeout": 5000,
+      "running_since": 1721732853284,
+      "content":{
+        "memberships": []
+      }
     }
-  }
-]
+  ]
+}
 ```
+
+`running_since` is the timestamp (as unix time in milliseconds) when the delayed event was scheduled or last refreshed.
+So, unless the delayed event is updated beforehand, the event will be sent after `running_since` + `timeout`.
 
 This can be used by clients to display events that have been scheduled to be sent in the future.
 
