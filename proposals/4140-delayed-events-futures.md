@@ -140,7 +140,7 @@ Content-Type: application/json
     {
       "delay_id": "1234567890",
       "room_id": "!roomid:example.com",
-      "event_type": "m.room.message",
+      "type": "m.room.message",
       "delay": 15000,
       "running_since": 1721732853284,
       "content":{
@@ -151,7 +151,7 @@ Content-Type: application/json
     {
       "delay_id": "abcdefgh",
       "room_id": "!roomid:example.com",
-      "event_type": "m.call.member",
+      "type": "m.call.member",
       "state_key": "@user:example.com_DEVICEID",
       "delay": 5000,
       "running_since": 1721732853284,
