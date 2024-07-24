@@ -194,16 +194,6 @@ Content-Type: application/json
 }
 ```
 
-```http
-POST /_matrix/client/v1/update_future
-Content-Type: application/json
-
-{
-  "future_id": "1234567890",
-  "action": "send"
-}
-```
-
 ### Homeserver implementation details
 
 #### Power levels are evaluated at the point of sending
