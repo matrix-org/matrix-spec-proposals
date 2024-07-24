@@ -1,7 +1,7 @@
 # MSC4140: Cancellable delayed events (Futures)
 
 This MSC proposes a mechanism by which a Matrix client can schedule an event (including a state event) to be sent into
-a room on behalf of a user at a later time.
+a room at a later time.
 
 The client does not have to be running or in contact with the Homeserver at the time that the event is actually sent.
 
