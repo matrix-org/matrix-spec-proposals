@@ -1,4 +1,4 @@
-# MSC4140: Cancellable delayed events (Futures)
+# MSC4140: Cancellable delayed events
 
 This MSC proposes a mechanism by which a Matrix client can schedule an event (including a state event) to be sent into
 a room at a later time.
@@ -10,7 +10,7 @@ time and then distributing as normal via federation.
 
 <!-- TOC -->
 
-- [MSC4140: Cancellable delayed events Futures](#msc4140-cancellable-delayed-events-futures)
+- [MSC4140: Cancellable delayed events](#msc4140-cancellable-delayed-events)
   - [Background and motivation](#background-and-motivation)
   - [Proposal](#proposal)
     - [Scheduling a delayed event](#scheduling-a-delayed-event)
@@ -84,7 +84,7 @@ The following operations are added to the client-server API:
 - Send the scheduled event immediately
 - Cancel a scheduled event so that it is never sent
 
-At the point of an event being scheduled the homeserver is [unable to allocate the event ID](#allocating-event-id-at-the-point-of-scheduling-the-send). Instead, the homeserver allocates a _future ID_ to the scheduled event which is used during the above API operations.
+At the point of an event being scheduled the homeserver is [unable to allocate the event ID](#allocating-event-id-at-the-point-of-scheduling-the-send). Instead, the homeserver allocates a _delay ID_ to the scheduled event which is used during the above API operations.
 
 ### Scheduling a delayed event
 
@@ -112,7 +112,7 @@ Content-Type: application/json
 ```
 
 The homeserver can optionally enforce a maximum delay duration. If the requested delay exceeds the maximum the homeserver
-can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) and a Matrix error code `M_FUTURE_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
+can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) and a Matrix error code `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
 
 For example the following specifies a maximum delay of 24 hours:
 
@@ -121,7 +121,7 @@ For example the following specifies a maximum delay of 24 hours:
 Content-Type: application/json
 
 {
-  "errcode": "M_FUTURE_MAX_DELAY_EXCEEDED",
+  "errcode": "M_MAX_DELAY_EXCEEDED",
   "error": "The requested delay exceeds the allowed maximum.",
   "max_delay": 86400000
 }
@@ -357,9 +357,9 @@ that proposes a future specific group sending endpoint in case this is required 
 
 Alternatively new endpoints could be introduced to not overload the `send` and `state` endpoint.
 Those endpoints could be called:
-`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?future_timeout={timeout_duration}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?delay={delay_ms}`
 
-`PUT /_matrix/client/v1/rooms/{roomId}/state_future/{eventType}/{stateKey}?future_timeout={timeout_duration}`
+`PUT /_matrix/client/v1/rooms/{roomId}/state_future/{eventType}/{stateKey}?delay={delay_ms}`
 
 This would allow the response for the `send` and `state` endpoints intact and we get a different return type
 for the new `send_future` and `state_future` endpoints.
@@ -373,12 +373,12 @@ with one request. Otherwise there is a risk for the client to lose connection or
 event and the future which results in never expiring call membership or never destructing self-destructing messages.  
 This would be solved once [MSC4080](https://github.com/matrix-org/matrix-spec-proposals/pull/4080) and the `/send_pdus`
 endpoint is implemented.
-(Then the `future_timeout` could be added
+(Then the `delay` could be added
 to the `PDUInfo` instead of the query parameters and everything could be send at once.)
 
 This would be the preferred solution since we currently don't have any other batch sending mechanism.  
 It would however require lots of changes since a new widget action for futures would be needed.
-With the current main proposal it is enough to add a `future_timeout` to the send message
+With the current main proposal it is enough to add a `delay` to the send message
 widget action.
 The widget driver would then take care of calling `send` or `send_future` based on the presence of those fields.
 
@@ -428,12 +428,12 @@ The response will be a collection of all the futures with the same fields as in 
 ```jsonc
 {
   "send_on_timeout": {
-    "future_id": "future_id",
+    "delay_id": "delay_id",
   },
   // optional
   "send_on_action": {
-    "${action1}": { "future_id": "future_id1" },
-    "${action2}": { "future_id": "future_id2" }
+    "${action1}": { "delay_id": "delay_id1" },
+    "${action2}": { "delay_id": "delay_id2" }
   },
 
   // optional
@@ -552,13 +552,13 @@ Whilst the MSC is in the proposal stage, the following should be used:
 - `org.matrix.msc4140.delay` should be used instead of the `delay` query parameter.
 - `POST /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}` should be used instead of the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
 - `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
-- The `M_UNKNOWN` `errcode` should be used instead of `M_FUTURE_MAX_DELAY_EXCEEDED` as follows:
+- The `M_UNKNOWN` `errcode` should be used instead of `M_MAX_DELAY_EXCEEDED` as follows:
 
 ```json
 {
   "errcode": "M_UNKNOWN",
   "error": "The requested delay exceeds the allowed maximum.",
-  "org.matrix.msc4140.errcode": "M_FUTURE_MAX_DELAY_EXCEEDED",
+  "org.matrix.msc4140.errcode": "M_MAX_DELAY_EXCEEDED",
   "org.matrix.msc4140.max_delay": 86400000
 }
 ```
@@ -567,7 +567,7 @@ instead of:
 
 ```json
 {
-  "errcode": "M_FUTURE_MAX_DELAY_EXCEEDED",
+  "errcode": "M_MAX_DELAY_EXCEEDED",
   "error": "The requested delay exceeds the allowed maximum.",
   "max_delay": 86400000
 }
