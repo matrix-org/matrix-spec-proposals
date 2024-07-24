@@ -88,7 +88,7 @@ At the point of an event being scheduled the homeserver is [unable to allocate t
 
 ### Scheduling a delayed event
 
-An optional `future_timeout` query parameter is added to the existing
+An optional `delay` query parameter is added to the existing
 [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 and
 [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
@@ -96,23 +96,23 @@ endpoints.
 
 The new query parameter is used to configure the event scheduling:
 
-- `future_timeout` - Optional number of milliseconds the homeserver should wait before sending the event. If no `future_timeout` is provided, the event is sent immediately as normal.
+- `delay` - Optional number of milliseconds the homeserver should wait before sending the event. If no `delay` is provided, the event is sent immediately as normal.
 
 The body of the request is the same as currently.
 
-If a `future_timeout` is provided, the homeserver schedules the event to be sent with the specified delay and returns the _future ID_ in the `future_id` field (omitting the `event_id` as it is not available):
+If a `delay` is provided, the homeserver schedules the event to be sent with the specified delay and returns the _delay ID_ in the `delay_id` field (omitting the `event_id` as it is not available):
 
 ```http
 200 OK
 Content-Type: application/json
 
 {
-  "future_id": "1234567890"
+  "delay_id": "1234567890"
 }
 ```
 
-The homeserver can optionally enforce a maximum timeout duration. If the requested timeout exceeds the maximum the homeserver
-can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) and a Matrix error code `M_FUTURE_MAX_TIMEOUT_EXCEEDED` and the maximum allowed timeout (`timeout_duration` in milliseconds).
+The homeserver can optionally enforce a maximum delay duration. If the requested delay exceeds the maximum the homeserver
+can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) and a Matrix error code `M_FUTURE_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
 
 For example the following specifies a maximum delay of 24 hours:
 
@@ -121,15 +121,15 @@ For example the following specifies a maximum delay of 24 hours:
 Content-Type: application/json
 
 {
-  "errcode": "M_FUTURE_MAX_TIMEOUT_EXCEEDED",
-  "error": "The requested timeout exceeds the allowed maximum.",
-  "timeout_duration": 86400000
+  "errcode": "M_FUTURE_MAX_DELAY_EXCEEDED",
+  "error": "The requested delay exceeds the allowed maximum.",
+  "max_delay": 86400000
 }
 ```
 
 ### Getting delayed events
 
-A new authenticated client-server API endpoint `GET /_matrix/client/v1/futures` allow clients to get a list of all the events that have been scheduled to send in the future.
+A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allow clients to get a list of all the events that have been scheduled to send in the future.
 
 ```http
 HTTP 200 OK
@@ -138,10 +138,10 @@ Content-Type: application/json
 {
   "futures": [
     {
-      "future_id": "1234567890",
+      "delay_id": "1234567890",
       "room_id": "!roomid:example.com",
       "event_type": "m.room.message",
-      "timeout": 15000,
+      "delay": 15000,
       "running_since": 1721732853284,
       "content":{
         "msgtype": "m.text",
@@ -149,11 +149,11 @@ Content-Type: application/json
       }
     },
     {
-      "future_id": "abcdefgh",
+      "delay_id": "abcdefgh",
       "room_id": "!roomid:example.com",
       "event_type": "m.call.member",
       "state_key": "@user:example.com_DEVICEID",
-      "timeout": 5000,
+      "delay": 5000,
       "running_since": 1721732853284,
       "content":{
         "memberships": []
@@ -164,7 +164,7 @@ Content-Type: application/json
 ```
 
 `running_since` is the timestamp (as unix time in milliseconds) when the delayed event was scheduled or last refreshed.
-So, unless the delayed event is updated beforehand, the event will be sent after `running_since` + `timeout`.
+So, unless the delayed event is updated beforehand, the event will be sent after `running_since` + `delay`.
 
 This can be used by clients to display events that have been scheduled to be sent in the future.
 
@@ -173,7 +173,7 @@ For use cases where the existence of a delayed event is also of interest for oth
 
 ### Managing delayed events
 
-A new authenticated client-server API endpoint at `POST /_matrix/client/v1/futures/{future_id}` allows scheduled events
+A new authenticated client-server API endpoint at `POST /_matrix/client/v1/delayed_events/{delay_id}` allows scheduled events
 to be managed.
 
 The body of the request is a JSON object containing the following fields:
@@ -181,12 +181,12 @@ The body of the request is a JSON object containing the following fields:
 - `action` - The action to take on the delayed event. Must be one of:
   - `send` - Send the delayed event immediately.
   - `cancel` - Cancel the delayed event so that it is never sent.
-  - `refresh` - Restart the timeout of the delayed event.
+  - `restart` - Restart the timeout of the delayed event.
 
-For example, the following would send the delayed event with future ID `1234567890` immediately:
+For example, the following would send the delayed event with delay ID `1234567890` immediately:
 
 ```http
-POST /_matrix/client/v1/futures/1234567890
+POST /_matrix/client/v1/delayed_events/1234567890
 Content-Type: application/json
 
 {
@@ -298,7 +298,7 @@ is available):
 ```
 
 then send:
-`PUT /_matrix/client/v1/rooms/{roomId}/send/m.room.redaction/{txnId}?future_timeout=600000`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/m.room.redaction/{txnId}?delay=600000`
 
 ```jsonc
 {
@@ -318,7 +318,7 @@ It is useful for external services to also interact with futures. If a client di
 be the best source to activate the Future/"last will".
 
 This is not covered in this MSC but could be realized with scoped access tokens.
-A scoped token for only the `update_future` endpoint and a subset of `future_id`s would be used.
+A scoped token for only the `update_future` endpoint and a subset of `timeout_event_id`s would be used.
 
 An SFU for instance, that tracks the current client connection state, could be sent a request from the client that it
 needs to call every X hours while a user is connected and a request it has to call once the user disconnects
@@ -549,17 +549,17 @@ Servers SHOULD impose a maximum timeout value for future timeouts of not more th
 
 Whilst the MSC is in the proposal stage, the following should be used:
 
-- `org.matrix.msc4140.future_timeout` should be used instead of the `future_timeout` query parameter.
-- `POST /_matrix/client/unstable/org.matrix.msc4140/futures/{future_id}` should be used instead of the `POST /_matrix/client/v1/futures/{future_id}` endpoint.
-- `GET /_matrix/client/unstable/org.matrix.msc4140/futures` should be used instead of the `GET /_matrix/client/v1/futures` endpoint.
-- The `M_UNKNOWN` `errcode` should be used instead of `M_FUTURE_MAX_TIMEOUT_EXCEEDED` as follows:
+- `org.matrix.msc4140.delay` should be used instead of the `delay` query parameter.
+- `POST /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}` should be used instead of the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
+- `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
+- The `M_UNKNOWN` `errcode` should be used instead of `M_FUTURE_MAX_DELAY_EXCEEDED` as follows:
 
 ```json
 {
   "errcode": "M_UNKNOWN",
-  "error": "The requested timeout exceeds the allowed maximum.",
-  "org.matrix.msc4140.errcode": "M_FUTURE_MAX_TIMEOUT_EXCEEDED",
-  "org.matrix.msc4140.timeout_duration": 86400000
+  "error": "The requested delay exceeds the allowed maximum.",
+  "org.matrix.msc4140.errcode": "M_FUTURE_MAX_DELAY_EXCEEDED",
+  "org.matrix.msc4140.max_delay": 86400000
 }
 ```
 
@@ -567,9 +567,9 @@ instead of:
 
 ```json
 {
-  "errcode": "M_FUTURE_MAX_TIMEOUT_EXCEEDED",
-  "error": "The requested timeout exceeds the allowed maximum.",
-  "timeout_duration": 86400000
+  "errcode": "M_FUTURE_MAX_DELAY_EXCEEDED",
+  "error": "The requested delay exceeds the allowed maximum.",
+  "max_delay": 86400000
 }
 ```
 
