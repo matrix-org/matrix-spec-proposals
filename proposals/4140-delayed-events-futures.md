@@ -132,6 +132,23 @@ Content-Type: application/json
 A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of all the delayed events that
 have been scheduled to send.
 
+The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as per the
+[pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable page size.
+
+The response is a JSON object containing the following fields:
+
+- `delayed_events` - Required. An array of delayed events that have been scheduled to send.
+  - `delay_id` - Required. The ID of the delayed event.
+  - `room_id` - Required. The room ID of the delayed event.
+  - `type` - Required. The event type of the delayed event.
+  - `state_key` - Optional. The state key of the delayed event if it is a state event.
+  - `delay` - Required. The delay in milliseconds before the event is sent.
+  - `running_since` - Required. The timestamp (as unix time in milliseconds) when the delayed event was scheduled or last restarted.
+  - `content` - Required. The content of the delayed event.
+- `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
+
+For example:
+
 ```http
 HTTP 200 OK
 Content-Type: application/json
@@ -160,7 +177,8 @@ Content-Type: application/json
         "memberships": []
       }
     }
-  ]
+  ],
+  "next_batch": "b12345"
 }
 ```
 
