@@ -1,4 +1,4 @@
-# MSC4140: Delayed events (Futures)
+# MSC4140: Cancellable delayed events (Futures)
 
 This MSC proposes a mechanism by which a Matrix client can schedule an event (including a state event) to be sent into
 a room on behalf of a user at a later time.
@@ -10,7 +10,7 @@ time and then distributing as normal via federation.
 
 <!-- TOC -->
 
-- [MSC4140: Delayed events Futures](#msc4140-delayed-events-futures)
+- [MSC4140: Cancellable delayed events (Futures)](#msc4140-cancellable-delayed-events-futures)
   - [Background and motivation](#background-and-motivation)
   - [Proposal](#proposal)
     - [Scheduling a delayed event](#scheduling-a-delayed-event)
