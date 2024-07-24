@@ -10,7 +10,7 @@ time and then distributing as normal via federation.
 
 <!-- TOC -->
 
-- [MSC4140: Cancellable delayed events (Futures)](#msc4140-cancellable-delayed-events-futures)
+- [MSC4140: Cancellable delayed events Futures](#msc4140-cancellable-delayed-events-futures)
   - [Background and motivation](#background-and-motivation)
   - [Proposal](#proposal)
     - [Scheduling a delayed event](#scheduling-a-delayed-event)
@@ -76,7 +76,7 @@ can then periodically reset/restart the timer whilst it is running. If the clien
 
 ## Proposal
 
-We propose the following operations are added to the client-server API:
+The following operations are added to the client-server API:
 
 - Schedule an event to be sent at a later time
 - Get a list of events that have been scheduled to send
@@ -88,11 +88,11 @@ At the point of an event being scheduled the homeserver is [unable to allocate t
 
 ### Scheduling a delayed event
 
-We propose extending the existing
+An optional `future_timeout` query parameter is added to the existing
 [`PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidsendeventtypetxnid)
 and
 [`PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`](https://spec.matrix.org/v1.11/client-server-api/#put_matrixclientv3roomsroomidstateeventtypestatekey)
-endpoints by adding an optional `future_timeout` query parameter.
+endpoints.
 
 The new query parameter is used to configure the event scheduling:
 
@@ -129,7 +129,7 @@ Content-Type: application/json
 
 ### Getting delayed events
 
-We propose adding a new authenticated endpoint `GET /_matrix/client/v1/futures` to the client-server API to allow clients to get a list of all the events that have been scheduled to send in the future.
+A new authenticated client-server API endpoint `GET /_matrix/client/v1/futures` allow clients to get a list of all the events that have been scheduled to send in the future.
 
 ```http
 HTTP 200 OK
@@ -173,8 +173,8 @@ For use cases where the existence of a delayed event is also of interest for oth
 
 ### Managing delayed events
 
-We propose adding a new authenticated client-server API endpoint at `POST /_matrix/client/v1/futures/{future_id}` to manage
-delayed events that have already been scheduled.
+A new authenticated client-server API endpoint at `POST /_matrix/client/v1/futures/{future_id}` allows scheduled events
+to be managed.
 
 The body of the request is a JSON object containing the following fields:
 
