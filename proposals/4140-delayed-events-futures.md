@@ -552,6 +552,10 @@ The client can set a Will Message when it connects to the server. If the client 
 
 A similar concept could be applied to Matrix by having the client specify a set of "Last Will" event(s) and have the homeserver trigger them if the client (possibly identified by device ID) does not send an API request within a specified time.
 
+### `M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`
+
+The existing `M_INVALID_PARAM` error code could be used instead of introducing a new error code `M_MAX_DELAY_EXCEEDED`.
+
 ### Naming
 
 The following alternative names for this concept are considered
