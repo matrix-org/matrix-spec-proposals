@@ -31,10 +31,10 @@ time and then distributing as normal via federation.
     - [Not reusing the send/state endpoint](#not-reusing-the-sendstate-endpoint)
     - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
       - [Batch Response](#batch-response)
-      - [Allocating event ID at the point of scheduling the send](#allocating-event-id-at-the-point-of-scheduling-the-send)
       - [EventId template variable](#eventid-template-variable)
+    - [Allocating the event ID at the point of scheduling the send](#allocating-the-event-id-at-the-point-of-scheduling-the-send)
     - [MSC4018 use client sync loop](#msc4018-use-client-sync-loop)
-    - [Federated futures](#federated-futures)
+    - [Federated delayed events](#federated-delayed-events)
     - [MQTT style Last Will](#mqtt-style-last-will)
     - [Naming](#naming)
   - [Security considerations](#security-considerations)
@@ -79,10 +79,10 @@ can then periodically reset/restart the timer whilst it is running. If the clien
 The following operations are added to the client-server API:
 
 - Schedule an event to be sent at a later time
-- Get a list of events that have been scheduled to send
-- Refresh the timeout of a scheduled event
-- Send the scheduled event immediately
-- Cancel a scheduled event so that it is never sent
+- Get a list of delayed events
+- Restart the timer of a delayed event
+- Send the delayed event immediately
+- Cancel a delayed event so that it is never sent
 
 At the point of an event being scheduled the homeserver is [unable to allocate the event ID](#allocating-event-id-at-the-point-of-scheduling-the-send). Instead, the homeserver allocates a _delay ID_ to the scheduled event which is used during the above API operations.
 
@@ -129,14 +129,15 @@ Content-Type: application/json
 
 ### Getting delayed events
 
-A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allow clients to get a list of all the events that have been scheduled to send in the future.
+A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of all the delayed events that
+have been scheduled to send.
 
 ```http
 HTTP 200 OK
 Content-Type: application/json
 
 {
-  "futures": [
+  "delayed_events": [
     {
       "delay_id": "1234567890",
       "room_id": "!roomid:example.com",
@@ -452,16 +453,6 @@ Also the behaviour of the homeserver on when to invalidate the futures is identi
 we don't need the error code `409` anymore since the events are sent as a batch and there cannot be
 an action future without a timeout future.
 
-#### Allocating event ID at the point of scheduling the send
-
-This was considered, but when sending a future the `event_id` is not yet available:
-
-The Matrix spec says that the `event_id` must use the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids)
-which is [calculated from the fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
-of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
-
-Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call duration computation) we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
-
 #### EventId template variable
 
 It would be useful to be able to send redactions and edits as one HTTP request.
@@ -472,6 +463,7 @@ to reference the event to redact.
 For this reason, template variables are introduced that are only valid in `Future` events.
 `$m.send_now.event_id` in the content of one of the `send_on_action` and
 `send_on_timeout` this template variable can be used.
+
 The **Self-destructing messages** example be a single request:
 
 `PUT /_matrix/client/v1/rooms/{roomId}/send/future/{txnId}`
@@ -500,9 +492,19 @@ At this point the client has the id but the event is not in the DAG.
 So it would be trivial to sign both the event and the redaction/related event
 and then send them via `/send_pdus` (see: [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080)).
 
+### Allocating the event ID at the point of scheduling the send
+
+This was considered, but when sending a future the `event_id` is not yet available:
+
+The Matrix spec says that the `event_id` must use the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids)
+which is [calculated from the fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
+of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
+
+Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call duration computation) we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
+
 ### MSC4018 (use client sync loop)
 
-[MSC4018](https://github.com/matrix-org/matrix-spec-proposals/pull/4018) also
+[MSC4018: Reliable call membership](https://github.com/matrix-org/matrix-spec-proposals/pull/4018) also
 proposes a way to make call memberships reliable. It uses the client sync loop as
 an indicator to determine if the event is expired. Instead of letting the SFU
 inform about the call termination or using the call app ping loop like we propose
@@ -520,9 +522,9 @@ With a dedicated ping (independent to the sync loop) it is more flexible and all
 execute the refresh.
 If the widget dies, the call membership will disconnect.
 
-### Federated futures
+### Federated delayed events
 
-The delayed/scheduled events could be sent over federation immediately and then have the receiving servers process them at the appropriate time.
+The delayed events could be sent over federation immediately and then have the receiving servers process them at the appropriate time.
 
 ### MQTT style Last Will
 
