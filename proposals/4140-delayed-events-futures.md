@@ -196,6 +196,7 @@ The response is a JSON object containing the following fields:
   - `room_id` - Required. The room ID of the delayed event.
   - `type` - Required. The event type of the delayed event.
   - `state_key` - Optional. The state key of the delayed event if it is a state event.
+  - `transaction_id` - Optional. The transaction ID of the delayed event if it is a regular (non-state) event.
   - `delay` - Required. The delay in milliseconds before the event is sent.
   - `running_since` - Required. The timestamp (as unix time in milliseconds) when the delayed event was scheduled or
     last restarted.
@@ -217,6 +218,7 @@ Content-Type: application/json
       "type": "m.room.message",
       "delay": 15000,
       "running_since": 1721732853284,
+      "transaction_id": "abcdefgh",
       "content":{
         "msgtype": "m.text",
         "body": "I am now offline"
