@@ -199,7 +199,8 @@ The response is a JSON object containing the following fields:
   - `delay` - Required. The delay in milliseconds before the event is sent.
   - `running_since` - Required. The timestamp (as unix time in milliseconds) when the delayed event was scheduled or
     last restarted.
-  - `content` - Required. The content of the delayed event.
+  - `content` - Required. The content of the delayed event. This is the body of the original `PUT` request not a preview
+    of the full event after sending.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
 For example:
