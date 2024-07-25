@@ -353,7 +353,7 @@ Content-Type: application/json
 }
 ```
 
-It then also schedules a delayed "leave" state event with `delay` of around 5-20 seconds that marks the end of its participation:
+It then also schedules a delayed "hangup" state event with `delay` of around 5-20 seconds that marks the end of its participation:
 
 ```http
 PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.call.member/@someone:example.com?delay=10000
@@ -366,7 +366,7 @@ Content-Type: application/json
 
 Let's say the homeserver returns a `delay_id` of `1234567890`.
 
-The client then periodically sends a "heartbeat" in the form of a "restart" of the delayed "leave" state event to keep
+The client then periodically sends a "heartbeat" in the form of a "restart" of the delayed "hangup" state event to keep
 the call membership "alive".
 
 For example it could make the request every 5 seconds (or some other period less than the `delay`):
@@ -381,7 +381,7 @@ Content-Type: application/json
 ```
 
 This would have the effect that if the homeserver does not receive a "heartbeat" from the client for 10 seconds then
-it will automatically send the "leave" state event for the client.
+it will automatically send the "hangup" state event for the client.
 
 ### Self-destructing messages
 
