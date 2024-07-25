@@ -688,6 +688,12 @@ a new non-delayed event instead.
 
 This would simplify the API, but it's less efficient since the client would have to send two requests instead of one.
 
+### Use `DELETE` HTTP method for `cancel` action
+
+Instead of providing a `cancel` action for delayed events, the client could send a `DELETE` request to the same endpoint.
+
+This feels more elegant, but the doesn't feel like a good suggestion for how the other actions are mapped.
+
 ## Security considerations
 
 All new endpoints are authenticated.
