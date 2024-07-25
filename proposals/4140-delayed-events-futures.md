@@ -72,7 +72,7 @@ in the [Use case specific considerations/MatrixRTC](#use-case-specific-considera
 of this proposal.
 
 The proposal here allows a Matrix client to schedule a "hangup" state event to be sent after a specified time period.
-The client can then periodically reset/restart the timer whilst it is running. If the client is no longer running or able
+The client can then periodically restarts the timer whilst it is running. If the client is no longer running or able
 to communicate then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
 
 Such an arrangement can also be described as a "heartbeat" mechanism. The client sends a "heartbeat" to the homeserver
@@ -236,7 +236,7 @@ Content-Type: application/json
 }
 ```
 
-`running_since` is the timestamp (as unix time in milliseconds) when the delayed event was scheduled or last refreshed.
+`running_since` is the timestamp (as unix time in milliseconds) when the delayed event was scheduled or last restarted.
 So, unless the delayed event is updated beforehand, the event will be sent after `running_since` + `delay`.
 
 This can be used by clients to display events that have been scheduled to be sent in the future.
@@ -425,7 +425,7 @@ A scoped token for only the `delayed_events` endpoint and a subset of `delay_id`
 
 An SFU for instance, that tracks the current client connection state, could be sent a request from the client that it
 needs to call every X hours while a user is connected and a request it has to call once the user disconnects
-(using a `{"action": "refresh}` and a `{"action": "send"}` `delayed_events` request.).
+(using a `{"action": "restart"}` and a `{"action": "send"}` `delayed_events` request.).
 This way the SFU can be used as the source of truth for the call member room state even if the client
 gets closed or looses connection and without knowing anything about the Matrix call.
 
@@ -443,7 +443,7 @@ future at the same time.
   It might be important to have the guarantee, that the redact is received
   by the server at the time where the original message is sent.
 - In the case of a state event we might want to set the state to `A` and after a
-  timeout reset it to `{}`. If we have two separate request sending `A` could work
+  timeout change it back to `{}`. If we have two separate request sending `A` could work
   but the event with content `{}` could fail. The state would not automatically
   reset to `{}`.
 
@@ -548,7 +548,7 @@ Working with futures is the same with this alternative.
 This means,
 
 - `GET /_matrix/client/v1/futures` getting running futures
-- `POST /_matrix/client/v1/update_future` to canceling, refreshing and sending futures
+- `POST /_matrix/client/v1/update_future` to canceling, restarting and sending futures
 
 uses the exact same endpoints.
 Also the behaviour of the homeserver on when to invalidate the futures is identical except, that
@@ -613,7 +613,8 @@ an indicator to determine if the event is expired. Instead of letting the SFU
 inform about the call termination or using the call app ping loop like we propose
 here.
 
-The advantage is, that this does not require us to introduce a new refresh token type.
+The advantage is, that this does not require us to introduce a new ping system (as we do by using `delayed_events`
+restart action).
 With cryptographic identities we however need the client to create the leave event.
 
 The timeout for syncs are much slower than what would be desirable (30s vs 5s).
@@ -622,7 +623,7 @@ With a widget implementation for calls we cannot guarantee that the widget is ru
 So one either has to move the hangup logic to the hosting client or let the widget run all the time.
 
 With a dedicated ping (independent to the sync loop) it is more flexible and allows us to let the widget
-execute the refresh.
+execute the timer restart.
 If the widget dies, the call membership will disconnect.
 
 ### Federated delayed events
