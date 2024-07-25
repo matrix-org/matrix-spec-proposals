@@ -19,6 +19,7 @@ time and then distributing as normal via federation.
     - [Homeserver implementation details](#homeserver-implementation-details)
       - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
       - [Delayed events are cancelled by a more recent state event](#delayed-events-are-cancelled-by-a-more-recent-state-event)
+      - [Rate-limiting at the point of sending](#rate-limiting-at-the-point-of-sending)
   - [Use case specific considerations](#use-case-specific-considerations)
     - [MatrixRTC](#matrixrtc)
       - [Background](#background)
@@ -134,6 +135,22 @@ Content-Type: application/json
 }
 ```
 
+The homeserver SHOULD apply rate limiting to the scheduling of delayed events to provide mitigation against the
+[High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
+
+The homeserver MAY apply a limit on the maximum number of outstanding delayed events in which case the Matrix error code
+`M_MAX_DELAYED_EVENTS_EXCEEDED` can be returned:
+
+```http
+400 Bad Request
+Content-Type: application/json
+
+{
+  "errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED",
+  "error": "The maximum number of delayed events has been reached.",
+}
+```
+
 ### Managing delayed events
 
 A new authenticated client-server API endpoint at `POST /_matrix/client/v1/delayed_events/{delay_id}` allows scheduled events
@@ -156,6 +173,9 @@ Content-Type: application/json
   "action": "send"
 }
 ```
+
+Where the `action` is `send`, the homeserver SHOULD apply rate limiting to provide mitigation against the
+[High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
 
 ### Getting delayed events
 
@@ -244,6 +264,19 @@ the _new state event_:
 - timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of
   the delayed event but later with the content of _new state event_.
 - _new state event_ followed by timeout for _delayed event_: the _new state event_ will cancel the outstanding _delayed event_.
+
+#### Rate-limiting at the point of sending
+
+Further to the rate limiting of the API endpoints, the homeserver SHOULD apply rate limiting to the sending of delayed messages
+at the point that they are entered into the DAG.
+
+This is to provide mitigation against the
+[High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat where a malicious
+actor could schedule a large volume of events ahead of time without exceeding a rate limit on the initial `PUT` request,
+but has specified a `delay` that corresponds to a common point of time in the future.
+
+A limit on the maximum number of delayed events that can be outstanding at one time could also provide some mitigation against
+this attack.
 
 ## Use case specific considerations
 
@@ -592,6 +625,11 @@ Servers SHOULD impose a maximum timeout value for future timeouts of not more th
 As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver MUST evaluate and enforce the
 power levels at the time of the delayed event being sent (i.e. added to the DAG).
 
+The is a risk that this feature could be used by a malicious actor to circumvent existing rate limiting measures which
+corresponds to the [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages)
+threat. The homeserver SHOULD apply rate-limiting to both the scheduling of delayed events and the later sending to
+mitigate this risk.
+
 ## Unstable prefix
 
 Whilst the MSC is in the proposal stage, the following should be used:
@@ -619,6 +657,25 @@ instead of:
   "errcode": "M_MAX_DELAY_EXCEEDED",
   "error": "The requested delay exceeds the allowed maximum.",
   "max_delay": 86400000
+}
+```
+
+- The `M_UNKNOWN` `errcode` should be used instead of `M_MAX_DELAYED_EVENTS_EXCEEDED` as follows:
+
+```json
+{
+  "errcode": "M_UNKNOWN",
+  "error": "The maximum number of delayed events has been reached.",
+  "org.matrix.msc4140.errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED"
+}
+```
+
+instead of:
+
+```json
+{
+  "errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED",
+  "error": "The maximum number of delayed events has been reached."
 }
 ```
 
