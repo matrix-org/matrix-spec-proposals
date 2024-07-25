@@ -16,7 +16,7 @@ time and then distributing as normal via federation.
   - [Getting delayed events](#getting-delayed-events)
   - [Homeserver implementation details](#homeserver-implementation-details)
     - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
-    - [Delayed events are cancelled by a more recent state event](#delayed-events-are-cancelled-by-a-more-recent-state-event)
+    - [Delayed state events are cancelled by a more recent state event](#delayed-state-events-are-cancelled-by-a-more-recent-state-event)
     - [Rate-limiting at the point of sending](#rate-limiting-at-the-point-of-sending)
 - [Use case specific considerations](#use-case-specific-considerations)
   - [MatrixRTC](#matrixrtc)
@@ -255,7 +255,7 @@ DAG. This implies a delayed event can fail if it violates power levels at the ti
 Conversely, it's also possible to successfully schedule an event that the user has no permission to at the time of sending
 if the power level situation has changed at the time the delay passes.
 
-#### Delayed events are cancelled by a more recent state event
+#### Delayed state events are cancelled by a more recent state event
 
 If a new state event is sent to the same room with the same (event type, state key) pair as a delayed event, the delayed
 event is cancelled.
@@ -266,6 +266,9 @@ the _new state event_:
 - timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of
   the delayed event but later with the content of _new state event_.
 - _new state event_ followed by timeout for _delayed event_: the _new state event_ will cancel the outstanding _delayed event_.
+
+Note that this behaviour does not apply to regular (non-state) events as there is no concept of a `(type, state_key)`
+pair that could be overwritten.
 
 #### Rate-limiting at the point of sending
 
