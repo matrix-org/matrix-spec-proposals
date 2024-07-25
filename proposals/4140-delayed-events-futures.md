@@ -203,7 +203,7 @@ The response is a JSON object containing the following fields:
 For example:
 
 ```http
-HTTP 200 OK
+200 OK
 Content-Type: application/json
 
 {
@@ -334,17 +334,54 @@ This is currently not possible over federation since `unsigned.age` is not avail
 
 #### How this MSC would be used for MatrixRTC
 
-With this proposal we can provide an elegant solution using actions and timeouts
-to only send one event for joining and one for leaving (reliably)
+With this proposal the client can use delayed events to implement a "heartbeat" mechanism.
 
-- If the client takes care of its membership, we use a short timeout value (around 5-20 seconds)
-  The client will have to ping the refresh endpoint approx every 2-19 seconds.
-- When the SFU is capable of taking care of managing our connection state, and we trust the SFU to
-  not disconnect, a really long value can be chosen (approx. 2-10hours). The SFU will then only send
-  an action once the user disconnects or loses connection (it could even be a different action for both cases
-  handling them differently on the client)
-  This significantly reduces the amount of calls for the `/update_future` endpoint since the SFU only needs to ping
-  once per session (per user) and every 2-5hours (instead of every `X` seconds.)
+On joining the call the client sends a "join" state event as normal to indicate that it is participating:
+
+e.g.
+
+```http
+PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.call.member/@someone:example.com
+Content-Type: application/json
+
+{
+  "memberships": [
+    {
+      ...membership data here...
+    }
+  ]
+}
+```
+
+It then also schedules a delayed "leave" state event with `delay` of around 5-20 seconds that marks the end of its participation:
+
+```http
+PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.call.member/@someone:example.com?delay=10000
+Content-Type: application/json
+
+{
+  "memberships": []
+}
+```
+
+Let's say the homeserver returns a `delay_id` of `1234567890`.
+
+The client then periodically sends a "heartbeat" in the form of a "restart" of the delayed "leave" state event to keep
+the call membership "alive".
+
+For example it could make the request every 5 seconds (or some other period less than the `delay`):
+
+```http
+POST /_matrix/client/v1/delayed_events/1234567890
+Content-Type: application/json
+
+{
+  "action": "restart"
+}
+```
+
+This would have the effect that if the homeserver does not receive a "heartbeat" from the client for 10 seconds then
+it will automatically send the "leave" state event for the client.
 
 ### Self-destructing messages
 
