@@ -681,6 +681,13 @@ The following alternative names for this concept are considered
 
 TODO
 
+### Don't provide a `send` action
+
+Instead of providing a `send` action for delayed events, the client could cancel the outstanding delayed event and send
+a new non-delayed event instead.
+
+This would simplify the API, but it's less efficient since the client would have to send two requests instead of one.
+
 ## Security considerations
 
 All new endpoints are authenticated.
