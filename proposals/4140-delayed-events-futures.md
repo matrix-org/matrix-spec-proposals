@@ -474,6 +474,10 @@ There is a [batch sending version](#batch-sending-futures-with-custom-endpoint) 
 that proposes a future specific group sending endpoint in case this is required sooner then its realistic to implement
 [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080).
 
+[MSC2716: Incrementally importing history into existing rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/2716)
+already proposes a `batch_send` endpoint. However, it is limited to application services however and focuses on historic
+data. Since we also need the additional capability to use a template event_id parameter, this probably is not a good fit.
+
 ### Not reusing the `send`/`state` endpoint
 
 Alternatively new endpoints could be introduced to not overload the `send` and `state` endpoint.
