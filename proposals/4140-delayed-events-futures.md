@@ -585,7 +585,12 @@ The following alternative names for this concept are considered
 
 ## Security considerations
 
+All new endpoints are authenticated.
+
 Servers SHOULD impose a maximum timeout value for future timeouts of not more than a month.
+
+As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver MUST evaluate and enforce the
+power levels at the time of the delayed event being sent (i.e. added to the DAG).
 
 ## Unstable prefix
 
