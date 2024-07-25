@@ -673,6 +673,10 @@ The following alternative names for this concept are considered
 - PostponedEvents
 - LastWill
 
+### MSC3277: Scheduled messages
+
+TODO
+
 ## Security considerations
 
 All new endpoints are authenticated.
