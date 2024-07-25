@@ -729,6 +729,19 @@ Instead of providing a `cancel` action for delayed events, the client could send
 
 This feels more elegant, but the doesn't feel like a good suggestion for how the other actions are mapped.
 
+### [Ab]use typing notifications
+
+Some exploration of using typing notifications to indicate that a user is still connected to a call was done.
+
+The idea of extending [MSC3038: Typed typing notifications](https://github.com/matrix-org/matrix-spec-proposals/pull/3038)
+to allow for additional meta data (like device ID and call ID) was considered.
+
+A perceived benefit was that if the delay events were federated then the typing notification EDUs might provide an
+efficient transport.
+
+However, as the conclusion was to [not federate the delayed events](#federated-delayed-events) this approach was
+discounted in favour of a dedicated endpoint.
+
 ## Security considerations
 
 All new endpoints are authenticated.
