@@ -659,6 +659,24 @@ If the widget dies, the call membership will disconnect.
 The delayed events could be sent over federation immediately and then have the receiving servers process them at the
 appropriate time.
 
+Downsides of this approach that have been considered:
+
+- "heartbeats"/restarts would need to distributed via the federation meaning more traffic and processing to be done.
+- if another homeservers missed the "heartbeat"/restart then it might decide that the event is visible in the DAG whereas
+other homeservers might have received it and come to a different conclusion. If the event was later cancelled then
+resolving the inconsistency feels more complex than if the event was never sent in the first place.
+
+[MSC3277: Scheduled messages](https://github.com/matrix-org/matrix-spec-proposals/pull/3277) proposes a similar feature
+and there is an extensive analysis of the pros and cons of this MSC vs MSC3277
+[here](https://github.com/matrix-org/matrix-spec-proposals/pull/4140#discussion_r1653083566).
+
+If we don't need modification of a delayed event after it has been scheduled, there is a benefit in
+federating the scheduled event (adding it to the DAG immediately). It increases resilience: the sender's homeserver can
+disconnect and the delayed message still will enter non-soft-failed state (will be sent).
+
+However, for the MatrixRTC use case we do need to be able to modify the event after it has been scheduled. As such, we
+have discounted this approach.
+
 ### MQTT style Last Will
 
 [MQTT](https://mqtt.org/) has the concept of a Will Message that is published by the server when a client disconnects.
@@ -682,10 +700,6 @@ The following alternative names for this concept are considered
 - DelayedEvents
 - PostponedEvents
 - LastWill
-
-### MSC3277: Scheduled messages
-
-TODO
 
 ### Don't provide a `send` action
 
