@@ -51,29 +51,31 @@ This proposal originates from the needs of VoIP signalling in Matrix:
 The Client-Server API currently has a  [Voice over IP module](https://spec.matrix.org/v1.11/client-server-api/#voice-over-ip)
 that uses room messages to communicate the call state. However, it only allows for calls with two participants.
 
-[MSC3401: Native Group VoIP Signalling](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) proposes a scheme that
-allows for more than two-participants by using room state events.
+[MSC3401: Native Group VoIP Signalling](https://github.com/matrix-org/matrix-spec-proposals/pull/3401) proposes a scheme
+that allows for more than two-participants by using room state events.
 
 In this arrangement each device signals its participant in a call by sending a state event that represents the device's
-"membership" of a call. Once the device is no longer in the call, it sends a new state event to update the call state and say
-that it is no longer a member.
+"membership" of a call. Once the device is no longer in the call, it sends a new state event to update the call state and
+say that it is no longer a member.
 
-This works well when the client is running and can send the state events as needed. However, if the client is not running and
-able to communicate with the homeserver (e.g. the user closes the app or loses connection) the call state is not updated to
-say that the participant has left.
+This works well when the client is running and can send the state events as needed. However, if the client is not running
+and able to communicate with the homeserver (e.g. the user closes the app or loses connection) the call state is not
+updated to say that the participant has left.
 
 The motivation for this MSC is to allow updating call member state events after the user disconnected by allowing to
 schedule/delay/timeout/expire events in a generic way.
 
 The ["reliability requirements for the room state"](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#reliability-requirements-for-the-room-state)
-section of [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) has more details on the use case.
+section of [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) has more details on the
+use case.
 
 There are numerous possible solution to solve the call member event expiration. They are covered in detail
 in the [Use case specific considerations/MatrixRTC](#use-case-specific-considerations) section, because they are not part
 of this proposal.
 
-The proposal here allows a Matrix client to schedule a "hangup" state event to be sent after a specified time period. The client
-can then periodically reset/restart the timer whilst it is running. If the client is no longer running or able to communicate then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
+The proposal here allows a Matrix client to schedule a "hangup" state event to be sent after a specified time period.
+The client can then periodically reset/restart the timer whilst it is running. If the client is no longer running or able
+to communicate then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
 
 ## Proposal
 
@@ -85,7 +87,8 @@ The following operations are added to the client-server API:
 - Send the delayed event immediately
 - Cancel a delayed event so that it is never sent
 
-At the point of an event being scheduled the homeserver is [unable to allocate the event ID](#allocating-event-id-at-the-point-of-scheduling-the-send). Instead, the homeserver allocates a _delay ID_ to the scheduled event which is used during the above API operations.
+At the point of an event being scheduled the homeserver is [unable to allocate the event ID](#allocating-the-event-id-at-the-point-of-scheduling-the-send).
+Instead, the homeserver allocates a _delay ID_ to the scheduled event which is used during the above API operations.
 
 ### Scheduling a delayed event
 
@@ -97,11 +100,13 @@ endpoints.
 
 The new query parameter is used to configure the event scheduling:
 
-- `delay` - Optional number of milliseconds the homeserver should wait before sending the event. If no `delay` is provided, the event is sent immediately as normal.
+- `delay` - Optional number of milliseconds the homeserver should wait before sending the event. If no `delay` is provided,
+the event is sent immediately as normal.
 
 The body of the request is the same as currently.
 
-If a `delay` is provided, the homeserver schedules the event to be sent with the specified delay and returns the _delay ID_ in the `delay_id` field (omitting the `event_id` as it is not available):
+If a `delay` is provided, the homeserver schedules the event to be sent with the specified delay and returns the _delay ID_
+in the `delay_id` field (omitting the `event_id` as it is not available):
 
 ```http
 200 OK
@@ -113,7 +118,8 @@ Content-Type: application/json
 ```
 
 The homeserver can optionally enforce a maximum delay duration. If the requested delay exceeds the maximum the homeserver
-can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) and a Matrix error code `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
+can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) and a Matrix error code
+`M_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
 
 For example the following specifies a maximum delay of 24 hours:
 
@@ -153,11 +159,13 @@ Content-Type: application/json
 
 ### Getting delayed events
 
-A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of all the delayed events that
+A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of
+all the delayed events that
 have been scheduled to send.
 
-The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as per the
-[pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable page size.
+The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
+per the [pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable
+page size.
 
 The response is a JSON object containing the following fields:
 
@@ -167,7 +175,8 @@ The response is a JSON object containing the following fields:
   - `type` - Required. The event type of the delayed event.
   - `state_key` - Optional. The state key of the delayed event if it is a state event.
   - `delay` - Required. The delay in milliseconds before the event is sent.
-  - `running_since` - Required. The timestamp (as unix time in milliseconds) when the delayed event was scheduled or last restarted.
+  - `running_since` - Required. The timestamp (as unix time in milliseconds) when the delayed event was scheduled or
+    last restarted.
   - `content` - Required. The content of the delayed event.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
@@ -226,11 +235,14 @@ if the power level situation has changed at the time the delay passes.
 
 #### Delayed events are cancelled by a more recent state event
 
-If a new state event is sent to the same room with the same (event type, state key) pair as a delayed event, the delayed event is cancelled.
+If a new state event is sent to the same room with the same (event type, state key) pair as a delayed event, the delayed
+event is cancelled.
 
-There is no race condition here since a possible race between timeout and the _new state event_ will always converge to the _new state event_:
+There is no race condition here since a possible race between timeout and the _new state event_ will always converge to
+the _new state event_:
 
-- timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of the delayed event but later with the content of _new state event_.
+- timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of
+  the delayed event but later with the content of _new state event_.
 - _new state event_ followed by timeout for _delayed event_: the _new state event_ will cancel the outstanding _delayed event_.
 
 ## Use case specific considerations
@@ -338,11 +350,11 @@ It is useful for external services to also interact with futures. If a client di
 be the best source to activate the Future/"last will".
 
 This is not covered in this MSC but could be realized with scoped access tokens.
-A scoped token for only the `update_future` endpoint and a subset of `timeout_event_id`s would be used.
+A scoped token for only the `delayed_events` endpoint and a subset of `delay_id`s would be used.
 
 An SFU for instance, that tracks the current client connection state, could be sent a request from the client that it
 needs to call every X hours while a user is connected and a request it has to call once the user disconnects
-(using a `{"action": "refresh}` and a `{"action": "send"}` `future_update` request.).
+(using a `{"action": "refresh}` and a `{"action": "send"}` `delayed_events` request.).
 This way the SFU can be used as the source of truth for the call member room state even if the client
 gets closed or looses connection and without knowing anything about the Matrix call.
 
@@ -519,7 +531,8 @@ The Matrix spec says that the `event_id` must use the [reference hash](https://s
 which is [calculated from the fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
 of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
 
-Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call duration computation) we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
+Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call
+duration computation) we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
 
 ### MSC4018 (use client sync loop)
 
@@ -543,15 +556,19 @@ If the widget dies, the call membership will disconnect.
 
 ### Federated delayed events
 
-The delayed events could be sent over federation immediately and then have the receiving servers process them at the appropriate time.
+The delayed events could be sent over federation immediately and then have the receiving servers process them at the
+appropriate time.
 
 ### MQTT style Last Will
 
 [MQTT](https://mqtt.org/) has the concept of a Will Message that is published by the server when a client disconnects.
 
-The client can set a Will Message when it connects to the server. If the client disconnects unexpectedly the server will publish the Will Message if the client is not back online within a specified time.
+The client can set a Will Message when it connects to the server. If the client disconnects unexpectedly the server will
+publish the Will Message if the client is not back online within a specified time.
 
-A similar concept could be applied to Matrix by having the client specify a set of "Last Will" event(s) and have the homeserver trigger them if the client (possibly identified by device ID) does not send an API request within a specified time.
+A similar concept could be applied to Matrix by having the client specify a set of "Last Will" event(s) and have the
+homeserver trigger them if the client (possibly identified by device ID) does not send an API request within a specified
+time.
 
 ### `M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`
 
@@ -575,8 +592,10 @@ Servers SHOULD impose a maximum timeout value for future timeouts of not more th
 Whilst the MSC is in the proposal stage, the following should be used:
 
 - `org.matrix.msc4140.delay` should be used instead of the `delay` query parameter.
-- `POST /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}` should be used instead of the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
-- `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of the `GET /_matrix/client/v1/delayed_events` endpoint.
+- `POST /_matrix/client/unstable/org.matrix.msc4140/delayed_events/{delay_id}` should be used instead of
+  the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
+- `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of
+  the `GET /_matrix/client/v1/delayed_events` endpoint.
 - The `M_UNKNOWN` `errcode` should be used instead of `M_MAX_DELAY_EXCEEDED` as follows:
 
 ```json
@@ -598,7 +617,8 @@ instead of:
 }
 ```
 
-Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with the key `org.matrix.msc4140` set to `true`. So, the response could look then as following:
+Additionally, the feature is to be advertised as unstable feature in the `GET /_matrix/client/versions` response, with
+the key `org.matrix.msc4140` set to `true`. So, the response could look then as following:
 
 ```json
 {
