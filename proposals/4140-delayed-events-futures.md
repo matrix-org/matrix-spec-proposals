@@ -78,6 +78,10 @@ The proposal here allows a Matrix client to schedule a "hangup" state event to b
 The client can then periodically reset/restart the timer whilst it is running. If the client is no longer running or able
 to communicate then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
 
+Such an arrangement can also be described as a "heartbeat" mechanism. The client sends a "heartbeat" to the homeserver
+in the form of a "restart" of the delayed event to keep the call "alive". If the homeserver does not receive a "heartbeat"
+then it will automatically send the "hangup" event for the client.
+
 ## Proposal
 
 The following operations are added to the client-server API:
