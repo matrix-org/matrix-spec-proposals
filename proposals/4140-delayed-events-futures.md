@@ -59,9 +59,9 @@ In this arrangement each device signals its participant in a call by sending a s
 "membership" of a call. Once the device is no longer in the call, it sends a new state event to update the call state and
 say that it is no longer a member.
 
-This works well when the client is running and can send the state events as needed. However, if the client is not running
-and able to communicate with the homeserver (e.g. the user closes the app or loses connection) the call state is not
-updated to say that the participant has left.
+This works well when the client is running and can send the state events as needed. However, if the client is not able to
+communicate with the homeserver (e.g. the user closes the app or loses connection) the call state is not updated to say
+that the participant has left.
 
 The motivation for this MSC is to allow updating call member state events after the user disconnected by allowing to
 schedule/delay/timeout/expire events in a generic way.
