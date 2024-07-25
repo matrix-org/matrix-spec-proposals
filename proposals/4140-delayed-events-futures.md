@@ -688,6 +688,21 @@ A similar concept could be applied to Matrix by having the client specify a set 
 homeserver trigger them if the client (possibly identified by device ID) does not send an API request within a specified
 time.
 
+The main differentiator is that this type of approach might use the sync loop as the "heartbeat" equivalent similar to
+MSC4018(https://github.com/matrix-org/matrix-spec-proposals/pull/4018).
+
+A benefit compared to this proposal is that theoretically there would be no additional network traffic overhead.
+
+Some complications:
+
+- in order that the isn't the additional network traffic the homeserver would need to proactively realise that a connection
+has dropped. Depending on the network/load balancer stack this might be problematic.
+- as an alternative the client could reduce the long poll timeout (from a typical 30s down to, say, 5s) which would
+result in a traffic increase.
+- As syncing is a per client concept the MatrixRTC app has to either run in the same process as the client so that a
+MatrixRTC app failure triggers the client Last Will or the client has to observe the MatrixRTC app and simulate the Last
+Will if the MatrixRTC app fails.
+
 ### `M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`
 
 The existing `M_INVALID_PARAM` error code could be used instead of introducing a new error code `M_MAX_DELAY_EXCEEDED`.
