@@ -24,6 +24,7 @@ time and then distributing as normal via federation.
     - [How this MSC would be used for MatrixRTC](#how-this-msc-would-be-used-for-matrixrtc)
   - [Self-destructing messages](#self-destructing-messages)
 - [Potential issues](#potential-issues)
+  - [Compatibility with Cryptographic Identities](#compatibility-with-cryptographic-identities)
 - [Alternatives](#alternatives)
   - [Delegating futures](#delegating-futures)
   - [Batch sending](#batch-sending)
@@ -412,6 +413,23 @@ then send:
 This would redact the message with content: `"m.text": "my msg"` after 10 minutes.
 
 ## Potential issues
+
+### Compatibility with Cryptographic Identities
+
+We are mindful that this proposal should be compatible with other proposals such as
+[MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080) which introduce mechanisms
+to allow the recipient of an event to determine whether it was sent by a client as opposed to spoofed/injected by a
+malicious homeserver.
+
+In the context of this proposal, the delayed events should be signed with the same cryptographic identity as the client
+that scheduled them.
+
+This means that the content of the original scheduled event must be sent "as is" without modification by the homeserver.
+The implication is an implementation details that client developers must be aware of: if the content of the delayed
+event contains a timestamp then it would be the timestamp of when the event was originally scheduled rather than
+anything later.
+
+However, the `origin_server_ts` of the delayed event should be the time that the event is actually sent by the homeserver.
 
 ## Alternatives
 
