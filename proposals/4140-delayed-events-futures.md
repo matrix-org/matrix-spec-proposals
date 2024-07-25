@@ -11,35 +11,36 @@ time and then distributing as normal via federation.
 <!-- TOC -->
 
 - [MSC4140: Cancellable delayed events](#msc4140-cancellable-delayed-events)
-  - [Background and motivation](#background-and-motivation)
-  - [Proposal](#proposal)
-    - [Scheduling a delayed event](#scheduling-a-delayed-event)
-    - [Getting delayed events](#getting-delayed-events)
-    - [Managing delayed events](#managing-delayed-events)
-    - [Homeserver implementation details](#homeserver-implementation-details)
-      - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
-      - [Delayed events are cancelled by a more recent state event](#delayed-events-are-cancelled-by-a-more-recent-state-event)
-  - [Use case specific considerations](#use-case-specific-considerations)
-    - [MatrixRTC](#matrixrtc)
-      - [Background](#background)
-      - [How this MSC would be used for MatrixRTC](#how-this-msc-would-be-used-for-matrixrtc)
-    - [Self-destructing messages](#self-destructing-messages)
-  - [Potential issues](#potential-issues)
-  - [Alternatives](#alternatives)
-    - [Delegating futures](#delegating-futures)
-    - [Batch sending](#batch-sending)
-    - [Not reusing the send/state endpoint](#not-reusing-the-sendstate-endpoint)
-    - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
-      - [Batch Response](#batch-response)
-      - [EventId template variable](#eventid-template-variable)
-    - [Allocating the event ID at the point of scheduling the send](#allocating-the-event-id-at-the-point-of-scheduling-the-send)
-    - [MSC4018 use client sync loop](#msc4018-use-client-sync-loop)
-    - [Federated delayed events](#federated-delayed-events)
-    - [MQTT style Last Will](#mqtt-style-last-will)
-    - [Naming](#naming)
-  - [Security considerations](#security-considerations)
-  - [Unstable prefix](#unstable-prefix)
-  - [Dependencies](#dependencies)
+    - [Background and motivation](#background-and-motivation)
+    - [Proposal](#proposal)
+        - [Scheduling a delayed event](#scheduling-a-delayed-event)
+        - [Managing delayed events](#managing-delayed-events)
+        - [Getting delayed events](#getting-delayed-events)
+        - [Homeserver implementation details](#homeserver-implementation-details)
+            - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
+            - [Delayed events are cancelled by a more recent state event](#delayed-events-are-cancelled-by-a-more-recent-state-event)
+    - [Use case specific considerations](#use-case-specific-considerations)
+        - [MatrixRTC](#matrixrtc)
+            - [Background](#background)
+            - [How this MSC would be used for MatrixRTC](#how-this-msc-would-be-used-for-matrixrtc)
+        - [Self-destructing messages](#self-destructing-messages)
+    - [Potential issues](#potential-issues)
+    - [Alternatives](#alternatives)
+        - [Delegating futures](#delegating-futures)
+        - [Batch sending](#batch-sending)
+        - [Not reusing the send/state endpoint](#not-reusing-the-sendstate-endpoint)
+        - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
+            - [Batch Response](#batch-response)
+            - [EventId template variable](#eventid-template-variable)
+        - [Allocating the event ID at the point of scheduling the send](#allocating-the-event-id-at-the-point-of-scheduling-the-send)
+        - [MSC4018 use client sync loop](#msc4018-use-client-sync-loop)
+        - [Federated delayed events](#federated-delayed-events)
+        - [MQTT style Last Will](#mqtt-style-last-will)
+        - [M_INVALID_PARAM instead of M_MAX_DELAY_EXCEEDED](#m_invalid_param-instead-of-m_max_delay_exceeded)
+        - [Naming](#naming)
+    - [Security considerations](#security-considerations)
+    - [Unstable prefix](#unstable-prefix)
+    - [Dependencies](#dependencies)
 
 <!-- /TOC -->
 
@@ -127,6 +128,29 @@ Content-Type: application/json
 }
 ```
 
+### Managing delayed events
+
+A new authenticated client-server API endpoint at `POST /_matrix/client/v1/delayed_events/{delay_id}` allows scheduled events
+to be managed.
+
+The body of the request is a JSON object containing the following fields:
+
+- `action` - The action to take on the delayed event. Must be one of:
+  - `send` - Send the delayed event immediately.
+  - `cancel` - Cancel the delayed event so that it is never sent.
+  - `restart` - Restart the timeout of the delayed event.
+
+For example, the following would send the delayed event with delay ID `1234567890` immediately:
+
+```http
+POST /_matrix/client/v1/delayed_events/1234567890
+Content-Type: application/json
+
+{
+  "action": "send"
+}
+```
+
 ### Getting delayed events
 
 A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of all the delayed events that
@@ -189,29 +213,6 @@ This can be used by clients to display events that have been scheduled to be sen
 
 For use cases where the existence of a delayed event is also of interest for other room members,
 (e.g. self-destructing messages) it is recommended to include this information in the original/affected event itself.
-
-### Managing delayed events
-
-A new authenticated client-server API endpoint at `POST /_matrix/client/v1/delayed_events/{delay_id}` allows scheduled events
-to be managed.
-
-The body of the request is a JSON object containing the following fields:
-
-- `action` - The action to take on the delayed event. Must be one of:
-  - `send` - Send the delayed event immediately.
-  - `cancel` - Cancel the delayed event so that it is never sent.
-  - `restart` - Restart the timeout of the delayed event.
-
-For example, the following would send the delayed event with delay ID `1234567890` immediately:
-
-```http
-POST /_matrix/client/v1/delayed_events/1234567890
-Content-Type: application/json
-
-{
-  "action": "send"
-}
-```
 
 ### Homeserver implementation details
 
