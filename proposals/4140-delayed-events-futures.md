@@ -38,6 +38,7 @@ time and then distributing as normal via federation.
   - [MQTT style Last Will](#mqtt-style-last-will)
   - [`M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`](#m_invalid_param-instead-of-m_max_delay_exceeded)
   - [Naming](#naming)
+  - [`M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`](#m_invalid_param-instead-of-m_max_delay_exceeded)
 - [Security considerations](#security-considerations)
 - [Unstable prefix](#unstable-prefix)
 - [Dependencies](#dependencies)
