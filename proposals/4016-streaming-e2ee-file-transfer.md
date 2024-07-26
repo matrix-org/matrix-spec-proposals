@@ -245,6 +245,10 @@ to make sure the detailed thumbnail streams in and is viewed as rapidly as possi
 
 ## Security considerations
 
+* AES-GCM is not key-committing, so removing hashes on the event means:
+  * the key committing attacks are all about an adversary which constructs a ciphertext C with multiple ((IV1, K1), (IV2, K2), ...) so that C decrypts to P1, P2, ... at the same time
+  * given that AES GCM is specifically not key committing, we introduce this attack.
+  * (thanks to @dkasak for pointing this out)
 * Variable size blocks could leak metadata for VBR audio.  Mitigation is to use CBR if you care about leaking voice
   traffic patterns (constant size blocks isn’t necessarily enough, as you’d still leak the traffic patterns)
 * Is encrypting a sequence number in block header (with authenticated encryption) sufficient to mitigate reordering
