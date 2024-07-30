@@ -10,7 +10,8 @@ solution for bots before canonical DMs are fully implemented.
 
 ## Proposal
 The proposed solution is a new state event: `m.member_hints`. The state event
-contains a field called `service_members` which is a list of user IDs.
+has no state key and contains a field called `service_members` which is a list
+of user IDs.
 
 Any users (service members) listed there should not be considered when
 computing the room name or avatar based on the member list. If the room only
@@ -64,4 +65,5 @@ events.
 
 ## Unstable prefix
 Due to existing implementations, `io.element.functional_members` should be used
-as the event type until this MSC is accepted.
+as the event type until this MSC is accepted. The field name (`service_members`)
+is kept as-is.
