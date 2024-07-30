@@ -41,6 +41,15 @@ a user is invited with a client that doesn't know about this MSC, it's better
 for bots to show up in the name than it is for real users to be hidden from the
 name.
 
+### Canonical DMs
+The use cases of this proposal would be solved by canonical DMs. For example,
+[MSC2199] defines "unimportant" users which would be excluded from room name
+calculation and behave similar to service members in this proposal. However,
+canonical DMs are much more complicated, while this proposal is relatively
+simple to implement.
+
+[MSC2199]: https://github.com/matrix-org/matrix-spec-proposals/pull/2199
+
 ## Security considerations
 This MSC hides encrypted message recipients to some extent. However, as long as
 the requirement to still show the members in the member list is followed, the
