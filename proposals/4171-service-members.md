@@ -22,7 +22,8 @@ visible in the member list and membership events they send MUST be rendered if
 other users' membership events are rendered.
 
 Clients may include some special label for service members in the member list
-to make it clearer why they're not included in the room name.
+and/or other places in the room to make it clearer why they're not included in
+the room name.
 
 Any listed users who are not room members can be safely ignored. Simply being
 on the list without actually being a room member has no special behavior.
