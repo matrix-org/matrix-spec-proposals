@@ -41,6 +41,11 @@ a user is invited with a client that doesn't know about this MSC, it's better
 for bots to show up in the name than it is for real users to be hidden from the
 name.
 
+While the use case in this MSC is primarily for DMs and small groups, an
+inverted user list would completely prevent using the same event in larger
+rooms, as the list would need to be updated on every join/leave. A list of bots
+could be used for other purposes even in big rooms.
+
 ### Canonical DMs
 The use cases of this proposal would be solved by canonical DMs. For example,
 [MSC2199] defines "unimportant" users which would be excluded from room name
