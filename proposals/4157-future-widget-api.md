@@ -1,11 +1,17 @@
 # Futures for the widget api
 
-With [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) a way to send Future events is introduced.
-Futures are events that are send **now** but will be inserted into the dag (and distributed to all clients and federating
-servers) a time after **now** (based on timeout or delegation conditions).
+With [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) a way to send Delayed events is introduced.
+Delayed events are events that will be inserted into the dag (and distributed to all clients and federating
+servers) a time after **now** (based on a delay that can be refreshed).
 
-This is an extension to the client server api to expose Futures to widgets.
-This can be useful for numerous widgets. It is required for widgets implementing MatrixRTC.
+Those events are useful to implement scheduled messages or a last will mechanisms. Since the delayed events are refreshable,
+it is possible to send an event with a short timeout and send restarts to that timeout. This behaves like a heartbeat and
+the event is sent once the heartbeat stops: As a last will.
+
+This msc only specifies how the widget api uses this concept. [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
+gives more details about the delayed events themselves.
+
+Exposing delayed events to the widget is required for widgets implementing MatrixRTC.
 Futures are needed for reliable MatrixRTC memberships that get cleaned up when a client looses network connection.
 
 Since ElementCall (EC) is a widget and based on MatrixRTC this widget api proposel is required for EC to work.
@@ -37,13 +43,9 @@ and the `"send_event"` response:
 }
 ```
 
-to provide the same properties needed for [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140).
-The client is responsible to check
-for the field `delay` of the widget action and send the correct http request
-if one of it is present.
-
-All other details about the future concept can be found in [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
-so here we intentionally don't mention any of the details about futures.
+To provide the same properties needed for [MSC4140](https://github.com/matrix-org/matrix-spec-proposals/pull/4140).
+The client is responsible to check for the `delay` field of the widget action and send the correct http request if it
+is present.
 
 ### Sending `update_delayed_event` actions
 
@@ -69,8 +71,27 @@ Two new capabilities will be introduces:
 - `m.update_delayed_event`\
   allows to update delayed events using the `fromWidget update_delayed_event` widget action.
 
+Receiving events does not require a special permission since delayed events are not distinguishable from normal events
+from the receiver side.
+
+For sending a delayed event two capabilities are required. One for sending the event type itself and the `m.send.delay_events`
+capability to send it as a delayed event.
+
+## Alternatives
+
+A more granular capability configuration for sending delayed events can be imagined. Where
+each event type gets its own capability to sent this type with a delay. Since we always need the capability for the
+event type itself it might be sufficient to ask for delayed event sending in general.
+
+But it is then possible to send any of the events the widget can sent as delayed events.
+
 ## Unstable prefix
 
-- `update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
-- `m.send.delayed_event` -> `org.matrix.msc4157.send.delayed_event`
-- `m.update_delayed_event` -> `org.matrix.msc4157.update.delayed_event`
+The following strings will have unstable prefixes:
+
+- The widget action:\
+  `update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
+- The send delayed event capability:\
+  `m.send.delayed_event` -> `org.matrix.msc4157.send.delayed_event`
+- The update delayed event capability:\
+  `m.update_delayed_event` -> `org.matrix.msc4157.update.delayed_event`
