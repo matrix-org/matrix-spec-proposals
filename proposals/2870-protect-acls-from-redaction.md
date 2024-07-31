@@ -40,7 +40,7 @@ the room administrator's understanding of their room's function.
 
 Another possible approach is to have servers prevent sending faulty ACL events by preventing their
 local clients from doing so, such as by rejecting redaction requests. This doesn't solve the issue
-over federation, but can reduce the liklihood of such events making it to the federation layer. This
+over federation, but can reduce the likelihood of such events making it to the federation layer. This
 is what Synapse currently does to help mitigate the issue. This is only effective if the server (or
 client, locally) implements it - it's common for both clients and servers to forget to add these checks
 during development, leading to occasional room breakage. This MSC instead tries to resolve the issue

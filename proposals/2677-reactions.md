@@ -51,7 +51,7 @@ property should contains a `key` that indicates the annotation being
 applied. For example, when reacting with emojis, the `key` contains the emoji
 being used.
 
-An event annotating another with the thumbs-up emoji would therefore have the following `m.relates_to` propperty:
+An event annotating another with the thumbs-up emoji would therefore have the following `m.relates_to` property:
 
 ```json
 "m.relates_to": {

@@ -174,7 +174,7 @@ certificates comes with a number of downsides.
 
 Configuring a working, federating homeserver is a process fraught with
 pitfalls. This proposal adds the requirement to obtain a signed certificate to
-that process. Even with modern intiatives such as Let's Encrypt, this is
+that process. Even with modern initiatives such as Let's Encrypt, this is
 another procedure requiring manual intervention across several moving parts.
 
 On the other hand: obtaining an SSL certificate should be a familiar process to
