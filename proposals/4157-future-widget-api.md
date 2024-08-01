@@ -94,4 +94,4 @@ The following strings will have unstable prefixes:
 - The send delayed event capability:\
   `m.send.delayed_event` -> `org.matrix.msc4157.send.delayed_event`
 - The update delayed event capability:\
-  `m.update_delayed_event` -> `org.matrix.msc4157.update.delayed_event`
+  `m.update_delayed_event` -> `org.matrix.msc4157.update_delayed_event`
