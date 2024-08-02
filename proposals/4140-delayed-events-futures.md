@@ -38,7 +38,9 @@ time and then distributing as normal via federation.
   - [MQTT style Last Will](#mqtt-style-last-will)
   - [`M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`](#m_invalid_param-instead-of-m_max_delay_exceeded)
   - [Naming](#naming)
-  - [`M_INVALID_PARAM` instead of `M_MAX_DELAY_EXCEEDED`](#m_invalid_param-instead-of-m_max_delay_exceeded)
+  - [Don't provide a `send` action](#dont-provide-a-send-action)
+  - [Use `DELETE` HTTP method for `cancel` action](#use-delete-http-method-for-cancel-action)
+  - [[Ab]use typing notifications](#abuse-typing-notifications)
 - [Security considerations](#security-considerations)
 - [Unstable prefix](#unstable-prefix)
 - [Dependencies](#dependencies)
@@ -717,14 +719,14 @@ The following alternative names for this concept are considered
 - PostponedEvents
 - LastWill
 
-### Don't provide a `send` action
+### Don't provide a `send` action
 
 Instead of providing a `send` action for delayed events, the client could cancel the outstanding delayed event and send
 a new non-delayed event instead.
 
 This would simplify the API, but it's less efficient since the client would have to send two requests instead of one.
 
-### Use `DELETE` HTTP method for `cancel` action
+### Use `DELETE` HTTP method for `cancel` action
 
 Instead of providing a `cancel` action for delayed events, the client could send a `DELETE` request to the same endpoint.
 
