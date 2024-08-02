@@ -745,6 +745,15 @@ efficient transport.
 However, as the conclusion was to [not federate the delayed events](#federated-delayed-events) this approach was
 discounted in favour of a dedicated endpoint.
 
+### Alternative to `running_since` field
+
+Some alternatives for the `running_since` field on the `GET` response:
+
+- `delaying_from`
+- `delayed_since`
+- `delaying_since`
+- `last_restart` - but this feels less clear than `running_since` for a delayed event that hasn't been restarted
+
 ## Security considerations
 
 All new endpoints are authenticated.
