@@ -217,7 +217,7 @@ To ensure clear communication of issues, the following error codes and messages 
     }
     ```
 
-### Distinction Between Existing and Custom Fields
+### Propagation of profile fields to membership events
 
 The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
 room. These fields are replicated per-room via member events. Other fields, however, will **not**
