@@ -220,7 +220,7 @@ To ensure clear communication of issues, the following error codes and messages 
 ### Distinction Between Existing and Custom Fields
 
 The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
-room. These fields are replicated per-room via member events. Custom fields, however, will **not**
+room. These fields are replicated per-room via member events. Other fields, however, will **not**
 trigger state events in rooms. They will exist solely at the global level and are intended for
 storing metadata about the user that does not need to be replicated in each room.
 
