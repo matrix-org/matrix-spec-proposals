@@ -96,7 +96,7 @@ member events.
     }
     ```
 
-6. **POST `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
+6. **PUT `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
    to replace the entire profile, not only adding/updating any changed keys, but removing any
    absent ones in the process:
 
@@ -110,7 +110,7 @@ member events.
     ```
 
     **Note**: User-interactive clients are encouraged to manipulate fields individually to avoid
-    race conditions, however this `POST` method allows single-client accounts (such as bots) to
+    race conditions, however this `PUT` method allows single-client accounts (such as bots) to
     overwrite the entire profile in a single request, which allows bridge bots managing many
     accounts to bulk update profiles for their users with minimal requests.
 
@@ -243,20 +243,14 @@ The namespace for field names is defined as follows:
 - The namespace `u.*` is reserved for user-defined fields. The portion of the string after the `u.`
   is defined the display name of this field. These user-defined fields will always be string format.
 
-For example, if a future MSC were to add a field for the user's timezone (not included in this MSC)
-it might become `m.timezone` after entering the spec, but during the unstable process it might be
-`org.matrix.msc9876.timezone`.
+Following support for this specification change, a user could enter a "My Timezone" field manually
+in their client and the client would be expected to add a `u.My Timezone` key in their profile.
+However, this would be expected to be a string value, even if the user types "null" or an integer
+into the box.
 
-The MSC could define format requirements (e.g. "must be in IANA format like `Europe/Paris`") that
-clients must validate, or that the field should be displayed in profiles showing the local time for
-that user, or even that client/server behaviour is affected by this field (e.g. overriding display
-from the device timezone to this configured one) but this MSC does not seek to define those options
-in advance - those would be defined in that field's MSC.
-
-In contrast, if users wish to display their timezone immediately after this specification change,
-they could enter a "My Timezone" field manually that would create a `u.My Timezone` key in their
-profile - this would have open entry requirements, so they might enter `CEST` or `+2` or `None`
-and clients/servers would not be expected to do anything with the value except store/display it.
+In contrast, [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/4175) would use the
+unstable key `us.cloke.msc4175.tz` and following approval would then support clients using the
+`m.tz` key with the values/validation that MSC requires.
 
 ### Size Limit
 
@@ -335,11 +329,18 @@ these fields until this proposal has entered the API as stable:
 }
 ```
 
-The new endpoints would be on the
-`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` unstable version, before
-promoting to `/_matrix/client/v3/profile/{userId}/{key_name}` when this is stable.
+`/_matrix/client/uk.tcpip.msc4133/profile/{userId}` would be necessary for the `PATCH` and `PUT`
+methods allowed when unstable capability (detailed below) is advertised by the server.
 
-Likewise, the client capability `m.profile_fields` should use this custom prefix until stable:
+The existing `GET` method would act as normal and remain on `/_matrix/client/v3/profile/{userId}`
+without *need* for an unstable endpoint.
+
+Likewise, when the unstable capability is advertised by the server, the server should accept the
+new key endpoints `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` which
+would then promote to `/_matrix/client/v3/profile/{userId}/{key_name}` when the stable capability
+is advertised following this specification change.
+
+The client capability `m.profile_fields` should use this prefix until stable:
 
 ```json
 {
