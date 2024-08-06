@@ -258,12 +258,14 @@ unstable key `us.cloke.msc4175.tz` and following approval would then support cli
 The key *must* be a string of *at least* one character, and *must* not exceed 255 bytes.
 
 To ensure efficient handling and storage of profile data, this proposal requires the entire user
-profile JSON object not exceed 64KiB *over federation*.
+profile JSON object not exceed 64KiB.
 
-As it is possible for a homeserver to allow a user to edit a field that it then doesn't provide
-over federation, homeservers are encouraged to limit the fields (or content) that their local users
-can set, setting an upper size limit per field and/or for the entire profile. Homeservers may also
-limit the maximum number of keys a user may set.
+A future MSC may increase this limit or add exceptions, but this current limit has been chosen to
+allow both servers and clients to have predictable upper limits, especially for caching.
+
+Homeservers are allowed to limit the fields (or content) that their local users can set, setting
+an upper size limit per field and/or for the entire profile, and may also limit the maximum number
+of keys a user may set.
 
 ### Implementation Details
 
