@@ -83,7 +83,7 @@ member events.
     }
     ```
 
-5. **PUT `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
+5. **PATCH `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
    to *merge* into the current profile, updating any changed keys without removing/changing any
    absent ones:
 
@@ -183,12 +183,12 @@ To ensure clear communication of issues, the following error codes and messages 
     }
     ```
 
-  - **Error Code for Key Name Exceeding Length**: `M_KEY_TOO_LONG`
+  - **Error Code for Invalid Data**: `M_INVALID_DATA`
   - **Example Response**:
 
     ```json
     {
-        "errcode": "M_KEY_TOO_LONG",
+        "errcode": "M_INVALID_DATA",
         "error": "The key name exceeds the maximum allowed length of 255 bytes."
     }
     ```
@@ -217,7 +217,7 @@ To ensure clear communication of issues, the following error codes and messages 
     }
     ```
 
-### Propagation of profile fields to membership events
+### Propagation of Profile Fields to Membership Events
 
 The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
 room. These fields are replicated per-room via member events. Other fields, however, will **not**
