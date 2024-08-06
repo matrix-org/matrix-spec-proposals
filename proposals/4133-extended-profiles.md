@@ -242,6 +242,7 @@ The namespace for field names is defined as follows:
   attempt to update the content in case it has special requirements.
 - The namespace `u.*` is reserved for user-defined fields. The portion of the string after the `u.`
   is defined the display name of this field. These user-defined fields will always be string format.
+- Client-specific or unstable fields MUST use the Java package naming convention: `tld.name.*`.
 
 Following support for this specification change, a user could enter a "My Timezone" field manually
 in their client and the client would be expected to add a `u.My Timezone` key in their profile.
