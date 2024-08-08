@@ -40,14 +40,33 @@ Uploading to and downloading from the content repository is separated from the e
 explained above. This gives Matrix applications dealing with referenced files great flexibility, for example it would be
 possible to reference multiple files from a single event. It is also not an issue for clients to deal with end-to-end
 encrypted files, as they can easily reference the `key` and `iv` required for decryption through the
-[`EncryptedFile`][encryptedfile] object in the referencing event. [MSC2762][MSC2762] defines the client as responsible
+[`EncryptedFile`][encryptedfile] metadata in the referencing event. [MSC2762][MSC2762] defines the client as responsible
 for handling encryption.
 
-As a consequence of the three factors separation, keeping to standard Matrix file encryption (i.e. storing
-`EncryptedFile`), and implementing the en/decryption in the client follows, that the widget must be responsible for
-attaching the `EncryptedFile` to any event it sends. For otherwise already standardised events, this means following
-their [standardised scheme for encrypted variants][encryptedfile], but custom formats for custom events are possible, as
-long as the widget can provide the required data again when requesting decryption from the client.
+As a consequence of the three factors separation, keeping to standard Matrix file encryption (i.e. `EncryptedFile`), and
+implementing the en/decryption in the client follows, that the widget must be responsible for attaching the
+`EncryptedFile` metadata to any event it sends. For otherwise already standardised events, this means following their
+[standardised scheme for encrypted variants][encryptedfile], but custom formats for custom events are possible, as long
+as the widget can provide the required data again when requesting decryption from the client. The `EncryptedFile` object
+used in the definitions below is a JSON object simply containing all the information required for encrypted
+attachments as already defined by the Matrix specification with their usual keys and values, i.e. for v1.11:
+
+```json
+{
+  "v": "v2",
+  "key": {
+    "alg": "A256CTR",
+    "ext": true,
+    "k": "aWF6-32KGYaC3A_FEUCk1Bt0JA37zP0wrStgmdCaW-0",
+    "key_ops": ["encrypt","decrypt"],
+    "kty": "oct"
+  },
+  "iv": "w+sE15fzSc0AAAAAAAAAAA",
+  "hashes": {
+    "sha256": "fdSLu/YkRx3Wyh3KQabP3rd6+SFiKg5lsJZQHtkSAYA"
+  }
+}
+```
 
 ### Get configuration
 
