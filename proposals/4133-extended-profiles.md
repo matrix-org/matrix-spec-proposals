@@ -164,7 +164,6 @@ To ensure clear communication of issues, the following error codes and messages 
 - **400 Bad Request**: When the request is malformed, exceeds specified limits, or the profile
   JSON object is larger than 64KiB.
   - **Error Code for Malformed Request**: `M_BAD_JSON`
-  - **Example Response**:
 
     ```json
     {
@@ -174,7 +173,6 @@ To ensure clear communication of issues, the following error codes and messages 
     ```
 
   - **Error Code for Exceeding Size Limit**: `M_TOO_LARGE`
-  - **Example Response**:
 
     ```json
     {
@@ -183,12 +181,11 @@ To ensure clear communication of issues, the following error codes and messages 
     }
     ```
 
-  - **Error Code for Invalid Data**: `M_INVALID_DATA`
-  - **Example Response**:
+  - **Error Code for Invalid Data**: `M_INVALID_PARAM`
 
     ```json
     {
-        "errcode": "M_INVALID_DATA",
+        "errcode": "M_INVALID_PARAM",
         "error": "The key name exceeds the maximum allowed length of 255 bytes."
     }
     ```
@@ -197,7 +194,6 @@ To ensure clear communication of issues, the following error codes and messages 
   such as when the server policy (e.g.
   [MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
   - **Error Code**: `M_FORBIDDEN`
-  - **Example Response**:
 
     ```json
     {
@@ -208,7 +204,6 @@ To ensure clear communication of issues, the following error codes and messages 
 
 - **404 Not Found**: When attempting to `GET` or `DELETE` a profile key that does not exist:
   - **Error Code**: `M_NOT_FOUND`
-  - **Example Response**:
 
     ```json
     {
