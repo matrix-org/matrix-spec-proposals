@@ -18,8 +18,12 @@ proposal attempts to standardize on `via`.
 
 The `server_name` query parameter on [`/_matrix/client/v3/join/{roomIdOrAlias}`] and
 [`/_matrix/client/v3/knock/{roomIdOrAlias}`] is deprecated and a new parameter `via: [string]` is
-introduced. Clients SHOULD use `via` when the homeserver they're talking to supports it. To do this, they
-MAY either detect server support through [`/_matrix/client/versions`] or always include both parameters.
+introduced.
+
+Clients SHOULD use `via` when the homeserver they're talking to supports it. To do this, they MAY either
+detect server support through the supported spec versions in [`/_matrix/client/versions`] or always include
+both parameters.
+
 Homeservers MUST ignore all `server_name` parameters if any `via` parameters are supplied.
 
 
