@@ -22,7 +22,7 @@ introduced.
 
 Clients SHOULD use `via` when the homeserver they're talking to supports it. To do this, they MAY either
 detect server support through the supported spec versions in [`/_matrix/client/versions`] or always include
-both parameters.
+both parameters (with identical values).
 
 Homeservers MUST ignore all `server_name` parameters if any `via` parameters are supplied.
 
@@ -41,7 +41,9 @@ None other than accepting status quo.
 
 ## Security considerations
 
-None.
+A client that supplies different `via` and `server_name` parameters could be served a different room depending
+on which set of parameters the server uses to resolve the room ID. Tricking a client into doing this seems very
+difficult though because [Matrix URIs], for instance, only have a single documented `via` parameter.
 
 
 ## Unstable prefix
@@ -54,6 +56,7 @@ Until this proposal is accepted into the spec, implementations SHOULD refer to `
 None.
 
 
+[Matrix URIs]: https://spec.matrix.org/v1.11/appendices/#matrix-uri-scheme
 [room ID grammar]: https://spec.matrix.org/v1.10/appendices/#room-ids
 [`via`]: https://spec.matrix.org/v1.10/appendices/#routing
 [`/_matrix/client/v3/join/{roomIdOrAlias}`]: https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3joinroomidoralias
