@@ -80,6 +80,9 @@ Discord, Twitter, blah don't provide a user's time zone.
 Showing a user's time zone gives some information to their location. There is currently
 no way to limit what profile fields other users can see.
 
+clients may wish to warn users when providing a timezone and give
+the option to kot incoude it in their profile.
+
 
 ## Unstable prefix
 
