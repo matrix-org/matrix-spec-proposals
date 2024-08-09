@@ -3,7 +3,7 @@
 Room IDs in Matrix are generally not routable on their own. In the [room ID grammar] `!opaque_id:domain`,
 the `domain` is the server that created the room. There is, however, no guarantee that this server is
 still joined to the room at a later time. Therefore, room IDs don't provide a reliable resident server
-to send requests to.
+to send requests to. Critically, the `domain` is not to be used as a routing server. It is purely a namespace.
 
 The spec partially addresses this issue by defining a [`via`] query parameter on room URIs that can be
 used to list servers that have a high probability of being in the room in the distant future. Additionally,
