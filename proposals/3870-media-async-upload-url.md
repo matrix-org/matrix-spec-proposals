@@ -31,12 +31,14 @@ client may continue to upload via the new upload endpoint defined in MSC2246.
 {
   "content_uri": "mxc://example.com/AQwafuaFswefuhsfAFAgsw",
   "unused_expires_at": 1647257217083,
+  "upload_method": "PUT",
   "upload_url": "https://cdn.example.com/media-repo/upload/XAPw4CtrzArk?signed=h4tGOHvCu"
 }
 ```
 
-If the client chooses to upload media via the `upload_url` field it must use a `PUT` request, in this
-case:
+If the client chooses to upload media via the `upload_url` field it must use the method specified
+by the `upload_method` field. Clients should expect the upload URL to work until `unused_expires_at`
+time, afterwhich a new media would need to be created. Upload request based on the above response:
 
 `PUT https://cdn.example.com/media-repo/upload/XAPw4CtrzArk?signed=h4tGOHvCu`
 
