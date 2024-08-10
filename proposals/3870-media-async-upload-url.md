@@ -14,7 +14,7 @@ of Presence to their users than the homeserver itself.
 When combined with [MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860) (media
 download redirect URLs) this makes it possible to run a "lean" media server that orchestrates where
 media is uploaded to and downloaded from but does not directly handle much media itself. Note this 
-doesn't include thubmnails or URL previews which would still go through the media server.
+doesn't include thumbnails or URL previews which would still go through the media server.
 
 
 ## Proposal
