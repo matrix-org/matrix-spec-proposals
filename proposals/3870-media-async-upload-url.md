@@ -23,7 +23,7 @@ The proposal modifies the MSC2246 create endpoint to optionally include a URL th
 client may use to upload the content for the created MXID. This is considered optional and the
 client may continue to upload via the new upload endpoint defined in MSC2246.
 
-`POST /_matrix/media/v3/create`
+`POST /_matrix/media/v1/create`
 
 **Example response**
 
@@ -44,7 +44,7 @@ The response to the upload is implementation specific depending on the target se
 should interpret standard HTTP responses, a 200 or 201 indicating successful upload. Once the upload
 is complete, the client must notify the media server via a new endpoint:
 
-`POST /_matrix/media/v3/upload/{serverName}/{mediaId}/complete`
+`POST /_matrix/media/v1/upload/{serverName}/{mediaId}/complete`
 
 **Example response**
 
