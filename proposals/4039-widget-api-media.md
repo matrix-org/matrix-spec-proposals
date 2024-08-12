@@ -139,7 +139,12 @@ To trigger the action to upload a file, widgets will use a new `fromWidget` requ
 If the widget did not get approved for the capability required to send the event, the client MUST
 send an error response (as required currently by the capabilities system for widgets).
 
-TODO: error response if uploading fails? if encrypting fails?
+Matrix v1.7 added asynchronous uploads through [MSC2246][MSC2246] by splitting the interface of the media upload into a
+“create the mxc-id” and a “upload the file for the mxc-id” stage. It is left as an implementation detail for clients to
+decide how to apply this to upload requests issued by widgets in detail, but it SHOULD be used for large files whose
+upload can be expected to take longer than the widget API timeout. The widget API itself does not explicitly support
+something mirroring the upload direction of asynchronous uploads because the assumption is that the communication
+between widget and host client is instant.
 
 #### Response (Unencrypted)
 
@@ -212,10 +217,18 @@ To trigger the action to download a file, widgets will use a new `fromWidget` re
   "requestid": "generated-id-1234",
   "action": "download_file",
   "data": {
-    "content_uri": "mxc://..."
+    "content_uri": "mxc://...",
+    "timeout_ms": 20000
   }
 }
 ```
+
+It is possible that the (default) timeouts for downloading introduced with asynchronous uploads and the widget API
+differ. Therefore, the widget MAY pass the `timeout_ms` parameter, whose default value follows and whose meaning mirrors
+that of the [same field in the client-server API][download] but also implies that the timeout in the widget API is
+adjusted accordingly for this single request. The widget is expected to be able to handle the
+[`M_NOT_YET_UPLOADED`][download] error response in the usual way the client forwards client-server-API errors to
+widgets.
 
 The client SHOULD NOT modify the received file from the content repository before responding to the widget in
 unencrypted rooms.
@@ -234,6 +247,7 @@ the client alongside it.
   "action": "download_file",
   "data": {
     "content_uri": "mxc://...",
+    "timeout_ms": 20000,
     "encryption": EncryptedFile
   }
 }
@@ -266,10 +280,6 @@ TODO: error response if downloading fails? if decrypting fails?
 [MSC3916][MSC3916] plans to add authentication for media access. This would require the Widget API to receive an
 additional extension to be able to access stored media. It is assumed that a successor of the current widget api (like
 [MSC3008]) will replace this need in the future.
-
-[MSC2246][MSC2246] splits the interface of the media upload into a “create the mxc-id” and a “upload the file for the
-mxc-id” stage. It is assumed that the new API can be transparently implemented in the client so the widget could still
-use the old API definition.
 
 TODO: [MSC3911][MSC3911] linking media to events
 
