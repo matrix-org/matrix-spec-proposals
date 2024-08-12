@@ -296,6 +296,9 @@ en/decryption steps directly in the widget would spare the back and forth of the
 client, however there would still need to be multiple requests for uploading (authentication and to determine the `mxc`)
 and downloading (authentication) regardless.
 
+A completely new approach where widgets can use the client-server API directly with a scoped access token would also be
+possible, but would touch on many parts of widget and client-server APIs including authentication and authorisation,
+which means it would require a complete revamp of the widget API and is hence out of scope of this MSC.
 
 ## Security considerations
 
