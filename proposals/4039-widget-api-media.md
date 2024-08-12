@@ -272,18 +272,13 @@ the client alongside it.
 }
 ```
 
-`response.file` mirrors `data.file` of the `upload_file` action and is a `XMLHttpRequestBodyInit` that is supported as a data type in the `postMessage` API.
+`response.file` mirrors `data.file` of the `upload_file` action and is a `XMLHttpRequestBodyInit` that is supported as a
+data type in the `postMessage` API.
 
 If the widget did not get approved for the capability required to send the event, the client MUST
 send an error response (as required currently by the capabilities system for widgets).
 
-TODO: error response if downloading fails? if decrypting fails?
-
 ## Potential issues
-
-[MSC3916][MSC3916] plans to add authentication for media access. This would require the Widget API to receive an
-additional extension to be able to access stored media. It is assumed that a successor of the current widget api (like
-[MSC3008]) will replace this need in the future.
 
 TODO: [MSC3911][MSC3911] linking media to events
 
