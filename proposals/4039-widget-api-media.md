@@ -223,6 +223,10 @@ To trigger the action to download a file, widgets will use a new `fromWidget` re
 }
 ```
 
+Instead of mirroring the client-server API's fields `mediaId` and `serverName`, the `download_file` action's `data`
+field is structured to mirror the `upload_file` action both for consistency within the widget API and to leave parsing
+the `mxc` URI to the client which already implements it for simplicity.
+
 It is possible that the (default) timeouts for downloading introduced with asynchronous uploads and the widget API
 differ. Therefore, the widget MAY pass the `timeout_ms` parameter, whose default value follows and whose meaning mirrors
 that of the [same field in the client-server API][download] but also implies that the timeout in the widget API is
@@ -297,8 +301,6 @@ en/decryption steps directly in the widget would spare the back and forth of the
 client, however there would still need to be multiple requests for uploading (authentication and to determine the `mxc`)
 and downloading (authentication) regardless.
 
-TODO: follow the C-S download API format for download_file. but our way alleviates the parsing from the widget to the
-client which already can parse them.
 
 ## Security considerations
 
