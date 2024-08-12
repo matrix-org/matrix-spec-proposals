@@ -141,7 +141,7 @@ send an error response (as required currently by the capabilities system for wid
 
 TODO: error response if uploading fails? if encrypting fails?
 
-#### Unencrypted
+#### Response (Unencrypted)
 
 The client SHOULD NOT modify the data of the request in unencrypted rooms.
 
@@ -162,7 +162,7 @@ If the file is successfully uploaded by the client, the client sends the followi
 }
 ```
 
-#### Encrypted
+#### Response (Encrypted)
 
 If the room is end-to-end encrypted, the client SHOULD encrypt the data before uploading, generating the usual required
 [`EncryptedFile`][encryptedfile] metadata. If sending is successful, the client adds the `EncryptedFile` to the
@@ -203,7 +203,7 @@ flowchart TD
 
 To trigger the action to download a file, widgets will use a new `fromWidget` request with the action `download_file`.
 
-#### Unencrypted (Request)
+#### Request (Unencrypted)
 
 ```json
 {
@@ -220,7 +220,7 @@ To trigger the action to download a file, widgets will use a new `fromWidget` re
 The client SHOULD NOT modify the received file from the content repository before responding to the widget in
 unencrypted rooms.
 
-#### Encrypted (Request)
+#### Request (Encrypted)
 
 It is the widget's responsibility to know if the file is encrypted, e.g. by checking if the
 [`EncryptedFile`][encryptedfile] metadata is stored next to the `mxc:` URI. If so, it must be provided in the request to
@@ -239,7 +239,7 @@ the client alongside it.
 }
 ```
 
-#### Common Response
+#### Response
 
 ```json
 {
