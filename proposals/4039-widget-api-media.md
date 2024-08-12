@@ -282,7 +282,10 @@ authenticated.
 
 TODO: "proxy" the mxcs and have the client bookkeep the e2ee data?
 
-TODO: e2ee in the widget, contrary to [MSC2762][MSC2762]
+As mentioned above, [MSC2762][MSC2762] defines the client to handle all end-to-end encryption tasks. Handling the
+en/decryption steps directly in the widget would spare the back and forth of the encryption keys between widget and
+client, however there would still need to be multiple requests for uploading (authentication and to determine the `mxc`)
+and downloading (authentication) regardless.
 
 TODO: follow the C-S download API format for download_file. but our way alleviates the parsing from the widget to the
 client which already can parse them.
