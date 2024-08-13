@@ -274,22 +274,31 @@ TODO: [MSC3911][MSC3911] linking media to events
 
 ## Alternatives
 
-TODO: "proxy" the mxcs and have the client bookkeep the e2ee data?
-
 As mentioned above, [MSC2762][MSC2762] defines the client to handle all end-to-end encryption tasks. Handling the
 en/decryption steps directly in the widget would spare the back and forth of the encryption keys between widget and
 client, however there would still need to be multiple requests for uploading (authentication and to determine the `mxc`)
 and downloading (authentication) regardless.
 
-A completely new approach where widgets can use the client-server API directly with a scoped access token would also be
-possible, but would touch on many parts of widget and client-server APIs including authentication and authorisation,
-which means it would require a complete revamp of the widget API and is hence out of scope of this MSC.
+In principle it would be preferable to be able to entirely rely on the client hosting the widget to handle end-to-end
+encryption. It would be possible to design a different approach such as [MSC2881][MSC2881], where any event that wants
+to reference multiple files cannot do so directly but instead uses event relations to refer to them "by proxy" of
+another event that also keeps the `EncryptedFile` metadata, or [MSC3382][MSC3382], which simply allows multiple
+attachments to one single event. The issue of multiple requests between widget and client remains for uploads due to
+having to determine the `mxc`, which the widget needs to include in the (potentially custom) event body. For downloads
+it would be possible for the client to automatically download, decrypt, and pass the file to the widget, but it takes
+the control from the widget to determine which files are actually needed for the current view. We therefore don't see a
+great advantage in this approach.
+
 It may be preferable if the widget would not need to pass the actual data to the client over the
 Widget API, but instead acquire an authenticated URL that it can use to upload/download the file
 directly to/from the homeserver without the need of an authentication token.
 Matrix v1.7 asynchronous uploads ([MSC2246][MSC2246]) go in this direction,
 however they still require that the upload is authenticated.
 
+A completely new approach such as [MSC3008][MSC3008] where widgets can use the client-server API directly with a scoped
+access token would also be possible, but would touch on many parts of widget and client-server APIs including
+authentication and authorisation, which means it would require a complete revamp of the widget API and is hence out of
+scope of this MSC.
 
 ## Security considerations
 
@@ -314,6 +323,9 @@ While this MSC is not present in the spec, clients and widgets should:
 [MSC1236]: https://github.com/matrix-org/matrix-spec-proposals/pull/1236
 [MSC2246]: https://github.com/matrix-org/matrix-spec-proposals/pull/2246
 [MSC2762]: https://github.com/matrix-org/matrix-spec-proposals/pull/2762
+[MSC2881]: https://github.com/matrix-org/matrix-spec-proposals/pull/2881
+[MSC3008]: https://github.com/matrix-org/matrix-spec-proposals/pull/3008
+[MSC3382]: https://github.com/matrix-org/matrix-spec-proposals/pull/3382
 [MSC3911]: https://github.com/matrix-org/matrix-spec-proposals/pull/3911
 [MSC3916]: https://github.com/matrix-org/matrix-spec-proposals/pull/3916
 [content]: https://spec.matrix.org/v1.11/client-server-api/#content-repository
