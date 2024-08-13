@@ -270,7 +270,13 @@ send an error response (as required currently by the capabilities system for wid
 
 ## Potential issues
 
-TODO: [MSC3911][MSC3911] linking media to events
+[MSC3911][MSC3911] proposes a way to link media (files) to events such that there is a 1:n relationship for event ->
+file. Particularly, each file must be attached to exactly one event, and copied using the proposed copy API to attach it
+again to another event. Since the client is unaware of event content sent by widgets per [MSC2762][MSC2762], it cannot
+automatically handle copying any referenced media and the burden is hence on the widget, which would require a change to
+the API described above to add the `copy` endpoint. Additionally, the event sending payload from MSC2762 will need to be
+extended such that whenever a widget includes references to files in an event, it is required to provide them to the
+client in the `send_event` request so the client knows to attach the files.
 
 ## Alternatives
 
@@ -287,7 +293,8 @@ attachments to one single event. The issue of multiple requests between widget a
 having to determine the `mxc`, which the widget needs to include in the (potentially custom) event body. For downloads
 it would be possible for the client to automatically download, decrypt, and pass the file to the widget, but it takes
 the control from the widget to determine which files are actually needed for the current view. We therefore don't see a
-great advantage in this approach.
+great advantage in this approach. However, it might become more viable if [MSC3911][MSC3911] should land close to its
+current form.
 
 It may be preferable if the widget would not need to pass the actual data to the client over the
 Widget API, but instead acquire an authenticated URL that it can use to upload/download the file
