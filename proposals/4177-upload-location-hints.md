@@ -1,12 +1,13 @@
-# MSC0000: Upload Location Hints
+# MSC4177: Upload Location Hints
 
 This MSC proposes extensions to the media APIs that allow servers and clients to provide each other
 location hints for uploaded media.
 
 Often Matrix homeservers serve users in many geographical locations. For media that is uploaded and
-downloaded via a CDN (see: MSC3860, MSC3870) it is advantageous to use a location as close to the
-user as possible. This MSC allows servers to advertise available media storage locations and for
-clients to request media is uploaded to one of these locations.
+downloaded via a CDN (see: [MSC3860](https://github.com/matrix-org/matrix-spec-proposals/pull/3860),
+[MSC3870](https://github.com/matrix-org/matrix-spec-proposals/pull/3870)) it is advantageous to use
+a location as close to the user as possible. This MSC allows servers to advertise available media
+storage locations and for clients to request media is uploaded to one of these locations.
 
 All the changes are optional, ultimately the server retains control of where media gets put.
 
@@ -38,7 +39,7 @@ server decides.
 ## Potential issues
 
 How do clients/servers interpret location hints? Is it sensible to leave this undefined/open. We 
-could provide explict options, or a baseline of options, "it is recommended location hints use
+could provide explicit options, or a baseline of options, "it is recommended location hints use
 geographical ISO codes" for example.
 
 ## Alternatives
@@ -58,5 +59,5 @@ no security issue (I think).
 
 ## Dependencies
 
-Though not a hard dependency uploads will only get speed benefits from this MSC once MSC3870 is
-merged (otherwise uploads still route through the users homeserver location).
+Though not a hard dependency uploads will only get speed benefits from this MSC once [MSC3870](https://github.com/matrix-org/matrix-spec-proposals/pull/3870)
+is merged (otherwise uploads still route through the users homeserver location).
