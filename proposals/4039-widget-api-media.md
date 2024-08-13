@@ -20,16 +20,6 @@ encryption as possible.
 
 ## Proposal
 
----
-TODO: remove?
-TODO: remove from https://github.com/matrix-org/matrix-widget-api/blob/3c9543cbe4255869953d1b79d513de2eaf87033e/src/templating/url-template.ts#L48-L49
-
-The widget API is extended with a new url parameter that can be requested and that will tell the
-widget the URL of the homeserver API the user is currently using:
-
-* `matrix_base_url`: The URL of the homeserver API.
----
-
 The widget API is extended with three new interfaces to access the content repository. The
 user must manually approve the following capabilities before the actions can be used:
 
@@ -311,7 +301,6 @@ possible when the user accepts the capability and grant access if the widget is 
 While this MSC is not present in the spec, clients and widgets should:
 
 - Use `org.matrix.msc4039.` in place of `m.` in all new identifiers of this MSC.
-- TODO: remove? Use `org.matrix.msc4039.matrix_base_url` in place of `matrix_base_url` for the url parameter.
 - Use `org.matrix.msc4039.get_media_config` in place of `get_media_config` for the action type in the
   `fromWidget` requests.
 - Use `org.matrix.msc4039.upload_file` in place of `upload_file` for the action type in the
