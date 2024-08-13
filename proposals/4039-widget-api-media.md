@@ -341,5 +341,3 @@ While this MSC is not present in the spec, clients and widgets should:
 [upload]: https://spec.matrix.org/v1.11/client-server-api/#post_matrixmediav3upload
 [download]: https://spec.matrix.org/v1.11/client-server-api/#get_matrixclientv1mediadownloadservernamemediaid
 [encryptedfile]: https://spec.matrix.org/v1.11/client-server-api/#extensions-to-mroommessage-msgtypes
-
-TODO: review wrt. actual current implementation
