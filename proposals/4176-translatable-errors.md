@@ -69,7 +69,7 @@ messages to provide rich context to the user.
 ## Security considerations
 
 The error messages could be different depending on the language chosen. Specific groups may also be
-targetted with their language of choice. For example, the error being a permissions issue but `en_US`
+targeted with their language of choice. For example, the error being a permissions issue but `en_US`
 users seeing "Vote for X!" instead. This is primarily a risk when the server project accepts contributions
 from unverified sources on translations. Projects should exercise care when accepting contributions.
 
