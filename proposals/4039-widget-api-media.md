@@ -274,11 +274,6 @@ TODO: [MSC3911][MSC3911] linking media to events
 
 ## Alternatives
 
-It would be preferable if the widget would not need to pass the actual data to the client over the Widget API, but if it
-could acquire an authenticated upload URL that it can use to upload the file directly to the homeserver without the need
-of an authentication token. [MSC2246][MSC2246] goes into this direction, however, it still requires that the upload is
-authenticated.
-
 TODO: "proxy" the mxcs and have the client bookkeep the e2ee data?
 
 As mentioned above, [MSC2762][MSC2762] defines the client to handle all end-to-end encryption tasks. Handling the
@@ -289,12 +284,19 @@ and downloading (authentication) regardless.
 A completely new approach where widgets can use the client-server API directly with a scoped access token would also be
 possible, but would touch on many parts of widget and client-server APIs including authentication and authorisation,
 which means it would require a complete revamp of the widget API and is hence out of scope of this MSC.
+It may be preferable if the widget would not need to pass the actual data to the client over the
+Widget API, but instead acquire an authenticated URL that it can use to upload/download the file
+directly to/from the homeserver without the need of an authentication token.
+Matrix v1.7 asynchronous uploads ([MSC2246][MSC2246]) go in this direction,
+however they still require that the upload is authenticated.
+
 
 ## Security considerations
 
-The same considerations as in [MSC2762][MSC2762] apply. This feature will allow the widget to be able to upload data
-into the media repository. This could potentially be used to upload malicious content. However, the access will only be
-possible when the user accepts the capability and grant access if the widget is trusted by the user.
+The same considerations as in [MSC2762][MSC2762]
+apply. This feature will allow the widget to be able to upload data into the media repository. This
+could potentially be used to upload malicious content. However, the access will only be possible
+when the user accepts the capability and grant access if the widget is trusted by the user.
 
 ## Unstable prefix
 
