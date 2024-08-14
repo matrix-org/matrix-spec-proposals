@@ -95,18 +95,27 @@ The `response` is a mirrored representation of the original [content repository 
 
 ### Upload file
 
+The following diagram shows the (optionally encrypted) upload file flow.
+
 ```mermaid
-flowchart TD
-    A[Widget: upload] -->|fromWidget upload_file| B{Client: e2ee room?}
-    B -->|No| C[Client: upload file]
-    B -->|Yes| D[Client: encrypt file]
-    D -->|EncryptedFile| C
-    C -->|fromWidget upload_file| E[Widget: uploaded file]
-    E -->|fromWidget send_event| F{Client: e2ee room?}
-    F -->|No| G[Client: send event]
-    F -->|Yes| H[Client: encrypt event]
-    H --> G
-    G -->|fromWidget send_event| I[Widget: sent event]
+sequenceDiagram
+    participant W as widget
+    participant C as client
+    participant H as homeserver
+    W->>C: fromWidget upload_file
+    alt e2ee room
+    C->>C: encrypt file
+    end
+    C->>H: upload file
+    H->>C: mxc
+    C->>W: fromWidget upload_file (mxc, EncryptedFile)
+    W->>C: fromWidget send_event
+    alt e2ee room
+    C->>C: encrypt event
+    end
+    C->>H: send event
+    H->>C: event ID
+    C->>W: fromWidget send_event (event ID)
 ```
 
 To trigger the action to upload a file, widgets will use a new `fromWidget` request with the action
@@ -181,19 +190,27 @@ response, resulting in:
 
 ### Download file
 
+The following diagram shows the (optionally encrypted) download file flow.
+
 ```mermaid
-flowchart TD
-    N[Client: receive event] --> O{Client: e2ee event?}
-    O -->|No| P[Client: received event]
-    O -->|Yes| Q[Client: decrypt event]
-    Q --> P
-    P -->|toWidget send_event| R[Widget: received event]
-    R -->|fromWidget download_file| S[Client: download file]
-    S --> T{Client: widget sent EncryptedFile}
-    T -->|No| U[Client: downloaded file]
-    T -->|Yes| V[Client: decrypt file]
-    V --> U
-    U -->|toWidget download_file| W[Widget: downloaded file]
+sequenceDiagram
+    participant W as widget
+    participant C as client
+    participant H as homeserver
+    H->>C: sync receives event
+    alt e2ee room
+    C->>C: decrypt event
+    end
+    C->>W: toWidget send_event
+    W->>W: extract mxc
+    W->>W: look up EncryptedFile
+    W->>C: fromWidget download_file (mxc, EncryptedFile)
+    C->>H: download (mxc)
+    H->>C: file
+    alt EncryptedFile provided
+    C->>C: decrypt file
+    end
+    C->>W: fromWidget download_file
 ```
 
 To trigger the action to download a file, widgets will use a new `fromWidget` request with the action `download_file`.
