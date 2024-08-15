@@ -55,7 +55,7 @@ to remove, either because of disk usage or privacy reasons.
 need to manually perform the account removal operation on all the services the employee had been using. This can
 be cumbersome depending on the quantity of users and services.
 - With a provisioning protocol, the modifications on the user profile
-are automacally repercuted on all the services, so the system administrators only need to do the removal once on
+are automatically performed on all the services, so the system administrators only need to do the removal once on
 the IAM server.
 
 ### A provisioning protocol
