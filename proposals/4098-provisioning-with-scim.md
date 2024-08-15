@@ -28,7 +28,7 @@ administrators.
 A new employee joins an organization.
 The team the employee will join wants to prepare their collaboration tools,
 so everything is set up for the employee's first day of work.
-The team reaches the organization system administrators who create a user profile in the IAM software.
+The team contacts  the organization system administrators who create a user profile in the IAM software.
 - Without a provisioning protocol, the new employee's profile will only be created on the collaboration tools at the
 employee first log-in. Until then, the team cannot share files, send welcome emails etc. or in case of a Matrix server,
 invite them in a discussion or a space. This is unless system administrators manually perform the user creation on
