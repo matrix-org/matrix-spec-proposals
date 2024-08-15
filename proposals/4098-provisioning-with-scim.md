@@ -34,7 +34,7 @@ employee first log-in. Until then, the team cannot share files, send welcome ema
 invite them in a discussion or a space. This is unless system administrators manually perform the user creation on
 all the services.
 - With a provisioning protocol, when the employee account is created on the IAM server,
- it reaches the different services to push the new employee profile. The team can share
+ the server contacts the different services to push the new employee profile. The team can share
 anything they need before the new employee has ever logged in.
 
 #### Centralized user update
