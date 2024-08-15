@@ -19,7 +19,7 @@ based on the data provided by the [authentication tokens](https://tools.ietf.org
 or a dedicated [endpoint at the IAM](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo) server.
 However this usage has limitations.
 
-Several real-world Matrix use cases would benefit having a provisioning protocol implemented,
+Several real-world Matrix use cases would benefit from having a provisioning protocol implemented,
 so IAM software and Matrix servers could communicate together and reduce friction for end users and system
 administrators.
 
