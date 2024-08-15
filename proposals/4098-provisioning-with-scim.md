@@ -8,7 +8,7 @@ by the specification, and in the end help reduce friction for system administrat
 
 In short, *provisioning* is a way for different services to exchange information about users and groups.
 
-Organizations often rely on IAM software to centralize information about their users.
+Organizations often rely on Identity and Access Management (IAM) software to centralize information about their users.
 IAM servers often implement protocols to communicate with services, such as OpenID Connect (OIDC) to provide unique
 authentication with protocols like OpenID Connect (OIDC).
 
