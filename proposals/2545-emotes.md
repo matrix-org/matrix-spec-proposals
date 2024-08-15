@@ -57,7 +57,9 @@ with clients not supporting emotes, specifying the `height` is required.
 If the new `data-mx-emoticon` attribute has a value, that value is ignored. Due to limitations of some libraries
 the attribute may even look like `data-mx-emoticon=""`.
 
-The `src` attribute *must* be a mxc URI. Other URIs, such as `https`, `mailto` etc. are not allowed.
+The `src` attribute *must* be a mxc URI. Other URI schemes, such as `https`,
+`mailto` etc. are not allowed. Clients MUST NOT attempt to render images
+accessible through other URI schemes.
 
 ### Sending stickers
 To send stickers, the already spec'd
