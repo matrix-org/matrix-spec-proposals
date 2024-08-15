@@ -178,7 +178,7 @@ providers](https://matrix-org.github.io/synapse/latest/sso_mapping_providers.htm
 
 The SCIM protocol [supports all the common HTTP authentication
 methods](https://www.rfc-editor.org/rfc/rfc7644#section-2), so the provisioning endpoints should use the same user
-[authentication methods](https://spec.matrix.org/v1.9/client-server-api/#client-authentication) than the rest of the
+[authentication methods](https://spec.matrix.org/v1.9/client-server-api/#client-authentication) as the rest of the
 Matrix server.
 
 As indicated in the [Server Administration](https://spec.matrix.org/v1.9/client-server-api/#server-administration)
