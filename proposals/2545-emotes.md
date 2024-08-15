@@ -45,9 +45,10 @@ could look as follows:
 <img data-mx-emoticon src="mxc://example.org/emote" alt=":emote:" title=":emote:" height="32" />
 ```
 
-Both the `alt` and the `title` attributes are specified as they serve different purposes: `alt` is
-displayed if e.g. the emote does not load. `title` is displayed e.g. on mouse hover over the emote.
-Thus, specifying both the `alt` and `title` attributes is required.
+`alt` and `title` are required attributes for their roles in accessibility and
+improved UX. Their meaning is inherited from the HTML specification
+([alt](https://html.spec.whatwg.org/multipage/images.html#alt),
+[title](https://html.spec.whatwg.org/multipage/dom.html#attr-title)).
 
 The `height` is just a height that looks good on most devices with the normal, default font size.
 No width is displayed as to not weirdly squish non-square emotes. In order to maintain backwards-compatibility
