@@ -1,8 +1,16 @@
 # MSC2545: Image Packs (Emoticons & Stickers)
 
-Emoticons, or short emotes...we need them!
+Custom emoticons and stickers have become commonplace in modern messaging apps.
+They allow users to express themselves in ways that words, nor the
+standard Unicode set cannot. And they can be functional, allowing bots to convey
+meaning with custom symbols in messages or reactions.
 
-We also need proper stickers, too!
+If Matrix is to remain both a fun and useful messaging protocol, as well as a
+flexible platform for bridging into other protocols, support for custom
+emoticons and stickers are a must.
+
+This proposal outlines how custom emoticons and stickers can both be sent into
+rooms, as well as organised into "packs" and shared between users.
 
 ## Terminology
 ### Emoticons
