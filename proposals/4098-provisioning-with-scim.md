@@ -97,7 +97,7 @@ The [SCIM IETF working group](https://datatracker.ietf.org/wg/scim/about/) wrote
 [RFC7644](https://www.rfc-editor.org/rfc/rfc7644) which details the protocol.
 The WG is alive and there are [several drafts currently being worked](https://datatracker.ietf.org/wg/scim/documents/).
 
-A SCIM implementation basically consists in a set of HTTP endpoints used to read or edit objects such as *Users* and
+A SCIM implementation basically consists of a set of HTTP endpoints used to read or edit objects such as *Users* and
 *Groups*, plus a few metadata endpoints. The different standard HTTP methods (GET, POST, PUT, PATCH, DELETE) are used
 depending on the intended actions on the objects.
 
