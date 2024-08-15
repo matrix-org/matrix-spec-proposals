@@ -72,7 +72,7 @@ administrator - perspective.
 
 Without standard protocol, when an IAM software is connected to multiple services,
 it implies that it implements a custom provisioning protocol for each one of those services,
-multiplicating the maintenance burden and the room for bugs.
+multiplying the maintenance burden and the room for bugs.
 Having a common provisioning protocol defined in the Matrix specification would at least reduce the effort for making
 IAM servers provisioning Matrix servers, since the protocol would need to be implemented once for all the Matrix
 servers.
