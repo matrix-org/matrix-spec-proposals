@@ -111,7 +111,7 @@ A lot of scenarios where SCIM is pertinent are available on [RFC7642](https://ww
 While being almost 10 years old, SCIM suffers from not being very popular yet (at least, not as much as protocols like
 OIDC).
 It is facing a chicken and egg issue, where services are waiting for IAM servers to implement SCIM before they find useful to
-implement it in return, and vice-versa. However, SCIM seems to gain in popularity lately.
+implement it in return, and vice-versa. However, SCIM seems to be gaining popularity lately.
 Here is a quick state of the art of the current SCIM implementations in famous IAM servers.
 
 - [Auth0](https://auth0.com/docs/authenticate/protocols/scim) ✅
