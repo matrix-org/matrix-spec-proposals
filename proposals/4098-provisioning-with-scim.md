@@ -42,7 +42,7 @@ anything they need before the new employee has ever logged in.
 An employee wishes to update their display name on their organization IAM server.
 - Without a provisioning protocol, they will need to log-out and log-in again so the new display name is read from their
   authentication token.
-- With a provisioning protocol, the IAM server instantly communicate the new display name to every services.
+- With a provisioning protocol, the IAM server instantly communicates the new display name to every service.
 
 #### Centralized user deletion
 
