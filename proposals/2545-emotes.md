@@ -51,16 +51,18 @@ improved UX. Their meaning is inherited from the HTML specification
 [title](https://html.spec.whatwg.org/multipage/dom.html#attr-title)).
 
 The `height` is just a height that looks good on most devices with the normal, default font size.
-No width is displayed as to not weirdly squish non-square emotes. In order to maintain backwards-compatibility
+No width is displayed as to not squish non-square emotes. In order to maintain backwards-compatibility
 with clients not supporting emotes, specifying the `height` is required.
 
-If the new `data-mx-emoticon` attribute has a value, it is ignored. Due to limitations of some libraries
+If the new `data-mx-emoticon` attribute has a value, that value is ignored. Due to limitations of some libraries
 the attribute may even look like `data-mx-emoticon=""`.
 
-The `src` attribute *must* be a mxc url. Other URIs, such as `https`, `mailto` etc. are not allowed.
+The `src` attribute *must* be a mxc URI. Other URIs, such as `https`, `mailto` etc. are not allowed.
 
 ### Sending stickers
-To send stickers, the already spec'd `m.sticker` is used.
+To send stickers, the already spec'd
+[`m.sticker`](https://spec.matrix.org/v1.11/client-server-api/#msticker) is
+used.
 
 ### Image types
 Emoticons are recommended to have a size of about 128x128 pixels. Even though the fallback specifies
