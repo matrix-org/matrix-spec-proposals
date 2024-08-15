@@ -67,12 +67,12 @@ To send stickers, the already spec'd
 used.
 
 ### Image types
-Emoticons are recommended to have a size of about 128x128 pixels. Even though the fallback specifies
-a height of 32, this is to ensure that the emotes still look good on higher DPI screens.
+Emoticons SHOULD be at least 128x128 pixels. Even though the fallback specifies
+a height of 32, this is to ensure that emotes still look good on higher DPI screens.
 
-Stickers are recommended to have a size of up to 512x512 pixels.
+Stickers SHOULD be at least 512x512 pixels, for the same reason.
 
-Furthermore, these images should either have a mimetype of `image/png`, `image/gif` or `image/webp`.
+Furthermore, these images SHOULD either have a mimetype of `image/png`, `image/gif` or `image/webp`.
 They can be animated.
 
 Due to the low resolution of emotes, `image/jpg` and `image/jpeg` have been purposefully excluded from this
