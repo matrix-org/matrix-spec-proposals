@@ -21,9 +21,9 @@ emoticons, namely those found within unicode. Custom emoji here would actually r
 font, that is your own rendering of 🦊, 🐱, etc., *not* new images. New images is what custom emoticons
 are for.
 
-Now, a client may choose to name these however they like. We already have a naming disparity between
-spec and clients with groups vs communities. It is, however, imperative to name things in the spec
-accurately after what they are.
+Now, a client may choose to name these however they like. In the spec's history,
+it has had naming disparity with clients, i.e. "groups" vs "communities". It is,
+however, imperative to name things in the spec accurately after what they are.
 
 ### Stickers
 Stickers already exist in Matrix. They are reusable images one can send, usually as a reaction to
