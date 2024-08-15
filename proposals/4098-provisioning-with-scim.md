@@ -1,6 +1,6 @@
 # MSC4098: User account provisioning using SCIM
 
-This proposal suggests to use the SCIM protocol as a standard way to achieve
+This proposal suggests to use the [SCIM protocol](https://en.wikipedia.org/wiki/System_for_Cross-domain_Identity_Management) as a standard way to achieve
 user account [provisioning](https://en.wikipedia.org/wiki/Account_provisioning), fix several use cases uncovered
 by the specification, and in the end help reduce friction for system administrators managing Matrix servers.
 
