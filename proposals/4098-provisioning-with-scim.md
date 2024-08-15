@@ -47,7 +47,7 @@ An employee wishes to update their display name on their organization IAM server
 #### Centralized user deletion
 
 An employee leaves the organization, the system administrators will remove or de-activate
-the user profile from the IAM server, that will immediately prevent the leaving employee to log-in at any service.
+the user profile from the IAM server, which will immediately prevent the leaving employee from logging in to any service.
 The employee may still have data left on all those services (such as files, emails, personal
 profile information etc.), that sooner or later will be needed
 to remove, either because of disk usage or privacy reasons.
