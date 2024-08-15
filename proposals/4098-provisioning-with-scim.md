@@ -171,7 +171,7 @@ complete and leaves room for additional attributes with its [extension
 model](https://www.rfc-editor.org/rfc/rfc7643#section-3.3).
 
 In the end, the exact attribute matching implementation should be left to the Matrix server, in a similar fashion
-than synapse achieves [mapping from attributes from SSO
+to how synapse achieves [mapping from attributes from SSO
 providers](https://matrix-org.github.io/synapse/latest/sso_mapping_providers.html).
 
 ### Authentication
