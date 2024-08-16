@@ -2,21 +2,21 @@
 
 As stated in MSC3013:
 
-Push notifications have the problem that they typically go through third-party gateways in order to
-be delivered, e.g. FCM (Google) or APNs (Apple) and an app-specific gateway (sygnal). In order to
-prevent these push gateways from being able to read any sensitive information the `event_id_only` format
-was introduced, which only pushes the `event_id` and `room_id` of an event down the push. After
-receiving the push message the client can hit the `GET /_matrix/client/r0/rooms/{roomId}/event/{eventId}`
-to fetch the full event, and then create the notification based on that.
+Push notifications have the problem that they typically go through third-party push providers in order to be delivered,
+e.g. FCM (Google) or APNs (Apple) and a push gateway (sygnal). In order to prevent these push providers and
+push gateways from being able to read any sensitive information the `event_id_only` format was introduced, which only
+pushes the `event_id` and `room_id` of an event down the push. After receiving the push message the client can hit the
+`GET /_matrix/client/r0/rooms/{roomId}/event/{eventId}` to fetch the full event, and then create the notification based
+on that.
 
 Even the `event_id_only` leaks some metadata that can be avoided.
 
-Today, web clients (eg. hydrogen, probably element web/desktop), needs to use a matrix to webpush gateway.
-This requires goind over the specifications, because they use `endpoint`, and `auth` in the `PusherData`
-(hydrogen [1], sygnal [2]), while the specifications let understand that only `url` and `format` are allowed [3].
+Today, web clients supporting push notifications (eg. hydrogen) needs to use a matrix to webpush gateway. This requires
+going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` (hydrogen [1], sygnal [2]),
+while the specifications let understand that only `url` and `format` are allowed [3].
 => __PusherData already need to be updated__ to add `auth` and `endpoint`.
 
-Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292: many libraries
+Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [4][5][6]: many libraries
 are already available and robuste: they are reviewed, and acknowledge by experts.
 
 Having a webpush push kind would provide push notifications without gateway to
@@ -26,7 +26,10 @@ Having a webpush push kind would provide push notifications without gateway to
 
 [1] https://github.com/element-hq/hydrogen-web/blob/9b68f30aad329c003ead70ff43f289e293efb8e0/src/platform/web/dom/NotificationService.js#L32
 [2] https://github.com/matrix-org/sygnal/blob/main/sygnal/webpushpushkin.py#L152
-[3] https://spec.matrix.org/v1.9/client-server-api/#post_matrixclientv3pushersset (search for PusherData)
+[3] https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata
+[4] https://www.rfc-editor.org/rfc/rfc8030
+[5] https://www.rfc-editor.org/rfc/rfc8291
+[6] https://www.rfc-editor.org/rfc/rfc8292
 
 ## Proposal
 
