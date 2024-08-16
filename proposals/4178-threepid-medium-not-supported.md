@@ -1,4 +1,4 @@
-# MSC0000: Error code for Third Party Medium Not Supported
+# MSC4178: Error code for Third Party Medium Not Supported
 
 Homeservers may not always support adding email addresses or phone numbers to a user's account,
 however, there is no error code to signal this situation. Synapse currently returns `M_UNKNOWN`
