@@ -17,8 +17,8 @@ and
 [`POST /account/3pid/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidmsisdnrequesttoken),
 defined to mean that the homeserver does not support adding a third party identifier of that medium.
 
-Secondly, allow these endpoints to also return `M_INVALID_PARAM`, to indicate that the third party identifier parameter
-was not a valid identifier for that medium (eg. not a valid phone number).
+Secondly, allow these endpoints to also return `M_INVALID_PARAM`, to indicate that the third party address
+was not valid for that medium (eg. not a valid phone number).
 
 ## Potential issues
 
