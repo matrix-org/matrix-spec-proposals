@@ -20,6 +20,8 @@ defined to mean that the homeserver does not support adding a third party identi
 Secondly, allow these endpoints to also return `M_INVALID_PARAM`, to indicate that the third party address
 was not valid for that medium (eg. not a valid phone number).
 
+For both of these codes, HTTP status code 400 should be used.
+
 ## Potential issues
 
 None foreseen.
