@@ -12,7 +12,7 @@ Add a top-level `m.moderation_hidden` key to the content of an event. The format
 }
 ```
 
-`<level:string>` is a string referring to the *level* of percieved need to hide the event. Valid keys are:
+`<level:string>` is a string referring to the *level* of perceived need to hide the event. Valid keys are:
 
 ##### `"spoiler"`
 Show the event's presence, but hide its contents.
