@@ -31,6 +31,12 @@ Example:
 }
 ```
 
+## Client implementation
+A client should offer a three-state option in its settings about the interpretation of the hints.
+- Respect the hints
+- Treat `hidden` as `spoiler`
+- Ignore the hints
+
 ## Unstable prefix
 Use `org.itycodes.msc4179.moderation_hidden` in place of `m.moderation_hidden`.
 
