@@ -1,16 +1,24 @@
-# MSC4178: Error code for Third Party Medium Not Supported
+# MSC4178: Error codes for requestToken
 
-Homeservers may not always support adding email addresses or phone numbers to a user's account,
+There are a number of ways that sending a token to validate a third party identifier can go wrong.
+The requestToken API, however, has a very limited number of error codes that it can return.
+
+Firstly, homeservers may not always support adding email addresses or phone numbers to a user's account,
 however, there is no error code to signal this situation. Synapse currently returns `M_UNKNOWN`
 which leads to bad, untranslatable error messages.
 
+Secondly, the supplied third party identifier may be invalid.
+
 ## Proposal
 
-Add the `M_THREEPID_MEDIUM_NOT_SUPPORTED` code to be returned by both
+Firstly, Add the `M_THREEPID_MEDIUM_NOT_SUPPORTED` code to be returned by both
 [`/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
 and
 [`/account/3pid/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidmsisdnrequesttoken),
 defined to mean that the homeserver does not support adding a third party identifier of that medium.
+
+Secondly, allow these endpoints to also return `M_INVALID_PARAM`, to indicate that the third party identifier parameter
+was not a valid identifier for that medium (eg. not a valid phone number).
 
 ## Potential issues
 
