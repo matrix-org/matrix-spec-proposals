@@ -32,7 +32,7 @@ Example:
 ```
 
 ## Unstable prefix
-Use `org.itycodes.msc0000.moderation_hidden` in place of `m.moderation_hidden`.
+Use `org.itycodes.msc4179.moderation_hidden` in place of `m.moderation_hidden`.
 
 ## Further work
 Standardizing the list of tags
