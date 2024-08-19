@@ -12,9 +12,9 @@ Secondly, the supplied third party identifier may be invalid.
 ## Proposal
 
 Firstly, Add the `M_THREEPID_MEDIUM_NOT_SUPPORTED` code to be returned by both
-[`/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
+[`POST /account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
 and
-[`/account/3pid/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidmsisdnrequesttoken),
+[`POST /account/3pid/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidmsisdnrequesttoken),
 defined to mean that the homeserver does not support adding a third party identifier of that medium.
 
 Secondly, allow these endpoints to also return `M_INVALID_PARAM`, to indicate that the third party identifier parameter
@@ -22,17 +22,17 @@ was not a valid identifier for that medium (eg. not a valid phone number).
 
 ## Potential issues
 
-None forseen
+None foreseen.
 
 ## Alternatives
 
-A better UX would be for servers to advertise what third party identifiers that support adding so that clients can
+A better UX would be for servers to advertise what third party identifiers they support adding so that clients can
 inform users before they try to do so. This should be in addition rather than as alternative though: the clearest
 possible API will come from having both.
 
 ## Security considerations
 
-None forseen
+None foreseen.
 
 ## Unstable prefix
 
