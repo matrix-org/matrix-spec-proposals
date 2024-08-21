@@ -31,6 +31,11 @@ Example:
 }
 ```
 
+This key should be retroactively editable.  
+Since this is intended primarily for state events, this also means allowing the modification of this part of a state event.
+Thankfully, this is only metadata, and it does not change the actual protocoal-critical parts of the stat event, so there should be no problem,
+but it's important to mention it nonetheless. 
+
 ## Client implementation
 A client should offer a three-state option in its settings about the interpretation of the hints.
 - Respect the hints
@@ -39,6 +44,18 @@ A client should offer a three-state option in its settings about the interpretat
 
 ## Unstable prefix
 Use `org.itycodes.msc4179.moderation_hidden` in place of `m.moderation_hidden`.
+
+## Comparison with #3531
+##### Motivation 
+#3531 is primarily for hiding message events pending moderation, while #4179 is for hiding state events that have already happened but include content that one might not wish to be visible 
+(such as a user with an offensive MXID getting banned). 
+#3531 is likely to have the hidden status of an event retracted and the message deleted, while #4179 is unlikely to have the hidden status modified after the event has been sent 
+##### Granularity
+#3531 is less granular. Its `visibility: hidden` corresponds to the `hidden` level in #4179, but there is no equivalent of the `spoiler` level. 
+Additionally, #3531 uses a free-form string, which cannot be automatically matched on by a client, while #4179 uses a tag list
+(allowing someone to customize what events they are okay with seeing, and allowing optional fine-grained control over the completeness vs safety of room history per-client)
+##### Race condition
+#3531 requires the sending of a separate event, while #4179 has no such race condition, plus piggy-backs off of edit events for changing the content.
 
 ## Further work
 Standardizing the list of tags
