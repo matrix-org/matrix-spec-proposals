@@ -38,7 +38,7 @@ profile data for the time being.
 
 Even if it is not documented, it is currently possible to remove profile account data. The general consensus is to send
 `{ avatar_url: "" }` for `avatar_url` or `{}` for `displayname`. This means that a clarification in the spec would
-either be inconsistent between the `PUT` endpoints or it whould require a change in the current implementations.
+either be inconsistent between the `PUT` endpoints or it would require a change in the current implementations.
 
 [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133) introduces a way to add and delete custom
 profile fields, and its `DELETE` endpoint would effectively replace this MSC.
