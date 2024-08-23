@@ -20,8 +20,9 @@ DELETE /_matrix/client/v3/profile/{userId}/avatar_url
 DELETE /_matrix/client/v3/profile/{userId}/displayname
 ```
 
-To identify the change, the `m.room.member` and `m.presence` events sent following the call to one of these two
-endpoints MUST remove the corresponding key.
+To identify the change for [Events sent on Change of Profile Information ](https://spec.matrix.org/v1.11/client-server-api/#events-on-change-of-profile-information),
+the `m.room.member` and `m.presence` events sent following the call to one of these two endpoints MUST remove the
+corresponding key.
 
 To pair with the new endpoints, omitting the `avatar_url` field in the body of the request to `PUT […]/avatar_url` or
 the `displayname` field in the body of the request to `PUT […]/displayname` is now deprecated. They can be marked as
