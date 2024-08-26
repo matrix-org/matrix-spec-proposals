@@ -13,11 +13,11 @@ options.
 
 ## Proposal
 
-Drawing from extensible events as described in [MSC1767],
-`m.room.topic` is formally deprecated and replaced with a new `m.topic`
-event type. The latter contains a new content block `m.topic` which wraps
-an `m.text` content block that allows representing the room topic in
-different mime types.
+Drawing from extensible events as described in [MSC1767], `m.room.topic`
+is prohibited in room versions that support extensible events and replaced
+with a new `m.topic` event type. The latter contains a new content block
+`m.topic` which wraps an `m.text` content block that allows representing
+the room topic in different mime types.
 
 ``` json5
 {
