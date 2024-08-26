@@ -45,10 +45,11 @@ uploads as defined in [MSC3551]. It avoids clients accidentally rendering
 the topic state event as a room message.
 
 In order to prevent formatting abuse in room topics, clients are
-encouraged to treat the first two lines as the shorthand topic and the
-remainder as additional information. Specifically, this means that
-things like headings and enumerations should be ignored (or formatted
-as regular text) unless they occur after the second line.
+encouraged to limit the length of topics to at most two lines. Additionally,
+clients should ignore things like headings and enumerations (or format them
+as regular text). A future MSC may introduce a mechanism to capture extended
+multiline details that are not suitable for room topics in a separate field
+or event type.
 
 A change to `/_matrix/client/v3/createRoom` is not necessary. The
 endpoint has a plain text `topic` parameter but also allows to specify a
