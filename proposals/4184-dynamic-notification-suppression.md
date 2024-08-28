@@ -14,7 +14,7 @@ acceptable number. Further, spammers can somewhat trivially work around the numb
 events 1 step below the limit.
 
 This proposal instead creates a provision in the specification for a server (or client) to decide
-to supress a notification on a per-event basis. Servers can then protect their users by adjusting
+to suppress a notification on a per-event basis. Servers can then protect their users by adjusting
 an X value described above, or implement other suppression mechanisms depending on the situation.
 Clients can already choose to not notify the user on events, but their counts may differ from the
 server if they do this. This proposal includes a way for the server to communicate to the client that
