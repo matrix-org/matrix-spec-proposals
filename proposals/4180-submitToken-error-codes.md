@@ -1,0 +1,52 @@
+# MSC4180: Additional Error Codes for submitToken endpoint
+
+The [https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken](POST /_matrix/identity/v2/validate/email/submitToken) and [https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validatemsisdnsubmittoken](POST /_matrix/identity/v2/validate/msisdn/submitToken) endpoints do not specify any particular specifc error codes, instead relying on the common error codes
+defined in the identity service API.
+
+However, these common error codes don't have any codes to signal many errors that can occur in these
+APIs: most obviously, that the token the user entered was incorrect.
+
+This MSC can be considered similar to [https://github.com/matrix-org/matrix-spec-proposals/pull/4178](MSC4178)
+although that MSC is for `requestToken` on the C/S API only.
+
+The [https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken](POST /_matrix/client/v3/account/3pid/email/requestToken) endpoint in the C/S API also specifies a `submit_url` response parameter, defining its parameters to
+be the same as the Identity API's `submitToken` endpoints. This MSC also affects this.
+
+## Proposal
+
+Add the following specific error code as a code that can be returned by the two endpoints given above:
+ * `M_TOKEN_INCORRECT`: Indicates that the token that the user entered to validate the session is incorrect.
+
+Additionally specify that the following common error codes can be returned:
+ * `M_INVALID_PARAM`: One of the supplied parameters in not valid.
+ * `M_SESSION_EXPIRED`: The validation session is question has expired.
+
+Also change the C/S API's definition of
+[https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken](POST
+/_matrix/client/v3/account/3pid/email/requestToken) to specify that the entire API is the same, including
+response / error codes, rather than just parameters.
+
+## Potential issues
+
+None forseen.
+
+## Alternatives
+
+None considered.
+
+## Security considerations
+
+None forseen.
+
+## Unstable prefix
+
+No unstable prefix is deemed necessary. Sydent already sends the common error codes and also sends
+`M_NO_VALID_SESSION` if the code is incorrect. Once an identity server (or homeserver) switches to
+use the new error code, they may not recognise the error condition correctly until updated to support
+the new code. We say that this is acceptable in favour of avoding the complexity of negotiating error
+codes with API versions. Since the identity server is generally used via the homeserver now, most
+uses of this API will not currently be receiving a sensible error code in this situation anyway.
+
+## Dependencies
+
+None
