@@ -2,7 +2,7 @@
 
 The [`POST /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken)
 and [`POST /_matrix/identity/v2/validate/msisdn/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validatemsisdnsubmittoken)
-endpoints do not specify any particular specifc error codes, instead relying on the common error codes defined in the
+endpoints do not specify any particular specific error codes, instead relying on the common error codes defined in the
 identity service API.
 
 However, these common error codes don't have any codes to signal many errors that can occur in these
@@ -43,7 +43,7 @@ None forseen.
 No unstable prefix is deemed necessary. Sydent already sends the common error codes and also sends
 `M_NO_VALID_SESSION` if the code is incorrect. Once an identity server (or homeserver) switches to
 use the new error code, they may not recognise the error condition correctly until updated to support
-the new code. We say that this is acceptable in favour of avoding the complexity of negotiating error
+the new code. We say that this is acceptable in favour of avoiding the complexity of negotiating error
 codes with API versions. Since the identity server is generally used via the homeserver now, most
 uses of this API will not currently be receiving a sensible error code in this situation anyway.
 
