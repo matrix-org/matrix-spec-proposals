@@ -58,9 +58,12 @@ improved UX. Their meaning is inherited from the HTML specification
 ([alt](https://html.spec.whatwg.org/multipage/images.html#alt),
 [title](https://html.spec.whatwg.org/multipage/dom.html#attr-title)).
 
-The `height` is just a height that looks good on most devices with the normal, default font size.
-No width is displayed as to not squish non-square emotes. In order to maintain backwards-compatibility
-with clients not supporting emotes, specifying the `height` is required.
+The `height` SHOULD be set to "32px". This is a default that looks good on most
+devices. In practice, receiving clients are expected to override the height when
+rendering emotes based on their particular environment (the user's font size,
+etc.). In order to maintain backwards-compatibility with clients that do not
+support emotes, specifying the `height` is required. No width is specified as to
+maintain the aspect ratio of non-square emotes. 
 
 If the new `data-mx-emoticon` attribute has a value, that value is ignored. Due to limitations of some libraries
 the attribute may even look like `data-mx-emoticon=""`.
