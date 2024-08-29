@@ -83,11 +83,13 @@ a height of 32, this is to ensure that emotes still look good on higher DPI scre
 
 Stickers SHOULD be at least 512x512 pixels, for the same reason.
 
-Furthermore, these images SHOULD either have a mimetype of `image/png`, `image/gif` or `image/webp`.
-They can be animated.
+Images filetypes are not limited by this proposal. Instead they are
+equivalent to the formats allowed in an
+[`m.image`](https://spec.matrix.org/v1.11/client-server-api/#mimage) event. As
+of writing, no limitations for `m.image` are currently defined (see [this spec
+issue](https://github.com/matrix-org/matrix-spec/issues/453)).
 
-Due to the low resolution of emotes, `image/jpg` and `image/jpeg` have been purposefully excluded from this
-list.
+Emoticons and stickers may be animated.
 
 ### Image pack event
 The image pack event has a type of `m.image_pack`. It contains a key `images`, which is a map from a
