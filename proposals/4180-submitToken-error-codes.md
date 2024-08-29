@@ -1,4 +1,4 @@
-# MSC4180: Additional Error Codes for submitToken endpoint
+# MSC4183: Additional Error Codes for submitToken endpoint
 
 The [`POST /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken)
 and [`POST /_matrix/identity/v2/validate/msisdn/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validatemsisdnsubmittoken)
