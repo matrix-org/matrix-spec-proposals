@@ -19,9 +19,13 @@ be the same as the Identity API's `submitToken` endpoints. This MSC also affects
 Add the following specific error code as a code that can be returned by the two endpoints given above:
  * `M_TOKEN_INCORRECT`: Indicates that the token that the user entered to validate the session is incorrect.
 
+HTTP status code 400 should be used for this error.
+
 Additionally specify that the following common error codes can be returned:
  * `M_INVALID_PARAM`: One of the supplied parameters in not valid.
  * `M_SESSION_EXPIRED`: The validation session is question has expired.
+
+HTTP status code 400 should also be used for both of these errors.
 
 Also change the C/S API's definition of [`POST /_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
 to specify that the entire API is the same, including response / error codes, rather than just parameters.
