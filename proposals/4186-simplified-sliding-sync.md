@@ -370,3 +370,15 @@ indicate to the client that the user has effectively left the room (the server h
 
 We may want to allow special entries in the `required_state` list of the form
 `{"type": .., "state_key": .., content: null}` to indicate that the state entry has been removed.
+
+
+# Security considerations
+
+Care must be taken, as with sync v2, to ensure that only the data that the user is authorized to see is returned in the
+response.
+
+
+# Unstable prefix
+
+The unstable URL for simplified sliding sync is `/org.matrix.simplified_msc3575/sync`. The flag in `/versions` is
+`org.matrix.simplified_msc3575`.
