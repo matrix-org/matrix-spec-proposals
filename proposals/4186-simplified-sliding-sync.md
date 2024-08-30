@@ -302,6 +302,33 @@ for:
 }
 ```
 
+# Example usage
+
+This section gives an example of how a client can use this API (roughly based on how Element X currently uses the API).
+
+When the app starts up it configures a single list with a range of `[0, 19]` (to get the top 20 rooms) and a
+`timeline_limit` of 1. This returns quickly with the top 20 rooms (or just the changes in the top 20 rooms if a token
+was specified).
+
+The client then increases the range (in the next request) to `[0, 99]`, which will return the next 80 rooms. The server
+may sort the rooms differently than they are returned by the server (e.g. they may ignore reactions for sorting
+purposes).
+
+The client can use room subscriptions, with a `timeline_limit` of 20, to preload history for the top rooms. This means
+that if the user clicks on one of the top rooms the app can immediately display a screens worth of history. (An
+alternative would be to have a second list with a static range of `[0, 19]` and a `timeline_limit` of 20. The downside)
+
+The client can keep increasing the list range in increments to pull in the full list of rooms. The client uses the
+returned `count` for the list to know when to stop expanding the list.
+
+The client *may* decided to reduce the range back to `[0, 19]` (and then subsequently incrementally expand the range),
+this can be done.
+
+When the client is expecting a fast response (e.g. while expanding the lists), it should set the `timeout` parameter to
+0 to ensure the server doesn't block waiting for new data. This can easily happen if the app starts and sends the first
+request with a `since` parameter, if the client shows a spinner but doesn't set a timeout then the request may take a
+long time to return (if there were no updates to return).
+
 
 # Alternatives / changes
 
