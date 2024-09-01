@@ -311,12 +311,14 @@ sensitive personal information, and complies with legal frameworks such as GDPR.
 be encouraged to implement data caching strategies that do not exceed 24 hours to minimise the risk
 of unintended data persistence.
 
-## Unstable prefix
+## Unstable Prefixes
 
-The [current Matrix specification](https://spec.matrix.org/v1.10/#profiles) technically already
-allows extra custom fields to be published in a user's profile, however as this proposal introduces
-additional requirements and allows custom user-defined fields, an unstable prefix should be used on
-these fields until this proposal has entered the API as stable:
+### Unstable Profile Fields
+
+The current Matrix specification technically already allows extra custom fields to be published in
+a user's profile, however as this proposal introduces additional requirements and allows custom
+user-defined fields, an unstable prefix should be used on these fields until this proposal has
+entered the API as stable:
 
 ```json
 {
@@ -326,6 +328,8 @@ these fields until this proposal has entered the API as stable:
     "uk.tcpip.msc4133.m.allowed_list": ["one value", "another value"]
 }
 ```
+
+### Unstable Endpoints
 
 `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}` would be necessary for the `PATCH` and `PUT`
 methods allowed when unstable capability (detailed below) is advertised by the server.
@@ -338,6 +342,8 @@ new key endpoints `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{k
 would then promote to `/_matrix/client/v3/profile/{userId}/{key_name}` when the stable capability
 is advertised following this specification change.
 
+### Unstable Client Capability
+
 The client capability `m.profile_fields` should use this prefix until stable:
 
 ```json
@@ -347,5 +353,27 @@ The client capability `m.profile_fields` should use this prefix until stable:
       "enabled": false
     }
   }
+}
+```
+
+### Unstable Client Features
+
+The client feature `uk.tcpip.msc4133` should be advertised on the `/_matrix/client/versions`
+endpoint when the `PUT` and `PATCH` methods are accepted on the
+`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}` endpoint.
+
+Once this MSC is merged, the client feature `uk.tcpip.msc4133.stable` should be advertised when the
+`PUT` and `PATCH` methods are accepted on the `/_matrix/client/v3/profile/{userId}` endpoint until
+the next spec version where this endpoint is officially written into the spec, e.g.
+
+```json
+{
+  "unstable_features": {
+    "uk.tcpip.msc4133": true,
+    "uk.tcpip.msc4133.stable": true
+  },
+  "versions": [
+    "v1.11"
+  ]
 }
 ```
