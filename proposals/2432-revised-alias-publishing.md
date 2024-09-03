@@ -148,6 +148,11 @@ rules](https://matrix.org/docs/spec/rooms/v1#authorization-rules) and
    Servers might also choose to allow access to other users such as server
    administrators.
 
+ * [`GET /_matrix/client/r0/publicRooms`](https://matrix.org/docs/spec/client_server/r0.6.0#get-matrix-client-r0-publicrooms)
+   (and the `POST` variant) no longer return `aliases` as part of `PublicRoomsChunk`.
+   Clients do not appear to make use of this field, and `canonical_alias` is maintained
+   to provide similar information.
+
 Various APIs are currently subject to implementation-defined access
 restrictions. No change to the specification is introduced in this regard
 (implementations will continue to be free to impose their own
