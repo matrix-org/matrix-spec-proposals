@@ -88,7 +88,7 @@ right encoding.
    A potential extension would be to change *all* Base64 encodings to be
    URL-safe. This would address the inconsistency. However, it feels like a
    large job which would span the entire matrix ecosystem (far larger than
-   updating clients to URL-encode their URL prarameters), and again the
+   updating clients to URL-encode their URL parameters), and again the
    situation would be confusing while the transition was in progress.
 
 2. Incompleteness. Event IDs are certainly not the only identifier which can

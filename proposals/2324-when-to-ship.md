@@ -87,13 +87,13 @@ To clarify:
 ### Specific examples outside of the client-server API
 
 There are some instances where a change might be made outside of the client-server API,
-which is where much of this proposal is targetted. The general spirit of the process
+which is where much of this proposal is targeted. The general spirit of the process
 should be followed where possible, if implementations decide to work ahead of spec releases.
 
 #### Room versions
 
 When a new room version is needed, implementations MUST use vendor-prefixed versions
-before using the namespace reserved for Matrix (see https://matrix.org/docs/spec/#room-versions).
+before using the namespace reserved for Matrix (see https://spec.matrix.org/unstable/rooms/).
 A room version is considered released once it is listed as an "available room version" in
 the spec. Often a new room version is accompanied with a server-server API release, but
 doesn't have to be.

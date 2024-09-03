@@ -11,7 +11,7 @@ Managers.
 Requirements for this proposal are:
  * ISes and IMs should be able to give multiple documents a user must agree to
    abide by
- * Each document shoud be versioned
+ * Each document should be versioned
  * ISes and IMs must, for each request that they handle, know that the user
    making the request has agreed to their data being used. This need not be
    absolute proof (we will always have to trust that the client actually
@@ -34,7 +34,7 @@ way that Homeservers do.
 
 ## Proposal
 
-Throuhgout this proposal, $prefix will be used to refer to the prefix of the
+Throughout this proposal, $prefix will be used to refer to the prefix of the
 API in question, ie. `/_matrix/identity/v2` for the IS API and
 `/_matrix/integrations/v1` for the IM API.
 
