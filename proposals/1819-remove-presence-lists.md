@@ -17,7 +17,7 @@ This MSC addresses
 
 Presence lists seem like a good fit for ['MSC1769: Extensible profiles as
 rooms'](https://github.com/matrix-org/matrix-doc/pull/1769) proposal, meaning
-that the current design will most likely be superceded.
+that the current design will most likely be superseded.
 
 Additionally, no major client has implemented the behaviour to date and the
 only server implementation of presence lists (Synapse) auto-accepts invites
@@ -35,9 +35,9 @@ CS API: Remove
   /_matrix/client/r0/presence/list/{userId}](https://matrix.org/docs/spec/client_server/r0.4.0.html#get-matrix-client-r0-presence-list-userid)
 
 SS API: Remove
- * [m.presence_invite](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-invite-schema)
- * [m.presence_accept](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-accept-schema)
- * [m.presence_deny](https://matrix.org/docs/spec/server_server/unstable.html#m-presence-deny-schema)
+ * [m.presence_invite](https://github.com/matrix-org/matrix-doc/blob/8b65da1cf6fce5f657a2a46b5c6c8bcc24d32ae3/api/server-server/definitions/event-schemas/m.presence_invite.yaml)
+ * [m.presence_accept](https://github.com/matrix-org/matrix-doc/blob/8b65da1cf6fce5f657a2a46b5c6c8bcc24d32ae3/api/server-server/definitions/event-schemas/m.presence_accept.yaml)
+ * [m.presence_deny](https://github.com/matrix-org/matrix-doc/blob/8b65da1cf6fce5f657a2a46b5c6c8bcc24d32ae3/api/server-server/definitions/event-schemas/m.presence_deny.yaml)
 
 
 ## Tradeoffs
@@ -51,5 +51,5 @@ there today.
 
 This is a common sense attempt to remove unused portions of the spec ahead of
 an r0 release. It does not suggest that the ability to subscribe to the
-presence of others is undesirable and assumes that this behvaiour will return
+presence of others is undesirable and assumes that this behaviour will return
 again in some form.

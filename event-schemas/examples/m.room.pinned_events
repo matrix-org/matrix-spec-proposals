@@ -1,8 +1,0 @@
-{
-  "$ref": "core/state_event.json",
-  "type": "m.room.pinned_events",
-  "state_key": "",
-  "content": {
-    "pinned": ["$someevent:example.org"]
-  }
-}
