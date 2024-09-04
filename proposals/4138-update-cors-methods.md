@@ -10,7 +10,11 @@ the `Access-Control-Allow-Methods` header.
 ## Proposal
 
 The [`Access-Control-Allow-Methods` header's recommended value](https://spec.matrix.org/v1.10/client-server-api/#web-browser-clients)
-is updated to include the following:
+is updated to note that the HTTP methods described cover existing specified endpoints. Servers which
+support additional endpoints or methods should add those methods as well. The specification will be
+updated whenever a new method is supported by an endpoint.
+
+Examples of possible future-use methods include:
 
 * `PATCH` - A plausibly useful HTTP method for future use.
 * `HEAD` - Similar to `PATCH`, `HEAD` is plausibly useful for feature detection and cases like
