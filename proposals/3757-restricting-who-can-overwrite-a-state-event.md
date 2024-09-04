@@ -36,11 +36,14 @@ by sending state events whose state_key is their matrix ID.
 
 Practically speaking, this means modifying the [authorization rules](https://spec.matrix.org/v1.2/rooms/v9/#authorization-rules) such that rule 8:
 
-> If the event has a `state_key` that starts with an `@` and does not match the `sender`, reject.
+> 8. If the event has a `state_key` that starts with an `@` and does not match the `sender`, reject.
 
 becomes:
 
-> If the event has a `state_key` that starts with an `@`, and the substring before the first `_` that follows the first `:` (or end of string) does not match the `sender`, reject - unless the sender's powerlevel is greater than the event type's *required power level*.
+> 8. If the event has a `state_key` that starts with an `@`:
+>    1. If the prefix of the `state_key` before the first `_` that follows the first `:` (or end of string) is a valid user ID:
+>       1. If that user ID does not match the `sender`, and the `sender`'s power level is not greater than that of the user denoted by the ID, reject.
+>    2. Otherwise, reject.
 
 No additional restrictions are made about the content of the `state_key`, so any characters that follow the `sender` + `_` part are only required to be valid for use in a `state_key`.
 
