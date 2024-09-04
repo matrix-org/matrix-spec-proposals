@@ -77,6 +77,11 @@ A full discovery flow would be as follows:
 
 The authentication server discovery could be done by other mechanisms.
 
+### Discovery via [RFC8414](https://tools.ietf.org/html/rfc8414)
+
+[RFC8414](https://tools.ietf.org/html/rfc8414): OAuth 2.0 Authorization Server Metadata is a standard similar to OpenID Connect Discovery.
+The main differences is that the well-known endpoint is under `.well-known/oauth-authorization-server` and this standard is defined by the IETF and not the OpenID Foundation.
+
 ### Discovery via the well-known client discovery
 
 A previous version of this proposal suggested using the well-known client discovery mechanism to discover the authentication server.
