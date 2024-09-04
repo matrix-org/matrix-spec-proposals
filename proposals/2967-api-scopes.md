@@ -1,6 +1,6 @@
 # MSC2967: API scopes
 
-This proposal is part of the broader [MSC3861: Matrix architecture change to delegate authentication via OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/2967).
+This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
 When a user signs in with a Matrix client, it currently gives the client full access to their Matrix account.
 
@@ -8,15 +8,13 @@ This proposal introduces access scopes to allow restricting client access to onl
 
 ## Proposal
 
-[MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) introduces the usage of OAuth 2.0 for a client to authenticate against a Matrix homeserver.
+[MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) introduces the usage of the OAuth 2.0 authorization code grant to authenticate against a Matrix homeserver.
 
 OAuth 2.0 grants have scopes associated to them and provides a framework for obtaining user consent.
 
 The framework encourages the practise of obtaining additional use consent when a client asks for a new scope that was not granted previously.
 
-This MSC does not attempt to define all the scopes necessary to cover all Matrix APIs and use cases, but proposes the structure of a namespace and some specific scopes to cover existing use cases.
-
-Additionally it is proposed that a standard approach to error response representation is adopted across the API. This could replace the UIA based responses that exist on some API endpoints today.
+This MSC does not attempt to define all the scopes necessary to cover all Matrix APIs and use cases, but proposes the structure of a namespace and a few scopes to cover existing use cases.
 
 ### Scope format
 
@@ -32,16 +30,15 @@ e.g. `urn:matrix:com.example.mscXXXX.foo:something` or `urn:matrix:client:com.ex
 
 ### Allocated scopes
 
-#### Legacy use cases
+#### Full API read/write access
 
-To support existing, pre-MSC2964 use cases the following scopes are assigned:
+To support the existing semantic of granting full access to the Matrix C-S API the following scope is assigned:
 
 | Scope | Purpose | Implementation notes |
 | - | - | - |
-| `urn:matrix:client:api:guest` | Grants access as a guest to endpoints in the Client-Server API | The OP can issue a refresh token for grants with this scope. |
 | `urn:matrix:client:api:*` | Grants full access to the Client-Server API | The OP can issue a refresh token for grants with this scope. |
 
-These are referred to as "legacy" because it is envisioned that a client would request more specific actions in future when required. e.g. something like `urn:matrix:client:api:read:*`
+In the future, a client would request more specific actions when required. e.g. something like `urn:matrix:client:api:read:*`
 
 #### Device ID handling
 
@@ -55,7 +52,7 @@ The client can then bind the device ID to the grant by requesting a scope compri
 
 | Scope | Purpose | Implementation notes |
 | - | - | - |
-| `urn:matrix:client:device:<device ID>` | bind the given device ID to the grant/access token | The OIDC Provider must only grant exactly one device scope for a token. |
+| `urn:matrix:client:device:<device ID>` | bind the given device ID to the grant/access token | The homeserver must only grant exactly one device scope for a token. |
 
 Note that currently the Matrix specification doesn't specify a format for the device ID itself. If the device ID were constrained as per [MSC1597](https://github.com/matrix-org/matrix-spec-proposals/pull/1597) then it could be directly represented within a URN without further encoding.
 
@@ -72,37 +69,9 @@ Some thoughts/ideas for possible scopes are:
 
 New MSCs should be created for proposing and discussing such new scopes.
 
-### Insufficient privilege response
-
-It is proposed that a [RFC6750](https://datatracker.ietf.org/doc/html/rfc6750) formatted `WWW-Authenticate` response header is used to provide feedback to the client with `error="insufficent_scope"`.
-
-```http
-HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer error="insufficient_scope", scope="urn:matrix:api:something"
-```
-
-On receipt of such a response the client may then request a new authorization from the issuer as per [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) requesting the additional scope be granted.
-
-The rest of the response would be as per the [standard error response](https://spec.matrix.org/v1.2/client-server-api/#standard-error-response) spec.
-
-For example:
-
-```http
-HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Bearer error="insufficient_scope", scope="urn:matrix:api:something"
-Content-Type: application/json
-
-{
-  "errcode": "M_FORBIDDEN",
-  "error": "Insufficient scope"
-}
-```
-
 ## Potential issues
 
-The Device ID handling involves a change in where device IDs are generated. This is discussed in [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964). On the OIDC Provider side the device ID proposal requires the use of dynamic scopes. That is, the specific scope is a templated form rather than being static. This is not currently supported by some OpenID Providers (e.g. Okta and Auth0).
-
-The addition of the `WWW-Authenticate` header could cause issue with some clients.
+The Device ID handling involves a change in where device IDs are generated. This is discussed in [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964). On the OIDC Provider side the device ID proposal requires the use of dynamic scopes. That is, the specific scope is a templated form rather than being static.
 
 ## Alternatives
 
@@ -115,12 +84,6 @@ In both cases, the URL could be confused with API endpoints and in the second ca
 
 The actual namespace prefix and sub divisions are open to debate.
 
-### Insufficient privilege response
-
-The [standard Client-Server API error response](https://spec.matrix.org/v1.2/client-server-api/#standard-error-response) could be used.
-
-A custom HTTP header could be used instead.
-
 ## Security considerations
 
 As we are just representing existing access models there shouldn't be anything special.
@@ -130,7 +93,3 @@ As we are just representing existing access models there shouldn't be anything s
 While this feature is in development the following unstable scope prefixes should be used:
 
 - `urn:matrix:client` --> `urn:matrix:org.matrix.msc2967.client`
-
-## Dependencies
-
-- [MSC2964: Delegation of auth from homeserver to OIDC Provider](https://github.com/matrix-org/matrix-spec-proposals/pull/2964)
