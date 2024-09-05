@@ -250,7 +250,7 @@ unstable key `us.cloke.msc4175.tz` and following approval would then support cli
 
 ### Size Limit
 
-The key *must* be a string of *at least* one character, and *must* not exceed 255 bytes.
+The key *must* be a string of *at least* one byte, and *must* not exceed 255 bytes.
 
 To ensure efficient handling and storage of profile data, this proposal requires the entire user
 profile JSON object not exceed 64KiB.
@@ -258,9 +258,12 @@ profile JSON object not exceed 64KiB.
 A future MSC may increase this limit or add exceptions, but this current limit has been chosen to
 allow both servers and clients to have predictable upper limits, especially for caching.
 
-Homeservers are allowed to limit the fields (or content) that their local users can set, setting
-an upper size limit per field and/or for the entire profile, and may also limit the maximum number
-of keys a user may set.
+Homeservers may limit the fields (or content) that their local users can set, setting a size limit
+per field and/or for the entire profile, and may limit the maximum number of keys a user may set.
+
+For example, if a homeserver implementation finds it more efficient to measure limits per value, it
+could limit users to 50 keys with a 1024 byte limit per value, which would allow a user to set the
+50 of the maximum key and value lengths without needing to calculate against the 64KiB total limit.
 
 ### Implementation Details
 
