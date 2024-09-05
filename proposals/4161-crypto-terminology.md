@@ -247,6 +247,13 @@ should provide a way for users to be educated on the terminology change (e.g. a
 tooltip or help link): e.g. "Your recovery key may also have been referred to as
 a security key in the past"
 
+⚠️ Be aware that at time of writing the spec uses
+["recovery key"](https://spec.matrix.org/v1.8/client-server-api/#recovery-key)
+to refer to the private half of the backup encryption key, which is different
+from the usage here. The recovery key described in this section is referred to
+in the spec as the
+[secret storage key](https://spec.matrix.org/v1.8/client-server-api/#secret-storage).
+
 ## Potential issues
 
 Lots of existing clients use a whole variety of different terminology, and many
