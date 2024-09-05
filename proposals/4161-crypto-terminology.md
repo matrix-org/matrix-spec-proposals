@@ -10,10 +10,16 @@ This document provides a list of concepts and explanations that are intended to
 be suitable for use in Matrix clients that are aimed at non-technical users.
 
 Ideally, encryption in Matrix should be entirely invisible to end-users (much as
-WhatsApp or Signal users are not exposed to encryption specifics) - as outlined
-in [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153).
-However, consistent terminology is still required, especially during the
-transition period to Invisible Cryptography.
+WhatsApp or Signal users are not exposed to encryption specifics). This
+initiative is referred to as "Invisible Cryptography" and is tracked as:
+
+* [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153) -
+  Exclude non-cross-signed devices,
+* [MSC4048](https://github.com/matrix-org/matrix-spec-proposals/pull/4048) -
+  Authenticated key backup,
+* [MSC4147](https://github.com/matrix-org/matrix-spec-proposals/pull/4147) -
+  Including device keys with Olm-encrypted events, and
+* MSC4161 - this document
 
 ## Goals
 
