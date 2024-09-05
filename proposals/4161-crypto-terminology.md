@@ -96,7 +96,7 @@ When an unverified person resets their cryptographic identity, we should warn
 the user, so they are aware of the change.
 
 If a verified person's cryptographic identity changes (i.e. they reset their
-recovery key) then this is very important: we verified them because we care
+master cross-signing key) then this is very important: we verified them because we care
 about proof that no-one is listening, and now someone could be. The user can
 choose to **withdraw verification** (i.e. "demote" them from being verified), or
 **re-verify** them. Until they do one or the other, communication with them should
