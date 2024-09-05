@@ -181,12 +181,30 @@ To ensure clear communication of issues, the following error codes and messages 
     }
     ```
 
+    or
+
+    ```json
+    {
+        "errcode": "M_TOO_LARGE",
+        "error": "Profile field u.Bio exceeds maximum allowed size of 1024 bytes."
+    }
+    ```
+
   - **Error Code for Invalid Data**: `M_INVALID_PARAM`
 
     ```json
     {
         "errcode": "M_INVALID_PARAM",
         "error": "The key name exceeds the maximum allowed length of 255 bytes."
+    }
+    ```
+
+  - **Error Code for Exceeding Resource Limits**: `M_RESOURCE_LIMIT_EXCEEDED`
+
+    ```json
+    {
+        "errcode": "M_RESOURCE_LIMIT_EXCEEDED",
+        "error": "The user has exceeded the maximum number of allowed keys in their profile."
     }
     ```
 
