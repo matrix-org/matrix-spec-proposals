@@ -265,6 +265,9 @@ For example, if a homeserver implementation finds it more efficient to measure l
 could limit users to 50 keys with a 1024 byte limit per value, which would allow a user to set the
 50 of the maximum key and value lengths without needing to calculate against the 64KiB total limit.
 
+**Note:** The existing `avatar_url` and `displayname` keys are contained within the profile, so if
+an implementation enforces a per-value limit on fields, it must also enforce them upon these fields.
+
 ### Implementation Details
 
 - This feature will be implemented as optional but recommended, enabling a smooth transition and
