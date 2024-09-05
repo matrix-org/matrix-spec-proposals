@@ -195,6 +195,8 @@ identity will change, because it too is stored in key storage.
 > "Key storage holds your cryptographic identity on the server along with the
 > keys that allow you to read your message history."
 
+> "Message history is unavailable because key storage is disabled."
+
 ⚠️ Avoid distinguishing between "secret storage" and "key backup" - these are
 both part of key storage.
 
