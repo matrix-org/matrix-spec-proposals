@@ -95,13 +95,13 @@ probably become more common thanks to "transitive trust" or "key transparency").
 When an unverified person resets their cryptographic identity, we should warn
 the user, so they are aware of the change.
 
-If a verified person's cryptographic identity changes (i.e. they reset their
-master cross-signing key) then this is very important: we verified them because we care
-about proof that no-one is listening, and now someone could be. The user can
-choose to **withdraw verification** (i.e. "demote" them from being verified), or
-**re-verify** them. Until they do one or the other, communication with them should
-contain a prominent and serious warning that the user's **verified identity has
-changed**.
+If Alice is verified with Bob, and then Alice's cryptographic identity changes
+(i.e. Alice reset their master cross-signing key) then this is very important to
+Bob: Bob verified Alice because they care about proof that no-one is listening,
+and now someone could be. Bob can choose to **withdraw verification** (i.e.
+"demote" Alice from being verified), or **re-verify** with Alice. Until Bob does
+one or the other, Bob's communication with Alice should contain a prominent and
+serious warning that Alice's **verified identity has changed**.
 
 > "This person is verified."
 
