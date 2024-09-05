@@ -49,7 +49,7 @@ the following terms and concepts.
 ### Devices
 
 Instances of a client are called 'devices' (not 'sessions'). Aligned with
-MSC4153, we take it as granted that all devices have been cross-signed by the
+[MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), we take it as granted that all devices have been cross-signed by the
 user who owns them, and we call these **devices**.
 
 Devices which have not been cross-signed by the user are considered an error
