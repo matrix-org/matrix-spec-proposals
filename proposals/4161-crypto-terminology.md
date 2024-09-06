@@ -103,7 +103,7 @@ When an unverified person resets their cryptographic identity, we should warn
 the user, so they are aware of the change.
 
 If Alice is verified with Bob, and then Alice's cryptographic identity changes
-(i.e. Alice reset their master cross-signing key) then this is very important to
+(i.e. Alice resets their master cross-signing key) then this is very important to
 Bob: Bob verified Alice because they care about proof that no-one is listening,
 and now someone could be. Bob can choose to **withdraw verification** (i.e.
 "demote" Alice from being verified), or **re-verify** with Alice. Until Bob does
