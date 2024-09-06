@@ -180,6 +180,26 @@ Note: this clashes with the term "message key" in the double ratchet. Since the
 double ratchet algorithm is for a very different audience, we think that this is
 not a problem.
 
+### Unable to decrypt
+
+When we have an encrypted message but no message key to decrypt it, we are
+unable to decrypt it.
+
+When we expect the key to arrive, we are **waiting for this message**.
+
+> "Waiting for this message" button: "learn more" which explains that the key to
+> decrypt this message has not yet been received, but that we expect it to
+> arrive shortly. Further detail may be provided, for instance explaining that
+> connectivity issues between the sender's homeserver and our own can cause
+> key delivery delays.
+
+When the user does not have the message key for a permanent and well-understood
+reason, for example if it was sent before they joined the room, we say **you
+don't have access to this message**.
+
+> "You don't have access to this message" e.g. if it was sent before the user
+> entered the room, or the user does not have key storage set up.
+
 ### Message history
 
 Your **message history** is a record of every message you have received or sent,
