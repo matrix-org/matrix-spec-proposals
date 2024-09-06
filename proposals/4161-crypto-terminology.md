@@ -160,7 +160,7 @@ proof that you have a secure communication channel with them.
 ⚠️ Avoid saying "master key" - this is an implementation detail.
 
 ⚠️ Avoid saying "reset their encryption" - the reason that Alice's identity
-changes could be due to attack rather than because they reset their encryption
+changed could be due to attack rather than because they reset their encryption
 (plus "encryption" is jargony).
 
 ### Message key
