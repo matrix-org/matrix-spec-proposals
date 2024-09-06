@@ -26,12 +26,15 @@ it should consider the server offline and halt discovery.
 The period until discovery is re-attempted can be determined by the homeserver's implementation,
 such as using exponential backoff, waiting a period of days, or until the next restart.
 
+This MSC recommends homeservers *should* wait a minimum of 24 hours and no longer than 30 days,
+in case the error code was erroneous and the server returns online.
+
 ### Implementation Details
 
 - The suspension period should be configurable to allow administrators to fine-tune the behaviour
   based on their specific needs and network conditions.
 - Homeservers should resume discovery attempts after the suspension period has elapsed, or when new
-  PDUs or EDUs are received from the server as this should signal that the server is online.
+  PDUs or EDUs are received from the server, as receiving new activity signals the server is online.
 
 ## Potential Issues
 
