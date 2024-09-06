@@ -10,7 +10,7 @@ to respond or not. Example uses include:
 ## Proposal
 
 Profiles can provide an optional `m.tz` field with values equal to names from the
-[IANA time zone  database](https://data.iana.org/time-zones/theory.html#naming).
+[IANA Time Zone Database](https://www.iana.org/time-zones).
 Clients can set and fetch this via the [normal API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
 
 * Servers MAY validate that the value is a valid IANA time zone. If deemed invalid
@@ -33,6 +33,11 @@ Clients will need to manually update the profile field when the user changes tim
 This could be automated by clients based on location, or left as a manual change to
 users.
 
+Clients may wish to periodically fetch the time one of other users as it is
+liable to change somewhat frequently. Currently, profile data isn't propagated/synchronized
+between servers, but that's left to a future MSC to solve. It is recommended that
+clients cache the value for 12 - 24 hours.
+
 
 ## Alternatives
 
@@ -44,11 +49,16 @@ savings. Using the IANA time zone name is robust against this.
 format could be used instead, but this doesn't make much sense unless the entire
 profile was replaced.
 
-(Note there's an alternative [jCard](https://microformats.org/wiki/jCard) format
-which is a non-standard derivative of [hCard](https://microformats.org/wiki/hcard).)
+[RFC9553](https://datatracker.ietf.org/doc/html/rfc9553) offers an alternative
+representation for contacts (which is not backwards compatible with vCard). There
+exists `timeZone` field under the `addresses` field which uses an time zone name
+from the IANA Time Zone Database.
+
+Note there's an alternative [jCard](https://microformats.org/wiki/jCard) format
+which is a non-standard derivative of [hCard](https://microformats.org/wiki/hcard).
 
 
-## Competitive analysis
+### Competitive analysis
 
 Slack's [`users.info` API call](https://api.slack.com/methods/users.info) includes
 3 separate fields:
@@ -57,8 +67,7 @@ Slack's [`users.info` API call](https://api.slack.com/methods/users.info) includ
 * `tz_label`: a friendly name (e.g. `"Eastern Daylight Time"`)
 * `tz_offset`: offset in seconds as an integer (e.g. `-14400`)
 
-
-XMPP directly uses either:
+XMPP uses either:
 
 * [XEP-054](https://xmpp.org/extensions/xep-0054.html) uses vCard
   ([RFC2426](https://datatracker.ietf.org/doc/html/rfc2426)) converted to XML via
@@ -73,7 +82,8 @@ in the `utcOffset` field.
 Mattermost [returns an object](https://api.mattermost.com/#tag/users/operation/GetUser)
 with the user's manual and/or automatic IANA time zone name.
 
-Discord, Twitter, blah don't provide a user's time zone.
+Discord, Twitter, and IRC don't provide a user's time zone.
+
 
 ## Security considerations
 
