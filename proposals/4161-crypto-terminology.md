@@ -36,8 +36,9 @@ given it is a highly technical document, as opposed to a client user interface.
 We hope that this MSC will:
 
 * Cause small changes in the spec (as described in the previous paragraph), and
-* Become a document, blessed by the spec core team and available on the spec web
-  site, but probably separate from the spec proper.
+* Become an appendix in the spec, with a description that makes clear that the
+  intended audience is different from most of the spec, meaning different words
+  are used from the main spec body.
 
 Clients may, of course, choose to use different language. Some clients may
 deliberately choose to use more technical language, to suit the profiles of
