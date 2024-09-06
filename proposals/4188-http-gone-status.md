@@ -28,8 +28,6 @@ such as using exponential backoff, waiting a period of days, or until the next r
 
 ### Implementation Details
 
-- Homeservers should log the `410 Gone` response and the suspension period for transparency and
-  debugging purposes.
 - The suspension period should be configurable to allow administrators to fine-tune the behaviour
   based on their specific needs and network conditions.
 - Homeservers should resume discovery attempts after the suspension period has elapsed, or when new
