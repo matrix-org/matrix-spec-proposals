@@ -36,36 +36,36 @@ member events.
 1. **GET `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will replace the existing
    profile endpoints. It will return the value of the specified `key_name`:
 
-    ```json
-    {
-      "key_name": "field_value"
-    }
-    ```
+```json
+{
+    "key_name": "field_value"
+}
+```
 
-    For example, requesting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` would return:
+For example, requesting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` would return:
 
-    ```json
-    {
-      "displayname": "Alice"
-    }
-    ```
+```json
+{
+    "displayname": "Alice"
+}
+```
 
 2. **PUT `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will set the value of the
    specified `key_name`:
 
-    ```json
-    {
-      "key_name": "new_value"
-    }
-    ```
+```json
+{
+    "key_name": "new_value"
+}
+```
 
-    For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` with:
+For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` with:
 
-    ```json
-    {
-      "displayname": "Alice Wonderland"
-    }
-    ```
+```json
+{
+    "displayname": "Alice Wonderland"
+}
+```
 
 3. **DELETE `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will remove the key
    (and associated value) from the profile, if permitted by the homeserver. Could be considered a
@@ -74,45 +74,45 @@ member events.
 
 4. **GET `/_matrix/client/v3/profile/{userId}`**: This endpoint will retrieve all profile fields:
 
-    ```json
-    {
-      "avatar_url": "mxc://matrix.org/MyC00lAvatar",
-      "displayname": "John Doe",
-      "u.Custom Field": "value1",
-      "m.allowed_list": ["value2", "value3"]
-    }
-    ```
+```json
+{
+    "avatar_url": "mxc://matrix.org/MyC00lAvatar",
+    "displayname": "John Doe",
+    "u.Custom Field": "value1",
+    "m.allowed_list": ["value2", "value3"]
+}
+```
 
 5. **PATCH `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
    to *merge* into the current profile, updating any changed keys without removing/changing any
    absent ones:
 
-    ```json
-    {
-      "avatar_url": "mxc://matrix.org/MyNewAvatar",
-      "displayname": "John Doe",
-      "u.Custom Field": "new_value1",
-      "m.allowed_list": ["new_value2", "new_value3"]
-    }
-    ```
+```json
+{
+    "avatar_url": "mxc://matrix.org/MyNewAvatar",
+    "displayname": "John Doe",
+    "u.Custom Field": "new_value1",
+    "m.allowed_list": ["new_value2", "new_value3"]
+}
+```
 
 6. **PUT `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
    to replace the entire profile, not only adding/updating any changed keys, but removing any
    absent ones in the process:
 
-    ```json
-    {
-      "avatar_url": "mxc://matrix.org/MyNewAvatar",
-      "displayname": "John Doe",
-      "u.Custom Field": "new_value1",
-      "m.allowed_list": ["new_value2", "new_value3"]
-    }
-    ```
+```json
+{
+    "avatar_url": "mxc://matrix.org/MyNewAvatar",
+    "displayname": "John Doe",
+    "u.Custom Field": "new_value1",
+    "m.allowed_list": ["new_value2", "new_value3"]
+}
+```
 
-    **Note**: User-interactive clients are encouraged to manipulate fields individually to avoid
-    race conditions, however this `PUT` method allows single-client accounts (such as bots) to
-    overwrite the entire profile in a single request, which allows bridge bots managing many
-    accounts to bulk update profiles for their users with minimal requests.
+**Note**: User-interactive clients are encouraged to manipulate fields individually to avoid race
+conditions, however this `PUT` method allows single-client accounts (such as bots) to overwrite the
+entire profile in a single request, which allows bridge bots managing many accounts to bulk update
+profiles for their users with minimal requests.
 
 ### Server-Server API Changes
 
@@ -126,7 +126,7 @@ a profile from the homeserver specified in that user's MXID.
 As per the current stable endpoint, it accepts an optional `field` query string parameter to
 request a single field. At time of writing, the Matrix specification says:
 
-> If no `field` was specified, the response should include the fields of the user’s profile that
+> If no `field` was specified, the response should include the fields of the user's profile that
 > can be made public, such as the display name and avatar.
 
 Given this wording, homeservers currently already have the flexibility to decide whether some
@@ -161,74 +161,77 @@ Example capability object:
 
 To ensure clear communication of issues, the following error codes and messages will be used:
 
-- **400 Bad Request**: When the request is malformed, exceeds specified limits, or the profile
-  JSON object is larger than 64KiB.
-  - **Error Code for Malformed Request**: `M_BAD_JSON`
+**400 Bad Request**: When the request is malformed, exceeds specified limits, or the profile JSON
+object is larger than 64KiB:
 
-    ```json
-    {
-        "errcode": "M_BAD_JSON",
-        "error": "The provided JSON is malformed."
-    }
-    ```
+- **Error Code for Malformed Request**: `M_BAD_JSON`
 
-  - **Error Code for Exceeding Size Limit**: `M_TOO_LARGE`
+```json
+{
+    "errcode": "M_BAD_JSON",
+    "error": "The provided JSON is malformed."
+}
+```
 
-    ```json
-    {
-        "errcode": "M_TOO_LARGE",
-        "error": "The profile data exceeds the maximum allowed size of 64KiB."
-    }
-    ```
+- **Error Code for Exceeding Size Limit**: `M_TOO_LARGE`
 
-    or
+```json
+{
+    "errcode": "M_TOO_LARGE",
+    "error": "The profile data exceeds the maximum allowed size of 64KiB."
+}
+```
 
-    ```json
-    {
-        "errcode": "M_TOO_LARGE",
-        "error": "Profile field u.Bio exceeds maximum allowed size of 1024 bytes."
-    }
-    ```
+or
 
-  - **Error Code for Invalid Data**: `M_INVALID_PARAM`
+```json
+{
+    "errcode": "M_TOO_LARGE",
+    "error": "Profile field u.Bio exceeds maximum allowed size of 1024 bytes."
+}
+```
 
-    ```json
-    {
-        "errcode": "M_INVALID_PARAM",
-        "error": "The key name exceeds the maximum allowed length of 255 bytes."
-    }
-    ```
+- **Error Code for Invalid Data**: `M_INVALID_PARAM`
 
-  - **Error Code for Exceeding Resource Limits**: `M_RESOURCE_LIMIT_EXCEEDED`
+```json
+{
+    "errcode": "M_INVALID_PARAM",
+    "error": "The key name exceeds the maximum allowed length of 255 bytes."
+}
+```
 
-    ```json
-    {
-        "errcode": "M_RESOURCE_LIMIT_EXCEEDED",
-        "error": "The user has exceeded the maximum number of allowed keys in their profile."
-    }
-    ```
+- **Error Code for Exceeding Resource Limits**: `M_RESOURCE_LIMIT_EXCEEDED`
 
-- **403 Forbidden**: When the user does not have permission to take this action on a specific key,
-  such as when the server policy (e.g.
-  [MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
-  - **Error Code**: `M_FORBIDDEN`
+```json
+{
+    "errcode": "M_RESOURCE_LIMIT_EXCEEDED",
+    "error": "The user has exceeded the maximum number of allowed keys in their profile."
+}
+```
 
-    ```json
-    {
-        "errcode": "M_FORBIDDEN",
-        "error": "You do not have permission to modify this field."
-    }
-    ```
+**403 Forbidden**: When the user does not have permission to take this action on a specific key,
+such as when the server policy (e.g.
+[MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
 
-- **404 Not Found**: When attempting to `GET` or `DELETE` a profile key that does not exist:
-  - **Error Code**: `M_NOT_FOUND`
+- **Error Code**: `M_FORBIDDEN`
 
-    ```json
-    {
-        "errcode": "M_NOT_FOUND",
-        "error": "The requested profile key does not exist."
-    }
-    ```
+```json
+{
+    "errcode": "M_FORBIDDEN",
+    "error": "You do not have permission to modify this field."
+}
+```
+
+**404 Not Found**: When attempting to `GET` or `DELETE` a profile key that does not exist:
+
+- **Error Code**: `M_NOT_FOUND`
+
+```json
+{
+    "errcode": "M_NOT_FOUND",
+    "error": "The requested profile key does not exist."
+}
+```
 
 ### Propagation of Profile Fields to Membership Events
 
@@ -304,7 +307,7 @@ custom profiles.
 
 As such, this MSC is designed to be as simple as possible to get initial functionality and data
 structures implemented widely in both clients and servers, so further extensions can be debated,
-implemented, and tested over time in the future.
+implemented, and tested over time.
 
 As this data is stored only at the global level, it won't allow users to modify fields per-room,
 or track historical changes in profile fields. However, this is for performance and moderation
