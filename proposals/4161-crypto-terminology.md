@@ -170,8 +170,6 @@ are "locked in a box" by encrypting them, and "unlocked" by decrypting them.
 
 > "Store message keys on the server."
 
-> "This message could not be decrypted because its key is missing."
-
 ⚠️ Avoid saying "key" without a previous word saying what type of key it is.
 
 ⚠️ Avoid using "room key". These keys are used to decrypt messages, not rooms.
@@ -187,7 +185,7 @@ unable to decrypt it.
 
 When we expect the key to arrive, we are **waiting for this message**.
 
-> "Waiting for this message" button: "learn more" which explains that the key to
+> "Waiting for this message" with a button: "learn more" that explains that the key to
 > decrypt this message has not yet been received, but that we expect it to
 > arrive shortly. Further detail may be provided, for instance explaining that
 > connectivity issues between the sender's homeserver and our own can cause
