@@ -78,8 +78,7 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 {
     "avatar_url": "mxc://matrix.org/MyC00lAvatar",
     "displayname": "John Doe",
-    "u.Custom Field": "value1",
-    "m.allowed_list": ["value2", "value3"]
+    "u.Custom Field": "value1"
 }
 ```
 
@@ -91,8 +90,7 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 {
     "avatar_url": "mxc://matrix.org/MyNewAvatar",
     "displayname": "John Doe",
-    "u.Custom Field": "new_value1",
-    "m.allowed_list": ["new_value2", "new_value3"]
+    "u.Custom Field": "new_value1"
 }
 ```
 
@@ -104,8 +102,7 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 {
     "avatar_url": "mxc://matrix.org/MyNewAvatar",
     "displayname": "John Doe",
-    "u.Custom Field": "new_value1",
-    "m.allowed_list": ["new_value2", "new_value3"]
+    "u.Custom Field": "new_value1"
 }
 ```
 
@@ -164,7 +161,7 @@ To ensure clear communication of issues, the following error codes and messages 
 **400 Bad Request**: When the request is malformed, exceeds specified limits, or the profile JSON
 object is larger than 64KiB:
 
-- **Error Code for Malformed Request**: `M_BAD_JSON`
+- **Error code for malformed request**: `M_BAD_JSON`
 
 ```json
 {
@@ -173,7 +170,7 @@ object is larger than 64KiB:
 }
 ```
 
-- **Error Code for Exceeding Size Limit**: `M_TOO_LARGE`
+- **Error code for profile/field exceeding size limit**: `M_TOO_LARGE`
 
 ```json
 {
@@ -187,25 +184,16 @@ or
 ```json
 {
     "errcode": "M_TOO_LARGE",
-    "error": "Profile field u.Bio exceeds maximum allowed size of 1024 bytes."
+    "error": "Profile field u.Bio exceeds maximum allowed size of 512 bytes."
 }
 ```
 
-- **Error Code for Invalid Data**: `M_INVALID_PARAM`
+or
 
 ```json
 {
-    "errcode": "M_INVALID_PARAM",
-    "error": "The key name exceeds the maximum allowed length of 255 bytes."
-}
-```
-
-- **Error Code for Exceeding Resource Limits**: `M_RESOURCE_LIMIT_EXCEEDED`
-
-```json
-{
-    "errcode": "M_RESOURCE_LIMIT_EXCEEDED",
-    "error": "The user has exceeded the maximum number of allowed keys in their profile."
+    "errcode": "M_TOO_LARGE",
+    "error": "The key name exceeds the maximum allowed length of 128 bytes."
 }
 ```
 
@@ -213,7 +201,16 @@ or
 such as when the server policy (e.g.
 [MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
 
-- **Error Code**: `M_FORBIDDEN`
+- **Error code refusing to create additional keys**: `M_FORBIDDEN`
+
+```json
+{
+    "errcode": "M_FORBIDDEN",
+    "error": "The user has exceeded the maximum number of allowed keys in their profile."
+}
+```
+
+- **Error code when not allowed to modify key**: `M_FORBIDDEN`
 
 ```json
 {
@@ -236,9 +233,9 @@ such as when the server policy (e.g.
 ### Propagation of Profile Fields to Membership Events
 
 The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
-room. These fields are replicated per-room via member events. Other fields, however, will **not**
-trigger state events in rooms. They will exist solely at the global level and are intended for
-storing metadata about the user that does not need to be replicated in each room.
+room. These fields are replicated per-room via member events. Custom fields, however, will **not**
+trigger state events in rooms and will exist solely at the global level for storing metadata about
+the user.
 
 - **avatar_url** and **displayname**: Changes to these fields will generate state events in all
   rooms the user is a member of.
@@ -269,25 +266,24 @@ In contrast, [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/
 unstable key `us.cloke.msc4175.tz` and following approval would then support clients using the
 `m.tz` key with the values/validation that MSC requires.
 
-### Size Limit
+### Size Limits
 
-The key *must* be a string of *at least* one byte, and *must* not exceed 255 bytes.
+Until another MSC specifies otherwise:
 
-To ensure efficient handling and storage of profile data, this proposal requires the entire user
-profile JSON object not exceed 64KiB.
+- Each profile *must* be *at most* 64KiB in size
+- Each profile may contain *up to* 50 keys (including `avatar_url` and `displayname`)
+- Each key *must* be a string of *at least* one byte, and *must* not exceed 128 bytes
+- Each value *must* be a string and *must* not exceed 512 bytes
 
-A future MSC may increase this limit or add exceptions, but this current limit has been chosen to
-allow both servers and clients to have predictable upper limits, especially for caching.
+These sizes are measured *after* being escaped for JSON, e.g. `🛸` would become `\uD83D\uDEF8`.
 
-Homeservers may limit the fields (or content) that their local users can set, setting a size limit
-per field and/or for the entire profile, and may limit the maximum number of keys a user may set.
+This 64KiB size limit should be calculated on the full canonicalised JSON payload a homeserver
+would receive when retrieving the full profile, so a `Content-Length` header on the HTTP response
+must not exceed 65536 bytes.
 
-For example, if a homeserver implementation finds it more efficient to measure limits per value, it
-could limit users to 50 keys with a 1024 byte limit per value, which would allow a user to set the
-50 of the maximum key and value lengths without needing to calculate against the 64KiB total limit.
-
-**Note:** The existing `avatar_url` and `displayname` keys are contained within the profile, so if
-an implementation enforces a per-value limit on fields, it must also enforce them upon these fields.
+Future MSCs may allow fields that are not string values, or add exceptions to the size limits,
+but these current limits have been chosen to allow both servers and clients to have predictable
+upper limits for performance and caching purposes.
 
 ### Implementation Details
 
@@ -297,6 +293,8 @@ an implementation enforces a per-value limit on fields, it must also enforce the
   regulations will be enforced, particularly in terms of data deletion and retention policies.
 - Custom fields will not trigger state events in rooms, maintaining account-wide metadata without
   creating state events or other moderation issues.
+- The existing `avatar_url` and `displayname` keys are contained within the profile, so if they are
+  currently longer than 512 bytes, they will need to be truncated to 512 bytes.
 
 ## Potential Issues
 
@@ -343,7 +341,7 @@ of unintended data persistence.
 ### Unstable Profile Fields
 
 The current Matrix specification technically already allows extra custom fields to be published in
-a user's profile, however as this proposal introduces additional requirements and allows custom
+a user's profile. However, as this proposal introduces additional requirements and allows custom
 user-defined fields, an unstable prefix should be used on these fields until this proposal has
 entered the API as stable:
 
@@ -351,15 +349,14 @@ entered the API as stable:
 {
     "avatar_url": "mxc://matrix.org/MyC00lAvatar",
     "displayname": "John Doe",
-    "uk.tcpip.msc4133.u.Custom Field": "field_value",
-    "uk.tcpip.msc4133.m.allowed_list": ["one value", "another value"]
+    "uk.tcpip.msc4133.u.Custom Field": "field_value"
 }
 ```
 
 ### Unstable Endpoints
 
-`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}` would be necessary for the `PATCH` and `PUT`
-methods allowed when unstable capability (detailed below) is advertised by the server.
+`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}` would be necessary for the `PATCH` and
+`PUT` methods allowed when the unstable capability (detailed below) is advertised by the server.
 
 The existing `GET` method would act as normal and remain on `/_matrix/client/v3/profile/{userId}`
 without *need* for an unstable endpoint.
