@@ -270,20 +270,18 @@ unstable key `us.cloke.msc4175.tz` and following approval would then support cli
 
 Until another MSC specifies otherwise:
 
-- Each profile *must* be *at most* 64KiB in size
+- Each profile *must* be *at most* 64KiB (65536 bytes) in size
 - Each profile may contain *up to* 50 keys (including `avatar_url` and `displayname`)
 - Each key *must* be a string of *at least* one byte, and *must* not exceed 128 bytes
 - Each value *must* be a string and *must* not exceed 512 bytes
 
-These sizes are measured *after* being escaped for JSON, e.g. `🛸` would become `\uD83D\uDEF8`.
+These sizes are measured as encoded in
+[Canonical JSON](https://spec.matrix.org/v1.11/appendices/#canonical-json), so `🛸` would consume
+two bytes of the limit.
 
-This 64KiB size limit should be calculated on the full canonicalised JSON payload a homeserver
-would receive when retrieving the full profile, so a `Content-Length` header on the HTTP response
-must not exceed 65536 bytes.
-
-Future MSCs may allow fields that are not string values, or add exceptions to the size limits,
-but these current limits have been chosen to allow both servers and clients to have predictable
-upper limits for performance and caching purposes.
+Future MSCs may allow fields that are not string values, or add exceptions to the limits, but these
+current limits have been chosen to allow servers and clients to have predictable upper limits for
+performance and caching purposes.
 
 ### Implementation Details
 
