@@ -51,6 +51,7 @@ A complete `m.rtc.member` state event looks like this:
   "call_id": "",
   "device_id": "DEVICEID",
   "created_ts": Time | undefined,
+  "expires_after": Duration,
   "focus_active": {...FOCUS_A},
   "foci_preferred": [
     {...FOCUS_1},
