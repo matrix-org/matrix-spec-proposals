@@ -119,7 +119,8 @@ the disconnection behaviour. If the client disconnects from a call because of a 
 an application crash or a user forcefully quitting the client, the room state cannot be updated anymore.
 The client is required to leave by sending a new empty state which cannot happen once connection is lost.
 
-If the state is not updated correctly we end up with incorrect session end timestamps a room state that is not correctly representing the current RTC session state. Historic and current MatrixRTC session data would be broken.
+If the state is not updated correctly we end up with incorrect session end timestamps a room state that is not
+correctly representing the current RTC session state. Historic and current MatrixRTC session data would be broken.
 
 For an acceptable solution, the following requirements need to be taken into consideration:
 
@@ -132,6 +133,25 @@ For an acceptable solution, the following requirements need to be taken into con
 [MSC4340](https://github.com/matrix-org/matrix-spec-proposals/pull/4140) proposes a concept to
 delay the leave events until one of the leave conditions (heartbeat or SFU disconnect) occur
 and fulfil all of the these requirements.
+
+A matrixRTC client has to first send/schedule the following delayed leave event:
+
+```json
+// event type: "m.rtc.member"
+// event key: "@user:matrix.domain_DEVICEID"
+{
+  "leave_reason": "CONNECTION_LOST"
+}
+```
+
+only after that the actual state event can be sent, so that we guarantee that the state will be empty eventually.
+The `leave_reason` is added so clients can be more verbal about why a user disconnected from a call.
+
+Receiving clients will be able to detect if this order was not followed with the `has_delayed_overwrite: true`
+unsigned property. If the property is missing the event is invalid.
+
+This also invalides delayed leave events that are send with a valid membership content. They do not contain the
+`has_delayed_overwrite: true` unsigned property.
 
 #### Historic sessions
 
@@ -186,9 +206,15 @@ Based on the focus type and usecase choosing a `foci_preferred` can be different
 If possible these guidelines should be obeyed:
 
 - If there is a relation between the `focus_active` and a preferred focus (`type: livekit` is an example for this)
-  it is recommended to copy _the preferred focus that relates to the current `focus_active`_ of other participants to the start of the `foci_preferred` array of the member event.
-  (The exact definition of: _the preferred focus that relates to the current `focus_active`_ is part of the specification for each focus type. For `full_mesh` for example there is no such thing as: _the preferred focus that relates to the current `focus_active`_ )
-- Homeservers can proposes `preferred_foci` via the well known. An array of preferred foci is provided behind the well known key `m.rtc_foci`. This is defined in [MSC4158](https://github.com/matrix-org/matrix-spec-proposals/pull/4158). They are related and it is recommended to also read [MSC4158](https://github.com/matrix-org/matrix-spec-proposals/pull/4158) with this MSC.
+  it is recommended to copy _the preferred focus that relates to the current `focus_active`_ of other participants to
+  the start of the `foci_preferred` array of the member event.
+  (The exact definition of: _the preferred focus that relates to the current `focus_active`_ is part of the 
+  specification for each focus type. For `full_mesh` for example there is no such thing as: _the preferred focus that 
+  relates to the current `focus_active`_ )
+- Homeservers can proposes `preferred_foci` via the well known. An array of preferred foci is provided behind the well 
+  known key `m.rtc_foci`. This is defined in [MSC4158](https://github.com/matrix-org/matrix-spec-proposals/pull/4158). 
+  They are related and it is recommended to also read
+  [MSC4158](https://github.com/matrix-org/matrix-spec-proposals/pull/4158)with this MSC.
   Those proposals from **your own** homeserver should come next in the `foci_preferred` list of the member event.
 - Clients also have the option to configure a preferred foci even though this is not recommended (see below).
   Those come last in the list.
@@ -207,7 +233,8 @@ The rational for those guidelines are as following:
   homeserver distribution.
   For this reason the second guideline is to lookup the prefferred foci from the homeserver well_known
 - Looking up the prefferred foci from a client is toxic to a federated system. If the majority of users
-  decide to use the same client all of the users will use one Focus. This destroys the passive security mechanism, that each instance is not an interesting attack vector since it is only a fraction of the network.
+  decide to use the same client all of the users will use one Focus. This destroys the passive security mechanism, that 
+  each instance is not an interesting attack vector since it is only a fraction of the network.
   Additionally it will result in poor performance if every user on matrix would use the same Focus.
   There are cases where this is acceptable:
   - Transitioning to MatrixRTC. Here it might be beneficial to have a client that has a fallback Focus
