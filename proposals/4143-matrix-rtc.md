@@ -45,7 +45,7 @@ A complete `m.rtc.member` state event looks like this:
 
 ```json
 // event type: "m.rtc.member"
-// event key: ["@user:matrix.domain", "DEVICEID"]
+// event key: "@user:matrix.domain_DEVICEID"
 {
   "application": "m.my_session_type",
   "call_id": "",
@@ -63,8 +63,6 @@ A complete `m.rtc.member` state event looks like this:
 > This relies on [MSC3757](https://github.com/matrix-org/matrix-spec-proposals/pull/3757).
 > We need to have one state event per device, hence multiple "non-overwritable" state
 > events per user.
->
-> More specifically this uses the approach outlined in this [comment](https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-2099010555).
 
 This gives us the information, that user: `@user:matrix.domain` with device `DEVICEID`
 is part of an RTCSession of type `m.call` in the scope/sub-session `""` (empty
