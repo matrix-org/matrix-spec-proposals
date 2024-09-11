@@ -185,8 +185,7 @@ Where the `action` is `send`, the homeserver SHOULD apply rate limiting to provi
 ### Getting delayed events
 
 A new authenticated client-server API endpoint `GET /_matrix/client/v1/delayed_events` allows clients to get a list of
-all the delayed events that
-have been scheduled to send.
+all the delayed events owned by the requesting user that have been scheduled to send.
 
 The endpoint accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
 per the [pagination convention](https://spec.matrix.org/v1.11/appendices/#pagination). The homeserver can choose a suitable
