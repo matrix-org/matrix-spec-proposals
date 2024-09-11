@@ -80,7 +80,7 @@ the use of a state key equal to the sender's mxid, but this means we can only
 have one such event of each type, so those MSCs proposed using different types
 for each unique event.
 
-An earlier draft of this MSC proposed putting a flag on the contents of the 
+An earlier draft of this MSC proposed putting a flag on the contents of the
 event (outside of the E2EE payload) called `m.peer_unwritable: true` to indicate
 if other users were prohibited from overwriting the event or not.  However, this
 unravelled when it became clear that there wasn't a good value for the `state_key`,
@@ -107,7 +107,7 @@ are not allowed in domain names.  A pure prefix match will **not** be sufficient
 as `@matthew:matrix.org` will match a `state_key` of form `@matthew:matrix.org.evil.com:id1`.
 
 This changes auth rules in a backwards incompatible way, which will break any
-use cases which assume that higher PL users cannot overwrite state events whose 
+use cases which assume that higher PL users cannot overwrite state events whose
 `state_key` is a different mxid.  This is considered a feature rather than a bug,
 fixing an abuse vector where users could send arbitrary state events
 which could never be overwritten.
