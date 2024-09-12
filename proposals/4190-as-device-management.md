@@ -42,7 +42,7 @@ This would have the advantage of not changing the behavior of existing endpoints
 
 ## Unstable prefix
 
-Until this MSC is stable, application services must opt-in to the new behavior by setting the `mscxxx_device_management` flag to `true` in their registration file.
+Until this MSC is stable, application services must opt-in to the new behavior by setting the `msc4190_device_management` flag to `true` in their registration file.
 
 [MSC3202]: https://github.com/matrix-org/matrix-spec-proposals/pull/3202
 [MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
