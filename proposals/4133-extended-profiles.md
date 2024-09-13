@@ -67,6 +67,9 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 }
 ```
 
+**Note**: As the `DELETE` endpoint exists below, a `PUT` to key using a `null` value should leave
+the key in place without deleting the key.
+
 1. **DELETE `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint removes a key (and
    associated value) from the profile, if permitted by the homeserver. This could be considered a
    partial alternative to [MSC3754](https://github.com/matrix-org/matrix-spec-proposals/pull/3754),
