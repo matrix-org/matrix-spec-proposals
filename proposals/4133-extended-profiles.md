@@ -288,8 +288,6 @@ Until another MSC specifies otherwise:
   regulations will be enforced, particularly in terms of data deletion and retention policies.
 - Custom fields will not trigger state events in rooms, maintaining account-wide metadata without
   creating state events or other moderation issues.
-- The existing `avatar_url` and `displayname` keys are contained within the profile, so if they are
-  currently longer than 512 bytes, they will need to be truncated to 512 bytes.
 
 ## Potential Issues
 
