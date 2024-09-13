@@ -10,22 +10,22 @@ enriching the user interaction experience without impacting existing functionali
 ## Proposal
 
 The Matrix protocol's current user profile structure supports very limited fields (`avatar_url` and
-`displayname`). This proposal suggests expanding this structure to include custom fields,
-allowing for a more versatile user profile. Specifically, it redefines the existing `avatar_url`
-and `displayname` endpoints to be more flexible, while attempting to maximise compatibility with
+`displayname`). This proposal suggests expanding this structure to include custom fields, allowing
+for a more versatile user profile. Specifically, it redefines the existing `avatar_url` and
+`displayname` endpoints to be more flexible, while attempting to maximise compatibility with
 existing clients and servers to help speed adoption.
 
 Likewise, this proposal is designed to complement rather than replace
-[MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) (Extensible profiles as
-rooms). While [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) offers a more
-complex solution for extensible profiles, this proposal focuses on enabling the storage of small,
-arbitrary key:value pairs at the global level.
+[MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) (Extensible Profiles as
+Rooms). While [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) offers a
+more complex solution for extensible profiles, this proposal focuses on enabling the storage of
+small, arbitrary key:value pairs at the global level.
 
 This proposal does not seek to enforce the exact content or usage of these fields but rather to add
-a framework for users to have extra data that can be further clarified and extended in the future as
-community usage of these fields grows.
+a framework for users to have extra data that can be further clarified and extended in the future
+as community usage of these fields grows.
 
-Homeservers could disable the ability for users to update these fields, or require a specific list
+Homeservers could disable the ability for users to update these fields or require a specific list
 of fields, but the intention of this proposal is that users will be presented with a form to enter
 their own free-text fields and values. After using these very flexible fields, the community may
 opt to request a further extension to promote one or more fields to be specified per-room via
@@ -33,8 +33,8 @@ member events.
 
 ### Client-Server API Changes
 
-1. **GET `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will replace the existing
-   profile endpoints. It will return the value of the specified `key_name`:
+1. **GET `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint extends the existing
+   profile API to allow clients to retrieve the value of a specified `key_name` in a user's profile:
 
 ```json
 {
@@ -50,8 +50,8 @@ For example, requesting `/_matrix/client/v3/profile/@alice:matrix.org/displaynam
 }
 ```
 
-2. **PUT `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will set the value of the
-   specified `key_name`:
+2. **PUT `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint allows clients to set
+   the value of a specified `key_name`:
 
 ```json
 {
@@ -67,12 +67,12 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 }
 ```
 
-3. **DELETE `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint will remove the key
-   (and associated value) from the profile, if permitted by the homeserver. Could be considered a
-   partial alternative to [MSC3754](https://github.com/matrix-org/matrix-spec-proposals/pull/3754)
-   which specifies `DELETE` endpoints for specifically `/avatar_url` and `/displayname`.
+1. **DELETE `/_matrix/client/v3/profile/{userId}/{key_name}`**: This endpoint removes a key (and
+   associated value) from the profile, if permitted by the homeserver. This could be considered a
+   partial alternative to [MSC3754](https://github.com/matrix-org/matrix-spec-proposals/pull/3754),
+   which specifies `DELETE` endpoints specifically for `/avatar_url` and `/displayname`.
 
-4. **GET `/_matrix/client/v3/profile/{userId}`**: This endpoint will retrieve all profile fields:
+2. **GET `/_matrix/client/v3/profile/{userId}`**: This endpoint retrieves all profile fields:
 
 ```json
 {
@@ -82,9 +82,8 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 }
 ```
 
-5. **PATCH `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
-   to *merge* into the current profile, updating any changed keys without removing/changing any
-   absent ones:
+5. **PATCH `/_matrix/client/v3/profile/{userId}`**: This endpoint accepts a complete JSON object to
+   *merge* into the current profile, updating any changed keys without altering any absent ones:
 
 ```json
 {
@@ -94,9 +93,9 @@ For example, setting `/_matrix/client/v3/profile/@alice:matrix.org/displayname` 
 }
 ```
 
-6. **PUT `/_matrix/client/v3/profile/{userId}`**: This endpoint will accept a complete JSON object
-   to replace the entire profile, not only adding/updating any changed keys, but removing any
-   absent ones in the process:
+6. **PUT `/_matrix/client/v3/profile/{userId}`**: This endpoint accepts a complete JSON object to
+   replace the entire profile, adding or updating any changed keys and removing any keys that are
+   absent in the provided object:
 
 ```json
 {
@@ -113,12 +112,12 @@ profiles for their users with minimal requests.
 
 ### Server-Server API Changes
 
-**GET `/_matrix/federation/v1/query/profile`** will mirror the client-server API changes
-to ensure profile information is consistently available across the federated network.
+**GET `/_matrix/federation/v1/query/profile`** will mirror the client-server API changes to ensure
+profile information is consistently available across the federated network.
 
 As there is no method to verify the history of these fields over federation, this endpoint must
-only accept requests for local users on the current homeserver, and homeservers must only request
-a profile from the homeserver specified in that user's MXID.
+only accept requests for local users on the current homeserver, and homeservers must only request a
+profile from the homeserver specified in that user's MXID.
 
 As per the current stable endpoint, it accepts an optional `field` query string parameter to
 request a single field. At time of writing, the Matrix specification says:
@@ -131,35 +130,44 @@ fields are published over federation, and this proposal continues to allow this 
 
 ### Capabilities
 
-A new capability `m.profile_fields` will be introduced to control the ability to set custom
-profile fields.
+A new capability `m.profile_fields` is introduced to control the ability to set custom profile
+fields.
 
-For backwards compatibility purposes, clients should assume these extended endpoints are not
-supported when this capability is missing.
+- **Advertising the Capability**: Servers SHOULD advertise this capability in the `capabilities`
+  object returned by the `GET /_matrix/client/v3/capabilities` endpoint.
 
-When the capability exists but is set to `false`, clients should expect to read/display extended
-fields, but should expect the server to deny creating/updating any custom fields. When this is set
-to `true` it should be possible to create/update custom fields, but individual updates may receive
-a 400/403 from the homeserver following the error codes listed below.
+- **Checking the Capability**: Clients SHOULD check for the presence and value of the
+  `m.profile_fields` capability before attempting to create or update custom profile fields.
 
-Example capability object:
+- **Capability Structure**:
 
 ```json
 {
-  "capabilities": {
-    "m.profile_fields": {
-      "enabled": false
+    "capabilities": {
+        "m.profile_fields": {
+            "enabled": true
+        }
     }
-  }
 }
 ```
+
+- **Backward Compatibility**: For backward compatibility, clients SHOULD assume that extended
+  profile fields are not supported if this capability is missing from the server's advertised
+  capabilities.
+
+- **When `enabled` is `false`**: Clients SHOULD expect to read and display extended fields but
+  SHOULD NOT allow users to create or update custom fields. Any attempt to do so may result in a
+  `403 Forbidden` error.
+
+- **When `enabled` is `true`**: Clients MAY allow users to create or update custom fields. However,
+  individual updates may still receive a `400 Bad Request` or `403 Forbidden` response from the
+  homeserver if specific server-side policies prevent the action.
 
 ### Error Handling
 
 To ensure clear communication of issues, the following error codes and messages will be used:
 
-**400 Bad Request**: When the request is malformed, exceeds specified limits, or the profile JSON
-object is larger than 64KiB:
+#### 400 Bad Request: When request is malformed, exceeds limits, or the profile larger than 64KiB
 
 - **Error code for malformed request**: `M_BAD_JSON`
 
@@ -206,22 +214,13 @@ or
 }
 ```
 
-**403 Forbidden**: When the user does not have permission to take this action on a specific key,
-such as when the server policy (e.g.
-[MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
+#### 403 Forbidden: User lacks permission to take this action (e.g. restricted by server policy)
 
-- **Error code when not allowed to modify key**: `M_FORBIDDEN`
+**Note:** See [MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170) for more
+discussion on how server policy may result in 403 errors for profile requests.
 
-```json
-{
-    "errcode": "M_FORBIDDEN",
-    "error": "You do not have permission to modify this field."
-}
-```
-
-**404 Not Found**: When attempting to `GET` or `DELETE` a profile key that does not exist:
-
-- **Error Code**: `M_NOT_FOUND`
+- **404 Not Found**: When attempting to `GET` or `DELETE` a profile key that does not exist:
+  - **Error Code**: `M_NOT_FOUND`
 
 ```json
 {
@@ -247,14 +246,12 @@ the user.
 Homeservers are not expected to enforce these namespaces, as future expansions may be unknown to
 the server, but clients are expected to use the correct namespace for field creation/updates.
 
-The namespace for field names is defined as follows:
-
 - The namespace `m.*` is reserved for fields defined in the Matrix specification. This field may
   have special entry/display requirements that are defined in the Matrix specification. If a client
   does not recognise a field in this namespace, it may attempt to display it, but should not
   attempt to update the content in case it has special requirements.
 - The namespace `u.*` is reserved for user-defined fields. The portion of the string after the `u.`
-  is defined the display name of this field. These user-defined fields will always be string
+  is defined as the display name of this field. These user-defined fields will always be string
   format, and as measured in UTF-8 byte counts, the key and value must not be longer than 128 bytes
   and 512 bytes respectively.
 - Client-specific or unstable fields MUST use the Java package naming convention: `tld.name.*`.
@@ -275,18 +272,10 @@ UTF-16 character consumes two bytes of this limit.
 
 Until another MSC specifies otherwise:
 
-- Each profile *must* be *at most* 64KiB (65536 bytes) in size, as measured in Canonical JSON
-- Each key *must* be a string of *at least* one byte and *must* not exceed 128 bytes
-- Each value in the `u.*` namespace *must* not exceed 512 bytes in length
-- Profile size limits include `avatar_url` and `displayname`
-
-Future MSCs may add exceptions to these limits, but these current limits have been chosen to allow
-servers and clients to have predictable upper limits for performance and caching purposes, and to
-provide a more comfortable UX in clients.
-
-As lengths and types are subject to change, implementations are encouraged to accept values of any
-type acceptable in [Canonical JSON](https://spec.matrix.org/latest/appendices/#canonical-json), and
-treat remote profiles as a single ≤64KiB block of Canonical JSON.
+- Each profile *must* be *at most* 64KiB (65536 bytes) in size, as measured in Canonical JSON.
+- Each key *must* be a string of *at least* one byte and *must* not exceed 128 bytes.
+- Each value in the `u.*` namespace *must* not exceed 512 bytes in length.
+- The limit on overall profile size includes `avatar_url` and `displayname`.
 
 ### Implementation Details
 
@@ -327,17 +316,19 @@ An alternative could be to allow for more specific endpoint modifications or to 
 completely new API specifically for extended information. However, these approaches could lead
 to more significant changes to the existing API and higher complexity for client developers.
 
-## Security Considerations
+### Security Considerations
 
 Since the profile data is public, there are minimal security risks associated with the transmission
-of sensitive information; however, it is critical to ensure that all data handled through these
-endpoints complies with GDPR and other privacy regulations, particularly in the event of user data
-deletion.
+of sensitive information; however, users should be made aware that any information they add will be
+visible to others on the federated network.
 
-It is crucial to ensure that clients inform users this data will be public, does not include
-sensitive personal information, and complies with legal frameworks such as GDPR. Homeservers will
-be encouraged to implement data caching strategies that do not exceed 24 hours to minimise the risk
-of unintended data persistence.
+Clients *should* inform users that any custom profile fields they add will be publicly accessible,
+and *should* discourage users from adding sensitive personal information to their profiles.
+
+Homeservers and clients *must* comply with GDPR and other relevant privacy regulations, particularly
+regarding data deletion and retention. Profile data *should* be cleared when a user is deactivated.
+While homeservers *should* cache remote profiles, they *should* implement strategies that do not
+exceed 24 hours to minimize the risk of unintended data persistence.
 
 ## Unstable Prefixes
 
@@ -362,7 +353,7 @@ entered the API as stable:
 `PUT` methods allowed when the unstable capability (detailed below) is advertised by the server.
 
 The existing `GET` method would act as normal and remain on `/_matrix/client/v3/profile/{userId}`
-without *need* for an unstable endpoint.
+without need for an unstable endpoint.
 
 Likewise, when the unstable capability is advertised by the server, the server should accept the
 new key endpoints `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}` which
