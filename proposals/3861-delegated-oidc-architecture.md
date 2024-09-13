@@ -128,17 +128,30 @@ Solving Matrix-specific problems with this new base could benefit the wider ecos
 
 ## Proposal
 
-TODO: fill out the actual proposal
+This proposal introduces a new set of authentication APIs for Matrix, based on OAuth 2.0 and OpenID Connect (OIDC) specifications.
 
-Due to the complexity of this proposal it has been broken down into a number of constituent sub-proposals:
+As a first step, it introduces those APIs as altenratives to the existing User-Interactive Authentication (UIA) APIs, acknowledging the complexity of covering all the use cases of the existing APIs.
+The long-term goal is to deprecate the existing UIA APIs and replace them with the new OAuth 2.0/OIDC-based APIs.
 
-| Ref                                                           | Purpose                                                                                                                                                                                  |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964) | Describes how homeservers can delegate auth to an OpenID Provider                                                                                                                        |
-| [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965) | Describes how participants in the Matrix ecosystem can discover the available capabilities of OIDC-enabled Homeservers and OpenID Providers                                              |
-| [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966) | Describes how OAuth 2.0 Dynamic Client Registration can be used to facilitate interoperability and openness of clients whilst promoting trust                                            |
-| [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967) | Defines the namespace for a set of API scopes that can can expanded in future to allow for finer grained permissioning                                                                   |
-| [MSC3824](https://github.com/matrix-org/matrix-doc/pull/3824) | Proposes some minor changes to the C-S API to allow Matrix clients that are not fully OIDC-native to work best with an OIDC enabled homeserver that has is serving a compatibility layer |
+### Base authentication flow
+
+To cover the most common use case of authenticating an end-user, the following MSCs are necessary:
+
+- [MSC2964: Usage of OAuth 2.0 authorization code grant and refresh token grant][MSC2964] describes how the main authentication flow works
+- [MSC2965: Usage of OpenID Connect Discovery for authentication server metadata discovery][MSC2965] describes how a client can discover the authentication server metadata of the homeserver
+- [MSC2966: Usage of OAuth 2.0 Dynamic Client Registration][MSC2966] describes how a client can register itself with the homeserver to get a client identifier
+- [MSC2967: API scopes][MSC2967] defines the first set of access scopes and the basis for future access scopes
+
+### Account management
+
+This moves the user-interface for some account management tasks from the client to the homeserver.
+Existing APIs like `/_matrix/client/v3/capabilities` help clients understand which account-management API endpoints are unavailable, but they don't offer alternatives to a homeserver-provided user-interface.
+To build this bridge between the client user-interface and the homeserver, [MSC4191: Account management deep-linking][MSC4191] proposes a way to deep-link to the account management capabilities of the homeserver.
+
+### Transition and existing client support
+
+To help client transition to the next-generation auth, this proposal is designed to offer backward-compatible APIs through the `m.login.sso` login flow.
+How this is inteded to work, and let client offer reasonable user-experience is coverd by [MSC3824: OIDC-aware clients][MSC3824].
 
 ## Sample flow
 
@@ -156,14 +169,14 @@ For example, UIA (User-Interactive Auth) could be added to the `/login` endpoint
 
 Examples of existing proposals include:
 
-| Proposals                                                                                                                                                                                                                                   | Comments                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [MSC1998: Two-Factor Authentication Providers](https://github.com/matrix-org/matrix-spec-proposals/pull/1998)<br>[MSC2271: TOTP 2FA login](https://github.com/matrix-org/matrix-spec-proposals/pull/2271)                                   | OP is free to implement MFA and many do. The [Matrix OIDC Playground](https://github.com/vector-im/oidc-playground) contains a Keycloak configured to demonstrate this                                                                                                                                                     |
-| [MSC2000: Server-side password policies](https://github.com/matrix-org/matrix-spec-proposals/pull/2000)                                                                                                                                     | Because the UI is served by the OP it is free to implement whatever password policies it sees fit                                                                                                                                                                                                                          |
-| [MSC3105: Previewing UIA flows](https://github.com/matrix-org/matrix-spec-proposals/pull/3105)<br>[MSC3741: Revealing the useful login flows to clients after a soft logout](https://github.com/matrix-org/matrix-spec-proposals/pull/3741) | These become unnecessary as the burden to implement auth flows is moved away from the client to the OP                                                                                                                                                                                                                     |
-| [MSC3262: aPAKE authentication](https://github.com/matrix-org/matrix-spec-proposals/pull/3262)<br>[MSC2957: Cryptographically Concealed Credentials](https://github.com/matrix-org/matrix-spec-proposals/pull/2957)                         | This is an interesting one as OIDC explicitly discourages a user from trusting their client with credentials. As such there is no existing flow for PAKEs. To achieve this in OIDC you would need to implement a custom grant in the Client and OP (perhaps an extension of the Resource Owner Password Credentials flow). |
-| [MSC3782: Matrix public key login spec](https://github.com/matrix-org/matrix-spec-proposals/pull/3782)                                                                                                                                      | Similar to above                                                                                                                                                                                                                                                                                                           |
-| [MSC3744: Support for flexible authentication](https://github.com/matrix-org/matrix-spec-proposals/pull/3744)                                                                                                                               | OIDC would instead be used as the pluggable layer for auth in Matrix                                                                                                                                                                                                                                                       |
+| Proposals                                                                                                                       | Comments                                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [MSC1998: Two-Factor Authentication Providers][MSC1998]<br>[MSC2271: TOTP 2FA login][MSC2271]                                   | OP is free to implement MFA and many do. The [Matrix OIDC Playground](https://github.com/vector-im/oidc-playground) contains a Keycloak configured to demonstrate this                                                                                                                                                     |
+| [MSC2000: Server-side password policies][MSC2000]                                                                               | Because the UI is served by the OP it is free to implement whatever password policies it sees fit                                                                                                                                                                                                                          |
+| [MSC3105: Previewing UIA flows][MSC3105]<br>[MSC3741: Revealing the useful login flows to clients after a soft logout][MSC3741] | These become unnecessary as the burden to implement auth flows is moved away from the client to the OP                                                                                                                                                                                                                     |
+| [MSC3262: aPAKE authentication][MSC3262]<br>[MSC2957: Cryptographically Concealed Credentials][MSC2957]                         | This is an interesting one as OIDC explicitly discourages a user from trusting their client with credentials. As such there is no existing flow for PAKEs. To achieve this in OIDC you would need to implement a custom grant in the Client and OP (perhaps an extension of the Resource Owner Password Credentials flow). |
+| [MSC3782: Matrix public key login spec][MSC3782]                                                                                | Similar to above                                                                                                                                                                                                                                                                                                           |
+| [MSC3744: Support for flexible authentication][MSC3744]                                                                         | OIDC would instead be used as the pluggable layer for auth in Matrix                                                                                                                                                                                                                                                       |
 
 ## Security considerations
 
@@ -177,13 +190,32 @@ Please refer to individual proposals.
 
 The following MSCs are part of this proposal:
 
-- [MSC2964](https://github.com/matrix-org/matrix-doc/pull/2964)
-- [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965)
-- [MSC2966](https://github.com/matrix-org/matrix-doc/pull/2966)
-- [MSC2967](https://github.com/matrix-org/matrix-doc/pull/2967)
-- [MSC3824](https://github.com/matrix-org/matrix-doc/pull/3824)
+- [MSC2964]
+- [MSC2965]
+- [MSC2966]
+- [MSC2967]
+- [MSC3824]
 
 The following MSCs are not directly part of this proposal but this proposal assumes that these are accepted:
 
-- [MSC3970: Scope transaction IDs to devices](https://github.com/matrix-org/matrix-spec-proposals/pull/3970)
-- [MSC3967: Do not require UIA when first uploading cross signing keys](https://github.com/matrix-org/matrix-spec-proposals/pull/3967)
+- [MSC3970: Scope transaction IDs to devices][MSC3970]
+- [MSC3967: Do not require UIA when first uploading cross signing keys][MSC3967]
+
+[MSC1998]: https://github.com/matrix-org/matrix-spec-proposals/pull/1998
+[MSC2000]: https://github.com/matrix-org/matrix-spec-proposals/pull/2000
+[MSC2271]: https://github.com/matrix-org/matrix-spec-proposals/pull/2271
+[MSC2957]: https://github.com/matrix-org/matrix-spec-proposals/pull/2957
+[MSC2964]: https://github.com/matrix-org/matrix-spec-proposals/pull/2964
+[MSC2965]: https://github.com/matrix-org/matrix-spec-proposals/pull/2965
+[MSC2966]: https://github.com/matrix-org/matrix-spec-proposals/pull/2966
+[MSC2967]: https://github.com/matrix-org/matrix-spec-proposals/pull/2967
+[MSC3105]: https://github.com/matrix-org/matrix-spec-proposals/pull/3105
+[MSC3262]: https://github.com/matrix-org/matrix-spec-proposals/pull/3262
+[MSC3741]: https://github.com/matrix-org/matrix-spec-proposals/pull/3741
+[MSC3744]: https://github.com/matrix-org/matrix-spec-proposals/pull/3744
+[MSC3782]: https://github.com/matrix-org/matrix-spec-proposals/pull/3782
+[MSC3824]: https://github.com/matrix-org/matrix-spec-proposals/pull/3824
+[MSC3967]: https://github.com/matrix-org/matrix-spec-proposals/pull/3967
+[MSC3970]: https://github.com/matrix-org/matrix-spec-proposals/pull/3970
+[MSC4190]: https://github.com/matrix-org/matrix-spec-proposals/pull/4190
+[MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
