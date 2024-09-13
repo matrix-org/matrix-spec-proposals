@@ -267,8 +267,8 @@ unstable key `us.cloke.msc4175.tz` and following approval would then support cli
 
 ### Size Limits
 
-Whenever "bytes" are referred to as a limit, this is calculated as UTF-8 bytes, so a two-byte
-UTF-16 character consumes two bytes of this limit.
+Whenever "bytes" are referred to as a limit, this is calculated as UTF-8 bytes, so a two-byte code
+point consumes two bytes of this limit. This size would be measured before any JSON encoding.
 
 Until another MSC specifies otherwise:
 
