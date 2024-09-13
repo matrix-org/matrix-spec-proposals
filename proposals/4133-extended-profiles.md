@@ -197,18 +197,18 @@ or
 }
 ```
 
-**403 Forbidden**: When the user does not have permission to take this action on a specific key,
-such as when the server policy (e.g.
-[MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
-
-- **Error code refusing to create additional keys**: `M_FORBIDDEN`
+or
 
 ```json
 {
-    "errcode": "M_FORBIDDEN",
+    "errcode": "M_TOO_LARGE",
     "error": "The user has exceeded the maximum number of allowed keys in their profile."
 }
 ```
+
+**403 Forbidden**: When the user does not have permission to take this action on a specific key,
+such as when the server policy (e.g.
+[MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170)) restricts such actions:
 
 - **Error code when not allowed to modify key**: `M_FORBIDDEN`
 
@@ -254,7 +254,9 @@ The namespace for field names is defined as follows:
   does not recognise a field in this namespace, it may attempt to display it, but should not
   attempt to update the content in case it has special requirements.
 - The namespace `u.*` is reserved for user-defined fields. The portion of the string after the `u.`
-  is defined the display name of this field. These user-defined fields will always be string format.
+  is defined the display name of this field. These user-defined fields will always be string
+  format, and as measured in UTF-8 byte counts, the key and value must not be longer than 128 bytes
+  and 512 bytes respectively.
 - Client-specific or unstable fields MUST use the Java package naming convention: `tld.name.*`.
 
 Following support for this specification change, a user could enter a "My Timezone" field manually
@@ -268,20 +270,23 @@ unstable key `us.cloke.msc4175.tz` and following approval would then support cli
 
 ### Size Limits
 
+Whenever "bytes" are referred to as a limit, this is calculated as UTF-8 bytes, so a two-byte
+UTF-16 character consumes two bytes of this limit.
+
 Until another MSC specifies otherwise:
 
-- Each profile *must* be *at most* 64KiB (65536 bytes) in size
-- Each profile may contain *up to* 50 keys (including `avatar_url` and `displayname`)
-- Each key *must* be a string of *at least* one byte, and *must* not exceed 128 bytes
-- Each value *must* be a string and *must* not exceed 512 bytes
+- Each profile *must* be *at most* 64KiB (65536 bytes) in size, as measured in Canonical JSON
+- Each key *must* be a string of *at least* one byte and *must* not exceed 128 bytes
+- Each value in the `u.*` namespace *must* not exceed 512 bytes in length
+- Profile size limits include `avatar_url` and `displayname`
 
-These sizes are measured as encoded in
-[Canonical JSON](https://spec.matrix.org/v1.11/appendices/#canonical-json), so `🛸` would consume
-two bytes of the limit.
+Future MSCs may add exceptions to these limits, but these current limits have been chosen to allow
+servers and clients to have predictable upper limits for performance and caching purposes, and to
+provide a more comfortable UX in clients.
 
-Future MSCs may allow fields that are not string values, or add exceptions to the limits, but these
-current limits have been chosen to allow servers and clients to have predictable upper limits for
-performance and caching purposes.
+As lengths and types are subject to change, implementations are encouraged to accept values of any
+type acceptable in [Canonical JSON](https://spec.matrix.org/latest/appendices/#canonical-json), and
+treat remote profiles as a single ≤64KiB block of Canonical JSON.
 
 ### Implementation Details
 
