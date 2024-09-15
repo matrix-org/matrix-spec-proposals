@@ -121,6 +121,9 @@ None so far.
 
 ## Alternatives
 
+* An endpoint could be developed to expose soft-failed events to
+  clients or appservices such as in
+ [MSC4109](https://github.com/matrix-org/matrix-spec-proposals/pull/4109).
 
 ## Security considerations
 
