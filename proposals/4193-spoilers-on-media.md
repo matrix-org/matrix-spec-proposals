@@ -9,8 +9,8 @@ In events with an image, there will be an optional `m.spoiler` field as a boolea
 ## Potential issues
 A user with malicious intent may put something inappropriate in the reason field.
 ## Alternatives
-One alternative is the [Spoilerinator](https://codeberg.org/cf/spoilerinator) tool.
+One alternative is the [Spoilerinator](https://codeberg.org/cf/spoilerinator) tool. However, it depends on HTML, which not all clients implement, and it needs you to copy the media URL, then running the external tool.
 ## Security considerations
 None, hopefully.
 ## Unstable prefix
-Until this is stable, clients should use `org.matrix.msc4193.spoiler` and `org.matrix.msc4193.spoiler.reason`.
+Until this is stable, clients should use `page.codeberg.everypizza.msc4193.spoiler` and `page.codeberg.everypizza.msc4193.spoiler.reason`.
