@@ -38,7 +38,7 @@ issues that can occur in the moderator's flow.
 
 [^create-mass-redaction]: I think?
 
-[^often-soft-failure] https://github.com/matrix-org/synapse/issues/9329
+[^often-soft-failure]: https://github.com/matrix-org/synapse/issues/9329
 ## Proposal
 
 This proposal introduces a very simple client-server endpoint to
