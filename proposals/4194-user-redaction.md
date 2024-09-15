@@ -7,14 +7,14 @@ in clients with abuse.
 
 Typically, a moderator will be pinged by a bystander, and the
 moderator will respond by first banning the throwaway account and then
-issuing redactions for each event the throwaway account sent in their
-client.
+issuing redactions via a client for each event the throwaway account
+sent.
 
 Due to the architecture of various Matrix APIs, there are multiple
 issues that can occur in the moderator's flow.
 
 1. Calling `/messages` is required for some clients to accurately get
-   the full list of `event_ids` the throwaway account sent.  This is a
+   the full list of `event_id`s the throwaway account sent.  This is a
    compounding problem because homeservers can be slow to respond to a
    filtered `/messages` request and then the client must still process
    the response and issue a redaction for each event returned.
@@ -67,7 +67,7 @@ the scope of the request.
 
 #### Rate limiting
 
-This API SHOULD be rate limited, but the number `m.room.redaction`
+This endpoint SHOULD be rate limited, but the number `m.room.redaction`
 events emitted SHOULD NOT be the subject of the rate limit.
 But instead the number of events that have been redacted overall.
 This is to cover semantics of MSC2244.
@@ -85,7 +85,7 @@ Rather than their own events.
 `is_more_events`: `boolean` - Whether there are more events outside of
 the scope of the request sent by the user that could be redacted, but
 have not been because of the `limit` query parameter.  If
-`_is_more_events` is true, then the server should expect that the
+`is_more_events` is true, then the server should expect that the
 client can optionally be called again, to redact more even more events.
 
 `redacted_events`: `integer` - The number of events that have been redacted, including soft failed events.
