@@ -106,15 +106,24 @@ Content-Type: application/json
 }
 ```
 
-##### Limited response
+#### Limited response
 
-Servers may wish to limit the maximum size of the limit that can be specified.
+Servers may wish to limit the maximum size of the limit that can be
+specified. This maximum limit may even be dynamic to comply with rate
+limiting.
+
+To do this, they should simply redact less events than the limit provided
+by the client.
 
 ```
+POST /.../?limit=1000
+200 OK
+Content-Type: application/json
+
 {
-  "errcode": "M_LIMIT_TOO_LARGE",
-  "error": "The limit parameter specified for this request is too large.",
-  "max_limit": 100
+  "is_more_events": true,
+  "redacted_events": 25,
+  "soft_failed_events": 3
 }
 ```
 
@@ -136,9 +145,6 @@ Implementers should be cautious over the use of this API for self
 redaction. We might omit that use case from the MSC if there are concerns.
 
 ## Unstable prefix
-
-If nothing exists for what `M_LIMIT_TOO_LARGE` is trying to do, then
-`org.matrix.msc4194.LIMIT_TOO_LARGE`.
 
 Until the MSC is accepted, implementations can use `org.matrix.msc4194` as the
 unstable prefix and as a flag in the `unstable_features` section of `/versions`:
