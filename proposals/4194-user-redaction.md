@@ -58,6 +58,9 @@ soft-failed events, and will cause redactions to be issued
 for any soft-failed events that match the scope of the
 request.
 
+Events known to have already been redacted SHOULD be ignored and MUST
+NOT contribute to the request limit.
+
 It is left to an implementation detail whether a `m.room.redaction`
 event is created for each event, or
 [MSC2244](https://github.com/matrix-org/matrix-spec-proposals/pull/2244)
