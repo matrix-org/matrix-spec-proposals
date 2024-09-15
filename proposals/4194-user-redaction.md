@@ -131,7 +131,10 @@ redaction. We might omit that use case from the MSC if there are concerns.
 
 ## Unstable prefix
 
-Uhm help?
+If nothing exists for what `M_LIMIT_TOO_LARGE` is trying to do, then
+`org.matrix.msc4194.LIMIT_TOO_LARGE`
+
+`POST /_matrix/client/unstable/org.matrix.msc4194/rooms/{roomID}/redact/user/{userID}`
 
 ## Dependencies
 
