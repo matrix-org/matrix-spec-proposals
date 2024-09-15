@@ -151,6 +151,25 @@ style query pamarameters if the endpoint needs to be extended in the
 future. It is our current assessment that we are currently forward
 compatible. But someone should double check.
 
+### Redacting "future" soft-failed events
+
+Given that a request to the `/rooms/redact/user` endpoint is very
+likely to occur after a room ban, then it makes sense that there could
+still be soft failed events outside the scope of the request. The
+moderator's homeserver is likely to discover soft-failed events from
+the target user after the moderator's request has completed.
+
+It could make sense to add a flag to the endpoint to tell the
+moderator's homeserver to issue redactions on their behalf for the
+newly discovered events. However, this could be complicated for
+servers to implement.  The flag would have to reset if the target user
+is unbanned, and all incoming soft failed events will have to be
+checked against a list of flagged servers.
+
+At the moment we will remain forward compatible with a future
+proposal to add a flag.
+
+
 ## Alternatives
 
 * An endpoint could be developed to expose soft-failed events to
