@@ -30,12 +30,15 @@ issues that can occur in the moderator's flow.
    to be sent in one event. But there currently are no endpoints that
    allow you to create this event[^create-mass-redaction].
 
-3. Soft failure of events sent by the throwaway account after a ban
-   stop them from being visible to the matrix client, and there is no
-   way for a moderator to redact them. This is a huge problem that
-   occurs far more frequently than it should.
+3. Soft failure of events sent by the throwaway account after the
+   moderator bans the throwaway. These events are not visible to the
+   moderator's matrix client, and there is no way for a moderator to
+   redact these events. This is a huge problem that occurs far more
+   frequently than it should[^often-soft-failure].
 
 [^create-mass-redaction]: I think?
+
+[^often-soft-failure] https://github.com/matrix-org/synapse/issues/9329
 ## Proposal
 
 This proposal introduces a very simple client-server endpoint to
