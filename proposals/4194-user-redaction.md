@@ -97,7 +97,7 @@ check the response.
 the scope of the request sent by the user that could be redacted, but
 have not been because of the `limit` query parameter.  If
 `is_more_events` is true, then the server should expect that the
-client can optionally be called again, to redact even more events.
+client can optionally call the endpoint again, to redact even more events.
 
 `redacted_events`: `integer` - The number of events that have been redacted, including soft failed events.
 
