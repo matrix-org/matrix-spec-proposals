@@ -71,16 +71,23 @@ is employed. We expect that for now, most implementations will
 issue one `m.room.redaction` event for each event under
 the scope of the request.
 
+The action of redacting the events that are determined to be within
+the scope of the request should be seen as an atomic operation from
+the perspective of the client, regardless of whether multiple
+`m.room.redaction` events are issued by the server.
+
 #### Rate limiting
 
 This endpoint SHOULD be rate limited, but the number `m.room.redaction`
 events emitted SHOULD NOT be the subject of the rate limit.
 But instead the number of events that have been redacted overall.
 This is to cover semantics of MSC2244.
+
 Servers SHOULD be more liberal in the number of events that
 can be redacted in comparison to rate limits for `/send` when
 the endpoint is being used to redact another user's events.
-Rather than their own events.
+Rather than their own events. The intent of being liberal
+is to allow moderators to remove spam faster.
 
 #### Query parameters
 
