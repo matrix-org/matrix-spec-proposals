@@ -138,9 +138,15 @@ redaction. We might omit that use case from the MSC if there are concerns.
 ## Unstable prefix
 
 If nothing exists for what `M_LIMIT_TOO_LARGE` is trying to do, then
-`org.matrix.msc4194.LIMIT_TOO_LARGE`
+`org.matrix.msc4194.LIMIT_TOO_LARGE`.
 
-`POST /_matrix/client/unstable/org.matrix.msc4194/rooms/{roomID}/redact/user/{userID}`
+Until the MSC is accepted, implementations can use `org.matrix.msc4194` as the
+unstable prefix and as a flag in the `unstable_features` section of `/versions`:
+* `/_matrix/client/unstable/org.matrix.msc4194/rooms/{roomID}/redact/user/{userID}`
+  instead of `/_matrix/client/v1/rooms/{roomID}/redact/user/{userID}`
+Once the MSC is merged, the `org.matrix.msc4194.stable` unstable feature flag
+can be used to advertise support for the stable version of the endpoint, until
+the spec release with the endpoint is advertised.
 
 ## Dependencies
 
