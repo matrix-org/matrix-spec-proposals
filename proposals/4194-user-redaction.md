@@ -84,7 +84,12 @@ Rather than their own events.
 
 #### Query parameters
 
-`limit`: `integer` - The maximum number of events to redact. Default: 25.
+`limit`: `integer` - The maximum number of events to
+redact. Default: 25.
+
+Client authors should be aware that the server may return less than
+the `limit` even when `is_more_events` is `true`, and so should always
+check the response.
 
 #### Response
 
