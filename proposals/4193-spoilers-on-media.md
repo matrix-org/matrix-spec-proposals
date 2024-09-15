@@ -23,8 +23,8 @@ In events with an image, there will be an optional `m.spoiler` field as a boolea
     "url": "mxc://chat.blahaj.zone/UMjvQObiMNEyMunrldKQVYcT"
 ```
 ## Potential issues
-A user with malicious intent may put something inappropriate in the reason field.
-## Alternatives
+A user with malicious intent may put something inappropriate in the reason field. Additionally, clients that do not support this feature will show all media without a spoiler.
+# Alternatives
 One alternative is the [Spoilerinator](https://codeberg.org/cf/spoilerinator) tool. However, it depends on HTML, which not all clients implement, and it needs you to copy the media URL, then running the external tool.
 ## Security considerations
 None, hopefully.
