@@ -1,0 +1,16 @@
+# MSC4193: Spoilers on Media
+This proposal aims to enhance the protocol with more ways to make other users feel comfortable while using the protocol.
+Background
+Matrix includes a way to add a spoiler to text, which hides the text from visibility without explicit user interaction to show the hidden text. However, there is no official way to do this with images.
+## Proposal
+Some other chat protocols, like Discord or Telegram, offer a way to hide potentially sensitive or triggering images in a way that requires the user to explicitly interact with it to show the image.
+
+In events with an image, there will be an optional `m.spoiler` field as a boolean. If true, then clients should show a blurred version of the image. If not present, it will be assumed to be false. There will also be a `m.spoiler.reason` field as a text value that will optionally display text for why the image has a spoiler.
+## Potential issues
+A user with malicious intent may put something inappropriate in the reason field.
+## Alternatives
+One alternative is the [Spoilerinator](https://codeberg.org/cf/spoilerinator) tool.
+## Security considerations
+None, hopefully.
+## Unstable prefix
+Until this is stable, clients should use `org.matrix.msc4193.spoiler` and `org.matrix.msc4193.spoiler.reason`.
