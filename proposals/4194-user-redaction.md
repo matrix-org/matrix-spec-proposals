@@ -42,7 +42,7 @@ This proposal introduces a very simple client-server endpoint to
 alleviate all three of the concerns surrounding the moderators
 redaction flow.
 
-### Redacting a users's events
+### Redacting a user's events
 
 A new endpoint is introduced into the client-server spec.
 
@@ -80,7 +80,7 @@ Rather than their own events.
 
 `limit`: `integer` - The maximum number of events to redact. Default: 25.
 
-#### Respone
+#### Response
 
 `is_more_events`: `boolean` - Whether there are more events outside of
 the scope of the request sent by the user that could be redacted, but
@@ -126,7 +126,7 @@ None so far.
 
 ### Use case for self redaction
 
-Implementors should be cautious over the use of this API for self
+Implementers should be cautious over the use of this API for self
 redaction. We might omit that use case from the MSC if there are concerns.
 
 ## Unstable prefix
