@@ -137,7 +137,12 @@ Content-Type: application/json
 
 ## Potential issues
 
-None so far.
+### Forward compatibility with `/messages` style query parameters
+
+We probably want to keep the endpoint compatible with `/messages`
+style query pamarameters if the endpoint needs to be extended in the
+future. It is our current assessment that we are currently forward
+compatible. But someone should double check.
 
 ## Alternatives
 
