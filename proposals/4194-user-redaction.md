@@ -1,4 +1,4 @@
-# MSC0000: User redaction
+# MSC4194: User redaction
 
 Targeted attacks are a problem in Matrix. Typically throwaway users
 are used to target matrix rooms with abuse in the form of multiple
