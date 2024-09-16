@@ -120,7 +120,7 @@ Whether the parameter are in the URL fragment or query parameters is determined 
 
 Public clients with an HTTPS redirect URI must use the `fragment` response mode, as the fragment is not sent to the server in the redirect.
 
-In both success and failure cases, the paramaters will have the `state` value used in the authorization request.
+In both success and failure cases, the parameters will have the `state` value used in the authorization request.
 
 Successful authorization will have a `code` value.
 
