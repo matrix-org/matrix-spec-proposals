@@ -1,4 +1,4 @@
-# Comparison of proposals for ignoring invites
+# MSC4192: Comparison of proposals for ignoring invites
 
 Matrix supports ignoring specific users via the eponymous [module] and the
 `m.ignored_user_list` account data event.
