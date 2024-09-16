@@ -1,4 +1,4 @@
-# MSC0000: Template for new MSCs
+# MSC4195: MatrixRTC using LiveKit
 
 *Note: Text written in italics represents notes about the section or proposal process. This document
 serves as an example of what a proposal could look like (in this case, a proposal to have a template)
