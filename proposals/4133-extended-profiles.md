@@ -253,10 +253,13 @@ the server, but clients are expected to use the correct namespace for field crea
   have special entry/display requirements that are defined in the Matrix specification. If a client
   does not recognise a field in this namespace, it may attempt to display it, but should not
   attempt to update the content in case it has special requirements.
+
 - The namespace `u.*` is reserved for user-defined fields. The portion of the string after the `u.`
   is defined as the display name of this field. These user-defined fields will always be string
-  format, and as measured in UTF-8 byte counts, the key and value must not be longer than 128 bytes
-  and 512 bytes respectively.
+  format, and as measured in UTF-8 byte counts:
+  - The *name* of each key must not exceed 128 bytes.
+  - The *content* of each value must not exceed 512 bytes.
+
 - Client-specific or unstable fields MUST use the Java package naming convention: `tld.name.*`.
 
 Following support for this specification change, a user could enter a "My Timezone" field manually
@@ -276,8 +279,8 @@ point consumes two bytes of this limit. This size would be measured before any J
 Until another MSC specifies otherwise:
 
 - Each profile *must* be *at most* 64KiB (65536 bytes) in size, as measured in Canonical JSON.
-- Each key *must* be a string of *at least* one byte and *must* not exceed 128 bytes.
-- Each value in the `u.*` namespace *must* not exceed 512 bytes in length.
+- Each key *must* be a string of *at least* one byte and it's name *must* not exceed 128 bytes.
+- Each key's *value* in the `u.*` namespace *must* not exceed 512 bytes in length.
 - The limit on overall profile size includes `avatar_url` and `displayname`.
 
 ### Implementation Details
