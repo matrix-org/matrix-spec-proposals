@@ -75,6 +75,8 @@ With the current authentication paradigm, sensitive account operations, such as 
 With the current state of the ecosystem, in a password-based account, this means sending the user's password again: nothing prevents the client from storing the password on the initial login and using it to perform these actions.
 To put that in perspective, this means that if a user on the matrix.org homeserver tries to log in on a new client they want to try out, this client would be able to completely lock them out of their account by logging out other sessions and changing their password without additional confirmation from the user.
 
+This also effectively widens the attack surface for credential theft, as both the client and the homeserver currently have access to the user's credentials.
+
 Making it mandatory for the client to go through the system browser to authenticate means there is a part of the login flow that the client can't skip and doesn't have control over.
 The user has to give their explicit consent during that part of the flow, with no way for the client to bypass it.
 
@@ -126,6 +128,19 @@ This does not mean that the Matrix ecosystem should not embrace such flows, but 
 The goal is to set a new widely-adopted base for authentication in the Matrix ecosystem, eventually replacing the current custom authentication protocol.
 Solving Matrix-specific problems with this new base could benefit the wider ecosystem of decentralized protocols, rather than staying confined to Matrix.
 
+### Why not 'just use OpenID Connect'?
+
+OpenID Connect does a good job at standardizing on top of OAuth 2.0, and it covers most things happening between the client and the server for authentication.
+It is a great fit for connecting identity providers to other pieces of software, and this is already what homeservers do with the `m.login.sso` flow.
+
+Knowing that, it can feel like adopting OpenID Connect fully would help using off-the-shelf identity providers for Matrix homeservers.
+In practice, OpenID Connect does not cover continuous exchanges between the application and the identity providers: there is no well-supported standard to signal new sessions, new users, sessions ending, users deactivation, etc. from the identity provider to the application.
+Most identity providers are also designed to provide service to a fixed set of applications, which does not fit the Matrix ecosystem, where users can use any number of different clients.
+
+This means that backfitting Matrix-specific concepts on top of OpenID Connect would be a bad idea, especially as one important goal of this proposal is to keep the current authentication paradigm working for some time.
+
+**Note**: an earlier version of this MSC focused on 'delegating' authentication to an identity provider, but it showed its limitations and added much confusion over the intent of the proposal.
+
 ## Proposal
 
 This proposal introduces a new set of authentication APIs for Matrix, based on OAuth 2.0 and OpenID Connect (OIDC) specifications.
@@ -151,7 +166,7 @@ To build this bridge between the client user-interface and the homeserver, [MSC4
 ### Transition and existing client support
 
 To help client transition to the next-generation auth, this proposal is designed to offer backward-compatible APIs through the `m.login.sso` login flow.
-How this is inteded to work, and let client offer reasonable user-experience is coverd by [MSC3824: OIDC-aware clients][MSC3824].
+How this is intended to work, and let client offer reasonable user-experience is covered by [MSC3824: OIDC-aware clients][MSC3824].
 
 ## Sample flow
 
