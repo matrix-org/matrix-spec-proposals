@@ -1,23 +1,23 @@
 # MSC2964: Usage of OAuth 2.0 authorization code grant and refresh token grant
 
-This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
+This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC][MSC3861].
 
-A fundamental change is that access tokens will no longer be issued by the homeserver and instead will be issued by an auth server (OpenID Provider) directly to the Matrix client.
-
-This MSC in particular defines how clients should authenticate with the homeserver to obtain the access token used to access the Matrix Client-to-Server API.
+This MSC in particular defines how clients can leverage the OAuth 2.0 authorization code grant to gain access to the Matrix Client-to-Server API.
 
 ## Proposal
 
 ### Prerequisites
 
-This proposal requires the client to know the following metadata about the authentication server:
+This proposal requires the client to know the following authorization server metadata about the homeserver:
 
 - `authorization_endpoint`: the URL where the user is able to access the authorization endpoint to initiate the login flow
 - `token_endpoint`: the URL where the user is able to access the token endpoint to exchange the authorization code for an access token
   verify the signature of the ID Token
 - `response_types_supported`: a JSON array of response types supported by the authorization endpoint
-- `grant_types_supported`: a JSON array of grant types supported by the authorization endpoint
+- `grant_types_supported`: a JSON array of grant types supported by the authorization endpointn defined in [RFC8414] and used in [RFC6749]
 - `response_mode_supported`: a JSON array of response modes supported by the authorization endpoint
+
+All of those metadata values are well-defined in [RFC8414] and used in varioud MSCs like [RFC6749].
 
 The discovery of the above metadata is out of scope for this MSC, and is currently covered by [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
 
@@ -85,6 +85,8 @@ This authorization request URL must be opened in the user's browser:
   - using the system browser
   - through platform-specific APIs when available, such as [`ASWebAuthenticationSession`](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) on iOS or [Android Custom Tabs](https://developer.chrome.com/docs/android/custom-tabs) on Android
 
+The rationale for using the system browser is explained in [MSC3861], under "Motivation" → "Benefits of authenticating end-users through the system browser".
+
 ---
 
 Sample authorization request (broken down into multiple lines for readability), with the following values:
@@ -111,8 +113,14 @@ https://account.example.com/oauth2/auth?
 #### Callback
 
 Once completed, the user is redirected to the `redirect_uri`, with either a successful or failed authorization in the URL fragment or query parameters.
+Whether the parameter are in the URL fragment or query parameters is determined by the `response_mode` client metadata value:
 
-In both cases, the paramaters will have the `state` value used in the authorization request.
+- if set to `fragment`, the parameters will be placed in the URL fragment, like `https://example.com/callback#param1=value1&param2=value2`
+- if set to `query`, the parameters will be in placed the query string, like `https://example.com/callback?param1=value1&param2=value2`
+
+Public clients with an HTTPS redirect URI must use the `fragment` response mode, as the fragment is not sent to the server in the redirect.
+
+In both success and failure cases, the paramaters will have the `state` value used in the authorization request.
 
 Successful authorization will have a `code` value.
 
@@ -219,7 +227,7 @@ Whether the homeserver supports this parameter is advertised by the `prompt_valu
 
 ## Potential issues
 
-TODO
+For a discussion on potential issues please see [MSC3861]
 
 ## Alternatives
 
@@ -243,6 +251,7 @@ None as part of this MSC.
 
 [RFC6749]: https://tools.ietf.org/html/rfc6749
 [RFC7636]: https://tools.ietf.org/html/rfc7636
+[RFC8414]: https://tools.ietf.org/html/rfc8414
 [MSC2965]: https://github.com/matrix-org/matrix-spec-proposals/pull/2965
 [MSC2966]: https://github.com/matrix-org/matrix-spec-proposals/pull/2966
 [MSC2967]: https://github.com/matrix-org/matrix-spec-proposals/pull/2967
