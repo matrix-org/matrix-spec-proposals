@@ -155,17 +155,17 @@ fields.
 }
 ```
 
-- **Backward Compatibility**: For backward compatibility, clients SHOULD assume that extended
-  profile fields are not supported if this capability is missing from the server's advertised
-  capabilities.
+- **When capability missing**: Clients SHOULD assume extended profile fields are supported, and
+  that they can be created/written to. If a server intends to deny some (or all) changes, it SHOULD
+  use the capabiltiy to advertise this to improve client experience.
 
 - **When `enabled` is `false`**: Clients SHOULD expect to read and display extended fields but
   SHOULD NOT allow users to create or update custom fields. Any attempt to do so may result in a
   `403 Forbidden` error.
 
 - **When `enabled` is `true`**: Clients MAY allow users to create or update custom fields, except
-  for those listed in the `disallowed` array. Individual requests will receive a `400 Bad Request`
-  or `403 Forbidden` response from the homeserver if specific server-side policies prevent them.
+  those listed in the `disallowed` array. Individual requests will receive a `400 Bad Request` or#
+  `403 Forbidden` response from the homeserver if server-side policies prevent them.
 
 ### Error Handling
 
@@ -371,11 +371,12 @@ The client capability `m.profile_fields` should use this prefix until stable:
 
 ```json
 {
-  "capabilities": {
-    "uk.tcpip.msc4133.profile_fields": {
-      "enabled": false
+    "capabilities": {
+        "uk.tcpip.msc4133.profile_fields": {
+            "enabled": true,
+            "disallowed": ["org.example.job_title"]
+        }
     }
-  }
 }
 ```
 
