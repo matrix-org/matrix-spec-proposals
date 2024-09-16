@@ -148,7 +148,8 @@ fields.
 {
     "capabilities": {
         "m.profile_fields": {
-            "enabled": true
+            "enabled": true,
+            "disallowed": ["org.example.job_title"]
         }
     }
 }
@@ -162,9 +163,9 @@ fields.
   SHOULD NOT allow users to create or update custom fields. Any attempt to do so may result in a
   `403 Forbidden` error.
 
-- **When `enabled` is `true`**: Clients MAY allow users to create or update custom fields. However,
-  individual updates may still receive a `400 Bad Request` or `403 Forbidden` response from the
-  homeserver if specific server-side policies prevent the action.
+- **When `enabled` is `true`**: Clients MAY allow users to create or update custom fields, except
+  for those listed in the `disallowed` array. Individual requests will receive a `400 Bad Request`
+  or `403 Forbidden` response from the homeserver if specific server-side policies prevent them.
 
 ### Error Handling
 
