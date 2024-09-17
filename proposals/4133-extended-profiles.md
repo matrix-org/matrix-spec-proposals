@@ -157,14 +157,14 @@ fields.
 
 - **When capability missing**: Clients SHOULD assume extended profile fields are supported, and
   that they can be created/written to. If a server intends to deny some (or all) changes, it SHOULD
-  use the capabiltiy to advertise this to improve client experience.
+  use the capability to advertise this to improve client experience.
 
 - **When `enabled` is `false`**: Clients SHOULD expect to read and display extended fields but
   SHOULD NOT allow users to create or update custom fields. Any attempt to do so may result in a
   `403 Forbidden` error.
 
 - **When `enabled` is `true`**: Clients MAY allow users to create or update custom fields, except
-  those listed in the `disallowed` array. Individual requests will receive a `400 Bad Request` or#
+  those listed in the `disallowed` array. Individual requests will receive a `400 Bad Request` or
   `403 Forbidden` response from the homeserver if server-side policies prevent them.
 
 ### Error Handling
