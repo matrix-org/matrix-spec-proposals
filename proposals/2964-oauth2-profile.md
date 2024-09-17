@@ -10,14 +10,13 @@ This MSC in particular defines how clients can leverage the OAuth 2.0 authorizat
 
 This proposal requires the client to know the following authorization server metadata about the homeserver:
 
-- `authorization_endpoint`: the URL where the user is able to access the authorization endpoint to initiate the login flow
-- `token_endpoint`: the URL where the user is able to access the token endpoint to exchange the authorization code for an access token
-  verify the signature of the ID Token
+- `authorization_endpoint`: the URL where the user should be sent to initiate the login flow
+- `token_endpoint`: the URL where the client is able to exchange the authorization code for an access token
 - `response_types_supported`: a JSON array of response types supported by the authorization endpoint
-- `grant_types_supported`: a JSON array of grant types supported by the authorization endpointn defined in [RFC8414] and used in [RFC6749]
+- `grant_types_supported`: a JSON array of grant types supported by the authorization endpoint defined in [RFC8414] and used in [RFC6749]
 - `response_mode_supported`: a JSON array of response modes supported by the authorization endpoint
 
-All of those metadata values are well-defined in [RFC8414] and used in varioud MSCs like [RFC6749].
+All of those metadata values are well-defined in [RFC8414] and used in various RFCs like [RFC6749].
 
 The discovery of the above metadata is out of scope for this MSC, and is currently covered by [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
 
