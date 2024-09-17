@@ -60,6 +60,7 @@ The client must know the following parameters, through ways described in [MSC296
 - `client_id`: the unique identifier allocated for the client
 - `redirect_uri`: the URI where the user is redirected after the authorization flow used by this client
 - `scope`: the scope of the access token to request
+- `response_mode`: the response mode to use, either `fragment` or `query`. It must be `fragment` if the `redirect_uri` is an HTTPS URI, and can be `query` otherwise
 
 It needs to generate the following values:
 
@@ -75,6 +76,7 @@ It then constructs the authorization request URL using the `authorization_endpoi
 - The `redirect_uri` value
 - The `scope` value
 - The `state` value
+- The `response_mode` value
 - The `code_challenge` computed from the `code_verifier` value using the SHA-256 algorithm, as described in [RFC7636]
 - The `code_challenge_method` set to `S256`
 
@@ -95,6 +97,7 @@ Sample authorization request (broken down into multiple lines for readability), 
 - `client_id` set to `s6BhdRkqt3`, obtained through [MSC2966]
 - `redirect_uri` set to `https://app.example.com/oauth2-callback`
 - `state` set to `ewubooN9weezeewah9fol4oothohroh3`
+- `response_mode` set to `fragment`
 - `code_verifier` set to `ogie4iVaeteeKeeLaid0aizuimairaCh`
 - `code_challenge` computed as `72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU`
 - `scope` set to `urn:matrix:client:api:* urn:matrix:client:device:AAABBBCCCDDD` (as per [MSC2967])
@@ -103,6 +106,7 @@ Sample authorization request (broken down into multiple lines for readability), 
 https://account.example.com/oauth2/auth?
     client_id     = s6BhdRkqt3 &
     response_type = code &
+    response_mode = fragment &
     redirect_uri  = https://app.example.com/oauth2-callback &
     scope         = urn:matrix:client:api:* urn:matrix:client:device:AAABBBCCCDDD &
     state         = ewubooN9weezeewah9fol4oothohroh3 &
@@ -113,7 +117,7 @@ https://account.example.com/oauth2/auth?
 #### Callback
 
 Once completed, the user is redirected to the `redirect_uri`, with either a successful or failed authorization in the URL fragment or query parameters.
-Whether the parameter are in the URL fragment or query parameters is determined by the `response_mode` client metadata value:
+Whether the parameter are in the URL fragment or query parameters is determined by the `response_mode` value:
 
 - if set to `fragment`, the parameters will be placed in the URL fragment, like `https://example.com/callback#param1=value1&param2=value2`
 - if set to `query`, the parameters will be in placed the query string, like `https://example.com/callback?param1=value1&param2=value2`
