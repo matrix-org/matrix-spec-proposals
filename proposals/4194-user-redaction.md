@@ -106,9 +106,13 @@ have not been because of the `limit` query parameter.  If
 `is_more_events` is true, then the server should expect that the
 client can optionally call the endpoint again, to redact even more events.
 
-`redacted_events`: `integer` - The number of events that have been redacted, including soft failed events.
+`redacted_events`: `object` - An object with the following fields:
 
-`soft_failed_events`: `integer` - The number of soft failed events that have been redacted.
+* `total`: `integer` - The number of events that have been redacted,
+  including soft failed events.
+
+* `soft_failed`: `integer` - The number of soft failed events that
+  have been redacted.
 
 ```
 200 OK
@@ -116,8 +120,10 @@ Content-Type: application/json
 
 {
   "is_more_events": false,
-  "redacted_events": 5,
-  "soft_failed_events": 1
+  "redacted_events": {
+    "total": 5,
+    "soft_failed": 1
+  }
 }
 ```
 
@@ -137,8 +143,10 @@ Content-Type: application/json
 
 {
   "is_more_events": true,
-  "redacted_events": 25,
-  "soft_failed_events": 3
+  "redacted_events": {
+    "total": 25,
+    "soft_failed": 3
+  }
 }
 ```
 
