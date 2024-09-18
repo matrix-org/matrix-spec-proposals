@@ -51,10 +51,13 @@ A new endpoint is introduced into the client-server spec.
 
 `POST /_matrix/client/v1/rooms/{roomID}/redact/user/{userID}`
 
-This endpoint redacts the target matrix user's unredacted events in
-reverse chronological order, starting from the most
-chronologically-recent visible event in the room history for the
-requesting user.
+This endpoint redacts the target matrix user's unredacted events by
+sending redactions on behalf of the requesting user.
+
+The target user's unredacted events are sourced in reverse
+chronological order, starting from the most chronologically-recent
+visible event in the room history for the requesting user.
+Similarly to `/rooms/{roomID}/messages?dir=b`.
 
 This endpoint is blind to the distinction between normal and
 soft-failed events, and will cause redactions to be issued
@@ -69,7 +72,7 @@ event is created for each event, or
 [MSC2244](https://github.com/matrix-org/matrix-spec-proposals/pull/2244)
 is employed. We expect that for now, most implementations will
 issue one `m.room.redaction` event for each event under
-the scope of the request.
+the scope of the request. Sent by the requesting user.
 
 The action of redacting the events that are determined to be within
 the scope of the request should be seen as an atomic operation from
@@ -88,6 +91,12 @@ can be redacted in comparison to rate limits for `/send` when
 the endpoint is being used to redact another user's events.
 Rather than their own events. The intent of being liberal
 is to allow moderators to remove spam faster.
+
+#### Path parameters
+
+`roomID`: `string` - The room to get events to redact from.
+
+`userID`: `string` - The sender of the events to redact.
 
 #### Query parameters
 
