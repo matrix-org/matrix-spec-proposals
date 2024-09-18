@@ -85,11 +85,12 @@ events emitted SHOULD NOT be the subject of the rate limit.
 But instead the number of events that have been redacted overall.
 This is to cover semantics of MSC2244.
 
-Servers SHOULD be more liberal in the number of events that
-can be redacted in comparison to rate limits for `/send` when
-the endpoint is being used to redact another user's events.
-Rather than their own events. The intent of being liberal
-is to allow moderators to remove spam faster.
+Servers SHOULD be more liberal in the number of events that can be
+redacted in comparison to rate limits for `/send` when the endpoint is
+being used to redact another user's events.  Rather than the
+requester's own events. The intent of being liberal is to allow
+moderators to remove spam quickly, rather than struggling behind rate
+limits for `/rooms/redact/event` or `/send`.
 
 #### Path parameters
 
