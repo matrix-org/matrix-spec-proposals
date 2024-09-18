@@ -48,6 +48,10 @@ redaction flow.
 ### Redacting a user's events
 
 A new endpoint is introduced into the client-server spec.
+The endpoint is introduced with the intention to allow convenient and
+quick bulk redaction of spam events for room moderators.  Who may not
+necessarily have administrative privileges on their homeserver, and
+will also need to redact messages from remote users.
 
 `POST /_matrix/client/v1/rooms/{roomID}/redact/user/{userID}`
 
@@ -73,11 +77,6 @@ event is created for each event, or
 is employed. We expect that for now, most implementations will
 issue one `m.room.redaction` event for each event under
 the scope of the request. Sent by the requesting user.
-
-The action of redacting the events that are determined to be within
-the scope of the request should be seen as an atomic operation from
-the perspective of the client, regardless of whether multiple
-`m.room.redaction` events are issued by the server.
 
 #### Rate limiting
 
