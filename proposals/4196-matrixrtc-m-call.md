@@ -1,4 +1,4 @@
-# MSC0000: MatrixRTC voice and video conferencing application `m.call`
+# MSC4196: MatrixRTC voice and video conferencing application `m.call`
 
 ## Proposal
 
