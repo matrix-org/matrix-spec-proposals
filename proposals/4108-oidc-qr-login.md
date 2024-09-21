@@ -529,7 +529,7 @@ If the above was successful, Device S then calculates a two digit **CheckCode** 
 **Sp**:
 
 ```
-CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp "|" || Sp , salt=0, size=2)
+CheckBytes := HKDF_SHA256(SH, "MATRIX_QR_CODE_LOGIN_CHECKCODE|" || Gp || "|" || Sp , salt=0, size=2)
 CheckCode := NumToString(CheckBytes[0] % 10) || NumToString(CheckBytes[1] % 10)
 ```
 
