@@ -5,6 +5,8 @@ Matrix includes a way to add a spoiler to text, which hides the text from visibi
 ## Proposal
 Some other chat protocols, like Discord or Telegram, offer a way to hide potentially sensitive or triggering images in a way that requires the user to explicitly interact with it to show the image.
 
+In the event that a message has both a spoiler on the body and the image, clients should reveal the spoilers seperate from each other.
+
 In events with an image, there will be an optional `m.spoiler` field as a boolean. If true, then clients should show a blurred version of the image. If not present, it will be assumed to be false. There will also be a `m.spoiler.reason` field as a text value that will optionally display text for why the image has a spoiler.
 ## Example
 ```
