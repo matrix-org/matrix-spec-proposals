@@ -35,6 +35,8 @@ An example is below:
 }
 ```
 
+Clients MAY automatically copy the contents of `copy_hint` to the clipboard without asking the user. This is an implementation detail.
+
 ### Potential Issues
 
 None considered!
@@ -56,7 +58,7 @@ TODO.
 
 ### Unstable prefix
 
-What is this.
+While this MSC is unstable, all instances of the field name `copy_hint` must be replaced with `org.matrix.msc4197.copy_hint`.
 
 ### Dependencies
 
