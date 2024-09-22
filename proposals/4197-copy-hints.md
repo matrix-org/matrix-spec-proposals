@@ -20,7 +20,7 @@ An example is below:
     "body": "DO NOT SHARE THIS WITH ANYONE!!! Your 2FA code is: 100000",
     "m.mentions": {},
     "msgtype": "m.text",
-    "copy_hint": [23, 29]
+    "copy_hint": "100000"
   },
   "origin_server_ts": 1726936182830,
   "sender": "@andrewm:element.io",
