@@ -19,7 +19,7 @@ and send the user to the authorization endpoint ([MSC2964]), all in one step.
 To improve the UX of this flow, the MXID can be sent to the homeserver with the authorization request in the `login_hint`.
 In order to comply with the OpenID Connect specification, the requested scope must also include the `openid` scope.
 
-The value of `login_hint` should be set to the user's MXID, prefixed with `mxid:` (e.g. `mxid:@example-user:example.com`).
+The value of `login_hint` may be set to the user's MXID, and must be prefixed with `mxid:` (e.g. `mxid:@example-user:example.com`).
 Prefixing the value allows for more hint value types to be added in the future and for easy detection between them.
 
 The homeserver can then assist the user to complete the login flow with the correct account.
