@@ -71,11 +71,30 @@ Since `:` is not permitted in the localpart and `_` is not permitted in the doma
 
 ## Potential issues
 
+### Incompatibility with long user IDs
+
 As the spec enforces [a size limit of 255 bytes for both MXIDs and state keys](https://spec.matrix.org/unstable/client-server-api/#size-limits),
 the set of available MXID-prefixed state keys is smaller for long MXIDs than for short ones,
 with the worst case of none being available for MXIDs equal to the size limit.
 Thus, long MXIDs are restricted from being used as state key prefixes to designate state ownership.
 This issue could be solved by increasing the size limit for state keys.
+
+### Incompatibility with domain names containing underscores
+
+Although both [the spec](https://spec.matrix.org/unstable/appendices/#server-name)
+and [RFC 1035 §2.3.1](https://www.rfc-editor.org/rfc/rfc1035#section-2.3.1)
+forbid the presence of underscores in domain names,
+there noneless exist resolvable domain names that contain underscores.
+The proposed auth rule for parsing an MXID prefix from an underscore-separated state key would fail
+on such domain names.
+
+Possible solutions include:
+- using a different character to terminate an MXID prefix in state keys. The character must be one
+  that's known to be absent from domain names in practice, and must also not be any character that
+  the spec allows to appear in a server name.
+- refining the proposed auth rule for parsing an MXID prefix such that it does not fail on domain
+  names that contain an underscore. One way to achieve this is to leverage the absense of
+  underscores from top-level domains.
 
 ## Alternatives
 
