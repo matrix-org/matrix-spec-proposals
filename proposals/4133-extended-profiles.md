@@ -286,12 +286,19 @@ Until another MSC specifies otherwise:
 
 ### Implementation Details
 
-- This feature will be implemented as optional but recommended, enabling a smooth transition and
-  minimal disruption to existing deployments.
 - The profile data will be public by default, and compliance with GDPR and other privacy
   regulations will be enforced, particularly in terms of data deletion and retention policies.
+
 - Custom fields will not trigger state events in rooms, maintaining account-wide metadata without
   creating state events or other moderation issues.
+
+- Clients are encouraged to provide settings for users to choose the scope of users they present
+  the freetext (i.e. `u.*` namespaced) fields from (e.g. none, only users on the local server,
+  users in the current room, any users sharing a room with this user, all users globally) with
+  defaults sensitive to their implementation's UI and intended audience.
+
+- Clients should provide a UI for users to enter their own free-text custom fields in the `u.*`
+  namespace of their own profile.
 
 ## Potential Issues
 
@@ -334,6 +341,10 @@ Homeservers and clients *must* comply with GDPR and other relevant privacy regul
 regarding data deletion and retention. Profile data *should* be cleared when a user is deactivated.
 While homeservers *should* cache remote profiles, they *should* implement strategies that do not
 exceed 24 hours to minimize the risk of unintended data persistence.
+
+To minimise the impact of abuse, clients should offer suitable defaults for the users they will
+display the profile fields from. A user may *choose* to display fields from all users globally,
+but *by default* profiles should only be shown when the users share a room (or the current one).
 
 ## Unstable Prefixes
 
