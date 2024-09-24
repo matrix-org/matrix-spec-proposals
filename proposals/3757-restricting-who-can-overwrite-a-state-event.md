@@ -71,7 +71,11 @@ Since `:` is not permitted in the localpart and `_` is not permitted in the doma
 
 ## Potential issues
 
-None yet.
+As the spec enforces [a size limit of 255 bytes for both MXIDs and state keys](https://spec.matrix.org/unstable/client-server-api/#size-limits),
+the set of available MXID-prefixed state keys is smaller for long MXIDs than for short ones,
+with the worst case of none being available for MXIDs equal to the size limit.
+Thus, long MXIDs are restricted from being used as state key prefixes to designate state ownership.
+This issue could be solved by increasing the size limit for state keys.
 
 ## Alternatives
 
