@@ -103,7 +103,9 @@ overwrite the state event, despite not being its owner?
 
 When using a `state_key` prefix to restrict who can write the event, we have
 deliberately chosen an underscore to terminate the mxid prefix, as underscores
-are not allowed in domain names.  A pure prefix match will **not** be sufficient,
+are not allowed in [any form of server name](https://spec.matrix.org/v1.11/appendices/#server-name)
+(either a DNS name or IPv4/6 address, with or without a numeric port specifier).
+A pure prefix match will **not** be sufficient,
 as `@matthew:matrix.org` will match a `state_key` of form `@matthew:matrix.org.evil.com:id1`.
 
 This changes auth rules in a backwards incompatible way, which will break any
