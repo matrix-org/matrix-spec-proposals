@@ -93,7 +93,7 @@ Possible solutions include:
   that's known to be absent from domain names in practice, and must also not be any character that
   the spec allows to appear in a server name.
 - refining the proposed auth rule for parsing an MXID prefix such that it does not fail on domain
-  names that contain an underscore. One way to achieve this is to leverage the absense of
+  names that contain an underscore. One way to achieve this is to leverage the absence of
   underscores from top-level domains.
 
 ## Alternatives
