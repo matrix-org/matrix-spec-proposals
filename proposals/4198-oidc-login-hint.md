@@ -1,4 +1,4 @@
-# MSC0000: Usage of OIDC login_hint
+# MSC4198: Usage of OIDC login_hint
 
 [MSC3861] proposes using OAuth 2.0/OpenID Connect for authentication APIs.
 
