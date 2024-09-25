@@ -28,7 +28,6 @@ To get around the fact that we do not have federated peeking yet this proposal w
 to simply ask the users homeserver about their profiles. This proposal supports per room profiles and viewing
 restricted profiles.
 
-Restricted viewing is done via a check of is the person asking in a room where you are pointing to that profile.
 Public profiles without viewing restrictions are also considered valid as you want to be able to present
 a profile before you share a room if your privacy settings allow for this.
 
@@ -113,8 +112,9 @@ a room is shared `auth_event` must to be omitted.
 
 The user making the request must have history visibility for the `auth_event`
 
-A subset of the profile fields can be requested by putting an array of profile fields a request body. If omitted all
-fields are returned.
+A subset of the profile fields can be requested using the `filter` query parameter type being `string`.
+
+The response to a `GET /_matrix/client/v1/profile/{roomID}` is a set of Stripped state events responsive to the querry.
 
 To Access a profile over federation you use `GET /_matrix/federation/v1/profile/{roomID}`.
 
