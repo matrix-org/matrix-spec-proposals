@@ -21,7 +21,7 @@ After using these custom freetext fields, the community can then propose further
 standardise special fields with specific purposes, such as a user's timezone or languages, and
 these proposals may choose to allow selected fields to be specified per-room via member events.
 
-### Client-Server API Changes
+## Client-Server API Changes
 
 - **Get a Profile Field**
   - **Endpoint**: `GET /_matrix/client/v3/profile/{userId}/{key_name}`
@@ -112,7 +112,7 @@ these proposals may choose to allow selected fields to be specified per-room via
 **Note**: Clients are encouraged to manipulate fields individually to avoid race conditions.
 However, this method allows for bulk updates when needed (e.g., bots managing multiple accounts).
 
-### Server-Server API Changes
+## Server-Server API Changes
 
 The federation endpoint `GET /_matrix/federation/v1/query/profile` will mirror the client-server
 API changes to ensure profile information is consistent between local and federated users.
@@ -130,7 +130,7 @@ request a single field. At time of writing, the Matrix specification says:
 Given this wording, homeservers currently already have the flexibility to decide whether some
 fields are published over federation, and this proposal continues to allow this behaviour.
 
-### Capabilities
+## Capabilities
 
 A new capability `m.profile_fields` controls the ability to *set* custom profile fields and is
 advertised on the `GET /_matrix/client/v3/capabilities` endpoint. Clients should check for this
@@ -143,6 +143,7 @@ capability before attempting to create or modify a profile field.
   "capabilities": {
     "m.profile_fields": {
       "enabled": true,
+      "allowed": ["u.Custom Field 1", "org.example.job_title"],
       "disallowed": ["org.example.job_title"]
     }
   }
@@ -153,19 +154,23 @@ capability before attempting to create or modify a profile field.
   - **When capability missing**: Clients should assume extended profiles are supported, and that
     they can be created/written to. If a server intends to deny some (or all) changes, it SHOULD
     use the capability to advertise this to improve client experience.
-  - **When `enabled` is `false`**: Clients should expect to display profiles but NOT create or
-     update fields. Any attempt to do so should result in a `403 Forbidden` error. This does not
-     affect `avatar_url` and `displayname` fields, which are allowed for compatibility purposes.
-  - **When `enabled` is `true`**: Clients should allow users to create or update custom fields,
-    except those listed in the `disallowed` array. Individual requests will receive a
-    `400 Bad Request` or `403 Forbidden` response from the homeserver if server-side policies
-    prevent them.
 
-### Error Handling
+  - **When `enabled` is `false`**: Clients should expect to display profiles but NOT create or
+    update fields. Any attempt to do so should result in a `403 Forbidden` error. This does not
+    affect `avatar_url` and `displayname` fields, which are allowed for compatibility purposes.
+
+  - **When `enabled` is `true`**: Clients should allow users to create or update custom fields,
+    except those listed in the `disallowed` array, if it exists. Servers may optionally specify the
+    `allowed` array to allowlist fields that users may set - if the `allowed` key is provided with
+    empty content (e.g. `"allowed": []`) this also disallows the setting of any fields. Clients
+    will receive `400 Bad Request` or `403 Forbidden` responses from the homeserver if server-side
+    policies prevent them.
+
+## Error Handling
 
 Consistent error codes and messages ensure clear communication of issues:
 
-#### **400 Bad Request**: Request exceeds limits or is malformed
+### **400 Bad Request**: Request exceeds limits or is malformed
 
 - **`M_BAD_JSON`**: Malformed request.
 
@@ -203,12 +208,12 @@ or
 }
 ```
 
-#### **403 Forbidden**: User lacks permission
+### **403 Forbidden**: User lacks permission
 
 **Note:** See [MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170) for more
 discussion on how server policy may result in 403 errors for profile requests.
 
-#### **404 Not Found**: Target cannot be found
+### **404 Not Found**: Target cannot be found
 
 - **`M_NOT_FOUND`**: Profile key does not exist.
 
@@ -219,7 +224,7 @@ discussion on how server policy may result in 403 errors for profile requests.
 }
 ```
 
-### Propagation of Profile Fields to Membership Events
+## Propagation of Profile Fields to Membership Events
 
 The existing fields, `avatar_url` and `displayname`, will continue to trigger state events in each
 room. These fields are replicated per-room via member events.
@@ -227,7 +232,7 @@ room. These fields are replicated per-room via member events.
 All other fields (unless a future proposal specifies otherwise) will **not** trigger state events
 in rooms and will exist solely at the global level for storing metadata about the user.
 
-### Key/Namespace Requirements for Custom Fields
+## Key/Namespace Requirements for Custom Fields
 
 Homeservers are not expected to enforce these namespaces, as future expansions may be unknown to
 the server, but clients are expected to use the correct namespace for field creation/updates.
@@ -251,7 +256,7 @@ following [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/417
 use the unstable key `us.cloke.msc4175.tz` (or stable key `m.tz`) with the validation and
 formatting required by that MSC.
 
-### Size Limits
+## Size Limits
 
 Whenever "bytes" are referred to as a limit, this is calculated as UTF-8 bytes, so a two-byte code
 point consumes two bytes of this limit. This size would be measured before any JSON encoding.
@@ -263,7 +268,7 @@ Until a future MSC specifies otherwise:
 - Each key's *value* in the `u.*` namespace *must* not exceed 512 bytes in length.
 - The limit on overall profile size includes `avatar_url` and `displayname`.
 
-### Implementation Details
+## Implementation Details
 
 - The profile data will be public by default, and compliance with GDPR and other privacy
   regulations will be enforced, particularly in terms of data deletion and retention policies.
@@ -271,7 +276,7 @@ Until a future MSC specifies otherwise:
 - Custom fields will not trigger state events in rooms, maintaining account-wide metadata without
   creating state events or other moderation issues.
 
-- Homeservers should cache remote profiles but implement strategies to minimise unintended data
+- Servers should cache remote profiles but implement strategies to minimise unintended data
   persistence (e.g. expire caches within 24 hours).
 
 - Clients are encouraged to provide settings for users to choose the scope of users they present
@@ -285,6 +290,11 @@ Until a future MSC specifies otherwise:
 
 - Clients should provide a UI for users to enter their own free-text custom fields in the `u.*`
   namespace of their own profile.
+
+- Servers may add/remove/modify fields in their own user's global profile data, whether for
+  moderation purposes or for other policy reasons, e.g. to automatically populate a job title based
+  on the user's organisation. Server administrators must make users aware that these fields exist
+  and that they will be made available to every server that this server federates with, if any.
 
 - This proposal focuses on introducing custom free-text fields in a controlled manner. Future
   extensions, such as fields with special behaviours or administrative controls, will be addressed
@@ -320,11 +330,20 @@ notify users and homeservers that these custom fields have been updated.
 An alternative approach could involve introducing a completely new API for extended profile
 information. However, this may lead to increased complexity for client and server implementations.
 
+At the time of writing, Extensible Profiles as Rooms
+([MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)) is under development for
+richer and more granular content and privacy controls, which this proposal does not intend to
+replace - this proposal focuses on basic global profile data without the complexity of per-room
+profile management.
+
 ## Security Considerations
 
-Since profile fields are public, there are minimal security risks associated with the transmission
-of sensitive information; however, users should be made aware that any information they add will be
-visible to others on the federated network. Clients *should* inform them of this.
+Since profile fields are public, the server is not directly responsible for the privacy of the data;
+however, clients should make users aware that any information published in their profile will be
+visible to others on the federated network.
+
+Likewise, if a server automatically publishes data in user profile fields (e.g. setting a job title
+based on an organisation's internal user database) then they must have consent to do so.
 
 Homeservers and clients *must* comply relevant privacy regulations, particularly regarding data
 deletion and retention. Profile data *should* be cleared when a user is deactivated, and while
