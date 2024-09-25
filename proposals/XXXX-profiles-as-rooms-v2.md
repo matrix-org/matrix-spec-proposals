@@ -226,6 +226,9 @@ MSC informed by Steam. They also have rich profile visibility settings and they 
 not copying all of their settings in this proposal with the right use of this proposal you can achieve mostly similar
 results.
 
+There is the concern that users can ACL ban the mods from their profile and this concern is lessened if moderators are 
+informed of this situation and simply disallow such profiles in their rooms.
+
 The Problems related to that this MSC allows you to essentially ask to be vomited data at are hopefully explained
 away to an acceptable degree.
 
