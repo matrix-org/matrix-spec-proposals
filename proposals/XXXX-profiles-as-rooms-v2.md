@@ -1,6 +1,6 @@
-# MSCXXXX: Profiles as Rooms v2
+# MSC4201: Profiles as Rooms v2
 
-- [MSCXXXX: Profiles as Rooms v2](#mscxxxx-profiles-as-rooms-v2)
+- [MSC4201: Profiles as Rooms v2](#msc4201-profiles-as-rooms-v2)
   - [Introduction](#introduction)
   - [Proposal](#proposal)
     - [Profile Rooms](#profile-rooms)
@@ -233,17 +233,13 @@ or in this Section are known to the author at this time.
 
 While this proposal is unstable the following substitutions are to be made.
 
-`m.profile.privacy` becomes `support.feline.mscXXXX.profile.privacy.v1`
-`m.profile` state event becomes `support.feline.mscXXXX.profile.v1`
-`m.profile` room type becomes `support.feline.mscXXXX.profile`
-`m.profile` value in `m.room.member` becomes `support.feline.mscXXXX.profile.v1`
+`m.profile.privacy` becomes `support.feline.msc4201.profile.privacy.v1`
+`m.profile` state event becomes `support.feline.msc4201.profile.v1`
+`m.profile` room type becomes `support.feline.msc4201.profile`
+`m.profile` value in `m.room.member` becomes `support.feline.msc4201.profile.v1`
 
-Please note that due to the lack of a somewhat stable API format the APIs are NOT recommended to be implemented currently.
-
-Contributions welcome to resolve this problem.
-
-`GET /_matrix/client/v1/profile/{roomID}` becomes `GET /_matrix/client/unstable/support.feline.mscXXXX.v1/profile/{roomID}`
-`GET /_matrix/federation/v1/profile/{roomID}` becomes `GET /_matrix/federation/unstable/support.feline.msxXXXX.v1/profile/{roomID}`
+`GET /_matrix/client/v1/profile/{roomID}` becomes `GET /_matrix/client/unstable/support.feline.msc4201.v1/profile/{roomID}`
+`GET /_matrix/federation/v1/profile/{roomID}` becomes `GET /_matrix/federation/unstable/support.feline.msc4201.v1/profile/{roomID}`
 
 ## Dependencies
 
