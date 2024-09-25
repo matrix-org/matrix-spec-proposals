@@ -296,6 +296,13 @@ Until a future MSC specifies otherwise:
   on the user's organisation. Server administrators must make users aware that these fields exist
   and that they will be made available to every server that this server federates with, if any.
 
+- Servers are *allowed* to suppress some or all local/remote profile fields they do not wish to
+  share with their local users (e.g. if there are moderation concerns during a go-live phase);
+  however, server admins *must* disclose to users if they are publishing profile fields on behalf
+  of a user over federation that they cannot see, as this could be considered a breach of trust.
+  This feature could cause confusion if some users can see fields that other users cannot, so this
+  should be used sparingly.
+
 - This proposal focuses on introducing custom free-text fields in a controlled manner. Future
   extensions, such as fields with special behaviours or administrative controls, will be addressed
   in separate MSCs to allow for thorough community discussion and consideration of UI and
