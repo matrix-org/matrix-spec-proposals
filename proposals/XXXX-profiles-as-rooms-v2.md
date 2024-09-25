@@ -85,8 +85,8 @@ in a room that has a pointer to this profile.
 For a pointer to be valid said pointer must be issued by the creator of the profile if the profile is restricted.
 This means that invites can only set `public` profiles without causing the server to 404 the request.
 
-To use a given profile you set a `profile` value in your `m.room.member` event for a given room.
-The value of `profile` is the room ID of the profile you want to use in that room.
+To use a given profile you set a `m.profile` value in your `m.room.member` event for a given room.
+The value of `m.profile` is the room ID of the profile you want to use in that room.
 
 `m.profile` events are limited only to all the normal event size rules but clients are allowed to enforce whatever
 limits they find resonable on data that they will render when given this data.
@@ -239,6 +239,7 @@ While this proposal is unstable the following substitutions are to be made.
 `m.profile.privacy` becomes `support.feline.mscXXXX.profile.privacy.v1`
 `m.profile` state event becomes `support.feline.mscXXXX.profile.v1`
 `m.profile` room type becomes `support.feline.mscXXXX.profile`
+`m.profile` value in `m.room.member` becomes `support.feline.mscXXXX.profile.v1`
 
 ## Dependencies
 
