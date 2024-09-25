@@ -114,7 +114,7 @@ The user making the request must have history visibility for the `auth_event`
 
 A subset of the profile fields can be requested using the `filter` query parameter type being `string`.
 
-The response to a `GET /_matrix/client/v1/profile/{roomID}` is a set of Stripped state events responsive to the querry.
+The response to a `GET /_matrix/client/v1/profile/{roomID}` is a set of Stripped state events responsive to the query.
 
 To Access a profile over federation you use `GET /_matrix/federation/v1/profile/{roomID}`.
 
@@ -122,7 +122,7 @@ The result of a profile inquiry may be cached for a reasonable period of time no
 
 The federation version of this endpoint mirrors its behaviour mostly with the client server API version of this endpoint.
 The federation version of the endpoint adds the `requesting_user` query parameter. This parameter is required when
-the `auth_event` parameter is present. Its used to indicate on whos behalf the request is made as this changes if
+the `auth_event` parameter is present. Its used to indicate on whose behalf the request is made as this changes if
 a profile lookup fails or succeeds, due to that the `requesting_user` must have history visibility for `auth_event`.
 
 The history visibility check is done from the perspective of the resident server for the profile owner.
