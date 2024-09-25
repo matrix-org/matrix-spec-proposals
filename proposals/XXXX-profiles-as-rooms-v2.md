@@ -4,16 +4,18 @@
 
 ### Acknowledgements
 
-This MSC exists to realise the vision that was set out in [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
+This MSC exists to realise the vision that was set out in
+[MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)
 this vision has served to guide the ecosystem for a long time but its time to finally realise it.
 
 This proposal aims to provide a pathway to take us from the limitations of today that shaped the competing proposal
 [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133) to the future where we have fed peeking
 fully working in the hopeful event that said future happens.
 
-A thanks has to be issued to everyone who gave feedback on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
-as this feedback has helped shape this competing proposal. Also thanks to Tom for the proposal it self as it has inspired parts of this
-proposal.
+A thanks has to be issued to everyone who gave feedback on
+[MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
+as this feedback has helped shape this competing proposal.
+Also thanks to Tom for the proposal it self as it has inspired parts of this proposal.
 
 Thanks to Gnuxie for being the source of the peeking bypass idea as far as Cat remembers.
 
@@ -50,9 +52,13 @@ established precedent on that specialised rooms like these are what room types a
 They are plain old normal matrix rooms except for that they store profile information as their defined
 purpose and server implementations or future MSCs are free to provide powerlevel templates that reflect this purpose.
 
-These rooms contain `m.profile` state events to store profile data as the state key determines the profile key this data is for.
+These rooms contain `m.profile` state events to store profile data as the state key determines
+the profile key this data is for.
+
 The `m.profile.privacy` event controls the privacy rules for the profile in question. This state event
-with a blank state key and contains a `visibility` flag as its initial contents but future proposals are welcome to elaborate.
+with a blank state key and contains a `visibility` flag as its initial contents but future proposals
+are welcome to elaborate.
+
 This `visibility` flag accepts the values of `public` and `restricted`.
 
 Example of the `m.profile.privacy` event.
@@ -70,18 +76,20 @@ Example of the `m.profile.privacy` event.
 }
 ```
 
-`visibility` of `public` means that anyone is allowed to look up this profile. This value is primarily intended for your global profile
-for when you do not yet share a room with the subject. Like when they are doing a lookup in the user directory when starting a DM.
+`visibility` of `public` means that anyone is allowed to look up this profile. This value is primarily intended for
+your global profile for when you do not yet share a room with the subject. Like when they are doing a lookup in
+the user directory when starting a DM.
 
-`visibility` of `restricted` restricts who can look up a profile to users who are in a room that has a pointer to this profile.
-For a pointer to be valid said pointer must be issued by the creator of the profile if the profile is restricted. This means that
-invites can only set `public` profiles without causing the server to 404 the request.
+`visibility` of `restricted` restricts who can look up a profile to users who are
+in a room that has a pointer to this profile.
+For a pointer to be valid said pointer must be issued by the creator of the profile if the profile is restricted.
+This means that invites can only set `public` profiles without causing the server to 404 the request.
 
-To use a given profile you set a `profile` value in your `m.room.member` event for a given room. The value of `profile` is the room ID
-of the profile you want to use in that room.
+To use a given profile you set a `profile` value in your `m.room.member` event for a given room.
+The value of `profile` is the room ID of the profile you want to use in that room.
 
-`m.profile` events are limited only to all the normal event size rules but clients are allowed to enforce whatever limits they find resonable
-on data that they will render when given this data.
+`m.profile` events are limited only to all the normal event size rules but clients are allowed to enforce whatever
+limits they find resonable on data that they will render when given this data.
 
 ### Client-Server API Changes
 
@@ -123,7 +131,8 @@ A profile with `m.federate` set to `false` in its creation event is not allowed 
 
 The rules configured in the `m.room.server_acl` event are to be respected for all profile requests. This means that
 if a server is ACL banned from a profile room said server is not allowed to request the contents of this profile.
-This function exists so that users are able to block servers that they want to not have profile access from having profile access.
+This function exists so that users are able to
+block servers that they want to not have profile access from having profile access.
 
 ### Limitations
 
@@ -163,15 +172,16 @@ Lastly Clients and Servers and MSCs are ofc allowed to use custom prefixes that 
 conventions that we follow in matrix. An example could be `support.feline.cat`.
 
 Spec defined fields and fields that follow the java naming conventions can have specified validation
-rules that go beyond the general rules that this MSC imposes. For example if [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/4175)
-is used with this proposal that MSC could define that the `m.tz / us.cloke.msc4175.tz` field it defines
-has a maximum size of 50 characters.
+rules that go beyond the general rules that this MSC imposes. For example if
+[MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/4175) is used with this proposal that MSC
+could define that the `m.tz / us.cloke.msc4175.tz` field it defines has a maximum size of 50 characters.
 
 ## Potential issues
 
 This MSC has the problem of that its adding freeform fields and attempting to guarantee wide ecosystem
 support for all of them is well hard. But this challenge i think is warranted as this MSC represents
-a faithful hopefully version of the vision that the community had for [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769).
+a faithful hopefully version of the vision that
+the community had for [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769).
 
 This MSC is intentionally more complex to allow for a single proposal to do everything that was
 dreamed about for [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) over the years.
@@ -219,7 +229,8 @@ results.
 The Problems related to that this MSC allows you to essentially ask to be vomited data at are hopefully explained
 away to an acceptable degree.
 
-No further Security considerations not covered elsewhere in this MSC or in this Section are known to the author at this time.
+No further Security considerations not covered elsewhere in this MSC
+or in this Section are known to the author at this time.
 
 ## Unstable prefix
 
