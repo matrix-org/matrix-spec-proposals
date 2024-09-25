@@ -42,9 +42,9 @@ clarification of any of these points.
     - [ ] Proposal text
     - [ ] Potential issues
     - [ ] Alternatives
-    - [ ] Security considerations
     - [ ] Dependencies
 - [ ] Stable identifiers are used throughout the proposal, except for the unstable prefix section
     - [ ] Unstable prefixes [consider](README.md#unstable-prefixes) the awkward accepted-but-not-merged state
     - [ ] Chosen unstable prefixes do not pollute any global namespace (use “org.matrix.mscXXXX”, not “org.matrix”).
 - [ ] Changes have applicable [Sign Off](CONTRIBUTING.md#sign-off) from all authors/editors/contributors
+- [ ] There is a dedicated "Security Considerations" section which detail any possible attacks/vulnerabilities this proposal may introduce, even if this is "None.". See [RFC3552](https://datatracker.ietf.org/doc/html/rfc3552) for things to think about, but in particular pay attention to the [OWASP Top Ten](https://owasp.org/www-project-top-ten/).
