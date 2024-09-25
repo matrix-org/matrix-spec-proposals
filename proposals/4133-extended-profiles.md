@@ -147,7 +147,7 @@ capability before attempting to create or modify a profile field.
     }
   }
 }
-  ```
+```
 
 - **Behaviour**
   - **When capability missing**: Clients should assume extended profiles are supported, and that
@@ -317,7 +317,8 @@ notify users and homeservers that these custom fields have been updated.
 
 ## Alternatives
 
-An alternative approach could involve introducing a completely new API for extended profile information. However, this may lead to more significant changes and increased complexity for client developers.
+An alternative approach could involve introducing a completely new API for extended profile
+information. However, this may lead to increased complexity for client and server implementations.
 
 ## Security Considerations
 
