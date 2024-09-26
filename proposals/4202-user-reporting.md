@@ -2,94 +2,108 @@
 
 *This proposal extends [MSC3843](https://github.com/matrix-org/matrix-spec-proposals/pull/3843) to
 allow reporting user profiles over federation. Clients can offer a user interface feature, such as
-a button at the bottom of a user's profile, enabling users to report another user's profile to the
-administrators of the server from which the profile was accessed.*
+a button on a user's profile, enabling users to report another user's profile to the administrators
+of their own homeserver, which can then forward the report over federation if necessary.*
 
 ## Proposal
 
 Building upon the reporting mechanism proposed in
-[MSC3843](https://github.com/matrix-org/matrix-spec-proposals/pull/3843) and the user profile
-information introduced in [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133),
-this MSC proposes modifying the reporting endpoint to allow the use of a Matrix User ID (MXID) in
-place of an event ID. This enables users to report user profiles directly to the homeserver of the
-reported user.
+[MSC3843](https://github.com/matrix-org/matrix-spec-proposals/pull/3843), this MSC proposes that
+clients offer an option in user profiles to report the most recent `m.room.member` event of the
+user in a shared room. This leverages the existing client-server and federation APIs for reporting
+events, allowing servers to handle profile reports without any changes to the APIs.
 
-### Extended Federation Endpoint
+### Client Behaviour
 
-The existing federation endpoint for reporting events is:
+Clients SHOULD offer a user interface element in user profiles (e.g., a "Report User" button) that
+allows users to report problematic profiles. When reporting a profile, clients SHOULD:
 
-```
-POST /_matrix/federation/v1/rooms/{roomId}/report/{eventId}
-```
+- Identify a room (`room_id`) that both the reporting user and the reported user share. This could
+  be any mutual room, including a direct message room. If no mutual room exists, clients MAY
+  display an error to the user indicating that the profile cannot be reported through this mechanism.
 
-This MSC proposes extending this endpoint to allow reporting user profiles by accepting a user ID
-in the `eventId` position, identified by the `@` prefix:
+- Obtain the most recent `m.room.member` event (`event_id`) for the reported user in that room. This
+  event contains the profile information (display name, avatar URL) set by the user in that room.
 
-```
-POST /_matrix/federation/v1/rooms/{roomId}/report/{userId}
-```
+- Use the existing client-server endpoint `POST /_matrix/client/v3/rooms/{roomId}/report/{eventId}`
+  to report the `m.room.member` event. The request body SHOULD include:
 
-Where `userId` is a Matrix User ID in the format `@user:domain`.
+  - A `reason` provided by the user, explaining why the profile is being reported.
+  
+  - A `score` indicating the severity, as per the existing specification, though servers MAY ignore
+    this parameter.
+
+  - If reporting content in the user's profile, it is recommended for the client include an MXC URI
+    for a screenshot of the profile (including MXID and offending content) to aid investigation.
 
 #### Example Request
 
 Reporting a user's profile:
 
 ```
-POST /_matrix/federation/v1/rooms/!roomid:example.org/report/@baduser:badserver.com
+POST /_matrix/client/v3/rooms/!roomid:example.org/report/$eventid
+Content-Type: application/json
+
 {
-  "reason": "Inappropriate profile content: mxc://example.org/abcd1234"
+  "reason": "Inappropriate profile content: mxc://example.org/abcd1234",
+  "score": 0
 }
 ```
 
-### Request Body Parameters
+### Homeserver Behaviour
 
-The request body includes the following parameters:
+Upon receiving the report, the homeserver SHOULD process it according to its moderation policies.
+If the event being reported originated from a remote homeserver, and if the homeserver supports
+federation reporting as per MSC3843, it MAY forward the report to the remote homeserver using the
+federation endpoint:
 
-- `reason` (string, **required**): A description explaining why the profile is being reported.
-  This cannot be blank. It is *strongly* recommended that clients include the MXC URI of a
-  screenshot of the problematic profile content, clearly showing as much of the profile as possible
-  (especially the MXID) to ensure the user's identity is unmistakable. Homeservers are free to log
-  profile changes as they see fit, however this snapshot may assist investigating the report.
+```
+POST /_matrix/federation/v1/rooms/{roomId}/report/{eventId}
+Content-Type: application/json
 
-### Behaviour
+{
+  "reason": "Inappropriate profile content"
+}
+```
 
-When a homeserver receives a profile report, it SHOULD handle it similarly to how it handles event
-reports:
+The homeserver SHOULD ensure that the `event_id` being reported corresponds to an `m.room.member`
+event and SHOULD verify that the event was issued by the reported user's homeserver.
 
-- If the reported `userId` belongs to the receiving homeserver, it SHOULD process the report and
+### Federation Considerations
+
+When a homeserver receives a report over federation for an `m.room.member` event, it SHOULD handle
+it similarly to how it handles other event reports:
+
+- If the reported event was created by the receiving homeserver, it SHOULD process the report and
   take appropriate action as per its moderation policies.
-- If the reported `userId` does not belong to the receiving homeserver, it MAY choose to ignore
-  the report and respond with an `M_UNACTIONABLE` error code and an HTTP `400` status.
 
-### Error Responses
-
-- `400 M_UNACTIONABLE`: The server cannot act on the reported content. This may be because the
-  reported user is not hosted on the server, or the server does not support profile reporting.
+- If the reported event was not created by the receiving homeserver, it MAY choose to ignore the
+  report and respond with an `M_UNACTIONABLE` error code and an HTTP `400` status.
 
 #### Example Error Response
 
 ```json
 {
   "errcode": "M_UNACTIONABLE",
-  "error": "Cannot act on the reported user."
+  "error": "Cannot act on the reported event."
 }
 ```
 
-### Rate Limiting
+### Considerations
 
-Homeservers are strongly encouraged to rate limit incoming profile reports to prevent abuse.
-An example limit might be 10 reports per minute from a single server.
+- **Selecting the Appropriate Event**: Clients need to ensure they report the correct
+  `m.room.member` event. In rooms where the reported user has updated their profile multiple times,
+  the most recent membership event SHOULD be used.
 
-## Client Behaviour
+- Clients may offer to report previous member events, if the user has changed their profile to hide
+  the original content that caused offence.
 
-Clients SHOULD offer a user interface element in user profiles (e.g., a "Report User" button) that
-allows users to report problematic profiles. When reporting a profile:
+- **Shared Rooms**: Reporting a user in a room requires that both users share a room. If no mutual
+  room exists, the client cannot report the profile via this mechanism.
 
-- Clients SHOULD use the extended federation endpoint to send the report to the reported user's
-  homeserver.
-- Clients SHOULD include a `reason` for the report, provided by the user.
-- Clients SHOULD include an MXC URI of the offending profile to aid in the investigation.
+- **Event Context**: By reporting the `m.room.member` event, servers have the necessary context to
+  investigate the profile as it appeared in that room. The event includes the display name and
+  avatar URL used by the user in that room.
 
 ## Security Considerations
 
@@ -100,34 +114,26 @@ allows users to report problematic profiles. When reporting a profile:
 - **Abuse**: This mechanism could be abused to send spam reports. Homeservers SHOULD implement rate
   limiting and MAY require additional verification steps before acting on reports.
 
-- **Privacy**: Including screenshots may expose personal data. Clients SHOULD inform users that
-  any attached images will be sent to the remote server and ensure users consent to this.
-
-- **Validity**: Homeservers SHOULD verify that the `userId` is a valid Matrix User ID and handle
-  reports appropriately. They SHOULD also ensure that they do not process reports for users not
-  hosted on their server unless they choose to do so.
+- **Privacy**: Reporting an `m.room.member` event includes the profile information set by the user
+  in that room. Servers SHOULD handle this data appropriately and respect user privacy.
 
 ## Potential Issues
 
-- **Spam Reports**: Servers may receive a high volume of unnecessary or malicious reports. Rate
-  limiting and appropriate error responses can help mitigate this issue.
-- **Cross-Domain Trust**: Servers need to decide how much trust to place in reports received from
-  other homeservers. Policies may vary between servers.
+- **Lack of Mutual Rooms**: If the reporting user and the reported user do not share any rooms, the
+  client cannot report the profile using this method.
+
+- **Profile Changes**: If the user changes their profile after the report is made, the reported
+  `m.room.member` event may no longer reflect the current profile. Servers may need to consider
+  this when handling reports.
 
 ## Alternatives
 
-- **New Endpoint**: Define a new federation endpoint specifically for reporting user profiles.
-  However, reusing the existing endpoint simplifies implementation and leverages existing mechanisms.
-- **Policy Rooms**: As mentioned in MSC3843, servers could negotiate shared policy rooms to handle
-  reports. This adds complexity and is beyond the scope of this MSC.
+- **Reporting by User ID**: Previous versions of this MSC proposed allowing reports to specify a
+  user ID directly. However, reusing the existing event reporting mechanism simplifies
+  implementation and leverages existing APIs.
 
-## Unstable Prefix
-
-While this MSC is not yet stable, implementations SHOULD use the following endpoint:
-
-```
-POST /_matrix/federation/unstable/uk.tcpipuk.msc0000/rooms/{roomId}/report/{userId}
-```
+- **New Federation Endpoint**: Define a new federation endpoint specifically for reporting user
+  profiles. This adds complexity and is unnecessary if the existing mechanisms can be used.
 
 ## Dependencies
 
