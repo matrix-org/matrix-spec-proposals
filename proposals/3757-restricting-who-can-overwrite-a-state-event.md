@@ -29,6 +29,14 @@ manipulate.
 Therefore, we need a different way to state that a given state event may only
 be written by its owner. **We propose that if a state event's `state_key` *starts with* a matrix ID (followed by an underscore), only the sender with that matrix ID (or higher PL users) can set the state event.**  This is an extension of the current behaviour where state events may be overwritten only if the sender's mxid *exactly equals* the `state_key`.
 
+As the spec currently enforces [a size limit of 255 bytes for both user IDs and state keys](
+https://spec.matrix.org/unstable/client-server-api/#size-limits),
+the size limit on state keys is increased to **511 bytes** to allow prefixing any currently-valid
+state key with a maximum-length user ID (and a separator character).
+Similarly, the size of a state key suffix after a leading user ID and the separator character is
+limited to **255 bytes** so that any such suffix may follow any user ID without surpassing the total
+state key size limit.
+
 We also allow users with higher PL than the original sender to overwrite state
 events even if their mxid doesn't match the event's `state_key`. This fixes an abuse
 vector where a user can immutably graffiti the state within a room
@@ -41,9 +49,11 @@ Practically speaking, this means modifying the [authorization rules](https://spe
 becomes:
 
 > 8. If the event has a `state_key` that starts with an `@`:
->    1. If the prefix of the `state_key` before the first `_` that follows the first `:` (or end of string) is a valid user ID:
->       1. If that user ID does not match the `sender`, and the `sender`'s power level is not greater than that of the user denoted by the ID, reject.
->    2. Otherwise, reject.
+>    1. If the prefix of the `state_key` before the first `_` that follows the first `:` (or end of string) is not a valid user ID, reject.
+>    1. Otherwise, if the size of the `state_key` without the leading user ID is greater than 256 bytes, reject.
+>    1. Otherwise, if that user ID does not match the `sender`, and the `sender`'s power level is not greater than that of the user denoted by the ID, reject.
+
+Note that the size limit of 256 bytes after a leading user ID includes the separating `_`.
 
 No additional restrictions are made about the content of the `state_key`, so any characters that follow the `sender` + `_` part are only required to be valid for use in a `state_key`.
 
@@ -70,14 +80,6 @@ For example, to post a live location sharing beacon from [MSC3672](https://githu
 Since `:` is not permitted in the localpart and `_` is not permitted in the domain part of an mxid (see [Historical User IDs](https://spec.matrix.org/v1.2/appendices/#historical-user-ids)), it is not possible to craft an mxid that matches the beginning of a state key constructed for another user's mxid, so state keys restricted to one owner can never be overwritten by another user.
 
 ## Potential issues
-
-### Incompatibility with long user IDs
-
-As the spec enforces [a size limit of 255 bytes for both MXIDs and state keys](https://spec.matrix.org/unstable/client-server-api/#size-limits),
-the set of available MXID-prefixed state keys is smaller for long MXIDs than for short ones,
-with the worst case of none being available for MXIDs equal to the size limit.
-Thus, long MXIDs are restricted from being used as state key prefixes to designate state ownership.
-This issue could be solved by increasing the size limit for state keys.
 
 ### Incompatibility with domain names containing underscores
 
