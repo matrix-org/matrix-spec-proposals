@@ -1,0 +1,137 @@
+# MSC0000: `m.takedown` moderation policy recommendation
+
+Currently there is one specific moderation policy recommendation, `m.ban`[^spec-ban-recommendation].
+
+> When this recommendation is used, the entities affected by the rule
+> should be banned from participation where possible. The enforcement
+> of this is deliberately left as an implementation detail to avoid
+> the protocol imposing its opinion on how the policy list is to be
+> interpreted. However, a suggestion for a simple implementation is as
+> follows:
+
+[^spec-ban-recommendation]: https://spec.matrix.org/v1.11/client-server-api/#mban-recommendation
+
+In practice this recommendation is used by the moderation bots to
+store banned rooms, users and servers alongside a reason for the ban.
+
+This has provided the ability to create versatile policy lists that
+can ban matrix users for any recorded reason. Not only for spam,
+illegal content, csam, but softer reasons such as moderation disputes,
+timeouts, inrventions, disagreements.
+
+Unfortunately, because the `m.ban` recommendation has such a broad and
+consequently has the same power for any consequence,
+it is the expectation that a reason is provided for each `m.ban`.
+
+This reason inadvertently allows the subject of the moderation policy
+to be classified as an undesirable consequence. For example, a user called
+`@yarrgh:example.com` could be banned for the reason `piracy`. Which
+would identify `@yarrgh:example.com` as a pirate. Which is problematic.
+
+Moderation bots currently also use the `reason` of the ban to determine
+whether to redact a user's events or not. Which doesn't allow
+for a free-form use of the `reason` where redaction is required.
+
+## Proposal
+
+We introduce a new policy recommendation, `m.takedown`, reserved for
+purging entities and any associated content.  When `m.takedown` is
+used, a `reason` SHOULD NOT be embedded into the same policy event[^bluesky].
+
+The enforcement of the `m.takedown` recommendation deliberately left
+as an implementation detail to avoid the protocol imposing its opinion
+on how the `recommendation` is to be interpreted.
+However, examples of how the recommendation is expected to be used
+by implementations is as follows:
+
+If the entity of the rule is a user:
+
++ Applied to a user: The user and all associated messages, media, invitations
+  are hidden and removed from local storage or caches.
+
++ Applied to a room: The user is banned from the room and all of their
+  recent messages redacted.
+
++ Applied to a server: The user is not allowed to send invites to
+  users on the server. Any associated media is quarantined or removed,
+  if the user is resident then the user is considered for
+  deactivation.
+
+If the entity of the rule is a room:
+
++ Applied to a user: The user is parted from the room,
+  and be unable to rejoin it. An invitations to the room are
+  rejected or ignored.
+
++ Applied to a room: No-op because a room can't take itself down.
+
++ Applied to a server: The room is purged from the server and
+  resident users are prevented from joining. Invitations
+  to the room are blocked.
+
+If the entity of the rule is a server:
+
++ Applied to a user: Invitations originating from from users on the server are hidden.
+  Media uploaded from users resident to the target server are removed from
+  local storage or caches and is never be displayed.
+  Messages originating from the server could be hidden behind spoiler text.
+
++ Applied to a room: The server is added as a denied server in the ACLs.
+  All room members resident to the target server are banned from the room
+  and have their recent messages redacted.
+
++ Applied to a server: The subscriber should avoid federating with the
+  server as much as possible by blocking invites from the server and
+  not sending traffic unless strictly required (no outbound invites).
+  Any media associated with the server is quarantined or removed.
+
+
+[^bluesky] This is inspired by work going into bluesky
+https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
+
+## Potential issues
+
++ Some consequences of recommending `m.takedown` against an entity are irreversible,
+  and can have a huge impact on the history of a Matrix room if implemented naively.
+
++ Because the `reason` is no longer present, a higher degree of trust is required
+  when applying some consequences to these policies.
+
++ The lack of classification from the `reason` field is insufficient
+  to prevent direct identification of some entities. For example
+  `@yarrgh:example.com` is evidently a pirate because of the presence
+  of the phrase `yarrgh` embeded within their mxid.
+
+## Alternatives
+
++ `m.ban` Could continue to be used with a more specific reason, but
+  this presents problems for automated and semi-automated responses
+  because the reasons are not standardised.
+
++ `m.ban` A `takedown` reason could be given on `m.ban` policies.
+  This is pretty adhoc.
+
+
+## Security considerations
+
++ `m.takedown` can have severe consequences for entities, policies
+  could be created maliciously against innocent users on popular
+  policy rooms. This could increasce the reward of infiltrating
+  moderation focussed communities. Tools that naively implement
+  the recommendation without safeguards, such as manual approval,
+  for the most severe consequences could be exploited.
+
+## Unstable prefix
+
+*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
+implementation is compatible with the final version that lands in the spec. This generally means that
+experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
+For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
+should be used to document things such as what endpoints and names are being used while the feature is
+in development, the name of the unstable feature flag to use to detect support for the feature, or what
+migration steps are needed to switch to newer versions of the proposal.*
+
+## Dependencies
+
+This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
+into the spec).
