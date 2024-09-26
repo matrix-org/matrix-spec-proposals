@@ -332,13 +332,20 @@ changes have occurred. This is intentional to keep the scope of this change narr
 compatibility with existing servers. A future proposal may wish to use an EDU (such as Presence) to
 notify users and homeservers that these custom fields have been updated.
 
+This proposal does not directly address reporting of user profiles over federation, but
+[MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) offers a facility for
+users to report offensive content to the homeserver that account belongs to. This proposal is not
+dependent on [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) but encourages
+the use of moderation options to allow users to report offensive content.
+
 ## Alternatives
 
 An alternative approach could involve introducing a completely new API for extended profile
 information. However, this may lead to increased complexity for client and server implementations.
 
 At the time of writing, Extensible Profiles as Rooms
-([MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769)) is under development for
+([MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) and variant
+[MSC4201](https://github.com/matrix-org/matrix-spec-proposals/pull/4201)) is under development for
 richer and more granular content and privacy controls, which this proposal does not intend to
 replace - this proposal focuses on basic global profile data without the complexity of per-room
 profile management.
@@ -350,7 +357,8 @@ however, clients should make users aware that any information published in their
 visible to others on the federated network.
 
 Likewise, if a server automatically publishes data in user profile fields (e.g. setting a job title
-based on an organisation's internal user database) then they must have consent to do so.
+based on an organisation's internal user database) then they must have consent to do so, and users
+should be made aware that data is published on their behalf.
 
 Homeservers and clients *must* comply relevant privacy regulations, particularly regarding data
 deletion and retention. Profile data *should* be cleared when a user is deactivated, and while
@@ -361,6 +369,10 @@ To minimise the impact of abuse, clients should offer suitable defaults for the 
 display the profile fields from. A user may *choose* to display fields from all users globally,
 but *by default* profiles should only be shown when the users share the current room and the other
 user is in the `join`, `invite`, or `knock` membership states.
+
+The proposal [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) adds reporting
+of user profiles over federation, which offers a facility for users to report offensive content to
+the homeserver that account is registered on.
 
 ## Unstable Prefixes
 
