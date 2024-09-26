@@ -47,12 +47,12 @@ becomes:
 
 No additional restrictions are made about the content of the `state_key`, so any characters that follow the `sender` + `_` part are only required to be valid for use in a `state_key`.
 
-For example, to post a live location sharing beacon from [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672):
+For example, to post a live location sharing beacon from [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672) for one of a user's devices:
 
 ```json=
 {
     "type": "m.beacon_info",
-    "state_key": "@stefan:matrix.org_assetid1", // Ensures only the sender or higher PL users can update
+    "state_key": "@stefan:matrix.org_{deviceid1}", // Ensures only the sender or higher PL users can update
     "content": {
         "m.beacon_info": {
             "description": "Stefan's live location",
