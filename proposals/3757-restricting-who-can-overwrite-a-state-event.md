@@ -122,6 +122,16 @@ https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-20990
 proposes allowing `state_key` to be an array of strings.
 However, either proposal would alter the nature of state events and state resolution.
 
+Another comment in [the discussion of this MSC](
+https://github.com/matrix-org/matrix-spec-proposals/pull/3757#discussion_r1103877363)
+proposes an optional top-level field for both state and non-state events that designates ownership
+of the containing event to a particular user.
+This would provide ownership semantics for not only state events, but also message events, which may
+be used to restrict event replacements / redactions to only the designated owner of an event.
+However, it remains to be decided how using this top-level field for state events should affect
+state resolution; namely, whether it is possible to set multiple events with the same `state_key`
+but different owners.
+
 ## Security considerations
 
 This change requires a new room version, so will not affect old events.
