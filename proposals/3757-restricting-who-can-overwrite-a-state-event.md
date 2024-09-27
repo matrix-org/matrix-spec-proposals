@@ -16,14 +16,6 @@ and [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672), fo
 other users in the room to be able to overwrite the state event,
 so we need a mechanism to prevent other peers from doing so.
 
-[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489) originally proposed that the event type could be made variable,
-appending an ID to each separately posted event so that each one could
-separately be locked to the same mxid in the `state_key`.  However, this is
-problematic because you can't proactively refer to these event types in the
-`events` field of the `m.room.power_levels` event to allow users to post
-them - and they also are awkward for some client implementations to
-manipulate.
-
 ## Proposal
 
 Therefore, we need a different way to state that a given state event may only
@@ -104,10 +96,15 @@ Possible solutions include:
 
 ## Alternatives
 
-As originally proposed in [MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489) and [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672), we can require
-the use of a state key equal to the sender's mxid, but this means we can only
-have one such event of each type, so those MSCs proposed using different types
-for each unique event.
+[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489)
+and [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672)
+originally proposed that the event type could be made variable,
+with an ID appended to each separately posted event so that each one could
+separately be locked to the same mxid in the `state_key`.  However, this is
+problematic because you can't proactively refer to these event types in the
+`events` field of the `m.room.power_levels` event to allow users to post
+them - and they also are awkward for some client implementations to
+manipulate.
 
 An earlier draft of this MSC proposed putting a flag on the contents of the
 event (outside of the E2EE payload) called `m.peer_unwritable: true` to indicate
