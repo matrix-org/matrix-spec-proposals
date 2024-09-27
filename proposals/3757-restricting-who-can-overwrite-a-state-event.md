@@ -120,6 +120,8 @@ makes a state event unique.
 As an extension to this idea, a comment in [the discussion of this MSC](
 https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-2099010555)
 proposes allowing `state_key` to be an array of strings.
+Either proposal allows for effectively including an owning user ID in a state key without having to
+string-pack the user ID with another string.
 However, either proposal would alter the nature of state events and state resolution.
 
 Another comment in [the discussion of this MSC](
