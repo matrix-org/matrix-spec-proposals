@@ -117,6 +117,10 @@ goes away.
 [MSC3760](https://github.com/matrix-org/matrix-spec-proposals/pull/3760)
 proposes to include a dedicated `state_subkey` as the third component of what
 makes a state event unique.
+As an extension to this idea, a comment in [the discussion of this MSC](
+https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-2099010555)
+proposes allowing `state_key` to be an array of strings.
+However, either proposal would alter the nature of state events and state resolution.
 
 ## Security considerations
 
