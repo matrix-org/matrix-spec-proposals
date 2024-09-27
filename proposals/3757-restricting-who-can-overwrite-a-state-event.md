@@ -33,9 +33,11 @@ As the spec currently enforces [a size limit of 255 bytes for both user IDs and 
 https://spec.matrix.org/unstable/client-server-api/#size-limits),
 the size limit on state keys is increased to **511 bytes** to allow prefixing any currently-valid
 state key with a maximum-length user ID (and a separator character).
-Similarly, the size of a state key suffix after a leading user ID and the separator character is
-limited to **255 bytes** so that any such suffix may follow any user ID without surpassing the total
-state key size limit.
+The size of a state key suffix after a leading user ID and the separator character is limited to
+**255 bytes** so that any such suffix may follow any user ID without the complete state key
+ever surpassing the total state key size limit.
+Similarly, the size of a state key without a leading user ID is limited to **255 bytes** so that any
+state key without a leading user ID may be given one without ever surpassing the total size limit.
 
 We also allow users with higher PL than the original sender to overwrite state
 events even if their mxid doesn't match the event's `state_key`. This fixes an abuse
@@ -48,10 +50,12 @@ Practically speaking, this means modifying the [authorization rules](https://spe
 
 becomes:
 
-> 8. If the event has a `state_key` that starts with an `@`:
->    1. If the prefix of the `state_key` before the first `_` that follows the first `:` (or end of string) is not a valid user ID, reject.
->    1. Otherwise, if the size of the `state_key` without the leading user ID is greater than 256 bytes, reject.
->    1. Otherwise, if that user ID does not match the `sender`, and the `sender`'s power level is not greater than that of the user denoted by the ID, reject.
+> 8. If the event has a `state_key`:
+>   1. If the `state_key` starts with an `@`:
+>       1. If the prefix of the `state_key` before the first `_` that follows the first `:` (or end of string) is not a valid user ID, reject.
+>       1. Otherwise, if the size of the `state_key` without the leading user ID is greater than 256 bytes, reject.
+>       1. Otherwise, if the leading user ID does not match the `sender`, and the `sender`'s power level is not greater than that of the user denoted by that ID, reject.
+>   1. Otherwise, if size the `state_key` is greater than 255 bytes, reject.
 
 Note that the size limit of 256 bytes after a leading user ID includes the separating `_`.
 
