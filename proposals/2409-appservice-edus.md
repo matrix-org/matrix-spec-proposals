@@ -105,7 +105,11 @@ The reason for a new key rather than bundling the events into `events` is that
 existing appservices may mistake them for PDUs and might behave erratically.
 While `events` may now be a somewhat misleading name, this is an acceptable tradeoff.
 
-Note that the EDU is otherwise formatted as it would for client-server API transport.
+EDUs are formatted the same way as they are in the client-server API `/sync`
+endpoint, with the addition of the `room_id` field for room-scoped EDUs
+(`m.typing` and `m.receipt`). `room_id` is not present in the C-S API because
+sync nests EDUs inside a room object, but appservices get a flat list of events
+in all rooms.
 
 To-device messages are a bit special as they are aimed at a particular user/device ID
 combo. These events are annotated by the server with a `to_device_id` and `to_user_id`
