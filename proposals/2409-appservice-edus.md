@@ -67,7 +67,7 @@ via the `events` array.
 
 This proposal would extend the `PUT /_matrix/app/v1/transactions/` endpoint to include a new key
 `ephemeral` to behave similar to the various sections of the CS API `/sync` endpoint. The `ephemeral` key
-MAY be omitted entirely if there are ephemeral no events to send.
+MAY be omitted entirely if there are no ephemeral events to send.
 
 ```json
 {
@@ -185,7 +185,7 @@ namespaces of users which registers "interest" in the rooms where those users re
 well as claiming namespaces of rooms for explicit interest. However, not all EDUs are
 associated with a single room (presence, etc).
 
-If the EDU is capable of being associated to a particular room, it should be sent to the
+If the EDU is capable of being associated to a particular room (i.e. `m.typing` and `m.receipt`), it should be sent to the
 appservice under the same rules as regular events (interest in the room means sending it).
 For EDUs which are not associated with a particular room, the appservice receives the EDU
 if it contextually *would* apply. For example, a presence update for a user an appservice
@@ -223,7 +223,7 @@ network and the appservice more. As such, appservices have to opt-in to receive 
 
 ## Security considerations
 
-The homeserver needs to accuratley determine which EDUs to send to the appservice, as to not leak
+The homeserver needs to accurately determine which EDUs to send to the appservice, as to not leak
 any metadata about users. Particularly `m.presence` could be tricky, as no `room_id` is present in
 that EDU.
 
