@@ -5,7 +5,7 @@ and deprecates that one.*
 
 The [appservice /transactions API](https://matrix.org/docs/spec/application_service/r0.1.2#put-matrix-app-v1-transactions-txnid)
 currently supports pushing PDU events (regular message and state events)
-however it doesn't provison for EDU events (typing, presence and more). This means that bridges cannot
+however it doesn't provison for EDU events (typing, presence and receipts). This means that bridges cannot
 react to Matrix users who send any typing or presence information in a room the service is part of.
 
 There is an interest amongst the community to have equal bridging on both sides of a bridge, so that
@@ -105,11 +105,13 @@ The reason for a new key rather than bundling the events into `events` is that
 existing appservices may mistake them for PDUs and might behave erratically.
 While `events` may now be a somewhat misleading name, this is an acceptable tradeoff.
 
-EDUs are formatted the same way as they are in the client-server API `/sync`
-endpoint, with the addition of the `room_id` field for room-scoped EDUs
-(`m.typing` and `m.receipt`). `room_id` is not present in the C-S API because
-sync nests EDUs inside a room object, but appservices get a flat list of events
-in all rooms.
+The array is effectively a combination of the `presence` and `ephemeral` sections of the
+client-server `/sync` API. User-defined ephemeral events don't exist yet, which means there are
+only three event types that can currently occur: `m.presence`, `m.typing` and `m.receipt`.
+
+EDUs are formatted the same way as they are in C-S sync, with the addition of the `room_id` field
+for room-scoped EDUs (`m.typing` and `m.receipt`). `room_id` is not present in the C-S API because
+sync nests EDUs inside a room object, but appservices get a flat list of events in all rooms.
 
 To-device messages are a bit special as they are aimed at a particular user/device ID
 combo. These events are annotated by the server with a `to_device_id` and `to_user_id`
