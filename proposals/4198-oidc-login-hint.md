@@ -11,20 +11,44 @@ user typing their [MXID].
 
 ## Proposal
 
-A client can start the login flow by asking the user for their [MXID].
-The client can then parse the domain, discover the homeserver and its auth issuer ([MSC2965]),
+### Format
+
+In order to futureproof for new new types of hints in the future and to be able to identify and parse them easily,
+we introduce a format that contains a prefix before the value, separated by a colon.
+
+The ABNF syntax for it is as follows:
+```
+login-hint = prefix ":" value
+
+prefix = 1*prefix-char
+
+prefix-char = %x21-39 / %x3B-7E ; VCHAR excluding ":"
+
+value = 1*VCHAR
+```
+
+### The `mxid` hint
+
+This MSC specifies a hint that contains the user's [MXID].
+The prefix for this hint is `mxid` (all lowercase) and the value is the Matrix user ID as specified in the
+[User Identifiers][MXID] section.
+
+Example valid hint value: `mxid:@example-user:example.com`
+
+### Usage
+
+A client can start the login flow by asking the user for their MXID.
+It can then parse the domain, discover the homeserver and its auth issuer ([MSC2965]),
 register itself with the homeserver ([MSC2966])
 and send the user to the authorization endpoint ([MSC2964]), all in one step.
 
-To improve the UX of this flow, the MXID can be sent to the homeserver with the authorization request in the `login_hint`.
+To improve the UX of this flow, the MXID may be sent to the homeserver with the authorization request in the `login_hint`
+query parameter, following the format specified above using the `mxid` hint type.
 In order to comply with the OpenID Connect specification, the requested scope must also include the `openid` scope.
 
-The value of `login_hint` may be set to the user's MXID, and must be prefixed with `mxid:` (e.g. `mxid:@example-user:example.com`).
-Prefixing the value allows for more hint value types to be added in the future and for easy detection between them.
+The homeserver should then assist the user to complete the login flow with the correct account.
 
-The homeserver can then assist the user to complete the login flow with the correct account.
-
-The client should be prepared to handle a case where the account that the user signs into will not be the one that was
+The client must be prepared to handle a case where the account that the user signs into will not be the one that was
 initially suggested, especially if the homeserver does not support the `login_hint` parameter and/or
 the user mistakenly uses the wrong credentials.
 The client may inform the user about ending up on a different account than intended and present an option to try again.
@@ -98,8 +122,8 @@ TBD
 
 One alternative would be to only include the localpart (e.g. `login_hint=example-user`),
 as the domain is redundant information for the homeserver itself.
-However, the lack of a prefix makes adding and distinguishing additional future formats difficult
-and using an MXID builds on top of existing concepts within the spec.
+However, the lack of a prefix has the potential to make adding and distinguishing additional future formats difficult
+and using the full MXID builds on top of existing concepts within the spec.
 
 
 ## Security considerations
