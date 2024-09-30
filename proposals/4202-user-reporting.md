@@ -66,8 +66,8 @@ Content-Type: application/json
 }
 ```
 
-The homeserver SHOULD ensure that the `event_id` being reported corresponds to an `m.room.member`
-event and SHOULD verify that the event was issued by the reported user's homeserver.
+The homeserver SHOULD ensure that the `event_id` corresponds to an event in the room and SHOULD
+verify that the event was issued by the reported user's homeserver.
 
 ### Federation Considerations
 
