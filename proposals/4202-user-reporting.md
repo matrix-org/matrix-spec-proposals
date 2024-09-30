@@ -139,7 +139,10 @@ it similarly to how it handles other event reports:
 - **New Federation Endpoint**: Define a new federation endpoint specifically for reporting user
   profiles. This adds complexity and is unnecessary if the existing mechanisms can be used, however
   some clients may offer the ability to view user profiles outside of a room context and therefore
-  require a reporting method not tied to a specific room event.
+  require a reporting method not tied to a specific room event. This could be facilitated with a
+  variant of [MSC4151](https://github.com/matrix-org/matrix-spec-proposals/pull/4151) that adds an
+  endpoint like `/_matrix/client/v3/profile/{userId}/report` to report a user profile specifically
+  to the homeserver without optionally notifying room admins.
 
 ## Dependencies
 
