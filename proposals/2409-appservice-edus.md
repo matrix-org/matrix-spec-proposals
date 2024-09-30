@@ -3,9 +3,9 @@
 *Node: This proposal is a continuation of [MSC1888](https://github.com/matrix-org/matrix-doc/pull/1888)
 and deprecates that one.*
 
-The [appservice /transactions API](https://matrix.org/docs/spec/application_service/r0.1.2#put-matrix-app-v1-transactions-txnid)
+The [appservice /transactions API](https://spec.matrix.org/v1.11/application-service-api/#put_matrixappv1transactionstxnid)
 currently supports pushing PDU events (regular message and state events)
-however it doesn't provison for EDU events (typing, presence and receipts). This means that bridges cannot
+however it doesn't provision for EDU events (typing, presence and receipts). This means that bridges cannot
 react to Matrix users who send any typing or presence information in a room the service is part of.
 
 There is an interest amongst the community to have equal bridging on both sides of a bridge, so that
