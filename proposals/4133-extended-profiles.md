@@ -284,9 +284,10 @@ Until a future MSC specifies otherwise:
   users in the current room, any users sharing a room with this user, all users globally) with
   defaults sensitive to their implementation's UI and intended audience. This proposal *recommends*
   clients only display profiles of users in the current room whose membership status is `join`,
-  `invite`, or `knock`, and that if custom fields are always available in the UI, an option should
-  be provided to hide/minimise them automatically. These recommendations are to moderation concerns
-  associated with displaying information from banned or departed users.
+  `invite`, or `knock`, and whose `m.room.member` event has *not* been redacted. If a client offers
+  an option for custom fields to always be available in the UI, an option should be provided to
+  hide/minimise them automatically. These recommendations are to moderation concerns associated
+  with displaying information from banned or departed users.
 
 - Clients should provide a UI for users to enter their own free-text custom fields in the `u.*`
   namespace of their own profile.
