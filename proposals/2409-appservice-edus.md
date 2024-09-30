@@ -126,6 +126,9 @@ For EDUs which are not associated with a particular room, the appservice receive
 if it contextually *would* apply. For example, a presence update for a user an appservice
 shares a room with (or is under the appservice's namespace) would be sent to the appservice.
 
+For `m.receipt`, private read receipts (`m.read.private`) should only be sent for users within the
+appservice's namespaces. Normal read receipts and threaded read receipts are always sent.
+
 ## Potential issues
 
 Determining which EDUs to transmit to the appservice could lead to quite some overhead on the
