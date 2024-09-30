@@ -260,6 +260,12 @@ generate previews, rather than generating them immediately after the user types
 a URL. However, this is a UX decision and is therefore ultimately up to the
 client to decide.
 
+Clients could also use a privacy-preserving TCP relay to proxy all URL preview
+requests [like Signal does](https://signal.org/blog/i-link-therefore-i-am/).
+That way the client wouldn't leak its IP, and the relay wouldn't see previewed
+URLs. However, running such a proxy has several potential security issues for
+the server administrators, so it is out of scope for this MSC.
+
 ### Previewing code must be implemented carefully
 When generating URL previews, clients are parsing completely untrusted data.
 Parsing responses must be done with care to prevent content-based attacks, such
