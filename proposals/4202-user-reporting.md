@@ -126,6 +126,10 @@ it similarly to how it handles other event reports:
   `m.room.member` event may no longer reflect the current profile. Servers may need to consider
   this when handling reports.
 
+- **Reporting Outside Rooms**: There is currently no method to report a user/profile without a room,
+  so clients that allow viewing a user profile elsewhere (e.g. links to users outside a room, or
+  while searching the user directory) may require a non-room-based endpoint for these scenarios.
+
 ## Alternatives
 
 - **Reporting by User ID**: Previous versions of this MSC proposed allowing reports to specify a
@@ -133,7 +137,9 @@ it similarly to how it handles other event reports:
   implementation and leverages existing APIs.
 
 - **New Federation Endpoint**: Define a new federation endpoint specifically for reporting user
-  profiles. This adds complexity and is unnecessary if the existing mechanisms can be used.
+  profiles. This adds complexity and is unnecessary if the existing mechanisms can be used, however
+  some clients may offer the ability to view user profiles outside of a room context and therefore
+  require a reporting method not tied to a specific room event.
 
 ## Dependencies
 
