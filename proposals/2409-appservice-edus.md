@@ -1,6 +1,6 @@
 # MSC2409: Proposal to send typing, presence and receipts to appservices
 
-*Node: This proposal is a continuation of [MSC1888](https://github.com/matrix-org/matrix-doc/pull/1888)
+*Note: This proposal is a continuation of [MSC1888](https://github.com/matrix-org/matrix-doc/pull/1888)
 and deprecates that one.*
 
 The [appservice /transactions API](https://spec.matrix.org/v1.11/application-service-api/#put_matrixappv1transactionstxnid)
@@ -136,13 +136,13 @@ appservice's namespaces. Normal read receipts and threaded read receipts are alw
 ## Potential issues
 
 Determining which EDUs to transmit to the appservice could lead to quite some overhead on the
-homeservers side. Additionally, more network traffic is produced, potentially straining the local
+homeserver side. Additionally, more network traffic is produced, potentially straining the local
 network and the appservice more. As such, appservices have to opt-in to receive EDUs.
 
 ## Security considerations
 
 The homeserver needs to accurately determine which EDUs to send to the appservice, as to not leak
-any metadata about users. Particularly `m.presence` could be tricky, as no `room_id` is present in
+any unnecessary metadata about users. Particularly `m.presence` could be tricky, as no `room_id` is present in
 that EDU.
 
 ## Unstable prefix
