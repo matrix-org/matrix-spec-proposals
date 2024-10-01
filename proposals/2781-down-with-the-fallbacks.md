@@ -26,8 +26,7 @@ provided for convenience and aren't necessary to understand this proposal.
 Remove the [rich reply fallback from the
 specification](https://spec.matrix.org/v1.10/client-server-api/#fallbacks-for-rich-replies).
 Clients should stop sending them and should consider treating `<mx-reply>` parts
-as either something to be unconditionally stripped or as something to be escaped
-as invalid html.
+as they treat other invalid html tags.
 
 Clients are not required to include a fallback in a reply since version 1.3 of
 the
@@ -53,11 +52,11 @@ Old events and events sent by clients implementing an older version of the
 Matrix specification might still contain a reply fallback. So for at least some
 period of time clients will still need to strip reply fallbacks from messages.
 
-Clients which don't implement rich replies or edits may see messages
-without context, confusing users. However, most replies and edits are
-in close proximity to the original message, making context likely to be
-nearby. Clients should also have enough information in the event to
-render helpful indications to users while they work on full support.
+Clients which don't implement rich replies may see messages without context,
+confusing users. However, most replies are in close proximity to the original
+message, making context likely to be nearby. Clients should also have enough
+information in the event to render helpful indications to users while they work
+on full support.
 
 Clients which aren't using
 [intentional mentions](https://spec.matrix.org/v1.7/client-server-api/#mentioning-the-replied-to-user)
