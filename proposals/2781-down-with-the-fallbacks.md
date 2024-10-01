@@ -14,7 +14,8 @@ Some of the known issues include:
 * Parsing reply fallbacks can be tricky. ([#350](https://github.com/matrix-org/matrix-spec/issues/350))
 * It is unclear how to handle a reply to a reply. ([#372](https://github.com/matrix-org/matrix-spec/issues/372))
 * Localization of replies is not possible when the content is embedded into the event.
-* It is not possible to fully redact an event once it is replied to. This causes both trust & safety and right to be forgotten issues.
+* It is not possible to fully redact an event once it is replied to. This causes issues with Trust & Safety where
+  spam or other removed content remains visible, and may cause issues with the GDPR Right to be Forgotten.
 * There are a variety of implementation bugs related to reply fallback handling.
 
 More details and considerations are provided in the appendices, but these are
@@ -34,9 +35,10 @@ the
 For this reason the reply fallback can be removed from the specification without
 any additional deprecation period.
 
-An info box should be included to mention the historical use of the reply
-fallback, suggesting that clients may encounter such events sent by other
-clients and that clients may need to strip out such fallbacks.
+A suggestion for the spec PR: An info box could be included to mention
+the historical use of the reply fallback, suggesting that clients may encounter
+such events sent by other clients and that clients may need to strip out such
+fallbacks.
 
 Given clients have had enough time to implement replies completely, the
 overall look & feel of replies should be unchanged or even improved by this
