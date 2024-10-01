@@ -112,6 +112,9 @@ only three event types that can currently occur:
 [`m.typing`](https://spec.matrix.org/v1.11/client-server-api/#mtyping),
 and [`m.receipt`](https://spec.matrix.org/v1.11/client-server-api/#mreceipt).
 
+This proposal does not cover any other types of events which are sent as EDUs in the federation API,
+such as to-device events or other e2ee features. Those are left to a separate MSC.
+
 EDUs are formatted the same way as they are in C-S sync, with the addition of the `room_id` field
 for room-scoped EDUs (`m.typing` and `m.receipt`). `room_id` is not present in the C-S API because
 sync nests EDUs inside a room object, but appservices get a flat list of events in all rooms.
