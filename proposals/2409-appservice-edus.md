@@ -1,4 +1,4 @@
-# MSC2409: Proposal to send EDUs to appservices
+# MSC2409: Proposal to send typing, presence and receipts to appservices
 
 *Node: This proposal is a continuation of [MSC1888](https://github.com/matrix-org/matrix-doc/pull/1888)
 and deprecates that one.*
@@ -107,7 +107,7 @@ While `events` may now be a somewhat misleading name, this is an acceptable trad
 
 The array is effectively a combination of the `presence` and `ephemeral` sections of the
 client-server `/sync` API. User-defined ephemeral events don't exist yet, which means there are
-only three event types that can currently occur: `m.presence`, `m.typing` and `m.receipt`.
+only three event types that can currently occur: [`m.presence`](https://spec.matrix.org/v1.11/client-server-api/#mpresence), [`m.typing`](https://spec.matrix.org/v1.11/client-server-api/#mtyping), and [`m.receipt`](https://spec.matrix.org/v1.11/client-server-api/#mreceipt).
 
 EDUs are formatted the same way as they are in C-S sync, with the addition of the `room_id` field
 for room-scoped EDUs (`m.typing` and `m.receipt`). `room_id` is not present in the C-S API because
