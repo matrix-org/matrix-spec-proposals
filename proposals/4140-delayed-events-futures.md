@@ -308,6 +308,11 @@ this attack.
 
 ## Use case specific considerations
 
+Delayed events can be used for lots of different features, tea timers, reminders or ephemeral events could be implemented
+using this where clients send room events with
+intentional mentions or a redaction as a delayed event.
+It can even be used to send temporal power levels/mutes or bans.
+
 ### MatrixRTC
 
 In this section an overview is given how this MSC is used in [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143)
