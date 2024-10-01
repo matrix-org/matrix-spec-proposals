@@ -107,7 +107,10 @@ While `events` may now be a somewhat misleading name, this is an acceptable trad
 
 The array is effectively a combination of the `presence` and `ephemeral` sections of the
 client-server `/sync` API. User-defined ephemeral events don't exist yet, which means there are
-only three event types that can currently occur: [`m.presence`](https://spec.matrix.org/v1.11/client-server-api/#mpresence), [`m.typing`](https://spec.matrix.org/v1.11/client-server-api/#mtyping), and [`m.receipt`](https://spec.matrix.org/v1.11/client-server-api/#mreceipt).
+only three event types that can currently occur:
+[`m.presence`](https://spec.matrix.org/v1.11/client-server-api/#mpresence),
+[`m.typing`](https://spec.matrix.org/v1.11/client-server-api/#mtyping),
+and [`m.receipt`](https://spec.matrix.org/v1.11/client-server-api/#mreceipt).
 
 EDUs are formatted the same way as they are in C-S sync, with the addition of the `room_id` field
 for room-scoped EDUs (`m.typing` and `m.receipt`). `room_id` is not present in the C-S API because
@@ -120,11 +123,12 @@ namespaces of users which registers "interest" in the rooms where those users re
 well as claiming namespaces of rooms for explicit interest. However, not all EDUs are
 associated with a single room (presence, etc).
 
-If the EDU is capable of being associated to a particular room (i.e. `m.typing` and `m.receipt`), it should be sent to the
-appservice under the same rules as regular events (interest in the room means sending it).
-For EDUs which are not associated with a particular room, the appservice receives the EDU
-if it contextually *would* apply. For example, a presence update for a user an appservice
-shares a room with (or is under the appservice's namespace) would be sent to the appservice.
+If the EDU is capable of being associated to a particular room (i.e. `m.typing` and `m.receipt`),
+it should be sent to the appservice under the same rules as regular events (interest in the room
+means sending it). For EDUs which are not associated with a particular room, the appservice
+receives the EDU if it contextually *would* apply. For example, a presence update for a user an
+appservice shares a room with (or is under the appservice's namespace) would be sent to the
+appservice.
 
 For `m.receipt`, private read receipts (`m.read.private`) should only be sent for users within the
 appservice's namespaces. Normal read receipts and threaded read receipts are always sent.
