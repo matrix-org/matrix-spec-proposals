@@ -26,10 +26,10 @@ time and then distributing as normal via federation.
 - [Potential issues](#potential-issues)
   - [Compatibility with Cryptographic Identities](#compatibility-with-cryptographic-identities)
 - [Alternatives](#alternatives)
-  - [Delegating futures](#delegating-futures)
+  - [Delegating delayed events](#delegating-delayed-events)
   - [Batch sending](#batch-sending)
   - [Not reusing the `send`/`state` endpoint](#not-reusing-the-sendstate-endpoint)
-  - [Batch sending futures with custom endpoint](#batch-sending-futures-with-custom-endpoint)
+  - [Batch delayed events with custom endpoint](#batch-delayed-events-with-custom-endpoint)
     - [Batch Response](#batch-response)
     - [EventId template variable](#eventid-template-variable)
   - [Allocating the event ID at the point of scheduling the send](#allocating-the-event-id-at-the-point-of-scheduling-the-send)
@@ -78,7 +78,7 @@ of this proposal.
 The proposal here allows a Matrix client to schedule a "hangup" state event to be sent after a specified time period.
 The client can then periodically restarts the timer whilst it is running. If the client is no longer running or able
 to communicate then the timer would expire and the homeserver would send the "hangup" event on behalf of the client.
-
+The client can then periodically restart the timer whilst it is running. If the client is no longer running or able
 Such an arrangement can also be described as a "heartbeat" mechanism. The client sends a "heartbeat" to the homeserver
 in the form of a "restart" of the delayed event to keep the call "alive". If the homeserver does not receive a "heartbeat"
 then it will automatically send the "hangup" event for the client.
@@ -193,7 +193,8 @@ page size.
 
 The response is a JSON object containing the following fields:
 
-- `delayed_events` - Required. An array of delayed events that have been scheduled to send.
+- `delayed_events` - Required. An array of delayed events, sorted by `running_since + delay` in increasing order, that
+have been scheduled to send.
   - `delay_id` - Required. The ID of the delayed event.
   - `room_id` - Required. The room ID of the delayed event.
   - `type` - Required. The event type of the delayed event.
@@ -313,7 +314,7 @@ There are numerous approaches to solve such a situation. They split into two cat
   - Update the room state every x seconds.
     This allows clients to check how long an event has not been updated and ignore it if it's expired.
   - Use Future events with a 10s timeout to send the disconnected from call
-    in less then 10s after the user is not anymore pinging the `/update_future` endpoint.
+    in less then 10s after the user is not anymore pinging the `/delayed_events` endpoint.
     (or delegate the disconnect action to a service attached to the SFU)
   - Use the client sync loop as a special case timeout for call member events.
     (See [Alternatives/MSC4018 (use client sync loop))](#msc4018-use-client-sync-loop))
@@ -439,9 +440,9 @@ However, the `origin_server_ts` of the delayed event should be the time that the
 
 ## Alternatives
 
-### Delegating futures
+### Delegating delayed events
 
-It is useful for external services to also interact with futures. If a client disconnects an external service can
+It is useful for external services to also interact with delayed events. If a client disconnects an external service can
 be the best source to activate the Future/"last will".
 
 This is not covered in this MSC but could be realized with scoped access tokens.
@@ -455,12 +456,8 @@ gets closed or looses connection and without knowing anything about the Matrix c
 
 ### Batch sending
 
-Timed messages, tea timers, reminders or ephemeral events could be implemented
-using this where clients send room events with
-intentional mentions or a redaction as a future.
-
 In some scenarios it is important to allow to send an event with an associated
-future at the same time.
+delay at the same time.
 
 - One example would be redacting an event. It only makes sense to redact the event
   if it exists.
@@ -471,13 +468,13 @@ future at the same time.
   but the event with content `{}` could fail. The state would not automatically
   reset to `{}`.
 
-For this use case batch sending of multiple futures would be desired.
+For this use case batch sending of multiple delayed events would be desired.
 
 We do not include batch sending in the proposal of this MSC however since batch sending should
 become a generic Matrix concept as proposed with `/send_pdus`. (see: [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080))
 
-There is a [batch sending version](#batch-sending-futures-with-custom-endpoint) in the Alternatives section
-that proposes a future specific group sending endpoint in case this is required sooner then its realistic to implement
+There is a [batch sending version](#batch-delayed-events-with-custom-endpoint) in the Alternatives section
+that proposes a delayed event specific group sending endpoint in case this is required sooner then its realistic to implement
 [MSC4080: Cryptographic Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4080).
 
 [MSC2716: Incrementally importing history into existing rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/2716)
@@ -488,34 +485,35 @@ data. Since we also need the additional capability to use a template event_id pa
 
 Alternatively new endpoints could be introduced to not overload the `send` and `state` endpoint.
 Those endpoints could be called:
-`PUT /_matrix/client/v1/rooms/{roomId}/send_future/{eventType}/{txnId}?delay={delay_ms}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send_delayed_event/{eventType}/{txnId}?delay={delay_ms}`
 
-`PUT /_matrix/client/v1/rooms/{roomId}/state_future/{eventType}/{stateKey}?delay={delay_ms}`
+`PUT /_matrix/client/v1/rooms/{roomId}/state_delayed_event/{eventType}/{stateKey}?delay={delay_ms}`
 
 This would allow the response for the `send` and `state` endpoints intact and we get a different return type
-for the new `send_future` and `state_future` endpoints.
+for the new `send_delayed_event` and `state_delayed_event` endpoints.
 
-### Batch sending futures with custom endpoint
+### Batch sending delayed events with custom endpoint
 
-The proposed solution does not allow to send events together with futures that reference them with one  
+The proposed solution does not allow to send events together with delayed events that reference them with one  
 HTTPS request. This is desired for self-destructing events and for MatrixRTC room state events, where
-we want the guarantee, that the event itself and the future removing the event both reach the homeserver
+we want the guarantee, that the event itself and the delayed event removing the event both reach the homeserver
 with one request. Otherwise there is a risk for the client to lose connection or crash between sending the  
-event and the future which results in never expiring call membership or never destructing self-destructing messages.  
+event and the delayed event which results in never expiring call membership or never destructing self-destructing messages.
 This would be solved once [MSC4080](https://github.com/matrix-org/matrix-spec-proposals/pull/4080) and the `/send_pdus`
 endpoint is implemented.
 (Then the `delay` could be added
 to the `PDUInfo` instead of the query parameters and everything could be send at once.)
 
 This would be the preferred solution since we currently don't have any other batch sending mechanism.  
-It would however require lots of changes since a new widget action for futures would be needed.
+It would however require lots of changes since a new widget action for delayed events would be needed.
 With the current main proposal it is enough to add a `delay` to the send message
 widget action.
-The widget driver would then take care of calling `send` or `send_future` based on the presence of those fields.
+The widget driver would then take care of calling `send` or `send_delayed_event` based on the presence of those fields.
 
 An alternative to the proposed solution that allows this kind of batch sending would be to
 introduce this endpoint:
-`PUT /_matrix/client/v1/rooms/{roomId}/send/future/{txnId}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/delayed_event/{txnId}`
+
 It allows to send a list of event contents. The body looks as following:
 
 ```jsonc
@@ -524,18 +522,18 @@ It allows to send a list of event contents. The body looks as following:
 
   "send_on_timeout": {
     "type":type,
-    "content":timeout_future_content
+    "content":timeout_delay_event_content
     },
 
   // optional
   "send_on_action":{
     "${action1}": {
       "type":type,
-      "content":action_future_content
+      "content":action_delay_event_content
     },
     "${action2}": {
       "type":type,
-      "content":action_future_content
+      "content":action_delay_event_content
     },
     ...
   },
@@ -545,16 +543,16 @@ It allows to send a list of event contents. The body looks as following:
 }
 ```
 
-We are sending the timeout and the group id inside the body and combine the timeout future
-and the action future into one event.
+We are sending the timeout and the group id inside the body and combine the timeout delayed event
+and the action delayed event into one event.
 Each of the `sendEventBody` objects are exactly the same as sending a normal
 event.
 
-This is a batch endpoint that sends timeout and action futures at the same time.
+This is a batch endpoint that sends timeout and action delayed events at the same time.
 
 #### Batch Response
 
-The response will be a collection of all the futures with the same fields as in the initial proposal:
+The response will be a collection of all the delayed events with the same fields as in the initial proposal:
 
 ```jsonc
 {
@@ -572,22 +570,22 @@ The response will be a collection of all the futures with the same fields as in 
 }
 ```
 
-Working with futures is the same with this alternative.
+Working with delayed events is the same with this alternative.
 This means,
 
-- `GET /_matrix/client/v1/futures` getting running futures
-- `POST /_matrix/client/v1/update_future` to canceling, restarting and sending futures
+- `GET /_matrix/client/v1/delayed_events` getting running delayed events
+- `POST /_matrix/client/v1/delayed_events` to canceling, restarting and sending delayed events
 
 uses the exact same endpoints.
-Also the behaviour of the homeserver on when to invalidate the futures is identical except, that
+Also the behaviour of the homeserver on when to invalidate the delayed events is identical except, that
 we don't need the error code `409` anymore since the events are sent as a batch and there cannot be
-an action future without a timeout future.
+an action delayed event without a timeout delayed event.
 
 #### EventId template variable
 
 It would be useful to be able to send redactions and edits as one HTTP request.
-This would handle the cases where the futures need to reference the `send_now` event.
-For instance, sending a self-destructing message where the redaction timeout future needs
+This would handle the cases where the delayed events need to reference the `send_now` event.
+For instance, sending a self-destructing message where the redaction timeout delayed events needs
 to reference the event to redact.
 
 For this reason, template variables are introduced that are only valid in `Future` events.
@@ -596,7 +594,7 @@ For this reason, template variables are introduced that are only valid in `Futur
 
 The **Self-destructing messages** example be a single request:
 
-`PUT /_matrix/client/v1/rooms/{roomId}/send/future/{txnId}`
+`PUT /_matrix/client/v1/rooms/{roomId}/send/delayed_event/{txnId}`
 
 ```jsonc
 {
@@ -624,14 +622,14 @@ and then send them via `/send_pdus` (see: [MSC4080: Cryptographic Identities](ht
 
 ### Allocating the event ID at the point of scheduling the send
 
-This was considered, but when sending a future the `event_id` is not yet available:
+This was considered, but when sending a delayed event the `event_id` is not yet available:
 
 The Matrix spec says that the `event_id` must use the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids)
 which is [calculated from the fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
 of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
 
 Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call
-duration computation) we cannot compute the `event_id` when using the send endpoint when the future has not yet resolved.
+duration computation) we cannot compute the `event_id` when using the send endpoint when the dealyed event has not yet resolved.
 
 ### MSC4018 (use client sync loop)
 
@@ -755,7 +753,7 @@ Some alternatives for the `running_since` field on the `GET` response:
 
 All new endpoints are authenticated.
 
-Servers SHOULD impose a maximum timeout value for future timeouts of not more than a month.
+Servers SHOULD impose a maximum timeout value for delay timeouts of not more than a month.
 
 As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver MUST evaluate and enforce the
 power levels at the time of the delayed event being sent (i.e. added to the DAG).
