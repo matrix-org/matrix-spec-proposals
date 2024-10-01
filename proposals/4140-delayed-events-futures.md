@@ -205,6 +205,25 @@ have been scheduled to send.
   - `content` - Required. The content of the delayed event. This is the body of the original `PUT` request not a preview
     of the full event after sending.
 - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
+- `terminated_events` - Required. An array of finalized delayed events, that have either been sent or resulted in an error.
+  - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
+  - `termination_reason` - Required `"timeout"|"send"|"canceled"|"error"`.
+    - `"timeout"`: the event got sent because the delay timed out
+    - `"send"`: the event got sent because the send endpoint was called.
+    - `"canceled"`: the event got canceled using the `cancel` endpoint
+    - `"error"`: the delay timed out but the event sending failed.
+  - `error` - Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
+  to explain why this event failed to get sent.
+  - `event_id` - Optional EventId. The `event_id` this event got when it was sent.
+  - `origin_server_ts` - Optional Timestamp. The timestamp the event was sent.
+- `next_terminated_batch` - Optional. A token that can be used to paginate the list of finalized events.
+
+The batch size and the amount of termiated events that stay on the homeserver can be chosen, by the homeserver.
+The recommended values are:
+
+- `terminated_events` retention: 7days
+- `terminated_events` batch size: 10
+- `terminated_events` max cached events: 1000
 
 For example:
 
