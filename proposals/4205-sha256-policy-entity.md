@@ -3,7 +3,13 @@
 Currently, moderation policies describe the entity they are targeting
 by including a literal identifier in the `entity` field.
 
-This is problematic for multiple reasons.
+This is problematic for multiple reasons[^msc4204].
+
+[^msc4204]: While this MSC is not dependant upon
+[MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204),
+[MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204)
+provides a similar context for why hashing entities is desired.
+
 
 #### Propagating abuse
 
@@ -18,7 +24,7 @@ into their mxids.
 #### Identifying users before encountering them
 
 Policies can be used as an address book to identify problematic users
-who have not been encountered by
+who have not been encountered yet.
 
 For example, if `@yarrgh:example.com` is banned for `piracy`,
 then it is obvious that `@yarrgh:example.com` could be a pirate.
@@ -26,9 +32,9 @@ Even if the reason was not provided with the policy.
 
 ## Proposal
 
-We therefore propose a new field `hashes` to the top level of all
-moderation policy events.
-Embedded within this, we propose a simple `sha256` entity hash field.
+We therefore propose a new optional field `hashes` to the top level of
+all moderation policy events.  Embedded within this, we propose a
+simple `sha256` entity hash field.
 
 ```json
 {
@@ -46,7 +52,6 @@ In this example, when a moderation tool encounters a new user, or a
 new policy, the tool will calculate the base64 encoded sha256
 of their full mxid `@yarrgh:example.com` to
 match against policies that provide an associated hash.
-
 
 ## Potential issues
 
