@@ -17,14 +17,14 @@ store banned rooms, users and servers alongside a reason for the ban.
 This has provided the ability to create versatile policy lists that
 can ban matrix users for any recorded reason. Not only for spam,
 illegal content, csam, but softer reasons such as moderation disputes,
-timeouts, inrventions, disagreements.
+timeouts, interventions, disagreements.
 
 Unfortunately, because the `m.ban` recommendation has such a broad
 use, and its implementation has the same outcome for any consequence,
 it is the expectation that a `reason` is provided for each `m.ban`.
 
 This reason inadvertently allows the subject of the moderation policy
-to be classified among catagories of abuse, which can be
+to be classified among categories of abuse, which can be
 undesirable. For example, a user called `@yarrgh:example.com` could be
 banned for the reason `piracy`. Which would identify
 `@yarrgh:example.com` as a pirate. This is problematic because
@@ -37,7 +37,7 @@ Additionally, if `@yarrgh:example.com` is known to been smuggling
 contraband via matrix events or media, then there is no mechanism
 to mark this content as plunder that should be ceased.
 
-A compunding issue is Moderation bots currently use the `reason` of
+A compounding issue is Moderation bots currently use the `reason` of
 the ban to determine whether to redact a user's events or not. Which
 doesn't allow for a free-form use of the `reason` where redaction is
 required.
@@ -55,7 +55,7 @@ recommendation should behave and the severity of the consequences.  We
 also provide guidance to allow tool implementers to understand the
 context of the recommendations use. Moderation tools or clients are
 free to interpret the recommendation differently, for example if they
-are aware of a conflciting policy or they are configured to implement
+are aware of a conflicting policy or they are configured to implement
 harsher or more liberal consequences for the recommendation.
 
 If the entity of the rule is a user:
@@ -111,12 +111,12 @@ https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
 
 ## Potential issues
 
-+ It is anticipaited that some consequences of recommending
++ It is anticipated that some consequences of recommending
   `m.takedown` against an entity are irreversible, and can have a huge
   impact on the history of a Matrix room if implemented naively.  The
   most common use case for the recommendation will be to replace the
   use of `m.ban` with the reason `spam` targeting a user, which in
-  Mjolinr causes the target user to be banned from protected rooms and
+  Mjolnir causes the target user to be banned from protected rooms and
 
 + Because the `reason` is no longer present, a higher degree of trust
   is required when applying some consequences to these policies.  An
@@ -127,7 +127,7 @@ https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
 + The lack of classification from the `reason` field is insufficient
   to prevent direct identification of some entities. For example
   `@yarrgh:example.com` is evidently a pirate because of the presence
-  of the phrase `yarrgh` embeded within their mxid.  An attempt to
+  of the phrase `yarrgh` embedded within their mxid.  An attempt to
   alleviate this concern exists through [MSC4205 Hashed moderation policy
   entities](https://github.com/matrix-org/matrix-spec-proposals/pull/4205).
 
@@ -138,14 +138,14 @@ https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
   because the reasons are not standardised.
 
 + `m.ban` A `takedown` reason could be given on `m.ban` policies.
-  This is pretty adhoc.
+  This is pretty ad-hoc.
 
 
 ## Security considerations
 
 + `m.takedown` can have severe consequences for entities, policies
   could be created maliciously against innocent users on popular
-  policy rooms. This could increasce the reward of infiltrating
+  policy rooms. This could increase the reward of infiltrating
   moderation focussed communities. Tools that naively implement
   the recommendation without safeguards, such as manual approval,
   for the most severe consequences could be exploited.
