@@ -1,4 +1,4 @@
-# MSC0000: `m.takedown` moderation policy recommendation
+# MSC4204: `m.takedown` moderation policy recommendation
 
 Currently there is one specified moderation policy recommendation, `m.ban`[^spec-ban-recommendation].
 
@@ -119,12 +119,17 @@ https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
   Mjolinr causes the target user to be banned from protected rooms and
 
 + Because the `reason` is no longer present, a higher degree of trust
-  is required when applying some consequences to these policies.
+  is required when applying some consequences to these policies.  An
+  attempt to document the reason privately exists through [MSC4206
+  Moderation policy auditing and
+  context](https://github.com/matrix-org/matrix-spec-proposals/pull/4206).
 
 + The lack of classification from the `reason` field is insufficient
   to prevent direct identification of some entities. For example
   `@yarrgh:example.com` is evidently a pirate because of the presence
-  of the phrase `yarrgh` embeded within their mxid.
+  of the phrase `yarrgh` embeded within their mxid.  An attempt to
+  alleviate this concern exists through [MSC4205 Hashed moderation policy
+  entities](https://github.com/matrix-org/matrix-spec-proposals/pull/4205).
 
 ## Alternatives
 
@@ -150,15 +155,4 @@ https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
-
-## Dependencies
-
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
+`org.matrix.msc4204.takedown` -> `m.takedown`.
