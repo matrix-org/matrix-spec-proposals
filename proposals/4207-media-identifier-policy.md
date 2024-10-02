@@ -32,7 +32,12 @@ would have the following content:
 }
 ```
 
-A reason must not be used
+As described in [MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204),
+a reason may be provided with the `m.takedown` recommendation.
+However, in the context of media a reason must not be provided.
+
+This is to prevent the policy being used to classify the media and to
+keep the reason for takedown ambiguous.
 
 ### Recommendations
 
@@ -54,6 +59,10 @@ material.
 
 #### `m.ban`
 
+Moderators may wish to use `m.ban` when media is considered offensive,
+or the subject of a dispute, but not necessarily worthy of
+`m.takedown`.
+
 - When applied to a user: Media is hidden entirely or behind a spoiler
   tag with an explanation.
 
@@ -73,6 +82,16 @@ It can only be proactive in instances where the attacker doesn't
 know the media id has been listed yet, or the media simply
 hasn't propagated to all target homeservers yet.
 
+### Missing reason
+
+As mentioned in
+[MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204)
+in the
+[concerns](https://github.com/Gnuxie/matrix-doc/blob/gnuxie/takedown/proposals/4204-takedown-recommendation.md#potential-issues),
+the abscence reason may make it difficult for moderators to determine
+the context behind the policy.  An attempt to document the reason
+privately exists through [MSC4206 Moderation policy auditing and
+context](https://github.com/matrix-org/matrix-spec-proposals/pull/4206)
 
 ## Alternatives
 
@@ -82,6 +101,8 @@ Hashing the content of the media and distributing the media could
 be the same as distributing a content address.
 
 Distributing perceptual hashes is also problematic.
+
+See [MSC4113: Image hashes in Policy Lists](https://github.com/matrix-org/matrix-spec-proposals/pull/4113).
 
 ## Security considerations
 
