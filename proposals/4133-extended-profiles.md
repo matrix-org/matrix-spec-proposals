@@ -9,17 +9,13 @@ details) should enrich user interactions without impacting existing functionalit
 
 Currently, the Matrix protocol supports limited user profile fields: `avatar_url` and
 `displayname`. This proposal extends the API to include custom fields, enabling users to add
-free-text key:value pairs to their global profiles. This extension provides a flexible framework
-for users to share additional public information.
+key:value pairs to their global profiles. This extension provides a flexible framework for users to
+share additional public information.
 
 This proposal is designed to be simple and compatible with existing clients and servers,
 facilitating quick adoption. It complements, rather than replaces,
 [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) (Extensible Profiles as
 Rooms), by focusing on global profile data without the complexity of per-room profile management.
-
-After using these custom freetext fields, the community can then propose further extensions to
-standardise special fields with specific purposes, such as a user's timezone or languages, and
-these proposals may choose to allow selected fields to be specified per-room via member events.
 
 ## Client-Server API Changes
 
@@ -78,7 +74,8 @@ these proposals may choose to allow selected fields to be specified per-room via
 {
   "avatar_url": "mxc://matrix.org/MyC00lAvatar",
   "displayname": "John Doe",
-  "u.Custom Field": "value1"
+  "m.example_field": "value1",
+  "org.example.job_title": "Software Engineer"
 }
 ```
 
@@ -92,7 +89,7 @@ these proposals may choose to allow selected fields to be specified per-room via
 {
   "avatar_url": "mxc://matrix.org/MyNewAvatar",
   "displayname": "John Doe",
-  "u.Custom Field": "new_value1"
+  "m.example_field": "new_value1"
 }
 ```
 
@@ -106,7 +103,7 @@ these proposals may choose to allow selected fields to be specified per-room via
 {
   "avatar_url": "mxc://matrix.org/MyNewAvatar",
   "displayname": "John Doe",
-  "u.Custom Field": "new_value1"
+  "m.example_field": "new_value1"
 }
 ```
 
@@ -119,7 +116,7 @@ The federation endpoint `GET /_matrix/federation/v1/query/profile` will mirror t
 API changes to ensure profile information is consistent between local and federated users.
 
 There is no method to verify the history of global profile fields over federation, so this endpoint
-must only accept requests for local users on the current homeserver, and homeservers must only
+MUST only accept requests for local users on the current homeserver, and homeservers MUST only
 request a profile from the homeserver specified in that user's MXID.
 
 As per the current stable endpoint, it accepts an optional `field` query string parameter to
@@ -134,7 +131,7 @@ fields are published over federation, and this proposal continues to allow this 
 ## Capabilities
 
 A new capability `m.profile_fields` controls the ability to *set* custom profile fields and is
-advertised on the `GET /_matrix/client/v3/capabilities` endpoint. Clients should check for this
+advertised on the `GET /_matrix/client/v3/capabilities` endpoint. Clients SHOULD check for this
 capability before attempting to create or modify a profile field.
 
 - **Capability Structure**:
@@ -144,29 +141,29 @@ capability before attempting to create or modify a profile field.
   "capabilities": {
     "m.profile_fields": {
       "enabled": true,
-      "allowed": ["u.Custom Field 1", "org.example.job_title"],
+      "allowed": ["m.example_field", "org.example.job_title"],
       "disallowed": ["org.example.job_title"]
     }
   }
 }
 ```
 
-- **Behaviour**
-  - **When capability missing**: Clients should assume extended profiles are supported, and that
+- **Behaviour**:
+  - **When capability is missing**: Clients SHOULD assume extended profiles are supported, and that
     they can be created/written to. If a server intends to deny some (or all) changes, it SHOULD
     use the capability to advertise this to improve client experience.
 
-  - **When `enabled` is `false`**: Clients should expect to display profiles but NOT create or
-    update fields. Any attempt to do so should result in a `403 Forbidden` error. This does not
+  - **When `enabled` is `false`**: Clients SHOULD expect to display profiles but NOT create or
+    update fields. Any attempt to do so SHOULD result in a `403 Forbidden` error. This does not
     affect `avatar_url` and `displayname` fields, which are allowed for compatibility purposes.
 
-  - **When `enabled` is `true`**: Clients should allow users to create or update custom fields,
-    except those listed in the `disallowed` array, if it exists. Servers may optionally specify the
-    `allowed` array to allowlist fields that users may set - if the `allowed` key is provided with
-    empty content (e.g. `"allowed": []`) this also disallows the setting of any fields. If both
-    `allowed` and `disallowed` keys are provided, the `disallowed` one should be ignored. Clients
-    will receive `400 Bad Request` or `403 Forbidden` responses from the homeserver if server-side
-    policies prevent them.
+  - **When `enabled` is `true`**: Clients SHOULD allow users to create or update fields, except
+    those for keys listed in the `disallowed` array, if it exists. Servers MAY optionally specify
+    the `allowed` array to allowlist fields that users can set - if the `allowed` key is provided
+    with empty content (e.g. `"allowed": []`), this also disallows the setting of any fields.
+    If both `allowed` and `disallowed` keys are provided, the `disallowed` one should be ignored.
+    Clients will receive `400 Bad Request` or `403 Forbidden` responses from the homeserver if
+    server-side policies prevent them.
 
 ## Error Handling
 
@@ -239,35 +236,36 @@ in rooms and will exist solely at the global level for storing metadata about th
 (Whenever "bytes" are referred to as a limit, this is calculated as UTF-8 bytes, so a two-byte code
 point consumes two bytes of this limit. This size would be measured before any JSON encoding.)
 
-Each profile *must* be *at most* 64KiB (65,536 bytes) in size, as measured in Canonical JSON, and
-includes `avatar_url` and `displayname`.
+Each profile MUST be *at most* 64KiB (65,536 bytes) in size, as measured in Canonical JSON,
+including the `avatar_url` and `displayname` fields.
 
 Homeservers are not expected to enforce namespaces, as future expansions may be unknown to the
 server, but clients are expected to use the correct namespace for field creation/updates.
 
-Key must follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/unstable/appendices/#common-namespaced-identifier-grammar),
-but with an additional `u.*` namespace for user-defined fields:
+Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/unstable/appendices/#common-namespaced-identifier-grammar),
+with the following considerations:
 
-- **Namespace `m.*`**: Reserved for fields defined in the Matrix specification. This field may have
-  special entry/display requirements, so clients that do not recognise a field in this namespace
-  *may* attempt to display it, but should *not* attempt to update the content.
+- **Namespace `m.*`**: Reserved for fields explicitly defined in the Matrix specification. These
+  fields may have special entry/display requirements, so clients that do not recognise a field in
+  this namespace MAY attempt to display it, but SHOULD NOT attempt to update the content unless
+  they understand its formatting and validation requirements.
 
-- **Namespace `u.*`**: Reserved for user-defined custom fields. The portion of the key name after
-  the `u.` defines the display name of this field (e.g. `u.Bio`). The values in this namespace must
-  always be UTF-8 strings with a content not exceeding 512 bytes.
+- **Namespace `u.*`**: Reserved for future user-defined custom fields. A future proposal may
+  justify a need for users to create custom keys within their client, so this namespace has been
+  reserved for that purpose. Clients and servers SHOULD avoid using this namespace until specified
+  in a future proposal.
 
-- **Namespace `tld.name.*`**: Client-specific or unstable fields use Java package naming convention.
+- **Namespace `tld.name.*`**: For client-specific or unstable fields, using Java package naming
+  convention (e.g., `com.example.custom_field`).
 
-Following this change, for example, a user could enter a "My Timezone" field manually in their
-client, and the client would be required to encode this as `u.my_timezone` key in their profile.
-Clients would be expected to treat this as a string inside the profile with no special meaning.
-However, following [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/4175),
-clients would use the unstable key `us.cloke.msc4175.tz` (or stable key `m.tz`) following the
-validation and formatting required by that MSC.
+Following this change, for example, clients could use `m.example_field` if that field is defined by
+the Matrix specification, or `org.example.job_title` for organisation or client-specific fields.
+The proposal [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/4175) demonstrates
+the process of definining new fields in the `m.*` namespace.
 
 ## Implementation Details
 
-- Custom fields MUST not trigger state events in rooms; their data must not be replicated to
+- Custom fields MUST not trigger state events in rooms; their data MUST not be replicated to
   `m.room.member` events unless a future proposal creates exceptions for specific fields.
 
 - Servers SHOULD cache remote profiles for *at least* 5 minutes after retrieval; however, until
@@ -275,25 +273,17 @@ validation and formatting required by that MSC.
   *recommended* profiles be cached no longer than 15 minutes to avoid displaying stale data.
   Servers MUST not cache for longer than 24 hours to avoid unwanted data persistence.
 
-- Clients COULD provide a UI for users to view/enter their own free-text custom fields in the `u.*`
-  namespace of their own profile.
+- Clients COULD provide a UI for users to view and enter custom fields, respecting the appropriate
+  namespaces.
 
-- If clients present custom fields in profiles to users, clients SHOULD provide settings to choose
-  the scope of profiles they present the freetext (i.e. `u.*` namespaced) fields from, (e.g. none,
-  only users on the local server, users in the current room, any users sharing a room with this
-  user, all users globally) with defaults sensitive to their implementation's UI and intended
-  audience. This proposal *recommends* clients only display profiles of users in the current room
-  whose membership status is `join`, `invite`, or `knock`, and whose `m.room.member` event has
-  *not* been redacted. If a client offers an option for custom fields to always be available in the
-  UI, an option should be provided to hide/minimise them automatically.
+- Clients SHOULD only display profiles of users in the current room whose membership status is
+  `join`, `invite`, or `knock`, and whose `m.room.member` event has *not* been redacted. If a
+  client offers an option for free-text fields to always be available in the UI, an option SHOULD
+  be provided to hide/minimise them automatically.
 
-- Servers MAY add/remove/modify fields in their own user's global profile data, whether for
-  moderation purposes or for other policy reasons, e.g. to automatically populate a job title based
-  on the user's organisation.
-
-- Servers MAY suppress all extended profile fields to their users (e.g. during a go-live phase);
-  however, this feature could cause confusion if some users can see fields that other users
-  cannot, so should be used sparingly.
+- Servers MAY add/remove/modify fields in their own users' global profile data, whether for
+  moderation purposes or for other policy reasons (e.g. to automatically populate a job title based
+  on the user's organisation).
 
 ## Potential Issues
 
@@ -305,13 +295,13 @@ As such, this MSC is designed to be as simple as possible to get initial functio
 structures implemented widely, so further extensions can be debated, implemented, and tested with
 due care over time.
 
-As this data is stored only at the global level, it won't allow users to modify fields per-room,
-or track historical changes in profile fields. However, many users would struggle to track their
-own data across many rooms, and publishing state events for every field change could quickly become
-a heavy burden on servers and moderators.
+As this data is stored only at the global level, it won't allow users to modify fields per-room or
+track historical changes in profile fields. However, many users would struggle to track their own
+data across many rooms, and publishing state events for every field change could quickly become a
+heavy burden on servers and moderators.
 
-This proposal recommends future MSCs add certain fields to per-room member events when there is
-value in doing so - the current free-text fields added by this proposal are not considered to have
+This proposal recommends future MSCs only add certain fields to per-room member events when there is
+explicit value in doing so — the current fields added by this proposal are not considered to have
 this value.
 
 This proposal also does not offer a method to "broadcast" to other users or homeservers that
@@ -340,22 +330,22 @@ profile management.
 ## Security Considerations
 
 Since profile fields are public, the server is not directly responsible for the privacy of the data;
-however, clients should make users aware that any information published in their profile will be
+however, clients SHOULD make users aware that any information published in their profile will be
 visible to others on the federated network.
 
 Likewise, if a server automatically publishes data in user profile fields (e.g. setting a job title
-based on an organisation's internal user database) then they must have consent to do so, and users
-should be made aware that data is published on their behalf.
+based on an organisation's internal user database), then they SHOULD have consent to do so, and
+users SHOULD be made aware that data is published on their behalf.
 
-Homeservers and clients *must* comply relevant privacy regulations, particularly regarding data
-deletion and retention. Profile data *should* be cleared when a user is deactivated, and while
-homeservers *should* cache remote profiles, they *should* avoid caching beyond 24 hours to minimise
+Homeservers and clients SHOULD comply with relevant privacy regulations, particularly regarding data
+deletion and retention. Profile data SHOULD be cleared when a user is deactivated, and while
+homeservers SHOULD cache remote profiles, they SHOULD avoid caching beyond 24 hours to minimise
 the risk of unintended data persistence.
 
-To minimise the impact of abuse, clients should offer suitable defaults for the users they will
-display the profile fields from. A user may *choose* to display fields from all users globally,
-but *by default* profiles should only be shown when the users share the current room and the other
-user is in the `join`, `invite`, or `knock` membership states.
+To minimise the impact of abuse, clients SHOULD offer suitable defaults for the users they will
+display the profile fields from. A user MAY choose to display fields from all users globally, but
+*by default* profiles SHOULD only be shown when the users share the current room and the other user
+is in the `join`, `invite`, or `knock` membership states.
 
 The proposal [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) adds reporting
 of user profiles over federation, which offers a facility for users to report offensive content to
@@ -365,13 +355,13 @@ the homeserver that account is registered on.
 
 ### Unstable Profile Fields
 
-Until this proposal is stable, custom fields should use an unstable prefix:
+Until this proposal is stable, fields SHOULD use an unstable prefix:
 
 ```json
 {
   "avatar_url": "mxc://matrix.org/MyC00lAvatar",
   "displayname": "John Doe",
-  "uk.tcpip.msc4133.u.Custom Field": "field_value"
+  "uk.tcpip.msc4133.m.example_field": "field_value"
 }
 ```
 
@@ -379,7 +369,7 @@ Until this proposal is stable, custom fields should use an unstable prefix:
 
 Use unstable endpoints when the capability is not yet stable:
 
-- **Get/Set/Delete Custom Fields**:
+- **Get/Set/Delete Profile Fields**:
   - `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}`
 
 - **Patch/Put Profile**:
@@ -402,13 +392,13 @@ Advertise the capability with an unstable prefix:
 
 ### Unstable Client Features
 
-Client feature `uk.tcpip.msc4133` should be advertised on the `/_matrix/client/versions` endpoint
+Client feature `uk.tcpip.msc4133` SHOULD be advertised on the `/_matrix/client/versions` endpoint
 when the `PUT` and `PATCH` methods are accepted on the
 `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}` endpoint.
 
-Once this MSC is merged, the client feature `uk.tcpip.msc4133.stable` should be advertised when the
+Once this MSC is merged, the client feature `uk.tcpip.msc4133.stable` SHOULD be advertised when the
 `PUT` and `PATCH` methods are accepted on the `/_matrix/client/v3/profile/{userId}` endpoint until
-the next spec version where this endpoint is officially written into the spec, e.g.
+the next spec version where this endpoint is officially written into the spec, e.g.:
 
 ```json
 {
