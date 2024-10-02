@@ -51,8 +51,6 @@ A key drawback of this scheme is that it's not possible to blanketly ignore
 invites from specific users or servers. Spammers could, therefore, send
 invites repeatedly.
 
-Additionally, the ignore list is subject to the 64 KiB event size limit.
-
 
 ## [MSC3840] – Ignore invites
 
@@ -101,9 +99,6 @@ separate fields for ignoring invites:
 A key improvement over [MSC2270] is the ability to ignore entire users
 and servers.
 
-Similar to [MSC2270], however, the ignore configuration is still subject
-to the 64 KiB event size limit.
-
 Contrary to `m.ignored_user_list` and [MSC2270], `m.ignored_invites` is
 handled exclusively on the client side. This allows users to review and
 unignore ignored invites but also means that ignored invites will be
@@ -141,9 +136,6 @@ configurations.
 
 Unlike [MSC3840], processing the ignore configuration can happen on either the
 client or the server.
-
-Similar to [MSC2270] and [MSC3840], the ignore configuration is subject to
-the 64 KiB event size limit.
 
 
 ## [MSC3847] – Ignoring invites with policy rooms
@@ -187,12 +179,8 @@ event `m.policies` which defines:
 }
 ```
 
-Unlike the previous proposals, the ignore configuration is not subject to
-the 64 KiB event size limit because each policy rule is stored in a separate
-event.
-
-Additionally, ignore configurations can easily be shared and reused across
-different users.
+Unlike the previous proposals, the ignore configuration can easily be shared
+and reused across different users.
 
 Another key advantage is the ability to match users, rooms and servers against
 glob expressions. This could probably be added into the other proposals as well,
@@ -250,11 +238,8 @@ ahead to the next rule in the list.
 }
 ```
 
-Unlike [MSC3847], the ignore configuration is subject to the 64 KiB event size
-limit because all rules are stored in a single event.
-
-Similar to [MSC3847], however, glob expressions as well as block-list and
-allow-list configurations are supported.
+Similar to [MSC3847] glob expressions as well as block-list and allow-list
+configurations are supported.
 
 
 ## Summary
@@ -269,7 +254,6 @@ to all proposals.
 | Ignore user          | ❌        | ✅        | ✅            | ✅                  | ✅        |
 | Ignore server        | ❌        | ✅        | ✅            | ✅                  | ✅        |
 | Glob matching        | ❌        | ❌        | ❌            | ✅                  | ✅        |
-| Can exceed 64 KiB    | ❌        | ❌        | ❌            | ✅                  | ❌        |
 | Client-side          | ❌        | ✅        | ✅ (optional) | ✅                  | ❌        |
 | Block-list semantics | ✅        | ✅        | ✅            | ✅                  | ✅        |
 | Allow-list semantics | ❌        | ❌        | ✅            | ✅ (with [MSC4150]) | ✅        |
