@@ -1,16 +1,16 @@
 # MSC4207: Media identifier moderation policy
 
 Moderation policies are used to refer to entities that
-need to be takendown.
+need to be taken down.
 
 No such policy exists for media because of a number of safety,
 security, and legal reasons.
 
 A moderation policy that targets media is highly desired,
 because there is no current means to share knowledge about
-abusive content other than through backchannels.
+abusive content other than through back-channels.
 
-This is because we must not inadvertantly propagate the media
+This is because we must not inadvertently propagate the media
 by referring to it directly.
 
 ## Proposal
@@ -20,7 +20,7 @@ and [MSC4204 m.takedown recommendation](https://github.com/matrix-org/matrix-spe
 
 A new policy type is introduced `m.policy.rule.mxc`.
 
-A policy targetting the media `mxc://example.com/0`
+A policy targeting the media `mxc://example.com/0`
 would have the following content:
 
 ```json
@@ -41,7 +41,7 @@ A reason must not be used
 - When applied to a user: Media is automatically purged from
   local storage and is never displayed in the client.
 
-- When appiled to a room: Messages containing the media
+- When applied to a room: Messages containing the media
   uri are automatically redacted.
 
 - When applied to a server: Media matching the mxc uri is immediately
