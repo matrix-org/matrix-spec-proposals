@@ -1,4 +1,4 @@
-# MSC0000: Media identifier moderation policy
+# MSC4207: Media identifier moderation policy
 
 Moderation policies are used to refer to entities that
 need to be takendown.
@@ -15,8 +15,8 @@ by referring to it directly.
 
 ## Proposal
 
-This proposal builds upon both [MSC0000 Hashed policy entitites]
-and [MSC0000 m.takedown recommendation].
+This proposal builds upon both [MSC4205 Hashed policy entitites](https://github.com/matrix-org/matrix-spec-proposals/pull/4205)
+and [MSC4204 m.takedown recommendation](https://github.com/matrix-org/matrix-spec-proposals/pull/4204).
 
 A new policy type is introduced `m.policy.rule.mxc`.
 
@@ -36,7 +36,7 @@ A reason must not be used
 
 ### Recommendations
 
-#### MSC0000 `m.takedown`
+#### [MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204) `m.takedown`
 
 - When applied to a user: Media is automatically purged from
   local storage and is never displayed in the client.
@@ -87,19 +87,15 @@ Distributing perceptual hashes is also problematic.
 
 ### Dictionary attack
 
-Please see [MSC0000 m.takedown].
+Please see [MSC4205 Hashed policy entitites](https://github.com/matrix-org/matrix-spec-proposals/pull/4205), in particular
+the note on [dictionary attacks](https://github.com/Gnuxie/matrix-doc/blob/gnuxie/sha256-policy-entity/proposals/4205-sha256-policy-entity.md#dictionary-attack).
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+`org.matrix.msc4207.mxc` -> `m.policy.rule.mxc`
 
 ## Dependencies
 
-* [MSC0000 `m.takedown`]
-* [MSC0000 hashed policy entity]
+This MSC depends upon both:
+* [MSC4205 Hashed policy entitites](https://github.com/matrix-org/matrix-spec-proposals/pull/4205)
+* [MSC4204 m.takedown recommendation](https://github.com/matrix-org/matrix-spec-proposals/pull/4204)
