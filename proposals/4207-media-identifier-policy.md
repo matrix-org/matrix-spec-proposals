@@ -88,7 +88,7 @@ As mentioned in
 [MSC4204](https://github.com/matrix-org/matrix-spec-proposals/pull/4204)
 in the
 [concerns](https://github.com/Gnuxie/matrix-doc/blob/gnuxie/takedown/proposals/4204-takedown-recommendation.md#potential-issues),
-the abscence reason may make it difficult for moderators to determine
+the absence reason may make it difficult for moderators to determine
 the context behind the policy.  An attempt to document the reason
 privately exists through [MSC4206 Moderation policy auditing and
 context](https://github.com/matrix-org/matrix-spec-proposals/pull/4206)
