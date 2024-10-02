@@ -15,7 +15,7 @@ by referring to it directly.
 
 ## Proposal
 
-This proposal builds upon both [MSC4205 Hashed policy entitites](https://github.com/matrix-org/matrix-spec-proposals/pull/4205)
+This proposal builds upon both [MSC4205 Hashed policy entities](https://github.com/matrix-org/matrix-spec-proposals/pull/4205)
 and [MSC4204 m.takedown recommendation](https://github.com/matrix-org/matrix-spec-proposals/pull/4204).
 
 A new policy type is introduced `m.policy.rule.mxc`.
@@ -87,7 +87,7 @@ Distributing perceptual hashes is also problematic.
 
 ### Dictionary attack
 
-Please see [MSC4205 Hashed policy entitites](https://github.com/matrix-org/matrix-spec-proposals/pull/4205), in particular
+Please see [MSC4205 Hashed policy entities](https://github.com/matrix-org/matrix-spec-proposals/pull/4205), in particular
 the note on [dictionary attacks](https://github.com/Gnuxie/matrix-doc/blob/gnuxie/sha256-policy-entity/proposals/4205-sha256-policy-entity.md#dictionary-attack).
 
 ## Unstable prefix
@@ -97,5 +97,5 @@ the note on [dictionary attacks](https://github.com/Gnuxie/matrix-doc/blob/gnuxi
 ## Dependencies
 
 This MSC depends upon both:
-* [MSC4205 Hashed policy entitites](https://github.com/matrix-org/matrix-spec-proposals/pull/4205)
+* [MSC4205 Hashed policy entities](https://github.com/matrix-org/matrix-spec-proposals/pull/4205)
 * [MSC4204 m.takedown recommendation](https://github.com/matrix-org/matrix-spec-proposals/pull/4204)
