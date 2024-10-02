@@ -35,7 +35,7 @@ and they are not a pirate at all.
 
 Additionally, if `@yarrgh:example.com` is known to been smuggling
 contraband via matrix events or media, then there is no mechanism
-to mark this content as plunder that should be ceased.
+to mark this content as plunder that should be seized.
 
 A compounding issue is Moderation bots currently use the `reason` of
 the ban to determine whether to redact a user's events or not. Which
@@ -53,7 +53,7 @@ expected to be consumed by typical moderation tooling or clients.
 This is to set expectations for policy list curators for how the
 recommendation should behave and the severity of the consequences.  We
 also provide guidance to allow tool implementers to understand the
-context of the recommendations use. Moderation tools or clients are
+context of the recommendation's use. Moderation tools or clients are
 free to interpret the recommendation differently, for example if they
 are aware of a conflicting policy or they are configured to implement
 harsher or more liberal consequences for the recommendation.
@@ -106,7 +106,7 @@ If the entity of the rule is a server:
   quarantined or removed.
 
 
-[^bluesky] This is inspired by work going into bluesky
+[^bluesky]: This is inspired by work going into bluesky
 https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
 
 ## Potential issues
@@ -117,6 +117,7 @@ https://docs.bsky.app/blog/2024-protocol-roadmap#protocol-stability-milestone
   most common use case for the recommendation will be to replace the
   use of `m.ban` with the reason `spam` targeting a user, which in
   Mjolnir causes the target user to be banned from protected rooms and
+  their messages to be redacted.
 
 + Because the `reason` is no longer present, a higher degree of trust
   is required when applying some consequences to these policies.  An
