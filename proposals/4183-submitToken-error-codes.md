@@ -51,10 +51,11 @@ None foreseen.
 
 No unstable prefix is deemed necessary. Sydent already sends the common error codes and also sends
 `M_NO_VALID_SESSION` if the code is incorrect. Once an identity server (or homeserver) switches to
-use the new error code, they may not recognise the error condition correctly until updated to support
-the new code. We say that this is acceptable in favour of avoiding the complexity of negotiating error
-codes with API versions. Since the identity server is generally used via the homeserver now, most
-users of this API will not currently receive a sensible error code in this situation anyway.
+use the new error code, clients (including homeservers proxying the IS API) may not recognise the
+error condition correctly until updated to support the new code. We say that this is acceptable in
+favour of avoiding the complexity of negotiating error codes with API versions. Since the identity
+server is generally used via the homeserver now, most users of this API will not currently receive
+a sensible error code in this situation anyway.
 
 ## Dependencies
 
