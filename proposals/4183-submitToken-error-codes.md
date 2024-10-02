@@ -2,14 +2,14 @@
 
 The [`POST /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken)
 and [`POST /_matrix/identity/v2/validate/msisdn/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validatemsisdnsubmittoken)
-endpoints do not specify any particular specific error codes, instead relying on the common error codes defined in the
+endpoints do not specify any specific error codes, instead relying on the common error codes defined in the
 identity service API.
 
 However, these common error codes don't have any codes to signal many errors that can occur in these
 APIs: most obviously, that the token the user entered was incorrect.
 
 This MSC can be considered similar to [MSC4178](https://github.com/matrix-org/matrix-spec-proposals/pull/4178)
-although that MSC is for `requestToken` on the C/S API only.
+although that MSC is for `requestToken` on the C-S API only.
 
 The [`POST /_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken) endpoint in the C/S API also specifies a `submit_url` response parameter, defining its parameters to
 be the same as the Identity API's `submitToken` endpoints. This MSC also affects this.
@@ -32,7 +32,7 @@ to specify that the entire API is the same, including response / error codes, ra
 
 ## Potential issues
 
-None forseen.
+None foreseen.
 
 ## Alternatives
 
@@ -40,7 +40,7 @@ None considered.
 
 ## Security considerations
 
-None forseen.
+None foreseen.
 
 ## Unstable prefix
 
@@ -49,7 +49,7 @@ No unstable prefix is deemed necessary. Sydent already sends the common error co
 use the new error code, they may not recognise the error condition correctly until updated to support
 the new code. We say that this is acceptable in favour of avoiding the complexity of negotiating error
 codes with API versions. Since the identity server is generally used via the homeserver now, most
-uses of this API will not currently be receiving a sensible error code in this situation anyway.
+users of this API will not currently receive a sensible error code in this situation anyway.
 
 ## Dependencies
 
