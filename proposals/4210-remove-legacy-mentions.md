@@ -24,8 +24,12 @@ standard push rules are removed entirely:
 Additionally, the `contains_display_name` push rule condition is deprecated.
 
 ## Potential issues
-Users using old clients will no longer be able to mention users on up-to-date
-clients/servers.
+Users using old clients (which don't send intentional mentions) will no longer
+be able to mention users on up-to-date clients/servers.
+
+Users using old clients (which don't support the new push rule conditions) will
+also no longer be notified for mentions in case the client depends on the push
+rules served by the server.
 
 ## Alternatives
 
