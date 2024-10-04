@@ -186,7 +186,7 @@ Where the `action` is `send`, the homeserver **should** apply rate limiting to p
 ### Getting delayed events
 
 New authenticated client-server API endpoints `GET /_matrix/client/v1/delayed_events/scheduled` and
-`GET /_matrix/client/v1/delayed_events/terminated` allows clients to get a list of
+`GET /_matrix/client/v1/delayed_events/finalised` allows clients to get a list of
 all the delayed events owned by the requesting user that have been scheduled to send, have been sent or fail to send.
 
 The endpoints accepts a query parameter `from` which is a token that can be used to paginate the list of delayed events as
@@ -209,32 +209,30 @@ The response is a JSON object containing the following fields:
       of the full event after sending.
   - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
-- For the `GET /_matrix/client/v1/delayed_events/terminated` endpoint:
-  - `terminated_events` - Required. An array of finalized delayed events, that have either been sent or resulted in an error,
-  sorted by `origin_server_ts` in decreasing order (latest terminated event first).
+- For the `GET /_matrix/client/v1/delayed_events/finalised` endpoint:
+  - `finalised_events` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
+  sorted by `origin_server_ts` in decreasing order (latest finalised event first).
     - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
-    - `termination_reason` - Required `"timeout"|"send"|"canceled"|"error"`.
-      - `"timeout"`: the event got sent because the delay timed out
-      - `"send"`: the event got sent because the send endpoint was called.
-      - `"canceled"`: the event got canceled using the `cancel` endpoint
-      - `"error"`: the delay timed out but the event sending failed.
-    - `error` - Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
-    to explain why this event failed to get sent.
-    - `event_id` - Optional EventId. The `event_id` this event got when it was sent.
+    - `outcome`: "send"|"cancel",
+    - `reason`: "error"|"action"|"delay"
+    - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
+    to explain why this event failed to get sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
+    Errors from the client server send and state endpoints.
+    - `event_id` - Optional EventId. The `event_id` this event got in case it was sent.
     - `origin_server_ts` - Optional Timestamp. The timestamp the event was sent.
-  - `next_terminated_batch` - Optional. A token that can be used to paginate the list of finalized events.
+  - `next_batch` - Optional. A token that can be used to paginate the list of finalised events.
 
 The batch size and the amount of termiated events that stay on the homeserver can be chosen, by the homeserver.
 The recommended values are:
 
-- `terminated_events` retention: 7days
-- `terminated_events` batch size: 10
-- `terminated_events` max cached events: 1000
+- finalised events retention: 7days
+- finalised_events batch size: 10
+- finalised_events max cached events: 1000
 
 There is no guarantee for a client that all events will be available in the
-`terminated_events` list if they exceed the limits of their homeserver.
+finalised events list if they exceed the limits of their homeserver.
 
-For example:
+An example for a response to the `GET /_matrix/client/v1/delayed_events/scheduled` endpoint:
 
 ```http
 200 OK
@@ -269,8 +267,7 @@ Content-Type: application/json
 }
 ```
 
-`running_since` is the timestamp (as unix time in milliseconds) when the delayed event was scheduled or last restarted.
-So, unless the delayed event is updated beforehand, the event will be sent after `running_since` + `delay`.
+Unless the delayed event is updated beforehand, the event will be sent after `running_since` + `delay`.
 
 This can be used by clients to display events that have been scheduled to be sent in the future.
 
@@ -311,6 +308,18 @@ the _new state event_:
 - timeout for _delayed event_ followed by _new state event_: the room state will be updated twice: once by the content of
   the delayed event but later with the content of _new state event_.
 - _new state event_ followed by timeout for _delayed event_: the _new state event_ will cancel the outstanding _delayed event_.
+
+The finalised delayed event as represented by the finalised list of the GET endpoint (See:[Getting delayed events](#getting-delayed-events))
+will be stored with the following outcome:
+
+```json
+"outcome": "canceled", 
+"reason": "error", 
+"error": {
+  "errorcode": "M_CANCELLED_BY_STATE_UPDATE",
+  "error":"The delayed event did not get send because a different user updated the same state event.
+  So the scheduled event might change it in an undesired way."}
+```
 
 Note that this behaviour does not apply to regular (non-state) events as there is no concept of a `(type, state_key)`
 pair that could be overwritten.
@@ -572,8 +581,7 @@ duration computation) we cannot compute the `event_id` when using the send endpo
 [MSC4018: Reliable call membership](https://github.com/matrix-org/matrix-spec-proposals/pull/4018) also
 proposes a way to make call memberships reliable. It uses the client sync loop as
 an indicator to determine if the event is expired. Instead of letting the SFU
-inform about the call termination or using the call app ping loop like we propose
-here.
+inform about the call termination or using the call app ping/refresh loop like we propose here.
 
 The advantage is, that this does not require us to introduce a new ping system (as we do by using `delayed_events`
 restart action).
@@ -755,6 +763,27 @@ instead of:
   "errcode": "M_MAX_DELAYED_EVENTS_EXCEEDED",
   "error": "The maximum number of delayed events has been reached."
 }
+```
+
+- The `M_UNKNOWN` `errcode` should be used instead of `M_CANCELLED_BY_STATE_UPDATE` as follows:
+
+```json
+{
+  "errcode": "M_UNKNOWN",
+  "org.matrix.msc4140.errcode": "M_CANCELLED_BY_STATE_UPDATE",
+  "error":"The delayed event did not get send because a different user updated the same state event.
+  So the scheduled event might change it in an undesired way."
+  }
+```
+
+instead of:
+
+```json
+{
+  "errcode": "M_CANCELLED_BY_STATE_UPDATE",
+  "error":"The delayed event did not get send because a different user updated the same state event.
+  So the scheduled event might change it in an undesired way."
+  }
 ```
 
 Additionally, the feature is to be advertised as an unstable feature in the `GET /_matrix/client/versions` response, with
