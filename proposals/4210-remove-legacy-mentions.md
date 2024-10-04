@@ -23,6 +23,10 @@ standard push rules are removed entirely:
 
 Additionally, the `contains_display_name` push rule condition is deprecated.
 
+Including an empty `m.mentions` key is still required for clients that are
+aware of intentional mentions, as omitting it would cause current clients to
+assume messages are not using intentional mentions.
+
 ## Potential issues
 Users using old clients (which don't send intentional mentions) will no longer
 be able to mention users on up-to-date clients/servers.
