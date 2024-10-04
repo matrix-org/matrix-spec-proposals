@@ -32,6 +32,14 @@ also no longer be notified for mentions in case the client depends on the push
 rules served by the server.
 
 ## Alternatives
+The removal could be done in a new room version, such as when switching to
+extensible events, as suggested by [MSC3952]. However, such a migration will
+likely take much longer than clients implementing intentional mentions.
+Additionally, the room upgrade UX is still an open issue, which means many
+rooms simply don't upgrade. Therefore, making a slightly breaking change to
+existing room versions seems like the better option.
+
+[MSC3952]: https://github.com/matrix-org/matrix-spec-proposals/pull/3952
 
 ## Security considerations
 This proposal doesn't add any features, so there are no new security
