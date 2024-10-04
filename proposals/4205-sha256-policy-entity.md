@@ -53,9 +53,17 @@ new policy, the tool will calculate the base64 encoded sha256
 of their full mxid `@yarrgh:example.com` to
 match against policies that provide an associated hash.
 
+Currently the content schema for `m.policy.rule.user` requires the
+`entity` field. In order for the `entity` field to be omitted when a
+hash has been provided, the entity field will have to become optional.
+
+
 ## Potential issues
 
-None noted.
+### Glob rules
+
+This proposal does not work with glob rules, and those will
+still have to be encoded in plain text in the `entity` field.
 
 ## Alternatives
 
