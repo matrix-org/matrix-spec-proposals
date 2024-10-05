@@ -1,4 +1,4 @@
-# MSCXXXX: WebXDC on Matrix
+# MSC4190: WebXDC on Matrix
 
 
 In Matrix, users may want to send each other interactive content (for example a game
