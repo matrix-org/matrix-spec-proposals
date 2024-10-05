@@ -21,7 +21,7 @@ Matrix events. More information is available at WebXDC's own specification)
 
 To start a WebXDC event, a client may start by sending a `m.webxdc.start` event, 
 formatted as such:
-```json
+```jsonc
 {
     "content": {
         "name": "Storm on Mt. Ooe", // optional, must be a string
@@ -64,7 +64,7 @@ window.webxdc.sendUpdate(
 );
 ```
 
-```json
+```jsonc
 {
     "content": {
         "m.relates_to": { "event_id": "$WebXDCStart1", "rel_type": "m.webxdc" },
