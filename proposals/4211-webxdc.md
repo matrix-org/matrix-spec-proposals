@@ -144,9 +144,9 @@ risks, especially with untrusted entities.
 ## Unstable prefix
 
 Until this MSC is merged, client shall replace the following namespaces:
-`m.webxdc`->`at.kappach.at.webxdc`
-`m.webxdc.start`->`at.kappach.at.webxdc.start`
-`m.webxdc.data`->`at.kappach.at.webxdc.data`
+- `m.webxdc`->`at.kappach.at.webxdc`
+- `m.webxdc.start`->`at.kappach.at.webxdc.start`
+- `m.webxdc.data`->`at.kappach.at.webxdc.data`
 
 As this proposal acts at the event layer, there is no need to ask the server for if it has 
 support for this proposal.
