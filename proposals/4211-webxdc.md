@@ -128,7 +128,9 @@ However, these would require an additional server to be setup(which are not main
 and would effectively be limited to the Matrix ecosystem only, instead of being platform-
 agnostic.
 Widgets(MSC1236), while powerful, also suffer from a similar agnosticity problem with 
-other platforms.
+other platforms, and has been noted as not having a "[...] canonical document to describe 
+[it]" last year. WebXDC also has stricter security concerns(e.g: clients cannot have 
+sensitive information leaked, unlike widgets), thus making it safer.
 
 ## Security considerations
 
