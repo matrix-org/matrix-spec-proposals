@@ -2,11 +2,13 @@
 
 ## Problem
 
-Currently there are three main ways to limit who can overwrite a state event:
+Currently, there are two main restrictions on who can overwrite a state event, enforced by rules
+7 and 8 of the [authorization rules](https://spec.matrix.org/latest/rooms/v11/#authorization-rules):
 
- * If a user's PL is greater than the `m.room.power_levels` `state_default` field
- * If a user's PL is greater than the `m.room.power_levels` `events` field for that event type
- * If a state event has a state key which begins with an `@`, then the sender's mxid must match that state key.
+ * Only users with a power level greater than or equal to the "required power level" for a state
+   event type may send state events of that type.
+ * State events with a `state_key` that equals a user ID may be overwritten only by the user whose
+   ID matches the state key.
 
 This is problematic if a user needs to publish multiple state
 events of the same type in a room, but would like to set access control so
