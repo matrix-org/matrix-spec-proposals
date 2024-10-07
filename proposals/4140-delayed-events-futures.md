@@ -624,7 +624,7 @@ If it's not needed to allow modification of a delayed event after it has been sc
 federating the scheduled event (adding it to the DAG immediately). It increases resilience: the sender's homeserver can
 disconnect and the delayed message still will enter non-soft-failed state (will be sent).
 
-However, for the MatrixRTC use case it's requried to be able to modify the event after it has been scheduled. As such,
+However, for the MatrixRTC use case it's required to be able to modify the event after it has been scheduled. As such,
 this approach has been discounted.
 
 ### MQTT style Last Will
