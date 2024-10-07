@@ -244,9 +244,6 @@ true redundancy and disaster recovery, but key storage is not this.
 
 ⚠️ Avoid "4S" or "quad-S" - these are not descriptive terms.
 
-⚠️ Avoid "private key" - this is an implementation detail and a term with
-specific meaning from cryptography.
-
 ### Recovery key (and recovery passphrase)
 
 A **recovery key** is a way of regaining access to key storage if the user loses
