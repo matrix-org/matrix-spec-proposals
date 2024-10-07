@@ -235,12 +235,8 @@ storage, and this allows us to decrypt the messages keys from key backup".
 Instead, we simply say that both cryptographic identity and message keys are
 stored in key storage.
 
-⚠️ Avoid using "key backup" to talk about storing message keys: keeping things on
-the server is not a "backup", but a reliable, cross-device place where this
-information is stored. The word "backup" implies a redundant way to recover lost
-information, but if the user loses their recovery key, this information is lost.
-Clients and servers may wish to offer additional backup services that provide
-true redundancy and disaster recovery, but key storage is not this.
+⚠️ Avoid using "key backup" to talk about storing message keys: this is too
+easily confused with exporting keys or messages to an external system.
 
 ⚠️ Avoid "4S" or "quad-S" - these are not descriptive terms.
 
