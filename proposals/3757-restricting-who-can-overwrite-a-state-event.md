@@ -26,7 +26,8 @@ so there ought to be a mechanism to prevent other users from doing so.
 
 ## Proposal
 
-**If a state event's `state_key` *starts with* a user ID followed by an underscore, only the user
+In a future room version,
+**if a state event's `state_key` *starts with* a user ID followed by an underscore, only the user
 with that ID or users with a higher power level then them may overwrite that state event.**
 This is an extension of the current behaviour where state events may be overwritten only by users
 whose ID *exactly equals* the `state_key`.
