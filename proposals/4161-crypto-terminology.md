@@ -260,7 +260,7 @@ key and has the same purpose as the recovery key.
 > "Write down your recovery key in a safe place"
 
 > "If you lose access to your devices and your recovery key, you will need to
-> reset your key storage, which will create a new identity"
+> reset your message key storage, which will create a new identity"
 
 > "If you lose your recovery key you can generate a new one if you are signed in
 > elsewhere"
