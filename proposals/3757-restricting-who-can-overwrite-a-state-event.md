@@ -10,6 +10,10 @@ Currently, there are two main restrictions on who can overwrite a state event, e
  * State events with a `state_key` that equals a user ID may be overwritten only by the user whose
    ID matches the state key.
 
+With these restrictions, only a single piece of state for any state event type may have its write
+access limited to a particular user (the state event whose `state_key` is set to the ID of the user
+who has write access to it).
+
 This is problematic if a user needs to publish multiple state
 events of the same type in a room, but would like to set access control so
 that only they can subsequently update the event. An example of this is if a
