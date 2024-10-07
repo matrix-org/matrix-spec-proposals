@@ -87,7 +87,7 @@ do use the verb "verify" to describe how to make a device secure. By using the
 same verb, we help users understand the confusing fact that verifying devices
 and verifying users are similar processes, but with different outcomes.)
 
-⚠️ Avoid using "cross-signing", which requires a deeper understanding of
+⚠️ Avoid using "cross-signing", which requires a deeper knowledge of
 cryptography to understand.
 
 ⚠️ Avoid mentioning "device keys" - a device is just secure or not.
