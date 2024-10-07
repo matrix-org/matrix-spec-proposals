@@ -81,30 +81,30 @@ the user doesn't typically need to worry about the fact that insecure devices
 are a thing, given they should only ever occur in error (or transitional)
 scenarios.
 
-⚠️ Avoid saying "trusted device" or "verified device". Devices are not people,
-and it is helpful to use different language for people vs. devices. (However, we
+⚠️ Avoid saying "trusted device" or "verified device". Devices are not users,
+and it is helpful to use different language for users vs. devices. (However, we
 do use the verb "verify" to describe how to make a device secure. By using the
 same verb, we help users understand the confusing fact that verifying devices
-and verifying people are similar processes, but with different outcomes.)
+and verifying users are similar processes, but with different outcomes.)
 
 ⚠️ Avoid using "cross-signing", which requires a deeper understanding of
 cryptography to understand.
 
 ⚠️ Avoid mentioning "device keys" - a device is just secure or not.
 
-⚠️ Avoid "session" to mean device. Device better describes what most people
+⚠️ Avoid "session" to mean device. Device better describes what most users
 encounter, and is more commonly used in other products.
 
-### Verified person
+### Verified user
 
-When you verify a person they become **verified**. This means that you have
+When you verify a user they become **verified**. This means that you have
 cryptographic proof that no-one is listening in on your conversations. (You need
 this if you suspect someone in a room may be using a malicious homeserver.)
 
-In many contexts, most people are **not verified**: verification is a manual
+In many contexts, most users are **not verified**: verification is a manual
 step (scanning a QR code or comparing emojis). (In future, verification will
 probably become more common thanks to "transitive trust" or "key transparency").
-When an unverified person resets their cryptographic identity, we should warn
+When an unverified user resets their cryptographic identity, we should warn
 the user, so they are aware of the change.
 
 If Alice is verified with Bob, and then Alice's cryptographic identity changes
@@ -115,24 +115,24 @@ and now someone could be. Bob can choose to **withdraw verification** (i.e.
 one or the other, Bob's communication with Alice should contain a prominent and
 serious warning that Alice's **verified identity has changed**.
 
-> "This person is verified."
+> "This user is verified."
 
 > "WARNING: Bob's verified identity has changed!"
 
-> "You verified this person's identity, but it has changed. Please choose to
+> "You verified this user's identity, but it has changed. Please choose to
 > re-verify them or withdraw verification."
 
 ⚠️ Avoid using "cross-signing", which requires a deeper understanding of
 cryptography to understand.
 
 ⚠️ Avoid using "trust on first use (TOFU)", which is a colloquial name for noting
-the identity of people who are not verified so that we can notify the user if it
+the identity of users who are not verified so that we can notify the user if it
 changes. (This is a kind of "light" form of verification where we assume that
 the first identity we can see is trusted.)
 
-⚠️ Avoid confusing verification of people with verification of devices: the
+⚠️ Avoid confusing verification of users with verification of devices: the
 mechanism is similar but the purpose is different. Devices must be verified to
-make them secure, but people can optionally be verified to ensure no-one is
+make them secure, but users can optionally be verified to ensure no-one is
 listening in or tampering with communications.
 
 ⚠️ Avoid talking about "mismatch" or "verification mismatch" which is very
@@ -147,13 +147,13 @@ cryptography should be invisible.
 
 ### Identity
 
-A person's **identity** is proof of who they are, and, if they are verified,
+A user's **identity** is proof of who they are, and, if they are verified,
 proof that you have a secure communication channel with them.
 
 > "Warning: Alice's identity appears to have changed" (when a non-verified
-> person resets their recovery key)
+> user resets their recovery key)
 
-> "WARNING: Bob's verified identity has changed!" (when a verified person resets
+> "WARNING: Bob's verified identity has changed!" (when a verified user resets
 > their recovery key)
 
 (During login, at the "Confirm it's you" stage):
@@ -251,7 +251,7 @@ specific meaning from cryptography.
 
 A **recovery key** is a way of regaining access to key storage if the user loses
 all their devices. Using key storage, they can preserve their cryptographic
-identity (meaning other people don't see "Alice's identity appears to have
+identity (meaning other users don't see "Alice's identity appears to have
 changed" messages), and also read old messages using the stored message keys.
 
 A **recovery passphrase** is an easier-to-remember way of accessing the recovery
