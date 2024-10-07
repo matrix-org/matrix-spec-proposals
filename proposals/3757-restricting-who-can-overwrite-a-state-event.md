@@ -89,11 +89,6 @@ for one of a user's devices:
 }
 ```
 
-Since `:` is not permitted in the localpart and `_` is not permitted in the domain part of a user ID
-(see [Historical User IDs](https://spec.matrix.org/v1.2/appendices/#historical-user-ids)),
-it is not possible to craft a user ID that matches the beginning of a state key constructed for
-another user's ID, so state keys restricted to one owner can never be overwritten by another user.
-
 ## Potential issues
 
 ### Incompatibility with domain names containing underscores
