@@ -67,7 +67,7 @@ user who owns them, and we call these **devices**.
 Devices which have not been cross-signed by the user are considered an error
 state, primarily to be encountered during the transition to MSC4153 and/or due
 to buggy/incomplete/outdated clients. These devices are referred to as **not
-secure** and presence of them are considered a serious and dangerous error
+secure** or **insecure** and their existence is considered a serious and dangerous error
 condition, similar to an invalid TLS certificate.
 
 > "This device is not secure. Please verify it to continue."
