@@ -135,9 +135,15 @@ makes a state event unique.
 As an extension to this idea, a comment in [the discussion of this MSC](
 https://github.com/matrix-org/matrix-spec-proposals/pull/3757#issuecomment-2099010555)
 proposes allowing `state_key` to be an array of strings.
-Either proposal allows for effectively including an owning user ID in a state key without having to
-string-pack the user ID with another string.
-However, either proposal would alter the nature of state events and state resolution.
+With either proposal of multi-component state keys, state events could be scoped to an owning user
+by setting one of the components of the state key (either the `state_subkey` or an element of an
+array `state_key`) to a user ID, instead of by prefixing the `state_key` string with a user ID.
+Doing so would avoid having to parse user IDs out of `state_key` strings,
+and would avoid needing to increase the size limit of the `state_key` field to give it enough room
+to contain a leading user ID.
+However, allowing state keys to be multi-component would change state key comparison from being a
+string comparison to an array-of-strings comparison, which could be costly for existing server
+implementations to migrate to.
 
 Another comment in [the discussion of this MSC](
 https://github.com/matrix-org/matrix-spec-proposals/pull/3757#discussion_r1103877363)
