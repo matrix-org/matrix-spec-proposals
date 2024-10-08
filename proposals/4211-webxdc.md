@@ -121,7 +121,7 @@ As it is experimental, this proposal does not provide a mapping between
 doesn't see a good way to make it function alongside the existing event system properly, 
 and recommends waiting until it is stable within the WebXDC API before making an MSC 
 which supports it. As such, clients MUST set the function to the JavaScript `undefined` 
-until a MSC which explicitely declares support for it is merged into the specification.
+until a MSC which explicitly declares support for it is merged into the specification.
 
 
 ## Alternatives
