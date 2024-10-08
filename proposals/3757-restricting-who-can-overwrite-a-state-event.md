@@ -142,6 +142,7 @@ as an event's owner would be determined implicitly from whoever sent the event,
 instead of from an explicit field set in the event.
 If this were to be done, endpoints for setting/retrieving state events would need to
 allow specifying the owner of the event to set/retrieve.
+It would also require server implementations to change how they key state events.
 
 ### Multi-component state keys
 
