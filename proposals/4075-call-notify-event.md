@@ -17,7 +17,7 @@ wants to start a call. This event is added to the push rules for clients which
 support calling so they get push notifications. The push rules for intentional
 mentions make sure no unnecessary push notification is sent.
 
-This event contains the following fields by leveraging intentional mentions.
+This event contains the following fields including intentional mentions and extensible events.
 
 ```json
 {
@@ -31,7 +31,10 @@ This event contains the following fields by leveraging intentional mentions.
 
     // for application = "m.call":
     "call_id": "some_id",
-  }
+    // Extensible events fallback
+    "m.text": "<@room|@user1, @user2 and @user3>
+      <notify_type == 'ring' ? 'RingRing!!' : ''> Join the call in this room with a supported client."
+    }
 }
 ```
 
@@ -39,9 +42,11 @@ In the following we define **call** as any MatrixRTC session with the
 same `"application"` and the same application specific data.
 In the case of `"m.call"`, the same `"call_id"`.
 
-On retrieval, the event should not be rendered in the timeline.
-But if the notify conditions (listed below) apply,
-the client has to inform the user about the **call** with an appropriate user flow.
+If it does support the event it should not be rendered in the timeline.
+(Call timeline elements are done using the `m.call.member` state events.)
+
+But, if the notify conditions (listed below) apply,
+the client has to inform the user about the **call** with an appropriate user experience.
 For `notify_by == "ring"` some kind of sound is required
 (except if overwritten by another client specific setting),
 for `notify_by == "notification"` a visual indication is enough.
@@ -89,6 +94,13 @@ Sending a `m.call.notify` should happen only if all of these conditions apply:
 - If the user has not yet received a `m.call.notify` for the **call** they want to
   participate but the other condition applies. (So the obvious case is, that this
   is the first user in a new call session).
+
+### Fallback with extensible events
+
+If clients do not support `m.call.notify` events, they will however draw the extensible event fallback.
+The exact content is up the the sending client and can contain more detailed instructions on how to get
+access to a supporting client. It has to include the `@room` or the mentioned user list and has
+to communicate the message that those users are invited to participate in a call.
 
 ### Limitations and recommendations
 
