@@ -6,7 +6,7 @@ in a groupchat, or maybe a collaborative board). Previously, integrations were u
 to provide such content, but they are not in-band (thus needs another server, which 
 tends to be unmaintained as of now). As such, this proposal aims to resolve this by
 adding [WebXDC](https://webxdc.org/) into the Matrix client ecosystem, with no 
-server-side changes or additions needed.
+server-side changes or additions needed to existing Matrix interfaces.
 
 ## Proposal
 
@@ -17,7 +17,8 @@ that wouldn't require server administrators to either host another software solu
 or users to resort to a centralised hub(as integrations) would be highly appreciable.
 
 (Please note that the following simply describes how WebXDC calls transmate to 
-Matrix events. More information is available at WebXDC's own specification)
+Matrix events. More information is available at WebXDC's 
+[own specification](https://webxdc.org/docs/spec/index.html))
 
 To start a WebXDC event, a client may start by sending a `m.webxdc.start` event, 
 formatted as such:
@@ -42,9 +43,10 @@ where the `content.url` field must be a MXC URI pointing to the WebXDC media.
 Once a user starts, a client can show the event(alongside `content.name`, and 
 `content.icon`/`content.icon_mime`) as an invitation to enter the WebXDC context. 
 
-If so, it MUST set `window.webxdc.selfAddr` and `window.webxdc.selfName` to the 
-user's MXID and name in the room(or the global name stored in the profile API if 
-unavailable, otherwise fallback to the MXID), respectively.
+If the client is in the context, it MUST set `window.webxdc.selfAddr` and 
+`window.webxdc.selfName` to the user's MXID and name in the room(or the global 
+name stored in the profile API if unavailable, otherwise fallback to the MXID), 
+respectively.
 
 Whenever a client calls the JavaScript `window.webxdc.sendUpdate(update, desc)` 
 function, it MUST send a `m.room.message` with a relation to the original event 
@@ -91,7 +93,7 @@ the listener set with `window.webxdc.setUpdateListener`, with the update's
 `payload` being the `content->m.webxdc.data` object, it's `info`, `document` 
 and `summary` being the `content->m.webxdc.data->info`, `content->m.webxdc.data->document`,
 and `content->m.webxdc.data->summary` fields respectively, the 
-`serial`/`max_serial` fieldd being the current and last event's `origin_server_ts` 
+`serial`/`max_serial` field being the current and last event's `origin_server_ts` 
 fields respecticely. They must also check for such events (ideally via the 
 relations API).
 
@@ -118,34 +120,35 @@ As it is experimental, this proposal does not provide a mapping between
 `window.webxdc.joinRealtimeChannel` and a real, Matrix-side construct. The author also 
 doesn't see a good way to make it function alongside the existing event system properly, 
 and recommends waiting until it is stable within the WebXDC API before making an MSC 
-which supports it. As such, clients MUST set the function to the JavaScript `undefined`.
+which supports it. As such, clients MUST set the function to the JavaScript `undefined` 
+until a MSC which explicitely declares support for it is merged into the specification.
 
 
 ## Alternatives
 
-Another way to have interactive content in rooms would be to use an integration manager. 
-However, these would require an additional server to be setup(which are not maintained), 
-and would effectively be limited to the Matrix ecosystem only, instead of being platform-
-agnostic.
-Widgets(MSC1236), while powerful, also suffer from a similar agnosticity problem with 
-other platforms, and has been noted as not having a "[...] canonical document to describe 
-[it]" last year. WebXDC also has stricter security concerns(e.g: clients cannot have 
-sensitive information leaked, unlike widgets), thus making it safer.
+Widgets([MSC1236](https://github.com/matrix-org/matrix-spec-proposals/issues/3803)), while powerful, 
+also suffer from a similar agnosticity problem with other platforms, and effectively requires an actively 
+online, external server.  WebXDC also has stricter security concerns(e.g: clients cannot have sensitive 
+information leaked, unlike widgets), thus making it safer, though a system that would also widgets to act 
+as basic WebXDC containers (allowing clients that already have support for the more complicated widgets, 
+while allowing others to focus on the WebXDC subset) would be an interesting compromise.
 
 ## Security considerations
 
-WebXDC still suffers from some issues, due to its nature, which is effectively a packaged web 
-application. As such, client developers will need to be careful to properly conceal secrets
-(like a user's access token), and must follow [the WebXDC constraints](https://webxdc.org/docs/spec/messenger.html#webview-constraints-for-running-apps).
-A malicious user could also use WebXDC as a vector for existing vulnerabilities in, e.g, a
-browser/JavaScript engine, thus being able to break out of sandboxes. Clients must first
-consult the user on whenever they want to start a WebXDC session, and must warn of potential 
-risks, especially with untrusted entities.
+WebXDC still suffers from some issues, due to its nature, which is effectively a packaged web application. 
+As such, client developers will need to be careful to properly conceal secrets (like a user's access token), 
+and must follow [the WebXDC constraints](https://webxdc.org/docs/spec/messenger.html#webview-constraints-for-running-apps).
+A malicious user could also use WebXDC as a vector for existing vulnerabilities in, e.g, a browser/JavaScript 
+engine, thus being able to break out of sandboxes. Clients must first consult the user on whenever they want to 
+start a WebXDC session, and must warn of potential risks, especially with untrusted entities. A user could also 
+craft WebXDC events(not created through the application itself, or with a modified version of the application). 
+WebXDC app developers must take into consideration the source of a payload(and possibly take measures against, 
+but the author finds that discussing said measures falls outside the MSC's own scope).
 
 
 ## Unstable prefix
 
-Until this MSC is merged, client shall replace the following namespaces:
+Until this MSC is merged, clients shall replace the following namespaces accordingly:
 - `m.webxdc`->`at.kappach.at.webxdc`
 - `m.webxdc.start`->`at.kappach.at.webxdc.start`
 - `m.webxdc.data`->`at.kappach.at.webxdc.data`
