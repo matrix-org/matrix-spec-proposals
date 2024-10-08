@@ -111,6 +111,8 @@ Possible solutions include:
 
 ## Alternatives
 
+### Variable event types
+
 [MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489)
 and [MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672)
 originally proposed that the event type could be made variable,
@@ -121,6 +123,8 @@ problematic because you can't proactively refer to these event types in the
 them - and they also are awkward for some client implementations to
 manipulate.
 
+### `m.peer_unwritable` flag
+
 An earlier draft of this MSC proposed putting a flag on the contents of the
 event (outside of the E2EE payload) called `m.peer_unwritable: true` to indicate
 if other users were prohibited from overwriting the event or not.  However, this
@@ -128,6 +132,8 @@ unravelled when it became clear that there wasn't a good value for the `state_ke
 which needs to be unique and not subject to races from other malicious users.
 By scoping who can set the `state_key` to be the user ID of the sender, this problem
 goes away.
+
+### Multi-component state keys
 
 [MSC3760](https://github.com/matrix-org/matrix-spec-proposals/pull/3760)
 proposes to include a dedicated `state_subkey` as the third component of what
@@ -145,7 +151,9 @@ However, allowing state keys to be multi-component would change state key compar
 string comparison to an array-of-strings comparison, which could be costly for existing server
 implementations to migrate to.
 
-Another comment in [the discussion of this MSC](
+### Owning user ID field
+
+A comment in [the discussion of this MSC](
 https://github.com/matrix-org/matrix-spec-proposals/pull/3757#discussion_r1103877363)
 proposes an optional top-level field for both state and non-state events that designates ownership
 of the containing event to a particular user.
