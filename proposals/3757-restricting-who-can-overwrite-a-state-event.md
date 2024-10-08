@@ -123,15 +123,25 @@ problematic because you can't proactively refer to these event types in the
 them - and they also are awkward for some client implementations to
 manipulate.
 
-### `m.peer_unwritable` flag
+### Event ownership flag
 
 An earlier draft of this MSC proposed putting a flag on the contents of the
-event (outside of the E2EE payload) called `m.peer_unwritable: true` to indicate
+event (outside of the E2EE payload) called `m.peer_unwritable: true` to
+signify ownership of the containing event by its `sender`, which would indicate
 if other users were prohibited from overwriting the event or not.  However, this
 unravelled when it became clear that there wasn't a good value for the `state_key`,
 which needs to be unique and not subject to races from other malicious users.
 By scoping who can set the `state_key` to be the user ID of the sender, this problem
 goes away.
+
+One way to satisfy the need for unique and non-racing state keys with an event ownership flag
+is to key state events by not only their event type and `state_key`, but also their `sender`
+when the event ownership flag is set.
+This would also provide state ownership semantics that could not by overwritten by any other user,
+as an event's owner would be determined implicitly from whoever sent the event,
+instead of from an explicit field set in the event.
+If this were to be done, endpoints for setting/retrieving state events would need to
+allow specifing the owner of the event to set/retrieve.
 
 ### Multi-component state keys
 
