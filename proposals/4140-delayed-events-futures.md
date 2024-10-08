@@ -313,7 +313,7 @@ The finalised delayed event as represented by the finalised list of the GET endp
 will be stored with the following outcome:
 
 ```json
-"outcome": "canceled", 
+"outcome": "cancel", 
 "reason": "error", 
 "error": {
   "errorcode": "M_CANCELLED_BY_STATE_UPDATE",
