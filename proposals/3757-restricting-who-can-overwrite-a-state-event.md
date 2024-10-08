@@ -141,7 +141,7 @@ This would also provide state ownership semantics that could not by overwritten 
 as an event's owner would be determined implicitly from whoever sent the event,
 instead of from an explicit field set in the event.
 If this were to be done, endpoints for setting/retrieving state events would need to
-allow specifing the owner of the event to set/retrieve.
+allow specifying the owner of the event to set/retrieve.
 
 ### Multi-component state keys
 
