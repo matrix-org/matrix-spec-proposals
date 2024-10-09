@@ -213,8 +213,8 @@ The response is a JSON object containing the following fields:
   - `finalised_events` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
   sorted by `origin_server_ts` in decreasing order (latest finalised event first).
     - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
-    - `outcome`: "send"|"cancel",
-    - `reason`: "error"|"action"|"delay"
+    - `outcome`: `"send"|"cancel"`
+    - `reason`: `"error"|"action"|"delay"`
     - `error`: Optional Error. A matrix error (as defined by [Standard error response](https://spec.matrix.org/v1.11/client-server-api/#standard-error-response))
     to explain why this event failed to be sent. The Error can either be the `M_CANCELLED_BY_STATE_UPDATE` or any of the
     Errors from the client server send and state endpoints.
@@ -225,9 +225,9 @@ The response is a JSON object containing the following fields:
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
 The recommended values are:
 
-- finalised events retention: 7days
-- finalised_events batch size: 10
-- finalised_events max cached events: 1000
+- `finalised_events` retention: 7 days
+- `finalised_events` batch size: 10
+- `finalised_events` max cached events: 1000
 
 There is no guarantee for a client that all events will be available in the
 finalised events list if they exceed the limits of their homeserver.
