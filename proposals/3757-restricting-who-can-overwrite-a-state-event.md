@@ -140,7 +140,10 @@ when the event ownership flag is set.
 This would also provide state ownership semantics that could not by overwritten by any other user,
 as an event's owner would be determined implicitly from whoever sent the event,
 instead of from an explicit field set in the event.
-If this were to be done, endpoints for setting/retrieving state events would need to
+Notably, this applies to high PL users as well, leaving them with no way to replace state events
+owned by lower PL users. Administration of such events would then be limited to redacting them.
+
+With this change to state keying, endpoints for setting/retrieving state events would need to
 allow specifying the owner of the event to set/retrieve.
 It would also require server implementations to change how they key state events.
 
