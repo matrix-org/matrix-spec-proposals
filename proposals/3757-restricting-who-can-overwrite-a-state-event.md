@@ -137,15 +137,16 @@ goes away.
 One way to satisfy the need for unique and non-racing state keys with an event ownership flag
 is to key state events by not only their event type and `state_key`, but also their `sender`
 when the event ownership flag is set.
-This would also provide state ownership semantics that could not by overwritten by any other user,
-as an event's owner would be determined implicitly from whoever sent the event,
+This would set a flagged event's owner implicitly from whoever sent the event,
 instead of from an explicit field set in the event.
-Notably, this applies to high PL users as well, leaving them with no way to replace state events
-owned by lower PL users. Administration of such events would then be limited to redacting them.
+To support this, server implementations would need to change how they key state events, and
+the endpoint for retrieving state events would need to allow specifying the owner of the event to
+retrieve (or no owner to retrieve un-owned state).
+Additionally, the endpoint for setting state events may support a query parameter to specify
+which user's state to overwrite, which would work only for senders with a power level higher than
+that of the targeted user.
+Otherwise, administration of owned events would be limited to redacting them.
 
-With this change to state keying, endpoints for setting/retrieving state events would need to
-allow specifying the owner of the event to set/retrieve.
-It would also require server implementations to change how they key state events.
 
 ### Multi-component state keys
 
