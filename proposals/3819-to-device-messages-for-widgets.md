@@ -156,6 +156,7 @@ The request itself looks as follows:
   "data": {
     "type": "m.call.invite",
     "sender": "@source:example.org",
+    "encrypted": true,
     "content": {
       // ... as required for the event schema
     }
