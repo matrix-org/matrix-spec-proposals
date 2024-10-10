@@ -126,7 +126,8 @@ until a MSC which explicitly declares support for it is merged into the specific
 
 ## Alternatives
 
-Widgets([MSC1236](https://github.com/matrix-org/matrix-spec-proposals/issues/3803)), while powerful, 
+Widgets([MSC1236](https://github.com/matrix-org/matrix-spec-proposals/issues/3803) and 
+[MSC4214](https://github.com/matrix-org/matrix-spec-proposals/pull/4214)), while powerful, 
 also suffer from a similar agnosticity problem with other platforms, and effectively requires an actively 
 online, external server.  WebXDC also has stricter security concerns(e.g: clients cannot have sensitive 
 information leaked, unlike widgets), thus making it safer, though a system that would also widgets to act 
