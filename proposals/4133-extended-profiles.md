@@ -261,7 +261,7 @@ with the following considerations:
 Following this change, for example, clients could use `m.example_field` if that field is defined by
 the Matrix specification, or `org.example.job_title` for organisation or client-specific fields.
 The proposal [MSC4175](https://github.com/matrix-org/matrix-spec-proposals/pull/4175) demonstrates
-the process of definining new fields in the `m.*` namespace.
+the process of defining new fields in the `m.*` namespace.
 
 ## Implementation Details
 
