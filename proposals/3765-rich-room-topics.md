@@ -51,13 +51,13 @@ as regular text). A future MSC may introduce a mechanism to capture extended
 multiline details that are not suitable for room topics in a separate field
 or event type.
 
-A change to `/_matrix/client/v3/createRoom` is not necessary. The
+A change to [`/_matrix/client/v3/createRoom`] is not necessary. The
 endpoint has a plain text `topic` parameter but also allows to specify a
 full `m.topic` event in `initial_state`.
 
 Room topics also occur as part of the `PublicRoomsChunk` object in the
-responses of `/_matrix/client/v3/publicRooms` and
-`/_matrix/client/v1/rooms/{roomId}/hierarchy`. The topic can be kept
+responses of [`/_matrix/client/v3/publicRooms`] and
+[`/_matrix/client/v1/rooms/{roomId}/hierarchy`]. The topic can be kept
 plain text here because this data should commonly only be displayed to
 users that are *not* a member of the room yet. These users will not have
 the same need for rich room topics as users who are inside the room. If
@@ -98,7 +98,9 @@ as `org.matrix.msc3765.topic`.
 
 - [MSC1767]
 
-  [plain text]: https://spec.matrix.org/v1.2/client-server-api/#mroomtopic
-  [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
-  [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
-  [`/rooms/{roomId}/upgrade`]: https://spec.matrix.org/v1.5/client-server-api/#post_matrixclientv3roomsroomidupgrade
+[plain text]: https://spec.matrix.org/v1.12/client-server-api/#mroomtopic
+[MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+[MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
+[`/_matrix/client/v1/rooms/{roomId}/hierarchy`]: https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv1roomsroomidhierarchy
+[`/_matrix/client/v3/createRoom`]: https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3createroom
+[`/_matrix/client/v3/publicRooms`]: https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv3publicrooms
