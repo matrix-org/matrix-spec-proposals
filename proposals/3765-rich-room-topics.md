@@ -84,7 +84,8 @@ inclusion in [stripped state].
 
 As this MSC replaces `m.room.topic` for an extensible alternative,
 clients and servers are expected to treat `m.room.topic` as invalid in
-extensible event-supporting room versions.
+extensible event-supporting room versions. Similarly, `m.topic` cannot
+be used in non-extensible-supporting room versions.
 
 It is recommended that servers replicate `m.room.topic` to `m.topic`
 with a plain text mimetype and vice versa when [upgrading] between room
