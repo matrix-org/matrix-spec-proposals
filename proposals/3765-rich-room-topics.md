@@ -106,7 +106,9 @@ described in the introductory section of [MSC1767].
 ## Security considerations
 
 Allowing HTML in room topics is subject to the same security
-considerations that apply to HTML in room messages.
+considerations that apply to HTML in room messages. In particular,
+topics are already included in the content that clients should [sanitise]
+for unsafe HTML.
 
 ## Other notes
 
@@ -133,6 +135,7 @@ blocks might have their own prefixing requirements.
 [plain text]: https://spec.matrix.org/v1.12/client-server-api/#mroomtopic
 [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
 [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
+[sanitise]: https://spec.matrix.org/v1.12/client-server-api/#security-considerations
 [server side search]: https://spec.matrix.org/v1.12/client-server-api/#server-side-search
 [stripped state]: https://spec.matrix.org/v1.12/client-server-api/#stripped-state
 [upgrading]: https://spec.matrix.org/v1.12/client-server-api/#room-upgrades
