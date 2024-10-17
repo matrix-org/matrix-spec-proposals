@@ -108,10 +108,23 @@ described in the introductory section of [MSC1767].
 Allowing HTML in room topics is subject to the same security
 considerations that apply to HTML in room messages.
 
+## Other notes
+
+Normally extensible events would only be permitted in a specific
+room version. However, to facilitate adoption, clients MAY include
+the `m.topic` content block in `m.room.topic` events in room
+versions that don't support extensible events. They must, however,
+take care to always duplicate the plain text mimetype into the
+the normal `topic` field, too. This ensures compatibility for
+clients and servers that don't support this proposal. Since such
+clients are likely to delete the `m.topic` content block when updating
+`m.room.topic` themselves, it also helps prevent inconsistencies.
+
 ## Unstable prefix
 
 While this MSC is not considered stable, `m.topic` should be referred to
-as `org.matrix.msc3765.topic`.
+as `org.matrix.msc3765.topic`. Note that extensible events and content
+blocks might have their own prefixing requirements.
 
 ## Dependencies
 
