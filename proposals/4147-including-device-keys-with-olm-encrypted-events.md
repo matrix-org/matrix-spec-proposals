@@ -15,7 +15,7 @@ recipient does not have to try to query the sender's keys.
 
 ## Proposal
 
-The plaintext payload of the [`m.olm.v1.curve25519-aes-sha2` encryption
+The plaintext payload of `m.room.encrypted` events encrypted with the [`m.olm.v1.curve25519-aes-sha2` encryption
 algorithm](https://spec.matrix.org/unstable/client-server-api/#molmv1curve25519-aes-sha2)
 is currently of the form:
 
@@ -57,8 +57,8 @@ plaintext payload will now look something like:
     "user_id": "<user_id>",
     "device_id": "<device_id>",
     "keys": {
-      "ed25519:<device_id>": "<our_ed25519_key>",
-      "curve25519:<device_id>": "<our_curve25519_key>"
+      "ed25519:<device_id>": "<sender_ed25519_key>",
+      "curve25519:<device_id>": "<sender_curve25519_key>"
     },
     "signatures": {
       "<user_id>": {
@@ -75,7 +75,7 @@ payload must be the same as the `device_keys`.`keys`.`ed25519:<DEVICEID>`
 property.  If they differ, the recipient should discard the event.
 
 As the `keys` property is now redundant, it may be removed in a future version
-of Olm.
+of the Matrix specification.
 
 ## Potential issues
 
