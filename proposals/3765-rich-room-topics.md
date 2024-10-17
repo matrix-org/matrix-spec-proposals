@@ -117,9 +117,9 @@ room version. However, to facilitate adoption, clients MAY include
 the `m.topic` content block in `m.room.topic` events in room
 versions that don't support extensible events. They must, however,
 take care to always duplicate the plain text mimetype into the
-the normal `topic` field, too. This ensures compatibility for
-clients and servers that don't support this proposal. Since such
-clients are likely to delete the `m.topic` content block when updating
+normal `topic` field, too. This ensures compatibility for clients
+and servers that don't support this proposal. Since such clients
+are likely to delete the `m.topic` content block when updating
 `m.room.topic` themselves, it also helps prevent inconsistencies.
 
 ## Unstable prefix
