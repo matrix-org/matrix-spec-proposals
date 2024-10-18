@@ -37,6 +37,9 @@ namespaces:
   rooms: []
 ```
 
+For now, receiving EDUs is all-or-nothing. A future MSC may add more granular
+filtering capabilities for appservices.
+
 ### Changes to the /transactions/ API
 
 The `PUT /_matrix/app/v1/transactions/{txnId}` API currently supports sending PDUs
