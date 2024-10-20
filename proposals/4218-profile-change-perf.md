@@ -34,6 +34,11 @@ On receipt of `m.room.user_profile`, the contents of this event _overrides_ the 
 
  Effectively, this mechanism means we are using the redaction of the `m.room.member `event as a signal to redact all profile info for that user in that room. This has tradeoffs, notably that if a profile is redacted, it cannot be set again unless that user changes their membership e.g by leaving and rejoining the room. Typically, spammers will have their display names redacted then they will be kicked from the room, so this wouldn't change the behaviour for this use case at all.
 
+ The entire flow chart looks like:
+
+ <img width="994" alt="Screenshot 2024-10-20 at 15 17 46" src="https://github.com/user-attachments/assets/ac227603-b635-4ecc-bd60-d3446074facf">
+
+
  ### Synthetic Events
 
  These are events created by a server which aren't sent to any other server, but _are sent to clients_. Clients treat them as real events but they aren't real over federation and do not form part of the room DAG. The purpose of this is to help state synchronisation between clients and server. They can be detected because all synthetic events MUST have `synthetic: true` at the top-level of the event JSON. Other uses for synthetic events include communicating state deltas to clients when state resolution needs to back out some state it had previously told clients, see https://github.com/matrix-org/matrix-spec/issues/1209 
