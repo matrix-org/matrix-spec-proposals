@@ -58,6 +58,8 @@ If the receiving server cannot get the profile info for a user due to network is
 
 Profile changes are no longer part of the room DAG. This means malicious servers can split-brain the room for a user's profile: users on different servers may see different profile info for the same user. This can be done by accident due to network partitions or maliciously, by only sending innocuous display names to servers with admins but abusive names to servers without admins. Users in a room typically ping admins to remove bad users, so this could cause confusion if the admin doesn't see the abusive name/avatar. Given this relies on global profile data which is public, we could do transparency logs to ensure a server responds with the same data to all servers, but this is likely overkill so it doesn't form part of this MSC. It is worth noting per-room nicks ARE part of the room DAG and as such are not vulnerable to this.
 
+Denial of Service: when users receive a real `m.room.member` event, the receiving server should request profile info to decorate the event BEFORE delivering the event to the client, in order to preserve atomicity. Malicious servers can tarpit this request and purposefully take ages before responding with an error, thus introducing a denial of service. This happens because profile lookups are now on the hot path of message delivery. To fix this, servers should set sensibly low timeout values to this request, and cache profile data wherever possible.
+
 ## Unstable prefix
 
 - Room version is `org.matrix.msc4218` based off room version 11.
