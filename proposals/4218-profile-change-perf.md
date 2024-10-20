@@ -1,6 +1,6 @@
 # MSC4218: Improving performance of profile changes
 
-Many users on the Matrix ecosystem have seen how slow it is to change either their display name or their avatar. It is slow because it causes O(n) updates, one for each room the user is joined to. This MSC details a mechanism to improve performance by not sending O(n) updates. It does this by introducing a new concept called "Synthetic Events". This new concept can also be conveniently applied to [communicate state resolution deltas accurately to clients](https://github.com/matrix-org/matrix-spec/issues/1209). Also conveniently, decoupling profile changes from the membership of the user decreases the length of the auth chain for that user, which decreases the amount of data that is required to be fetched in order to join a room, thus increasing performance on room joins as well.
+Many users in the Matrix ecosystem have seen how slow it is to change either their display name or their avatar. It is slow because it causes O(n) updates, one for each room the user is joined to. This MSC details a mechanism to improve performance by not sending O(n) updates. It does this by introducing a new concept called "Synthetic Events". This new concept can also be conveniently applied to [communicate state resolution deltas accurately to clients](https://github.com/matrix-org/matrix-spec/issues/1209). Also conveniently, decoupling profile changes from the membership of the user decreases the length of the auth chain for that user, which decreases the amount of data that is required to be fetched in order to join a room, thus improving performance on room joins as well.
 
 ## Proposal
 
@@ -8,7 +8,7 @@ This MSC borrows and expands upon the ideas in MSC3883, specifically:
 
 > Displayname/Avatar updates should be EDUs that trigger a /profile query. 
 
-For unfederated rooms, no EDUs need to be sent. So how do users see profile changes in rooms? The server creates a "synthetic event" which is effectively a fake member event based on the real member event, decorated with the latest profile data at the time the EDU is sent / the profile was updated. As an example, if a user has no profile then sets one, the new profile fields will appear in the synthetic event e.g `content: { membership: join }` becomes `content: { membership, join, displayname: Alice }`. The synthesised event MUST have a unique event ID as clients often deduplicate data based on the event ID. This proposal proposes a format of `{original_member_event_id}_{iteration}` e.g `$A5z9GLL8ABCYg4SKujf_ehtW52yGoGhZuQGc0nspEeU_2`.
+For unfederated rooms, no EDUs need to be sent. So how do users see profile changes in rooms? The server creates a "synthetic event" which is effectively a fake member event based on the real member event, decorated with the latest profile data at the time the EDU is received / the profile was updated. As an example, if a user has no profile then sets one, the new profile fields will appear in the synthetic event e.g `content: { membership: join }` becomes `content: { membership, join, displayname: Alice }`. The synthesised event MUST have a unique event ID as clients often deduplicate data based on the event ID. This proposal proposes a format of `{original_member_event_id}_{iteration}` e.g `$A5z9GLL8ABCYg4SKujf_ehtW52yGoGhZuQGc0nspEeU_2`.
 
 As a result, clients will see no differences except:
  - profile change `m.room.member` events are synthetic so they don't exist in the room DAG, so the event ID isn't real. This can break clients which ask for events in federation format as this event won't have `prev_events`, etc. The response to `GET /state/m.room.member/@user:id` would also return the _synthetic event content_, not the federation form (as would `/members`), on the basis that we care about profiles more than accurate DAG reproducibility. This could be configured in another MSC.
@@ -57,8 +57,8 @@ Profile changes are no longer part of the room DAG. This means malicious servers
 
 - Room version is `org.matrix.msc4218` based off room version 11.
 - `m.room.user_profile` events are `org.matrix.msc4218.room.user_profile`.
-- 
-
+- `synthetic` flag is `org.matrix.msc4218.synthetic`.
+- `POST /rooms/{roomID}/user_profile` is `POST /rooms/{roomID}/org.matrix.msc4218.user_profile`
 
 ## Dependencies
 
