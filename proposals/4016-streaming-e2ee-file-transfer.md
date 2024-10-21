@@ -121,8 +121,7 @@ The proposed v3 `EncryptedFile` block looks like:
 
 N.B. there is no longer a `hashes` key, as AES-GCM includes its own hashing to enforce the integrity of the file
 transfer. Therefore we can authenticate the transfer by the fact we can decrypt it using its key & IV (unless an
-attacker who controls the same key & IV has substituted it for another file - but the benefit to them of doing so is
-questionable).
+attacker who controls the same key & IV has substituted it for another file - see Security Considerations below)
 
 We split the file stream into blocks of AES-256-GCM, with the following simple framing:
 
@@ -261,8 +260,9 @@ to make sure the detailed thumbnail streams in and is viewed as rapidly as possi
 * Removing the `hashes` entry on the EncryptedFile description means that an attacker who controls the key & IV of the
   original file transfer could strategically substitute the file contents.  This could be desirable for CDGs wishing to
   switch a file for a sanitised version without breaking the Matrix event hashes.  For other scenarios it could be
-  undesirable.  An alternative might be for the sender to keep sending new hashes in related matrix events as the
-  stream uploads, but it's unclear if this is worth it.
+  undesirable - for instance, a malicious server could serve different file contents to other users or servers to evade
+  moderation.  An alternative might be for the sender to keep sending new hashes in related matrix events as the
+  stream uploads (but it's unclear if this is worth it, relative to MSC3888)
 
 ## Conclusion
 
