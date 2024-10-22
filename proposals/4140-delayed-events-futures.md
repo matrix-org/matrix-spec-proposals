@@ -231,6 +231,8 @@ The recommended values are:
 
 There is no guarantee for a client that all events will be available in the
 finalised events list if they exceed the limits of their homeserver.
+Additionally, a homeserver may discard finalised delayed events that have been returned by a
+`GET /_matrix/client/v1/delayed_events/finalised` response.
 
 An example for a response to the `GET /_matrix/client/v1/delayed_events/scheduled` endpoint:
 
