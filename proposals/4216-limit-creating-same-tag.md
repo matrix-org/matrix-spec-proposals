@@ -1,3 +1,19 @@
 ## MSC4216 Proposal
 
-Give admins the ability to limit user-applied tags, e.g., u.pin to 3 rooms. Useful for consistency with other chat systems.
+Admins should have the ability to limit tag usage, like restricting `u.pin` to **3** rooms, while tags like `u.archive` will remain unrestricted if **not defined**.
+
+## Potential issues
+
+NA
+
+## Alternatives
+
+NA
+
+## Security considerations
+
+NA
+
+## Dependencies
+
+This MSC has no dependencies.
