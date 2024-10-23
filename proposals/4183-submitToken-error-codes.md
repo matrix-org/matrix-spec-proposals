@@ -16,7 +16,7 @@ that MSC is for `requestToken` on the C-S API only.
 The [`POST
 /_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
 endpoint in the C/S API also specifies a `submit_url` response parameter, defining its parameters to be the same as the
-Identity API's `submitToken` endpoints. This MSC also affects this.
+Identity API's `submitToken` endpoints. Everything this MSC specifies applies to this endpoint in the same way.
 
 ## Proposal
 
