@@ -8,7 +8,9 @@ terminating a call which may be already ongoing (`m.call.hangup`).
 However, we have no way for a specific device to say that it is unable to accept the currently ringing call.
 Use cases include:
 
- * Automatically rejecting the call on a given device because that device can't support the call protocol (e.g. MatrixRTC) 
+ * Automatically rejecting the call on a given device because that device can't support the call protocol (e.g. MatrixRTC),
+   and so giving the caller a way to be warned that the reason the callee might not answer is because they don't speak
+   the right protocol.
  * Letting users stop their local device ringing, but leave the call ringing other devices on the account (e.g. in case
    a different person can pick them up)
 
@@ -54,6 +56,10 @@ complexity with dependency on extensible events, so has been descoped for now.
 
 (We might also want to reject the call if no devices are sufficiently online to even acknowledge the invite - if we had an
 invite acknowledgement event like a SIP 180).
+
+3. Does this give legacy clients a way of rejecting MatrixRTC calls that they can't answer?  It's not clear from MSC4143 how
+much `m.call.*` etc is actually being used for MatrixRTC calls these days.  Whatever, surely legacy clients need a way
+to warn MatrixRTC clients that they won't be able to answer their calls...
 
 ## Alternatives
 
