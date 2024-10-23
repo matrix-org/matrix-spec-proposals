@@ -1,15 +1,20 @@
 # MSC3823: Account Suspension
 
-Unlike [account locking](https://github.com/matrix-org/matrix-spec-proposals/pull/3939), suspension
+Unlike [account locking](https://spec.matrix.org/v1.12/client-server-api/#account-locking), suspension
 allows the user to have a (largely) readonly view of their account. Homeserver administrators and
 moderators may use this functionality to temporarily deactivate an account, or place conditions on
 the account's experience. Critically, like locking, account suspension is reversible, unlike the
 deactivation mechanism currently available in Matrix - a destructive, irreversible, action.
 
-This proposal introduces an error code for communicating suspension to a user, alongside some
-guidelines for how suspension could be implemented by a server. APIs to invoke or clear suspension
-are not introduced, and left as an implementation detail. These will typically be done through an
-administrator-only API.
+This proposal introduces a concept of suspension to complement locking for server admins to use. Locking
+is typically more used in narrow scenarios, where the server admin wants to prevent the account from
+engaging any further. An example of this may be too many failed password attempts. Suspension is more
+general purpose to create a barrier to further action - a "something weird is going on -> suspend"
+kind of button.
+
+The error code introduced by this proposal is accompanied by guidelines on how servers can implement
+suspension. APIs to invoke or clear suspension are not introduced, and left as an implementation detail.
+These will typically be done through an administrator-only API.
 
 ## Proposal
 
@@ -30,12 +35,17 @@ detail, however a server SHOULD permit the user to:
   and write associated [cross-signing data](https://spec.matrix.org/v1.10/client-server-api/#cross-signing).
 * [Populate their key backup](https://spec.matrix.org/v1.10/client-server-api/#server-side-key-backups).
 * Leave rooms & reject invites.
-* Redact events.
+* Redacting their own events.
 * Log out/delete any device of theirs, including the current session.
 * Deactivate their account, potentially with a deliberate time delay to discourage making a new
   account right away.
 * Change or add [admin contacts](https://spec.matrix.org/v1.10/client-server-api/#adding-account-administrative-contact-information),
-  but not remove.
+  but not remove. Servers are recommended to only permit this if they keep a changelog on contact information
+  to prevent misuse.
+
+The recommendation for users to continue receiving/reading messages is largely so the administrator
+can maintain contact with the user, where applicable. Future MSCs may improve upon the admin<>user
+communication, and account locking may also be used to prevent access to messages.
 
 The suggested set of explicitly forbidden actions is:
 
@@ -43,6 +53,7 @@ The suggested set of explicitly forbidden actions is:
 * Sending messages.
 * Sending invites.
 * Changing profile data (display name and avatar).
+* Redacting other users' events (when a moderator/admin of a room, for example).
 
 ## Potential issues
 
