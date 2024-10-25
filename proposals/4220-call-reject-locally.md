@@ -41,7 +41,7 @@ MatrixRTC instead, or `unsupported_protocol` that "the user may not be able to a
 Other reasons MAY be ignored by the caller, given they are not actionable.
 
 While we're at it, we should fix the spec to clarify that `m.call.hangup` should not be used to reject v1 calls, as
-that's what `m.call.hangup` is for.  Currently the spec is ambiguous and says `m.call.hangup` "can be sent either once
+that's what `m.call.reject` is for.  Currently the spec is ambiguous and says `m.call.hangup` "can be sent either once
 the call has has been established or before to abort the call." which is true, but not how v1 calls are meant to work.
 
 ## Potential issues
