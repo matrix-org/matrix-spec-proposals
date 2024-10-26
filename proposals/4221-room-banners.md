@@ -26,7 +26,7 @@ A malicious user could upload a banner with explicit or illegal content. A futur
 
 ## Alternatives
 
-None I can think of.
+Pinned messages and room topics are in similar areas of the UI in some clients.
 
 ## Security considerations
 
