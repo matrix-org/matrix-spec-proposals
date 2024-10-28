@@ -81,4 +81,4 @@ The rejection leaks which devices the user is currently active on, and their cap
 
 ## Dependencies
 
-None
+Given this MSC involves `needs_matrixrtc` it has a soft dependency on MSC4143.
