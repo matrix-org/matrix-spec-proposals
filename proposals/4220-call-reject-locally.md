@@ -71,6 +71,10 @@ given user wants to be called via.
 (similar to a SIP<->MatrixRTC bridge, one could dial into MatrixRTC calls via legacy Matrix calling too).  But this
 doesn't exist yet, hence this workaround.
 
+3. Clients which can support both legacy & matrixrtc calling (e.g. Element Web) could place both call types running
+simultaneously, avoiding the need for warnings about unsupported protocols.  However, clients which only speak legacy
+calling (e.g. classic Element iOS/Android) would still benefit from theis MSC.
+
 ## Security considerations
 
 The rejection leaks which devices the user is currently active on, and their capabilities.
