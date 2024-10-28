@@ -9,7 +9,7 @@ however it doesn't provision for EDU events (typing, presence and receipts). Thi
 react to Matrix users who send any typing or presence information in a room the service is part of.
 
 There is an interest amongst the community to have equal bridging on both sides of a bridge, so that
-read reciepts and typing notifications can be seen on the remote side. To that end, this proposal
+read receipts and typing notifications can be seen on the remote side. To that end, this proposal
 specifies how these can be pushed to an appservice.
 
 ## Proposal
