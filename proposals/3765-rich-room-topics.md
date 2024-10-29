@@ -75,7 +75,7 @@ The same logic is applied to [`/_matrix/client/v1/rooms/{roomId}/hierarchy`]
 and [`/_matrix/federation/v1/hierarchy/{roomId}`].
 
 In [server side search], the `room_events` category is expanded to search
-over the `text/plain` mimetype in `m.topic`.
+over the `m.text` content block of `m.topic` events.
 
 Finally, `m.topic` is also added to the events that are recommended for
 inclusion in [stripped state].
