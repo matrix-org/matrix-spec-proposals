@@ -76,8 +76,8 @@ Let’s take a look at the common case of a state event getting sent down an inc
     "events": [ {
       "type": "org.matrix.example",
       "state_key": ""
-    } ]
-  }
+  } ]
+}
 ```
 
 </td>
