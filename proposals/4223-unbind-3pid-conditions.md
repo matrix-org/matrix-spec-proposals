@@ -5,8 +5,9 @@ to their account. This may be to ensure there is always a contact address, or fo
 in some jurisdictions. Many servers may not require contact information, and may never use this MSC's
 proposed functionality.
 
-This proposal adds error codes to the [/3pid/unbind](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3account3pidunbind)
-client-server API endpoint to allow for implementation-specific requirements to exist. Future proposals
+This proposal adds error codes to the [`/3pid/unbind`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3account3pidunbind)
+and [`/3pid/delete`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3account3piddelete)
+client-server API endpoints to allow for implementation-specific requirements to exist. Future proposals
 may further expand upon this concept to *adding* 3PIDs.
 
 This proposal does *not* affect the Identity Service API. The IS API is primarily used for discovery
@@ -15,7 +16,8 @@ rather than administration, and so is not affected by the use case described her
 ## Proposal
 
 Currently, the [unbind endpoint](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3account3pidunbind)
-does not describe any error responses at all - servers are expected to always return 200 OK. This
+and [delete endpoint](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3account3piddelete)
+do not describe any error responses at all - servers are expected to always return 200 OK. This
 inhibits a server's ability to prevent users from removing the last 3PID on their account, for example,
 and requires modernizing. Thus, a new error response is added for this implementation-specific use case:
 
@@ -41,7 +43,7 @@ allows for *optional* functionality to exist in a spec-compliant manner.
 
 ## Potential issues
 
-Bumping the endpoint version should be considered, as this may be a perceptual breaking change to
+Bumping the endpoint versions should be considered, as this may be a perceptual breaking change to
 clients. However, in general, clients should anticipate errors on endpoints because a 5xx response
 may happen at any time without formal specification. The `id_server_unbind_result` change may be
 of different concern.
@@ -62,8 +64,8 @@ to permit unbinds *at all*. This is not an issue the specification should be con
 ## Unstable prefix
 
 While this proposal is not considered stable, implementations should refrain from responding with 403
-errors. This may mean an implementation is required to stay as an open Pull Request until this MSC
-can become stable.
+errors on the endpoints. This may mean an implementation is required to stay as an open Pull Request
+until this MSC can become stable.
 
 ## Dependencies
 
