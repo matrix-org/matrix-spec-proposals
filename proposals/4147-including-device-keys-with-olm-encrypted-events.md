@@ -2,7 +2,7 @@
 
 When a Megolm session is sent from one device to another via Olm, the recipient
 can
-[query](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientv3keysquery)
+[query](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3keysquery)
 the sender's device keys and check whether the device has been cross-signed in
 order to determine whether the sending device can be trusted.  However, this
 does not work if the sending device has since logged out as the recipient will
@@ -16,7 +16,7 @@ recipient does not have to try to query the sender's keys.
 ## Proposal
 
 The plaintext payload of `m.room.encrypted` events encrypted with the [`m.olm.v1.curve25519-aes-sha2` encryption
-algorithm](https://spec.matrix.org/unstable/client-server-api/#molmv1curve25519-aes-sha2)
+algorithm](https://spec.matrix.org/v1.12/client-server-api/#molmv1curve25519-aes-sha2)
 is currently of the form:
 
 ```json
@@ -36,7 +36,7 @@ is currently of the form:
 
 We propose to add a new property: `device_keys`, which is a copy of what the
 server would return in response to a
-[`/keys/query`](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientv3keysquery)
+[`/keys/query`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3keysquery)
 request, as the device keys for the sender's device.  In other words, the
 plaintext payload will now look something like:
 
