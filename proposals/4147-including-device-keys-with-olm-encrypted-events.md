@@ -101,16 +101,11 @@ of the Matrix specification.
 
 ## Potential issues
 
-Adding this property will increase the size of the event.  This could be
-mitigated by only sending the `device_keys` in pre-key messages (Olm messages
-with `type: 0` in the `m.room.encrypted` event -- with the rationale that if
-the Olm message is a normal (non-pre-key) message, this means that the
-recipient has already decrypted a pre-key message that contains the
-information, and so does not need to be re-sent the information), or if the
-signatures change (for example, if the sender resets their cross-signing keys),
-or if the sender has not yet sent their `device_keys`.  However, this requires
-additional bookkeeping, and it is not clear whether this extra complexity is
-worth the reduction in bandwidth.
+Adding this property will increase the size of the event.  We found it
+increased the length of a typical `m.room_key` message from about 1400 to 2400
+bytes (a 70% increase). This will require increased storage on the recipient
+homeserver, and increase bandwidth for both senders and recipients. See
+[Alternatives](#alternatives) for discussion of mitigation strategies.
 
 This proposal is not a complete solution. In particular, if the sender resets
 their cross-signing keys, and also logs out the sending device, the recipient
@@ -120,6 +115,8 @@ to obtain a history of cross-signing key changes, and to expose that
 information to the user; that is left for the future.
 
 ## Alternatives
+
+### Minor variations
 
 The `device_keys` property could be added to the cleartext.  That is, it could
 be added as a property to the `m.room.encrypted` event.  This information is
@@ -132,10 +129,38 @@ it replacing the `keys` property, which must be part of the encrypted payload
 to prevent an [unknown key-share attack](https://github.com/element-hq/element-web/issues/2215).
 
 The `device_keys` property could be added to the cleartext by the sender's
-homeserver, rather than by the sending client.  Possibly within an `unsigned`
+homeserver, rather than by the sending client. Possibly within an `unsigned`
 property, as that is where properties added by homeservers are customarily
 added.  It is not clear what advantage there would be to having this
 information being added by the client.
+
+To mitigate the increased size of to-device events under this proposal, the
+`device_keys` could be sent only in pre-key messages (Olm messages
+with `type: 0` in the `m.room.encrypted` event) — with the rationale that if
+the Olm message is a normal (non-pre-key) message, this means that the
+recipient has already decrypted a pre-key message that contains the
+information, and so does not need to be re-sent the information), or if the
+signatures change (for example, if the sender resets their cross-signing keys),
+or if the sender has not yet sent their `device_keys`.  However, this requires
+additional bookkeeping, and it is not clear whether this extra complexity is
+worth the reduction in bandwidth.
+
+### Alternative approach
+
+A more radical proposal to decrease the overhead in to-device messages is to
+instead specify that `/keys/query` must include deleted devices as well as
+active ones, so that they can be reliably queried. Since the origin server
+might be unreachable at the time the recipient receives the message, such
+device lists would need to be cached on the recipient homeserver.
+
+In other words, this approach would require all homeservers to keep a permanent
+record of all devices observed anywhere in the federation, at least for as long
+as there are undelivered to-device events from such devices.
+
+Transparently: we have not significantly expolored this approach. We have a
+working solution, and it is unclear that the advantages of this alternative
+approach outweigh the opportunity cost and delay in rollout of an important
+security feature.
 
 ## Security considerations
 
@@ -143,8 +168,7 @@ If a device is logged out, there is no indication why it was logged out.  For
 example, an attacker could steal a device and use it send a message.  The user,
 upon realizing that the device has been stolen, could log out the device, but
 the message may still be sent, if the user does not notice the message and
-redact it.  Thus the recipient device should still indicate that the message
-came from a deleted device.
+redact it.
 
 ## Unstable prefix
 
