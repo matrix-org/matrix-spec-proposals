@@ -1,15 +1,37 @@
 # MSC4147: Including device keys with Olm-encrypted events
 
-When a Megolm session is sent from one device to another via Olm, the recipient
-can
-[query](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3keysquery)
-the sender's device keys and check whether the device has been cross-signed in
-order to determine whether the sending device can be trusted.  However, this
-does not work if the sending device has since logged out as the recipient will
-not be able to query the sender's device keys.  For example, this can happen if
-the recipient is offline for a long time.
+Summary: a proposal to ensure that messages sent from short-lived devices can
+be securely distinguished from a spoofed device.
 
-One way to solve this is to include a copy of the device keys in the
+## Background
+
+When a Matrix client receives an encrypted message, it is necessary to
+establish whether that message was sent from a device genuinely belonging to
+the apparent sender, or from a spoofed device (for example, a device created by
+an attacker with access to the sender's account such as the server admin, or a
+man-in-the-middle).
+
+In short, this is done by requiring a signature on the sending device's device
+keys from the sending user's [self-signing cross-signing
+key](https://spec.matrix.org/v1.12/client-server-api/#cross-signing). Such a
+signature proves that the sending device was genuine.
+
+Current client implementations check for such a signature by
+[querying](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3keysquery)
+the sender's device keys when an encrypted message is received.
+
+However, this does not work if the sending device logged out in the time
+between sending the message and it being received. This is particularly likely
+if the recipient is offline for a long time. In such a case, the sending server
+will have forgotten the sending device (and any cross-signing signatures) by
+the time the recipient queries for it. This makes the received message
+indistinguishable from one sent from a spoofed device.
+
+Current implementations work around this by displaying a warning such as "sent
+by a deleted or unknown device" against the received message, but such
+messaging is unsatisfactory: a message should be either trusted or not.
+
+We propose to solve this is by including a copy of the device keys in the
 Olm-encrypted message, along with the cross-signing signatures, so that the
 recipient does not have to try to query the sender's keys.
 
@@ -90,16 +112,12 @@ or if the sender has not yet sent their `device_keys`.  However, this requires
 additional bookkeeping, and it is not clear whether this extra complexity is
 worth the reduction in bandwidth.
 
-If the sender resets their cross-signing keys, then the self-signing signature
-in the `device_keys` is meaningless.  The recipient will need to re-query the
-device keys, and will need to treat the sender as untrusted if it fails to do
-so.  The sender could include the self-signing key, signed by the
-master-signing key, in the plaintext event, so that if the user only resets
-their self-signing key but retains their master-signing key, the recipient can
-still check the sender's device keys.  However, this will further increase the
-size of the event, and it is not common for clients to reset the self-signing
-key without also resetting the master-signing key, so this is unlikely to give
-much benefit.
+This proposal is not a complete solution. In particular, if the sender resets
+their cross-signing keys, and also logs out the sending device, the recipient
+still has no way to verify the sending device. The device signature in the Olm
+message is meaningless. A full solution would require the recipient to be able
+to obtain a history of cross-signing key changes, and to expose that
+information to the user; that is left for the future.
 
 ## Alternatives
 
