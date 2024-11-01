@@ -75,7 +75,7 @@ plaintext payload will now look something like:
     "ed25519": "<sender_ed25519_key>"
   },
   "device_keys": {
-    "algorithms": ["<supported>", "<algoriithms>"],
+    "algorithms": ["<supported>", "<algorithms>"],
     "user_id": "<user_id>",
     "device_id": "<device_id>",
     "keys": {
@@ -124,9 +124,12 @@ information to the user; that is left for the future.
 The `device_keys` property could be added to the cleartext.  That is, it could
 be added as a property to the `m.room.encrypted` event.  This information is
 already public, as it is accessible from `/keys/query` (while the device is
-logged in), and does not need to be authenticated as it is protected by .the
-self-signing signature, so it does not seem to need to be encrypted.  However,
-there seems to be little reason not to encrypt the information.
+logged in), and does not need to be authenticated as it is protected by the
+self-signing signature, so it does not seem to need to be encrypted. However,
+there seems to be little reason not to encrypt the information. In addition, by
+including it in the encrypted payload, it leaves open the possibility of
+it replacing the `keys` property, which must be part of the encrypted payload
+to prevent an [unknown key-share attack](https://github.com/element-hq/element-web/issues/2215).
 
 The `device_keys` property could be added to the cleartext by the sender's
 homeserver, rather than by the sending client.  Possibly within an `unsigned`
