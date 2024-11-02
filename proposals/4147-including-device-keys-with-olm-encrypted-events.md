@@ -1,15 +1,16 @@
 # MSC4147: Including device keys with Olm-encrypted events
 
-Summary: a proposal to ensure that messages sent from short-lived devices can
-be securely distinguished from a spoofed device.
+Summary: a proposal to ensure that messages sent from a short-lived (but
+genuine) device can be securely distinguished from those sent from a spoofed
+device.
 
 ## Background
 
 When a Matrix client receives an encrypted message, it is necessary to
 establish whether that message was sent from a device genuinely belonging to
 the apparent sender, or from a spoofed device (for example, a device created by
-an attacker with access to the sender's account such as the server admin, or a
-man-in-the-middle).
+an attacker with access to the sender's account such as a malicious server
+admin, or a man-in-the-middle).
 
 In short, this is done by requiring a signature on the sending device's device
 keys from the sending user's [self-signing cross-signing
@@ -31,7 +32,7 @@ Current implementations work around this by displaying a warning such as "sent
 by a deleted or unknown device" against the received message, but such
 messaging is unsatisfactory: a message should be either trusted or not.
 
-We propose to solve this is by including a copy of the device keys in the
+We propose to solve this by including a copy of the device keys in the
 Olm-encrypted message, along with the cross-signing signatures, so that the
 recipient does not have to try to query the sender's keys.
 
@@ -157,10 +158,12 @@ In other words, this approach would require all homeservers to keep a permanent
 record of all devices observed anywhere in the federation, at least for as long
 as there are undelivered to-device events from such devices.
 
-Transparently: we have not significantly expolored this approach. We have a
+Transparently: we have not significantly explored this approach. We have a
 working solution, and it is unclear that the advantages of this alternative
 approach outweigh the opportunity cost and delay in rollout of an important
-security feature.
+security feature. If, in future, the overhead of including the device keys
+in the to-device messages is found to be significant, it would be worth
+revisiting this.
 
 ## Security considerations
 
