@@ -185,8 +185,8 @@ different way
 
 | Name | Stable prefix | Unstable prefix |
 | - | - | - |
-| Query param | `use_state_after` | `org.matrix.use_state_after` |
-| Room response field | `state_after` | `org.matrix.state_after` |
+| Query param | `use_state_after` | `org.matrix.msc4222.use_state_after` |
+| Room response field | `state_after` | `org.matrix.msc4222.state_after` |
 
 ## Dependencies
 
