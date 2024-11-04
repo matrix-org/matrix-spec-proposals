@@ -49,7 +49,8 @@ sending `m.topic` events. This prevents bad UX in situations where a plain
 text topic is sufficient such as the public rooms directory.
 
 In order to prevent formatting abuse in room topics, clients are
-encouraged to limit the length of topics to at most two lines. Additionally,
+encouraged to limit the length of topics during both entry and display,
+for instance, by capping the number of displayed lines. Additionally,
 clients should ignore things like headings and enumerations (or format them
 as regular text). A future MSC may introduce a mechanism to capture extended
 multiline details that are not suitable for room topics in a separate field
