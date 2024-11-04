@@ -224,7 +224,7 @@ demonstrates the process of defining new fields in the `m.*` namespace.
 ```json
 {
   "errcode": "M_KEY_TOO_LARGE",
-  "error": "The key name exceeds the maximum allowed length of 128 bytes."
+  "error": "The key name exceeds the maximum allowed length of 255 bytes."
 }
 ```
 
