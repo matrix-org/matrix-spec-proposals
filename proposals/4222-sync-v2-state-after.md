@@ -17,10 +17,10 @@ the current sync, and clients do not update their view of state based on entries
 ## Proposal
 
 This change is gated behind the client adding a `?use_state_after=true` (the unstable name is
-`org.matrix.use_state_after`) query param.
+`org.matrix.msc4222.use_state_after`) query param.
 
 When enabled, the Homeserver will **omit** the `state` section in the room response sections. This is replaced by
-`state_after` (the unstable field name is `org.matrix.state_after`), which will include all state changes between the
+`state_after` (the unstable field name is `org.matrix.msc4222.use_state_after`), which will include all state changes between the
 previous sync and the *end* of the timeline section of the current sync. This is in contrast to the old `state` section
 that only included state changes between the previous sync and the *start* of the timeline section. Note that this does
 mean that a new state event will (likely) appear in both the timeline and state sections of the response.
