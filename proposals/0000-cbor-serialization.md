@@ -1,4 +1,4 @@
-# MSC0000: Initial support for CBOR serialization
+# MSC4224: Initial support for CBOR serialization
 
 This proposal introduces support for CBOR (Concise Binary Object Representation) as an optional serialization format for the Client-Server API. CBOR, a binary format standardized by [RFC 8949](https://datatracker.ietf.org/doc/html/rfc8949), is designed for efficient data encoding and processing, offering a more compact alternative to JSON. By providing optional CBOR support, this proposal aims to improve the performance for devices with constrained resources and enhance overall efficiency.
 
@@ -37,4 +37,4 @@ This proposal does not provide any new endpoints. Security of CBOR, just like wi
 
 ## Unstable prefix
 
-Clients should check for server support before using the features proposed by this MSC. Before this MSC gets merged, to detect server support, clients MUST check for the presence of the `org.matrix.msc0000` flag in `unstable_features` on `/versions`.
+Clients should check for server support before using the features proposed by this MSC. Before this MSC gets merged, to detect server support, clients MUST check for the presence of the `org.matrix.msc4224` flag in `unstable_features` on `/versions`.
