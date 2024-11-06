@@ -178,7 +178,7 @@ We could also do nothing, and instead wait for [MSC4186](https://github.com/matr
 
 ## Security considerations
 
-There are no security concerns with this proposal, as it simply encodes the same information sent do clients in a
+There are no security concerns with this proposal, as it simply encodes the same information sent to clients in a
 different way
 
 ## Unstable prefix
