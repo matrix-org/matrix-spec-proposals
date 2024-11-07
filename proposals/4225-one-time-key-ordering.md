@@ -29,13 +29,14 @@ This proposal is not a complete solution to the problem of premature discarding
 of one-time keys: even if the server issues a recent one-time key, it is still
 possible for a to-device message to be delayed so long that the recipient has
 discarded the private part of the one-time key. It is, however, a significant
-improvement. A possible solution is for clients that expect to be used in
-conditions of poor connectivity to keep old OTKs for longer.
+improvement. A possible future solution is for clients that expect to be used
+in conditions of poor connectivity to keep old OTKs for longer.
 
 There are other ways in which the server and client can get out of sync with
 respect to one-time keys, including by a [database
 rollback](https://github.com/element-hq/element-meta/issues/2155), or
-implementation defects.
+implementation defects. It is anticipated that other solutions will be found
+for those situations.
 
 ## Alternatives
 
@@ -53,7 +54,7 @@ implementation defects.
 
 2. [MSC4162](https://github.com/matrix-org/matrix-spec-proposals/pull/4162)
    proposes a mechanism by which a client can inform the server that it is
-   discarding certiain OTKs, so that the server can also remove the public
+   discarding certain OTKs, so that the server can also remove the public
    keys. This seems a heavier-weight solution to the problem.
 
 3. A more invasive alternative would be to design an encryption stack which
@@ -82,7 +83,7 @@ None.
 
 ## Appendix: detailed explanation of the failure mode
 
-### Backgroynd
+### Background
 
 End-to-end encryption in Matrix relies on individual devices sharing
 [Megolm](https://gitlab.matrix.org/matrix-org/olm/blob/master/docs/megolm.md)
@@ -113,6 +114,8 @@ it can generate new ones when required.
 See [One-time and fallback
 keys](https://spec.matrix.org/v1.12/client-server-api/#one-time-and-fallback-keys)
 which specifies much of this behaviour.
+
+### Problem
 
 Clearly, a device must retain the private part of each one-time key until that
 key is used to establish an Olm session. However, for a number of reasons,
