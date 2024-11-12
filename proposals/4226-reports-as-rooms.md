@@ -1,4 +1,4 @@
-# MSC0000: Reports as rooms
+# MSC4226: Reports as rooms
 
 Currently it is possible to report users, rooms, and events to the Matrix
 homeserver. However there are missing parts of the specification:
@@ -278,7 +278,7 @@ and prior art for the proposed MSC.
 
 ## Unstable prefix
 
-`m.report` -> `org.matrix.msc0000.report`
+`m.report` -> `org.matrix.msc4226.report`
 
 
 ## Dependencies
