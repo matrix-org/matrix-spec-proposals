@@ -23,6 +23,22 @@ This means that the server will retain only the most recently-uploaded one-time
 keys, therefore significantly reducing the chance that clients will discard
 private one-time keys that are later used.
 
+### Implementation note
+
+When servers first implement this proposal, they may still have old one-time
+keys in their datastore, and this may take many years to resolve.
+
+It is suggested that one solution to this is, as a one-time job, to drop all
+one-time keys older than, say, a week, from the database. Having done so,
+clients will upload new one-time keys as soon as they come online; in the
+meantime, fallback keys are available to allow conversation to continue.
+
+Servers might consider applying further heuristics: for example, keys produced
+by libolm are far more likely to have been dropped by the client than those
+produced by Vodozemac, because libolm only retained 100 keys, whereas Vodozemac
+retains 5000. The two can be identified by the different lengths of key ID they
+produce (6 characters vs 11 characters).
+
 ## Potential issues
 
 This proposal is not a complete solution to the problem of premature discarding
