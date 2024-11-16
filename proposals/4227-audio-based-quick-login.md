@@ -8,11 +8,11 @@ Although normal login works for visually impaired people as well as it does for 
 
 ## Proposal
 
-The only thing this MSC changes from the protocol outlined in the dependent MSC is the transport of the initial secret, the binary string represented through a qr code. The cryptographic primitives, the insecure session channel, the way in which  it is turned into a secure one, the strings exchanged between the two clients remain unchanged, which means that a lot of the mechanisms are in place already.
+The only thing this MSC changes from the protocol outlined in the dependent MSC is the transport layer through which the binary string goes from one device to another. The cryptographic primitives, the insecure session channel, the way in which  it is turned into a secure one, the strings exchanged between the two clients remain unchanged, which means that a lot of the mechanisms are in place already.
 
 Like in the dependent MSC, any device can generate the audio signal, same for recieving it. This means that the login is more likely to succeed, all one needs is a single device which has a microphone, the other having speakers functional is implied because this is providing accessibility to visually impaired people, who definitely have speakers working otherwise they wouldn't have speech output.
 
-The mechanism used for transmitting the audio signal across devices is morse code, as standardised and described by International Telecommunication Union [at this address](https://www.itu.int/rec/R-REC-M.1677-1-200910-I/). Here are afew reason for which this way of communication was chosen, as well as what criteria other protocols would have to satisfy in order to be considered:
+The mechanism used for transmitting the audio signal across devices is morse code, as standardised and described by International Telecommunication Union [at this address](https://www.itu.int/rec/R-REC-M.1677-1-200910-I/). Here are afew reasons for which this way of communication was chosen, as well as what criteria other protocols would have to satisfy in order to be considered:
 
 * intelligible and decodable, even across moderate zones of interference. Morse stands the test of time in this category even today, because it was constructed in such a way to be minimalist, yet decodable even if recieved through a very noisy radio uplink. This means that even if the microphones and speakers of both devices are badly made, the signal should still be intelligible enough to be decodable
 * well understood by a lot of people in the telecommunications industry, which means that there should be encoder and decoder implementations for it floating around in pretty much every important programming language, and if not, there are lots of docs on how to encode and parse morse
@@ -30,7 +30,7 @@ the binary code, the exact same one which would have been used for creating a QR
   * FB, 256
   * MC, 10000
   * writeEndMark, 1
-* base64 encoding is being aplied, in order to not make the morse code encoder error out when parsing binary characters resulting from the compression
+* base32 encoding is being aplied, in order to not make the morse code encoder error out when parsing binary characters resulting from the compression
 * the morse code signal is being generated and stored in memory, in case login didn't succeed the first time. Note however, such a signal should be deleted from memory imediately after its corresponding session timed out, like its QR equivalent. The following options should be used to generate the signal:
   * the beep being used must be a sign wave, sampled at a value between 50000 and 80000 HZ
   * the volume of the produced sign wave should not be clamped in normal conditions, but if it has to be due to potential clipping, the result should not be less than 50% of the current device's volume
@@ -58,36 +58,37 @@ Finally, decompression, with the same compression parameters as before, is being
 
 Because the situation where one client only supports qr code, while the other only supports morse is not desirable and should be avoided, client implementors should do the following:
 
-* if a client implements QR code login, it is strongly recommended that it also implements audio login, for accessibility reasons, because even if the other client supports audio login, the VI person still can't do anything to get the information from that qr code
-* if a client implements audio login, it is not required to also implement QR loggin, because audio login is accessible to everyone
+* if a client implements QR code login, it is required that it also implements audio login, for accessibility reasons, because even if the other client supports audio login, the VI person still can't do anything to get the information from the qr code displayed by the first client
+* if a client implements audio login, it is recommended to also implement QR login wherever doing so would make sense for the current platform, demographic or device capabilities, because while audio login is accessible to everyone, there are still situations in which it is impossible to perform an audio login with that device, for example the inability to use speakers, the person finding themselves in an aria where it's not allowed to make unauthorised noise, etc
 
 ## Potential issues
 
 This proposal may not work well, or at all, while in very noisy environments. However, since the user is about to use audio login, it should be apparent that audio login requires the audio to actually be audible, similar to trying to scan a QR code in bright sunlight. So, in most circumstances, this is a nonissue, at least for the moment. If any noise whatsoever is imediately disturbing the recording and transcribing the code wrongly, then this should be revisited, because it's a worse problem than initially anticipated
 
-This proposal does not work at all if none of those devices have a functional microphone. There are very few devices on which one would typically use matrix where this is the case nowadays, and while this is a problem, it's one this MSC cannot solve, the only thing that can still be said about this issue is that a login that works for most visually impaired people is better than a login which works for no visually impaired people.
+This proposal does not work at all if none of the participating devices have a functional microphone. There are very few devices on which one would typically use matrix where this is the case nowadays, and while this is a problem, it's one this MSC cannot solve, the only thing that can still be said about this issue is that a login that works for most visually impaired people is better than a login which works for no visually impaired people.
 
-This proposal doesn't work if the sending device has no speakers. This is highly unlikely, considering that the overwhelming majority of visually impaired users have their devices configured with the capability of using TTS, even if that is not the primary way for them of consuming information, so speakers are most likely working
+This proposal doesn't work if the sending device has no speakers. This is highly unlikely, considering that the overwhelming majority of visually impaired users have their devices configured with the capability of using TTS, even if that is not the primary way for them of consuming information, so speakers are most likely working. However, if for any reason whatsoever the device doesn't have speakers, for example if only headphones are attached to a particular device, then putting the phone close to the headphones might achieve some results, but this spec does not also extend to those cases, as normal login is still available for everyone
 
 ## Alternatives
 
-Before settling on morse code, other methods were thought of, each being ultimately rejected for relatively simple reasons.
+Before settling on morse code, other methods were thought of, each being ultimately rejected for various reasons.
 
-The first alternative was bluetooth based login, followed by typing a short code in one of the devices, similar to how smartphones are being connected to smart watches. This does not work because a lot of target devices for matrix users still don't have bluetooth, for example desktops.
+The first alternative was bluetooth based login, followed by typing a short 6 digit code in one of the devices, similar to how smartphones are being connected to smart watches. This does not work because a lot of target devices for matrix users still don't have bluetooth, for example desktops.
 
 Another idea was NFC based sending of the code, where the two devices contact each other on a specific surface, where the NFC chips are, for the sender to send the binary string along. Similar to alternative 1, the problem is availability, as this is pretty much only available in mobile devices, and perhaps tablets
 
-Another interesting method is file sharing, where the code would be put in a file, which the user would have to transfer it to the other device. There are multiple issues with this one, only considering that the two devices are a phone and a computer, otherwise it's completely infezable:
+Another interesting method is file sharing, where the code would be put in a file, which the user would have to then transfer across to the other device. There are multiple issues with this proposal:
 
-* it takes time: plugging in a usb cable, finding it among hundreds of other files, if you know where the app even put it in the first place, all that takes a lot of time if you're reading line by line with a screenreader
-* on some devices, that might not even work: if we consider the combination between the iphone and a non-apple device, if nothing major regarding this changed from ios 10, the computer is still heavily restricted in what it could access, so that file may not even be accessible outside the phone whatsoever
-* not everyone has a USB cable on them all the time: yes, this is the biggest issue by far here, not everyone walks with one of those in their pockets, so if one has to quickly login to a device while on the go or something, they definitely won't be able to
+* this can only be done reliably and quickly enough between a computer and a phone. Trying to use usb storage devices between two computers would take too long, causing the attempt to quickly time out. Using bluetooth is an option, but the issue there is that not enough devices have it enabled, see the beginning of this section
+* it takes time: plugging in a usb cable, finding the temporarily created file among hundreds of others, if you know where the app even put it in the first place, all that takes a lot of time if you're reading line by line with a screenreader, and even if you know your phone very well, this still presents a hurdle because it'll time out a lot
+* on some devices, that might not even work: if we consider the combination between the iphone and a non-apple device, the computer is heavily restricted in what it could access, so that file may not even be accessible outside the phone whatsoever
+* not everyone has a USB cable on them all the time: yes, this is the biggest issue by far here, not everyone walks with one of those in their pockets, so if one has to quickly login to a device while on the go or something, they definitely won't be able to do so at all
 
-A last method would be using a security key, but that wouldn't work broadly because not a lot of people have those. Furthermore, passkeys, security key authentication, etc, those should be handled by open ID connect, not quick login
+A last method would be using a hardware security key, but that wouldn't work broadly because not a lot of people have those. Furthermore, passkeys, security key authentication, etc, those should be handled by open ID connect, not quick login
 
 ## Security considerations
 
-A serious issue that could potentially compromise the account of the user who tryes to login in this way is if someone is next to them somewhere and manages to record the morse code exchange between devices. It is true that a QR code is 2d, so the attacker would literally have to be next to the person, while audio travels in all directions so even someone over at the next table can hear and record it clearly in ideal circumstances, however this inherits all of the security protections of its dependent MSC, which means that sholder surfing, or in this case, recording the morse code by an unauthorised device, is thought of in there, and all the mitigations in there aply here as well.
+A serious issue that could potentially compromise the account of the user who tryes to login in this way is if someone is next to them somewhere and manages to record the morse code exchange between devices. It is true that a QR code is 2d, so the attacker would literally have to be next to the person, while audio travels in all directions so even someone over at the next table can hear and record it clearly in ideal circumstances, however this inherits all of the security protections of its dependent MSC, which means that sholder surfing, or in this case, recording the morse code by an unauthorised device, is thought of in there, and all the mitigations described there aply here as well.
 
 Furthermore, a client could send invalid code, or send valid morse code which lasts for a very long time, trying to trigger a buffer overflow or inject bad input. Any client is recommended to stop at the first bad morse received by their decoder, and stop recording after half a minute has elapsed, if the end of stream mark hasn't been encountered yet.
 
@@ -99,4 +100,4 @@ not applicable here
 
 ## Dependencies
 
-This MSC builds on MSC4108 (which at the time of writing has not yet been accepted into the spec).
+This MSC builds on MSC4108, which at the time of writing has not yet been accepted into the spec.
