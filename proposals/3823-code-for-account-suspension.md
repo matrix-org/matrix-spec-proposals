@@ -69,7 +69,10 @@ flag, though ideally each error code should provide meaning on its own.
 
 The related concept of locking, as discussed in places like [MSC3939](https://github.com/matrix-org/matrix-spec-proposals/pull/3939)
 and [matrix-org/glossary](https://github.com/matrix-org/glossary), is semantically different from
-suspension.
+suspension. Suspension has the key difference that the user is *not* logged out of their client,
+typically used by safety teams, while locking *does* log the user out and would primarily be used by
+security teams. A future MSC may combine or split the two related error codes into a descriptive set
+of capabilities the user can perform.
 
 ## Unstable prefixes
 
