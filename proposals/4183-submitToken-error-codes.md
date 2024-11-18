@@ -23,6 +23,9 @@ Identity API's `submitToken` endpoints. Everything this MSC specifies applies to
 Add the following specific error code as a code that can be returned by the two endpoints given above:
  * `M_TOKEN_INCORRECT`: Indicates that the token that the user entered to validate the session is incorrect.
 
+Note that we deliberately chose not to re-use `M_UNKNOWN_TOKEN` since that refers to an access token, whereas this
+refers to a token that the user enters.
+
 HTTP status code 400 should be used for this error.
 
 Additionally specify that the following common error codes can be returned:
