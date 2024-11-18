@@ -53,6 +53,8 @@ For the federation endpoint specifically, the local user SHOULD have the remote 
 straight through to them, however some implementations may prefer to replace the error before serving
 it to their users. This can help reduce the potential of remote Cross-Server Scripting (XSS) attacks.
 
+When to return `403 M_FORBIDDEN` is left as an implementation detail.
+
 ### Example
 
 A user makes a request to `/_matrix/client/v3/publicRooms` with a search term of `something illegal`.
