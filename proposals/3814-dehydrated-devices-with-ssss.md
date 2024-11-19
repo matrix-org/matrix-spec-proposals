@@ -238,7 +238,7 @@ encrypted, which leads to ...
    ├────────────────────────┼───────────────┼──────────────────┤
    │Key ID                  │ u32           │ 4                │
    │Is published            │ u8            │ 1                │
-   │Curve 25519 key pair    │ KeyPair       │ 69               │
+   │Curve 25519 key pair    │ KeyPair       │ 64               │
    └────────────────────────┴───────────────┴──────────────────┘
 
    ┌───────────────────────────────────────────────────────────┐
@@ -265,13 +265,14 @@ TODO: Explain why the double derivation is necessary.
 The encryption key used for the dehydrated device will be randomly generated
 and stored/shared via SSSS using the name `m.dehydrated_device`.
 
-The randomly generated encryption key *must* be expanded using the HMAC-based
-Key Derivation function defined in [RFC5869].
+The randomly generated encryption key (`RANDOM_KEY` in the example below)
+*must* be expanded using the HMAC-based Key Derivation function defined in
+[RFC5869].
 
 ```math
 \begin{aligned}
-    DEVICE\_KEY
-    &= \text{HKDF} \left(\text{``Device ID``}, RANDOM\_KEY, \text{``dehydrated-device-pickle-key"}, 32\right)
+    \text{DEVICE\_KEY}
+    &= \text{HKDF} \left(\text{Device ID}, \text{RANDOM\_KEY}, \text{``dehydrated-device-pickle-key"}, 32\right)
 \end{aligned}
 ```
 
@@ -281,13 +282,13 @@ initialization vector.
 
 ```math
 \begin{aligned}
-    AES\_KEY \parallel HMAC\_KEY \parallel AES\_IV
-    &= \text{HKDF}\left(0,DEVICE\_KEY,\text{``Pickle"},80\right)
+    \text{AES\_KEY} \parallel \text{HMAC\_KEY} \parallel text{AES\_IV}
+    &= \text{HKDF}\left(0,\text{DEVICE\_KEY},\text{``Pickle"},80\right)
 \end{aligned}
 ```
 
 The plain-text is encrypted with [AES-256] in [CBC] mode with [PKCS#7] padding,
-using the key $`AES\_KEY`$ and the IV $`AES\_IV`$ to give the cipher-text.
+using the key $`\text{AES\_KEY}`$ and the IV $`\text{AES\_IV}`$ to give the cipher-text.
 
 Then the cipher-text are passed through [HMAC-SHA-256]. The first 8 bytes of the
 MAC are appended to the cipher-text.
