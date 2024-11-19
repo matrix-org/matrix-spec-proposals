@@ -31,6 +31,9 @@ URL previews are primarily meant for text-based message types (`m.text`,
 `m.notice`, `m.emote`), but they may be used with any message type, as even
 media messages may have captions in the future.
 
+Allowing the omission of `matched_url` is effectively a new feature to send URL
+previews without a link in the message text.
+
 ### Extensible events
 The definition of `matrix:matched_url` changes from "present in `body`" to
 "present in `m.text`", but otherwise the proposal is directly compatible with
@@ -49,9 +52,9 @@ persistent `mxc://` URI, as well as encrypt it if applicable. A future MSC
 could also extend `/preview_url` with a parameter to request a persistent URI.
 
 #### Receiving messages with `m.url_previews`
-If an object in the list contains only `matrix:matched_url` and no other fields,
-receiving clients should fall back to the old behavior of requesting a preview
-using `/preview_url`.
+If an object in the list contains only `matrix:matched_url` or `og:url` (but
+not both) and no other fields, receiving clients should fall back to the old
+behavior of requesting a preview using `/preview_url`.
 
 Clients may choose to ignore bundled data and ask the homeserver for a preview
 even if bundled data is present, as a security measure against faking preview
@@ -244,6 +247,11 @@ encrypted rooms unless the receiver opts in).
 
 ## Security considerations
 Fake preview data as covered in potential issues.
+
+### Visibility in old clients (T&S)
+Clients that don't support this MSC will not display any of the data in the
+preview field, which could be abused by spammers if all moderators in a room
+are using old clients.
 
 ### Generating previews will leak IPs
 The sender's client will leak its IP when it fetches previews for URLs typed by
