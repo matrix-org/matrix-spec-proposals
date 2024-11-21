@@ -68,7 +68,7 @@ Problems'.
 
 ## Unstable prefix
 
-Until stable, the flag will be `org.matrix.animated`.
+Until stable, the flag will be `org.matrix.msc4230.animated`.
 
 ## Dependencies
 
