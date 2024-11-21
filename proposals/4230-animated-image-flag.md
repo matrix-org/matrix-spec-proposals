@@ -16,7 +16,7 @@ We add an optional boolean flag, `ia_animated` to the `info` object of image eve
 the image is animated or not. This SHOULD match whether the original image contains animation. Note
 that this will require clients probe the image file for animation. Simpler clients may, therefore,
 choose to not send this value at all, or always set it to false, meaning receiving clients are
-likley to render the image as non-animated.
+likely to render the image as non-animated.
 
 Example:
 
