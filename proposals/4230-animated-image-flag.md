@@ -12,11 +12,11 @@ animation to start without a delay while it's downloaded.
 
 ## Proposal
 
-We add an optional boolean flag to the `info` object of image events indicating if the image is
-animated or not. This SHOULD match whether the original image contains animation. Note that this
-will require clients probe the image file for animation. Simpler clients may, therefore, choose to
-not send this value at all, or always set it to false, meaning receiving clients are likley to render
-the image as non-animated.
+We add an optional boolean flag, `ia_animated` to the `info` object of image events indicating if
+the image is animated or not. This SHOULD match whether the original image contains animation. Note
+that this will require clients probe the image file for animation. Simpler clients may, therefore,
+choose to not send this value at all, or always set it to false, meaning receiving clients are
+likley to render the image as non-animated.
 
 Example:
 
@@ -31,7 +31,7 @@ Example:
       "h": 480,
       "mimetype": "image/gif",
       "size": 35295,
-      "animated": "true",
+      "is_animated": "true",
     }
 ```
 
@@ -68,7 +68,7 @@ Problems'.
 
 ## Unstable prefix
 
-Until stable, the flag will be `org.matrix.msc4230.animated`.
+Until stable, the flag will be `org.matrix.msc4230.is_animated`.
 
 ## Dependencies
 
