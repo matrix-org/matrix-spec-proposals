@@ -17,7 +17,7 @@ clients during the window in which we wait for clients to upgrade to Matrix 1.10
 
 Clients should send a separate `m.room.message` event after the captioned media, including the caption as the body.
 
-The content block of this mesage also includes an `m.caption_fallback: true` field, so that caption-aware clients do not
+The content block of this message also includes an `m.caption_fallback: true` field, so that caption-aware clients do not
 display this event, instead displaying the media event's `body` field as a caption per MSC2530.
 
 However, caption-unaware clients will display the event and so avoid discarding the contents of the caption.
