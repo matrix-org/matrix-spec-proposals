@@ -39,21 +39,25 @@ To upload a new dehydrated device, a client will use `PUT /dehydrated_device`.
 Each user has at most one dehydrated device; uploading a new dehydrated device
 will remove any previously-set dehydrated device.
 
+The dehydrated device *must* be cross-signed and have a fallback key.
+
 The client *must* use the public [Curve25519] [identity key] of the device,
 encoded as unpadded Base64, as the device ID.
 
 The `device_keys`, `one_time_keys`, and `fallback_keys` fields use the same
 structure as for the [`/keys/upload`] request.
 
-We add a new optional property to the device keys: `dehydrated`, which is set
-to `true` for dehydrated devices.  Defaults to `false`.  Clients can use this
-flag to handle the dehydrated device specially.  For example:
+We add a new optional property to the device keys: `dehydrated`, which is set to
+`true` for dehydrated devices.  Defaults to `false`.  Clients that support
+dehydrated devices *must not* encrypt to devices marked as being a dehydrated
+device if they are not cross-signed.  Clients can use also this flag to for
+other purposes, such as:
 
-- display dehydrated devices differently from normal devices, to avoid
-  confusing from users who do not expect to see another device
-- don't send key forwarding requests to the dehydrated device, since it will
-  not respond to them
-- don't send room keys to the dehydrated device if the user has a sufficient
+- Display dehydrated devices differently from normal devices, to avoid confusing
+  from users who do not expect to see another device.
+- Don't send key forwarding requests to the dehydrated device, since it will
+  not respond to them.
+- Don't send room keys to the dehydrated device if the user has a sufficient
   number of other devices, with the assumption that if the user logs in to a
   new device, they can get the room keys from one of their other devices and/or
   from key backup.  This will reduce the chances that the dehydrated device
@@ -208,6 +212,14 @@ will have the advantage that we don't need to figure out a format that will fit
 into every possible implementation's idiosyncrasies.  The format will be
 encrypted, which leads to ...
 
+We define the following format for storing the dehydrated device (based on the
+libolm pickle format):
+
+We store the device as a concatenation of binary values.  Multi-byte numbers are
+stored in big-endian format.  The version is set to 0x80000000.  (Setting the
+high bit to 1 is to avoid confusion with the libolm pickle format for accounts,
+which was used in a previous version of this MSC.)
+
 ```text
    ┌───────────────────────────────────────────────────────────┐
    │                        Pickle                             │
@@ -215,20 +227,10 @@ encrypted, which leads to ...
    │Name                    │ Type          │ Size (bytes)     │
    ├────────────────────────┼───────────────┼──────────────────┤
    │Version                 │ u32           │ 4                │
-   │Ed25519 key pair        │ KeyPair       │ 64               │
-   │Curve25519 key pair     │ KeyPair       │ 64               │
+   │Curve25519 private key  │ [u8; 32]      │ 32               │
    │Number of one-time keys │ u32           │ 4                │
-   │One-time keys           │ [OneTimeKey]  │ N * 69           │
-   │Fallback keys           │ FallbackKeys  │ 2 * 69           │
-   │Next key ID             │ u32           │ 4                │
-   └────────────────────────┴───────────────┴──────────────────┘
-   ┌───────────────────────────────────────────────────────────┐
-   │                        KeyPair                            │
-   ├────────────────────────┬───────────────┬──────────────────┤
-   │Name                    │ Type          │ Size (bytes)     │
-   ├────────────────────────┼───────────────┼──────────────────┤
-   │Public key              │ [u8; 32]      │ 32               │
-   │Private key             │ [u8; 32]      │ 32               │
+   │One-time keys           │ [OneTimeKey]  │ N * 32           │
+   │Fallback key            │ OptFallback   │ 1 or 33          │
    └────────────────────────┴───────────────┴──────────────────┘
 
    ┌───────────────────────────────────────────────────────────┐
@@ -236,27 +238,23 @@ encrypted, which leads to ...
    ├────────────────────────┬───────────────┬──────────────────┤
    │Name                    │ Type          │ Size (bytes)     │
    ├────────────────────────┼───────────────┼──────────────────┤
-   │Key ID                  │ u32           │ 4                │
-   │Is published            │ u8            │ 1                │
-   │Curve 25519 key pair    │ KeyPair       │ 64               │
+   │Curve25519 private key  │ [u8; 32]      │ 32               │
    └────────────────────────┴───────────────┴──────────────────┘
 
    ┌───────────────────────────────────────────────────────────┐
-   │                     FallbackKeys                          │
+   │                      OptFallback                          │
    ├────────────────────────┬───────────────┬──────────────────┤
    │Name                    │ Type          │ Size (bytes)     │
    ├────────────────────────┼───────────────┼──────────────────┤
-   │Number of fallback keys │ u8            │ 1                │
-   │Fallback-key            │ OneTimeKey    │ 69               │
-   │Previous fallback-key   │ OneTImeKey    │ 69               │
+   │Fallback present        │ boolean       │ 1                │
+   │Fallback private key    │ [u8; 32]      │ 0 or 32          │
    └────────────────────────┴───────────────┴──────────────────┘
 ```
 
-TODO: Explain why we must ignore public keys when decoding them and why they are
-included in the first place.
+Note that we do not store the Ed25519 key, since the dehydrated device does not
+do any signing.
 
-When decoding, clients *must* ignore the public keys and instead derive the
-public key from the private one.
+The data is then encrypted and encoded as follows.
 
 #### Encryption key
 
@@ -310,11 +308,7 @@ The device pickle is then inserted into the `device_pickle` field of the
 
 #### Test vectors
 
-Device pickle:
-```
-Gc0elC7k7NISzWW/C2UIuzRMDSHzzRLfM3lMnJHMLMcuyLtZHljhV/YvIctIlepxevznEcwBc40Q0CtS3k5SI9gGyN7G+95hnQan0rKe64a1Vx1Vx4Ky8i+m1y9JVT++WcQ54CGhMuCGoN2O1xEQb+4fM+UVS/bLNJ4Pzzqa1ilzCrs4SCTz70eriShvzt7y1cn2A6ABNhK4aXnLB8gK9HuMLyctyX5ikvIjkAIAdVr1EI1azetZDQ
-```
-
+TODO: put a test vector here
 
 ## Potential issues
 
@@ -375,10 +369,26 @@ The alternatives discussed in MSC2697 are also alternatives here.
 
 ## Security considerations
 
+### Weak SSSS passphrase/key
+
 A similar security consideration to the one in MSC2697 also applies to this
 proposal: if SSSS is encrypted using a weak passphrase or key, an attacker
 could access it and rehydrate the device to read the user's encrypted
 messages.
+
+### Display of dehydrated devices
+
+As mentioned earlier, clients may wish to display dehydrated devices differently
+from normal devices by checking the `dehydrated` flag in the device's keys.
+Clients must exercise care when doing so, as this may allow a attacker to hide a
+malicious device.  Clients *must not* encrypt messages to a dehydrated device
+that is not cross-signed.  Clients should indicate the presence of the
+dehydrated device, even if it is not listed along with the normal devices.  For
+example, a client could hide the dehydrated device from the device list, but
+indicate that "The dehydrated device feature is enabled".  A user can only have
+one dehydrated device available at a time, so if more than one device is marked
+as `dehydrated: true`, the client should display them all as normal devices.
+Clients can also display a warning in such a situation.
 
 ## Unstable prefix
 
