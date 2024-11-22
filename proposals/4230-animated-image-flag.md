@@ -12,7 +12,7 @@ animation to start without a delay while it's downloaded.
 
 ## Proposal
 
-We add an optional boolean flag, `ia_animated` to the `info` object of `m.image` events indicating if
+We add an optional boolean flag, `is_animated` to the `info` object of `m.image` events indicating if
 the image is animated or not. This SHOULD match whether the original image contains animation. Note
 that this will require clients probe the image file for animation. Simpler clients may, therefore,
 choose to not send this value at all, or always set it to false, meaning receiving clients are
