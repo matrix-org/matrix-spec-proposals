@@ -23,6 +23,11 @@ The `id` field is required and is an opaque string. Clients may use it to group
 messages with the same ID like they would group messages from the same sender.
 For example, bridges would likely set it to the immutable remote user ID.
 
+This ID is scoped to the real MXID used to send the event, but is otherwise
+global. In other words, the same ID in different rooms from the same account
+can be considered to be the same user, but the same ID in the same room from
+different accounts are considered to be different users.
+
 ### Encrypted avatars
 Because the profile is inside the ciphertext in encrypted events, the entire
 profile can be hidden from the server, as long as the avatar is also encrypted.
