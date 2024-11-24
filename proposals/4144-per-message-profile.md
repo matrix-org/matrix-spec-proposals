@@ -158,7 +158,10 @@ account has sufficiently high power level, and the displayname is unique among
 members of the room (i.e. it does not require disambiguation in the
 ["Calculating the display name for a user" spec](https://spec.matrix.org/v1.12/client-server-api/#calculating-the-display-name-for-a-user)).
 
-TODO: define the power level
+TODO: define the power level  
+TODO2: what if the same name is used by multiple different bridges using
+per-message profiles? Maybe it's enough to recommend configuring bridges to
+append a network identifier to names?
 
 ## Unstable prefix
 `com.beeper.per_message_profile` should be used instead of `m.per_message_profile`
