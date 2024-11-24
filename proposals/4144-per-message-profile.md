@@ -28,6 +28,10 @@ global. In other words, the same ID in different rooms from the same account
 can be considered to be the same user, but the same ID in the same room from
 different accounts are considered to be different users.
 
+The field is allowed for all message events, which currently means
+`m.room.message` and `m.sticker`. A future MSC may expand the field to other
+events, such as reactions.
+
 ### Encrypted avatars
 Because the profile is inside the ciphertext in encrypted events, the entire
 profile can be hidden from the server, as long as the avatar is also encrypted.
@@ -102,7 +106,8 @@ there's demand for bridging without requiring server admin access.
 Such bridges would obviously have downsides, like not being able to start chats
 via standard mechanisms, and not being able to see the member list on Matrix.
 However, those may be acceptable compromises for non-puppeting bridges that
-only operate in specific predetermined rooms.
+only operate in specific predetermined rooms. Non-message events like reactions
+are also not supported by this MSC, but they could be allowed in the future.
 
 This method also allows encrypting profile info, which reduces metadata leaked
 by bridging.
