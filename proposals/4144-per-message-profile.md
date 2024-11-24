@@ -25,7 +25,7 @@ For example, bridges would likely set it to the immutable remote user ID.
 
 ### Encrypted avatars
 Because the profile is inside the ciphertext in encrypted events, the entire
-profile can be hidden the server, as long as the avatar is also encrypted.
+profile can be hidden from the server, as long as the avatar is also encrypted.
 Encrypted avatars are placed under `avatar_file` instead of `avatar_url`.
 The `avatar_file` field has the same schema as the `file` field in
 `m.room.message` events.
