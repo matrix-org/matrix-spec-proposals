@@ -53,7 +53,7 @@ like this:
 	    },
     }
   },
- ```
+```
 
 If non-caption-aware users reply to a caption fallback, then caption-aware clients should display the media event
 as the event being replied to.
