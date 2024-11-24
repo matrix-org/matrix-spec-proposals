@@ -138,10 +138,17 @@ unnecessarily.
 ## Security considerations
 
 ### Preventing impersonation
-To prevent impersonation using per-message profiles, clients should somehow
+To prevent impersonation using per-message profiles, clients MUST somehow
 indicate to the user that the message has a per-message profile with an easy
 way to see the user's MXID or default profile. For example, a client could have
 a small `via @user:example.com` text next to the per-message displayname.
+
+To improve user experience, clients MAY omit the indicator when the sender
+account has sufficiently high power level, and the displayname is unique among
+members of the room (i.e. it does not require disambiguation in the
+["Calculating the display name for a user" spec](https://spec.matrix.org/v1.12/client-server-api/#calculating-the-display-name-for-a-user)).
+
+TODO: define the power level
 
 ## Unstable prefix
 `com.beeper.per_message_profile` should be used instead of `m.per_message_profile`
