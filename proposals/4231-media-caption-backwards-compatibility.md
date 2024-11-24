@@ -66,6 +66,9 @@ will not be visible to caption-aware clients, causing inconsistent history betwe
 If a user on a caption-unaware client redacts a caption fallback sent on a caption-aware client, then the caption in
 the media event won't be redacted, potentially leaking the redacted content.
 
+Clients or bridges that are caption-aware but not MSC4231-aware capable will display or transport the text content
+twice, displaying double content to the user.
+
 ## Potential issues
 
 It's a bit ugly and redundant to duplicate the caption in the fallback event as well as the media event.  However, it's
