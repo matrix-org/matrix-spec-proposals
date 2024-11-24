@@ -74,7 +74,10 @@ However, there are use cases for setting an empty avatar, so `avatar_url` being
 an empty string should be treated as clearing the avatar and falling back to
 the client's default blank avatar behavior (e.g. generating one based on the
 displayname). If both `avatar_url` and `avatar_file` are omitted or null, the
-avatar from the member event should be used instead.
+avatar from the member event should be used instead. If the member event does
+not have an avatar defined either, and the client uses the displayname to
+generate fallback avatars, it should use the per-message displayname for the
+fallback avatar rather than the global one.
 
 ### Extensible profiles
 This MSC is not related to extensible profiles and does not attempt to
