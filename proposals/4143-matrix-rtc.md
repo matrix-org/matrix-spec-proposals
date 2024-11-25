@@ -151,8 +151,8 @@ The `leave_reason` is added so clients can be more verbal about why a user disco
 Receiving clients will be able to detect if the delayed event request was recognised by the presence of the `has_delayed_overwrite: true`
 unsigned property. If the property is missing the event is invalid.
 
-This also invalidates delayed leave events that are send with a valid membership content. They do not contain the
-`has_delayed_overwrite: true` unsigned property.
+This also ensures that delayed leave events that are incorrectly sent with a non-empty membership content are invalidated,
+as they will not contain the `has_delayed_overwrite: true` unsigned property.
 
 #### Historic sessions
 
