@@ -19,7 +19,7 @@ mentions make sure no unnecessary push notification is sent.
 
 This event contains the following fields including intentional mentions and extensible events.
 
-```json
+```json5
 {
   "content": {
     "application": "m.call | m.other_matrix_session_type | ...",
