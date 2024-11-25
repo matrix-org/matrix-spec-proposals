@@ -6,8 +6,8 @@ This is of interest in 1:1 Rooms/Calls but also in bigger rooms ringing can be d
 Legacy calls are using room events to negotiate the call.
 A client could use the initial steps in the negotiation to also make the phone ring.
 
-With matrix RTC based calls this signalling is done over state events.
-Also matrix RTC enables large group calls which makes it very
+With MatrixRTC based calls this signalling is done over state events.
+Also MatrixRTC enables large group calls which makes it very
 desirable to have more configurations over the ringing process.
 
 ## Proposal
@@ -21,6 +21,7 @@ This event contains the following fields including intentional mentions and exte
 
 ```json5
 {
+  "type": "m.call.notify",
   "content": {
     "application": "m.call | m.other_matrix_session_type | ...",
     "m.mentions": {"user_ids": [], "room": true | false},
@@ -54,7 +55,7 @@ This visual indication should be more than an unread indicator
 and similar to a notification banner.
 This is not enforced by the spec however and ultimately a client choice.
 
-Ringing (or notifying) should happen only if all these conditions apply:\
+Ringing (or notifying) should happen only if all these conditions apply:
 
 - `m.call.notify` content:\
   If the user is not part of the `m.mentions` section as defined in
@@ -107,44 +108,45 @@ to communicate the message that those users are invited to participate in a call
 - Encrypted rooms configured as `mentions only` are currently not sending push
   notifications for encrypted events. Hence the client would not ring even though
   the ring event contains `m.mentions`.
-  - As a stop gat, it is recommended, that the client sends unencrypted `m.call.notify`
+  - As a stop gap, it is recommended, that the client sends unencrypted `m.call.notify`
     events in such rooms.
   - As soon as [MSC3996: Encrypted mentions-only rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/3996)
     is supported `m.has_mentions` should be used instead of unencrypted call
     notify events.
-- Wanting to ring a user who you do not have a shared room with is not possible.
+- Ringing a user who you do not have a shared room with is not supported
+  by this MSC.
   It might be an undesired capability that your device can be started to ring
   by users you have not yet interacted on matrix.
-  On the other hand this might be desired to mimic what ppl expect from using
+  On the other hand this might be desired to mimic what people expect from using
   the telephone network.
-  Entering a matrix userId allows to call someone (Ring their phone).
-  (It would be possible to disable/configure this on the receiving
+  (It should be possible to disable/configure this on the receiving
   device)
   - The location to put this information would be the invite event.
-    This would be an edge case and only required for the specific usecase
+    This would be an edge case and only required for the specific use case
     of being able to ring without a shared DM/Room.
     It should be discussed in an additional MSC and is not part of this proposal.
 
 ## Alternatives
 
-It would be possible to use the call member room state events to determine a call
+It could be possible to use the call member room state events to determine a call
 start.
 The logic would be as following:
-_If we receive an event we check if  are already other members
+_If we receive an event we check if there are already other members
 (call.member events) for the call. In case there is not we make the phone ring._
 
 Pros:
 
 - This would not require any new event.
-- The clients can not "forget" to ring the others about the when they
-  start a new call. Because they would automatically send an event by joining.
-- There would be less traffic. With the proposed solution the first one who joins
-  needs to send a `m.call.notify` event and a `m.call.member` state event.
+- The clients can not "forget" to ring the others when they
+  start a new call, because they would automatically send an event by joining.
+- There would be less traffic. With the proposed solution in this MSC, the first
+  client who joins needs to send a `m.call.notify` event and a `m.call.member`
+  state event.
 
 Cons
 
 - All the ringing conditions run on the receiving user. There is no way for the
-  user who start the call to decide if it should ring the other participants.
+  user who starts the call to decide if it should ring the other participants.
   (Consider a very large room where I want to start a call only for the interested
   ones who want to discuss a side project. It would be very annoying if the
   initiator could not control how and who is going to be informed about that call.)
@@ -176,9 +178,9 @@ Cons
 ## Security considerations
 
 This is another timeline event where any room participant can send a push
-notification to others. Since this will make clients ring this has a higher
-effect on the receiver. Since ringing has to obey the mute settings, it is
-very easy for the targeted users to mitigate the "attack". It can be very
+notification to others. Since this will make clients ring this has a high
+impact on the receiver. However, since ringing has to obey the mute settings, it is
+very easy for the targeted users to mitigate unwanted ringing. It can be very
 much compared to spamming a room with "@room" messages.
 
 The default power level for `m.call.notify` is `50` and equivalent to the default
