@@ -60,17 +60,19 @@ On the server side, any logic that currently operates on `m.room.topic` is
 updated to use `m.topic` instead.
 
 In [`/_matrix/client/v3/createRoom`], the `topic` parameter causes `m.topic`
-to be written with a `text/plain` mimetype. If an `m.topic` event is supplied
-in `initial_state`, the `topic` parameter overwrites its `text/plain` mimetype
-but retains any other mimetypes.
+to be written with a `text/plain` mimetype. If at the same time an `m.topic`
+event is supplied in `initial_state`, it is overwritten entirely. A future MSC
+may generalize the `topic` parameter to allow specifying other mime types
+without `initial_state`.
 
 In [`GET /_matrix/client/v3/publicRooms`], [`GET /_matrix/federation/v1/publicRooms`]
 and their `POST` siblings, the `topic` response field is read from the
 `text/plain` mimetype of `m.topic` if it exists or omitted otherwise.
 A plain text topic is sufficient here because this data is commonly
 only displayed to users that are *not* a member of the room yet. These
-users don't have the same need for rich room topics as users who already
-reside in the room.
+users don't commonly have the same need for rich room topics as users
+who already reside in the room. A future MSC may update these endpoints
+to support rich text topics.
 
 The same logic is applied to [`/_matrix/client/v1/rooms/{roomId}/hierarchy`]
 and [`/_matrix/federation/v1/hierarchy/{roomId}`].
