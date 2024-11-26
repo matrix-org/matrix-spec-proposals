@@ -34,9 +34,9 @@ Additionally specify that the following common error codes can be returned:
 
 HTTP status code 400 should also be used for both of these errors.
 
-Also change the corresponding submitYoken-like API given in the C/S API's definition of [`POST
-/_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
-to specify that both request and response parameters / error codes are the same as the I/S API version, rather than just parameters, apart from needing an I/S API token.
+Also change the `submit_url` field in the response to [`POST
+/_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken),
+to specify that response parameters and error codes are the same as the I/S API version, as well as request parameters.
 
 ## Potential issues
 
