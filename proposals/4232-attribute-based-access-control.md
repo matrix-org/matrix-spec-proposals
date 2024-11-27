@@ -1,4 +1,4 @@
-# MSC4231: Attribute-Based Access Control (ABAC)
+# MSC4232: Attribute-Based Access Control (ABAC)
 
 Within Matrix rooms it is important to be able to grant specific actions to users with more trust or
 capability to embody a role, such as giving a concept of "moderators" the kick and ban permissions. In
@@ -166,9 +166,9 @@ TBD
 ## Unstable prefix
 
 While this MSC is not included in a stable room version, it MUST only be implemented in an unstable
-room version using the following format: `org.matrix.msc4231.<parent version>`. For example, if an
+room version using the following format: `org.matrix.msc4232.<parent version>`. For example, if an
 implementation implements this proposal using room version `11` as a base, the unstable room version
-would be `org.matrix.msc4231.11`.
+would be `org.matrix.msc4232.11`.
 
 For valid consideration under the MSC process, an implementation must base itself off the latest
 stable room version available at time of FCP.
