@@ -57,8 +57,8 @@ is currently of the form:
 }
 ```
 
-We propose to add a new property: `device_keys`, which is a copy of what the
-server would return in response to a
+We propose to add a new property: `sender_device_keys`, which is a copy of what
+the server would return in response to a
 [`/keys/query`](https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3keysquery)
 request, as the device keys for the sender's device.  In other words, the
 plaintext payload will now look something like:
@@ -75,7 +75,7 @@ plaintext payload will now look something like:
   "keys": {
     "ed25519": "<sender_ed25519_key>"
   },
-  "device_keys": {
+  "sender_device_keys": {
     "algorithms": ["<supported>", "<algorithms>"],
     "user_id": "<user_id>",
     "device_id": "<device_id>",
@@ -94,7 +94,7 @@ plaintext payload will now look something like:
 ```
 
 If this property is present, the `keys`.`ed25519` property of the plaintext
-payload must be the same as the `device_keys`.`keys`.`ed25519:<DEVICEID>`
+payload must be the same as the `sender_device_keys`.`keys`.`ed25519:<DEVICEID>`
 property.  If they differ, the recipient should discard the event.
 
 As the `keys` property is now redundant, it may be removed in a future version
@@ -119,7 +119,7 @@ information to the user; that is left for the future.
 
 ### Minor variations
 
-The `device_keys` property could be added to the cleartext.  That is, it could
+The `sender_device_keys` property could be added to the cleartext.  That is, it could
 be added as a property to the `m.room.encrypted` event.  This information is
 already public, as it is accessible from `/keys/query` (while the device is
 logged in), and does not need to be authenticated as it is protected by the
@@ -129,14 +129,14 @@ including it in the encrypted payload, it leaves open the possibility of
 it replacing the `keys` property, which must be part of the encrypted payload
 to prevent an [unknown key-share attack](https://github.com/element-hq/element-web/issues/2215).
 
-The `device_keys` property could be added to the cleartext by the sender's
+The `sender_device_keys` property could be added to the cleartext by the sender's
 homeserver, rather than by the sending client. Possibly within an `unsigned`
 property, as that is where properties added by homeservers are customarily
 added.  It is not clear what advantage there would be to having this
 information being added by the client.
 
 To mitigate the increased size of to-device events under this proposal, the
-`device_keys` could be sent only in pre-key messages (Olm messages
+`sender_device_keys` could be sent only in pre-key messages (Olm messages
 with `type: 0` in the `m.room.encrypted` event) — with the rationale that if
 the Olm message is a normal (non-pre-key) message, this means that the
 recipient has already decrypted a pre-key message that contains the
