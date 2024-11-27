@@ -18,6 +18,11 @@ The [`POST
 endpoint in the C/S API also specifies a `submit_url` response parameter, defining its parameters to be the same as the
 Identity API's `submitToken` endpoints. Everything this MSC specifies applies to this endpoint in the same way.
 
+Note that the email `submitToken` endpoint ([`POST
+/_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken))
+is not generally used in practice: Sydent's emails includes a link to click and therefore use the
+`GET` version. This proposal updates both for consistency.
+
 ## Proposal
 
 Add the following specific error code as a code that can be returned by the two endpoints given above:
