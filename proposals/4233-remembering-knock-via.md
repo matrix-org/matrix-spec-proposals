@@ -1,4 +1,4 @@
-# MSC4233: Remembering which server a user knock through
+# MSC4233: Remembering which server a user knocked through
 
 [Knocking](https://spec.matrix.org/v1.12/client-server-api/#knocking-on-rooms) allows users to request
 an invite into a semi-public room from members already in that room. The use cases for this feature
