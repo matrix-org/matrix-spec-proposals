@@ -15,13 +15,15 @@ that MSC is for `requestToken` on the C-S API only.
 
 The [`POST
 /_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
-endpoint in the C/S API also specifies a `submit_url` response parameter, defining its parameters to be the same as the
-Identity API's `submitToken` endpoints. Everything this MSC specifies applies to this endpoint in the same way.
+The numerous `requestToken` endpoints (enumerated in the proposal section) in the C/S API also specify a `submit_url`
+response parameter, defining their parameters to be the same as the Identity API's `submitToken` endpoints. Everything
+this MSC specifies applies to these endpoint in the same way.
 
 Note that the `POST` version of the email `submitToken` endpoint ([`POST
 /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken))
-is not generally used in practice (and does not exist on the C/S API): Sydent's emails includes a link to click and
-therefore use the `GET` version. This proposal updates both for consistency.
+is not generally used in practice: Sydent's emails includes a link to click instead of the `submit_url` response field and
+therefore use the `GET` version. Synapse does not implement the `POST` API for email validation for this reason. This
+proposal updates both for consistency.
 
 ## Proposal
 
@@ -39,9 +41,16 @@ Additionally specify that the following common error codes can be returned:
 
 HTTP status code 400 should also be used for both of these errors.
 
-Also change the `submit_url` field in the response to [`POST
-/_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken),
-to specify that response parameters and error codes are the same as the I/S API version, as well as request parameters.
+Also apply the same change to all the `submit_url` fields in the various response to the `POST requestToken` endpoints, ie:
+
+ * [`POST /_matrix/client/v3/register/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3registeremailrequesttoken)
+ * [`POST /_matrix/client/v3/register/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3registerrequesttoken)
+ * [`POST /_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
+ * [`POST /_matrix/client/v3/account/3pid/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidmsisdnrequesttoken)
+ * [`POST /_matrix/client/v3/account/password/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3accountpasswordemailrequesttoken)
+ * [`POST /_matrix/client/v3/account/password/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3accountpasswordmsisdnrequesttoken)
+
+...to specify that response parameters and error codes are the same as the I/S API version, as well as request parameters.
 
 ## Potential issues
 
