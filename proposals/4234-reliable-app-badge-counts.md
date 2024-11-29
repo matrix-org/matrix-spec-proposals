@@ -7,9 +7,9 @@ only clients can calculate their app badges accurately, and gives clients a way 
 their app badges.
 
 However, in order to actually get up-to-date app badge counts, you also need a way to nudge clients to recalculate their
-app badge count whenever the user has cleared the unread state on a given room (to decrement the badge count).
-Otherwise, the app badge will be stale and only get updated when the app receives an unrelated push notif, or syncs
-in the background, or happens to be foregrounded.
+app badge count whenever the user has cleared the unread state on a given room by reading it (i.e. to decrement the app
+badge count). Otherwise, the app badge will be stale and only get updated at some arbitrary point when the app receives
+an unrelated push notif, or happens to syncs in the background, or happens to be foregrounded.
 
 ## Solution
 
