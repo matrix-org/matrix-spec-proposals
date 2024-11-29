@@ -50,11 +50,14 @@ to the request called `e2ee_badge_aware` which defaults to `false` if absent.
 If `e2ee_badge_aware` is set to true, then the pusher will not specify `unread` or `missed_calls` in the
 `POST /_matrix/push/v1/notify` request to the target push gateway, and so not override the client's app badge.
 
-We also add a new optional field to read receipts called `cleared_notifs` which defaults to `false` if absent.  This is
-set to `true` by e2ee-badge-aware clients to indicate that a given receipt means the user has read all push
+We also add a new optional field to read receipts called `cleared_notifs` which defaults to `false` if absent.  This 
+SHOULD be set to `true` by clients implementing this MSC to indicate that a given receipt means the user has read all push
 notifications for this room's main timeline.  The server should then send a 'null' push notification to all other
 clients to encourage them to sync and recalculate their app badge counts, ensuring that the app badge count decreases
-when the user catches up on a given room.
+when the user catches up on a given room.  This is needed to replace the prior behaviour where the server would be
+responsible for calculating and pushing new app badge updates to clients - instead, the client has to tell the server
+when to nudge clients with a blank push to get them to calculate their own badge count, otherwise they will show
+a stale count.
 
 Finally, we fix the spec to describe the behaviour of the `unread` count field in `POST /_matrix/push/v1/notify`
 correctly.  We also remove the `missed_calls` field at all, as nothing has ever implemented it, as far as I know - I
