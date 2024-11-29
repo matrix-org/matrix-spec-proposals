@@ -11,10 +11,8 @@ However, these common error codes don't have any codes to signal many errors tha
 obviously, that the token the user entered was incorrect.
 
 This MSC can be considered similar to [MSC4178](https://github.com/matrix-org/matrix-spec-proposals/pull/4178) although
-that MSC is for `requestToken` on the C-S API only.
+that MSC is for `requestToken` on the C/S API only.
 
-The [`POST
-/_matrix/client/v3/account/3pid/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3account3pidemailrequesttoken)
 The numerous `requestToken` endpoints (enumerated in the proposal section) in the C/S API also specify a `submit_url`
 response parameter, defining their parameters to be the same as the Identity API's `submitToken` endpoints. Everything
 this MSC specifies applies to these endpoint in the same way.
@@ -27,7 +25,11 @@ proposal updates both for consistency.
 
 ## Proposal
 
-Add the following specific error code as a code that can be returned by the two endpoints given above:
+Add the following specific error code as a code that can be returned by both
+[`POST
+/_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken)
+and [`POST
+/_matrix/identity/v2/validate/msisdn/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validatemsisdnsubmittoken):
  * `M_TOKEN_INCORRECT`: Indicates that the token that the user entered to validate the session is incorrect.
 
 Note that we deliberately chose not to re-use `M_UNKNOWN_TOKEN` since that refers to an access token, whereas this
