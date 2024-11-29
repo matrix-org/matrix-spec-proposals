@@ -35,7 +35,8 @@ Therefore we need a way for sophisticated E2EE clients to tell the server to sto
 Also, the server currently tracks which events the user has read, and will send a 'null' push to the client to update
 the app badge count once a given pushed event has been read.  But given the server doesn't reliably know what events
 cause pushes in E2EE rooms, we will need a new mechanism to reduce the badge count as the user reads rooms (or parts
-them, or reconfigures their push settings).  However, this can be split into a separate MSC.
+them, or reconfigures their push settings).  However, this can be considered as a separate MSC:
+[MSC4234](https://github.com/matrix-org/matrix-spec-proposals/pull/4234)
  
 Finally, a separate but related problem is that historically the description of the `unread` count passed to push
 gateways in the Push API is currently wrong[^3]: it says it's "The number of unread messages a user has across all of
@@ -51,7 +52,7 @@ If `disable_badge_count` is set to true, then the pusher will not specify `unrea
 `POST /_matrix/push/v1/notify` request to the target push gateway, and so not override the client's app badge.
 
 Solving the problem of prodding other clients to update their badge counts when a user reads messages in a given room has been
-split out into a separate MSC.
+split out into a separate MSC: [MSC4234](https://github.com/matrix-org/matrix-spec-proposals/pull/4234).
 
 While we're here, we also fix the spec to describe the behaviour of the `unread` count field in `POST /_matrix/push/v1/notify`
 correctly.  We also remove the `missed_calls` field at all, as nothing has ever implemented it, as far as I know - I
