@@ -39,6 +39,8 @@ rules.  Alternatively, they could set `cleared_notifs: true` whatever when the u
 the room as a guaranteed point where all clients will agree that there are no unread notifs.
 Given per-device rules aren't common currently in the wild, I suggest we punt this to a later MSC.
 
+The other potential issues in [MSC4076](https://github.com/matrix-org/matrix-spec-proposals/pull/4076) also apply.
+
 ## Alternatives
 
 Alternatively, we could push all devices every time the user sends a read receipt anywhere, just in case they need to
