@@ -48,7 +48,7 @@ notifications" (although synapse has a config option to change that, confusingly
 When a pusher is registered for a given device via `POST /_matrix/client/v3/pushers/set`, we add a new boolean field
 to the request called `disable_badge_count` which defaults to `false` if absent.
 
-If `disable_badge_count` is set to true, then the pusher will not specify `unread` or `missed_calls` in the
+If `disable_badge_count` is set to true, then the pusher will not specify `counts` block in the
 `POST /_matrix/push/v1/notify` request to the target push gateway, and so not override the client's app badge.
 
 Solving the problem of prodding other clients to update their badge counts when a user reads messages in a given room has been
