@@ -1,4 +1,4 @@
-# MSC4076: Let E2EE clients calculate app badge counts themselves
+# MSC4076: Let E2EE clients calculate app badge counts themselves (disable_badge_count)
 
 ## Problem
 
@@ -35,7 +35,7 @@ Therefore we need a way for sophisticated E2EE clients to tell the server to sto
 Also, the server currently tracks which events the user has read, and will send a 'null' push to the client to update
 the app badge count once a given pushed event has been read.  But given the server doesn't reliably know what events
 cause pushes in E2EE rooms, we will need a new mechanism to reduce the badge count as the user reads rooms (or parts
-them, or reconfigures their push settings).
+them, or reconfigures their push settings).  However, this can be split into a separate MSC.
  
 Finally, a separate but related problem is that historically the description of the `unread` count passed to push
 gateways in the Push API is currently wrong[^3]: it says it's "The number of unread messages a user has across all of
@@ -45,21 +45,15 @@ notifications" (although synapse has a config option to change that, confusingly
 ## Solution
 
 When a pusher is registered for a given device via `POST /_matrix/client/v3/pushers/set`, we add a new boolean field
-to the request called `e2ee_badge_aware` which defaults to `false` if absent.
+to the request called `disable_badge_count` which defaults to `false` if absent.
 
-If `e2ee_badge_aware` is set to true, then the pusher will not specify `unread` or `missed_calls` in the
+If `disable_badge_count` is set to true, then the pusher will not specify `unread` or `missed_calls` in the
 `POST /_matrix/push/v1/notify` request to the target push gateway, and so not override the client's app badge.
 
-We also add a new optional field to read receipts called `cleared_notifs` which defaults to `false` if absent.  This 
-SHOULD be set to `true` by clients implementing this MSC to indicate that a given receipt means the user has read all push
-notifications for this room's main timeline.  The server should then send a 'null' push notification to all other
-clients to encourage them to sync and recalculate their app badge counts, ensuring that the app badge count decreases
-when the user catches up on a given room.  This is needed to replace the prior behaviour where the server would be
-responsible for calculating and pushing new app badge updates to clients - instead, the client has to tell the server
-when to nudge clients with a blank push to get them to calculate their own badge count, otherwise they will show
-a stale count.
+Solving the problem of prodding other clients to update their badge counts when a user reads messages in a given room has been
+split out into a separate MSC.
 
-Finally, we fix the spec to describe the behaviour of the `unread` count field in `POST /_matrix/push/v1/notify`
+While we're here, we also fix the spec to describe the behaviour of the `unread` count field in `POST /_matrix/push/v1/notify`
 correctly.  We also remove the `missed_calls` field at all, as nothing has ever implemented it, as far as I know - I
 think it was originally included for questionable futureproofness and never hooked up ("ooh, if we are tracking unread
 message notifs, let's also track unread call notifs")[^4].
@@ -72,20 +66,7 @@ number.  So if the client has been offline for a while and comes back, we have a
 up pushing the client, and potential notifs get dropped.  Perhaps we can detect when this happens (e.g. seqnums on push
 notifs?) and warn the user to launch the app to catch up on any notifs they may have missed?
 
-2. Rather than sending a null push to clients to get them to update their app badge counts, should we instead send the
-`cleared_notifs` read receipt details through - to tell them which room cleared its notifs, and at which event, rather
-than requiring them to /sync and guess?  This seems likelier to succeed within resource constraints, but exposes more
-metadata to the push provider on what events have been read by the user.  This in turn could be mitigated by
-[MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013).
-
-3. Just because one client thinks a room's notifs have been cleared doesn't mean a different client will agree, so if
-another client has more noisy per-device rules, it may end up with a stuck app badge count.  A workaround could be for
-e2ee_badge_aware clients to set `cleared_notifs: true` on every RR they send if they spot that the user has per-device
-rules.  Alternatively, they could set `cleared_notifs: true` whatever when the user reads the most recent message in
-the room as a guaranteed point where all clients will agree that there are no unread notifs.
-Given per-device rules aren't common currently in the wild, I suggest we punt this to a later MSC.
-
-4. Ideally we should also omit `unread_notifications` and `unread_thread_notifications` in /sync responses entirely for
+2. Ideally we should also omit `unread_notifications` and `unread_thread_notifications` in /sync responses entirely for
 E2EE rooms for that device, given they will be subtly wrong and encourage the client not to correctly calculate them
 themselves.  However, this is hygiene rather than functionality and can be a different MSC for an `e2ee_badge_aware`
 room_filter or similar.
@@ -99,25 +80,19 @@ Extension - instead the client sending the read receipts would do it for them.  
 work with per-device push rules.  And if the local client happens to be stale on spidering for old push events, the
 incorrect badge count would leak confusingly to the other clients which may be more accurate themselves.
 
-Alternatively, we could push all devices every time the user sends a read receipt anywhere, just in case they need to
-recalculate their app badge count.  This would have an avoidable and large impact on battery life.
-
-In terms of configuring pushers as e2ee_badge_aware: we could also do this via a per-device underride push rule with
-a custom `action` of `e2ee_badge_aware`.  However, this isn't really a push action: it shouldn't be changeable by other
+In terms of configuring pushers as `disable_badge_count`: we could also do this via a per-device underride push rule with
+a custom `action` of `disable_badge_count`.  However, this isn't really a push action: it shouldn't be changeable by other
 push rules, for instance.  Instead it's config data at the point the pusher is created, hence putting it there.
 
 ## Security considerations
 
-This assumes a user can trust their other apps to accurately say when they're sending a read receipt which will clear
-the badge count for a given room.  This doesn't seem unreasonable.
+None
 
 ## Unstable prefix
 
 Until this MSC is merged:
- * `e2ee_badge_aware` should be prefixed as `org.matrix.msc4076.e2ee_badge_aware` when setting pushers
- * `cleared_notifs` should be prefixed as `org.matrix.msc4076.cleared_notifs` when sending read receipts which clear
-   all the notifs in the room.
-
+ * `disable_badge_count` should be prefixed as `org.matrix.msc4076.disable_badge_count` when setting pushers
+ 
 ## Dependencies
 
 None.
