@@ -3,7 +3,7 @@
 ## Problem
 
 [MSC4076](https://github.com/matrix-org/matrix-spec-proposals/pull/4076) addresses the problem that E2EE means that
-only clients can calculate their app badges reliably, and gives clients a way of stopping the server from overriding
+only clients can calculate their app badges accurately, and gives clients a way of stopping the server from overriding
 their app badges.
 
 However, in order to actually get up-to-date app badge counts, you also need a way to nudge clients to recalculate their
