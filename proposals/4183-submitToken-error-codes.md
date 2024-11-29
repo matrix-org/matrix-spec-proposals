@@ -43,7 +43,7 @@ Additionally specify that the following common error codes can be returned:
 
 HTTP status code 400 should also be used for both of these errors.
 
-Also apply the same change to all the `submit_url` fields in the various response to the `POST requestToken` endpoints, ie:
+Also apply the same change to all the `submit_url` fields in the various response to the `POST requestToken` endpoints in the client-server API, i.e.:
 
  * [`POST /_matrix/client/v3/register/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3registeremailrequesttoken)
  * [`POST /_matrix/client/v3/register/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3registerrequesttoken)
