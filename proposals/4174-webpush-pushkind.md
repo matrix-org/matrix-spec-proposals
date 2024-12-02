@@ -66,7 +66,7 @@ It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint w
 }
 ```
 It is also useful to decide if the client should register a pusher using `http` kind and and old style
-Sygnal WebPush semantic, or preferably this proposal when available.
+Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too.
 
 ## Potential issues
 
@@ -92,7 +92,7 @@ Like any other federation request, there is a risk of SSRF. This risk is limited
 arbitrary (the content is encrypted), and a potential malicious actor don't have access to the response.
 Nevertheless, it is recommended to not post to private addresses, with the possibility with a setting to
 whitelist a private IP. (Synapse already have ip_range_whitelist [5])
-It is also recommended to not follow redirection, to avoid implementationissue where the destination is check
+It is also recommended to not follow redirection, to avoid implementation issue where the destination is check
 before sending the request but not for redirections.
 
 Like any other federation request, there is a risk of DOS amplification. One malicious actor register many users
