@@ -1,4 +1,4 @@
-# MSCXXXX: `server_name` query param for /hierarchy endpoint
+# MSC4235: `server_name` query param for /hierarchy endpoint
 
 To request the hierarchy of a space, clients need to call the
 [/hierarchy](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv1roomsroomidhierarchy) endpoint. This
