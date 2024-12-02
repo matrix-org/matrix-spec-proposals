@@ -66,7 +66,8 @@ It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint w
 }
 ```
 It is also useful to decide if the client should register a pusher using `http` kind and and old style
-Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too.
+Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too, and
+not register another `http` pusher to avoid duplicate pushes.
 
 ## Potential issues
 
