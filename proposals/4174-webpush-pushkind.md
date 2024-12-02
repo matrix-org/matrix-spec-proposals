@@ -56,6 +56,19 @@ If the `kind` is "email", this is the email address to send notifications to.
 If the `kind` is `webpush`, this is the user agent public key encoded in base64 url. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
+A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
+server.
+It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint with this format:
+```
+"m.webpush": {
+	"enabled": true,
+	"vapid": "BNbXV88MfMI0fSxB7cDngopoviZRTbxIS0qSS-O7BZCtG04khMOn-PP2ueb_X7Aeci42n02kJ0-JJJ0uQ4ELRTs"
+}
+```
+It is also useful to decide if the client should register a pusher using `http` kind and and old style
+Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too, and
+not register another `http` pusher to avoid duplicate pushes.
+
 ## Potential issues
 
 While implemnting, one have to be carreful with RFC8291: many libraries use the 4th draft of this spec. Checking the
@@ -67,6 +80,10 @@ the right specifications, else (`aesgcm`), then it uses the draft version.
 `pushkey` could be a random ID, and we can add `p256dh` in the `PusherData`. But it would require client to store it,
 while the public key already identify that pusher. And, client already use the PusherData that way.
 
+`vapid` parameter could be made optional considering it is officially not a requirement, however it seems
+existing big players push servers need it anyway to be able to subscribe, so it was decided to make it mandatory
+to avoid issues with those.
+
 ## Security considerations
 
 Security considerations are listed by RFC8030 [4], there are mainly resolved with RFC8291 (Encryption) and
@@ -76,7 +93,7 @@ Like any other federation request, there is a risk of SSRF. This risk is limited
 arbitrary (the content is encrypted), and a potential malicious actor don't have access to the response.
 Nevertheless, it is recommended to not post to private addresses, with the possibility with a setting to
 whitelist a private IP. (Synapse already have ip_range_whitelist [5])
-It is also recommended to not follow redirection, to avoid implementationissue where the destination is check
+It is also recommended to not follow redirection, to avoid implementation issue where the destination is check
 before sending the request but not for redirections.
 
 Like any other federation request, there is a risk of DOS amplification. One malicious actor register many users
@@ -90,7 +107,8 @@ code is not one intended.
 
 ## Unstable prefix
 
--
+- Until this proposal is considered stable, implementations must use
+`org.matrix.msc4174.webpush` instead of `m.webpush`.
 
 ## Dependencies
 
