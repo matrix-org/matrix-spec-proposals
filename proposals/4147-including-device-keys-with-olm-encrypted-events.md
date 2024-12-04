@@ -1,4 +1,4 @@
-# MSC4147: Including device keys with Olm-encrypted events
+# MSC4147: Including device keys with Olm-encrypted to-device messages
 
 Summary: a proposal to ensure that messages sent from a short-lived (but
 genuine) device can be securely distinguished from those sent from a spoofed
@@ -38,7 +38,7 @@ recipient does not have to try to query the sender's keys.
 
 ## Proposal
 
-The plaintext payload of `m.room.encrypted` events encrypted with the [`m.olm.v1.curve25519-aes-sha2` encryption
+The plaintext payload of to-device messages encrypted with the [`m.olm.v1.curve25519-aes-sha2` encryption
 algorithm](https://spec.matrix.org/v1.12/client-server-api/#molmv1curve25519-aes-sha2)
 is currently of the form:
 
@@ -102,8 +102,8 @@ of the Matrix specification.
 
 ## Potential issues
 
-Adding this property will increase the size of the event.  We found it
-increased the length of a typical `m.room_key` message from about 1400 to 2400
+Adding this property will increase the size of the to-device message.  We found it
+increased the length of a typical encrypted `m.room_key` message from about 1400 to 2400
 bytes (a 70% increase). This will require increased storage on the recipient
 homeserver, and increase bandwidth for both senders and recipients. See
 [Alternatives](#alternatives) for discussion of mitigation strategies.
