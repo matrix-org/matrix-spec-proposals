@@ -1,4 +1,4 @@
-# MSC4235: `server_name` query param for /hierarchy endpoint
+# MSC4235: `via` query param for /hierarchy endpoint
 
 To request the hierarchy of a space, clients need to call the
 [/hierarchy](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv1roomsroomidhierarchy) endpoint. This
@@ -13,8 +13,7 @@ endpoint does not provide client to express the server name's which server need 
 ## Proposal
 
 The [/hierarchy](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv1roomsroomidhierarchy) endpoint should
-include `server_name` as query parameter which server can use in case requested room in not locally available on the
-server.
+include `via` as query parameter which server can use in case requested room in not locally available on the server.
 
 Following change will allow clients to use this endpoint in more efficient manner, like: 
 1. Requesting the only part of sub-spaces hierarchy which is unknown the the client.
