@@ -1,14 +1,15 @@
 # MSC4235: `via` query param for /hierarchy endpoint
 
 To request the hierarchy of a space, clients need to call the
-[/hierarchy](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv1roomsroomidhierarchy) endpoint. This
-endpoint does not require user to join the room before responding with hierarchy details. It instead check whether the
-room is potentially joinable (per [MSC3173](https://github.com/matrix-org/matrix-spec-proposals/pull/3173)) before
-responding.
+[/hierarchy](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv1roomsroomidhierarchy) endpoint introduced
+in [MSC2946](https://github.com/matrix-org/matrix-spec-proposals/pull/2946). This endpoint does not require user to join
+the room before responding with hierarchy details. It instead check whether the room is potentially joinable (per
+[MSC3173](https://github.com/matrix-org/matrix-spec-proposals/pull/3173)) before responding.
 
-Because it doesn't not require space room to be joined before calling this endpoint, It is possible that the requested
-room is not locally available on the server and server need to request over federation to respond. In that case this
-endpoint does not provide client to express the server name's which server need to request over federation. 
+Because it does not require a space room to be joined before calling this endpoint, it's possible that the requested
+room may not be locally available on the server. The server might need to request information over federation to
+respond. In such a case, this endpoint doesn't provide a mechanism for the client to specify the server name from which
+the server should request information.
 
 ## Proposal
 
