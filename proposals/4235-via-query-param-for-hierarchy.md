@@ -16,7 +16,7 @@ the server should request information.
 The [/hierarchy](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv1roomsroomidhierarchy) endpoint should
 include `via` as query parameter which server can use in case requested room in not locally available on the server.
 
-Following change will stable the endpoint and allows clients to use this endpoint in more efficient manner, like: 
+Following change will stabilize the endpoint and allows clients to use this endpoint in more efficient manner, like: 
 1. Requesting the only part of sub-spaces hierarchy which is unknown the the client.
 2. Rendering the preview of space and it's children before joining the space.
 3. Since depth-first hierarchy responses can be costly, especially when reaching the end of the hierarchy, clients can
