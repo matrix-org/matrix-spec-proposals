@@ -31,7 +31,7 @@ Example:
       "h": 480,
       "mimetype": "image/gif",
       "size": 35295,
-      "is_animated": "true",
+      "is_animated": true,
     }
 ```
 
