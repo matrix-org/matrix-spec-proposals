@@ -75,6 +75,9 @@ The following metadata values are required to be present to use the OAuth 2.0 au
  - `redirect_uris`: Array of redirection URIs for use in redirect-based flows
  - `response_types`: Array of the OAuth 2.0 response types that the client may use
  - `grant_types`: Array of OAuth 2.0 grant types that the client may use
+ - `token_endpoint_auth_method`: String indicator of the requested authentication method for the token endpoint
+
+The homeserver must support the `none` value for the `token_endpoint_auth_method`, as most Matrix clients are client-side only, do not have a server component, and therefore are public clients.
 
 To use this grant, along with refresh tokens:
 
@@ -175,6 +178,7 @@ Server: auth.example.com
   "policy_uri": "https://example.com/policy.html",
   "policy_uri#fr": "https://example.com/fr/policy.html",
   "redirect_uris": ["https://app.example.com/callback"],
+  "token_endpoint_auth_method": "none",
   "response_types": ["code"],
   "grant_types": ["authorization_code", "refresh_token"],
   "application_type": "web"
