@@ -10,7 +10,7 @@ This MSC specifies how Matrix clients should leverage the OAuth 2.0 Dynamic Clie
 
 This proposal requires the client to know the following authorization server metadata about the homeserver:
 
- - `registration_endpoint`: the URL where the user is able to access the client registration endpoint.
+ - `registration_endpoint`: the URL where the client is able to register itself.
 
 The discovery of the above metadata is out of scope for this MSC and is currently covered by [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
 
