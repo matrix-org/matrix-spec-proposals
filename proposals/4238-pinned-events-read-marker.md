@@ -1,4 +1,4 @@
-# MSCXXXX: Pinned events read marker
+# MSC4238: Pinned events read marker
 
 Currently, messages are pinned using the `m.room.pinned_events` state event (see [specification](https://spec.matrix.org/v1.12/client-server-api/#mroompinned_events)). However, when new messages are pinned by the super user, other users can not detect newly pinned messages.
 
@@ -27,4 +27,4 @@ Unknown
 Unknown
 
 ## Unstable prefix
-`org.matrix.mscXXXX.read.pinned_events` for `m.read.pinned_events`
+`org.matrix.msc4238.read.pinned_events` for `m.read.pinned_events`
