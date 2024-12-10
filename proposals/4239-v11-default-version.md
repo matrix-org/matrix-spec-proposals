@@ -45,5 +45,5 @@ No outstanding blockers are listed.
 * https://github.com/matrix-org/matrix-spec-proposals/pull/2002 - Room version 4 to default (released ~r0.5.0, "Matrix 1.0", June 2019)
 * https://github.com/matrix-org/matrix-spec-proposals/pull/1943 - Room version 3 to default (closed in favour of version 4)
 
-Note: Room version 2, 3, 7, and 8 were never adopted as the default room version. Version 1 was the original room version,
+Note: Room versions 2, 3, 7, and 8 were never adopted as the default room version. Version 1 was the original room version,
 released formally in https://github.com/matrix-org/matrix-doc/pull/1773 (~r0.5.0, "Matrix 1.0", June 2019).
