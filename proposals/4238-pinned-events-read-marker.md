@@ -9,7 +9,7 @@ It primarily happen because `m.room.pinned_events` does not have any information
 Client should set read marker in user's room account data (see [specification](https://spec.matrix.org/v1.12/client-server-api/#put_matrixclientv3useruseridroomsroomidaccount_datatype)) after detecting that the user has read the pinned messages. The `type` of this account data is `m.read.pinned_events` and body content look like: 
 ```json
 {
-   event_id: "$xyz"
+   "event_id": "$xyz"
 }
 ```
 where `$xyz` is the `event_id` of `m.room.pinned_events` state event, signifying all pinned events as read.
