@@ -13,25 +13,26 @@ options.
 
 ## Proposal
 
-Drawing from extensible events as described in [MSC1767], `m.room.topic`
-is prohibited in room versions that support extensible events and replaced
-with a new `m.topic` event type. The latter contains a new content block
-`m.topic` which wraps an `m.text` content block that allows representing
-the room topic in different mime types.
+Drawing from extensible events as described in [MSC1767], a new content
+block `m.topic` is defined, which wraps an `m.text` content block that
+allows representing the room topic in different mime types. In current
+room versions, this content block is added to the content of [`m.room.topic`]
+events as shown below[^1].
 
-``` json5
+```json5
 {
-  "type": "m.topic",
+  "type": "m.room.topic",
   "state_key": "",
   "content": {
     "m.topic": {
       "m.text": [{
-          "body": "All about **pizza** | [Recipes](https://recipes.pizza.net)"
+        "body": "All about **pizza** | [Recipes](https://recipes.pizza.net)"
       }, {
-          "mimetype": "text/html",
-          "body": "All about <b>pizza</b> | <a href=\"https://recipes.pizza.net\">Recipes</a>"
+        "mimetype": "text/html",
+        "body": "All about <b>pizza</b> | <a href=\"https://recipes.pizza.net\">Recipes</a>"
       }]
-    }
+    },
+    "topic": "All about **pizza** | [Recipes](https://recipes.pizza.net)"
   },
   ...
 }
@@ -48,6 +49,12 @@ It is recommended that clients always include a plain text variant when
 sending `m.topic` events. This prevents bad UX in situations where a plain
 text topic is sufficient such as the public rooms directory.
 
+Additionally, clients should duplicate the plain text topic into the existing
+`topic` field for backwards compatibility with clients that don't support
+`m.topic` yet. This also helps prevent inconsistencies since such clients
+are likely to delete the `m.topic` content block when updating `m.room.topic`
+themselves.
+
 In order to prevent formatting abuse in room topics, clients are
 encouraged to limit the length of topics during both entry and display,
 for instance, by capping the number of displayed lines. Additionally,
@@ -56,14 +63,14 @@ as regular text). A future MSC may introduce a mechanism to capture extended
 multiline details that are not suitable for room topics in a separate field
 or event type.
 
-On the server side, any logic that currently operates on `m.room.topic` is
-updated to use `m.topic` instead.
+On the server side, any logic that currently operates on the `topic` field is
+updated to use the `m.topic` content block instead.
 
-In [`/_matrix/client/v3/createRoom`], the `topic` parameter causes `m.topic`
-to be written with a `text/plain` mimetype. If at the same time an `m.topic`
-event is supplied in `initial_state`, it is overwritten entirely. A future MSC
-may generalize the `topic` parameter to allow specifying other mime types
-without `initial_state`.
+In [`/_matrix/client/v3/createRoom`], the `topic` parameter causes `m.room.topic`
+to be written with a `text/plain` mimetype in `m.topic`. If at the same time an
+`m.room.topic` event is supplied in `initial_state`, it is overwritten entirely.
+A future MSC may generalize the `topic` parameter to allow specifying other mime
+types without `initial_state`.
 
 In [`GET /_matrix/client/v3/publicRooms`], [`GET /_matrix/federation/v1/publicRooms`]
 and their `POST` siblings, the `topic` response field is read from the
@@ -78,21 +85,7 @@ The same logic is applied to [`/_matrix/client/v1/rooms/{roomId}/hierarchy`]
 and [`/_matrix/federation/v1/hierarchy/{roomId}`].
 
 In [server side search], the `room_events` category is expanded to search
-over the `m.text` content block of `m.topic` events.
-
-Finally, `m.topic` is also added to the events that are recommended for
-inclusion in [stripped state].
-
-## Transition
-
-As this MSC replaces `m.room.topic` for an extensible alternative,
-clients and servers are expected to treat `m.room.topic` as invalid in
-extensible event-supporting room versions. Similarly, `m.topic` cannot
-be used in non-extensible-supporting room versions.
-
-It is recommended that servers replicate `m.room.topic` to `m.topic`
-with a plain text mimetype and vice versa when [upgrading] between room
-versions that do and don't support extensible events.
+over the `m.text` content block of `m.room.topic` events.
 
 ## Potential issues
 
@@ -102,7 +95,7 @@ None.
 
 The combination of `format` and `formatted_body` currently utilised to
 enable HTML in `m.room.message` events could be generalised to
-`m.topic` events. However, this would only allow for a single
+`m.room.topic` events. However, this would only allow for a single
 format in addition to plain text and is a weaker form of reuse than
 described in the introductory section of [MSC1767].
 
@@ -113,35 +106,21 @@ considerations that apply to HTML in room messages. In particular,
 topics are already included in the content that clients should [sanitise]
 for unsafe HTML.
 
-## Other notes
-
-Normally extensible events would only be permitted in a specific
-room version. However, to facilitate adoption, clients MAY include
-the `m.topic` content block in `m.room.topic` events in room
-versions that don't support extensible events. They must, however,
-take care to always duplicate the plain text mimetype into the
-normal `topic` field, too. This ensures compatibility for clients
-and servers that don't support this proposal. Since such clients
-are likely to delete the `m.topic` content block when updating
-`m.room.topic` themselves, it also helps prevent inconsistencies.
-
 ## Unstable prefix
 
 While this MSC is not considered stable, `m.topic` should be referred to
 as `org.matrix.msc3765.topic`. Note that extensible events and content
 blocks might have their own prefixing requirements.
 
-## Dependencies
-
-- [MSC1767]
+[^1]: A future MSC may discuss how to adopt the `m.topic` content block in
+      new room versions which support extensible events.
 
 [plain text]: https://spec.matrix.org/v1.12/client-server-api/#mroomtopic
 [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
 [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
 [sanitise]: https://spec.matrix.org/v1.12/client-server-api/#security-considerations
 [server side search]: https://spec.matrix.org/v1.12/client-server-api/#server-side-search
-[stripped state]: https://spec.matrix.org/v1.12/client-server-api/#stripped-state
-[upgrading]: https://spec.matrix.org/v1.12/client-server-api/#room-upgrades
+[`m.room.topic`]: https://spec.matrix.org/v1.12/client-server-api/#mroomtopic
 [`/_matrix/client/v1/rooms/{roomId}/hierarchy`]: https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv1roomsroomidhierarchy
 [`/_matrix/client/v3/createRoom`]: https://spec.matrix.org/v1.12/client-server-api/#post_matrixclientv3createroom
 [`/_matrix/federation/v1/hierarchy/{roomId}`]: https://spec.matrix.org/v1.12/server-server-api/#get_matrixfederationv1hierarchyroomid
