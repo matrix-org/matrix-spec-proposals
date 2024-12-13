@@ -57,7 +57,7 @@ capability of `com.example.event` and an event type of the same name).
 
 The new capabilities are:
 
-* `m.send.event:<event type>` (eg: `m.send.event:m.room.message`) - Used for sending room messages of
+* `m.send.event:<event type>` (eg: `m.send.event:m.room.message`) - Used for sending non-state events of
   a given type.
 * `m.send.state_event:<event type>` (eg: `m.send.state_event:m.room.topic`) - Used for sending state
   events of a given type.
@@ -180,12 +180,12 @@ on behalf of the widget.
 
 In addition to being able to send events into the room, some widgets have an interest in reacting
 to particular events that appear in the room. Using a similar approach to the sending of events,
-a new capability matching `m.receive.event:<event type>` and `m.receive.state_event:<event type>`
+new capabilities matching `m.receive.event:<event type>` and `m.receive.state_event:<event type>`
 are introduced, with the same formatting requirements as the `m.send.event` and `m.send.state_event`
 capabilities above (ie: `m.receive.event:m.room.message#m.text`).
 
-For each event type requested and approved, the client sends a `toWidget` request with action `event`
-is sent to the widget with the `data` being the event itself. For example:
+For each event type requested and approved, the client sends a `toWidget` request with action
+`send_event` to the widget, with the `data` being the event itself. For example:
 
 ```json
 {
@@ -220,6 +220,54 @@ unless they asked for it (and were approved), and they receive *decrypted* event
 Note that the client should also be sending the widget any events in rooms where the widget is permitted
 to receive events from. The exact details of these permissions are covered later in this document.
 
+## Proposal (receiving room state in a widget)
+
+When a widget is approved to receive some state events, the client begins syncing all room state
+entries matching the capabilities in rooms where the widget is permitted to receive events. It
+communicates the current state by sending a `toWidget` request with action `update_state`.
+
+```json
+{
+  "api": "toWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "update_state",
+  "data": {
+    "state": [
+      {
+        "type": "m.room.topic",
+        "sender": "@alice:example.org",
+        "event_id": "$example",
+        "room_id": "!room:example.org",
+        "state_key": "",
+        "origin_server_ts": 1574383781154,
+        "content": {
+          "topic": "Hello world!"
+        },
+        "unsigned": {
+          "age": 12345
+        }
+      }
+    ]
+  }
+}
+```
+
+`data.state` is an array of state events representing the current values of the room state for each
+(`room_id`, `type`, `state_key`) tuple. The widget acknowledges receipt of this request with an
+empty `response` object.
+
+Whenever a widget is granted the ability to receive some room state (through a capability
+negotiation or renegotiation), the widget may wait upon the next `update_state` action to know when
+the requested room state has finished loading. Therefore, if all new room state entries that the
+widget may receive are empty, the client must send an `update_state` action with an empty
+`data.state` array.
+
+The client continues sending `update_state` actions whenever it observes a change in the relevant
+room state. Each action only has to mention the events that changed.
+
+## Proposal (reading events in a widget)
+
 Widgets can also read the events they were approved to receive on demand with the following `fromWidget`
 API action:
 
@@ -239,9 +287,12 @@ API action:
 
 When a `state_key` is present, the client will respond with state events matching that state key. If
 `state_key` is instead a boolean `true`, the client will respond with state events of the given type
-with any state key. For clarity, `"state_key": "@alice:example.org"` would return the state event with
-the specified state key (there can only be one or zero), while `"state_key": true` would return any
-state events of the type, regardless of state key.
+with any state key.
+
+For clarity, the state events returned should *not* be understood to represent the current state of
+the room. Rather, they are simply events from the room's timeline that match the requested filter,
+and may or may not belong to the resolved room state. Multiple events may be returned, even when
+requesting a specific state key.
 
 To support the ability to read particular msgtypes, the widget can specify a `msgtype` in place of the
 `state_key` for `m.room.message` requests.
@@ -260,10 +311,7 @@ being able to send events. Web clients, for example, may be more able to send *e
 about. The default assumption is that the client will send over as much as possible as an upper limit.
 
 The client is not required to backfill (use the `/messages` endpoint) to get more events for the
-widget, and is able to return less than the requested amount of events. When returning state events,
-the client should always return the current state event (in the client's view) rather than the history
-of an event. For example, `{"type":"m.room.topic", "state_key": "", "limit": 5}` should return zero
-or one topic events, not 5, even if the topic has changed more than once.
+widget, and is able to return less than the requested amount of events.
 
 An optional `room_ids` property may also be added to the `data` object by the widget, indicating which
 room(s) to listen for events in. This is either an array of room IDs, undefined, or the special string
@@ -327,8 +375,8 @@ because they'll always send events to the user's currently viewed room, and the 
 without special room timeline permissions.
 
 There is no Widget API action exposed for listing the user's invited/joined rooms: the widget can request
-permission to read/receive the `m.room.create` state event of rooms and query that way. Clients should be
-aware of this trick and describe the situation appropriately to users.
+permission to receive the `m.room.create` state entries of rooms and learn about them that way. Clients
+should be aware of this trick and describe the situation appropriately to users.
 
 ## Alternatives
 
