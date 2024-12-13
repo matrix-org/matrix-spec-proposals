@@ -224,7 +224,7 @@ to receive events from. The exact details of these permissions are covered later
 
 When a widget is approved to receive some state events, the client begins syncing all room state
 entries matching the capabilities in rooms where the widget is permitted to receive events. It
-communicates each room state entry by sending a `toWidget` request with action `update_state`.
+communicates the current state by sending a `toWidget` request with action `update_state`.
 
 ```json
 {
@@ -233,36 +233,38 @@ communicates each room state entry by sending a `toWidget` request with action `
   "requestid": "generated-id-1234",
   "action": "update_state",
   "data": {
-    "type": "m.room.topic",
-    "sender": "@alice:example.org",
-    "event_id": "$example",
-    "room_id": "!room:example.org",
-    "state_key": "",
-    "origin_server_ts": 1574383781154,
-    "content": {
-      "topic": "Hello world!"
-    },
-    "unsigned": {
-      "age": 12345
-    }
+    "state": [
+      {
+        "type": "m.room.topic",
+        "sender": "@alice:example.org",
+        "event_id": "$example",
+        "room_id": "!room:example.org",
+        "state_key": "",
+        "origin_server_ts": 1574383781154,
+        "content": {
+          "topic": "Hello world!"
+        },
+        "unsigned": {
+          "age": 12345
+        }
+      }
+    ]
   }
 }
 ```
 
-The `data` is the state event representing the current value of the room state entry for
-(`room_id`, `type`, `state_key`). The widget acknowledges receipt of this request with an empty
-`response` object.
+`data.state` is an array of state events representing the current values of the room state for each
+(`room_id`, `type`, `state_key`) tuple. The widget acknowledges receipt of this request with an
+empty `response` object.
 
-Once the client has finished sending `update_state` actions for all currently approved room state
-entries, it sends a `toWidget` request with action `room_state_synced` and an empty `data` object.
-This informs the widget that any room state entries for which no `update_state` action was sent *do
-not exist*, and the widget acknowledges the request with an empty `response` object. The client
-continues sending `update_state` actions whenever it observes a change in the relevant room state.
+Whenever a widget is granted the ability to receive some room state (through a capability
+negotiation or renegotiation), the widget may wait upon the next `update_state` action to know when
+the requested room state has finished loading. Therefore, if all new room state entries that the
+widget may receive are empty, the client must send an `update_state` action with an empty
+`data.state` array.
 
-Clients should take care to only send a singular `room_state_synced` action in cases where a
-capability renegotiation overlaps with previous capability (re)negotiations that have yet to
-complete. A `room_state_synced` action means that no initial `update_state` sync is pending for any
-approved `m.receive.state_event` capabilities.
+The client continues sending `update_state` actions whenever it observes a change in the relevant
+room state. Each action only has to mention the events that changed.
 
 ## Proposal (reading events in a widget)
 
