@@ -358,6 +358,11 @@ As mentioned above,
 the same problem in a similar manner, but has several disadvantages that are
 fixed in this proposal.
 
+Since the device ID is used in URL path parameters, we could use URL-safe base64
+to derive the device ID.  However, this would result in the identity key being
+represented in two similar-but-different ways (URL-safe base64 in the device ID,
+and regular base64 in the device keys structure), which could lead to confusion.
+
 Rather than keep the name "dehydrated device", we could change the name to
 something like "shrivelled sessions", so that the full expansion of this MSC
 title would be "Shrivelled Sessions with Secure Secret Storage and Sharing", or
