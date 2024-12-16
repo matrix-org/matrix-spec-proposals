@@ -230,6 +230,7 @@ which was used in a previous version of this MSC.)
    ├────────────────────────┼───────────────┼──────────────────┤
    │Version                 │ u32           │ 4                │
    │Curve25519 private key  │ [u8; 32]      │ 32               │
+   │Ed25519 private key     │ [u8; 64]      │ 64               │
    │Number of one-time keys │ u32           │ 4                │
    │One-time keys           │ [OneTimeKey]  │ N * 32           │
    │Fallback key            │ OptFallback   │ 1 or 33          │
@@ -252,9 +253,6 @@ which was used in a previous version of this MSC.)
    │Fallback private key    │ [u8; 32]      │ 0 or 32          │
    └────────────────────────┴───────────────┴──────────────────┘
 ```
-
-Note that we do not store the Ed25519 key, since the dehydrated device does not
-do any signing.
 
 The data is then encrypted and encoded as follows.
 
