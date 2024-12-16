@@ -293,8 +293,9 @@ using the key $`\text{AES\_KEY}`$ and the IV $`\text{AES\_IV}`$ to give the ciph
 Then the cipher-text are passed through [HMAC-SHA-256]. The first 8 bytes of the
 MAC are appended to the cipher-text.
 
-The cipher-text, including the appended MAC tag, are encoded using unpadded
-Base64 to give the device pickle.
+The cipher-text, including the appended MAC tag, are encoded using [unpadded
+Base64](https://spec.matrix.org/v1.12/appendices/#unpadded-base64) to give the
+device pickle.
 
 The device pickle is then inserted into the `device_pickle` field of the
 `device_data` JSON message.
