@@ -169,14 +169,19 @@ fact we confirm identity cryptographically is usually irrelevant to the user.
 
 ### Identity
 
-A user's **identity** is proof of who they are, and, if they are verified,
+A user's **identity** is proof of who they are, and, if you have verified them,
 proof that you have a secure communication channel with them.
 
-> "Warning: Alice's identity appears to have changed" (when a non-verified
-> user resets their recovery key)
+> When a non-verified user resets their identity:
+> "Warning: Alice's identity has changed."
+>
+> Longer explanation:
+> This can happen if the user lost all their devices and the recovery key, but
+> it can also be a sign of someone taking over the account. To be sure, please
+> verify their identity by going to their profile.
 
-> "WARNING: Bob's verified identity has changed!" (when a verified user resets
-> their recovery key)
+> When a verified user resets their identity:
+> "WARNING: Bob's verified identity has changed!"
 
 (During login, at the "Confirm it's you" stage):
 
@@ -186,7 +191,7 @@ proof that you have a secure communication channel with them.
 
 ⚠️ Avoid saying "master key" - this is an implementation detail.
 
-⚠️ Avoid saying "reset their encryption" - the reason that Alice's identity
+⚠️ Avoid saying "Alice reset their encryption" - the reason that Alice's identity
 changed could be due to attack rather than because they reset their encryption
 (plus "encryption" is jargony).
 
@@ -266,7 +271,7 @@ easily confused with exporting keys or messages to an external system.
 
 A **recovery key** is a way of regaining access to key storage if the user loses
 all their devices. Using key storage, they can preserve their cryptographic
-identity (meaning other users don't see "Alice's identity appears to have
+identity (meaning other users don't see "Alice's identity has
 changed" messages), and also read old messages using the stored message keys.
 
 A **recovery passphrase** is an easier-to-remember way of accessing the recovery
