@@ -21,7 +21,30 @@ initiative is referred to as "Invisible Cryptography" and is tracked as:
   Including device keys with Olm-encrypted events, and
 * MSC4161 - this document
 
-## Goals
+## Why is this important?
+
+Use of common terminology should help further these goals:
+
+* **to reduce confusion**: many members of the community are confused by the
+  crypto features in Matrix clients, and the profusion of different words for
+  the same thing makes it much worse. By reducing the *number* of words, and
+  carefully choosing *good* words, we hope to develop a common language which
+  makes Matrix easier to understand, and easier to explain.
+
+* **to ease migration**: one of the key features of Matrix for end-users is the
+  choice of clients, meaning no-one is locked in to a particular piece of
+  software. If each client uses conflicting terminology, it becomes much more
+  difficult to move to a different client, which works against the user's
+  ability to migrate.
+
+This proposal uses "SHOULD" language rather than "MUST", because there are many
+good reasons why a particular client might choose different wording. In
+particular, different clients may have very different audiences who communicate
+in different ways and understand different metaphors. This proposal hopes to
+nudge client developers towards consistency, but never at the cost of their
+unique relationship with their users.
+
+## Outcomes
 
 We hope that Matrix client developers will like the terms and wording we
 provide, and adapt their user interfaces and documentation to use them. (If this
