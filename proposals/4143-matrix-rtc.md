@@ -82,7 +82,7 @@ Additional fields may be added depending on the application type.
 
 A full `m.rtc.member` state event for a joined member looks like this:
 
-```json
+```json5
 // event type: "m.rtc.member"
 // state key: see next section for definition
 {
@@ -162,7 +162,7 @@ There is an optional `leave_reason` field that can be used to provide a reason f
 
 An example of leaving a session where the user explicitly disconnects:
 
-```json
+```json5
 // event type: "m.rtc.member"
 // state key: "@user:matrix.domain_xyzABCDEF10123"
 {
@@ -174,7 +174,7 @@ to determine the details of the leave event.
 
 For example:
 
-```json
+```json5
 // event type: "m.rtc.member"
 // state key: "@user:matrix.domain_xyzABCDEF10123"
 {
@@ -235,7 +235,7 @@ and fulfil all of the these requirements.
 
 A MatrixRTC client has to first send/schedule the following delayed leave event:
 
-```json
+```json5
 // event type: "m.rtc.member"
 // state key: "@user:matrix.domain_xyzABCDEF10123"
 {
@@ -366,7 +366,7 @@ a sorted (by priority) list of Focus description objects.
 
 For example in generic form:
 
-```json
+```json5
 {
   "m.rtc_foci": [
     {
@@ -380,7 +380,7 @@ For example in generic form:
 
 Or a concrete example for a `livekit` Focus:
 
-```json
+```json5
 {
   "m.rtc_foci": [
     {
@@ -554,7 +554,7 @@ as the keys are stored in the room history.
 
 The encrypted content of the `m.rtc.encryption_keys` event was as follows:
 
-```json
+```json5
 {
     "session": {
       "application": "m.call",
