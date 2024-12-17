@@ -272,6 +272,15 @@ changed" messages), and also read old messages using the stored message keys.
 A **recovery passphrase** is an easier-to-remember way of accessing the recovery
 key and has the same purpose as the recovery key.
 
+**Losing the recovery key**: if the user loses their recovery key, they can
+"reset" it, which means re-storing the identity information in the server,
+encrypted with a new recovery key. If the user has a verified client, then that
+is holding the identity information locally, so they can reset their recovery
+key without losing access to key storage. If they don't have a verified client
+and they lose their recovery key, then they need to reset key storage as well as
+recovery key (since the identity information is needed to read from key
+storage), meaning they lose access to old messages.
+
 > "Write down your recovery key in a safe place"
 
 > "If you lose access to your devices and your recovery key, you will need to
