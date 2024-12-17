@@ -102,8 +102,8 @@ cryptographic proof that no-one is listening in on your conversations. (You need
 this if you suspect someone in a room may be using a malicious homeserver.)
 
 In many contexts, most users are **not verified**: verification is a manual
-step (scanning a QR code or comparing emojis). (In future, verification will
-probably become more common thanks to "transitive trust" or "key transparency").
+step ([scanning a QR code](https://spec.matrix.org/v1.12/client-server-api/#qr-codes) or [comparing emojis](https://spec.matrix.org/v1.12/client-server-api/#sas-method-emoji)). (In future, verification will
+probably become more common thanks to [MSC2882 Transitive Trust](https://github.com/matrix-org/matrix-spec-proposals/pull/2882) or something similar).
 When an unverified user resets their identity, we should warn
 the user, so they are aware of the change.
 
