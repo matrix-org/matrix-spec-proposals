@@ -104,10 +104,10 @@ this if you suspect someone in a room may be using a malicious homeserver.)
 In many contexts, most users are **not verified**: verification is a manual
 step (scanning a QR code or comparing emojis). (In future, verification will
 probably become more common thanks to "transitive trust" or "key transparency").
-When an unverified user resets their cryptographic identity, we should warn
+When an unverified user resets their identity, we should warn
 the user, so they are aware of the change.
 
-If Alice is verified with Bob, and then Alice's cryptographic identity changes
+If Alice is verified with Bob, and then Alice's identity changes
 (i.e. Alice resets their master cross-signing key) then this is very important to
 Bob: Bob verified Alice because they care about proof that no-one is listening,
 and now someone could be. Bob can choose to **withdraw verification** (i.e.
@@ -139,11 +139,10 @@ listening in or tampering with communications.
 jargony - it is the identity which is mismatched, not the verification process.
 Just say "Bob's verified identity has changed".
 
-⚠️ Avoid talking about "cryptographic identity" which is very jargony. Just call
-it "identity" where possible - i.e. the non-technical dictionary definition of
-identity such that someone is who they claim they are, not someone else. The
-fact we confirm identity cryptographically is irrelevant to the user;
-cryptography should be invisible.
+⚠️ Where possible, avoid talking about "cryptographic identity" which is very jargony.
+In many contexts, just the word "identity" is sufficient: the dictionary definition of
+identity meaning that someone is who they claim they are, not someone else. The
+fact we confirm identity cryptographically is usually irrelevant to the user.
 
 ### Identity
 
@@ -212,7 +211,7 @@ rather than your device(s)
 ### Key storage
 
 **Key storage** means keeping cryptographic information on the server. This
-includes the user's cryptographic identity, and/or the message keys needed to
+includes the user's identity, and/or the message keys needed to
 decrypt messages.
 
 If a user loses their recovery key, they may **reset** their key storage. Unless
@@ -222,7 +221,7 @@ identity will change, because it too is stored in key storage.
 
 > "Allow key storage"
 
-> "Key storage holds your cryptographic identity on the server along with the
+> "Key storage holds your identity on the server along with the
 > keys that allow you to read your message history."
 
 > "Message history is unavailable because key storage is disabled."
@@ -232,7 +231,7 @@ both part of key storage.
 
 ⚠️ Avoid talking about more keys: "the backup key is stored in the secret
 storage, and this allows us to decrypt the messages keys from key backup".
-Instead, we simply say that both cryptographic identity and message keys are
+Instead, we simply say that both identity and message keys are
 stored in key storage.
 
 ⚠️ Avoid using "key backup" to talk about storing message keys: this is too
@@ -260,7 +259,7 @@ key and has the same purpose as the recovery key.
 
 ⚠️ Avoid using "security key", "security code", "recovery code", "master key". A
 recovery key allows "unlocking" the key storage, which is a "box" that is on the
-server, containing your cryptographic identity and message keys. It is used to
+server, containing your identity and message keys. It is used to
 recover the situation if you lose access to your devices. None of these other
 terms express this concept so clearly.
 
