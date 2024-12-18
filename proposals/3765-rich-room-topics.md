@@ -45,8 +45,8 @@ The wrapping `m.topic` content block is similar to `m.caption` for file
 uploads as defined in [MSC3551]. It avoids clients accidentally rendering
 the topic state event as a room message.
 
-It is recommended that clients always include a plain text variant when
-sending `m.topic` events. This prevents bad UX in situations where a plain
+It is recommended that clients always include a plain text variant within `m.text` when
+sending `m.room.topic` events. This prevents bad UX in situations where a plain
 text topic is sufficient such as the public rooms directory.
 
 Additionally, clients should duplicate the plain text topic into the existing
@@ -66,14 +66,14 @@ or event type.
 On the server side, any logic that currently operates on the `topic` field is
 updated to use the `m.topic` content block instead.
 
-In [`/_matrix/client/v3/createRoom`], the `topic` parameter causes `m.room.topic`
+In [`/_matrix/client/v3/createRoom`], the `topic` parameter should cause `m.room.topic`
 to be written with a `text/plain` mimetype in `m.topic`. If at the same time an
 `m.room.topic` event is supplied in `initial_state`, it is overwritten entirely.
 A future MSC may generalize the `topic` parameter to allow specifying other mime
 types without `initial_state`.
 
 In [`GET /_matrix/client/v3/publicRooms`], [`GET /_matrix/federation/v1/publicRooms`]
-and their `POST` siblings, the `topic` response field is read from the
+and their `POST` siblings, the `topic` response field should be read from the
 `text/plain` mimetype of `m.topic` if it exists or omitted otherwise.
 A plain text topic is sufficient here because this data is commonly
 only displayed to users that are *not* a member of the room yet. These
