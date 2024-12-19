@@ -17,11 +17,10 @@ who has write access to it).
 This is problematic if a user needs to publish multiple state
 events of the same type in a room, but would like to set access control so
 that only they can subsequently update the event. An example of this is if a
-user wishes to publish multiple live location share beacons as per
-[MSC3489](https://github.com/matrix-org/matrix-spec-proposals/pull/3489) and
-[MSC3672](https://github.com/matrix-org/matrix-spec-proposals/pull/3672),
-for instance one per device.
-They will typically not want other users in the room to be able to overwrite the state event,
+user wishes to participate in VoIP call as per [MatrixRTC (MSC4143)](
+https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#the-matrixrtc-room-state),
+by sending a state event for each of their devices that is to participate in the call.
+They will typically not want other users in the room to be able to overwrite those state events,
 so there ought to be a mechanism to prevent other users from doing so.
 
 ## Proposal
