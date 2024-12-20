@@ -87,39 +87,6 @@ method SHOULD NOT delete the key but rather retain it with a `null` value. Serve
 }
 ```
 
-### Partially Update Profile Fields
-
-- **Endpoint**: `PATCH /_matrix/client/v3/profile/{userId}`
-- **Description**: Merge the provided JSON object into the user's profile, updating any
-  specified keys without altering others, if permitted by the homeserver.
-- **Request Body**:
-
-```json
-{
-  "avatar_url": "mxc://matrix.org/MyNewAvatar",
-  "displayname": "John Doe",
-  "m.example_field": "new_value1"
-}
-```
-
-### Replace Profile Fields
-
-- **Endpoint**: `PUT /_matrix/client/v3/profile/{userId}`
-- **Description**: Replace the entire user's profile with the provided JSON object,
-  adding or updating keys and removing any absent ones, if permitted by the homeserver.
-- **Request Body**:
-
-```json
-{
-  "avatar_url": "mxc://matrix.org/MyNewAvatar",
-  "displayname": "John Doe",
-  "m.example_field": "new_value1"
-}
-```
-
-**Note**: Clients are encouraged to manipulate fields individually to avoid race conditions.
-However, this method allows for bulk updates when needed (e.g. bots managing multiple accounts).
-
 ## Server-Server API Changes
 
 The federation endpoint `GET /_matrix/federation/v1/query/profile` will mirror the client-server
@@ -239,12 +206,12 @@ demonstrates the process of defining new fields in the `m.*` namespace.
 
 ### 403 Forbidden: User Lacks Permission
 
-**Note**: See [MSC4170](https://github.com/matrix-org/matrix-spec-proposals/pull/4170) for more
-discussion on how server policy may result in 403 errors for profile requests.
+Unchanged from the [current spec](https://spec.matrix.org/v1.13/client-server-api/#server-behaviour).
 
 ### 404 Not Found: Target Cannot Be Found
 
-- **`M_NOT_FOUND`**: Profile key does not exist.
+- **`M_NOT_FOUND`**: Profile key does not exist (this is unchanged, just expanded to
+  apply to arbitrary keys).
 
 ```json
 {
@@ -377,9 +344,6 @@ Use unstable endpoints when the capability is not yet stable:
 
 - **Get/Set/Delete Profile Fields**:
   - `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}`
-
-- **Patch/Put Profile**:
-  - `/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}`
 
 ### Unstable Capability
 
