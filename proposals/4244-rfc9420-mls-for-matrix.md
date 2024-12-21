@@ -72,12 +72,12 @@ DS has configurable visibility on the group state, up to and including zero visi
 
 MLS can be enabled in a room only at creation time due to the room's underlying algorithms, like the
 authorization rules, changing behaviour depending on whether MLS is enabled. This is achieved using
-[MSC0002](https://github.com/matrix-org/matrix-spec-proposals/pull/0002)'s `encryption_algorithm` in
+[MSC4245](https://github.com/matrix-org/matrix-spec-proposals/pull/4245)'s `encryption_algorithm` in
 the create event for the room. The initial Matrix-namespaced MLS encryption algorithm is `m.mls.10`
 to mirror the `mls10` `ProtocolVersion` defined by RFC 9420. `m.mls.*` encryption algorithms are
 *illegal* in `m.room.encryption` events, and clients MUST treat such configurations as though the
 room has an unknown encryption algorithm (unless of course `encryption_algorithm` is set, in which
-case `m.room.encryption`'s `algorithm` is meaningless under MSC0002).
+case `m.room.encryption`'s `algorithm` is meaningless under MSC4245).
 
 **Note:** The `m.mls.10` algorithm does not define primitives, against the specification's
 [request](https://spec.matrix.org/v1.13/client-server-api/#messaging-algorithm-names). This is because
@@ -93,7 +93,7 @@ etc, transit the normal full mesh of Matrix. Transferring this role to another s
 problem in this version of the MSC (**TODO:** solve this).
 
 When a client wishes to Commit, Proposal, or other update to the MLS group state, it uses the
-to-device semantics defined by [MSC0001](https://github.com/matrix-org/matrix-spec-proposals/pull/0001),
+to-device semantics defined by [MSC4246](https://github.com/matrix-org/matrix-spec-proposals/pull/4246),
 sending an `m.mls.message` event with the following respective contents:
 
 ```jsonc
@@ -287,7 +287,7 @@ Keeping centralization to the absolute bare essentials is a strong consideration
 
 ## Dependencies
 
-This proposal is dependent [MSC0001]() on [MSC0002]() and .
+This proposal is dependent [MSC4246]() on [MSC4245]() and .
 
 
 ## Future considerations
