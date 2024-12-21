@@ -1,4 +1,4 @@
-# MSC0000: RFC 9420 MLS for Matrix
+# MSC4244: RFC 9420 MLS for Matrix
 
 [RFC 9420](https://datatracker.ietf.org/doc/rfc9420/) defines the Messaging Layer Security (MLS)
 protocol for secure, end-to-end encrypted, group conversations. Matrix in its current design is capable
