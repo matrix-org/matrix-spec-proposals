@@ -287,7 +287,8 @@ Keeping centralization to the absolute bare essentials is a strong consideration
 
 ## Dependencies
 
-This proposal is dependent [MSC4246]() on [MSC4245]() and .
+This proposal is dependent on [MSC4245](https://github.com/matrix-org/matrix-spec-proposals/pull/4245)
+and [MSC4246](https://github.com/matrix-org/matrix-spec-proposals/pull/4246).
 
 
 ## Future considerations
