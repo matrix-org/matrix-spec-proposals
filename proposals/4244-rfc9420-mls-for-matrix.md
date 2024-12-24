@@ -345,6 +345,7 @@ Unresolved:
 * How to actually specify ciphersuite and etc in the room? (probably just copy LM)
 * How to determine if your local server can behave as a DS? (try to create room with encryption_algorithm?)
 * Credentials (what makes a "device" a device, what makes a "user" the owner of that device)
+* How does the DS find out what the MLS Group even is? (we may need to add it to `/createRoom`)
 
 This proposal centralizes room membership operations onto a single server within the room (not across
 the federation), which may be undesirable to room operators. Rooms which want to retain full
