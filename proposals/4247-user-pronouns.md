@@ -48,4 +48,4 @@ None.
 ## Unstable prefix
 
 Clients and servers wishing to implement this early may use
-`io.fsky.nyx.pronouns` and `io.fsky.nyx.pronouns.secondary`.
+`io.fsky.nyx.pronouns`.
