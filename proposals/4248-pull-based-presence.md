@@ -1,7 +1,5 @@
 # MSC4248: Pull-based presence
 
-_TODO: MSC number may change_
-
 Currently, presence in Matrix imposes a considerable burden on all participating servers.
 Matrix presence works by having the client notify its homeserver when a user changes their
 presence (online, unavailable, or offline). The homeserver then delivers this information
