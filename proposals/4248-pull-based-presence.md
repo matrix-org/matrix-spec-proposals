@@ -174,6 +174,8 @@ If this proposal is adopted prior to finalisation, implementers must ensure they
 to the final version. This typically involves using `/unstable` endpoints and vendor prefixes,  
 as per [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324).
 
+The vendor prefix for this MSC should be `uk.co.nexy7574.pull_based_presence`.
+
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy, and MSCzzzz (none are accepted at the time of writing).
+This MSC does not depend on any other MSCs.
