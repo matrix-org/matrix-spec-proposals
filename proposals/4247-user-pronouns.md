@@ -36,7 +36,10 @@ Clients should parse this and use these instead of they/them where possible.
     ]
 }
 ```
+The example uses it/its pronouns followed by she/her pronouns, both in English.
 The array is ordered by preference, and `language` should be a language code.
+Clients should parse the pronouns and return them to users in the format
+"`subject`/`possessive_determiner`".
 
 ## Potential issues
 
