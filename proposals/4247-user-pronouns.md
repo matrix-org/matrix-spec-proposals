@@ -1,4 +1,4 @@
-# MSCXXXX: User Pronouns
+# MSC4247: User Pronouns
 
 Many users of Matrix put pronouns in display names. However, that causes screen clutter. This proposal defines a standardized pronouns field on top of MSC4133.
 
@@ -28,3 +28,7 @@ None.
 ## Unstable prefix
 
 Clients and servers wishing to implement this early may use `io.fsky.nyx.pronouns` and `io.fsky.nyx.pronouns.secondary`.
+
+## Dependencies
+
+This depends on MSC4133.
