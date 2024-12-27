@@ -6,8 +6,8 @@ clutter. This proposal defines a standardized pronouns field on top of
 
 ## Proposal
 
-Profiles may have optional `m.pronouns` and `m.pronouns.secondary` fields as a
-dictionary. These fields can be fetched through the
+Profiles may have an optional `m.pronouns` field as an
+array. These fields can be fetched through the
 [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
 Clients should parse this and use these instead of they/them where possible.
 
@@ -16,20 +16,22 @@ Clients should parse this and use these instead of they/them where possible.
 ```json
 { 
     "avatar_url": "…", "displayname": "…",
-    "m.pronouns": {
-        "subject": "it",
-        "object": "it", 
-        "possessive_determiner": "its", 
-        "possessive_pronoun": "its", 
-        "reflexive": "itself"
-    }, 
-    "m.pronouns.secondary": { 
-        "subject": "she",
-        "object": "her",
-        "possessive_determiner": "her",
-        "possessive_pronoun": "hers",
-        "reflexive": "herself"
-    }
+    "m.pronouns": [
+        {
+            "subject": "it",
+            "object": "it", 
+            "possessive_determiner": "its", 
+            "possessive_pronoun": "its", 
+            "reflexive": "itself"
+        },
+        {
+            "subject": "she",
+            "object": "her",
+            "possessive_determiner": "her",
+            "possessive_pronoun": "hers",
+            "reflexive": "herself"
+        }
+    ]
 }
 ```
 
