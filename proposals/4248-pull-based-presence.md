@@ -3,55 +3,55 @@
 _TODO: MSC number may change_
 
 Currently, presence in Matrix imposes a considerable burden on all participating servers.  
-Matrix presence works by having the client notify its homeserver when a user changes their presence  
-(online, unavailable, or offline). The homeserver then delivers this information to every server that  
-might be interested, as described in the [specification’s presence section](https://spec.matrix.org/v1.13/server-server-api/#presence).
+Matrix presence works by having the client notify its homeserver when a user changes their  
+presence (online, unavailable, or offline). The homeserver then delivers this information  
+to every server that might be interested, as described in the  
+[specification’s presence section](https://spec.matrix.org/v1.13/server-server-api/#presence).
 
-However, this approach is highly inefficient and wasteful, requiring significant resources for all  
-involved parties. Many servers have therefore disabled federated presence, and many clients have  
-consequently chosen not to implement presence at all.
+However, this approach is highly inefficient and wasteful, requiring significant resources  
+for all involved parties. Many servers have therefore disabled federated presence, and many  
+clients have consequently chosen not to implement presence at all.
 
-This MSC proposes a new pull-based model for presence that replaces the current “push-based” EDU  
-presence mechanism. The aim is to save bandwidth and CPU usage for all servers, and to reduce the  
-amount of superfluous data exchanged between uninterested servers and clients.
+This MSC proposes a new pull-based model for presence that replaces the current “push-based”  
+EDU presence mechanism. The aim is to save bandwidth and CPU usage for all servers, and to  
+reduce superfluous data exchanged between uninterested servers and clients.
 
 ## Proposal
 
-Today, when a user’s presence is updated, their homeserver receives the update and determines  
-which remote servers may need this information. It then sends an EDU to those servers with the user’s  
-updated presence. Each remote server processes the data and relays it to its interested clients,  
-which may then display the new presence status.
+Today, when a user’s presence is updated, their homeserver receives the update and decides  
+which remote servers might need it. It then sends an EDU to those servers. Each remote  
+server processes and relays the data to its interested clients. This creates substantial  
+bandwidth usage and duplication of effort.
 
-This MSC suggests a different approach:
+In contrast, this MSC suggests a pull-based approach:
 
-1. When the user updates their presence, their homeserver stores the new status but does  
-   not send it to other servers immediately.  
-2. Other servers periodically query this homeserver for presence updates, in bulk, for the  
-   users they care about.  
-3. The homeserver returns only new or changed presence information since the last query.  
+1. When the user updates their presence, their homeserver stores the new status without  
+   pushing it to other servers.
+2. Other servers periodically query that homeserver for presence updates, in bulk, for the  
+   users they track.
+3. The homeserver returns only presence information that has changed since the last query.
 
-Clients would continue to request presence in the usual manner (for instance, through `/sync`  
-and the `/presence/{userId}/status` endpoint), meaning no client-side change is strictly necessary.
+Clients continue to request presence as before (e.g. `/sync` and  
+`/presence/{userId}/status`). No client-side changes are strictly required.
 
-Servers would calculate which users they are interested in and query presence data on a  
-timed interval from the relevant homeservers. The new proposed federation endpoint is:  
-`/federation/v1/query/presence`. Through this endpoint, servers can request presence  
-information for specific users on that homeserver, in a bulk query.
+Servers instead calculate which users they are interested in and query the homeservers of  
+those users at intervals. The new proposed federation endpoint is  
+`/federation/v1/query/presence`. This allows servers to request presence data in bulk for  
+the relevant users on that homeserver.
 
 ### New flow
 
 1. User 1 updates their presence on server A.  
-2. Server A stores the new presence and timestamps it.  
-3. Server B queries server A for the presence of users 1, 2, and 3, along with the time  
-   it last observed their presence updates.  
-4. Server A checks its local presence records and replies with the updated presence  
-   statuses for those users (only if there have been changes).  
-5. Server B updates its local presence records and relays the information to any  
-   interested clients.  
-6. Server B repeats the query at the next scheduled interval.  
+2. Server A stores the new presence and timestamp.  
+3. Server B queries server A about users 1, 2, and 3, including the time it last observed  
+   their presence changes.  
+4. Server A checks its data for these users and responds only with updated presence info.  
+5. Server B updates its local records and informs any interested clients.  
+6. Server B repeats the query at the next interval.
 
-By only requesting fresh data when needed, each server can independently maintain presence  
-information without excessive data broadcast. This cuts down on network usage and CPU load.
+By pulling presence only when needed, each server can maintain accurate user status without  
+excessive data broadcasts. This is significantly more efficient than pushing updates to  
+every server that might be interested.
 
 #### New federation endpoint: `/federation/v1/query/presence`
 
@@ -70,18 +70,17 @@ POST /federation/v1/query/presence
 }
 ```
 
-Here, the request indicates that `@user1:server.a` had its presence last updated at Unix  
-timestamp `1735324578000` (milliseconds), as seen by the querying server. For `@user2:server.a`,  
-the querying server has no stored timestamp (0).
+Here, `@user1:server.a` was last updated at `1735324578000` (Unix milliseconds) as seen by  
+the querying server. For `@user2:server.a`, the querying server has no stored timestamp.
 
-Homeservers **must not** request presence information by proxy; presence queries **must only**  
-concern users of the homeserver being queried. Similarly, the responding server must only  
-provide presence data for its own users.
+Homeservers **must not** proxy requests for presence: only users on the homeserver being  
+queried should appear in the request. Likewise, the responding server must only provide  
+presence data for its own users.
 
 #### 200 OK response
 
-If successful, the response provides an object mapping user IDs to  
-[`m.presence` content](https://spec.matrix.org/v1.13/client-server-api/#mpresence). For example:
+If successful, the response is a JSON object mapping user IDs to  
+[`m.presence` data](https://spec.matrix.org/v1.13/client-server-api/#mpresence). For example:
 
 ```json
 {
@@ -97,14 +96,14 @@ If successful, the response provides an object mapping user IDs to
 }
 ```
 
-The server **must not** include users whose presence has not changed since the querying  
-server last updated. It is valid for the response object to be empty if no new data exists.
+Users whose presence has not changed since the last time the querying server checked should  
+not appear in the response. An empty response body is valid if no updates exist.
 
 #### 403 Forbidden response
 
-If the remote server does not federate presence, or explicitly disallows the requesting  
-server, it should respond with an [HTTP 403 Forbidden](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403),  
-such as:
+If the remote server does not federate presence or explicitly blocks the querying server, it  
+should respond with  
+[HTTP 403 Forbidden](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403):
 
 ```json
 {
@@ -116,11 +115,9 @@ such as:
 
 #### 413 Content too large response
 
-To prevent timeouts and large payloads, servers should cap the number of presence queries  
-allowed in a single request. This limit is configurable per server, but a recommended  
-default is 500 users. If a request exceeds this limit, the server should respond with an  
-[HTTP 413 Payload Too Large](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413),  
-for example:
+To avoid large payloads and timeouts, servers should cap the number of presence queries in a  
+single request. A recommended default limit is 500 users. If a request exceeds this limit,  
+respond with [HTTP 413 Payload Too Large](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/413):
 
 ```json
 {
@@ -132,25 +129,53 @@ for example:
 
 ## Potential issues
 
-(Describe any potential pitfalls in implementing this model.)
+1. **Stale data**: If a server’s polling interval is long, clients may see outdated status.  
+   However, this trade-off is often preferable to constant pushing of updates, which wastes  
+   bandwidth and CPU.
+2. **Performance bursts**: Polling in bulk might cause periodic spikes in traffic. In  
+   practice, scheduling queries reduces overhead compared to perpetual push notifications.
+3. **Server downtime**: If a homeserver is unavailable, remote servers cannot retrieve  
+   updates. This is still simpler to handle than a push-based system that continually retries.
+4. **Partial coverage**: Each server must poll multiple homeservers if users span many  
+   domains. This is still more controlled than blindly receiving all presence EDUs from  
+   across the federation.
+5. **Implementation complexity**: Homeservers must track timestamps for each user’s presence  
+   changes. Despite this, the overall load and bandwidth consumption should be lower than the  
+   push-based approach.
 
 ## Alternatives
 
-(Discuss alternative approaches and why they might or might not be suitable.)
+1. **Optimising push-based EDUs**: Servers could throttle or batch outgoing presence. While  
+   it reduces the raw volume of messages, uninterested servers might still receive unwanted  
+   data.
+2. **Hybrid push-pull**: Pushing for high-profile users while polling for others can reduce  
+   traffic but complicates implementation. It also risks partially reverting to old,  
+   inefficient patterns.
+3. **Deprecating presence**: Servers could disable presence entirely. This has already  
+   happened in some deployments but removes a key real-time user activity feature.
+4. **Posting presence in rooms**: Embedding presence as timeline events could leverage  
+   existing distribution. However, this would complicate large, high-traffic rooms and let  
+   presence be tracked indefinitely. The added data overhead and privacy impact are worse  
+   than poll-based federation for many use cases.
 
 ## Security considerations
 
-(Outline any security or privacy concerns relevant to this approach.)
+1. **Data visibility**: Because presence can reveal user activity times, queries and responses  
+   must be restricted to legitimate servers. Proper ACLs and rate-limiting are advised.
+2. **Query abuse**: A malicious server could repeatedly query for large user lists to track  
+   patterns or overload a homeserver. Bulk requests limit overhead more effectively than  
+   repeated push, but the server should still implement protections.
+3. **Privacy**: Even pull-based presence shares user status and activity times. Operators  
+   should minimise leakages and evaluate if presence is necessary for all users.
+4. **Server authentication**: Proper federation checks remain critical to prevent  
+   impersonation or man-in-the-middle attacks.
 
 ## Unstable prefix
 
-If a proposal is implemented before it is finalised in the spec, implementers must ensure  
-compatibility with the final design. Typically, this means using `/unstable` endpoints and  
-appropriate vendor prefixes. This section should detail the temporary endpoints, feature  
-flags, or other requirements for experimental implementations, per  
-[MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324).
+If this proposal is adopted prior to finalisation, implementers must ensure they can migrate  
+to the final version. This typically involves using `/unstable` endpoints and vendor prefixes,  
+as per [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324).
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy, and MSCzzzz (which have not yet been accepted at  
-the time of writing).
+This MSC builds on MSCxxxx, MSCyyyy, and MSCzzzz (none are accepted at the time of writing).
