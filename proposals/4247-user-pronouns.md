@@ -1,6 +1,6 @@
 # MSCXXXX: User Pronouns
 
-Many users of Matrix put pronouns in display names. However, that causes screen clutter. This proposal defines a standardized pronouns field on top of MSC4133.
+Many users of Matrix put pronouns in display names. However, that causes screen clutter. This proposal defines a standardized pronouns field on top of [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133).
 
 ## Proposal
 
