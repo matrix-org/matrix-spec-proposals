@@ -45,11 +45,18 @@ the relevant users on that homeserver.
    their presence changes.
 4. Server A checks its data for these users and responds only with updated presence info.
 5. Server B updates its local records and informs any interested clients.
-6. Server B repeats the query at the next interval.
+6. Server B repeats the query at the next interval, plus a random scatter period.
 
 By pulling presence only when needed, each server can maintain accurate user status without
 excessive data broadcasts. This is significantly more efficient than pushing updates to
 every server that might be interested.
+
+Servers **should** implement a "scatter period" in their intervals to avoid synchronised
+bursts of traffic, ideally in the magnitutde of up to a few minutes. By adding or subtracting
+a random value from the query interval, servers can automatically space out their requests,
+to avoid overloading the remote server if it is popular.
+For example, if server A fetches presence every 10 minutes, it could run the next fetch cycle
+a few minutes early or a few minutes late, to avoid sporadic traffic spikes.
 
 #### New federation endpoint: `/federation/v1/query/presence`
 
@@ -108,6 +115,9 @@ should respond with
     "reason": "This server does not federate presence information"
 }
 ```
+
+Servers that receive this response should not retry this query for a long period of time, as this
+is likely a permanent restriction.
 
 #### 413 Content too large response
 
