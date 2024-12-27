@@ -1,10 +1,10 @@
-# MSC4247: User Pronouns
+# MSCXXXX: User Pronouns
 
 Many users of Matrix put pronouns in display names. However, that causes screen clutter. This proposal defines a standardized pronouns field on top of MSC4133.
 
 ## Proposal
 
-Profiles may have optional `m.pronouns` and `m.pronouns.secondary` fields as a string. These fields can be fetched through the [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
+Profiles may have optional `m.pronouns` and `m.pronouns.secondary` fields as a dictionary. These fields can be fetched through the [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles). Clients should parse this and use these instead of they/them where possible.
 
 ### Example
 
@@ -12,8 +12,20 @@ Profiles may have optional `m.pronouns` and `m.pronouns.secondary` fields as a s
 {
   "avatar_url": "…",
   "displayname": "…",
-  "m.pronouns": "it/its",
-  "m.pronouns.secondary": "she/her"
+  "m.pronouns": {
+    "subject": "it",
+    "object": "it",
+    "possessive_determiner": "its",
+    "possessive_pronoun": "its",
+    "reflexive": "itself"
+  },
+  "m.pronouns.secondary": {
+    "subject": "she",
+    "object": "her",
+    "possessive_determiner": "her",
+    "possessive_pronoun": "hers",
+    "reflexive": "herself"
+  }
 }
 ```
 
@@ -28,7 +40,3 @@ None.
 ## Unstable prefix
 
 Clients and servers wishing to implement this early may use `io.fsky.nyx.pronouns` and `io.fsky.nyx.pronouns.secondary`.
-
-## Dependencies
-
-This depends on MSC4133.
