@@ -22,18 +22,21 @@ Clients should parse this and use these instead of they/them where possible.
             "object": "it", 
             "possessive_determiner": "its", 
             "possessive_pronoun": "its", 
-            "reflexive": "itself"
+            "reflexive": "itself",
+            "language": "en"
         },
         {
             "subject": "she",
             "object": "her",
             "possessive_determiner": "her",
             "possessive_pronoun": "hers",
-            "reflexive": "herself"
+            "reflexive": "herself",
+            "language": "en"
         }
     ]
 }
 ```
+The array is ordered by preference, and `language` should be a language code.
 
 ## Potential issues
 
