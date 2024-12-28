@@ -23,7 +23,8 @@ Clients should parse this and use these instead of they/them where possible.
             "possessive_determiner": "its", 
             "possessive_pronoun": "its", 
             "reflexive": "itself",
-            "language": "en"
+            "language": "en",
+            "summary": "it/its"
         },
         {
             "subject": "she",
@@ -31,15 +32,17 @@ Clients should parse this and use these instead of they/them where possible.
             "possessive_determiner": "her",
             "possessive_pronoun": "hers",
             "reflexive": "herself",
-            "language": "en"
+            "language": "en",
+            "summary": "she/her"
         }
     ]
 }
 ```
 The example uses it/its pronouns followed by she/her pronouns, both in English.
-The array is ordered by preference, and `language` should be a language code.
-Clients should parse the pronouns and return them to users in the format
-"`subject`/`possessive_determiner`".
+The array is ordered by preference, `language` should be a language code, and
+clients should render the `summary` for the pronouns. Clients may offer
+pre-defined sets of common pronouns like she/her, they/them, he/him, it/its,
+etc.
 
 ## Potential issues
 
