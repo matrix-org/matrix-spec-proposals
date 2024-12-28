@@ -72,7 +72,7 @@ other purposes, such as:
 {
   "device_id": "dehydrated_device_id",
   "device_data": {
-    "algorithm": "m.dehydration.v1.olm"
+    "algorithm": "m.dehydration.v2.olm"
     "other_fields": "other_values"
   },
   "initial_device_display_name": "foo bar", // optional
@@ -133,7 +133,7 @@ Response:
 {
   "device_id": "dehydrated device's ID",
   "device_data": {
-    "algorithm": "m.dehydration.v1.olm",
+    "algorithm": "m.dehydration.v2",
     "other_fields": "other_values"
   }
 }
@@ -204,16 +204,6 @@ Response:
 
 ### Device Dehydration Format
 
-TODO: define a format.  Unlike MSC2679, we don't need to worry about the
-dehydrated device being used as a normal device, so we can omit some
-information.  So we should be able to get by with defining a fairly simple
-standard format, probably just the concatenation of the private device keys and
-the private one-time keys.  This will come at the expense of implementations
-such as libolm needing to implement extra functions to support dehydration, but
-will have the advantage that we don't need to figure out a format that will fit
-into every possible implementation's idiosyncrasies.  The format will be
-encrypted, which leads to ...
-
 We define the following format for storing the dehydrated device (based on the
 libolm pickle format):
 
@@ -230,7 +220,7 @@ which was used in a previous version of this MSC.)
    ├────────────────────────┼───────────────┼──────────────────┤
    │Version                 │ u32           │ 4                │
    │Curve25519 private key  │ [u8; 32]      │ 32               │
-   │Ed25519 private key     │ [u8; 64]      │ 64               │
+   │Ed25519 private key     │ [u8; 32]      │ 32               │
    │Number of one-time keys │ u32           │ 4                │
    │One-time keys           │ [OneTimeKey]  │ N * 32           │
    │Fallback key            │ OptFallback   │ 1 or 33          │
@@ -258,51 +248,27 @@ The data is then encrypted and encoded as follows.
 
 #### Encryption key
 
-TODO: Explain why the double derivation is necessary.
-
 The encryption key used for the dehydrated device will be randomly generated
 and stored/shared via SSSS using the name `m.dehydrated_device`.
 
-The randomly generated encryption key (`RANDOM_KEY` in the example below)
-*must* be expanded using the HMAC-based Key Derivation function defined in
-[RFC5869].
+A 96-bit (12-byte) nonce is randomly generated; each time a device is
+dehydrated, a new nonce must be generated.
 
-```math
-\begin{aligned}
-    \text{DEVICE\_KEY}
-    &= \text{HKDF} \left(\text{Device ID}, \text{RANDOM\_KEY}, \text{``dehydrated-device-pickle-key"}, 32\right)
-\end{aligned}
-```
+The plain-text is encrypted with ChaCha20-Poly1305 as defined in
+[RFC8439](https://datatracker.ietf.org/doc/html/rfc8439) using the encryption
+key and nonce.
 
-The `device_key` is then further expanded into a AES256 key, HMAC key and
-initialization vector.
-
-
-```math
-\begin{aligned}
-    \text{AES\_KEY} \parallel \text{HMAC\_KEY} \parallel text{AES\_IV}
-    &= \text{HKDF}\left(0,\text{DEVICE\_KEY},\text{``Pickle"},80\right)
-\end{aligned}
-```
-
-The plain-text is encrypted with [AES-256] in [CBC] mode with [PKCS#7] padding,
-using the key $`\text{AES\_KEY}`$ and the IV $`\text{AES\_IV}`$ to give the cipher-text.
-
-Then the cipher-text are passed through [HMAC-SHA-256]. The first 8 bytes of the
-MAC are appended to the cipher-text.
-
-The cipher-text, including the appended MAC tag, are encoded using [unpadded
-Base64](https://spec.matrix.org/v1.12/appendices/#unpadded-base64) to give the
-device pickle.
-
-The device pickle is then inserted into the `device_pickle` field of the
-`device_data` JSON message.
+The ciphertext and nonce are then encoded as [unpadded
+Base64](https://spec.matrix.org/v1.12/appendices/#unpadded-base64) and inserted
+into the `device_pickle` and `nonce` properties, respectively, of the
+`device_data` JSON message.  The `algorithm` property is set to `m.dehydration.v2`.
 
  ```json
 {
   "device_data": {
-    "algorithm": "m.dehydration.v1.olm",
+    "algorithm": "m.dehydration.v2",
     "device_pickle": "encrypted dehydrated device"
+    "nonce": "random nonce"
   }
 }
 ```
@@ -402,8 +368,8 @@ While this MSC is in development, the `/dehydrated_device` endpoints will be
 reached at `/unstable/org.matrix.msc3814.v1/dehydrated_device`, and the
 `/dehydrated_device/{device_id}/events` endpoint will be reached at
 `/unstable/org.matrix.msc3814.v1/dehydrated_device/{device_id}/events`.  The
-dehydration algorithm `m.dehydration.v1.olm` will be called
-`org.matrix.msc3814.v1.olm`.  The SSSS name for the dehydration key will be
+dehydration algorithm `m.dehydration.v2` will be called
+`org.matrix.msc3814.v2`.  The SSSS name for the dehydration key will be
 `org.matrix.msc3814` instead of `m.dehydrated_device`.
 
 ## Dependencies
