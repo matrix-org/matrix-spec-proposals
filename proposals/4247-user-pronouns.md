@@ -9,7 +9,8 @@ clutter. This proposal defines a standardized pronouns field on top of
 Profiles may have an optional `m.pronouns` field as an
 array. These fields can be fetched through the
 [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
-Clients should parse this and use these instead of they/them where possible.
+Clients should parse this and use these instead of they/them where possible. All fields
+within `m.pronouns` are optional, exluding `"language"` and `"summary"`.
 
 ### Example
 
@@ -39,7 +40,7 @@ Clients should parse this and use these instead of they/them where possible.
 }
 ```
 The example uses it/its pronouns followed by she/her pronouns, both in English.
-The array is ordered by preference, `language` should be a language code, and
+The array is ordered by preference, `language` should be an ISO 639 language code, and
 clients should render the `summary` for the pronouns. Clients may offer
 pre-defined sets of common pronouns like she/her, they/them, he/him, it/its,
 etc.
