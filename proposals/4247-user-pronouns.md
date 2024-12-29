@@ -40,7 +40,8 @@ within `m.pronouns` are optional, exluding `"language"` and `"summary"`.
 }
 ```
 The example uses it/its pronouns followed by she/her pronouns, both in English.
-The array is ordered by preference, `language` should be an ISO 639 language code, and
+The array is ordered by preference, `language` should be a
+[BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language code, and
 clients should render the `summary` for the pronouns. Clients may offer
 pre-defined sets of common pronouns like she/her, they/them, he/him, it/its,
 etc.
