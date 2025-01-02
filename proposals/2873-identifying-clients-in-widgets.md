@@ -13,7 +13,9 @@ Some new template variables are added to the available options for a widget URL:
   for the client which is rendering the widget.
 * `matrix_client_theme` - The stringified name for the user's current theme as decided upon by
   the client.
-* `matrix_client_language` - The ISO 639-1 alpha-2 code for the user's current language.
+* `matrix_client_language` - The code for the user's current language, formatted as per
+  [Section 2.2 of RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646#section-2.2) but
+  additionally allowing underscores in place of a dash (e.g. `zh_Hant`).
 
 For example, in Element Web the `matrix_client_id` might be `io.element.web` and the
 `matrix_client_theme` could be `light`. In the case of another example client, the client ID might
@@ -99,8 +101,8 @@ later on if the language were to change.
 }
 ```
 
-The `lang` variable is an ISO 639-1 alpha-2 code. The request is acknowledged with an empty response
-by the widget.
+The `lang` variable is a language code in the same format as `matrix_client_language` template
+variable. The request is acknowledged with an empty response by the widget.
 
 ## Potential issues
 
