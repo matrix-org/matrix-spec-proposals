@@ -195,15 +195,6 @@ demonstrates the process of defining new fields in the `m.*` namespace.
 }
 ```
 
-- **`M_TOO_MANY_KEYS`**: Exceeds key limits.
-
-```json
-{
-  "errcode": "M_TOO_MANY_KEYS",
-  "error": "The user has exceeded the maximum number of allowed keys in their profile."
-}
-```
-
 ### 403 Forbidden: User Lacks Permission
 
 Unchanged from the [current spec](https://spec.matrix.org/v1.13/client-server-api/#server-behaviour).
@@ -357,27 +348,5 @@ Advertise the capability with an unstable prefix:
       "disallowed": ["org.example.secret_field"]
     }
   }
-}
-```
-
-### Unstable Client Features
-
-The client feature `uk.tcpip.msc4133` SHOULD be advertised on the `/_matrix/client/versions`
-endpoint when the `PUT` and `PATCH` methods are accepted on the
-`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}` endpoint.
-
-Once this MSC is merged, the client feature `uk.tcpip.msc4133.stable` SHOULD be advertised when the
-`PUT` and `PATCH` methods are accepted on the `/_matrix/client/v3/profile/{userId}` endpoint until
-the next spec version where this endpoint is officially written into the spec, e.g.:
-
-```json
-{
-  "unstable_features": {
-    "uk.tcpip.msc4133": true,
-    "uk.tcpip.msc4133.stable": true
-  },
-  "versions": [
-    "v1.11"
-  ]
 }
 ```
