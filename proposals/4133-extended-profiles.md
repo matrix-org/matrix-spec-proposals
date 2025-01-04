@@ -350,3 +350,25 @@ Advertise the capability with an unstable prefix:
   }
 }
 ```
+
+### Unstable Client Features
+
+The client feature `uk.tcpip.msc4133` SHOULD be advertised on the `/_matrix/client/versions`
+endpoint when the unstable endpoints for managing profile fields are supported at
+`/_matrix/client/unstable/uk.tcpip.msc4133/profile/{userId}/{key_name}`.
+
+Once this MSC is merged, the client feature `uk.tcpip.msc4133.stable` SHOULD be advertised when
+these endpoints are accepted at `/_matrix/client/v3/profile/{userId}/{key_name}` until the next
+spec version where these endpoints are officially written into the spec, e.g.
+
+```json
+{
+  "unstable_features": {
+    "uk.tcpip.msc4133": true,
+    "uk.tcpip.msc4133.stable": true
+  },
+  "versions": [
+    "v1.11"
+  ]
+}
+```
