@@ -9,7 +9,7 @@ clutter. This proposal defines a standardized pronouns field on top of
 Profiles may have an optional `m.pronouns` field as an
 array. These fields can be fetched through the
 [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
-Clients should parse this and use these instead of they/them where possible. All fields
+Clients should use these instead of they/them where possible. All fields
 within `m.pronouns` are optional, exluding `"language"` and `"summary"`.
 
 ### Example
@@ -19,20 +19,12 @@ within `m.pronouns` are optional, exluding `"language"` and `"summary"`.
     "avatar_url": "…", "displayname": "…",
     "m.pronouns": [
         {
-            "subject": "it",
-            "object": "it", 
-            "possessive_determiner": "its", 
-            "possessive_pronoun": "its", 
-            "reflexive": "itself",
+            "grammatical_gender": "inanimate",
             "language": "en",
             "summary": "it/its"
         },
         {
-            "subject": "she",
-            "object": "her",
-            "possessive_determiner": "her",
-            "possessive_pronoun": "hers",
-            "reflexive": "herself",
+            "grammatical_gender": "feminine"
             "language": "en",
             "summary": "she/her"
         }
@@ -42,9 +34,9 @@ within `m.pronouns` are optional, exluding `"language"` and `"summary"`.
 The example uses it/its pronouns followed by she/her pronouns, both in English.
 The array is ordered by preference, `language` should be a
 [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language code, and
-clients should render the `summary` for the pronouns. Clients may offer
-pre-defined sets of common pronouns like she/her, they/them, he/him, it/its,
-etc.
+clients should render the `summary` for the pronouns. Clients SHOULD use the
+`grammatical_gender` if possible in state events. For example, "Alice changed
+her avatar" for `feminine` or "Alex changed its avatar" for `inanimate`.
 
 ## Potential issues
 
