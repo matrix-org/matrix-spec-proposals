@@ -197,7 +197,20 @@ demonstrates the process of defining new fields in the `m.*` namespace.
 
 ### 403 Forbidden: User Lacks Permission
 
-Unchanged from the [current spec](https://spec.matrix.org/v1.13/client-server-api/#server-behaviour).
+A server may return this error in several scenarios:
+
+- When the user lacks permission to modify another user's profile
+- When the capability `m.profile_fields` is disabled (`enabled: false`)
+- When the server denies setting/creating a specific field value, even if the capability allows it
+  (for example, due to content policy violations or server-side validation rules)
+- When the user is not allowed to modify profiles at all
+
+```json
+{
+  "errcode": "M_FORBIDDEN",
+  "error": "You do not have permission to perform this operation"
+}
+```
 
 ### 404 Not Found: Target Cannot Be Found
 
