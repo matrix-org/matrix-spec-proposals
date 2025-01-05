@@ -301,9 +301,11 @@ Likewise, if a server automatically publishes data in user profile fields (e.g. 
 based on an organisation's internal user database), then they SHOULD have consent to do so, and
 users SHOULD be made aware that data is published on their behalf.
 
-To minimise potential abuse risks, clients should consider appropriate defaults for displaying
-user-entered content. Profile content is publicly visible to other users on the federated network,
-so clients may wish to implement controls around when and how profile fields are displayed.
+To minimise the impact of abuse, clients should carefully consider when and how to display
+user-entered profile content. While some clients may choose to show profile fields globally, others
+may restrict visibility based on room membership or other trust signals. Clients should be aware
+that profile fields may contain abusive content and implement appropriate safety measures based on
+their risk assessment.
 
 Proposal [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) adds reporting of
 user profiles over federation, which offers a facility for users to report offensive content to the
