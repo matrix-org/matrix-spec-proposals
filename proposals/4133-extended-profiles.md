@@ -101,18 +101,6 @@ request a single field. At the time of writing, the Matrix specification says:
 Given this wording, homeservers currently have the flexibility to decide whether some fields are
 published over federation, and this proposal continues to allow this behaviour.
 
-### Caching Behaviour
-
-To reduce federation traffic and improve performance, servers SHOULD implement the following
-caching behaviour:
-
-- Cache remote profiles for at least 5 minutes after retrieval
-- Do not cache profiles longer than 1 hour without revalidation, to avoid displaying stale data
-- Never cache profiles longer than 24 hours, to avoid unwanted data persistence
-- Consider implementing exponential backoff for failed retrievals
-
-This guidance may be updated when a method for servers to notify each other of profile updates is established.
-
 ## Capabilities
 
 A new capability `m.profile_fields` controls the ability to *set* profile fields and is advertised
@@ -253,6 +241,11 @@ consideration of this.
 
 - Custom fields MUST NOT trigger state events in rooms; their data MUST NOT be replicated to
   `m.room.member` events unless a future proposal creates exceptions for specific fields.
+
+- Servers SHOULD cache remote profiles for at least 5 minutes after retrieval. Until a method for
+  servers to notify each other of updates is established, it is recommended that profiles be cached
+  no longer than an hour to avoid displaying stale data. Servers SHOULD NOT cache profiles for
+  longer than 24 hours to avoid unwanted data persistence.
 
 - Clients MAY provide a UI for users to view and enter custom fields, respecting the appropriate
   namespaces.
