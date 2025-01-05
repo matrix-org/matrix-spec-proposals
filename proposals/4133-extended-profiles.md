@@ -18,12 +18,24 @@ requiring minimal changes to facilitate quick adoption. It complements, rather t
 [MSC1769](https://github.com/matrix-org/matrix-spec-proposals/pull/1769) (Extensible Profiles as
 Rooms) by focusing on global profile data without the complexity of per-room profile management.
 
+## Authentication and Rate Limiting
+
+All endpoints in this proposal follow the standard client-server API authentication rules. Specifically:
+
+- All endpoints require authentication except for GET requests which may be accessed without
+  authentication
+- Servers MUST verify the access token has permission to modify the requested userId's profile
+- Rate limiting SHOULD be applied as per the homeserver's normal profile endpoint limits
+- Guest access follows the same rules as existing profile endpoints - guests may view profiles but
+  not modify them
+
 ## Client-Server API Changes
 
 ### Get a Profile Field
 
 - **Endpoint**: `GET /_matrix/client/v3/profile/{userId}/{key_name}`
 - **Description**: Retrieve the value of a specified `key_name` from a user's profile.
+- **Pagination**: Not applicable, returns a single bounded key-value pair
 - **Response**:
 
 ```json
@@ -76,6 +88,7 @@ method SHOULD NOT delete the key but rather retain it with a `null` value. Serve
 - **Endpoint**: `GET /_matrix/client/v3/profile/{userId}`
 - **Description**: Retrieve all profile fields for a user, identical to the
   [current API](https://spec.matrix.org/latest/client-server-api/#get_matrixclientv3profileuserid).
+- **Pagination**: Not applicable, the full profile is bounded at 64 KiB total size
 - **Response**:
 
 ```json
@@ -301,11 +314,14 @@ Likewise, if a server automatically publishes data in user profile fields (e.g. 
 based on an organisation's internal user database), then they SHOULD have consent to do so, and
 users SHOULD be made aware that data is published on their behalf.
 
-To minimise the impact of abuse, clients should carefully consider when and how to display
-user-entered profile content. While some clients may choose to show profile fields globally, others
-may restrict visibility based on room membership or other trust signals. Clients should be aware
-that profile fields may contain abusive content and implement appropriate safety measures based on
-their risk assessment.
+To minimise the impact of abuse, clients SHOULD offer suitable defaults for displaying user-entered
+content. A user MAY choose to display fields from all users globally, but *by default* profiles
+SHOULD only be shown when the users share the current room and the other user is in the `join`,
+`invite`, or `knock` membership states.
+
+If future clients (or spec proposals) implement the ability to set custom user-entered text in
+profiles, servers MAY require additional moderation and safety tooling on the server side to
+provide better visibility of problematic content, e.g., during reports.
 
 Proposal [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) adds reporting of
 user profiles over federation, which offers a facility for users to report offensive content to the
