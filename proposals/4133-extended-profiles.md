@@ -149,7 +149,7 @@ the `avatar_url` and `displayname` fields.
 Homeservers SHOULD NOT enforce namespaces, as future expansions may be unknown to the server, but
 clients SHOULD use the correct namespace when creating or updating fields.
 
-Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/unstable/appendices/#common-namespaced-identifier-grammar),
+Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.13/appendices/#common-namespaced-identifier-grammar),
 with the following considerations:
 
 - **Namespace `m.*`**: Reserved for fields explicitly defined in the Matrix specification. Clients
