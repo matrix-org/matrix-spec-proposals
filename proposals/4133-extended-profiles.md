@@ -155,8 +155,9 @@ Clients SHOULD check for this capability before attempting to create or modify a
 
 ## Key and Namespace Requirements
 
-Profiles MUST be at most 64 KiB (65,536 bytes) in size, as measured in Canonical JSON, including
-the `avatar_url` and `displayname` fields.
+Profiles MUST be at most 64 KiB (65,536 bytes) in size, as measured in
+[Canonical JSON](https://spec.matrix.org/v1.13/appendices/#canonical-json), including the
+`avatar_url` and `displayname` fields.
 
 Homeservers SHOULD NOT enforce namespaces, as future expansions may be unknown to the server, but
 clients SHOULD use the correct namespace when creating or updating fields.
