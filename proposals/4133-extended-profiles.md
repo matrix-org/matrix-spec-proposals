@@ -242,10 +242,11 @@ consideration of this.
 - Custom fields MUST NOT trigger state events in rooms; their data MUST NOT be replicated to
   `m.room.member` events unless a future proposal creates exceptions for specific fields.
 
-- Servers SHOULD cache remote profiles for at least 5 minutes after retrieval. Until a method for
-  servers to notify each other of updates is established, it is recommended that profiles be cached
-  no longer than an hour to avoid displaying stale data. Servers SHOULD NOT cache profiles for
-  longer than 24 hours to avoid unwanted data persistence.
+- Servers MAY cache remote profiles to optimise performance. Until a method for servers to notify
+  each other of updates is established, it is recommended that profiles be cached *no longer* than
+  an hour to avoid displaying stale data. If caching is implemented, servers SHOULD invalidate their
+  cache when receiving new profile information. A future MSC may propose a mechanism for servers to
+  notify each other of profile updates.
 
 - Clients MAY provide a UI for users to view and enter custom fields, respecting the appropriate
   namespaces.
@@ -281,7 +282,8 @@ functionality added by this proposal is not anticipated to have this value.
 This proposal also does not offer a method to "broadcast" to other users or homeservers that
 changes have occurred. This is intentional to keep the scope of this change narrow and maximise
 compatibility with existing servers. A future proposal may wish to use an EDU (such as Presence)
-to notify users and homeservers that these custom fields have been updated.
+to notify users and homeservers that these custom fields have been updated. This would allow
+servers to cache profile data more effectively without compromising on user experience.
 
 This proposal does not directly address reporting of user profiles over federation, but
 [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) offers a facility for
