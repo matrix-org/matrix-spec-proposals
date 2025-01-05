@@ -314,14 +314,11 @@ Likewise, if a server automatically publishes data in user profile fields (e.g. 
 based on an organisation's internal user database), then they SHOULD have consent to do so, and
 users SHOULD be made aware that data is published on their behalf.
 
-To minimise the impact of abuse, clients SHOULD offer suitable defaults for displaying user-entered
-content. A user MAY choose to display fields from all users globally, but *by default* profiles
-SHOULD only be shown when the users share the current room and the other user is in the `join`,
-`invite`, or `knock` membership states.
-
-If future clients (or spec proposals) implement the ability to set custom user-entered text in
-profiles, servers MAY require additional moderation and safety tooling on the server side to
-provide better visibility of problematic content, e.g., during reports.
+To minimise the impact of abuse, clients should carefully consider when and how to display
+user-entered profile content. While some clients may choose to show profile fields globally, others
+may restrict visibility based on room membership or other trust signals. Clients should be aware
+that profile fields may contain abusive content and implement appropriate safety measures based on
+their risk assessment.
 
 Proposal [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) adds reporting of
 user profiles over federation, which offers a facility for users to report offensive content to the
