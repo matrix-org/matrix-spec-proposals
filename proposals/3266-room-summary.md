@@ -87,10 +87,6 @@ already. This API just makes this more convenient.
 `allowed_room_ids` is already part of the federation `hierarchy` API and
 necessary for distinguishing possible join modes for `knock_restricted` rooms.
 
-This API should be accessible to guest users (as it is already accessible
-without authentication). If the room is not allowed to be previewed,
-403/`M_FORBIDDEN` should be returned.
-
 
 #### Rationale and description of response fields
 
@@ -112,7 +108,20 @@ without authentication). If the room is not allowed to be previewed,
 
 It should be possible to call this API without authentication, but servers may
 rate limit how often they fetch information over federation more heavily, if the
-user is unauthenticated.
+user is unauthenticated. Being able to call this API unauthenticated is
+beneficial to avoid third parties registering guest users for one-shot API
+calls. Restricting this API to guests only would provide no security benefit.
+
+This API should be accessible to guest users (as it is already accessible
+without authentication).
+
+If the room is not allowed to be previewed, 403/`M_FORBIDDEN` should be
+returned. If the room can't be found, `M_NOT_FOUND` should be returned. A
+server might return additional error codes based on if a room was blocked, the
+`roomIdOrAlias` is malformed or other implementation specific error cases. The
+server should NOT return `M_UNAUTHORIZED` or otherwise divulge existance of a
+room, that requires authentication to preview, if the request is
+unauthenticated or authenticated by a user without access to the room.
 
 (1) The field `membership` will not be present when called unauthenticated, but
 is required when called authenticated. It should be `leave` if the server
