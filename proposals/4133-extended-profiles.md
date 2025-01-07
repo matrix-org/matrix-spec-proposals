@@ -255,11 +255,9 @@ consideration of this.
 - Custom fields MUST NOT trigger state events in rooms; their data MUST NOT be replicated to
   `m.room.member` events unless a future proposal creates exceptions for specific fields.
 
-- Servers MAY cache remote profiles to optimise performance. Until a method for servers to notify
-  each other of updates is established, it is recommended that profiles be cached *no longer* than
-  an hour to avoid displaying stale data. If caching is implemented, servers SHOULD invalidate their
-  cache when receiving new profile information. A future MSC may propose a mechanism for servers to
-  notify each other of profile updates.
+- Servers MAY cache remote profiles to optimise performance. Servers which prefer to cache details
+  should do so for a short period of time to avoid stale data being presented to users.
+  A future MSC may propose a mechanism for servers to notify each other of profile updates.
 
 - Clients MAY provide a UI for users to view and enter custom fields, respecting the appropriate
   namespaces.
