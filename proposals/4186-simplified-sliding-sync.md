@@ -34,7 +34,7 @@ These goals shaped the design of this proposal.
 
 The core differences between sync v2 and simplified sliding sync are:
 
-- The server initially only sends the most recent N rooms to the client (where N is specified by the lcient), which then
+- The server initially only sends the most recent N rooms to the client (where N is specified by the client), which then
   can paginate in older rooms in subsequent requests
 - The client can configure which information the server will return for different sets of rooms (e.g. a smaller timeline
   limit for older rooms).
