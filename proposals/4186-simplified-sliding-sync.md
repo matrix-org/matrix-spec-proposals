@@ -17,7 +17,7 @@ on real world use cases and usages.
 This improved `/sync` mechanism has a number of goals:
 
 - Sync time should be independent of the number of rooms you are in.
-- Time from launch to confident usability should be as low as possible.
+- Time from opening of the app (when already logged in) to confident usability should be as low as possible.
 - Time from login on existing accounts to usability should be as low as possible.
 - Bandwidth should be minimized.
 - Support lazy-loading of things like read receipts (and avoid sending unnecessary data to the client)
@@ -40,6 +40,8 @@ The core differences between sync v2 and simplified sliding sync are:
   limit for older rooms).
 - The client can filter what rooms it is interested in
 - The client can maintain multiple sync loops (with some caveats)
+  - This is useful for e.g. iOS clients which have a separate process to deal with notifications, as well as allowing
+    the app to split handling of things like encryption entirely from room data.
 
 The basic operation is similar between sync v2 and simplified sliding sync: both use long-polling with tokens to fetch
 updates from the server. I.e., the basic operation of both APIs is to do an “initial” request and then repeatedly call
@@ -89,8 +91,8 @@ Clients can have multiple “connections” (i.e. sync loops) with the server, s
 
 Clients must only have a single request in-flight at any time per connection (clients can have multiple connections by
 specifying a unique `conn_id`). If a client needs to send another request before receiving a response to an in-flight
-request (e.g. for retries or to change parameters) the client *must* cancel the in-flight request and *not* process any
-response it receives for it.
+request (e.g. for retries or to change parameters) the client *must* cancel the in-flight request (at the HTTP level)
+and *not* process any response it receives for it.
 
 In particular, a client must use the returned `pos` value in a response as the `since` param in exactly one request that
 the client will process the response for. Clients must be careful to ensure that when processing a response any new
@@ -177,9 +179,9 @@ for:
         // are returned. If true, only encrypted rooms are returned.
         "is_encrypted": true|false|null,
 
-        // Flag which only returns rooms which have an `m.room.encryption` state event. If unset,
-        // both encrypted and unencrypted rooms are returned. If false, only unencrypted rooms
-        // are returned. If true, only encrypted rooms are returned.
+        // Flag which only returns rooms the user is currently invited to. If unset, both invited
+        // and joined rooms are returned. If false, no invited rooms are returned. If true, only
+        // invited rooms are returned.
         "is_invite": true|false|null,
 
         // If specified, only rooms where the `m.room.create` event has a `type` matching one
@@ -239,7 +241,8 @@ for:
   "lists": {
     // Matches the list name supplied by the client in the request
     "<list-name>" {
-      // The total number of rooms that match the list's filter.
+      // The total number of rooms that match the list's filter. Note that rooms can be in
+      // multiple lists, so may be double counted.
       "count": 1234,
     }
   },
@@ -248,7 +251,8 @@ for:
   // the room appears in multiple lists and/or room subscriptions.
   "rooms": {
     "!foo:example.com": {
-      // The room name, if one exists. Only sent initially and when it changes.
+      // The room name (as specified by any `m.room.name` event), if one exists. Only sent initially
+      // and when it changes.
       "name": str|null,
       // The room avatar, if one exists. Only sent initially and when it changes.
       "avatar_url": str|null,
@@ -269,7 +273,8 @@ for:
       "unstable_expanded_timeline": true|null,
       // The list of events, sorted least to most recent.
       "timeline": [ ... ],
-      // The current state of the room as a list of events
+      // The current state of the room as a list of events. This is the full state if `initial`
+      // state is set, otherwise it is a delta from the previous sync.
       "required_state": [ ... ],
       // The number of timeline events which have just occurred and are not historical.
       // The last N events are 'live' and should be treated as such.
@@ -312,11 +317,14 @@ was specified).
 
 The client then increases the range (in the next request) to `[0, 99]`, which will return the next 80 rooms. The server
 may sort the rooms differently than they are returned by the server (e.g. they may ignore reactions for sorting
-purposes).
+purposes). Note: the range here matches 100 rooms, however we only send the 80 rooms that we didn't send down in the
+previous request.
 
 The client can use room subscriptions, with a `timeline_limit` of 20, to preload history for the top rooms. This means
 that if the user clicks on one of the top rooms the app can immediately display a screens worth of history. (An
-alternative would be to have a second list with a static range of `[0, 19]` and a `timeline_limit` of 20. The downside)
+alternative would be to have a second list with a static range of `[0, 19]` and a `timeline_limit` of 20. The downside
+is that the clients may use a different order for the room list and so always fetching extra events for the top 20 rooms
+may return more data than required.)
 
 The client can keep increasing the list range in increments to pull in the full list of rooms. The client uses the
 returned `count` for the list to know when to stop expanding the list.
