@@ -1,6 +1,6 @@
 # MSC3266: Room Summary API
 
-Quite a few clients and tools have a need preview a room:
+Quite a few clients and tools have a need to preview a room:
 
 - A client may want to show the room in the roomlist, when showing a space.
 - matrix.to may want to show avatar and name of a room.
@@ -36,7 +36,7 @@ a member, or has the necessary permissions to join. (For example, the user may
 be a member of a room mentioned in an `allow` condition in the join rules of a
 restricted room.) For unauthenticated requests a response should only be
 returned if the room is publicly accessible.
-Invites and rooms the user has knocked at might return outdated or partial
+Rooms that the user has been invited to or knocked at might result in outdated or partial
 information depending on if the homeserver can request the current state of the
 room or not.
 
@@ -48,7 +48,7 @@ GET /_matrix/client/v1/room_summary/{roomIdOrAlias}?
     via=neko.dev
 ```
 
-(This is not under `/rooms`, because it can be used with an alias.
+(This is not under `/rooms`, because it can be used with an alias.)
 
 - `roomIdOrAlias` can be the roomid or an alias to a room.
 - `via` are servers that should be tried to request a summary from, if it can't
@@ -74,12 +74,12 @@ A response includes the stripped state in the following format:
 }
 ```
 
-These are the same fields as those returned by `/publicRooms` or
+These are the same fields as those returned by [`/publicRooms`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv3publicrooms) or
 [`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
-, with a few additions: `room_type`, `membership`, `room_version`,
+, with a few additions: `membership`, `room_version`,
 `encryption` and `allowed_room_ids`.
 
-`room_type`, `room_version` and `encryption` are already accessible as part of
+`room_version` and `encryption` are already accessible as part of
 the stripped state according to
 https://spec.matrix.org/v1.3/client-server-api/#stripped-state . The
 `membership` is not, but a client could access that in various different ways
@@ -100,7 +100,7 @@ necessary for distinguishing possible join modes for `knock_restricted` rooms.
 | topic              | Optional. Topic of the room                                                                                                                           | Copied from `publicRooms`.                                                                                                            |
 | world_readable     | Required. If the room history can be read without joining.                                                                                            | Copied from `publicRooms`.                                                                                                            |
 | join_rule          | Optional. Join rules of the room                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
-| allowed_room_ids   | Room ids allows in restricted joins.                                                                                                                  | Copied from `hierarchy`. Necessary to distinguish if a room can be joined or only knocked at.                                         |
+| allowed_room_ids   | Room ids allows in restricted joins.                                                                                                                  | Copied from [`GET /_matrix/federation/v1/hierarchy/{roomId}`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1hierarchyroomid). Necessary to distinguish if the room can be joined or only knocked at.                                         |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
 | room_version       | Optional (for historical reasons (2)). Version of the room.                                                                                           | Can be used by clients to show incompatibilities with a room early.                                                                   |
 | membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
@@ -139,7 +139,7 @@ For symmetry the `room_version` and `encryption` fields are also added to the
 
 ### Server-Server API
 
-For the server side the federation API of the 
+For fetching room summaries of a room a server is not joined to, the federation API of the 
 [`/hierarchy`](https://spec.matrix.org/v1.3/server-server-api/#get_matrixfederationv1hierarchyroomid)
 endpoint is reused. This provides (with a few changes) all the information
 needed in this MSC, but it also provides a few additional fields and one level
