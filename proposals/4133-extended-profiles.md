@@ -162,18 +162,16 @@ Profiles MUST be at most 64 KiB (65,536 bytes) in size, as measured in
 [Canonical JSON](https://spec.matrix.org/v1.13/appendices/#canonical-json), including the
 `avatar_url` and `displayname` fields.
 
-Homeservers SHOULD NOT enforce namespaces, as future expansions may be unknown to the server, but
-clients SHOULD use the correct namespace when creating or updating fields.
+Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.13/appendices/#common-namespaced-identifier-grammar), with the following considerations:
 
-Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.13/appendices/#common-namespaced-identifier-grammar),
-with the following considerations:
-
-- **Namespace `m.*`**: Reserved for fields explicitly defined in the Matrix specification. Clients
-  that do not recognise a field in this namespace MAY attempt to display it but SHOULD NOT attempt
-  to update the content unless they understand its formatting and validation requirements.
+- **Namespace `m.*`**: Reserved for fields explicitly defined in the Matrix specification:
+  - Servers SHOULD NOT check whether a key is known to be in the Matrix specification, as future expansions
+    may be unknown to it.
+  - Clients that do not recognise a field in this namespace MAY attempt to display it but SHOULD NOT
+    attempt to update the content unless they understand its formatting and validation requirements.
 
 - **Namespace `tld.name.*`**: For client-specific or unstable fields, using Java package naming
-  convention (e.g., `com.example.custom_field`).
+  convention (e.g. `com.example.custom_field`).
 
 Following this change, clients could use `m.example_field` if that field is defined by the Matrix
 specification, or `org.example.job_title` for organisation, client-specific fields, or MSC-backed
