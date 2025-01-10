@@ -122,7 +122,7 @@ on the `GET /_matrix/client/v3/capabilities` endpoint.
 This capability deprecates the use of `m.set_displayname` and `m.set_avatar_url`, which are not
 required when this capability is present.
 
-Clients SHOULD check for this capability before attempting to create or modify a profile field.
+Clients MAY check for this capability before attempting to create or modify a profile field.
 
 ### Capability Structure
 
