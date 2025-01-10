@@ -72,7 +72,7 @@ other purposes, such as:
 {
   "device_id": "dehydrated_device_id",
   "device_data": {
-    "algorithm": "m.dehydration.v2.olm"
+    "algorithm": "m.dehydration.v2"
     "other_fields": "other_values"
   },
   "initial_device_display_name": "foo bar", // optional
