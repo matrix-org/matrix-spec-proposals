@@ -102,7 +102,7 @@ method SHOULD NOT delete the key but rather retain it with a `null` value. Serve
 
 ## Server-Server API Changes
 
-The federation endpoint `GET /_matrix/federation/v1/query/profile` will mirror the client-server
+The federation endpoint [`GET /_matrix/federation/v1/query/profile](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1queryprofile)` will mirror the client-server
 API changes to ensure profile information is consistent between local and federated users.
 
 As per the current stable endpoint, it accepts an optional `field` query string parameter to
