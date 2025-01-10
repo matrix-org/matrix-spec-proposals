@@ -141,7 +141,9 @@ Clients MAY check for this capability before attempting to create or modify a pr
 ### Behaviour
 
 - **When capability is missing**: Clients SHOULD assume extended profiles are supported and that
-  they can be created or modified. If a server intends to deny some (or all) changes, it SHOULD use
+  they can be created or modified, provided the response from [`/versions`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientversions)
+  indicates support for a spec version that includes this proposal.
+  If a server intends to deny some (or all) changes, it SHOULD use
   the capability to advertise this, improving the client experience.
 
 - **When `enabled` is `false`**: Clients SHOULD expect to display profiles but NOT create or update
