@@ -162,13 +162,15 @@ Profiles MUST be at most 64 KiB (65,536 bytes) in size, as measured in
 [Canonical JSON](https://spec.matrix.org/v1.13/appendices/#canonical-json), including the
 `avatar_url` and `displayname` fields.
 
-Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.13/appendices/#common-namespaced-identifier-grammar), with the following considerations:
+Keys MUST follow the [Common Namespaced Identifier Grammar](https://spec.matrix.org/v1.13/appendices/#common-namespaced-identifier-grammar),
+with the following considerations:
 
 - **Namespace `m.*`**: Reserved for fields explicitly defined in the Matrix specification:
-  - Servers SHOULD NOT check whether a key is known to be in the Matrix specification, as future expansions
-    may be unknown to it.
-  - Clients that do not recognise a field in this namespace MAY attempt to display it but SHOULD NOT
-    attempt to update the content unless they understand its formatting and validation requirements.
+  - Servers SHOULD NOT check whether a key is known to be in the Matrix specification, as future
+    expansions may be unknown to it.
+  - Clients that do not recognise a field in this namespace MAY attempt to display it but
+    SHOULD NOT attempt to update the content unless they understand its formatting and validation
+    requirements.
 
 - **Namespace `tld.name.*`**: For client-specific or unstable fields, using Java package naming
   convention (e.g. `com.example.custom_field`).
