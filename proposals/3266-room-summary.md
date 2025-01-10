@@ -100,7 +100,7 @@ necessary for distinguishing possible join modes for `knock_restricted` rooms.
 | topic              | Optional. Topic of the room                                                                                                                           | Copied from `publicRooms`.                                                                                                            |
 | world_readable     | Required. If the room history can be read without joining.                                                                                            | Copied from `publicRooms`.                                                                                                            |
 | join_rule          | Optional. Join rules of the room                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
-| allowed_room_ids   | Room ids allows in restricted joins.                                                                                                                  | Copied from [`GET /_matrix/federation/v1/hierarchy/{roomId}`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1hierarchyroomid). Necessary to distinguish if the room can be joined or only knocked at.                                         |
+| allowed_room_ids   | Optional. Room ids allows in restricted joins.                                                                                                        | Copied from [`GET /_matrix/federation/v1/hierarchy/{roomId}`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1hierarchyroomid). Necessary to distinguish if the room can be joined or only knocked at.                                         |
 | room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
 | room_version       | Optional (for historical reasons (2)). Version of the room.                                                                                           | Can be used by clients to show incompatibilities with a room early.                                                                   |
 | membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
@@ -115,13 +115,10 @@ calls. Restricting this API to guests only would provide no security benefit.
 This API should be accessible to guest users (as it is already accessible
 without authentication).
 
-If the room is not allowed to be previewed, 403/`M_FORBIDDEN` should be
-returned. If the room can't be found, `M_NOT_FOUND` should be returned. A
-server might return additional error codes based on if a room was blocked, the
-`roomIdOrAlias` is malformed or other implementation specific error cases. The
-server should NOT return `M_UNAUTHORIZED` or otherwise divulge existance of a
-room, that requires authentication to preview, if the request is
-unauthenticated or authenticated by a user without access to the room.
+If the room can't be found, `M_NOT_FOUND` should be returned. The server should
+NOT return `M_UNAUTHORIZED` or otherwise divulge existance of a room, that
+requires authentication to preview, if the request is unauthenticated or
+authenticated by a user without access to the room.
 
 (1) The field `membership` will not be present when called unauthenticated, but
 is required when called authenticated. It should be `leave` if the server
