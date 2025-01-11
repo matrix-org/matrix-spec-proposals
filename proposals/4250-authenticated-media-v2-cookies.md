@@ -1,4 +1,4 @@
-# MSC0000: Authenticated media v2 (Cookie authentication for Client-Server API)
+# MSC4250: Authenticated media v2 (Cookie authentication for Client-Server API)
 
 With the introduction of authenticated media in Matrix 1.11, some browser environments became unable
 to view *unencrypted* media because they were unable to append the required `Authorization` header.
@@ -201,7 +201,7 @@ cookie auth to the entire Client-Server API is encouraged.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `org.matrix.msc0000.set_auth_cookie`
+While this proposal is not considered stable, implementations should use `org.matrix.msc4250.set_auth_cookie`
 instead of `set_auth_cookie` throughout this proposal. Cookie keys/values are not subject to unstable
 namespacing due to being implementation details.
 
