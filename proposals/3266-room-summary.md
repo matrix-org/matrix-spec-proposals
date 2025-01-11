@@ -131,8 +131,8 @@ rooms.
 
 #### Modifications to `/_matrix/client/v1/rooms/{roomId}/hierarchy`
 
-For symmetry the `room_version` and `encryption` fields are also added to the
-`/hierarchy` API.
+For symmetry the `room_version`, `allowed_room_ids` and `encryption` fields are
+also added to the `/hierarchy` API.
 
 ### Server-Server API
 
