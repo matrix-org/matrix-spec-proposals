@@ -193,7 +193,8 @@ demonstrates the process of defining new fields in the `m.*` namespace.
 }
 ```
 
-- **`M_MISSING_PARAM`**: Required parameter is missing, e.g. if a client attempts to set a profile field, but neglects to include that named field in the request body.
+- **`M_MISSING_PARAM`**: Required parameter is missing, e.g. if a client attempts to set a profile
+  field, but neglects to include that named field in the request body.
 
 ```json
 {
@@ -248,6 +249,23 @@ A server may return this error in several scenarios:
   "error": "The requested profile key does not exist."
 }
 ```
+
+### Applicability of Error Codes
+
+Unless explicitly stated otherwise, all error codes described in this
+section apply to all Client-Server and Server-Server endpoints introduced
+by this MSC. For example:
+
+1. `M_NOT_FOUND` applies to any attempt to retrieve a non-existent profile
+   field.
+2. `M_PROFILE_TOO_LARGE` applies to any attempt to create or update profile
+   data exceeding the allowed size.
+
+The Server-Server endpoints introduced in this MSC adhere to the existing
+error structure for federation, as the federation access remains read-only
+in this proposal. This means no new error codes or status code combinations
+are introduced for Server-Server endpoints beyond what is already
+documented in the specification.
 
 ## Propagation of Profile Fields
 
