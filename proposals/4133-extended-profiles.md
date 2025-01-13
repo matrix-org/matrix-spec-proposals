@@ -193,6 +193,15 @@ demonstrates the process of defining new fields in the `m.*` namespace.
 }
 ```
 
+- **`M_MISSING_PARAM`**: Required parameter is missing, e.g. if a client attempts to set a profile field, but neglects to include that named field in the request body.
+
+```json
+{
+  "errcode": "M_MISSING_PARAM",
+  "error": "A required parameter is missing: {parameter_name}."
+}
+```
+
 - **`M_PROFILE_TOO_LARGE`**: Exceeds total profile size limits.
 
 ```json
