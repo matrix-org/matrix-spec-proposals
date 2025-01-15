@@ -52,7 +52,7 @@ We add a new optional property to the device keys: `dehydrated`, which is set to
 dehydrated devices *must not* encrypt to devices marked as being a dehydrated
 device if they are not cross-signed.  Clients should also drop any to-device
 messages from a device marked as being a dehydrated device, since dehydrated
-device should not be sending messages.  Clients can use also this flag to for
+device should not be sending messages.  Clients can use also this flag for
 other purposes, such as:
 
 - Display dehydrated devices differently from normal devices, to avoid confusing
