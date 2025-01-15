@@ -3,7 +3,7 @@
 The [spec process](https://spec.matrix.org/proposals/) defines the stages and steps an MSC goes through
 before becoming actual specification. That process has an awkward accepted-but-not-merged state where
 the MSC has successfully completed a *merge* FCP, but has not yet had a spec PR merged to introduce
-that MSC to the formal specification. During this time, implementations MAY use stable endpoints when
+that MSC to the formal specification. During this time, implementations MAY use stable identifiers when
 speaking the MSC.
 
 The general theory of this stage is that after several rounds of review, the MSC is unlikely to materially
@@ -26,7 +26,7 @@ For MSCs which are *accepted* but not *merged* (anywhere between `finished-final
    enact this process step. This step is known as "post-acceptance rejection", regardless of target
    state for the affected MSC.
 
-2. Another MSC is required to change the text of another MSC, provided it does two things:
+2. Another MSC is required to change the text of the accepted MSC, provided it does two things:
 
    1. Describe the rationale for the change being made in a dedicated MSC; and
    2. Modify the accepted MSC's actual text in the same GitHub PR. This is to ensure that the change
