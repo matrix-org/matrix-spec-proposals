@@ -168,10 +168,6 @@ respond with [HTTP 413 Payload Too Large](https://developer.mozilla.org/en-US/do
    inefficient patterns.
 3. **Deprecating presence**: Servers could disable presence entirely. This has already
    happened in some deployments but removes a key real-time user activity feature.
-4. **Posting presence in rooms**: Embedding presence as timeline events could leverage
-   existing distribution. However, this would complicate large, high-traffic rooms and let
-   presence be tracked indefinitely. The added data overhead and privacy impact are worse
-   than poll-based federation for many use cases.
 
 ## Security considerations
 
