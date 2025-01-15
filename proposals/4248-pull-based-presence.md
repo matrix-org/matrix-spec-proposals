@@ -1,17 +1,24 @@
 # MSC4248: Pull-based presence
 
-Currently, presence in Matrix imposes a considerable burden on all participating servers.
-Matrix presence works by having the client notify its homeserver when a user changes their
-presence (online, unavailable, or offline). The homeserver then delivers this information
-to every server that might be interested, as described in the
+Currently, presence in Matrix imposes a considerable burden on all participating servers when
+users are engaging in large rooms, such as Matrix HQ, the Raspberry Pi room,
+and the Python room.
+
+Matrix presence currently works by having the client notify its homeserver when a user changes
+their presence (online, unavailable, or offline, and optionally a custom status message).
+The homeserver then delivers this information to every server that might be interested,
+as described in the
 [specification's presence section](https://spec.matrix.org/v1.13/server-server-api/#presence).
 
 However, this approach is highly inefficient and wasteful, requiring significant resources
-for all involved parties. Many servers have therefore disabled federated presence, and many
-clients have consequently chosen not to implement presence at all.
+for all involved parties. Many servers have therefore disabled federated presence, some have
+even gone as far as to disable local presence, and many clients have consequently chosen
+not to implement presence at all, because many maintainers simply don't see the value in
+presence.
 
-This MSC proposes a new pull-based model for presence that replaces the current "push-based"
-EDU presence mechanism. The aim is to save bandwidth and CPU usage for all servers, and to
+This MSC proposes a new optional pull-based model for presence that works alongside the current
+"push-based" EDU presence mechanism.
+The aim of "push-based presence" is to save bandwidth and CPU usage for all servers, and to
 reduce superfluous data exchanged between uninterested servers and clients.
 
 ## Proposal
@@ -36,6 +43,8 @@ Servers instead calculate which users they are interested in and query the homes
 those users at intervals. The new proposed federation endpoint is
 `/federation/v1/query/presence`. This allows servers to request presence data in bulk for
 the relevant users on that homeserver.
+
+Servers should offer the option to enable push-based presence, pull-based presence, or both.
 
 ### New flow
 
