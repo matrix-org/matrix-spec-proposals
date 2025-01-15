@@ -1,4 +1,4 @@
-# MSC0000: Extensible Events modification: State event handling
+# MSC4252: Extensible Events modification: State event handling
 
 [MSC1767 (accepted; not merged)](https://github.com/matrix-org/matrix-spec-proposals/pull/1767) introduced
 a concept of Extensible Events to Matrix, with a specific recommendation that state events *not* be
