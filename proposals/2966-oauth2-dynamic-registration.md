@@ -126,11 +126,11 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
 
  1. Private-Use URI Scheme:
     - the scheme must be prefixed with the client URI hostname in reverse-DNS notation. For example, if the client URI is `https://example.com/`, then a valid custom URI scheme would be `com.example.app:/`.
-    - the URI must not have an authority component. This means it should have a single slash after the scheme, with no hostname, username, or port.
+    - the URI must not have an authority component. This means that it must have either a single slash or none immediately following the scheme, with no hostname, username, or port.
  2. "http" URIs on the loopback interface:
     - it must use the `http` scheme
     - the host part must be `localhost`, `127.0.0.1`, or `[::1]`
-    - it must have no port registered. The homeserver will then accept any port number during the authorization flow.
+    - it must have no port registered. The homeserver must then accept any port number during the authorization flow.
  3. Claimed "https" Scheme URI:
     - some operating systems allow apps to claim "https" scheme URIs in the domains they control
     - when the browser encounters a claimed URI, instead of the page being loaded in the browser, the native app is launched with the URI supplied as a launch parameter
@@ -142,6 +142,7 @@ Examples of valid redirect URIs (with `https://example.com/` as the client URI):
 
  - `com.example.app:/callback`
  - `com.example:/`
+ - `com.example:callback`
  - `http://localhost/callback`
  - `http://127.0.0.1/callback`
  - `http://[::1]/callback`
@@ -149,7 +150,7 @@ Examples of valid redirect URIs (with `https://example.com/` as the client URI):
 Examples of invalid redirect URIs (with `https://example.com/` as the client URI):
 
  - `example:/callback`
- - `com.example.com://callback`
+ - `com.example.app://callback`
  - `https://localhost/callback`
  - `http://localhost:1234/callback`
 
