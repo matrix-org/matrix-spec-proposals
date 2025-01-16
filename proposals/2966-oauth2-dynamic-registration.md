@@ -72,7 +72,7 @@ For example:
 
 #### Metadata values required by the OAuth 2.0 authorization grant flow
 
-The following metadata values are required to be present to use the OAuth 2.0 authorization code grant, as described in [MSC2964]:
+The following metadata values are required to be present to use the OAuth 2.0 authorization code grant and refresh token grant, as described in [MSC2964]:
 
  - `redirect_uris`: Array of redirection URIs for use in redirect-based flows
  - `response_types`: Array of the OAuth 2.0 response types that the client may use
@@ -81,7 +81,7 @@ The following metadata values are required to be present to use the OAuth 2.0 au
 
 The homeserver must support the `none` value for the `token_endpoint_auth_method`, as most Matrix clients are client-side only, do not have a server component, and therefore are public clients.
 
-To use this grant, along with refresh tokens:
+To use this grant:
 
  - the `redirect_uris` must have at least one value
  - the `response_types` must include `code`
