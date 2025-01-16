@@ -183,12 +183,17 @@ Server: auth.example.com
   "redirect_uris": ["https://app.example.com/callback"],
   "token_endpoint_auth_method": "none",
   "response_types": ["code"],
-  "grant_types": ["authorization_code", "refresh_token"],
+  "grant_types": [
+    "authorization_code",
+    "refresh_token",
+    "urn:ietf:params:oauth:grant-type:token-exchange"
+  ],
   "application_type": "web"
 }
 ```
 
 The server replies with a JSON object containing the `client_id` allocated, as well as all the metadata values that the server registered.
+It must ignore fields, `grant_types` and `response_types` that are not understood by the server.
 
 With the previous registration request, the server would reply with:
 
@@ -196,8 +201,6 @@ With the previous registration request, the server would reply with:
 {
   "client_id": "s6BhdRkqt3",
   "client_name": "My App",
-
-
   "client_uri": "https://example.com/",
   "logo_uri": "https://example.com/logo.png",
   "tos_uri": "https://example.com/tos.html",
@@ -209,7 +212,7 @@ With the previous registration request, the server would reply with:
 }
 ```
 
-**Note**: in this example, the server has not registered the locale-specific values for `client_name`, `tos_uri`, and `policy_uri`, which is why they are not present in the response.
+**Note**: in this example, the server has not registered the locale-specific values for `client_name`, `tos_uri`, and `policy_uri`, which is why they are not present in the response. The server also does not support the `urn:ietf:params:oauth:grant-type:token-exchange` grant type, which is why it is not present in the response.
 
 The client must store the `client_id` for future use.
 
