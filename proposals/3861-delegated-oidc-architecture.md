@@ -193,6 +193,13 @@ Examples of existing proposals include:
 | [MSC3782: Matrix public key login spec][MSC3782]                                                                                | Similar to above                                                                                                                                                                                                                                                                                                           |
 | [MSC3744: Support for flexible authentication][MSC3744]                                                                         | OIDC would instead be used as the pluggable layer for auth in Matrix                                                                                                                                                                                                                                                       |
 
+## History
+
+This proposal was originally known as 'OIDC-native' authentication.
+To avoid the confusion with OIDC as a single sign-on/identity protocol, this proposal removed its dependency on OpenID Connect and was renamed to 'next-generation auth'.
+
+Consistent with [MSC4186], this proposal can also be referred to as 'augmented atomic authentication', abbreviated to 'AAA'.
+
 ## Security considerations
 
 Please refer to individual proposals.
@@ -232,5 +239,6 @@ The following MSCs are not directly part of this proposal but this proposal assu
 [MSC3824]: https://github.com/matrix-org/matrix-spec-proposals/pull/3824
 [MSC3967]: https://github.com/matrix-org/matrix-spec-proposals/pull/3967
 [MSC3970]: https://github.com/matrix-org/matrix-spec-proposals/pull/3970
+[MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
 [MSC4190]: https://github.com/matrix-org/matrix-spec-proposals/pull/4190
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
