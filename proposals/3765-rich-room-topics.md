@@ -43,7 +43,13 @@ repeated here.
 
 The wrapping `m.topic` content block is similar to `m.caption` for file
 uploads as defined in [MSC3551]. It avoids clients accidentally rendering
-the topic state event as a room message.
+the topic as a room message. Note that while [MSC1767] had explicitly
+excluded state events from being treated as extensible, this is being
+changed with [MSC4252]. The extra content block, therefore, allows putting
+a fallback representation that is actually designated for the timeline
+into a separate `content['m.text']` field. Lastly, the `m.topic` content
+block also serves as a good place for additional fields to be added by
+other MSCs in the future.
 
 It is recommended that clients always include a plain text variant within `m.text` when
 sending `m.room.topic` events. This prevents bad UX in situations where a plain
@@ -118,6 +124,7 @@ blocks might have their own prefixing requirements.
 [plain text]: https://spec.matrix.org/v1.12/client-server-api/#mroomtopic
 [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
 [MSC3551]: https://github.com/matrix-org/matrix-spec-proposals/pull/3551
+[MSC4252]: https://github.com/matrix-org/matrix-spec-proposals/pull/4252
 [sanitise]: https://spec.matrix.org/v1.12/client-server-api/#security-considerations
 [server side search]: https://spec.matrix.org/v1.12/client-server-api/#server-side-search
 [`m.room.topic`]: https://spec.matrix.org/v1.12/client-server-api/#mroomtopic
