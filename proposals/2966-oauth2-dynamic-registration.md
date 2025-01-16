@@ -50,6 +50,8 @@ The following metadata values should be used by clients to help users identify t
 
 All the URIs must use the `https` scheme and use the `client_uri` as a common base.
 
+If provided by the client, the homeserver should show or link to the `tos_uri` and `policy_uri` to the user.
+
 All of these metadata values are optional.
 
 As per [RFC 7591 sec. 2.2](https://tools.ietf.org/html/rfc7591#section-2.2), these metadata values may be localized.
