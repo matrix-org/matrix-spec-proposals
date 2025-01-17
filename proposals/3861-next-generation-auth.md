@@ -174,6 +174,8 @@ How this is intended to work, and let client offer reasonable user-experience is
 This section describes a sample flow, taking together the steps described in more details in the dedicated MSCs.
 It assumes the client already discovered the homeserver's Client-Server API endpoint.
 
+[areweoidcyet.com](https://areweoidcyet.com/client-implementation-guide/) has an interactive guide on how to use this flow.
+
 ### Discovery [MSC2965]
 
 First step is to discover the homeserver's authorization server metadata.
