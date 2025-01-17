@@ -238,9 +238,15 @@ For a discussion on alternatives please see [MSC3861]
 
 ## Security considerations
 
-Since this touches one of the most sensitive part of the API, there are a lot of security considerations to have.
+Since this touches one of the most sensitive parts of the API, there are a lot of security considerations to keep in mind.
 
-The [OAuth 2.0 Security Best Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-16) IETF draft has many attack scenarios. Many of those scenarios are mitigated by the choices enforced in the client profiles outlined in this MSC.
+The [OAuth 2.0 Security Best Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-16) IETF draft outlines many potential attack scenarios. Many of these scenarios are mitigated by the choices enforced in the client profiles outlined in this MSC.
+It motivates the following decisions in this profile:
+
+ - Using strict redirect URIs validation helps mitigate the risk of open redirection attacks.
+ - Using the `code` response mode, alongside PKCE mitigates the risk in cases of redirection hijacking.
+ - Usage of short-lived access tokens, along with rotation of refresh tokens mitigates the impact of leaked tokens.
+ - Using the system browser to authenticate users lowers the risk of credentials exfiltration by the client.
 
 ## Unstable prefix
 
