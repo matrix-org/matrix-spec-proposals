@@ -80,7 +80,21 @@ The authentication server discovery could be done by other mechanisms.
 ### Discovery via [RFC8414](https://tools.ietf.org/html/rfc8414)
 
 [RFC8414](https://tools.ietf.org/html/rfc8414): OAuth 2.0 Authorization Server Metadata is a standard similar to OpenID Connect Discovery.
-The main differences is that the well-known endpoint is under `.well-known/oauth-authorization-server` and this standard is defined by the IETF and not the OpenID Foundation.
+The main difference is that the well-known endpoint is under `.well-known/oauth-authorization-server` and this standard is defined by the IETF and not the OpenID Foundation.
+
+One consideration of using this RFC is that it explicitly states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and *not* use the `.well-known/oauth-authorization-server` endpoint.
+
+### Publish the server metadata through a new C-S API
+
+To eliminate one roundtrip, the server metadata could be published directly through a new C-S API endpoint.
+A theoretical endpoint could be `/_matrix/client/v1/auth_metadata`, which would directly return the server metadata, as defined in [RFC8414](https://tools.ietf.org/html/rfc8414).
+
+The full discovery flow would be as follows:
+
+- `GET [domain]/_matrix/client/v1/auth_metadata` to discover the homeserver
+- `GET [homeserver]/_matrix/client/v1/auth_metadata` to discover the authorization server metadata
+- `POST [issuer client registration endpoint]` to register the OAuth 2.0 client
+- Redirect to `[issuer authorization endpoint]` to initiate the login flow
 
 ### Discovery via the well-known client discovery
 
