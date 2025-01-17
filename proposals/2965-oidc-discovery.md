@@ -1,20 +1,72 @@
-# MSC2965: Usage of OpenID Connect Discovery for authentication server metadata discovery
+# MSC2965: OAuth 2.0 Authorization Server Metadata discovery
 
-This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
+This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC][MSC3861].
 
-To be able to initiate an OAuth 2.0 login flow to use a Matrix server, the client needs to know the location of the authentication server in use.
+To be able to initiate an OAuth 2.0 login flow to use a Matrix server, the client needs to know the authorization server metadata, as defined in [RFC8414].
 
 ## Proposal
 
-This introduces a new Client-Server API endpoint to discover the authentication server used by the homeserver.
+This introduces a new Client-Server API endpoint to discover the authorization server metadata used by the homeserver.
 
-### `GET /auth_issuer`
+### `GET /auth_metadata`
 
-A request on this endpoint should return a JSON object with one field:
-
-- _REQUIRED_ `issuer`: the OpenID Connect Provider that is trusted by the homeserver
+A request on this endpoint should return a JSON object containing the authorization server metadata as defined in [RFC8414].
 
 For example:
+
+```http
+GET /_matrix/client/v1/auth_metadata
+Host: example.com
+Accept: application/json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: public, max-age=3600
+```
+
+```json
+{
+  "authorization_endpoint": "https://account.example.com/oauth2/auth",
+  "token_endpoint": "https://account.example.com/oauth2/token",
+  "registration_endpoint": "https://account.example.com/oauth2/clients/register",
+  "revocation_endpoint": "https://account.example.com/oauth2/revoke",
+  "jwks_uri": "https://account.example.com/oauth2/keys",
+  "response_types_supported": ["code"],
+  "grant_types_supported": ["authorization_code", "refresh_token"],
+  "response_modes_supported": ["query", "fragment"],
+  "code_challenge_methods_supported": ["S256"],
+  "...": "some fields omitted"
+}
+```
+
+**Note**: The fields required for the main flow outlined by [MSC3861] and its sub-proposals are:
+
+ - `authorization_endpoint`
+ - `token_endpoint`
+ - `revocation_endpoint`
+ - `response_types_supported` including the value `code`
+ - `grant_types_supported` including the values `authorization_code` and `refresh_token`
+ - `response_modes_supported` including the values `query` and `fragment`
+ - `code_challenge_methods_supported` including the value `S256`
+
+See individual proposals for more details on each field.
+
+## Potential issues
+
+The authorization server metadata is relatively large and may change over time. The client should:
+
+- Cache the metadata appropriately based on HTTP caching headers
+- Refetch the metadata if it is stale
+
+## Alternatives
+
+### Discovery via OpenID Connect Discovery
+
+Instead of directly exposing the metadata through a Client-Server API endpoint, the homeserver could expose only the issuer URL and let clients discover the metadata using OpenID Connect Discovery.
+
+In this approach, a new endpoint `/_matrix/client/v1/auth_issuer` would return just the issuer URL:
 
 ```http
 GET /_matrix/client/v1/auth_issuer
@@ -33,68 +85,16 @@ Content-Type: application/json
 }
 ```
 
-The Matrix client can then discover the OpenID Connect Provider configuration by using [OpenID Connect Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
+The Matrix client would then discover the OpenID Connect Provider configuration by using [OpenID Connect Discovery].
 
-```http
-GET /.well-known/openid-configuration
-Host: account.example.com
-Accept: application/json
-```
+The downside of this approach is that it requires an extra roundtrip to get the metadata.
+It also introduces a dependency on an OpenID Connect specification: [MSC3861] proposals tries to build on OAuth 2.0/IETF standards as much as possible.
 
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
-```
+### Discovery via [RFC8414] well-known endpoint
 
-```json
-{
-  "issuer": "https://account.example.com/",
-  "authorization_endpoint": "https://account.example.com/oauth2/auth",
-  "token_endpoint": "https://account.example.com/oauth2/token",
-  "registration_endpoint": "https://account.example.com/oauth2/clients/register",
-  "end_session_endpoint": "https://account.example.com/oauth2/logout",
-  "jwks_uri": "https://account.example.com/oauth2/keys",
-  "response_types_supported": ["code"],
-  "grant_types_supported": ["authorization_code", "refresh_token"],
-  "response_mode_supported": ["query", "fragment"],
-  "...": "some fields omitted"
-}
-```
-
-## Potential issues
-
-Using a separate endpoint for discovery makes the request chain to initiate a login flow longer.
-A full discovery flow would be as follows:
-
-- `GET [domain]/.well-known/matrix/client` to discover the homeserver
-- `GET [homeserver]/_matrix/client/v1/auth_issuer` to discover the issuer
-- `GET [issuer]/.well-known/openid-configuration` to discover the OpenID Connect Provider configuration
-- `POST [issuer client registration endpoint]` to register the OAuth 2.0 client
-  (see [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966))
-- Redirect to `[issuer authorization endpoint]` to initiate the login flow
-
-## Alternatives
-
-The authentication server discovery could be done by other mechanisms.
-
-### Discovery via [RFC8414](https://tools.ietf.org/html/rfc8414)
-
-[RFC8414](https://tools.ietf.org/html/rfc8414): OAuth 2.0 Authorization Server Metadata is a standard similar to OpenID Connect Discovery.
-The main difference is that the well-known endpoint is under `.well-known/oauth-authorization-server` and this standard is defined by the IETF and not the OpenID Foundation.
-
-One consideration of using this RFC is that it explicitly states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and *not* use the `.well-known/oauth-authorization-server` endpoint.
-
-### Publish the server metadata through a new C-S API
-
-To eliminate one roundtrip, the server metadata could be published directly through a new C-S API endpoint.
-A theoretical endpoint could be `/_matrix/client/v1/auth_metadata`, which would directly return the server metadata, as defined in [RFC8414](https://tools.ietf.org/html/rfc8414).
-
-The full discovery flow would be as follows:
-
-- `GET [domain]/.well-known/matrix/client` to discover the Client-Server API endpoint
-- `GET [homeserver]/_matrix/client/v1/auth_metadata` to discover the authorization server metadata
-- `POST [issuer client registration endpoint]` to register the OAuth 2.0 client
-- Redirect to `[issuer authorization endpoint]` to initiate the login flow
+[RFC8414] OAuth 2.0 Authorization Server Metadata already defines a standard well-known endpoint, under `.well-known/oauth-authorization-server`.
+However, the RFC states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and *not* use the `.well-known/oauth-authorization-server` endpoint.
+This is why this proposal suggests defining a new C-S API endpoint instead.
 
 ### Discovery via the well-known client discovery
 
@@ -180,7 +180,7 @@ different authentication servers could be used by different accounts on the serv
 
 The downsides of this approach are:
 
-- the `.well-known` resource is dynamic, which can be harder to host/delegate & might conflict with other services like Mastodon
+- the `.well-known/webfinger` resource is dynamic, which can be harder to host/delegate & might conflict with other services leveraging it like Mastodon
 - this does not cover discovering the authentication server for user registration
 
 ## Security considerations
@@ -191,4 +191,8 @@ None relevant.
 
 While this MSC is not in a released version of the specification,
 clients should use the `org.matrix.msc2965` unstable prefix for the endpoint,
-e.g. `GET /_matrix/client/unstable/org.matrix.msc2965/auth_issuer`.
+e.g. `GET /_matrix/client/unstable/org.matrix.msc2965/auth_metadata`.
+
+[RFC8414]: https://tools.ietf.org/html/rfc8414
+[MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
+[OpenID Connect Discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html
