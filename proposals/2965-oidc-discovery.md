@@ -91,7 +91,7 @@ A theoretical endpoint could be `/_matrix/client/v1/auth_metadata`, which would 
 
 The full discovery flow would be as follows:
 
-- `GET [domain]/_matrix/client/v1/auth_metadata` to discover the homeserver
+- `GET [domain]/.well-known/matrix/client` to discover the Client-Server API endpoint
 - `GET [homeserver]/_matrix/client/v1/auth_metadata` to discover the authorization server metadata
 - `POST [issuer client registration endpoint]` to register the OAuth 2.0 client
 - Redirect to `[issuer authorization endpoint]` to initiate the login flow
