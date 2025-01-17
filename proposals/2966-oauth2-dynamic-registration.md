@@ -231,7 +231,15 @@ This approach has the advantage of being able to use the same `client_id` for di
 
 ## Security considerations
 
-TBD
+The restrictions on the metadata values laid out in this MSC are a best effort to prevent client impersonation, but they are not flawless.
+
+For web clients, it relies on the client's ability to prove ownership of the redirect URI, which can be guaranteed to some extent by sane DNS management and its use of TLS.
+If a client-related domain name hosts an open redirector, it could be used to impersonate the client.
+
+For native clients, because they can use private-use URI schemes and localhost redirectors, it relies more on the underlying operating system's security model and their application distribution model.
+A good example of this is if a mobile client distributed through an app store registers the `app.acme.corp:` scheme in an effort to impersonate "ACME Corp's" app, then "ACME Corp" would have a valid case to take down the malicious app from the app store.
+
+In both cases, it is crucial for the server to strictly enforce these restrictions and to show as much information about the client as possible to the user so they can make an informed decision.
 
 ## Unstable prefix
 
