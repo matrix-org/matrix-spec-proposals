@@ -94,7 +94,7 @@ It also introduces a dependency on an OpenID Connect specification: [MSC3861] pr
 
 [RFC8414] OAuth 2.0 Authorization Server Metadata already defines a standard well-known endpoint, under `.well-known/oauth-authorization-server`.
 However, the RFC states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and *not* use the `.well-known/oauth-authorization-server` endpoint.
-This is why this proposal suggests defining a new C-S API endpoint instead.
+To avoid confusion with the existing `.well-known/matrix/*` documents, this proposal suggests defining a new C-S API endpoint instead.
 
 ### Discovery via the well-known client discovery
 
