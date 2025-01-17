@@ -156,6 +156,7 @@ To cover the most common use case of authenticating an end-user, the following M
 - [MSC2965: Usage of OpenID Connect Discovery for authentication server metadata discovery][MSC2965] describes how a client can discover the authentication server metadata of the homeserver
 - [MSC2966: Usage of OAuth 2.0 Dynamic Client Registration][MSC2966] describes how a client can register itself with the homeserver to get a client identifier
 - [MSC2967: API scopes][MSC2967] defines the first set of access scopes and the basis for future access scopes
+- [MSC4254: Usage of RFC7009 Token Revocation for Matrix client logout][MSC4254] describes how a client can end a client session
 
 ### Account management
 
@@ -170,7 +171,234 @@ How this is intended to work, and let client offer reasonable user-experience is
 
 ## Sample flow
 
-TODO: This section will give an overview of a sample flow, referencing the MSCs above.
+This section describes a sample flow, taking together the steps described in more details in the dedicated MSCs.
+It assumes the client already discovered the homeserver's Client-Server API endpoint.
+
+### Discovery [MSC2965]
+
+First step is to discover the homeserver's authorization server metadata.
+This is defined by [MSC2965: Usage of OpenID Connect Discovery for authentication server metadata discovery][MSC2965] as follows:
+
+```http
+GET /_matrix/client/v1/auth_issuer HTTP/1.1
+Host: matrix.example.com
+Accept: application/json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+  "issuer": "https://auth.example.com/"
+}
+```
+
+The client can then use the `issuer` value to discover the homeserver's authorization server metadata.
+
+```http
+GET /.well-known/openid-configuration HTTP/1.1
+Host: auth.example.com
+Accept: application/json
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+
+```json
+{
+  "authorization_endpoint": "https://auth.example.com/oauth2/auth",
+  "token_endpoint": "https://auth.example.com/oauth2/token",
+  "registration_endpoint": "https://auth.example.com/oauth2/clients/register",
+  "revocation_endpoint": "https://auth.example.com/oauth2/revoke",
+  "...": "some fields omitted"
+}
+```
+
+The client must save this document as the "authorization server metadata".
+
+### Client registration [MSC2966]
+
+Next step is to register the client with the homeserver.
+This uses the `registration_endpoint` value from the authorization server metadata.
+This is defined by [MSC2966: Usage of OAuth 2.0 Dynamic Client Registration][MSC2966] as follows:
+
+```http
+POST /oauth2/clients/register HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Server: auth.example.com
+```
+
+```json
+{
+  "client_name": "My App",
+  "client_uri": "https://example.com/",
+  "logo_uri": "https://example.com/logo.png",
+  "tos_uri": "https://example.com/tos.html",
+  "policy_uri": "https://example.com/policy.html",
+  "redirect_uris": ["https://app.example.com/callback"],
+  "token_endpoint_auth_method": "none",
+  "response_types": ["code"],
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ]
+}
+```
+
+The server replies with a JSON object containing the `client_id` allocated, as well as all the metadata values that the server registered.
+
+With the previous registration request, the server would reply with:
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+Pragma: no-cache
+```
+
+```json
+{
+  "client_id": "s6BhdRkqt3",
+  "client_name": "My App",
+  "client_uri": "https://example.com/",
+  "logo_uri": "https://example.com/logo.png",
+  "tos_uri": "https://example.com/tos.html",
+  "policy_uri": "https://example.com/policy.html",
+  "redirect_uris": ["https://app.example.com/callback"],
+  "response_types": ["code"],
+  "grant_types": ["authorization_code", "refresh_token"],
+  "application_type": "web"
+}
+```
+
+The client must store the `client_id` for later use.
+
+### Authorization request [MSC2964]
+
+The client is ready to start an authorization request.
+It needs to determine a few other values:
+
+ - `state`: a usually random string that will be used to associate the response with the authorization request
+ - `code_verifier`: a random string with enough entropy which will be used to ensure the client is the one that initiated the request
+ - The Matrix device ID the client wants to use/create
+
+In this example, we've picked:
+ - `state` to be `To29j0DdKUcc75Rt`
+ - `code_verifier` to be `NXt2S0jiptl4q0m8OYVJFFyuDB5i5aeJSOUJ4NpdmTv`
+ - The device ID to be `EIKO9QUIAL`
+
+This will help create the authorization request URL, with the following parameters:
+
+ - `response_mode` set to `fragment` for a client-side web client
+ - `response_type` set to `code`
+ - `client_id` got from the registration request above, in this example `s6BhdRkqt3`
+ - `code_challenge_method` set to `S256`
+ - `code_challenge` derived from the `code_verifier` using the `S256` method. In this example, it is `8coMp56MvhmfFtjk0dYd9H9d3jQRV1qjS703hAOVnEk`
+ - `scope`: as defined by [MSC2967]
+    - For full access, it needs to contain:
+        - `urn:matrix:client:api:*`
+        - `urn:matrix:device:XXYYZZ`, where `XXYYZZ` is the device ID
+    - Our example is then using `urn:matrix:client:api:* urn:matrix:device:EIKO9QUIAL`
+ - `redirect_uri`: the client's redirect URI registered. In our example, it is `https://app.example.com/callback`
+
+Building the full URL gives:
+
+```
+https://auth.example.com/oauth2/auth?response_mode=fragment&response_type=code&client_id=s6BhdRkqt3&code_challenge_method=S256&code_challenge=8coMp56MvhmfFtjk0dYd9H9d3jQRV1qjS703hAOVnEk&scope=urn:matrix:client:api:%20urn:matrix:device:EIKO9QUIAL&redirect_uri=https%3A%2F%2Fapp.example.com%2Fcallback&state=To29j0DdKUcc75Rt
+```
+
+The client then redirects the user to this URL.
+
+### Authorization response [MSC2964]
+
+At the end of the authorization flow, the user is redirected back to the client, with a `code` parameter in the URL fragment, as well as the `state` parameter.
+
+```
+https://app.example.com/callback#code=To29j0DdKUcc75Rt&state=To29j0DdKUcc75Rt
+```
+
+The client must now exchange the `code` for an access token.
+
+This is defined by [MSC2964: Usage of OAuth 2.0 authorization code grant and refresh token grant][MSC2964] as follows:
+
+```http
+POST /oauth2/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+Server: auth.example.com
+
+grant_type=authorization_code&code=To29j0DdKUcc75Rt&redirect_uri=https%3A%2F%2Fapp.example.com%2Fcallback&code_verifier=NXt2S0jiptl4q0m8OYVJFFyuDB5i5aeJSOUJ4NpdmTv
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+Pragma: no-cache
+```
+
+```json
+{
+  "access_token": "mat_ooreiPhei2wequu9fohkai3AeBaec9oo",
+  "refresh_token": "mar_Pieyiev3aenahm4atah7aip3eiveizah",
+  "expires_in": 300,
+  "token_type": "Bearer"
+}
+```
+
+The client can now use the access token to make authenticated requests to the homeserver.
+It will expire after `expires_in` seconds, after which it must be refreshed, using the refresh token.
+
+```http
+POST /oauth2/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+Server: auth.example.com
+
+grant_type=refresh_token&refresh_token=mar_Pieyiev3aenahm4atah7aip3eiveizah
+```
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+Pragma: no-cache
+```
+
+```json
+{
+  "access_token": "mat_ohb2Chei5Ne5yoghohs8voochei1laep",
+  "refresh_token": "mar_eequee6zahsee1quieta8oopoopeeThu",
+  "expires_in": 300,
+  "token_type": "Bearer"
+}
+```
+
+### Token revocation [MSC4254]
+
+To end a client session, the client must revoke the access token.
+This is defined by [MSC4254: Usage of RFC7009 Token Revocation for Matrix client logout][MSC4254] as follows:
+
+```http
+POST /oauth2/revoke HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+Server: auth.example.com
+
+token=mat_ohb2Chei5Ne5yoghohs8voochei1laep&token_type_hint=access_token&client_id=s6BhdRkqt3
+```
+
+```http
+HTTP/1.1 200 OK
+```
+
+Both the access token and the refresh token are revoked, and the associated device ID is deleted on the homeserver.
 
 ## Potential issues
 
@@ -217,6 +445,7 @@ The following MSCs are part of this proposal:
 - [MSC2966]
 - [MSC2967]
 - [MSC3824]
+- [MSC4254]
 
 The following MSCs are not directly part of this proposal but this proposal assumes that these are accepted:
 
@@ -242,3 +471,4 @@ The following MSCs are not directly part of this proposal but this proposal assu
 [MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
 [MSC4190]: https://github.com/matrix-org/matrix-spec-proposals/pull/4190
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
+[MSC4254]: https://github.com/matrix-org/matrix-spec-proposals/pull/4254
