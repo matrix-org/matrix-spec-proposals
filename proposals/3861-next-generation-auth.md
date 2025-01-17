@@ -153,7 +153,7 @@ The long-term goal is to deprecate the existing UIA APIs and replace them with t
 To cover the most common use case of authenticating an end-user, the following MSCs are necessary:
 
 - [MSC2964: Usage of OAuth 2.0 authorization code grant and refresh token grant][MSC2964] describes how the main authentication flow works
-- [MSC2965: Usage of OpenID Connect Discovery for authentication server metadata discovery][MSC2965] describes how a client can discover the authentication server metadata of the homeserver
+- [MSC2965: OAuth 2.0 Authorization Server Metadata discovery][MSC2965] describes how a client can discover the authentication server metadata of the homeserver
 - [MSC2966: Usage of OAuth 2.0 Dynamic Client Registration][MSC2966] describes how a client can register itself with the homeserver to get a client identifier
 - [MSC2967: API scopes][MSC2967] defines the first set of access scopes and the basis for future access scopes
 - [MSC4254: Usage of RFC7009 Token Revocation for Matrix client logout][MSC4254] describes how a client can end a client session
@@ -177,10 +177,10 @@ It assumes the client already discovered the homeserver's Client-Server API endp
 ### Discovery [MSC2965]
 
 First step is to discover the homeserver's authorization server metadata.
-This is defined by [MSC2965: Usage of OpenID Connect Discovery for authentication server metadata discovery][MSC2965] as follows:
+This is defined by [MSC2965: OAuth 2.0 Authorization Server Metadata discovery][MSC2965] as follows:
 
 ```http
-GET /_matrix/client/v1/auth_issuer HTTP/1.1
+GET /_matrix/client/v1/auth_metadata HTTP/1.1
 Host: matrix.example.com
 Accept: application/json
 ```
@@ -188,25 +188,7 @@ Accept: application/json
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
-```
-
-```json
-{
-  "issuer": "https://auth.example.com/"
-}
-```
-
-The client can then use the `issuer` value to discover the homeserver's authorization server metadata.
-
-```http
-GET /.well-known/openid-configuration HTTP/1.1
-Host: auth.example.com
-Accept: application/json
-```
-
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
+Cache-Control: public, max-age=3600
 ```
 
 ```json
@@ -220,6 +202,7 @@ Content-Type: application/json
 ```
 
 The client must save this document as the "authorization server metadata".
+It must also check that it contains all the fields it will need for other parts of the flow.
 
 ### Client registration [MSC2966]
 
