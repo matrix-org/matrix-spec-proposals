@@ -385,8 +385,34 @@ Both the access token and the refresh token are revoked, and the associated devi
 
 ## Potential issues
 
-TODO
+Each individual proposal has its own potential issues section.
+This section only covers the potential issues that are common to the proposal as a whole.
 
+### User and ecosystem migration
+
+This proposal fundamentally changes the way users and ecosystems interact with their accounts on their homeservers.
+Users might be used to entering their credentials within their client, which means that migrating to this proposal will introduce a new web-based login flow that will be different from what users are used to.
+
+In the long term, this is beneficial for the ecosystem, as it helps users familiarize themselves with the distinction between their homeserver and their client.
+
+This proposal is not yet proposing to deprecate the existing APIs, in an effort to avoid breaking existing clients as much as possible.
+This adds complexity for homeserver implementers if they want to support both the old and new APIs.
+
+### Reliance on the system browser
+
+The main authentication flow of this proposal is a web-based flow that is intended to run in the context of a system browser.
+There are alternative flows which could help support login on devices where a browser is not available, or for automation purposes, but they are not yet part of this proposal.
+
+Additionally, in some contexts, the system browser can be a security risk, as it has a wide attack surface inherent to its complexity.
+This can be mitigated to some extent by having homeservers implement authorization flows that don't require JavaScript, but this doesn't completely eliminate the risk.
+
+### Homeserver implementation complexity
+
+In practice, to provide a good user experience, homeservers have to implement web views for the authentication flows, which is complex to implement well.
+This means having proper accessibility, translations, and UX.
+Those concerns were previously only affecting client implementations, and will now also affect homeserver implementations.
+
+On the other hand, the previous registration flow was notoriously complex to implement both for clients and homeservers, and this proposal removes a lot of that complexity from the client side.
 ## Alternatives
 
 The primary alternative is to continue to build out the auth capabilities within the Client-Server API.
