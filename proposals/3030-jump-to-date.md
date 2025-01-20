@@ -152,7 +152,7 @@ the room was created.
 ## Alternatives
 
 We chose the current `/timestamp_to_event` route because it sounded like the
-easist path forward to bring it to fruition and get some real-world experience.
+easiest path forward to bring it to fruition and get some real-world experience.
 And was on our mind during the [initial discussion](https://docs.google.com/document/d/1KCEmpnGr4J-I8EeaVQ8QJZKBDu53ViI7V62y5BzfXr0/edit#bookmark=id.qu9k9wje9pxm) because there was some prior art with a [WIP
 implementation](https://github.com/matrix-org/synapse/pull/9445/commits/91b1b3606c9fb9eede0a6963bc42dfb70635449f)
 from @erikjohnston. The alternatives haven't been thrown out for a particular
