@@ -102,10 +102,10 @@ method SHOULD NOT delete the key but rather retain it with a `null` value. Serve
 
 ## Server-Server API Changes
 
-The federation endpoint [`GET /_matrix/federation/v1/query/profile](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1queryprofile)`
-will mirror the client-server API changes to facilitate profile information consistency
-between local and federated users, though homeservers MAY decide specific fields are not
-published over federation.
+The federation endpoint [`GET /_matrix/federation/v1/query/profile`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1queryprofile)
+will mirror the client-server API changes to facilitate profile information consistency between
+local and federated users, though homeservers MAY decide specific fields are not published over
+federation.
 
 As per the current stable endpoint, it accepts an optional `field` query string parameter to
 request a single field. At the time of writing, the Matrix specification says:
@@ -144,9 +144,8 @@ Clients MAY check for this capability before attempting to create or modify a pr
 
 - **When capability is missing**: Clients SHOULD assume extended profiles are supported and that
   they can be created or modified, provided the response from [`/versions`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientversions)
-  indicates support for a spec version that includes this proposal.
-  If a server intends to deny some (or all) changes, it SHOULD use
-  the capability to advertise this, improving the client experience.
+  indicates support for a spec version that includes this proposal. If a server intends to deny some
+  (or all) changes, it SHOULD use the capability to advertise this, improving the client experience.
 
 - **When `enabled` is `false`**: Clients SHOULD expect to display profiles but NOT create or update
   fields. Any attempt to do so SHOULD result in a `403 Forbidden` error. This does not affect
@@ -254,19 +253,16 @@ A server may return this error in several scenarios:
 
 ### Applicability of Error Codes
 
-Unless explicitly stated otherwise, all error codes described in this
-section apply to all Client-Server and Server-Server endpoints introduced
-by this MSC. For example:
+Unless explicitly stated otherwise, all error codes described in this section apply to all
+Client-Server and Server-Server endpoints introduced by this MSC. For example:
 
-1. `M_NOT_FOUND` applies to any attempt to retrieve a non-existent profile
-   field.
-2. `M_PROFILE_TOO_LARGE` applies to any attempt to create or update profile
-   data exceeding the allowed size.
+1. `M_NOT_FOUND` applies to any attempt to retrieve a non-existent profile field.
+2. `M_PROFILE_TOO_LARGE` applies to any attempt to create or update profile data exceeding the
+   allowed size.
 
-The Server-Server endpoints introduced in this MSC adhere to the existing
-error structure for federation, as the federation access remains read-only
-in this proposal. This means no new error codes or status code combinations
-are introduced for Server-Server endpoints beyond what is already
+The Server-Server endpoints introduced in this MSC adhere to the existing error structure for
+federation, as the federation access remains read-only in this proposal. This means no new error
+codes or status code combinations are introduced for Server-Server endpoints beyond what is already
 documented in the specification.
 
 ## Propagation of Profile Fields
