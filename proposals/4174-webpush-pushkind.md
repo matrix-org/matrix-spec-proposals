@@ -22,7 +22,8 @@ are already available and robuste: they are reviewed, and acknowledge by experts
 Having a webpush push kind would provide push notifications without gateway to
 - Web app and desktop app
 - Android apps using UnifiedPush (MSC2970 was open for this and won't be required anymore)
-- Maybe other ? We have seen apple moving a lot into web push support
+- Android apps using FCM (It is possible to push to FCM with webpush standard [7])
+- Maybe other ? We have seen apple moving a lot into web push support [8]
 
 [1] https://github.com/element-hq/hydrogen-web/blob/9b68f30aad329c003ead70ff43f289e293efb8e0/src/platform/web/dom/NotificationService.js#L32
 [2] https://github.com/matrix-org/sygnal/blob/main/sygnal/webpushpushkin.py#L152
@@ -30,6 +31,8 @@ Having a webpush push kind would provide push notifications without gateway to
 [4] https://www.rfc-editor.org/rfc/rfc8030
 [5] https://www.rfc-editor.org/rfc/rfc8291
 [6] https://www.rfc-editor.org/rfc/rfc8292
+[7] https://gist.github.com/mar-v-in/2a054e3a4c0a508656549fc7d0aaeb74#webpush
+[8] https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers
 
 ## Proposal
 
