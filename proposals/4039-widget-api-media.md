@@ -1,0 +1,360 @@
+# MSC4039: Access the Content Repository With the Widget API
+
+[MSC1236][MSC1236], [MSC2762][MSC2762], etc. specify a Widget API that is able to receive events from and write events
+to the room that is loaded in the client. Besides sending pure text events, it is possible to attach media and other
+files to events. The two concepts are consciously separated: Files are stored in a "[content repository][content]"
+(usually attached to the homeserver) and are addressable through a "[Matrix Content (`mxc://`) URI][mxc]". This URI can
+in turn be used in an event to reference a file.
+
+While prior to [MSC3916][MSC3916] and deprecation in Matrix v1.11, widgets could already download media via the
+unauthenticated download endpoint, provided they acquired the URL of the homeserver, the widget API does not currently
+contain a way to authenticate with the upload and new download endpoints nor does it otherwise expose these functions
+from the client hosting the widget to the widget itself. This would be useful to post images or attachments, but also to
+upload larger data that can't easily be stored in a room event, like a whiteboard's content that can easily grow larger
+than 64kb.
+
+This proposal aims to bring the functionality of reading and writing files from and to the content repository into the
+widget specification. Specifically, it should provide the equivalents of the ["Upload Content"][upload] and ["Download
+Content"][download] endpoints of the Client-Server API, while also having the client handle as much of the end-to-end
+encryption as possible.
+
+## Proposal
+
+The widget API is extended with three new interfaces to access the content repository. The
+user must manually approve the following capabilities before the actions can be used:
+
+- `m.upload_file`: Let the widget upload files.
+- `m.download_file`: Let the widget download files.
+
+Uploading to and downloading from the content repository is separated from the events referencing these files as
+explained above. This gives Matrix applications dealing with referenced files great flexibility, for example it would be
+possible to reference multiple files from a single event. It is also not an issue for clients to deal with end-to-end
+encrypted files, as they can easily reference the `key` and `iv` required for decryption through the
+[`EncryptedFile`][encryptedfile] metadata in the referencing event. [MSC2762][MSC2762] defines the client as responsible
+for handling encryption.
+
+As a consequence of the three factors separation, keeping to standard Matrix file encryption (i.e. `EncryptedFile`), and
+implementing the en/decryption in the client follows, that the widget must be responsible for attaching the
+`EncryptedFile` metadata to any event it sends. For otherwise already standardised events, this means following their
+[standardised scheme for encrypted variants][encryptedfile], but custom formats for custom events are possible, as long
+as the widget can provide the required data again when requesting decryption from the client. The `EncryptedFile` object
+used in the definitions below is a JSON object simply containing all the information required for encrypted
+attachments as already defined by the Matrix specification with their usual keys and values, i.e. for v1.11:
+
+```json
+{
+  "v": "v2",
+  "key": {
+    "alg": "A256CTR",
+    "ext": true,
+    "k": "aWF6-32KGYaC3A_FEUCk1Bt0JA37zP0wrStgmdCaW-0",
+    "key_ops": ["encrypt","decrypt"],
+    "kty": "oct"
+  },
+  "iv": "w+sE15fzSc0AAAAAAAAAAA",
+  "hashes": {
+    "sha256": "fdSLu/YkRx3Wyh3KQabP3rd6+SFiKg5lsJZQHtkSAYA"
+  }
+}
+```
+
+### Get configuration
+
+To trigger the action to get the configuration, widgets will use a new `fromWidget` request with the
+action `get_media_config` which takes the following shape:
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "get_media_config",
+  "data": {}
+}
+```
+
+If the widget did not get approved for the capability required to send the event, the client MUST
+send an error response (as required currently by the capabilities system for widgets).
+
+If the event is successfully sent by the client, the client sends the following response:
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "get_media_config",
+  "data": {},
+  "response": {
+    "m.upload.size": 1000,
+  }
+}
+```
+
+The `response` is a mirrored representation of the original [content repository configuration][config] API.
+
+### Upload file
+
+The following diagram shows the (optionally encrypted) upload file flow.
+
+```mermaid
+sequenceDiagram
+    participant W as widget
+    participant C as client
+    participant H as homeserver
+    W->>C: fromWidget upload_file
+    alt e2ee room
+    C->>C: encrypt file
+    end
+    C->>H: upload file
+    H->>C: mxc
+    C->>W: fromWidget upload_file (mxc, EncryptedFile)
+    W->>C: fromWidget send_event
+    alt e2ee room
+    C->>C: encrypt event
+    end
+    C->>H: send event
+    H->>C: event ID
+    C->>W: fromWidget send_event (event ID)
+```
+
+To trigger the action to upload a file, widgets will use a new `fromWidget` request with the action
+`upload_file` which takes the following shape:
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "upload_file",
+  "data": {
+    "file": "some-content"
+  }
+}
+```
+
+`data.file` is a `XMLHttpRequestBodyInit` that is supported as a data type in the `postMessage` API.
+
+If the widget did not get approved for the capability required to send the event, the client MUST
+send an error response (as required currently by the capabilities system for widgets).
+
+Matrix v1.7 added asynchronous uploads through [MSC2246][MSC2246] by splitting the interface of the media upload into a
+“create the mxc-id” and a “upload the file for the mxc-id” stage. It is left as an implementation detail for clients to
+decide how to apply this to upload requests issued by widgets in detail, but it SHOULD be used for large files whose
+upload can be expected to take longer than the widget API timeout. The widget API itself does not explicitly support
+something mirroring the upload direction of asynchronous uploads because the assumption is that the communication
+between widget and host client is instant.
+
+#### Response (Unencrypted)
+
+The client SHOULD NOT modify the data of the request in unencrypted rooms.
+
+If the file is successfully uploaded by the client, the client sends the following response (mirroring the [Client-Server upload][upload] API):
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "upload_file",
+  "data": {
+    "file": "some-content"
+  },
+  "response": {
+    "content_uri": "mxc://..."
+  }
+}
+```
+
+#### Response (Encrypted)
+
+If the room is end-to-end encrypted, the client SHOULD encrypt the data before uploading, generating the usual required
+[`EncryptedFile`][encryptedfile] metadata. If sending is successful, the client adds the `EncryptedFile` to the
+response, resulting in:
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "upload_file",
+  "data": {
+    "file": "some-content"
+  },
+  "response": {
+    "content_uri": "mxc://...",
+    "encryption": EncryptedFile
+  }
+}
+```
+
+### Download file
+
+The following diagram shows the (optionally encrypted) download file flow.
+
+```mermaid
+sequenceDiagram
+    participant W as widget
+    participant C as client
+    participant H as homeserver
+    H->>C: sync receives event
+    alt e2ee room
+    C->>C: decrypt event
+    end
+    C->>W: toWidget send_event
+    W->>W: extract mxc
+    W->>W: look up EncryptedFile
+    W->>C: fromWidget download_file (mxc, EncryptedFile)
+    C->>H: download (mxc)
+    H->>C: file
+    alt EncryptedFile provided
+    C->>C: decrypt file
+    end
+    C->>W: fromWidget download_file
+```
+
+To trigger the action to download a file, widgets will use a new `fromWidget` request with the action `download_file`.
+
+#### Request (Unencrypted)
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "download_file",
+  "data": {
+    "content_uri": "mxc://...",
+    "timeout_ms": 20000
+  }
+}
+```
+
+Instead of mirroring the client-server API's fields `mediaId` and `serverName`, the `download_file` action's `data`
+field is structured to mirror the `upload_file` action both for consistency within the widget API and to leave parsing
+the `mxc` URI to the client which already implements it for simplicity.
+
+It is possible that the (default) timeouts for downloading introduced with asynchronous uploads and the widget API
+differ. Therefore, the widget MAY pass the `timeout_ms` parameter, whose default value follows and whose meaning mirrors
+that of the [same field in the client-server API][download] but also implies that the timeout in the widget API is
+adjusted accordingly for this single request. The widget is expected to be able to handle the
+[`M_NOT_YET_UPLOADED`][download] error response in the usual way the client forwards client-server-API errors to
+widgets.
+
+The client SHOULD NOT modify the received file from the content repository before responding to the widget in
+unencrypted rooms.
+
+#### Request (Encrypted)
+
+It is the widget's responsibility to know if the file is encrypted, e.g. by checking if the
+[`EncryptedFile`][encryptedfile] metadata is stored next to the `mxc:` URI. If so, it must be provided in the request to
+the client alongside it.
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "download_file",
+  "data": {
+    "content_uri": "mxc://...",
+    "timeout_ms": 20000,
+    "encryption": EncryptedFile
+  }
+}
+```
+
+#### Response
+
+```json
+{
+  "api": "fromWidget",
+  "widgetId": "20200827_WidgetExample",
+  "requestid": "generated-id-1234",
+  "action": "download_file",
+  "data": <see above>,
+  "response": {
+    "file": "some-content"
+  }
+}
+```
+
+`response.file` mirrors `data.file` of the `upload_file` action and is a `XMLHttpRequestBodyInit` that is supported as a
+data type in the `postMessage` API.
+
+If the widget did not get approved for the capability required to send the event, the client MUST
+send an error response (as required currently by the capabilities system for widgets).
+
+## Potential issues
+
+[MSC3911][MSC3911] proposes a way to link media (files) to events such that there is a 1:n relationship for event ->
+file. Particularly, each file must be attached to exactly one event, and copied using the proposed copy API to attach it
+again to another event. Since the client is unaware of event content sent by widgets per [MSC2762][MSC2762], it cannot
+automatically handle copying any referenced media and the burden is hence on the widget, which would require a change to
+the API described above to add the `copy` endpoint. Additionally, the event sending payload from MSC2762 will need to be
+extended such that whenever a widget includes references to files in an event, it is required to provide them to the
+client in the `send_event` request so the client knows to attach the files.
+
+## Alternatives
+
+As mentioned above, [MSC2762][MSC2762] defines the client to handle all end-to-end encryption tasks. Handling the
+en/decryption steps directly in the widget would spare the back and forth of the encryption keys between widget and
+client, however there would still need to be multiple requests for uploading (authentication and to determine the `mxc`)
+and downloading (authentication) regardless.
+
+In principle it would be preferable to be able to entirely rely on the client hosting the widget to handle end-to-end
+encryption. It would be possible to design a different approach such as [MSC2881][MSC2881], where any event that wants
+to reference multiple files cannot do so directly but instead uses event relations to refer to them "by proxy" of
+another event that also keeps the `EncryptedFile` metadata, or [MSC3382][MSC3382], which simply allows multiple
+attachments to one single event. The issue of multiple requests between widget and client remains for uploads due to
+having to determine the `mxc`, which the widget needs to include in the (potentially custom) event body. For downloads
+it would be possible for the client to automatically download, decrypt, and pass the file to the widget, but it takes
+the control from the widget to determine which files are actually needed for the current view. We therefore don't see a
+great advantage in this approach. However, it might become more viable if [MSC3911][MSC3911] should land close to its
+current form.
+
+It may be preferable if the widget would not need to pass the actual data to the client over the
+Widget API, but instead acquire an authenticated URL that it can use to upload/download the file
+directly to/from the homeserver without the need of an authentication token.
+Matrix v1.7 asynchronous uploads ([MSC2246][MSC2246]) go in this direction,
+however they still require that the upload is authenticated.
+
+A completely new approach such as [MSC3008][MSC3008] where widgets can use the client-server API directly with a scoped
+access token would also be possible, but would touch on many parts of widget and client-server APIs including
+authentication and authorisation, which means it would require a complete revamp of the widget API and is hence out of
+scope of this MSC.
+
+## Security considerations
+
+The same considerations as in [MSC2762][MSC2762]
+apply. This feature will allow the widget to be able to upload data into the media repository. This
+could potentially be used to upload malicious content. However, the access will only be possible
+when the user accepts the capability and grant access if the widget is trusted by the user.
+
+## Unstable prefix
+
+While this MSC is not present in the spec, clients and widgets should:
+
+- Use `org.matrix.msc4039.` in place of `m.` in all new identifiers of this MSC.
+- Use `org.matrix.msc4039.get_media_config` in place of `get_media_config` for the action type in the
+  `fromWidget` requests.
+- Use `org.matrix.msc4039.upload_file` in place of `upload_file` for the action type in the
+  `fromWidget` requests.
+- Use `org.matrix.msc4039.download_file` in place of `download_file` for the action type in the
+  `fromWidget` requests.
+- Only call/support the `action`s if an API version of `org.matrix.msc4039` is advertised.
+
+[MSC1236]: https://github.com/matrix-org/matrix-spec-proposals/pull/1236
+[MSC2246]: https://github.com/matrix-org/matrix-spec-proposals/pull/2246
+[MSC2762]: https://github.com/matrix-org/matrix-spec-proposals/pull/2762
+[MSC2881]: https://github.com/matrix-org/matrix-spec-proposals/pull/2881
+[MSC3008]: https://github.com/matrix-org/matrix-spec-proposals/pull/3008
+[MSC3382]: https://github.com/matrix-org/matrix-spec-proposals/pull/3382
+[MSC3911]: https://github.com/matrix-org/matrix-spec-proposals/pull/3911
+[MSC3916]: https://github.com/matrix-org/matrix-spec-proposals/pull/3916
+[content]: https://spec.matrix.org/v1.11/client-server-api/#content-repository
+[mxc]: https://spec.matrix.org/v1.11/client-server-api/#matrix-content-mxc-uris
+[config]: https://spec.matrix.org/v1.11/client-server-api/#get_matrixclientv1mediaconfig
+[upload]: https://spec.matrix.org/v1.11/client-server-api/#post_matrixmediav3upload
+[download]: https://spec.matrix.org/v1.11/client-server-api/#get_matrixclientv1mediadownloadservernamemediaid
+[encryptedfile]: https://spec.matrix.org/v1.11/client-server-api/#extensions-to-mroommessage-msgtypes
