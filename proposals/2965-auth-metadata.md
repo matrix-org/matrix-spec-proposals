@@ -44,13 +44,14 @@ Cache-Control: public, max-age=3600
 
 **Note**: The fields required for the main flow outlined by [MSC3861] and its sub-proposals are:
 
- - `authorization_endpoint`
- - `token_endpoint`
- - `revocation_endpoint`
- - `response_types_supported` including the value `code`
- - `grant_types_supported` including the values `authorization_code` and `refresh_token`
- - `response_modes_supported` including the values `query` and `fragment`
- - `code_challenge_methods_supported` including the value `S256`
+ - `authorization_endpoint` ([MSC2964])
+ - `token_endpoint` ([MSC2964])
+ - `revocation_endpoint` ([MSC4254])
+ - `registration_endpoint` ([MSC2966])
+ - `response_types_supported` including the value `code` ([MSC2964])
+ - `grant_types_supported` including the values `authorization_code` and `refresh_token` ([MSC2964])
+ - `response_modes_supported` including the values `query` and `fragment` ([MSC2964])
+ - `code_challenge_methods_supported` including the value `S256` ([MSC2964])
 
 See individual proposals for more details on each field.
 
@@ -195,5 +196,8 @@ clients should use the `org.matrix.msc2965` unstable prefix for the endpoint,
 e.g. `GET /_matrix/client/unstable/org.matrix.msc2965/auth_metadata`.
 
 [RFC8414]: https://tools.ietf.org/html/rfc8414
+[MSC2964]: https://github.com/matrix-org/matrix-spec-proposals/pull/2964
+[MSC2966]: https://github.com/matrix-org/matrix-spec-proposals/pull/2966
 [MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
+[MSC4254]: https://github.com/matrix-org/matrix-spec-proposals/pull/4254
 [OpenID Connect Discovery]: https://openid.net/specs/openid-connect-discovery-1_0.html
