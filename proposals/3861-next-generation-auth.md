@@ -13,9 +13,12 @@ The proposal itself is high-level, and the technical implications are split into
 
 ### Current paradigm
 
-The Matrix Client-Server API currently has endpoints for authenticating and managing users.
+The Matrix Client-Server API currently has endpoints for [authenticating][spec-auth] and [managing][spec-account] users.
 This API design is focused on displaying authentication UI as native controls within the Matrix client.
 It is meant to offer multiple server-defined, multi-staged authentication flows, which the client then uses to build a native UI.
+
+[spec-auth]: https://spec.matrix.org/v1.13/client-server-api/#client-authentication
+[spec-account]: https://spec.matrix.org/v1.13/client-server-api/#account-registration-and-management
 
 As an example, on the Matrix.org homeserver, the user registration flow is gated behind three stages:
 
