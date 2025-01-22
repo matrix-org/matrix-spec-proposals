@@ -474,7 +474,7 @@ The following MSCs map the aforementioned OAuth 2.0/OIDC requirements to Matrix 
 - [MSC3824]
 - [MSC4254]
 
-The following MSCs are not directly part of this proposal but this proposal assumes that these are accepted:
+The following MSCs were prerequisites for implenting this proposal in a sane way, and were accepted in the meantime:
 
 - [MSC3970: Scope transaction IDs to devices][MSC3970]
 - [MSC3967: Do not require UIA when first uploading cross signing keys][MSC3967]
