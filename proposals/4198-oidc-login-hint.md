@@ -44,7 +44,9 @@ and send the user to the authorization endpoint ([MSC2964]), all in one step.
 
 To improve the UX of this flow, the MXID may be sent to the homeserver with the authorization request in the `login_hint`
 query parameter, following the format specified above using the `mxid` hint type.
-In order to comply with the OpenID Connect specification, the requested scope must also include the `openid` scope.
+
+Despite the `login_hint` parameter being defined in the OpenID Connect specification, homeservers supporting this proposal
+must handle the parameter even without the `openid` scope.
 
 The homeserver should then assist the user to complete the login flow with the correct account.
 
@@ -59,7 +61,6 @@ Expanding on the example request in [MSC2964] (broken down into multiple lines f
 with the following additional parameters:
 
 - `login_hint` set to `mxid:@example-user:example.com`
-- Additional `scope` of `openid`
 
 ```
 https://account.example.com/oauth2/auth?
@@ -67,7 +68,7 @@ https://account.example.com/oauth2/auth?
     response_type         = code &
     response_mode         = fragment &
     redirect_uri          = https://app.example.com/oauth2-callback &
-    scope                 = openid urn:matrix:client:api:* urn:matrix:client:device:AAABBBCCCDDD &
+    scope                 = urn:matrix:client:api:* urn:matrix:client:device:AAABBBCCCDDD &
     state                 = ewubooN9weezeewah9fol4oothohroh3 &
     code_challenge        = 72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU &
     code_challenge_method = S256 &
@@ -76,7 +77,7 @@ https://account.example.com/oauth2/auth?
 
 With the line breaks removed and values properly encoded:
 ```
-https://account.example.com/oauth2/auth?client_id=s6BhdRkqt3&response_type=code&response_mode=fragment&redirect_uri=https%3A%2F%2Fapp.example.com%2Foauth2-callback&scope=openid+urn%3Amatrix%3Aclient%3Aapi%3A*+urn%3Amatrix%3Aclient%3Adevice%3AAAABBBCCCDDD&state=ewubooN9weezeewah9fol4oothohroh3&code_challenge=72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU&code_challenge_method=S256&login_hint=mxid%3A%40example-user%3Aexample.com
+https://account.example.com/oauth2/auth?client_id=s6BhdRkqt3&response_type=code&response_mode=fragment&redirect_uri=https%3A%2F%2Fapp.example.com%2Foauth2-callback&scope=urn%3Amatrix%3Aclient%3Aapi%3A*+urn%3Amatrix%3Aclient%3Adevice%3AAAABBBCCCDDD&state=ewubooN9weezeewah9fol4oothohroh3&code_challenge=72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU&code_challenge_method=S256&login_hint=mxid%3A%40example-user%3Aexample.com
 ```
 
 ### Examples of homeserver assistance
