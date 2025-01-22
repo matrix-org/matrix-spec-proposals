@@ -11,7 +11,7 @@ This introduces a new Client-Server API endpoint to discover the authorization s
 ### `GET /auth_metadata`
 
 A request on this endpoint should return a JSON object containing the authorization server metadata as defined in [RFC8414].
-This endpoint does *not* require authentication, and MAY be rate limited per usual. 
+This endpoint does _not_ require authentication, and MAY be rate limited per usual.
 
 For example:
 
@@ -44,14 +44,14 @@ Cache-Control: public, max-age=3600
 
 **Note**: The fields required for the main flow outlined by [MSC3861] and its sub-proposals are:
 
- - `authorization_endpoint` ([MSC2964])
- - `token_endpoint` ([MSC2964])
- - `revocation_endpoint` ([MSC4254])
- - `registration_endpoint` ([MSC2966])
- - `response_types_supported` including the value `code` ([MSC2964])
- - `grant_types_supported` including the values `authorization_code` and `refresh_token` ([MSC2964])
- - `response_modes_supported` including the values `query` and `fragment` ([MSC2964])
- - `code_challenge_methods_supported` including the value `S256` ([MSC2964])
+- `authorization_endpoint` ([MSC2964])
+- `token_endpoint` ([MSC2964])
+- `revocation_endpoint` ([MSC4254])
+- `registration_endpoint` ([MSC2966])
+- `response_types_supported` including the value `code` ([MSC2964])
+- `grant_types_supported` including the values `authorization_code` and `refresh_token` ([MSC2964])
+- `response_modes_supported` including the values `query` and `fragment` ([MSC2964])
+- `code_challenge_methods_supported` including the value `S256` ([MSC2964])
 
 See individual proposals for more details on each field.
 
@@ -115,7 +115,7 @@ It also introduces a dependency on an OpenID Connect specification: [MSC3861] pr
 ### Discovery via [RFC8414] well-known endpoint
 
 [RFC8414] OAuth 2.0 Authorization Server Metadata already defines a standard well-known endpoint, under `.well-known/oauth-authorization-server`.
-However, the RFC states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and *not* use the `.well-known/oauth-authorization-server` endpoint.
+However, the RFC states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and _not_ use the `.well-known/oauth-authorization-server` endpoint.
 To avoid confusion with the existing `.well-known/matrix/*` documents, this proposal suggests defining a new C-S API endpoint instead.
 
 ### Discovery via the well-known client discovery
