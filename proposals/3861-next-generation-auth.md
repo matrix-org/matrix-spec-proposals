@@ -193,8 +193,10 @@ How this is intended to work and let clients offer reasonable user experience is
 #### Application services
 
 In the longer term, application services could leverage alternative grant types like the [OAuth 2.0 Client Credentials Grant](https://tools.ietf.org/html/rfc6749#section-4.4) to obtain access to the homeserver.
-In the meantime, homeservers should keep registration through the `/register` endpoint working for application services.
+In the meantime, homeservers should keep registration through the [`/_matrix/client/v3/register` with the `m.login.application_service` type][register-app-service] endpoint working for application services.
 [MSC4190: Device management for application services][MSC4190] proposes a simple API to create and delete devices for users managed by application services, to remove the need for keeping the [`m.login.application_service`] login type working.
+
+[register-app-service]: https://spec.matrix.org/v1.13/application-service-api/#server-admin-style-permissions
 
 ## Sample flow
 
@@ -447,7 +449,7 @@ On the other hand, the previous registration flow was notoriously complex to imp
 
 The primary alternative is to continue to build out the auth capabilities within the Client-Server API.
 
-For example, UIA (User-Interactive Auth) could be added to the `/login` endpoint and additional capabilities/flows added to UIA.
+For example, UIA (User-Interactive Auth) could be added to the [`/_matrix/client/v3/login`] endpoint and additional capabilities/flows added to UIA.
 
 Examples of existing proposals include:
 
@@ -521,3 +523,5 @@ The following MSCs were prerequisites for implenting this proposal in a sane way
 [MSC4254]: https://github.com/matrix-org/matrix-spec-proposals/pull/4254
 [`m.login.application_service`]: https://spec.matrix.org/v1.13/client-server-api/#appservice-login
 [`m.login.sso`]: https://spec.matrix.org/v1.13/client-server-api/#single-sign-on
+[`/_matrix/client/v3/capabilities`]: https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv3capabilities
+[`/_matrix/client/v3/login`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3login
