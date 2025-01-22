@@ -61,6 +61,20 @@ If the homeserver does not offer next-generation authentication as described in 
 
 In this case, clients should fall back to using the User-Interactive Authentication flows instead to authenticate the user.
 
+## Rationale for not using a `.well-known` document
+
+[RFC8414] suggests using an application-specific well-known endpoint instead of the `.well-known/oauth-authorization-server` endpoint.
+
+Considering the rest of the client-server API, there are two potential locations where this could be hosted:
+
+1. On the server name domain, with well-known delegation, e.g. `https://example.com/.well-known/matrix/auth-metadata`
+2. On the client-server API endpoint root, e.g. `https://matrix-client.example.com/.well-known/matrix/auth-metadata`
+
+The first option would require making well-known documents mandatory on the server name domain, with a document that may need to be updated more frequently than existing ones.
+This isn't practical for some server deployments, and clients may find it challenging to consistently perform this discovery.
+
+The second option is also impractical, as all other Matrix APIs on this domain are prefixed with `/_matrix`, and it could easily be confused with the set of well-known documents hosted on the server name domain.
+
 ## Potential issues
 
 The authorization server metadata is relatively large and may change over time. The client should:
