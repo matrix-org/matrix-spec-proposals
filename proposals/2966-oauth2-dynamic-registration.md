@@ -2,7 +2,7 @@
 
 This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
 
-This MSC specifies how Matrix clients should leverage the OAuth 2.0 Dynamic Client Registration Protocol ([RFC 7591](https://tools.ietf.org/html/rfc7591)) to register themselves before initiating an authorization flow.
+This MSC specifies how Matrix clients SHOULD leverage the OAuth 2.0 Dynamic Client Registration Protocol ([RFC 7591](https://tools.ietf.org/html/rfc7591)) to register themselves before initiating an authorization flow.
 
 ## Proposal
 
@@ -28,33 +28,33 @@ The metadata names are registered in the IANA [OAuth Dynamic Client Registration
 #### `client_uri` and relationship with other URIs
 
 The `client_uri` metadata is required to be a valid URI.
-This URI must use the `https` scheme.
+This URI MUST use the `https` scheme.
 
-The host part of the URI must be a public hostname that is not a [public suffix](https://publicsuffix.org).
+The host part of the URI MUST be a public hostname that is not a [public suffix](https://publicsuffix.org).
 IP addresses and private hostnames like `localhost` are not allowed.
 
 It is recommended that the `client_uri` is a web page that provides information about the client.
-This page should be able to be accessed without requiring authentication.
+This page SHOULD be able to be accessed without requiring authentication.
 
-This URI is a common base for all the other URIs in the metadata: those must be either on the same host or on a subdomain of the host of the `client_uri`.
+This URI is a common base for all the other URIs in the metadata: those MUST be either on the same host or on a subdomain of the host of the `client_uri`.
 For example, if the `client_uri` is `https://example.com/`, then one of the `redirect_uris` can be `https://example.com/callback` or `https://app.example.com/callback`, but not `https://app.com/callback`.
 
 #### User-visible metadata values
 
-The following metadata values should be used by clients to help users identify the client:
+The following metadata values SHOULD be used by clients to help users identify the client:
 
  - `client_name`: Human-readable name of the client to be presented to the user
  - `logo_uri`: URL that references a logo for the client
  - `tos_uri`: URL that points to a human-readable terms of service document for the client
  - `policy_uri`: URL that points to a human-readable policy document for the client
 
-All the URIs must use the `https` scheme and use the `client_uri` as a common base.
+All the URIs MUST use the `https` scheme and use the `client_uri` as a common base.
 
-If provided by the client, the homeserver should show or link to the `tos_uri` and `policy_uri` to the user.
+If provided by the client, the homeserver SHOULD show or link to the `tos_uri` and `policy_uri` to the user.
 
 All of these metadata values are optional.
 
-As per [RFC 7591 sec. 2.2](https://tools.ietf.org/html/rfc7591#section-2.2), these metadata values may be localized.
+As per [RFC 7591 sec. 2.2](https://tools.ietf.org/html/rfc7591#section-2.2), these metadata values MAY be localized.
 For example:
 
 ```json
@@ -79,13 +79,13 @@ The following metadata values are required to be present to use the OAuth 2.0 au
  - `grant_types`: Array of OAuth 2.0 grant types that the client may use
  - `token_endpoint_auth_method`: String indicator of the requested authentication method for the token endpoint
 
-The homeserver must support the `none` value for the `token_endpoint_auth_method`, as most Matrix clients are client-side only, do not have a server component, and therefore are public clients.
+The homeserver MUST support the `none` value for the `token_endpoint_auth_method`, as most Matrix clients are client-side only, do not have a server component, and therefore are public clients.
 
 To use this grant:
 
- - the `redirect_uris` must have at least one value
- - the `response_types` must include `code`
- - the `grant_types` must include `authorization_code` and `refresh_token`
+ - the `redirect_uris` MUST have at least one value
+ - the `response_types` MUST include `code`
+ - the `grant_types` MUST include `authorization_code` and `refresh_token`
 
 #### Redirect URI validation
 
@@ -96,16 +96,16 @@ This is why it is critical to have strict validation of the redirect URI.
 The `application_type` metadata is used to determine the type of client.
 It defaults to `web` if not present, and can be set to `native` to indicate that the client is a native application.
 
-In all cases, the redirect URI must not have a fragment component.
+In all cases, the redirect URI MUST not have a fragment component.
 
 #### Web clients
 
 `web` clients can use redirect URIs that:
 
- - must use the `https` scheme
- - must omit the port (to use the default port for https: 443)
- - must not use a user or password in the authority component of the URI
- - must use the client URI as a common base for the authority component
+ - MUST use the `https` scheme
+ - MUST omit the port (to use the default port for https: 443)
+ - MUST not use a user or password in the authority component of the URI
+ - MUST use the client URI as a common base for the authority component
 
 Examples of valid redirect URIs (with `https://example.com/` as the client URI):
 
@@ -125,12 +125,12 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
 `native` clients can use three types of redirect URIs:
 
  1. Private-Use URI Scheme:
-    - the scheme must be prefixed with the client URI hostname in reverse-DNS notation. For example, if the client URI is `https://example.com/`, then a valid custom URI scheme would be `com.example.app:/`.
-    - the URI must not have an authority component. This means that it must have either a single slash or none immediately following the scheme, with no hostname, username, or port.
+    - the scheme MUST be prefixed with the client URI hostname in reverse-DNS notation. For example, if the client URI is `https://example.com/`, then a valid custom URI scheme would be `com.example.app:/`.
+    - the URI MUST not have an authority component. This means that it MUST have either a single slash or none immediately following the scheme, with no hostname, username, or port.
  2. "http" URIs on the loopback interface:
-    - it must use the `http` scheme
-    - the host part must be `localhost`, `127.0.0.1`, or `[::1]`
-    - it must have no port registered. The homeserver must then accept any port number during the authorization flow.
+    - it MUST use the `http` scheme
+    - the host part MUST be `localhost`, `127.0.0.1`, or `[::1]`
+    - it MUST have no port registered. The homeserver MUST then accept any port number during the authorization flow.
  3. Claimed "https" Scheme URI:
     - some operating systems allow apps to claim "https" scheme URIs in the domains they control
     - when the browser encounters a claimed URI, instead of the page being loaded in the browser, the native app is launched with the URI supplied as a launch parameter
@@ -156,7 +156,7 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
 
 ### Dynamic client registration
 
-Before initiating an authorization flow, the client must advertise its metadata to the homeserver to get back a `client_id`.
+Before initiating an authorization flow, the client MUST advertise its metadata to the homeserver to get back a `client_id`.
 
 This is done through the `registration_endpoint` as described by [RFC7591 sec. 3](https://tools.ietf.org/html/rfc7591#section-3).
 
@@ -193,7 +193,7 @@ Server: auth.example.com
 ```
 
 The server replies with a JSON object containing the `client_id` allocated, as well as all the metadata values that the server registered.
-It must ignore fields, `grant_types` and `response_types` that are not understood by the server.
+It MUST ignore fields, `grant_types` and `response_types` that are not understood by the server.
 
 With the previous registration request, the server would reply with:
 
@@ -214,7 +214,7 @@ With the previous registration request, the server would reply with:
 
 **Note**: in this example, the server has not registered the locale-specific values for `client_name`, `tos_uri`, and `policy_uri`, which is why they are not present in the response. The server also does not support the `urn:ietf:params:oauth:grant-type:token-exchange` grant type, which is why it is not present in the response.
 
-The client must store the `client_id` for future use.
+The client MUST store the `client_id` for future use.
 
 ## Potential issues
 
