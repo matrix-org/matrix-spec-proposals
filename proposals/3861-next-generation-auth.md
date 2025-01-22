@@ -43,7 +43,7 @@ A few issues can be highlighted from this particular example:
 
 Rather than trying to fix the existing flows, this MSC proposes an alternative approach to authentication.
 Authenticating end-users through the system browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
-Though, some applications may wish to retain browser-less authentication, which this proposal supports thanks to the inherited authentication specifications. 
+Though, some applications may wish to retain browser-less authentication, which this proposal supports thanks to the inherited authentication specifications.
 
 The general idea is simple: to authenticate a user, the client redirects the user to a URL on the homeserver, which completes the authentication flow, and then redirects the user back to the client.
 
@@ -140,6 +140,19 @@ Most identity providers are also designed to provide service to a fixed set of a
 This means that backfitting Matrix-specific concepts on top of OpenID Connect would be a bad idea, especially as one important goal of this proposal is to keep the current authentication paradigm working for some time.
 
 **Note**: an earlier version of this MSC focused on 'delegating' authentication to an identity provider, but it showed its limitations and added much confusion over the intent of the proposal.
+
+### Keeping the ecosystem open
+
+One common critique of OAuth 2.0 and OpenID Connect is that they are widely used in contexts where the service provider controls which clients are allowed to interact with the service.
+This usually implies a contractual relationship between the service provider and the client, typically through a developer program, where the client must comply with the service provider's terms of service.
+
+This has been a notorious problem with [OAuth 2.0 in email protocols][thunderbird-oauth2], where email clients are forced to register their applications with each email provider, giving the email provider the right to reject any application.
+
+The goal of this proposal is to keep the ecosystem open by clearly defining how clients register themselves dynamically with the homeserver.
+This won't prevent the homeserver from rejecting clients arbitrarily, but this was already the case with UIA.
+On the contrary, this proposal will provide homeserver operators greater visibility into which clients are being used, helping with decisions to approve third-party clients.
+
+[thunderbird-oauth2]: https://wiki.mozilla.org/Thunderbird:Autoconfiguration:ConfigFileFormat#OAuth2
 
 ## Proposal
 
