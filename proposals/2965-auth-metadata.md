@@ -55,6 +55,12 @@ Cache-Control: public, max-age=3600
 
 See individual proposals for more details on each field.
 
+### Fallback
+
+If the homeserver does not offer next-generation authentication as described in [MSC3861], this endpoint should return a 404 with the `M_UNRECOGNIZED` error code.
+
+In this case, clients should fall back to using the User-Interactive Authentication flows instead to authenticate the user.
+
 ## Potential issues
 
 The authorization server metadata is relatively large and may change over time. The client should:
