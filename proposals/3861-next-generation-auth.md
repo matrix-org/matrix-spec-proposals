@@ -84,17 +84,17 @@ It would open up Matrix to a new class of clients with only partial access to th
 
 **Note**: This does not change the level of trust that the user places in their homeserver. Their E2EE keys are still controlled by the client and never exposed to the homeserver, keeping the content of their events secret from the homeserver.
 
-### Limitations of the existing `m.login.sso` flow
+### Limitations of the existing [`m.login.sso`] flow
 
 The Matrix Client-Server API already has an existing browser-based authentication flow.
-The `m.login.sso` flow is effectively used as a single-staged flow, which works as follows:
+The [`m.login.sso`] flow is effectively used as a single-staged flow, which works as follows:
 
 1. The client redirects to the homeserver to start the authentication
 1. The homeserver authenticates the user
 1. It redirects back to the client with a single-use "login token"
 1. The client exchanges that "login token" to get an access token
 
-This flow design is very similar to the industry-standard OAuth 2.0 authorization code flow as described in [RFC 6749](https://tools.ietf.org/html/rfc6749#section-4.1). However, `m.login.sso` is relatively simple and does not incorporate many of the security features commonly found in OAuth 2.0 flows.
+This flow design is very similar to the industry-standard OAuth 2.0 authorization code flow as described in [RFC 6749](https://tools.ietf.org/html/rfc6749#section-4.1). However, [`m.login.sso`] is relatively simple and does not incorporate many of the security features commonly found in OAuth 2.0 flows.
 
 - There is no protection to ensure the client at the end of the flow is the same as the one that started it.
 - Because of this, clients using custom URI schemes as redirect URLs are vulnerable to interception by other applications.
@@ -130,7 +130,7 @@ Solving Matrix-specific problems with this new base could benefit the wider ecos
 ### Why not 'just use OpenID Connect'?
 
 OpenID Connect does a good job at standardizing on top of OAuth 2.0, and it covers most things happening between the client and the server for authentication.
-It is a great fit for connecting identity providers to other pieces of software, and this is already what homeservers do with the `m.login.sso` flow.
+It is a great fit for connecting identity providers to other pieces of software, and this is already what homeservers do with the [`m.login.sso`] flow.
 
 Knowing that, it can feel like adopting OpenID Connect fully would help using off-the-shelf identity providers for Matrix homeservers.
 In practice, OpenID Connect does not cover continuous exchanges between the application and the identity providers: there is no well-supported standard to signal new sessions, new users, sessions ending, users deactivation, etc. from the identity provider to the application.
@@ -161,7 +161,7 @@ As a first step, it introduces those APIs as alternatives to the existing User-I
 The long-term goal is to deprecate the existing UIA APIs and replace them with the new OAuth 2.0/OIDC-based APIs.
 This deprecation is not done in this MSC.
 
-### Base authentication flow
+### Core authentication flow
 
 To cover the most common use case of authenticating an end-user, the following MSCs are necessary:
 
@@ -171,16 +171,27 @@ To cover the most common use case of authenticating an end-user, the following M
 - [MSC2967: API scopes][MSC2967] defines the first set of access scopes and the basis for future access scopes
 - [MSC4254: Usage of RFC7009 Token Revocation for Matrix client logout][MSC4254] describes how a client can end a client session
 
-### Account management
+### Adjacent proposals
+
+This set of core proposals doesn't cover everything previously covered by UIA-protected APIs.
+The following proposals are meant to provide alternative APIs to fill in the gaps.
+
+#### Account management
 
 This moves the user-interface for some account management tasks from the client to the homeserver.
 Existing APIs like `/_matrix/client/v3/capabilities` help clients understand which account-management API endpoints are unavailable, but they don't offer alternatives to a homeserver-provided user-interface.
 To build this bridge between the client user-interface and the homeserver, [MSC4191: Account management deep-linking][MSC4191] proposes a way to deep-link to the account management capabilities of the homeserver.
 
-### Transition and existing client support
+#### Transition and existing client support
 
-To help client transition to the next-generation auth, this proposal is designed to offer backward-compatible APIs through the `m.login.sso` login flow.
-How this is intended to work, and let client offer reasonable user-experience is covered by [MSC3824: OIDC-aware clients][MSC3824].
+To help clients transition to the next-generation auth, this proposal is designed to offer backward-compatible APIs through the [`m.login.sso`] login flow.
+How this is intended to work and let clients offer reasonable user experience is covered by [MSC3824: OIDC-aware clients][MSC3824].
+
+#### Application services
+
+In the longer term, application services could leverage alternative grant types like the [OAuth 2.0 Client Credentials Grant](https://tools.ietf.org/html/rfc6749#section-4.4) to obtain access to the homeserver.
+In the meantime, homeservers should keep registration through the `/register` endpoint working for application services.
+[MSC4190: Device management for application services][MSC4190] proposes a simple API to create and delete devices for users managed by application services, to remove the need for keeping the [`m.login.application_service`] login type working.
 
 ## Sample flow
 
@@ -465,12 +476,19 @@ Please refer to individual proposals.
 
 The following MSCs map the aforementioned OAuth 2.0/OIDC requirements to Matrix APIs:
 
-- [MSC2964]
-- [MSC2965]
-- [MSC2966]
-- [MSC2967]
-- [MSC3824]
-- [MSC4254]
+- [MSC2964: Usage of OAuth 2.0 authorization code grant and refresh token grant][MSC2964]
+- [MSC2965: OAuth 2.0 Authorization Server Metadata discovery][MSC2965]
+- [MSC2966: Usage of OAuth 2.0 Dynamic Client Registration][MSC2966]
+- [MSC2967: API scopes][MSC2967]
+- [MSC4254: Usage of RFC7009 Token Revocation for Matrix client logout][MSC4254]
+
+The following MSCs are meant to cover less escential parts of the authentication and account management flows.
+They are not strictly required for this proposal to be accepted, but should be considered shortly afterwards:
+
+- [MSC3824: OIDC-aware clients][MSC3824]
+- [MSC4190: Device management for application services][MSC4190]
+- [MSC4191: Account management deep-linking][MSC4191]
+- [MSC4198: Usage of OIDC login_hint][MSC4198]
 
 The following MSCs were prerequisites for implenting this proposal in a sane way, and were accepted in the meantime:
 
@@ -496,4 +514,7 @@ The following MSCs were prerequisites for implenting this proposal in a sane way
 [MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
 [MSC4190]: https://github.com/matrix-org/matrix-spec-proposals/pull/4190
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
+[MSC4198]: https://github.com/matrix-org/matrix-spec-proposals/pull/4198
 [MSC4254]: https://github.com/matrix-org/matrix-spec-proposals/pull/4254
+[`m.login.application_service`]: https://spec.matrix.org/v1.13/client-server-api/#appservice-login
+[`m.login.sso`]: https://spec.matrix.org/v1.13/client-server-api/#single-sign-on
