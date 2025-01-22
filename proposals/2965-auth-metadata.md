@@ -11,6 +11,7 @@ This introduces a new Client-Server API endpoint to discover the authorization s
 ### `GET /auth_metadata`
 
 A request on this endpoint should return a JSON object containing the authorization server metadata as defined in [RFC8414].
+This endpoint does *not* require authentication, and MAY be rate limited per usual. 
 
 For example:
 
