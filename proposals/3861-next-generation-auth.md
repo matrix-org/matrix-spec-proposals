@@ -37,12 +37,13 @@ A few issues can be highlighted from this particular example:
 - Because the password field is displayed by the client, any system password manager will save the password as associated with the client domain.
   This means that if the user chooses to use a different client, they will have to manually find the password in their password manager, as the password will not be associated with the _service_, i.e., the homeserver domain.
 
-**Note**: We acknowledge that many of these points could be improved with individual improvements to each of those stages, and multiple MSCs already exist to address some of them.
+**Note**: Many of these points could be improved with individual improvements to each of those stages, and multiple MSCs already exist to address some of them.
 
 ### Benefits of authenticating end-users through the system browser
 
 Rather than trying to fix the existing flows, this MSC proposes an alternative approach to authentication.
 Authenticating end-users through the system browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
+Though, some applications may wish to retain browser-less authentication, which this proposal supports thanks to the inherited authentication specifications. 
 
 The general idea is simple: to authenticate a user, the client redirects the user to a URL on the homeserver, which completes the authentication flow, and then redirects the user back to the client.
 
@@ -60,7 +61,6 @@ This has the benefit of working well with domain-bound authentication mechanisms
 This makes it possible to design widely different authentication flows for different homeservers, without having to cross an API boundary.
 Implementers of said flows can focus on the specifics of their deployment without worrying about defining the right API between the client and the homeserver.
 
-**Note**: We are not arguing that browser-based authentication should be the only way to authenticate users, but rather that it is a good default flow for most end-user use cases.
 
 ### Concealing the user's credentials
 
@@ -106,7 +106,7 @@ This flow design is very similar to the industry-standard OAuth 2.0 authorizatio
 
 ### OAuth 2.0 and OpenID Connect as building blocks
 
-Quoting the [specification](https://spec.matrix.org/latest/#introduction-to-the-matrix-apis):
+Quoting the [specification](https://spec.matrix.org/v1.13/#introduction-to-the-matrix-apis):
 
 > Matrix is a set of open APIs for open-federated Instant Messaging (IM), Voice over IP (VoIP) and Internet of Things (IoT) communication, designed to create and support a new global real-time communication ecosystem. The intention is to provide an **open decentralised pubsub layer for the internet for securely persisting and publishing/subscribing JSON objects**.
 
@@ -145,8 +145,9 @@ This means that backfitting Matrix-specific concepts on top of OpenID Connect wo
 
 This proposal introduces a new set of authentication APIs for Matrix, based on OAuth 2.0 and OpenID Connect (OIDC) specifications.
 
-As a first step, it introduces those APIs as altenratives to the existing User-Interactive Authentication (UIA) APIs, acknowledging the complexity of covering all the use cases of the existing APIs.
+As a first step, it introduces those APIs as alternatives to the existing User-Interactive Authentication (UIA) APIs, acknowledging the complexity of covering all the use cases of the existing APIs.
 The long-term goal is to deprecate the existing UIA APIs and replace them with the new OAuth 2.0/OIDC-based APIs.
+This deprecation is not done in this MSC.
 
 ### Base authentication flow
 
@@ -396,6 +397,7 @@ This proposal fundamentally changes the way users and ecosystems interact with t
 Users might be used to entering their credentials within their client, which means that migrating to this proposal will introduce a new web-based login flow that will be different from what users are used to.
 
 In the long term, this is beneficial for the ecosystem, as it helps users familiarize themselves with the distinction between their homeserver and their client.
+Where clients and servers are in a managed environment, branding between the flows can unify the user experience, similar to how many corporate email accounts work.
 
 This proposal is not yet proposing to deprecate the existing APIs, in an effort to avoid breaking existing clients as much as possible.
 This adds complexity for homeserver implementers if they want to support both the old and new APIs.
@@ -403,7 +405,8 @@ This adds complexity for homeserver implementers if they want to support both th
 ### Reliance on the system browser
 
 The main authentication flow of this proposal is a web-based flow that is intended to run in the context of a system browser.
-There are alternative flows which could help support login on devices where a browser is not available, or for automation purposes, but they are not yet part of this proposal.
+There are alternative flows which could help support login on devices where a browser is not available, or for automation purposes.
+These flows are best implemented through future MSCs.
 
 Additionally, in some contexts, the system browser can be a security risk, as it has a wide attack surface inherent to its complexity.
 This can be mitigated to some extent by having homeservers implement authorization flows that don't require JavaScript, but this doesn't completely eliminate the risk.
@@ -449,7 +452,7 @@ Please refer to individual proposals.
 
 ## Dependencies
 
-The following MSCs are part of this proposal:
+The following MSCs map the aforementioned OAuth 2.0/OIDC requirements to Matrix APIs:
 
 - [MSC2964]
 - [MSC2965]
