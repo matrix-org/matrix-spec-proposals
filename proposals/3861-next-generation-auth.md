@@ -61,7 +61,6 @@ This has the benefit of working well with domain-bound authentication mechanisms
 This makes it possible to design widely different authentication flows for different homeservers, without having to cross an API boundary.
 Implementers of said flows can focus on the specifics of their deployment without worrying about defining the right API between the client and the homeserver.
 
-
 ### Concealing the user's credentials
 
 Another benefit of authenticating outside the client is that the client never has the user's full credentials.
@@ -243,10 +242,7 @@ Server: auth.example.com
   "redirect_uris": ["https://app.example.com/callback"],
   "token_endpoint_auth_method": "none",
   "response_types": ["code"],
-  "grant_types": [
-    "authorization_code",
-    "refresh_token"
-  ]
+  "grant_types": ["authorization_code", "refresh_token"]
 }
 ```
 
@@ -283,28 +279,29 @@ The client must store the `client_id` for later use.
 The client is ready to start an authorization request.
 It needs to determine a few other values:
 
- - `state`: a usually random string that will be used to associate the response with the authorization request
- - `code_verifier`: a random string with enough entropy which will be used to ensure the client is the one that initiated the request
- - The Matrix device ID the client wants to use/create
+- `state`: a usually random string that will be used to associate the response with the authorization request
+- `code_verifier`: a random string with enough entropy which will be used to ensure the client is the one that initiated the request
+- The Matrix device ID the client wants to use/create
 
 In this example, we've picked:
- - `state` to be `To29j0DdKUcc75Rt`
- - `code_verifier` to be `NXt2S0jiptl4q0m8OYVJFFyuDB5i5aeJSOUJ4NpdmTv`
- - The device ID to be `EIKO9QUIAL`
+
+- `state` to be `To29j0DdKUcc75Rt`
+- `code_verifier` to be `NXt2S0jiptl4q0m8OYVJFFyuDB5i5aeJSOUJ4NpdmTv`
+- The device ID to be `EIKO9QUIAL`
 
 This will help create the authorization request URL, with the following parameters:
 
- - `response_mode` set to `fragment` for a client-side web client
- - `response_type` set to `code`
- - `client_id` got from the registration request above, in this example `s6BhdRkqt3`
- - `code_challenge_method` set to `S256`
- - `code_challenge` derived from the `code_verifier` using the `S256` method. In this example, it is `8coMp56MvhmfFtjk0dYd9H9d3jQRV1qjS703hAOVnEk`
- - `scope`: as defined by [MSC2967]
-    - For full access, it needs to contain:
-        - `urn:matrix:client:api:*`
-        - `urn:matrix:device:XXYYZZ`, where `XXYYZZ` is the device ID
-    - Our example is then using `urn:matrix:client:api:* urn:matrix:device:EIKO9QUIAL`
- - `redirect_uri`: the client's redirect URI registered. In our example, it is `https://app.example.com/callback`
+- `response_mode` set to `fragment` for a client-side web client
+- `response_type` set to `code`
+- `client_id` got from the registration request above, in this example `s6BhdRkqt3`
+- `code_challenge_method` set to `S256`
+- `code_challenge` derived from the `code_verifier` using the `S256` method. In this example, it is `8coMp56MvhmfFtjk0dYd9H9d3jQRV1qjS703hAOVnEk`
+- `scope`: as defined by [MSC2967]
+  - For full access, it needs to contain:
+    - `urn:matrix:client:api:*`
+    - `urn:matrix:device:XXYYZZ`, where `XXYYZZ` is the device ID
+  - Our example is then using `urn:matrix:client:api:* urn:matrix:device:EIKO9QUIAL`
+- `redirect_uri`: the client's redirect URI registered. In our example, it is `https://app.example.com/callback`
 
 Building the full URL gives:
 
@@ -431,6 +428,7 @@ This means having proper accessibility, translations, and UX.
 Those concerns were previously only affecting client implementations, and will now also affect homeserver implementations.
 
 On the other hand, the previous registration flow was notoriously complex to implement both for clients and homeservers, and this proposal removes a lot of that complexity from the client side.
+
 ## Alternatives
 
 The primary alternative is to continue to build out the auth capabilities within the Client-Server API.
