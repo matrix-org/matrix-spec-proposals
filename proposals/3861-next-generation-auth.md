@@ -117,8 +117,8 @@ The ecosystem needs authentication to work, but it is not core to the mission.
 
 This MSC essentially proposes building on top of well-established authentication protocols, defined by OAuth 2.0 RFCs and OpenID Connect specifications.
 
-OAuth 2.0 is a framework for building authorization systems, defined across multiple RFCs by the IETF.
-OpenID Connect is an effort by the OpenID Foundation to standardize on top of OAuth 2.0.
+[OAuth 2.0](https://oauth.net/2/) is a framework for building authorization systems, defined across multiple RFCs by the IETF.
+[OpenID Connect](https://openid.net/connect/) is an effort by the OpenID Foundation to standardize on top of OAuth 2.0.
 
 This set of MSCs is an attempt to build on top of these existing specifications, defining what clients and homeservers must implement to comply with the Matrix specification.
 
