@@ -215,6 +215,7 @@ With the previous registration request, the server would reply with:
 **Note**: in this example, the server has not registered the locale-specific values for `client_name`, `tos_uri`, and `policy_uri`, which is why they are not present in the response. The server also does not support the `urn:ietf:params:oauth:grant-type:token-exchange` grant type, which is why it is not present in the response.
 
 The client MUST store the `client_id` for future use.
+It SHOULD reuse the `client_id` for all future authorization requests done against the same homeserver.
 
 ## Potential issues
 
