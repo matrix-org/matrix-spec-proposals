@@ -23,6 +23,22 @@ This change will stabilize the endpoint and allows clients to use this endpoint 
    optimize the process by loading subspaces independently. This approach can improve efficiency by loading the
    hierarchy of individual subspaces only when the user views them.
 
+
+### Rendering the space hierarchy before joining
+  1. Client may have an alias of space room.
+  2. Client need to get `roomId` and `via` using [/directory/room/roomAlias](https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv3directoryroomroomalias)
+  3. Client renders [/hierarchy](https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv1roomsroomidhierarchy) with `roomId` and `via` params found by previous step.
+
+### Rendering subspaces hierarchy independently
+  1. Client have data about subspaces. i.e `m.space.child` state events of parent space
+     1. If parent space is joined, `m.space.child` is retrievable from room state maintained by client.
+     2. If parent space is fetched using [/hierarchy](https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv1roomsroomidhierarchy), `m.space.child` is
+        retrievable from `children_state` of [/hierarchy](https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv1roomsroomidhierarchy) response.
+  2. Client can get `roomId` from `m.space.child` event's `state_key` and `via` from the content.
+  3. Client renders [/hierarchy](https://spec.matrix.org/v1.12/client-server-api/#get_matrixclientv1roomsroomidhierarchy) using `roomId` and `via` found by previous step.
+  4. Client can iterate the same procedure for child subspaces.
+
+
 ## Potential issues
 Unknown
 
