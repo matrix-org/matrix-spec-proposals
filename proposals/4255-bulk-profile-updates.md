@@ -148,10 +148,10 @@ Until this proposal is stable, implementations SHOULD use these endpoints:
 
 ## Relationship to Other MSCs
 
-This proposal builds on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
-which introduces extensible profiles. While [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
-focuses on the core functionality of custom profile fields, this MSC adds efficient bulk update
-capabilities specifically to support bridge use cases.
+This proposal doesn't technically depend on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
+but is considered more necessary as [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
+introduced the concept of extra fields in the global profile, while this MSC then adds efficient
+bulk update capabilities specifically to support AppService use cases.
 
 ## Alternatives
 
