@@ -1,6 +1,6 @@
 # MSC4174: Web Push pusher kind
 
-As stated in MSC3013:
+As stated in [MSC3013](https://github.com/matrix-org/matrix-spec-proposals/pull/3013), a first MSC about push notification encryption, that the present MSC is to replace:
 
 Push notifications have the problem that they typically go through third-party push providers in order to be delivered,
 e.g. FCM (Google) or APNs (Apple) and a push gateway (sygnal). In order to prevent these push providers and
@@ -12,27 +12,27 @@ on that.
 Even the `event_id_only` leaks some metadata that can be avoided.
 
 Today, web clients supporting push notifications (eg. hydrogen) needs to use a matrix to webpush gateway. This requires
-going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` (hydrogen [1], sygnal [2]),
-while the specifications let understand that only `url` and `format` are allowed [3].
+going over the specifications, because they use `endpoint`, and `auth` in the `PusherData` (hydrogen [[1]], sygnal [[2]]),
+while the specifications let understand that only `url` and `format` are allowed [[3]].
 => __PusherData already need to be updated__ to add `auth` and `endpoint`.
 
-Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [4][5][6]: many libraries
+Web Push is a standard for (E2EE) push notifications, defined with RFC8030+RFC8291+RFC8292 [[4]][[5]][[6]]: many libraries
 are already available and robuste: they are reviewed, and acknowledge by experts.
 
 Having a webpush push kind would provide push notifications without gateway to
 - Web app and desktop app
 - Android apps using UnifiedPush (MSC2970 was open for this and won't be required anymore)
-- Android apps using FCM (It is possible to push to FCM with webpush standard [7])
-- Maybe other ? We have seen apple moving a lot into web push support [8]
+- Android apps using FCM (It is possible to push to FCM with webpush standard [[7]])
+- Maybe other ? We have seen apple moving a lot into web push support [[8]]
 
-[1] https://github.com/element-hq/hydrogen-web/blob/9b68f30aad329c003ead70ff43f289e293efb8e0/src/platform/web/dom/NotificationService.js#L32
-[2] https://github.com/matrix-org/sygnal/blob/main/sygnal/webpushpushkin.py#L152
-[3] https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata
-[4] https://www.rfc-editor.org/rfc/rfc8030
-[5] https://www.rfc-editor.org/rfc/rfc8291
-[6] https://www.rfc-editor.org/rfc/rfc8292
-[7] https://gist.github.com/mar-v-in/2a054e3a4c0a508656549fc7d0aaeb74#webpush
-[8] https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers
+[1]: https://github.com/element-hq/hydrogen-web/blob/9b68f30aad329c003ead70ff43f289e293efb8e0/src/platform/web/dom/NotificationService.js#L32
+[2]: https://github.com/matrix-org/sygnal/blob/main/sygnal/webpushpushkin.py#L152
+[3]: https://spec.matrix.org/v1.9/client-server-api/#_matrixclientv3pushers_pusherdata
+[4]: https://www.rfc-editor.org/rfc/rfc8030
+[5]: https://www.rfc-editor.org/rfc/rfc8291
+[6]: https://www.rfc-editor.org/rfc/rfc8292
+[7]: https://gist.github.com/mar-v-in/2a054e3a4c0a508656549fc7d0aaeb74#webpush
+[8]: https://developer.apple.com/documentation/usernotifications/sending-web-push-notifications-in-web-apps-and-browsers
 
 ## Proposal
 
@@ -89,13 +89,13 @@ to avoid issues with those.
 
 ## Security considerations
 
-Security considerations are listed by RFC8030 [4], there are mainly resolved with RFC8291 (Encryption) and
+Security considerations are listed by RFC8030 [[9]], there are mainly resolved with RFC8291 (Encryption) and
 RFC8292 (VAPID).
 
 Like any other federation request, there is a risk of SSRF. This risk is limited since the post data isn't
 arbitrary (the content is encrypted), and a potential malicious actor don't have access to the response.
 Nevertheless, it is recommended to not post to private addresses, with the possibility with a setting to
-whitelist a private IP. (Synapse already have ip_range_whitelist [5])
+whitelist a private IP. (Synapse already have ip_range_whitelist [[10]])
 It is also recommended to not follow redirection, to avoid implementation issue where the destination is check
 before sending the request but not for redirections.
 
@@ -105,8 +105,8 @@ amplification is very limited since HTTPS is required and the TLS certificate of
 request won't reach any functionnality of the targeted application. The home server can reject pusher if the response
 code is not one intended.
 
-[4] https://www.rfc-editor.org/rfc/rfc8030#section-8
-[5] https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ip_range_whitelist
+[9]: https://www.rfc-editor.org/rfc/rfc8030#section-8
+[10]: https://matrix-org.github.io/synapse/latest/usage/configuration/config_documentation.html#ip_range_whitelist
 
 ## Unstable prefix
 
