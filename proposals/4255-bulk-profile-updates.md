@@ -146,9 +146,6 @@ Until this proposal is stable, implementations SHOULD use these endpoints:
 - `PUT /_matrix/client/unstable/uk.tcpip.msc4255/profile/{userId}`
 - `PATCH /_matrix/client/unstable/uk.tcpip.msc4255/profile/{userId}`
 
-The client feature `uk.tcpip.msc4255` SHOULD be advertised on the `/versions` endpoint when these
-endpoints are supported.
-
 ## Relationship to Other MSCs
 
 This proposal builds on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
