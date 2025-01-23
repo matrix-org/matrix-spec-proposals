@@ -21,142 +21,6 @@ of the `u.*` namespace for user-defined custom fields:
   the `u.` defines the display name of this field (e.g., `u.bio`). The values in this namespace
   must always be UTF-8 strings with content not exceeding 512 bytes.
 
-### Client-Server API Changes
-
-#### Setting a Custom Profile Field
-
-To set or update a custom profile field, clients can use the `PUT` endpoint defined in
-[MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133):
-
-- **Endpoint**: `PUT /_matrix/client/v3/profile/{userId}/{key_name}`
-- **Description**: Set or update the value of a specified `key_name` in the user's profile,
-  if permitted by the homeserver.
-- **Request Body**:
-
-```json
-{
-  "u.key_name": "new_value"
-}
-```
-
-*Example*: Setting the custom field `u.bio` for user `@alice:matrix.org`:
-
-```http
-PUT /_matrix/client/v3/profile/@alice:matrix.org/u.bio
-```
-
-With body:
-
-```json
-{
-  "u.bio": "I love Matrix!"
-}
-```
-
-#### Retrieving Custom Profile Fields
-
-To retrieve custom fields from a user's profile, clients use the `GET` endpoint:
-
-- **Endpoint**: `GET /_matrix/client/v3/profile/{userId}/{key_name}`
-- **Description**: Retrieve the value of a specified `key_name` from a user's profile.
-- **Response**:
-
-```json
-{
-  "key_name": "field_value"
-}
-```
-
-*Example*: Retrieving the custom field `u.bio` for user `@alice:matrix.org`:
-
-```http
-GET /_matrix/client/v3/profile/@alice:matrix.org/u.bio
-```
-
-Response:
-
-```json
-{
-  "u.bio": "I love Matrix!"
-}
-```
-
-#### Deleting a Custom Profile Field
-
-To delete a custom profile field:
-
-- **Endpoint**: `DELETE /_matrix/client/v3/profile/{userId}/{key_name}`
-- **Description**: Remove a specified `key_name` and its value from the user's profile,
-  if permitted by the homeserver.
-
-#### Retrieving All Profile Fields
-
-Clients can retrieve all profile fields for a user, including custom fields:
-
-- **Endpoint**: `GET /_matrix/client/v3/profile/{userId}`
-- **Description**: Retrieve all profile fields for a user.
-- **Response**:
-
-```json
-{
-  "avatar_url": "mxc://matrix.org/MyC00lAvatar",
-  "displayname": "Alice",
-  "u.bio": "I love Matrix!",
-  "u.location": "London"
-}
-```
-
-### Capabilities
-
-A new capability `m.custom_profile_fields` is introduced to control the ability to set custom
-profile fields. It is advertised on the `GET /_matrix/client/v3/capabilities` endpoint. Clients
-should check for this capability before attempting to create or modify custom fields.
-
-- **Capability Structure**:
-
-```json
-{
-  "capabilities": {
-    "m.custom_profile_fields": {
-      "enabled": true
-    }
-  }
-}
-```
-
-- **Behaviour**:
-  - **When capability is missing**: Clients should assume that custom profile fields are not
-    supported and refrain from providing options to set them.
-
-  - **When `enabled` is `false`**: Clients should not allow users to create or update custom
-    fields. Any attempt to do so should result in a `403 Forbidden` error.
-
-  - **When `enabled` is `true`**: Clients should allow users to create or update custom fields in
-    the `u.*` namespace, except those listed in the `disallowed` array.
-
-### Error Handling
-
-Consistent error codes and messages ensure clear communication of issues. Homeservers should use
-the following error codes:
-
-- **`M_KEY_NOT_ALLOWED`**: The specified key is not allowed to be set.
-
-```json
-{
-  "errcode": "M_KEY_NOT_ALLOWED",
-  "error": "The profile key 'u.bio' is not allowed to be set."
-}
-```
-
-- **`M_TOO_LARGE`**: The value provided exceeds the maximum allowed length.
-
-```json
-{
-  "errcode": "M_TOO_LARGE",
-  "error": "The value exceeds the maximum allowed length of 512 bytes."
-}
-```
-
 ### Client Considerations
 
 - Clients SHOULD provide a UI for users to view and edit their own custom fields in the `u.*`
@@ -168,6 +32,9 @@ the following error codes:
 - Clients SHOULD be cautious about the amount of data displayed and provide options to limit or
   filter the display of custom fields.
 
+- Clients SHOULD implement appropriate content warnings and user education about the public nature
+  of profile fields.
+
 ### Server Considerations
 
 - Homeservers MAY impose limits on the number of custom fields, whether for storage reasons or to
@@ -176,7 +43,69 @@ the following error codes:
 - Homeservers MAY validate that keys in the `u.*` namespace conform to the required format and
   enforce size limits on values.
 
-- Homeservers MAY restrict certain keys or values based on server policies.
+- Homeservers SHOULD use the existing `m.profile_fields` capability to control access to the `u.*`
+  namespace. For example:
+
+  ```json
+  {
+    "m.profile_fields": {
+      "enabled": true,
+      "disallowed": ["u.*"]
+    }
+  }
+  ```
+
+### Trust & Safety Considerations
+
+The ability for users to set arbitrary freetext fields in their profiles introduces several
+significant trust and safety concerns that implementations must consider:
+
+#### Content Moderation
+
+- **Hate Speech and Harassment**: Users could use profile fields to spread hate speech or harass
+  others. Homeservers MUST implement appropriate content moderation tools.
+
+- **Impersonation**: Custom fields could be used to impersonate others or create misleading
+  profiles. Homeservers SHOULD have mechanisms to handle impersonation reports.
+
+- **Spam and Malicious Links**: Profile fields could be used to spread spam or malicious links.
+  Homeservers SHOULD implement link scanning and spam detection.
+
+#### Privacy and Data Protection
+
+- **Personal Information**: Users might inadvertently overshare personal information. Clients
+  SHOULD warn users about the public nature of profile fields.
+
+- **Data Mining**: Public profile fields could be scraped for data mining. Homeservers SHOULD
+  implement rate limiting and monitoring for bulk profile access.
+
+- **Right to be Forgotten**: Homeservers MUST ensure compliance with data protection regulations,
+  including the ability to completely remove profile data when requested.
+
+#### Implementation Requirements
+
+To address these concerns:
+
+1. **Content Filtering**:
+   - Homeservers MUST implement content filtering capabilities for custom fields
+   - Support for blocking specific patterns or content types
+   - Ability to quickly respond to emerging abuse patterns
+
+2. **Reporting Mechanisms**:
+   - Integration with [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202)
+     or similar reporting systems
+   - Clear processes for handling abuse reports
+   - Tools for moderators to review and action reported content
+
+3. **Rate Limiting**:
+   - Limits on frequency of profile updates
+   - Protection against automated abuse
+   - Monitoring for suspicious patterns
+
+4. **User Education**:
+   - Clear warnings about public nature of fields
+   - Guidelines for appropriate content
+   - Privacy implications documentation
 
 ## Potential Issues
 
