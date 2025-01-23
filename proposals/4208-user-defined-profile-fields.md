@@ -135,21 +135,6 @@ Until this proposal is stabilised, custom fields should use an unstable prefix i
 
 - **Namespace `uk.tcpip.msc4208.u.*`**: For example, `uk.tcpip.msc4208.u.bio`.
 
-### Unstable Capability
-
-The capability should be advertised with an unstable prefix:
-
-```json
-{
-  "capabilities": {
-    "uk.tcpip.msc4208.custom_profile_fields": {
-      "enabled": true,
-      "allowed": ["uk.tcpip.msc4208.u.*"]
-    }
-  }
-}
-```
-
 ## Dependencies
 
 This proposal depends on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133),
