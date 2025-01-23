@@ -68,7 +68,8 @@ request:
 ```json
 {
     "avatar_url": "mxc://matrix.org/MyNewAvatar",
-    "m.example_field": "new_value1"
+    "m.example_field": "new_value1",
+    "org.example.to_delete": null
 }
 ```
 
@@ -82,6 +83,12 @@ request:
 - Authentication and permissions follow the same rules as individual field updates
 - Servers MUST process these requests atomically to prevent partial updates
 - Servers MUST validate all fields in the request before applying any changes
+- For `PATCH` requests:
+  - Each top-level field in the request body directly overrides the corresponding field in the
+    existing profile without any recursive merging
+  - Setting a field's value to `null` removes that field from the profile
+  - Fields not mentioned in the request body remain unchanged
+  - The request must still result in a valid profile (respecting size limits and field naming rules)
 
 ## Use Cases
 
@@ -117,45 +124,22 @@ reducing server load and improving synchronisation speed.
 
 ## Error Codes
 
-All error codes from individual profile field updates apply, plus:
+This MSC uses the same error codes as defined in [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133):
 
-- **`M_LIMIT_EXCEEDED`**: Too many fields are updated at once (server-defined limit)
+- `M_FORBIDDEN` if the user lacks permission
+- `M_LIMIT_EXCEEDED` if server-defined limits are exceeded
+- `M_BAD_JSON` if the request body is malformed
+- `M_NOT_JSON` if the request body isn't JSON
+- `M_INVALID_PARAM` if field names are invalid
+- `M_TOO_LARGE` if the resulting profile would exceed size limits
 
-  ```json
-  {
-    "errcode": "M_LIMIT_EXCEEDED",
-    "error": "Too many profile fields in request"
-  }
-  ```
+## Feature Flags
 
-- **`M_BAD_JSON`**: Request body is malformed
+Servers MUST advertise support for this feature through the following flags in the `/versions`
+response:
 
-  ```json
-  {
-    "errcode": "M_BAD_JSON",
-    "error": "Request must be valid JSON"
-  }
-  ```
-
-- **`M_FORBIDDEN`**: User lacks permission for requested changes
-
-  ```json
-  {
-    "errcode": "M_FORBIDDEN",
-    "error": "You do not have permission to modify this profile"
-  }
-  ```
-
-- **`M_PROFILE_TOO_LARGE`**: Resulting profile would exceed 64 KiB
-
-  ```json
-  {
-    "errcode": "M_PROFILE_TOO_LARGE",
-    "error": "Profile exceeds maximum size of 64 KiB"
-  }
-  ```
-
-## Unstable Prefix
+- Stable: `org.matrix.msc4255`
+- Unstable: `uk.tcpip.msc4255`
 
 Until this proposal is stable, implementations SHOULD use these endpoints:
 
