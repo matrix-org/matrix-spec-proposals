@@ -138,7 +138,7 @@ This MSC uses the same error codes as defined in [MSC4133](https://github.com/ma
 Servers MUST advertise support for this feature through the following flags in the `/versions`
 response:
 
-- Stable: `org.matrix.msc4255`
+- Stable: `uk.tcpip.msc4255.stable`
 - Unstable: `uk.tcpip.msc4255`
 
 Until this proposal is stable, implementations SHOULD use these endpoints:
