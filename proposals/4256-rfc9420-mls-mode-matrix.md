@@ -1,4 +1,4 @@
-# MSC0000: MLS mode Matrix
+# MSC4256: MLS mode Matrix
 
 Messaging Layer Security ([RFC 9420][RFC9420], MLS) is a modern
 layer for end-to-end encrypted group messaging providing Forward Secrecy (PFS) and Post-Compromise
@@ -151,7 +151,7 @@ private message. The object follows the following format (here illustrated as JS
 
 ```json
 {
-   "federation": {
+   "federation": {-
       "powers": ["example.net", "example.org"],
       "servers": ["example.com", "example.net", "example.org"],
       "can_propose": ["example.com", "example.net", "example.org"]
@@ -797,5 +797,5 @@ for their ideas, feedback and work on that...you guys rock!
 [MSC4244]: <https://github.com/matrix-org/matrix-spec-proposals/pull/4244>
 [MSC4245]: <https://github.com/matrix-org/matrix-spec-proposals/pull/4245>
 
-[invite-flow]: <./images/0000-invite-flow.png>
-[pending-flow]: <./images/0000-pending-commit-flow.png>
+[invite-flow]: <./images/4256-invite-flow.png>
+[pending-flow]: <./images/4256-pending-commit-flow.png>
