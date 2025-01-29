@@ -107,6 +107,11 @@ Client authors should be aware that the server may return less than
 the `limit` even when `is_more_events` is `true`, and so should always
 check the response.
 
+#### Request body
+
+`reason`: `string` - The reason for redacting the user's events
+(Optional).
+
 #### Response
 
 `is_more_events`: `boolean` - Whether there are more events outside of
