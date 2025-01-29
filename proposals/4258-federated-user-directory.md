@@ -90,7 +90,7 @@ For that we introduce a `search_token` to the request coming from the response o
 
 We propose to add a new field in the profile (MSC4133) `m.user_directory.visibility` to give the user the ability to control their visibility in the user directory.
 
-Differents values are possible :
+Different values are possible :
 - `hidden` : not visible to anyone
 - `local` : visible only to local homeserver users
 - `restricted`: visible to any user sharing a room with
@@ -108,7 +108,7 @@ If no value is provided (or it is null), the user hasn't set a preference and th
 
 ## Potential issues
 
-We may have requests lost or getting timeout from intermediary network equipments, especially since we are using some kind of long polling.
+We may have requests lost or getting timeout from intermediary network equipment, especially since we are using some kind of long polling.
 We think the fact that we use a `search_token` that changes on each request allow the server to track correctly if new search results were already received by the client or not.
 
 ## Alternatives
