@@ -1,4 +1,4 @@
-# MSC4259: Profile Sync API for Federation
+# MSC4259: Bulk Profile Sync API for Federation
 
 Currently, homeservers must individually request profiles via
 [`/_matrix/federation/v1/query/profile`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1queryprofile)
