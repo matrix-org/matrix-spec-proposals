@@ -343,9 +343,10 @@ To minimise the impact of abuse, clients should carefully consider when and how 
 user-entered profile content. While some clients may choose to show profile fields globally, others
 may restrict visibility based on room membership or other trust signals. Clients should be aware
 that profile fields may contain abusive content and implement appropriate safety measures based on
-their risk assessment. For example, a client could hide a user's custom profile fields in the context of
-a room if the user in question's latest `m.room.member` state event has been redacted. This gives
-room moderators the power to quickly hide abusive content in profile fields from other users.
+their risk assessment. For example, a client could hide a user's custom profile fields in the
+context of a room if the user in question's latest `m.room.member` state event has been redacted.
+This gives room moderators the power to quickly hide abusive content in profile fields from other
+users.
 
 Proposal [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202) adds reporting of
 user profiles over federation, which offers a facility for users to report offensive content to the
