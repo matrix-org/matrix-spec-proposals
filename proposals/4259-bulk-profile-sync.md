@@ -55,7 +55,7 @@ requests and returns only changed data on subsequent requests using sync tokens.
 
 #### Request Format
 
-```json
+```json5
 {
     "last_batch": "opaque_server_token", // Optional sync token from previous response
     "accounts": [                        // Required array of MXIDs
