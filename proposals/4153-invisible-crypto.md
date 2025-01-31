@@ -27,18 +27,20 @@ cross-signing keys.
 
 ### Users SHOULD have Secret Storage
 
-Secret Storage allows users to keep secrets on the server so that they are
-accessible when the user logs in to a new device.
-
 The spec currently does not give recommendations for what information is stored
-in Secret Storage, or even whether Secret Storage is available to users.  A
-user’s Secret Storage SHOULD contain the user’s cross-signing secret keys and
-the key backup decryption key (if the user is using key backup).  This ensures
-that users use cross-signing and key backup on new devices.
+in Secret Storage, or even whether Secret Storage is available to users.  Secret
+Storage allows users to keep secrets on the server so that they are accessible
+when the user logs in to a new device and does not have an existing device that
+can share the secrets with the new device.  Therefore users SHOULD have Secret
+storage set up.
 
-Users SHOULD have Secret Storage with a default key (a key referred to by
-`m.secret_storage.default_key`) that encrypts the private cross-signing keys
-and key backup key (if available).
+The user’s Secret Storage SHOULD contain the user’s cross-signing secret keys
+and the key backup decryption key (if the user is using key backup).  This
+ensures that users use cross-signing and key backup on new devices.
+
+The user's Secret Storage SHOULD have a default key (a key referred to by
+`m.secret_storage.default_key`) that encrypts the private cross-signing keys and
+key backup key (if available).
 
 ### Verifying individual devices of other users is deprecated
 
