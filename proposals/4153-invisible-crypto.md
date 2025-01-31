@@ -84,7 +84,7 @@ That is, if Alice changes her cross-signing keys and Bob has multiple devices
 logged in, then Bob will see a warning on all his devices, and will have to
 dismiss the warning on all of his devices.
 
-A mechanism for synchonising information between devices could be proposed by
+A mechanism for synchronising information between devices could be proposed by
 another MSC.
 
 ### Encrypted to-device messages MUST NOT be sent to non-cross-signed devices
