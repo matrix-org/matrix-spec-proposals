@@ -125,6 +125,23 @@ cryptography to understand.
 ⚠️ Avoid "session" to mean device. Device better describes what most users
 encounter, and is more commonly used in other messaging apps.
 
+#### Logging out
+
+In contrast to some other services, **logging out** (or **signing out**) of a
+Matrix device is quite a significant operation: it means the encryption data on
+this device is lost, and if you log out of all devices you will need to use your
+recovery key to re-establish your identity and regain access to your old
+messages.
+
+If using a trusted physical device, the right choice for a user may well be not
+to log out, but simply to close the app or browser and re-open it later. This
+preserves their identity and their access to message history.
+
+> "Are you sure you want to log out?"
+
+> "If you log out of all devices, you will lose access to message history and
+> will need to reset your identity."
+
 ### Verified user
 
 When you verify a user they become **verified**. This means that you have
@@ -177,7 +194,18 @@ fact we confirm identity cryptographically is usually irrelevant to the user.
 ### Identity
 
 A user's **identity** is proof of who they are, and, if you have verified them,
-proof that you have a secure communication channel with them.
+proof that you have a secure communication channel with them. Your own identity
+proves who you are, and gives you access to key storage.
+
+Technical note: we use "identity" here to describe a collection of keys: the
+master signing key, user signing key, device signing key, key storage key and
+others.
+
+Your identity allows you to be identified by other users, and also allows you to
+access key storage and therefore see message history. This identity may be
+stored on the server by using recovery. The recovery key is not part of your
+identity, but allows you to re-establish your identity if you lose all your
+devices.
 
 > When a non-verified user resets their identity:
 > "Warning: Alice's identity has changed."
@@ -195,6 +223,9 @@ proof that you have a secure communication channel with them.
 > "If you don't have any other device and you have lost your recovery key, you
 > can create a new identity. (Warning: you will lose access to your old
 > messages!)" button text (in red or similar): "Reset my identity"
+
+> "Are you sure you want to reset your identity? You will lose access to your
+> message history."
 
 ⚠️ Avoid saying "master key" - this is an implementation detail.
 
@@ -241,65 +272,68 @@ don't have access to this message**.
 
 Your **message history** is a record of every message you have received or sent,
 and is particularly used to describe messages that are stored on the server
-rather than your device(s)
+rather than your device(s). Where messages are encrypted, the message keys are
+required to be able to read them, so "message history" includes those keys,
+which are held in key storage.
 
 ### Key storage
 
-**Key storage** means keeping cryptographic information on the server. This
-includes the user's identity, and/or the message keys needed to
-decrypt messages.
+**Key storage** means message keys that are kept on the server, so that they can
+be shared with the user's other devices (including new devices added in the
+future).
 
-If a user loses their recovery key, they may **reset** their key storage. Unless
-they have old devices, they will not be able to access old encrypted messages
-because the message keys are stored in key storage, and their cryptographic
-identity will change, because it too is stored in key storage.
+The keys inside key storage are themselves encrypted, so that the server
+operator is not able to access them and read your messages.
 
 > "Allow key storage"
 
-> "Key storage holds your identity on the server along with the
-> keys that allow you to read your message history."
+> "Key storage holds the keys that allow you to read your message history."
 
 > "Message history is unavailable because key storage is disabled."
 
-⚠️ Avoid distinguishing between "secret storage" and "key backup" - these are
-both part of key storage.
+⚠️ Avoid using "key backup" to talk about storing message keys: this is too
+easily confused with exporting keys or messages to an external system. Key
+storage is for day-to-day use (reading message history), not a redundant store
+for disaster recovery.
 
 ⚠️ Avoid talking about more keys: "the backup key is stored in the secret
 storage, and this allows us to decrypt the messages keys from key backup".
 Instead, we simply say that both identity and message keys are
 stored in key storage.
 
-⚠️ Avoid using "key backup" to talk about storing message keys: this is too
-easily confused with exporting keys or messages to an external system.
+### Recovery
 
-⚠️ Avoid "4S" or "quad-S" - these are not descriptive terms.
+Recovery is useful when a user loses all their devices (or logs out of them
+all).
 
-### Recovery key (and recovery passphrase)
+If **recovery** is enabled, the user's identity is saved on the server, allowing
+them to recover it if they lose all their devices. This in turn allows them to
+recover their key storage and see message history. To recover their identity the
+user must enter the **recovery key**.
 
-A **recovery key** is a way of regaining access to key storage if the user loses
-all their devices. Using key storage, they can preserve their cryptographic
-identity (meaning other users don't see "Alice's identity has
-changed" messages), and also read old messages using the stored message keys.
+The server is not able to read or manipulate the saved identity, because it is
+encrypted using the recovery key.
+
+If a user loses their recovery key, they may **reset** their identity. Unless
+they have old devices, they will not be able to access old encrypted messages
+because the new identity does not have access to the old key storage.
+
+A **recovery key** (or **recovery code**) is a way of re-establishing your
+identity if you lose all your devices. This in turn allows you to access key
+storage, and therefore see message history. If you re-establish your identity
+instead of resetting it, other users won't see "Alice's identity has changed"
+messages, and you will be able to read your message history, even if you logged
+out everywhere or lost your devices.
 
 A **recovery passphrase** is an easier-to-remember way of accessing the recovery
 key and has the same purpose as the recovery key.
 
-**Losing the recovery key**: if the user loses their recovery key, they can
-"reset" it, which means re-storing the identity information in the server,
-encrypted with a new recovery key. If the user has a verified client, then that
-is holding the identity information locally, so they can reset their recovery
-key without losing access to key storage. If they don't have a verified client
-and they lose their recovery key, then they need to reset key storage as well as
-recovery key (since the identity information is needed to read from key
-storage), meaning they lose access to old messages.
-
 > "Write down your recovery key in a safe place"
 
 > "If you lose access to your devices and your recovery key, you will need to
-> reset your message key storage, which will create a new identity"
+> reset your identity, meaning you will lose all your message history"
 
-> "If you lose your recovery key you can generate a new one if you are signed in
-> elsewhere"
+⚠️ Avoid "4S" or "quad-S" - these are not descriptive terms.
 
 ⚠️ Avoid using "security key", "security code", "recovery code", "master key". A
 recovery key allows "unlocking" the key storage, which is a "box" that is on the
@@ -319,6 +353,33 @@ to refer to the private half of the backup encryption key, which is different
 from the usage here. The recovery key described in this section is referred to
 in the spec as the
 [secret storage key](https://spec.matrix.org/v1.8/client-server-api/#secret-storage).
+
+#### Losing the recovery key
+
+If the user loses their recovery key, they no longer have a way to recover their
+identity.
+
+If the user still has a secure device, then that device has its own copy of the
+identity information, so they can **reset their recovery** without losing their
+identity, meaning other users will not see "Alice's identity has changed", and
+they will be able to continue using key storage to access message history.
+
+Note: users should be encouraged to reset their recovery if they have forgotten
+their recovery key, because they are in a precarious position - if they lose
+access to their device, they will be forced to reset their identity and lose
+message history.
+
+If the user does not have a device, or all their devices are insecure, then they
+will need to reset their identity (not just their recovery), meaning other users
+see "Alice's identity has changed", and they lose access to their old key
+storage, meaning they cannot read message history.
+
+> "If you lose your recovery key you can generate a new one if you are signed in
+> elsewhere"
+
+⚠️ Distinguish between "Reset identity" and "Reset recovery" - these are very
+different actions: resetting identity is destructive, whereas resetting recovery
+from a device that holds the full identity information is benign.
 
 ## Potential issues
 
