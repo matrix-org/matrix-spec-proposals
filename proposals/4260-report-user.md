@@ -89,6 +89,9 @@ Like `/report/:eventId`, handling of the report is left as a deliberate implemen
 
 * Authentication is required for this new endpoint.
 
+* Guest access is not permitted for this new endpoint to reduce spam. A future MSC may change this
+  out of necessity. MSC4151 and the original report events API are likely similarly affected.
+
 * Servers which opt to hide the existence of a user on the new endpoint should consider implementing
   a constant time function to avoid unintentionally disclosing that a user exists by processing the
   request slower.
