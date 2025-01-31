@@ -18,38 +18,38 @@ warnings that users will encounter by taking advantage of cross-signing.
 
 ## Proposal
 
-The changes below only apply to clients that support encryption.
+Note: The changes below only apply to clients that support encryption.
 
-### Users should have cross-signing keys
+### Users SHOULD have cross-signing keys
 
-Clients should create new cross-signing keys for users who do not yet have
+Clients SHOULD create new cross-signing keys for users who do not yet have
 cross-signing keys.
 
-### Users should have Secret Storage
+### Users SHOULD have Secret Storage
 
 Secret Storage allows users to keep secrets on the server so that they are
 accessible when the user logs in to a new device.
 
 The spec currently does not give recommendations for what information is stored
 in Secret Storage, or even whether Secret Storage is available to users.  A
-user’s Secret Storage should contain the user’s cross-signing secret keys and
+user’s Secret Storage SHOULD contain the user’s cross-signing secret keys and
 the key backup decryption key (if the user is using key backup).  This ensures
 that users use cross-signing and key backup on new devices.
 
-Users should have Secret Storage with a default key (a key referred to by
+Users SHOULD have Secret Storage with a default key (a key referred to by
 `m.secret_storage.default_key`) that encrypts the private cross-signing keys
 and key backup key (if available).
 
 ### Verifying individual devices of other users is deprecated
 
-When one user verifies a different user, the verification should verify the
+When one user verifies a different user, the verification SHOULD verify the
 users’ cross-signing keys.  Any flow that verifies only the device keys of
-different users is deprecated.  Verifying a user’s own device keys is still
-supported.
+different users is deprecated without verifying the cross-signing keys.
+Verifying a user’s own device keys is still supported.
 
-### Devices should be cross-signed
+### Devices SHOULD be cross-signed
 
-Clients should encourage users to cross-sign their devices.  This includes both
+Clients SHOULD encourage users to cross-sign their devices.  This includes both
 when logging in a new device, and for existing devices.  Clients may even go so
 far as to require cross-signing of devices by preventing the user from using
 the client until the device is cross-signed.  If the user cannot cross-sign
@@ -57,12 +57,12 @@ their device (for example, if they have forgotten their Secret Storage key),
 the client can allow users to reset their Secret Storage, cross-signing, and
 key backup.
 
-### Clients should flag when cross-signing keys change
+### Clients SHOULD flag when cross-signing keys change
 
-If Alice’s cross-signing keys change, Alice’s own devices must alert her to
+If Alice’s cross-signing keys change, Alice’s own devices MUST alert her to
 this fact, and prompt her to re-cross-sign those devices.  If Bob is in an
-encrypted room with Alice, Bob’s devices should inform him of Alice’s key
-change and should prevent him from sending an encrypted message to Alice
+encrypted room with Alice, Bob’s devices SHOULD inform him of Alice’s key
+change and SHOULD prevent him from sending an encrypted message to Alice
 without acknowledging the change.
 
 Bob’s clients may behave differently depending on whether Bob had previously
@@ -74,28 +74,72 @@ Note that this MSC does not propose a mechanism for remembering previous
 cross-signing keys between devices. In other words if Alice changes her
 cross-signing keys and then Bob logs in a new device, Bob’s new device will not
 know that Alice’s cross-signing keys had changed, even if Bob has other devices
-that were previously logged in. Such a mechanism could be proposed by another
-MSC.
+that were previously logged in.  This may result in Bob never seeing a warning
+about Alice's identity change, for example if Bob logs out of his last device,
+then Alice changes her cross-signing keys, and then Bob logs into a new device.
 
-### Room keys and secrets should by default not be sent to non-cross-signed devices
+In addition, this MSC does not propose a mechanism for synchronising between
+devices information regarding what warnings the user has seen or acknowledged.
+That is, if Alice changes her cross-signing keys and Bob has multiple devices
+logged in, then Bob will see a warning on all his devices, and will have to
+dismiss the warning on all of his devices.
+
+A mechanism for synchonising information between devices could be proposed by
+another MSC.
+
+### Encrypted to-device messages MUST NOT be sent to non-cross-signed devices
 
 Since non-cross-signed devices don’t provide any assurance that the device
 belongs to the user, and server admins can trivially create new devices for
-users, clients should not send room keys to non-cross-signed devices by
-default. Clients may provide users the ability to encrypt to specific
-non-cross-signed devices, for example, for development or testing purposes.
+users, clients MUST not send encrypted to-device messages, such as room keys or
+secrets (via Secret Sharing), to non-cross-signed devices by default.  When
+sending room keys, clients can use a [`m.room_key.withheld`
+message](https://spec.matrix.org/unstable/client-server-api/#reporting-that-decryption-keys-are-withheld)
+with a code of `m.unverified` to indicate to the non-cross-signed device why it
+is not receiving the room key.
 
-In addition, users should not send secrets (via Secret Sharing) to their own
-devices that are not cross-signed.
+An allowed exception to this rule is that clients may provide users the ability
+to encrypt to specific non-cross-signed devices for development or testing
+purposes.
 
-### Messages from non-cross-signed devices should be ignored by default
+A future MSC may specify exceptions to this rule.  For example, if a future MSC
+defines a device verification method that uses encrypted to-device messages,
+such messages would need to be sent to a user's own non-cross-signed devices, so
+that the user can verify their device to cross-sign it.
+
+### Encrypted messages from non-cross-signed devices SHOULD be ignored
 
 Similarly, clients have no assurance that encrypted messages sent from
 non-cross-signed devices were sent by the user, rather than an
 impersonator. Therefore messages sent from non-cross-signed devices cannot be
-trusted and should not be displayed differently to the user. Again, clients
-may be allow the user to override this behaviour for specific devices for
-development or testing purposes.
+trusted and SHOULD NOT be displayed to the user.
+
+Again, an allowed exception to this is that clients may be allow the user to
+override this behaviour for specific devices for development or testing
+purposes.
+
+### Non-cryptographic devices SHOULD NOT impact E2EE behaviour
+
+For the sake of clarity: non-cryptographic devices (devices which do not have
+device identity keys uploaded to the homeserver) should not have any impact on
+a client's E2EE behaviour. For all intents and purposes, non-cryptographic
+devices are a completely separate concept and do not exist from the perspective
+of the cryptography layer since they do not have identity keys, so it is
+impossible to send them encrypted messages.
+
+In particular, Matrix clients MUST NOT consider non-cryptographic devices to be
+equivalent to non-cross-signed cryptographic devices for purposes of enforcing
+E2EE policy. For example, clients SHOULD NOT warn nor refuse to send messages
+due to the presence of non-cryptographic devices.
+
+The intent of this is to smoothly support and minimise interference from
+applications which choose to set up E2EE only on demand (e.g.
+[WorkAdventure](https://workadventu.re/article-en/managing-e2e-encryption-with-matrix-in-a-simple-way/).
+Such clients should initially create a non-cryptographic device until they are
+ready to set up E2EE. Only when they are ready will they create the device
+identity keys for the device and upload them to the homeserver, converting the
+device into a cryptographic device and making it subject to the rules given in
+this MSC.
 
 ## Potential Issues
 
@@ -119,11 +163,30 @@ client fully implements this proposal, users will be unable to interact with
 bots and application services in encrypted rooms if they do not support
 cross-signing.
 
-TODO: status of cross-signing in bots/application services
+Some possible solutions for bots are:
+
+- if a bot is the only device logged into a given account, the bot can create its
+  own cross-signing keys and cross-sign its device.
+- the bot administrator can provide the Secret Storage key to the bot so that
+  the bot can fetch its self-signing private key and cross-sign its device.
+- the bot can log its device keys so that the administrator can cross-sign it
+  from a different device by manually comparing the device keys.  Note that many
+  clients do not have the ability to verify by comparing device keys.
+
+TODO: status of cross-signing in bots/application services, which clients can be
+used to cross-sign by comparing device keys
 
 ## Alternatives
 
+We could do nothing and leave things as they are, but the rules given in this
+MSC provide improved security.
+
 ## Security considerations
+
+Warning the user about cross-signing key changes can be circumvented by a
+malicious server if it sends forged cross-signing keys the first time the user
+sees them.  Therefore users should still verify other users when security is
+important.
 
 ## Unstable prefix
 
