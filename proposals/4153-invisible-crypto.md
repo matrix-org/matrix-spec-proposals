@@ -116,7 +116,7 @@ non-cross-signed devices were sent by the user, rather than an
 impersonator. Therefore messages sent from non-cross-signed devices cannot be
 trusted and SHOULD NOT be displayed to the user.
 
-Again, an allowed exception to this is that clients may be allow the user to
+Again, an allowed exception to this is that clients may allow the user to
 override this behaviour for specific devices for development or testing
 purposes.
 
