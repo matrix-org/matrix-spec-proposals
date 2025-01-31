@@ -320,6 +320,38 @@ users are familiar with different terms. Nevertheless we believe that working
 together to agree on a common language is the only way to address this issue
 over time.
 
+## Alternatives
+
+### Device vs. Session
+
+There is debate over the use of the word "device" to identify an instance of a
+client. Objections to "device" include:
+
+* Multiple apps on the same physical device will be listed as separate devices,
+  which may cause confusion.
+* Logging out and in on the same physical device will result in a new "device"
+  being created.
+* Some applications, especially on Web, use "session" for this concept.
+
+The most popular alternative is "session". Objections to "session" include:
+
+* It is an unfamiliar word for non-technical users: they have no metaphor to
+  work with to understand it.
+* It has multiple existing alternative meanings within Matrix.
+
+"Device" was chosen in the proposal because:
+
+* It is familiar from similar messaging apps.
+* It has a clear meaning in everyday speech, giving users a stepping-stone
+  towards understanding what it means in this context.
+* For novice users, it corresponds well with the everyday meaning: when they
+  first engage with Matrix, they will use one "device" per physical device.
+* The extension to think of multiple virtual "devices" on a physical device is
+  simple and familiar from other applications.
+* Messaging apps are increasingly used on mobile devices, especially as the
+  first point of contact, and "device" is commonly used in mobile apps.
+* The spec uses "device" for precisely this concept, which is a bonus.
+
 ## Further work
 
 Several other concepts might benefit from similar treatment. Within
