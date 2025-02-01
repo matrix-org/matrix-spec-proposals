@@ -1,4 +1,4 @@
-# MSCxxxx: "Do not encrypt for device" flag
+# MSC4261: "Do not encrypt for device" flag
 
 Some devices (such as bots and application service puppets) may not need to
 receive encrypted messages.  For example, an application service may have
@@ -44,7 +44,7 @@ does not pose any risk for leaking messages.
 ## Unstable prefix
 
 Until this is proposal is accepted, implementations should use the property name
-`org.matrix.mscxxxx.do_not_encrypt` rather than `do_not_encrypt`.
+`org.matrix.msc4261.do_not_encrypt` rather than `do_not_encrypt`.
 
 ## Dependencies
 
