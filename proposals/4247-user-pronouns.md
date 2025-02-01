@@ -10,7 +10,7 @@ Profiles may have an optional `m.pronouns` field as an
 array. These fields can be fetched through the
 [profile API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
 Clients should use these instead of they/them where possible. All fields
-within `m.pronouns` are optional, exluding `"language"` and `"summary"`.
+within `m.pronouns` are optional, excluding `"language"` and `"summary"`.
 
 ### Example
 
