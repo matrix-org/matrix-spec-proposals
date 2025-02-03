@@ -1,6 +1,7 @@
 # MSC4262: Sliding Sync Extension: Profile Updates
 
 This MSC is an extension to [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575)
+(and its proposed successor [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186))
 which adds support for receiving profile updates via Sliding Sync. It complements
 [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) which handles
 federation-level profile updates.
@@ -132,4 +133,6 @@ request JSON:
 
 This MSC builds on:
 
-- MSC3575 (Sliding Sync), which is not yet accepted into the spec
+- [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575) (Sliding Sync) or its
+  proposed successor [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)  
+  (Simplified Sliding Sync), neither of which are yet accepted into the spec
