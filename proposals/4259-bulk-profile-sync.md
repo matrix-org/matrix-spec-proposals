@@ -14,7 +14,8 @@ introduced in [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull
 
 This proposal specifically focuses on efficient delivery of profile updates between servers. While
 client delivery of profile updates is also important, that solution is to be addressed separately,
-such as through an extension to [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186).
+such as through a sliding sync extension like
+[MSC4262](https://github.com/matrix-org/matrix-spec-proposals/pull/4262).
 
 ## Proposal
 
