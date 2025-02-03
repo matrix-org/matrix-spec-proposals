@@ -134,5 +134,5 @@ request JSON:
 This MSC builds on:
 
 - [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575) (Sliding Sync) or its
-  proposed successor [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)  
+  proposed successor [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186)
   (Simplified Sliding Sync), neither of which are yet accepted into the spec
