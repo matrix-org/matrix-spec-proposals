@@ -360,26 +360,26 @@ If the user loses their recovery key, they no longer have a way to recover their
 identity.
 
 If the user still has a secure device, then that device has its own copy of the
-identity information, so they can **reset their recovery** without losing their
+identity information, so they can **change recovery key** without losing their
 identity, meaning other users will not see "Alice's identity has changed", and
 they will be able to continue using key storage to access message history.
 
-Note: users should be encouraged to reset their recovery if they have forgotten
+Note: users should be encouraged to change their recovery key if they have forgotten
 their recovery key, because they are in a precarious position - if they lose
 access to their device, they will be forced to reset their identity and lose
 message history.
 
 If the user does not have a device, or all their devices are insecure, then they
-will need to reset their identity (not just their recovery), meaning other users
+will need to reset their identity, meaning other users
 see "Alice's identity has changed", and they lose access to their old key
 storage, meaning they cannot read message history.
 
 > "If you lose your recovery key you can generate a new one if you are signed in
 > elsewhere"
 
-⚠️ Distinguish between "Reset identity" and "Reset recovery" - these are very
-different actions: resetting identity is destructive, whereas resetting recovery
-from a device that holds the full identity information is benign.
+⚠️ Distinguish between "Reset identity" and "Change recovery key" - these are
+very different actions: resetting identity is destructive, whereas changing
+recovery key from a device that holds the full identity information is benign.
 
 ## Potential issues
 
