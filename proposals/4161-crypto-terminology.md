@@ -335,7 +335,7 @@ key and has the same purpose as the recovery key.
 
 ⚠️ Avoid "4S" or "quad-S" - these are not descriptive terms.
 
-⚠️ Avoid using "security key", "security code", "recovery code", "master key". A
+⚠️ Avoid using "security key", "security code", "master key". A
 recovery key allows "unlocking" the key storage, which is a "box" that is on the
 server, containing your identity and message keys. It is used to
 recover the situation if you lose access to your devices. None of these other
