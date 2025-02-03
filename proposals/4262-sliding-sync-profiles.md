@@ -1,12 +1,18 @@
 # MSC4262: Sliding Sync Extension: Profile Updates
 
-This MSC is an extension to [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575) which adds support for receiving profile updates via Sliding Sync. It complements [MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) which handles federation-level profile updates.
+This MSC is an extension to [MSC3575](https://github.com/matrix-org/matrix-spec-proposals/pull/3575)
+which adds support for receiving profile updates via Sliding Sync. It complements
+[MSC4259](https://github.com/matrix-org/matrix-spec-proposals/pull/4259) which handles
+federation-level profile updates.
 
 ## Proposal
 
-MSC3575 currently does not include support for receiving profile field updates through the `/sync` endpoint. This extension adds support for receiving profile updates for users who are members of rooms the client is subscribed to.
+MSC3575 currently does not include support for receiving global profile field updates through the
+`/sync` endpoint. This extension adds support for receiving profile updates for users who are
+members of rooms the client is subscribed to.
 
-The proposal introduces a new extension called `profiles`. It processes the core extension arguments `enabled`, `rooms`, and `lists`, and adds the following optional arguments:
+The proposal introduces a new extension called `profiles`. It processes the core extension
+arguments `enabled`, `rooms`, and `lists`, and adds the following optional arguments:
 
 ```json5
 {
@@ -37,13 +43,16 @@ If `enabled` is `true`, then the sliding sync response MAY include profile updat
 
 ### Behaviour
 
-1. The extension only returns profile updates for users who are members of rooms that the client is subscribed to via either:
+1. The extension only returns profile updates for users who are members of rooms that the client is
+   subscribed to via either:
    - Room IDs explicitly listed in the `rooms` argument
    - Rooms that fall within the sliding windows specified in `lists`
 
-2. The optional `fields` argument allows clients to filter which profile fields they want to receive updates for. If omitted, all profile field updates are included.
+2. The optional `fields` argument allows clients to filter which profile fields they want to receive
+   updates for. If omitted, all profile field updates are included.
 
-3. The optional `include_history` argument controls whether the initial sync includes recent historical profile changes:
+3. The optional `include_history` argument controls whether the initial sync includes recent
+   historical profile changes:
    - If false (default), only current profile states are sent on initial sync
    - If true, the server MAY include recent profile changes that occurred before the sync
 
@@ -54,20 +63,23 @@ If `enabled` is `true`, then the sliding sync response MAY include profile updat
 
 5. When live streaming:
    - Profile updates MUST be sent as the server receives them
-   - For rooms which initially appear (`initial: true`) due to direct subscriptions or rooms moving into the sliding window, current profile states MUST be included
+   - For rooms which initially appear (`initial: true`) due to direct subscriptions or rooms moving
+     into the sliding window, current profile states MUST be included
    - A null value for a field indicates the field has been removed
    - Omitted fields should be considered unchanged
 
 ### Implementation Notes
 
-- Servers SHOULD implement appropriate batching and rate limiting of profile updates to prevent overwhelming clients
+- Servers SHOULD implement appropriate batching and rate limiting of profile updates to prevent
+  overwhelming clients
 
 - While this extension provides real-time profile updates, implementations should note:
   - Network issues could cause missed updates
   - Clients MAY implement periodic full profile refreshes if they require stronger consistency guarantees
   - The frequency of such refreshes should be balanced against resources and desired freshness
 
-- Profile updates are typically infrequent compared to other real-time events like typing notifications, so including them in sliding sync is considered efficient
+- Profile updates are typically infrequent compared to other real-time events like typing
+  notifications, so including them in sliding sync is considered efficient
 
 ## Potential Issues
 
@@ -103,7 +115,8 @@ If `enabled` is `true`, then the sliding sync response MAY include profile updat
 
 ## Unstable Prefix
 
-No unstable prefix as Sliding Sync is still in review. To enable this extension, add this to your request JSON:
+No unstable prefix as Sliding Sync is still in review. To enable this extension, add this to your
+request JSON:
 
 ```json
 {
@@ -118,4 +131,5 @@ No unstable prefix as Sliding Sync is still in review. To enable this extension,
 ## Dependencies
 
 This MSC builds on:
+
 - MSC3575 (Sliding Sync), which is not yet accepted into the spec
