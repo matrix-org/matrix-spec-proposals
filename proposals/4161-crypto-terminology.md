@@ -83,12 +83,11 @@ clients SHOULD document how they deviate from this document, and why.
 
 ### Devices
 
-**Note: this section depends on [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153)
-- Exclude non-cross-signed devices, which specifies clients should avoid sending
+**Note: this section depends on [MSC4153 ("Exclude non-cross-signed devices")](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), which specifies clients should avoid sending
 and receiving encryption info with devices that are not cross-signed by their
-owner ("insecure" devices in our terminology). While MSC4153 remains unmerged,
+owner ("insecure" devices in our terminology).** While MSC4153 remains unmerged,
 the parts of this section relating to insecure devices should be considered
-non-normative.**
+non-normative.
 
 Instances of a client are called 'devices' (not 'sessions'). Aligned with
 [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), we take it as granted that all devices have been cross-signed by the
