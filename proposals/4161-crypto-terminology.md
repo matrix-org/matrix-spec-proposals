@@ -285,6 +285,9 @@ future).
 The keys inside key storage are themselves encrypted, so that the server
 operator is not able to access them and read your messages.
 
+In the spec, key storage is referred to as
+[server-side key backup](https://spec.matrix.org/v1.13/client-server-api/#server-side-key-backups).
+
 > "Allow key storage"
 
 > "Key storage holds the keys that allow you to read your message history."
@@ -327,6 +330,10 @@ out everywhere or lost your devices.
 
 A **recovery passphrase** is an easier-to-remember way of accessing the recovery
 key and has the same purpose as the recovery key.
+
+In the spec, recovery is referred to as
+[secret storage](https://spec.matrix.org/v1.13/client-server-api/#secret-storage),
+or "4S".
 
 > "Write down your recovery key in a safe place"
 
