@@ -90,10 +90,11 @@ the parts of this section relating to insecure devices should be considered
 non-normative.
 
 Instances of a client are called 'devices' (not 'sessions'). Aligned with
-[MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), we take it as granted that all devices have been cross-signed by the
+[MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), we take it as granted that all devices taking part in encryption have been cross-signed by the
 user who owns them, and we call these **devices**.
 
-Devices which have not been cross-signed by the user are considered an error
+Devices which have published cryptographic keys (thus being visible as "cryptographic devices" to other users)
+but which have not been cross-signed are considered an error
 state, primarily to be encountered during the transition to MSC4153 and/or due
 to buggy/incomplete/outdated clients. These devices are referred to as **not
 secure** or **insecure** and their existence is considered a serious and dangerous error
