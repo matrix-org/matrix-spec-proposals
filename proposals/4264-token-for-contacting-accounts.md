@@ -1,4 +1,4 @@
-# MSC0000: Tokens for Contacting Accounts
+# MSC4264: Tokens for Contacting Accounts
 
 Federated networks eventually face the problem of spam. Without a central
 instance to ensure some form of identification, a small number of people will
