@@ -242,21 +242,29 @@ Similar to [MSC3847] glob expressions as well as block-list and allow-list
 configurations are supported.
 
 
+## [MSC4264] – Tokens for Contacting Accounts
+
+This proposal adapts the subaddressing functionality known from email to
+Matrix IDs. Users manage a set of "tokens" which are extensions of their
+MXIDs, e.g. in the form `@localpart::token:domain`. Invites are only processed
+when they include a valid token.
+
+
 ## Summary
 
 The table below compares the proposals in terms of different features. It's
 worth noting that some features such as glob matching could easily be extended
 to all proposals.
 
-|                      | [MSC2270] | [MSC3840] | [MSC4155]     | [MSC3847]           | [MSC3659] |
-|----------------------|-----------|-----------|---------------|---------------------|-----------|
-| Ignore room          | ✅        | ✅        | ❌            | ✅                  | ✅        |
-| Ignore user          | ❌        | ✅        | ✅            | ✅                  | ✅        |
-| Ignore server        | ❌        | ✅        | ✅            | ✅                  | ✅        |
-| Glob matching        | ❌        | ❌        | ❌            | ✅                  | ✅        |
-| Client-side          | ❌        | ✅        | ✅ (optional) | ✅                  | ❌        |
-| Block-list semantics | ✅        | ✅        | ✅            | ✅                  | ✅        |
-| Allow-list semantics | ❌        | ❌        | ✅            | ✅ (with [MSC4150]) | ✅        |
+|                      | [MSC2270] | [MSC3840] | [MSC4155]     | [MSC3847]           | [MSC3659] | [MSC4264]     |
+|----------------------|-----------|-----------|---------------|---------------------|-----------|---------------|
+| Ignore room          | ✅        | ✅        | ❌            | ✅                  | ✅        | ❌            |
+| Ignore user          | ❌        | ✅        | ✅            | ✅                  | ✅        | ✅            |
+| Ignore server        | ❌        | ✅        | ✅            | ✅                  | ✅        | ❌            |
+| Glob matching        | ❌        | ❌        | ❌            | ✅                  | ✅        | ❌            |
+| Client-side          | ❌        | ✅        | ✅ (optional) | ✅                  | ❌        | ✅ (optional) |
+| Block-list semantics | ✅        | ✅        | ✅            | ✅                  | ✅        | ❌            |
+| Allow-list semantics | ❌        | ❌        | ✅            | ✅ (with [MSC4150]) | ✅        | ✅            |
 
 
 [moderation policy lists]: https://spec.matrix.org/v1.11/client-server-api/#moderation-policy-lists
@@ -267,3 +275,4 @@ to all proposals.
 [MSC3847]: https://github.com/matrix-org/matrix-spec-proposals/pull/3847
 [MSC4150]: https://github.com/matrix-org/matrix-spec-proposals/pull/4150
 [MSC4155]: https://github.com/matrix-org/matrix-spec-proposals/pull/4155
+[MSC4264]: https://github.com/matrix-org/matrix-spec-proposals/pull/4264
