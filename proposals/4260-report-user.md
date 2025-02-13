@@ -95,7 +95,10 @@ POST /_matrix/client/v3/users/@alice:example.org/report
   as they require further thought and consideration - a future MSC may expand (or even deprecate) the
   report endpoints to support this added information.
 
-* Reports are not federated. This is considered an issue for another MSC, like [MSC3843](https://github.com/matrix-org/matrix-spec-proposals/pull/3843) or [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202).
+* While reports against non-local users are permitted, this MSC does not introduce a way for those
+  reports to transit federation to the target's server. This is considered an issue for another MSC,
+  like [MSC3843](https://github.com/matrix-org/matrix-spec-proposals/pull/3843) or
+  [MSC4202](https://github.com/matrix-org/matrix-spec-proposals/pull/4202).
 
 * Whether a user exists on the server is revealed through the new endpoint. Servers have the option
   to mask this detail by ignoring the report.
