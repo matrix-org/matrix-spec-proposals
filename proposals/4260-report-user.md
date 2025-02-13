@@ -18,7 +18,7 @@ a new endpoint is introduced:
 ```
 POST /_matrix/client/v3/users/:userId/report
 {
-  "reason": "<user-supplied, optional>"
+  "reason": "<user-supplied, may be empty>"
 }
 ```
 
@@ -35,6 +35,35 @@ a response body. If a user doesn't exist and the server wishes to hide that deta
 successful (`200`) response instead.
 
 Like `/report/:eventId`, handling of the report is left as a deliberate implementation detail.
+
+### Examples
+
+**Note**: Some clients may need to `encodeURIComponent` (or similar) the user ID to use it in a path
+parameter.
+
+```
+POST /_matrix/client/v3/users/@alice:example.org/report
+{"reason":"bad person"}
+
+> 200 OK
+> {}
+```
+
+```
+POST /_matrix/client/v3/users/@alice:example.org/report
+{"reason":""}
+
+> 200 OK
+> {}
+```
+
+```
+POST /_matrix/client/v3/users/@alice:example.org/report
+{"reason":""}
+
+> 404 OK
+> {"errcode":"M_NOT_FOUND","error":"User does not exist"}
+```
 
 ## Safety considerations
 
