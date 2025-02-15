@@ -1,4 +1,4 @@
-# MSC4264: Tokens for Contacting Accounts
+# MSC4264: Tokens for Contacting Accounts or Joining Semi-Public Rooms
 
 Federated networks eventually face the problem of spam. Without a central
 instance to ensure some form of identification, a small number of people will
@@ -13,6 +13,8 @@ entirely. Additionally, a reporting system requires some form of centralized
 structure and/or causes a additional traffic and load on the server
 infrastructure.
 
+This problem does not just apply to making a first contact with individuals, but
+generally to requests joining semi-private rooms.
 
 ## Proposal
 
@@ -49,7 +51,7 @@ has several benefits:
   via `@alice::i_gave_this_token_to_peter:matrix.org`).
 
 
-I have a few more ideas:
+There are a few more ideas:
 
 * Instead of blocking all contacting requests without a (valid) token, these
   requests could be marked as spam instead of being refused automatically. This
@@ -68,6 +70,17 @@ I have a few more ideas:
   can start a direct conversation.
 * There should be no automatic feedback to the requester whether the token is
   valid or not, to avoid brute-force attacks.
+* This feature could be used not just for first communication attempts to
+  individuals, but generally to requests joining semi-public rooms:
+  * A semi-public room can be configured to be visible to the world, but only
+    accept requests to join if users enter a valid token.
+  * Instead of entering a valid token upon request, one could use the same
+    syntax, like `#semi_public_room::token:matrix.org`.
+  * Admins of the semi-public room can edit the token list.
+  * Instead of requiring the token to entered when joining, a request could also
+    be sent to group admins (configurable).
+  * This could possibly further expanded to spaces as well.
+
 
 An implementation would probably have to cover both the server and the client
 side.
@@ -78,6 +91,8 @@ side.
     server side. This is because users using multiple clients would not want to
     maintain multiple token lists on each client, which also may interfere with
     each other.
+      * For semi-public rooms, there must be a list of valid tokens for each
+        each semi-public room.
   * A communication between server and client to sync the token list.
   * The decision whether a contact attempt is allowed or rejected should be made
     on the server side.
@@ -90,6 +105,7 @@ side.
   * A communication between server and client to sync the token list.
   * Showing the token to the user upon communication requests (and also in the
     chat history).
+  * Semi-public rooms must be made identifiable as such.
 
 
 ## Potential issues
@@ -123,7 +139,9 @@ ways to implement it.
 
 Instead of using the word 'token', a more precise word could be found.
 [RFC5233](https://datatracker.ietf.org/doc/html/rfc5233) for a comparable
-feature in e-mail describes it as 'detail'. All proposals are welcome.
+feature in e-mail describes it as 'detail'. All proposals are welcome. Some
+ideas are: token, detail, secret, access_token, access_secret, voucher,
+room_password, ...
 
 ## Security considerations
 
