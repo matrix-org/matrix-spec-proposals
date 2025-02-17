@@ -137,7 +137,7 @@ state events, see "Encrypted state events" for state events inside of the MLS la
 Every valid state event in this room version is required to have an empty state key.
 
 The `m.room.create` event has a mandatory `algorithm` field now to set the encryption algorithm
-for the room. This would be the MLS cipherset prefixed with `m.mls.v1.` for example
+for the room. This would be the MLS ciphersuite prefixed with `m.mls.v1.` for example
 "m.mls.v1.MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519". All future events in the room need to
 have the same algorithm set. To change the algorithm a new room needs to be created possibly via the
 room upgrade endpoint.
@@ -199,15 +199,16 @@ The below rules describe such behaviour and if there is the option to decide bet
 less strict validation, those rules tend to favour stricter validation. Some of those rules could be
 made more lenient to allow more extensibility if such a need is expected.
 
-1. if state_key is not empty, reject
+1. if state_key has any value (not missing or empty value), reject
 2. if state_key is present and event type is not `m.mls.commit` or `m.room.create`, reject
-3. if the event is `m.room.create` :
-   1. If it has any `prev_events` or `auth_events` , reject
-   2. If the room version is not an mls version, reject (or it should have been a different
+3. if the event is `m.room.create`:
+   1. If it has no state_key, reject
+   1. If it has any `prev_events` or `auth_events`, reject
+   1. If the room version is not an mls version, reject (or it should have been a different
 algorithm for that room version!)
-   3. If `origin` does not match the domain of the `room_id` , reject
-   4. If the `algorithm` is not present or empty, reject
-   5. Otherwise, allow
+   1. If `origin` does not match the domain of the `room_id`, reject
+   1. If the `algorithm` is not present or empty, reject
+   1. Otherwise, allow
 4. Considering the events auth events:
    1. If there is not exactly one `m.room.create` event (with implicitly an empty state key), reject
    2. If the event is not the `m.room.create` event (we never get here) or an `m.mls.commit` event
@@ -223,18 +224,19 @@ the first commit), reject
 7. If the room_id or the MLS group_id do not match the room_id of the create event, reject
 8. If the algorithm of the event does not match the create event, reject
 9. If the event type is `m.mls.commit`:
+   1. If it has no state_key, reject
    1. If the epoch is 0, the origin has to match the room id
-   2. If the epoch of this event is not exactly the epoch of the previous `m.mls.commit` event + 1,
+   1. If the epoch of this event is not exactly the epoch of the previous `m.mls.commit` event + 1,
 reject
-   3. If the MLS content is not a commit, reject
-   4. If `servers` is empty or any of the entries are not a valid servername, reject
-   5. If `powers` is empty or any of the entries are not a valid servername, reject
-   6. If the `origin` is not listed in `powers` (of the previous `m.mls.commit` event), reject
-   7. If the `powers` has entries not in `servers`, reject
-   8. If the `powers` start not with exactly the same entries in the same order as the subset of
+   1. If the MLS content is not a commit, reject
+   1. If `servers` is empty or any of the entries are not a valid servername, reject
+   1. If `powers` is empty or any of the entries are not a valid servername, reject
+   1. If the `origin` is not listed in `powers` (of the previous `m.mls.commit` event), reject
+   1. If the `powers` has entries not in `servers`, reject
+   1. If the `powers` start not with exactly the same entries in the same order as the subset of
 entries in the previous `powers` above the `origin` , reject
-   9. If the `can_propose` has entries not in `servers`, reject
-   10. Otherwise, allow
+   1. If the `can_propose` has entries not in `servers`, reject
+   1. Otherwise, allow
 10. If the event type is `m.mls.pending_commit`:
     1. If the epoch of this event is not exactly the epoch of the previous `m.mls.commit` event + 1, reject
     2. If the MLS content is not a commit, reject
@@ -379,8 +381,8 @@ The encrypted payload should be:
 {
    "type": "m.room.encrypted",
    "content": {
-      "algorithm": "m.megolm.v1.aes-sha2",
-      "ciphertext": "<encrypted_payload_base_64>"
+      "algorithm": "m.mls.v1.MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519",
+      "ciphertext": "<encrypted_payload_unpadded_base_64>"
    }
 }
 ```
@@ -414,7 +416,7 @@ a separate security analysis and is left out of this proposal.
 
 This proposal provides no support for generic state events outside of the MLS layer. State events
 inside the MLS layer are agreed upon using a GroupContext extension. The extension id for the group
-state should be 0xF6D0. 0xF000 to 0xFFFF is reserved for private extensions, 6D is a lowercase M in
+state should be 0xF6D0. 0xF000 to 0xFFFF is reserved for private extensions, 6D is a lowercase "m" in
 ASCII and 0 is just a placeholder.
 
 The extension is a required extension and has to be supported by all group members.
@@ -491,7 +493,7 @@ GET /_matrix/client/v3/keys/list
 
 ### Adding users to a room
 
-To invite users into a room the client should first fetch the key packages for that user and add the
+To invite user's devices into a room the client should first fetch the key packages for that user and add the
 user to the MLS group. The key packages should be validated and should be cross-signed as configured
 in the additional authenticated data of the current MLS commit.
 After this the commit in the room is updated. Once this commit is accepted by the delivery service,
