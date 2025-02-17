@@ -151,7 +151,7 @@ private message. The object follows the following format (here illustrated as JS
 
 ```json
 {
-   "federation": {-
+   "federation": {
       "powers": ["example.net", "example.org"],
       "servers": ["example.com", "example.net", "example.org"],
       "can_propose": ["example.com", "example.net", "example.org"]
