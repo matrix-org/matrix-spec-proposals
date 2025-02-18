@@ -2,7 +2,6 @@
 
 Quite a few clients and tools have a need to preview a room:
 
-- A client may want to show the room in the roomlist, when showing a space.
 - matrix.to may want to show avatar and name of a room.
 - Nextcloud may want to list the names and avatars of your `/joined_rooms` when
   asking where to share the media.
@@ -55,7 +54,7 @@ GET /_matrix/client/v1/room_summary/{roomIdOrAlias}?
   be generated locally. These can be from a matrix URI, matrix.to link or a
   `m.space.child` event for example.
 
-A response includes the stripped state in the following format:
+A successful `200` response includes the stripped state in the following format:
 
 ```json5
 {
@@ -115,12 +114,13 @@ calls. Restricting this API to guests only would provide no security benefit.
 This API should be accessible to guest users (as it is already accessible
 without authentication).
 
-If the room can't be found, `M_NOT_FOUND` should be returned. The server should
-NOT return `M_UNAUTHORIZED` or otherwise divulge existance of a room, that
+If the room cannot be found, the server should return a `404`
+HTTP status code along with an `M_NOT_FOUND` error code. The server should
+NOT return `M_UNAUTHORIZED` or otherwise divulge existence of a room, that
 requires authentication to preview, if the request is unauthenticated or
 authenticated by a user without access to the room.
 
-(1) The field `membership` will not be present when called unauthenticated, but
+(1) The `membership` field will not be present when called unauthenticated, but
 is required when called authenticated. It should be `leave` if the server
 doesn't know about the room, since for all other membership states the server
 would know about the room already.
@@ -201,8 +201,8 @@ calculate the room name, topic and other fields provided in this MSC.
 
 Furthermore, the membership counts in the summary field are only included, if
 the client is using lazy loading.  This MSC provides similar information as
-calling `/sync`, but it uses the stripped state, which is needed to allow this
-to work for unjoined rooms and it excludes `m.heroes` as well as membership
+calling `/sync`, but to allow it to work for unjoined rooms it only uses information
+ from the stripped state. Additionally, it excludes `m.heroes` as well as membership
 events, since those are not included in the stripped state of a room. (A client
 can call `/joined_members` to receive those if needed. It may still make sense
 to include heroes so that clients could construct a human-friendly room display
