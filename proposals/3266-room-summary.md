@@ -17,7 +17,7 @@ Quite a few clients and tools have a need to preview a room:
 - External services can use this API to preview rooms like shields.io.
 
 There are a few ways to request a room summary, but they only support some of
-the use cases. The [spaces hierarchy API](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy) only provides
+the use cases. The [spaces hierarchy API](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv1roomsroomidhierarchy) only provides
 limited control over what rooms to summarize and returns a lot more data than
 necessary.  `{roomid}/initialSync` and `{roomid}/state/{event_type}` don't work
 over federation and are much heavier than necessary or need a lot of http calls
@@ -74,13 +74,13 @@ A successful `200` response includes the stripped state in the following format:
 ```
 
 These are the same fields as those returned by [`/publicRooms`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv3publicrooms) or
-[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+[`/hierarchy`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
 , with a few additions: `membership`, `room_version`,
 `encryption` and `allowed_room_ids`.
 
 `room_version` and `encryption` are already accessible as part of
 the stripped state according to
-https://spec.matrix.org/v1.3/client-server-api/#stripped-state . The
+https://spec.matrix.org/v1.13/client-server-api/#stripped-state . The
 `membership` is not, but a client could access that in various different ways
 already. This API just makes this more convenient.
 `allowed_room_ids` is already part of the federation `hierarchy` API and
@@ -136,8 +136,8 @@ also added to the `/hierarchy` API.
 
 ### Server-Server API
 
-For fetching room summaries of a room a server is not joined to, the federation API of the 
-[`/hierarchy`](https://spec.matrix.org/v1.3/server-server-api/#get_matrixfederationv1hierarchyroomid)
+For fetching room summaries of a room a server is not joined to, the federation API of the
+[`/hierarchy`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1hierarchyroomid)
 endpoint is reused. This provides (with a few changes) all the information
 needed in this MSC, but it also provides a few additional fields and one level
 of children of this room.
@@ -159,7 +159,7 @@ go.)
 ### Performance
 
 Clients may start calling this API very often instead of using the
-[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+[`/hierarchy`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
 for spaces or caching the state received via `/sync`.
 Looking up all the state events required for this API may cause performance
 issues in that case.
@@ -172,7 +172,7 @@ apply rate limiting if necessary.
 ### The Space Summary / `/hierarchy` API
 
 The
-[`/hierarchy`](https://spec.matrix.org/v1.3/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
+[`/hierarchy`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
 API could be used, but it returns more data than necessary by default (but it
 can be limited to just 1 room) such as all the `m.space.child` events in a
 space, but also is missing the room version, membership and the encryption
