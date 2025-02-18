@@ -33,11 +33,16 @@ alias, and a corresponding server-server API to fetch a summary over federation.
 The API returns a summary of the given room, provided the user is either already
 a member, or has the necessary permissions to join. (For example, the user may
 be a member of a room mentioned in an `allow` condition in the join rules of a
-restricted room.) For unauthenticated requests a response should only be
-returned if the room is publicly accessible.
-Rooms that the user has been invited to or knocked at might result in outdated or partial
-information depending on if the homeserver can request the current state of the
-room or not.
+restricted room.)
+
+For unauthenticated requests a response should only be returned if the room is
+publicly accessible; specifically, that means either:
+ * the room has `join_rule: public` or `join_rule: knock`, or:
+ * the room has `history_visibility: world_readable`.
+
+Note that rooms the user has been invited to or knocked at might result in
+outdated or partial information, since the the homeserver may not have access
+to the current state of the room.
 
 A request could look like this:
 
