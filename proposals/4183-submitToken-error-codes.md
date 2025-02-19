@@ -21,7 +21,7 @@ Note that the `POST` version of the email `submitToken` endpoint ([`POST
 /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken))
 is not generally used in practice: Sydent's emails include a link to click instead of the `submit_url` response field and
 therefore use the `GET` version. Synapse does not implement the `POST` API for email validation for this reason. This
-proposal updates both for consistency.
+proposal updates both `POST` and `GET` versions for consistency.
 
 ## Proposal
 
