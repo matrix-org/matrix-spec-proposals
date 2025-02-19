@@ -154,7 +154,21 @@ cross-signing as soon as possible, and to encourage users to cross-sign their
 devices, and clients should delay the implementation of the last two points (or
 make it optional) until most clients have implemented cross-signing.
 
-TODO: status of cross-signing in clients
+The following clients support cross-signing:
+
+- Cinny
+- Element (all platforms), and derivatives such as Schildi Chat
+- Fractal
+- gomuks
+- NeoChat
+- Nheko
+- pantalaimon
+- Tammy
+- Trixnity Messenger
+
+The following encryption-capable clients do not support cross-signing:
+
+- kazv
 
 ### Bots and application services
 
