@@ -1,4 +1,4 @@
-# MSC4183: Additional Error Codes for submitToken endpoint
+# MSC4183: Additional Error Codes for submitToken endpoints
 
 The [`POST
 /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken)
@@ -19,7 +19,7 @@ this MSC specifies applies to these endpoint in the same way.
 
 Note that the `POST` version of the email `submitToken` endpoint ([`POST
 /_matrix/identity/v2/validate/email/submitToken`](https://spec.matrix.org/v1.11/identity-service-api/#post_matrixidentityv2validateemailsubmittoken))
-is not generally used in practice: Sydent's emails includes a link to click instead of the `submit_url` response field and
+is not generally used in practice: Sydent's emails include a link to click instead of the `submit_url` response field and
 therefore use the `GET` version. Synapse does not implement the `POST` API for email validation for this reason. This
 proposal updates both for consistency.
 
@@ -43,7 +43,7 @@ Additionally specify that the following common error codes can be returned:
 
 HTTP status code 400 should also be used for both of these errors.
 
-Also apply the same change to all the `submit_url` fields in the various response to the `POST requestToken` endpoints in the client-server API, i.e.:
+Also apply the same change to the endpoints returned in the `submit_url` fields in the response to the various `POST requestToken` endpoints in the client-server API, i.e.:
 
  * [`POST /_matrix/client/v3/register/email/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3registeremailrequesttoken)
  * [`POST /_matrix/client/v3/register/msisdn/requestToken`](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3registerrequesttoken)
