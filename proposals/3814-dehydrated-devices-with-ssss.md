@@ -79,7 +79,6 @@ other purposes, such as:
   "device_keys": {
     "user_id": "<user_id>",
     "device_id": "<device_id>",
-    "valid_until_ts": <millisecond_timestamp>,
     "dehydrated": true,
     "algorithms": [
         "m.olm.curve25519-aes-sha2",
@@ -186,11 +185,14 @@ with an error code of `M_FORBIDDEN`, HTTP code 403.
 
 ### Deleting a dehydrated device
 
-A dehydrated device will get replaced whenever a new device gets uploaded using
-the `PUT /dehydrated_device`, this makes a `DELETE /dehydrated_device`
-unnecessary, though for completeness sake and to give client authors to get back
-to a state where no dehydrated device exists for a given user we will introduce
-one.
+The dehydrated device can be deleted by calling `DELETE /dehydrated_device`.
+Note that the dehydrated device will get replaced whenever a new device gets
+uploaded using the `PUT /dehydrated_device`, so calling `DELETE
+/dehydrated_device` is not necessary when replacing the dehydrated device.  It
+is only necessary to call when the dehydrated device is to be removed and may
+not be replaced.  For example, if a client resets the user's cross-signing keys,
+but does not create a new dehydrated device, it should call this endpoint, as
+the dehydrated device would be signed with an outdated old cross-signing key.
 
 `DELETE /dehydrated_device`
 
@@ -201,6 +203,17 @@ Response:
   "device_id": "dehydrated device's ID"
 }
 ```
+
+The dehydrated can also be deleted by calling the existing [`POST
+/delete_devices`](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientv3delete_devices),
+[`DELETE
+/devices/{deviceId}`](https://spec.matrix.org/unstable/client-server-api/#delete_matrixclientv3devicesdeviceid),
+and [`POST
+/logout/all`](https://spec.matrix.org/unstable/client-server-api/#post_matrixclientv3logoutall)
+endpoints.  In contrast with `POST /delete_devices` and `DELETE
+/devices/{deviceId}`, the new `DELETE /dehydrated_device` does not use
+User-Interactive Authentication, and does not require knowing the device ID of
+the dehydrated device.
 
 ### Device Dehydration Format
 
@@ -249,7 +262,8 @@ The data is then encrypted and encoded as follows.
 #### Encryption key
 
 The encryption key used for the dehydrated device will be randomly generated
-and stored/shared via SSSS using the name `m.dehydrated_device`.
+and stored/shared via SSSS using the name `m.dehydrated_device`, encoded using
+unpadded base64.
 
 A 96-bit (12-byte) nonce is randomly generated; each time a device is
 dehydrated, a new nonce must be generated.
@@ -293,20 +307,23 @@ will not be able to share megolm keys.  This issue is not unique to dehydrated
 devices; this also occurs when devices are offline for an extended period of
 time.
 
-This may be addressed by using [fallback keys](https://spec.matrix.org/v1.9/client-server-api/#one-time-and-fallback-keys).
+This may be addressed by using [fallback
+keys](https://spec.matrix.org/v1.9/client-server-api/#one-time-and-fallback-keys),
+and clients are recommended to create a fallback key for the dehydrated device.
 
 To reduce the chances of one-time key exhaustion, if the user has an active
-client, it can periodically replace the dehydrated device with a new dehydrated
-device with new one-time keys.  If a client does this, then it runs the risk of
-losing any megolm keys that were sent to the dehydrated device, but the client
-would likely have received those megolm keys itself.
+client, it should periodically (e.g. once a week) replace the dehydrated device
+with a new dehydrated device with new one-time keys.  If a client does this,
+then it runs the risk of losing any megolm keys that were sent to the dehydrated
+device, but the client should have received those megolm keys itself, so this
+should not be a problem.
 
-Alternatively, the client could perform a `/sync` for the dehydrated device,
-dehydrate the olm sessions, and upload new one-time keys.  By doing this
-instead of overwriting the dehydrated device, the device can receive megolm
-keys from more devices.  However, this would require additional server-side
-changes above what this proposal provides, so this approach is not possible for
-the moment.
+Alternatively, we could provide a new API to allow the client to perform a
+`/sync`-like call for the dehydrated device, dehydrate the olm sessions, and
+upload new one-time keys.  By doing this instead of overwriting the dehydrated
+device, the device can receive megolm keys from more devices.  However, this
+would require additional server-side changes above what this proposal provides,
+adds more complexity, and does not provide any practical benefits.
 
 ### Accumulated to-device messages
 
@@ -314,8 +331,7 @@ If a dehydrated device is not rehydrated for a long time, then it may
 accumulate many to-device messages from other clients sending it Megolm
 sessions.  This may result in a slower initial sync when the device eventually
 does get rehydrated, due to the number of messages that it will retrieve.
-Again, this can be addressed by periodically replacing the dehydrated device,
-or by performing a `/sync` for the dehydrated device and updating it.
+Again, this can be addressed by periodically replacing the dehydrated device.
 
 ## Alternatives
 
