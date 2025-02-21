@@ -27,7 +27,7 @@ Previous proposals have tried to unify those aspects of MLS and Matrix, but ofte
 the expense of some of the security benefits of MLS. At its core having a coherent set of members in
 a room and the ability to change membership at any time without the ability to broadcast these
 changes to other servers in the room are at conflict. If any server can modify historical membership
-of a room, this compromises Post-Compromise Security (PFS). In an earlier proposal, decentralised
+of a room, this compromises security. In an earlier proposal, decentralised
 MLS (dMLS), each participant will need to keep private keys at every possible fork point of the DAG
 around for a possibly unlimited amount of time as Matrix places no upper bound on how far back
 history can have diverged but ultimately still be allowed to merge together in the future.
@@ -136,7 +136,7 @@ state events, see "Encrypted state events" for state events inside of the MLS la
 
 Every valid state event in this room version is required to have an empty state key.
 
-The `m.room.create` event has a mandatory `algorithm` field now to set the encryption algorithm
+The `m.room.create` event has a mandatory `encryption_algorithm` field now to set the encryption algorithm
 for the room. This would be the MLS ciphersuite prefixed with `m.mls.v1.` for example
 "m.mls.v1.MLS_128_DHKEMX25519_AES128GCM_SHA256_Ed25519". All future events in the room need to
 have the same algorithm set. To change the algorithm a new room needs to be created possibly via the
@@ -144,7 +144,7 @@ room upgrade endpoint.
 
 A new state event is introduced to track the current MLS commit. This event follows the format for
 encrypted events with only an `algorithm` and `ciphertext` field. It contains the current MLS
-commit as a MLS private message.
+commit as a MLS private message encoded as urlsafe base64 without padding.
 
 The MLS commit contains a CBOR encoded field in its unencrypted authenticated data of the MLS
 private message. The object follows the following format (here illustrated as JSON):
@@ -175,8 +175,14 @@ mls commit conflicts. Optional, defaults to 0\. Clients should not allow values 
 and should clamp any larger values to that maximum.
 `security.required_verification` specifies the verification required to add new users or clients
 to the MLS state. The sender of such a commit needs to have at least this level of verification with
-the other participant to add them. Possible values are m.direct, m.cross, m.tofu and m.none.
-Optional, defaults to m.cross.
+the other participant to add them. Possible values are:
+
+- `m.direct`: Direct verified (without cross-signing)
+- `m.cross`: Verified via cross-signing
+- `m.tofu`: Trust on first use, so pinning the first master key the user has seens for that user
+- `m.none`
+
+Optional, defaults to `m.cross`.
 
 The MLS commit should use the event type "m.mls.commit".
 
@@ -199,7 +205,10 @@ The below rules describe such behaviour and if there is the option to decide bet
 less strict validation, those rules tend to favour stricter validation. Some of those rules could be
 made more lenient to allow more extensibility if such a need is expected.
 
-1. if state_key has any value (not missing or empty value), reject
+In the following section the “epoch” field refers to the epoch of the MLS message
+([RFC9420 Sec. 6.3][RFC9420Sec6.3]), which is available as part of the ciphertext, but not encrypted.
+
+1. Only allow empty state keys or events without state keys. If the state key is present and not empty, reject
 2. if state_key is present and event type is not `m.mls.commit` or `m.room.create`, reject
 3. if the event is `m.room.create`:
    1. If it has no state_key, reject
@@ -220,7 +229,8 @@ reject (could move this check to a different section)
 to `false`, and the `origin` of the event does not match the `origin` domain of the create event,
 reject.
 6. If the `origin` is not listed in the `servers` of the previous `m.mls.commit` event (unless it is
-the first commit), reject
+the first commit), reject. Previous in this case refers to the m.mls.commit from the auth events
+representing the current state of the room.
 7. If the room_id or the MLS group_id do not match the room_id of the create event, reject
 8. If the algorithm of the event does not match the create event, reject
 9. If the event type is `m.mls.commit`:
@@ -238,7 +248,7 @@ entries in the previous `powers` above the `origin` , reject
    1. If the `can_propose` has entries not in `servers`, reject
    1. Otherwise, allow
 10. If the event type is `m.mls.pending_commit`:
-    1. If the epoch of this event is not exactly the epoch of the previous `m.mls.commit` event + 1, reject
+    1. If the epoch of this event is not exactly the epoch of the current `m.mls.commit` event + 1, reject
     2. If the MLS content is not a commit, reject
     3. If `servers` is empty or any of the entries are not a valid servername, reject
     4. If `powers` is not the same as the current `m.mls.commit`, reject
@@ -595,6 +605,13 @@ the lack of a message history synchronization and backup protocol. These feature
 with secure protocols without breaking the security of the end-to-end encryption. Specification of
 such protocols is left open for future MSCs.
 
+### Size of Welcome Messages
+
+Welcome messages can become pretty big when they contain the ratchet tree. To reduce the message
+size of welcome messages, MLS allows distributing the ratchet tree (which is the largest part in
+the message) in other ways. Future MSCs can define other delivery mechanisms for ratchet trees
+when the size of the welcome messages becomes an issue.
+
 ## Alternatives
 
 ### MSC2883: Matrix-flavoured MLS
@@ -633,7 +650,8 @@ this time as both proposals are still in progress and [MSC4244][MSC4244] include
 #### Membership handling
 
 This proposal does not use membership events and gets rid of the "sender" field in events. This
-essentially makes membership opaque to the homeserver and gets Matrix a lot closer to portable
+essentially makes membership opaque to the homeserver (apart from its own local users for distributing
+messages to clients) and gets Matrix a lot closer to portable
 identities as well as provides a lot less metadata to the homeservers as well as anyone else being
 able to intercept HTTPS traffic. [MSC4244][MSC4244] instead uses traditional membership events with some
 additional rules on how to make them match the MLS membership list.
@@ -795,6 +813,7 @@ and [famedly (Niklas Zender and Nicolas Werner)](https://www.famedly.com/) both 
 for their ideas, feedback and work on that...you guys rock!
 
 [RFC9420]: <https://datatracker.ietf.org/doc/rfc9420/>
+[RFC9420Sec6.3]: <https://datatracker.ietf.org/doc/html/rfc9420#name-encoding-and-decoding-a-pri>
 [MSC2883]: <https://github.com/matrix-org/matrix-spec-proposals/pull/2883>
 [MSC4244]: <https://github.com/matrix-org/matrix-spec-proposals/pull/4244>
 [MSC4245]: <https://github.com/matrix-org/matrix-spec-proposals/pull/4245>
