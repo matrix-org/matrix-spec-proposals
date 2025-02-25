@@ -26,7 +26,7 @@ for each room.
 ## Proposal
 
 A new client-server API, which allows you to fetch a summary of a room by id or
-alias, and a corresponding server-server API to fetch a summary over federation.
+alias.
 
 ### Client-Server API
 
