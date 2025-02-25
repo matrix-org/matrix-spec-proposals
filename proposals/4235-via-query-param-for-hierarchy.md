@@ -49,4 +49,4 @@ Unknown
 Unknown
 
 ## Unstable prefix
-None
+Until this proposal is accepted into the spec, implementations SHOULD refer to via as `org.matrix.msc4235.via`.
