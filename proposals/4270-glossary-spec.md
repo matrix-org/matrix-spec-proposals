@@ -46,46 +46,7 @@ can be maintained through translations.
 These definitions may be incorporated in a "General" section of the new Glossary document, and are
 normative (acceptance of this MSC means accepting the definitions).
 
-#### Users
-
-Typically a human or bot, a **user** is identified by their [user ID](https://spec.matrix.org/v1.13/appendices/#user-identifiers).
-
-#### Bots
-
-**Bots** are *users* which have automated software primarily running them. Human operators may still
-log in and make use of the user, however this would be an exception to normal operation.
-
-Sometimes, bots may be operated as single-user *appservices*.
-
-#### Appservices
-
-Shorthand term for [Application Services](https://spec.matrix.org/v1.13/application-service-api/).
-
-#### Bridges
-
-A type of *appservice* which connects Matrix to another protocol or platform, typically at the room
-level.
-
-#### Rooms
-
-Identified by its [room ID](https://spec.matrix.org/v1.13/appendices/#room-ids).
-
-⚠️ Avoid using terms like "channel" or "topic".
-
-#### Spaces
-
-A special type of *room* which has the [`m.space` room type](https://spec.matrix.org/v1.13/client-server-api/#spaces).
-
-⚠️ Avoid using terms like "groups" or "communities".
-
-#### Homeservers
-
-A server hosting *users* in Matrix. Note that rooms may initially be created on a particular homeserver,
-but become decentralized when another server joins.
-
-Sometimes, homeservers may be simply referred to as **servers**.
-
-⚠️ Avoid putting a space between "home" and "server".
+**TODO**: Re-add definitions once the remainder of the MSC has been reviewed. 😇
 
 ### Initial language support
 
