@@ -23,21 +23,21 @@ Servers MAY automatically forget the room – as if the user had called
 
 This can limit clients' options to maintain an archive of historic rooms (such
 that they have left *without* forgetting them). Therefore, servers that
-auto-forget rooms MUST advertise that they do so via an `m.leave_without_forget`
+auto-forget rooms MUST advertise that they do so via an `m.forget_forced_upon_leave`
 capability.
 
 ``` json5
 {
   "capabilities": {
-    "m.leave_without_forget": {
+    "m.forget_forced_upon_leave": {
       "enabled": true
     }
   }
 }
 ```
 
-A value of `false` means that the server performs auto-forget so that the client
-cannot leave rooms without also forgetting them. A value of `true` means that
+A value of `true` means that the server performs auto-forget so that the client
+cannot leave rooms without also forgetting them. A value of `false` means that
 rooms will only be forgotten when the clients calls
 [`/_matrix/client/v3/rooms/{roomId}/forget`].
 
@@ -59,7 +59,7 @@ None.
 ## Unstable prefix
 
 While this proposal is unstable, clients should refer to
-`m.leave_without_forget` as `org.matrix.msc4267.leave_without_forget`.
+`m.forget_forced_upon_leave` as `org.matrix.msc4267.forget_forced_upon_leave`.
 
 ## Dependencies
 
