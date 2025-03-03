@@ -1,7 +1,7 @@
 # MSC4271: Recommended `enabled`-ness for default push rules
 
 Homeservers are required to deploy a set of [predefined push rules] into user
-accounts. For one thing, the specification covers the shear existence of these
+accounts. For one thing, the specification covers the sheer existence of these
 predefined rules. This is sensible as a means to preventing clients from
 inventing their own set of default rules.
 
