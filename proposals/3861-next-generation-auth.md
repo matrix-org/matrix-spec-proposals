@@ -500,7 +500,7 @@ They are not strictly required for this proposal to be accepted, but should be c
 - [MSC4191: Account management deep-linking][MSC4191]
 - [MSC4198: Usage of OIDC login_hint][MSC4198]
 
-The following MSCs were prerequisites for implenting this proposal in a sane way, and were accepted in the meantime:
+The following MSCs were prerequisites for implementing this proposal in a sane way, and were accepted in the meantime:
 
 - [MSC3970: Scope transaction IDs to devices][MSC3970]
 - [MSC3967: Do not require UIA when first uploading cross signing keys][MSC3967]
