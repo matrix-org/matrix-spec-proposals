@@ -91,6 +91,22 @@ already. This API just makes this more convenient.
 `allowed_room_ids` is already part of the federation `hierarchy` API and
 necessary for distinguishing possible join modes for `knock_restricted` rooms.
 
+#### Unauthenticated and guest access
+
+This API may optionally be exposed to unauthenticated users, or guest users, at the choice of
+server implementations and administrators.
+
+ * Rationale: unauthenticated access is beneficial for third-party services such as
+   https://matrix.to. On the other hand, allowing unauthenticated access may leak
+   information about rooms that would otherwise be registered users (particularly
+   on servers which do not allow public federation), and may lead to unexpected
+   resource usage.
+
+Servers may rate limit how often they fetch information over federation more heavily, if the
+user is unauthenticated.
+
+When the endpoint is called unauthenticated, the `membership` field will be
+absent in the response.
 
 #### Rationale and description of response fields
 
@@ -110,14 +126,7 @@ necessary for distinguishing possible join modes for `knock_restricted` rooms.
 | membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
 | encryption         | Optional. If the room is encrypted this specified the algorithm used for this room. This is already accessible as stripped state. | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption or not this algorithm. |
 
-It should be possible to call this API without authentication, but servers may
-rate limit how often they fetch information over federation more heavily, if the
-user is unauthenticated. Being able to call this API unauthenticated is
-beneficial to avoid third parties registering guest users for one-shot API
-calls. Restricting this API to guests only would provide no security benefit.
 
-This API should be accessible to guest users (as it is already accessible
-without authentication).
 
 If the room cannot be found, the server should return a `404`
 HTTP status code along with an `M_NOT_FOUND` error code. The server should
