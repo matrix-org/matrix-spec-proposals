@@ -86,7 +86,9 @@ See below for a more detailed description of the response.
 #### Unauthenticated and guest access
 
 This API may optionally be exposed to unauthenticated users, or guest users, at the choice of
-server implementations and administrators.
+server implementations and administrators. Clients MUST NOT rely on being able
+to use the endpoint without authentication, and should degrade gracefully if
+access is denied.
 
  * Rationale: unauthenticated access is beneficial for third-party services such as
    https://matrix.to. On the other hand, allowing unauthenticated access may leak
@@ -99,6 +101,9 @@ user is unauthenticated.
 
 When the endpoint is called unauthenticated, the `membership` field will be
 absent in the response.
+
+As mentioned above, a successful response should only be returned for
+unauthenticated requests where the room is publicly accessible.
 
 #### Response format
 
