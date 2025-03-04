@@ -42,10 +42,10 @@ A few issues can be highlighted from this particular example:
 
 **Note**: Many of these points could be improved with individual improvements to each of those stages, and multiple MSCs already exist to address some of them.
 
-### Benefits of authenticating end-users through the system browser
+### Benefits of authenticating end-users through the user's default browser
 
 Rather than trying to fix the existing flows, this MSC proposes an alternative approach to authentication.
-Authenticating end-users through the system browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
+Authenticating end-users through the user's default browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
 Though, some applications may wish to retain browser-less authentication, which this proposal supports thanks to the inherited authentication specifications.
 
 The general idea is simple: to authenticate a user, the client redirects the user to a URL on the homeserver, which completes the authentication flow, and then redirects the user back to the client.
@@ -63,6 +63,10 @@ This has the benefit of working well with domain-bound authentication mechanisms
 
 This makes it possible to design widely different authentication flows for different homeservers, without having to cross an API boundary.
 Implementers of said flows can focus on the specifics of their deployment without worrying about defining the right API between the client and the homeserver.
+
+Bouncing between the client and the browser may lead to user confusion, especially on operating systems with limited window management capabilities.
+Mobile operating systems such as iOS and Android provide a way to embed a secure browser view within an application ([`ASWebAuthenticationSession`](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession)) on iOS, [Custom Tabs](https://developer.android.com/develop/ui/views/layout/webapps/overview-of-android-custom-tabs) on Android).
+In those cases, the host application cannot control or monitor what is happening within the embedded browser view, protecting the user's credentials, but that view shares the same context as the system-wide browser.
 
 ### Concealing the user's credentials
 
