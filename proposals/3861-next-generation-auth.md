@@ -55,12 +55,9 @@ This allows the homeserver to implement an authentication (and registration) flo
 A public service with open registration like Matrix.org could have secure CAPTCHA prompts, email verification, and terms of service agreements, with both password-based and social-based authentication.
 A private service could have SSO-based authentication with specific 2FA requirements.
 
-This has the benefit of working well with domain-bound authentication mechanisms:
-
-- Password managers can be used to store the password for the homeserver domain, and the user can use a different client on a different domain without having to remember the password.
-- WebAuthn credentials/Passkeys are bound to the domain, and would be impractical to introduce with the current authentication paradigm.
-- The user could benefit from sharing a single browser session with multiple clients, requiring them to enter their credentials only once per physical device.
-- Many other authentication mechanisms are effectively domain-bound: CAPTCHAs and client certificates, just to name a few.
+Using the homeserver's domain name in the authentication flow unlocks new kinds of authentication mechanisms and enhances the user experience of existing flows.
+WebAuthn credentials/Passkeys, as well as client certificate-based authentication, are all bound to the domain they are registered on, making them impractical if the client is directly authenticating the end user.
+Password managers will also function better if the credentials are bound to the homeserver domain instead of the client itself.
 
 This makes it possible to design widely different authentication flows for different homeservers, without having to cross an API boundary.
 Implementers of said flows can focus on the specifics of their deployment without worrying about defining the right API between the client and the homeserver.
