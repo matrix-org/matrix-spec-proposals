@@ -92,7 +92,7 @@ access is denied.
 
  * Rationale: unauthenticated access is beneficial for third-party services such as
    https://matrix.to. On the other hand, allowing unauthenticated access may leak
-   information about rooms that would otherwise be registered users (particularly
+   information about rooms that would otherwise be restricted to registered users (particularly
    on servers which do not allow public federation), and may lead to unexpected
    resource usage.
 
