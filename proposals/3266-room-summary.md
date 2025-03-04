@@ -239,7 +239,9 @@ of a single room (as a POST request). This may have performance benefits for the
 federation API and a client could then easily request a summary of all joined
 rooms. It could still request the summary of a single room by just including
 only a single room in the POST or a convenience GET could be provided by the
-server (that looks like this proposal).
+server (that looks like this proposal). At the same time, a batched API is inherently
+more complex to implement for both clients and servers. Additionally, there are no
+known use cases yet that would benefit from batched access.
 
 ### MSC3429: Individual room preview API (closed)
 
