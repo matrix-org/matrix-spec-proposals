@@ -35,7 +35,8 @@ necessity for further flexibility.
 As a more radical change, the deployment of predefined rules could be made
 entirely optional. It is, however, [probable] that existing clients assume the
 existence of these rules. Thus, removing them could lead to major compatibility
-issues.
+issues. Additionally, if clients cannot rely on the existence of standard rules,
+they might clash over creating their own set of standard rules.
 
 ## Security considerations
 
