@@ -59,7 +59,7 @@ GET /_matrix/client/v1/room_summary/{roomIdOrAlias}?
   be generated locally. These can be from a matrix URI, matrix.to link or a
   `m.space.child` event for example.
 
-A successful `200` response includes the stripped state in the following format:
+A successful `200` response should contain a JSON object giving information about the room. For example:
 
 ```json5
 {
@@ -78,18 +78,7 @@ A successful `200` response includes the stripped state in the following format:
 }
 ```
 
-These are the same fields as those returned by [`/publicRooms`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv3publicrooms) or
-[`/hierarchy`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv1roomsroomidhierarchy)
-, with a few additions: `membership`, `room_version`,
-`encryption` and `allowed_room_ids`.
-
-`room_version` and `encryption` are already accessible as part of
-the stripped state according to
-https://spec.matrix.org/v1.13/client-server-api/#stripped-state . The
-`membership` is not, but a client could access that in various different ways
-already. This API just makes this more convenient.
-`allowed_room_ids` is already part of the federation `hierarchy` API and
-necessary for distinguishing possible join modes for `knock_restricted` rooms.
+See below for a more detailed description of the response.
 
 #### Unauthenticated and guest access
 
@@ -108,26 +97,7 @@ user is unauthenticated.
 When the endpoint is called unauthenticated, the `membership` field will be
 absent in the response.
 
-#### Rationale and description of response fields
-
-| fieldname          | description                                                                                                                                           | rationale                                                                                                                             |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| room_id            | Required. Id of the room                                                                                                                               | Useful when the API is called with an alias.                                        |
-| avatar_url         | Optional. Avatar of the room                                                                                                                          | Copied from `publicRooms`.                                                                                                            |
-| canonical_alias    | Optional. The canonical alias of the room, if any.                                                                                                    | Copied from `publicRooms`.                                                                                                            |
-| guest_can_join     | Required. If guests can join the room.                                                                                                                | Copied from `publicRooms`.                                                                                                            |
-| name               | Optional. Name of the room                                                                                                                            | Copied from `publicRooms`.                                                                                                            |
-| num_joined_members | Required. Member count of the room                                                                                                                    | Copied from `publicRooms`.                                                                                                            |
-| topic              | Optional. Topic of the room                                                                                                                           | Copied from `publicRooms`.                                                                                                            |
-| world_readable     | Required. If the room history can be read without joining.                                                                                            | Copied from `publicRooms`.                                                                                                            |
-| join_rule          | Optional. Join rules of the room                                                                                                                      | Copied from `publicRooms`.                                                                                                            |
-| allowed_room_ids   | Optional. Room ids allows in restricted joins.                                                                                                        | Copied from [`GET /_matrix/federation/v1/hierarchy/{roomId}`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1hierarchyroomid). Necessary to distinguish if the room can be joined or only knocked at.                                         |
-| room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    | Used to distinguish rooms from spaces.                                                                                                |
-| room_version       | Optional (for historical reasons (2)). Version of the room.                                                                                           | Can be used by clients to show incompatibilities with a room early.                                                                   |
-| membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the room is fetched over federation.                                              | Useful to distinguish invites and knocks from joined rooms.                                                                           |
-| encryption         | Optional. If the room is encrypted this specified the algorithm used for this room. This is already accessible as stripped state. | Some users may only want to join encrypted rooms or clients may want to filter out encrypted rooms, if they don't support encryption or not this algorithm. |
-
-
+#### Response format
 
 If the room cannot be found, the server should return a `404`
 HTTP status code along with an `M_NOT_FOUND` error code. The server should
@@ -135,14 +105,57 @@ NOT return `M_UNAUTHORIZED` or otherwise divulge existence of a room, that
 requires authentication to preview, if the request is unauthenticated or
 authenticated by a user without access to the room.
 
+If the request is successful, the server returns a JSON object containing the
+following properties:
+
+| property name      | description                                                                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| avatar_url         | Optional. Avatar of the room                                                                                                                          |
+| canonical_alias    | Optional. The canonical alias of the room, if any.                                                                                                    |
+| guest_can_join     | Required. Whether guests can join the room.                                                                                                           |
+| join_rule          | Optional. Join rules of the room                                                                                                                      |
+| name               | Optional. Name of the room                                                                                                                            |
+| num_joined_members | Required. Member count of the room                                                                                                                    |
+| room_id            | Required. Id of the room                                                                                                                              |
+| room_type          | Optional. Type of the room, if any, i.e. `m.space`                                                                                                    |
+| topic              | Optional. Topic of the room                                                                                                                           |
+| world_readable     | Required. If the room history can be read without joining.                                                                                            |
+| allowed_room_ids   | Optional. If the room is a restricted room, these are the room IDs which are specified by the join rules. Empty or omitted otherwise.                 |
+| encryption         | Optional. If the room is encrypted, this specifies the algorithm used for this room. Otherwise, omitted.                                              |
+| membership         | Optional (1). The current membership of this user in the room. Usually `leave` if the server has no local users (so fetches the room over federation). |
+| room_version       | Optional (for historical reasons (2)). Version of the room.                                                                                           |
+
 (1) The `membership` field will not be present when called unauthenticated, but
-is required when called authenticated. It should be `leave` if the server
-doesn't know about the room, since for all other membership states the server
-would know about the room already.
+is required when called authenticated.
 
 (2) Prior to this MSC, `/_matrix/federation/v1/hierarchy/{roomId}` doesn't
 return the room version, so `room_version` may be unavailable for remote
 rooms.
+
+Most of the fields above are the same as those returned by
+[`/_matrix/client/v3/publicRooms`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv3publicrooms). (Those
+same fields are also a subset of those returned by
+[`/_matrix/client/v1/rooms/{roomId}/hierarchy`](https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv1roomsroomidhierarchy).) The
+exceptions are:
+
+ * `allowed_room_ids`. This is currently accessible via the federation
+   hierarchy endpoint [`GET
+   /_matrix/federation/v1/hierarchy/{roomId}`](https://spec.matrix.org/v1.13/server-server-api/#get_matrixfederationv1hierarchyroomid),
+   and is necessary
+   to distinguish if the room can be joined or only knocked at.
+
+ * `encryption`. Currently part of the [stripped
+   state](https://spec.matrix.org/v1.13/client-server-api/#stripped-state). Some
+   users may only want to join encrypted rooms; alternatively, clients may want to filter
+   out encrypted rooms, for example if they don't support encryption, or do not
+   support particular encryption algorithms.
+
+ * `membership`. Exposed solely for convenience: a client has many other ways
+   to access this information.
+
+ * `room_version`. Also part of the [stripped
+   state](https://spec.matrix.org/v1.13/client-server-api/#stripped-state).
+   Can be used by clients to show incompatibilities with a room early.
 
 #### Modifications to `/_matrix/client/v1/rooms/{roomId}/hierarchy`
 
