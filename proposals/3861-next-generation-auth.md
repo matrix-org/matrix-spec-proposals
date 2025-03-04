@@ -37,6 +37,7 @@ A few issues can be highlighted from this particular example:
   This means the server has to trust the goodwill of the client to make sure the user agrees to the terms of service.
 - The current design of the email verification flow has a confusing user experience.
   The link sent to the user by email leads to a screen where the user is prompted to return to their client.
+  A better approach would be to send a one-time code by email, which avoids one extra context switch and can sometimes be automatically filled by the operating system.
 - Because the password field is displayed by the client, any system password manager will save the password as associated with the client domain.
   This means that if the user chooses to use a different client, they will have to manually find the password in their password manager, as the password will not be associated with the _service_, i.e., the homeserver domain.
 
