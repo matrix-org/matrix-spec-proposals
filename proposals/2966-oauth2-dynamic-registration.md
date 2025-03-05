@@ -126,7 +126,7 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
  2. "http" URIs on the loopback interface:
     - it MUST use the `http` scheme
     - the host part MUST be `localhost`, `127.0.0.1`, or `[::1]`
-    - it MUST have no port registered. The homeserver MUST then accept any port number during the authorization flow.
+    - it MUST have no port in the registered redirect URI. The homeserver MUST then accept any port number during the authorization flow.
  3. Claimed "https" Scheme URI:
     - some operating systems allow apps to claim "https" scheme URIs in the domains they control
     - when the browser encounters a claimed URI, instead of the page being loaded in the browser, the native app is launched with the URI supplied as a launch parameter
