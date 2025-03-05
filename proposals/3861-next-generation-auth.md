@@ -137,9 +137,10 @@ Solving Matrix-specific problems with this new base could benefit the wider ecos
 OpenID Connect does a good job at standardizing on top of OAuth 2.0, and it covers most things happening between the client and the server for authentication.
 It is a great fit for connecting identity providers to other pieces of software, and this is already what homeservers do with the [`m.login.sso`] flow.
 
-Knowing that, it can feel like adopting OpenID Connect fully would help using off-the-shelf identity providers for Matrix homeservers.
-In practice, OpenID Connect does not cover continuous exchanges between the application and the identity providers: there is no well-supported standard to signal new sessions, new users, sessions ending, users deactivation, etc. from the identity provider to the application.
-Most identity providers are also designed to provide service to a fixed set of applications, which does not fit the Matrix ecosystem, where users can use any number of different clients.
+Knowing that, it might seem like fully adopting OpenID Connect would facilitate the use of off-the-shelf identity providers for Matrix homeservers.
+However, in practice, OpenID Connect does not cover continuous exchanges between the application and the identity providers: there is no well-supported standard to signal new sessions, new users, session endings, user deactivation, etc., from the identity provider to the application.
+Matrix fundamentally needs those signals, as the state of devices (and, to some extent, users) is propagated to other servers through room memberships and cryptographic devices.
+Moreover, most identity providers are designed to provide service to a fixed set of applications, which does not fit the Matrix ecosystem, where users can use any number of different clients.
 
 This means that backfitting Matrix-specific concepts on top of OpenID Connect would be a bad idea, especially as one important goal of this proposal is to keep the current authentication paradigm working for some time.
 
