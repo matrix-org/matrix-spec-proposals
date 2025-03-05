@@ -188,8 +188,9 @@ Server: auth.example.com
 }
 ```
 
-The server replies with a JSON object containing the `client_id` allocated, as well as all the metadata values that the server registered.
-It MUST ignore fields, `grant_types` and `response_types` that are not understood by the server.
+The server MUST ignore `grant_types` and `response_types` that it does not understand.
+
+Upon successful registration, the server replies with an *HTTP 201 Created* response, with a JSON object containing the allocated `client_id` and all the registered metadata values.
 
 With the previous registration request, the server would reply with:
 
