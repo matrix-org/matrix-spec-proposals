@@ -187,7 +187,7 @@ The following proposals are meant to provide alternative APIs to fill in the gap
 #### Account management
 
 This moves the user-interface for some account management tasks from the client to the homeserver.
-Existing APIs like `/_matrix/client/v3/capabilities` help clients understand which account-management API endpoints are unavailable, but they don't offer alternatives to a homeserver-provided user-interface.
+Existing APIs like [`/_matrix/client/v3/capabilities`] help clients understand which account-management API endpoints are unavailable, but they don't offer alternatives to a homeserver-provided user-interface.
 To build this bridge between the client user-interface and the homeserver, [MSC4191: Account management deep-linking][MSC4191] proposes a way to deep-link to the account management capabilities of the homeserver.
 
 #### Transition and existing client support
