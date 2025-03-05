@@ -88,7 +88,7 @@ This authorization request URL must be opened in the user's browser:
 
 The rationale for using the system browser is explained in [MSC3861], under "Motivation" → "Benefits of authenticating end-users through the system browser".
 
----
+##### Sample authorization request
 
 Sample authorization request (broken down into multiple lines for readability), with the following values:
 
@@ -125,6 +125,8 @@ Clients with an HTTPS redirect URI must use the `fragment` response mode, as the
 
 In both success and failure cases, the parameters will have the `state` value used in the authorization request.
 
+##### Successful authorization callback
+
 Successful authorization will have a `code` value.
 
 Sample successful authorization:
@@ -133,7 +135,7 @@ Sample successful authorization:
 https://app.example.com/oauth2-callback#state=ewubooN9weezeewah9fol4oothohroh3&code=iuB7Eiz9heengah1joh2ioy9ahChuP6R
 ```
 
----
+##### Failed authorization callback
 
 Failed authorization will have the following values:
 
@@ -161,7 +163,9 @@ This is done by making a POST request to the `token_endpoint` with the following
 
 The server replies with a JSON object containing the access token, the token type, the expiration time, and the refresh token.
 
-Sample token request:
+The access token must be short-lived and should be refreshed using the `refresh_token` when expired.
+
+##### Sample token request
 
 ```
 POST /oauth2/token HTTP/1.1
@@ -186,8 +190,6 @@ grant_type=authorization_code
 }
 ```
 
-The access token must be short-lived and should be refreshed using the `refresh_token` when expired.
-
 #### Token refresh
 
 When the access token expires, the client must refresh it by making a POST request to the `token_endpoint` with the following parameters, encoded as `application/x-www-form-urlencoded` in the body:
@@ -199,7 +201,7 @@ When the access token expires, the client must refresh it by making a POST reque
 The server replies with a JSON object containing the new access token, the token type, the expiration time, and a new refresh token.
 The old refresh token is no longer valid and should be discarded.
 
-Sample token refresh:
+##### Sample token refresh
 
 ```
 POST /oauth2/token HTTP/1.1
