@@ -31,6 +31,7 @@ The metadata names are registered in the IANA [OAuth Dynamic Client Registration
 Per [RFC 7591](https://tools.ietf.org/html/rfc7591), the `client_uri` MUST be a valid URL that SHOULD give the user more information about the client.
 This URL SHOULD NOT require authentication to access.
 
+The `client_uri` is required and the server MAY reject client registrations with an invalid or missing `client_uri`.
 This URI is a common base for all the other URIs in the metadata: those MUST be either on the same host or on a subdomain of the host of the `client_uri`.
 For example, if the `client_uri` is `https://example.com/`, then one of the `redirect_uris` can be `https://example.com/callback` or `https://app.example.com/callback`, but not `https://app.com/callback`.
 
