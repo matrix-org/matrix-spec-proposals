@@ -64,9 +64,11 @@ HTTP/1.1 200 OK
 
 ### Handling errors
 
-The server may return an error response as defined in [RFC7009]. The client should handle these errors appropriately:
+The server may return an error response as defined in [RFC7009]. Note that RFC7009 mandates a [RFC6749 error response](https://datatracker.ietf.org/doc/html/rfc6749#section-5.2) rather than a Matrix standard error response.
 
-- If the token is already revoked, the server returns a 200 OK response
+The client should handle these errors appropriately:
+
+- If the token is already revoked or invalid, the server returns a 200 OK response
 - If the client is not authorized to revoke the token, the server returns a 401 Unauthorized response
 - For other errors, the server returns a 400 Bad Request response with error details
 
