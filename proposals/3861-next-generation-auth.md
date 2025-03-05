@@ -206,6 +206,7 @@ In the meantime, homeservers should keep registration through the [`/_matrix/cli
 ## Sample flow
 
 This section describes a sample flow, taking together the steps described in more details in the dedicated MSCs.
+**It is non-normative**, as the different parts of the flow are described in more details in their respective MSCs.
 It assumes the client already discovered the homeserver's Client-Server API endpoint.
 
 [areweoidcyet.com](https://areweoidcyet.com/client-implementation-guide/) has an interactive guide on how to use this flow.
