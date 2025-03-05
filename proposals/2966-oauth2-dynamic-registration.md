@@ -94,7 +94,7 @@ It defaults to `web` if not present, and can be set to `native` to indicate that
 
 In all cases, the redirect URI MUST NOT have a fragment component.
 
-#### Web clients
+##### Web clients
 
 `web` clients can use redirect URIs that:
 
@@ -116,7 +116,7 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
  - `http://example.com/callback`
  - `http://localhost/`
 
-#### Native clients
+##### Native clients
 
 `native` clients can use three types of redirect URIs:
 
