@@ -26,8 +26,6 @@ This MSC specifies what metadata values are required by the Matrix specification
 
 The metadata names are registered in the IANA [OAuth Dynamic Client Registration Metadata](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata) registry, and normative definitions of them are available in their respective RFCs in the registry.
 
-#### Localizable metadata
-
 #### `client_uri` and relationship with other URIs
 
 Per [RFC 7591](https://tools.ietf.org/html/rfc7591), the `client_uri` MUST be a valid URL that SHOULD give the user more information about the client.
