@@ -16,14 +16,17 @@ The discovery of the above metadata is out of scope for this MSC, and is current
 
 ### Token revocation
 
-When a user wants to log out from a client, the client should revoke either its access token or refresh token by making a POST request to the revocation endpoint as described in [RFC7009].
+When a user wants to log out from a client, the client SHOULD revoke either its access token or refresh token by making a POST request to the revocation endpoint as described in [RFC7009].
 
-The server must revoke both the access token and refresh token associated with the token provided in the request.
+The server MUST revoke both the access token and refresh token associated with the token provided in the request.
 
-The request includes:
-- The `token` parameter containing either the access token or refresh token to revoke
-- Optionally, the `token_type_hint` parameter, with either the `access_token` or `refresh_token` value. If provided, the server can use this value to determine the kind of token which was provided in the request
-- The `client_id` obtained during client registration
+The request includes the following parameters, encoded as `application/x-www-form-urlencoded`:
+
+- `token`: This parameter MUST contain either the access token or the refresh token to be revoked.
+- `token_type_hint`: This parameter is OPTIONAL, and if present, MUST have a value of either `access_token` or `refresh_token`.  The server MAY use this value to optimize the token lookup process
+- `client_id`: The client identifier obtained during client registration.
+
+If the `client_id` is not provided, or does not match the client associated with the token, the server SHOULD still revoke the token. The server MAY also warn the user that one of their sessions may be compromised in this scenario.
 
 #### Sample flow
 
