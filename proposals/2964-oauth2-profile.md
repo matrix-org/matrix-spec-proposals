@@ -48,6 +48,11 @@ It should do this only if it can guarantee that in case a response with a new re
 
 The homeserver should consider that the session is compromised if an old, invalidated refresh token is being used, and should revoke the session.
 
+The client must handle access token refresh failures as follows:
+
+ - If the refresh fails due to network issues or a `5xx` HTTP status code from the server, the client should retry the request with the old refresh token later.
+ - If the refresh fails due to a `4xx` HTTP status code from the server, the client should consider the session logged out.
+
 ### Sample flow
 
 #### Flow parameters
