@@ -166,6 +166,9 @@ As a first step, it introduces those APIs as alternatives to the existing User-I
 The long-term goal is to deprecate the existing UIA APIs and replace them with the new OAuth 2.0/OIDC-based APIs.
 This deprecation is not done in this MSC.
 
+While not directly part of this proposal, it paves the way for providing only partial access to the user's account.
+Therefore, the specification should begin including the scope required to access each endpoint in its description.
+
 ### Core authentication flow
 
 To cover the most common use case of authenticating an end-user, the following MSCs are necessary:
