@@ -22,7 +22,7 @@ The server must revoke both the access token and refresh token associated with t
 
 The request includes:
 - The `token` parameter containing either the access token or refresh token to revoke
-- Optionally, the `token_type_hint` parameter, with either the `access_token` or `refresh_token` value. If provided, the server must use this value to determine which token to revoke
+- Optionally, the `token_type_hint` parameter, with either the `access_token` or `refresh_token` value. If provided, the server can use this value to determine the kind of token which was provided in the request
 - The `client_id` obtained during client registration
 
 #### Sample flow
