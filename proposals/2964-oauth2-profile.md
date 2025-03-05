@@ -31,7 +31,7 @@ Because this flow has various parameters and security improvements added by othe
 
 Homeservers and clients must:
 
-- support PKCE as per [RFC7636]
+- support PKCE using the `S256` code challenge method as per [RFC7636]
 - support the auth code flow as per [RFC6749] section 4.1
 - support the refresh token grant as per [RFC6749] section 6
 - use pre-registered, strict redirect URIs
