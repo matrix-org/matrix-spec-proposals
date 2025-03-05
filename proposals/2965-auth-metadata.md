@@ -135,12 +135,11 @@ It also introduces a dependency on an OpenID Connect specification: [MSC3861] pr
 However, the RFC states that an application leveraging this standard should define its own application-specific endpoint, e.g. `/.well-known/matrix-authorization-server`, and _not_ use the `.well-known/oauth-authorization-server` endpoint.
 To avoid confusion with the existing `.well-known/matrix/*` documents, this proposal suggests defining a new C-S API endpoint instead.
 
-### Discovery via the well-known client discovery
+### Discovery via existing `.well-known` mechanism
 
-A previous version of this proposal suggested using the well-known client discovery mechanism to discover the authentication server.
-Clients already discover the homeserver when doing a server discovery via the well-known document.
+A previous version of this proposal suggested using the existing [homeserver discovery mechanism](https://spec.matrix.org/v1.13/client-server-api/#server-discovery) to discover the authentication server.
 
-A new `m.authentication` field is added to this document to support OpenID Connect Provider (OP) discovery.
+A new `m.authentication` field is added to the `.well-known` document to support OpenID Connect Provider (OP) discovery.
 It is an object containing two fields:
 
 - REQUIRED `issuer` - the OpenID Connect Provider that is trusted by the homeserver
