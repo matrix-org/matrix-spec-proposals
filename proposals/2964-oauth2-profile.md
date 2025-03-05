@@ -234,7 +234,13 @@ For a discussion on potential issues please see [MSC3861]
 
 ## Alternatives
 
-For a discussion on alternatives please see [MSC3861]
+The authorization flow could make use of [RFC9126: OAuth 2.0 Pushed Authorization Request][RFC9126] as a way to future-proof the flow.
+This could help with granting very specific permissions to the client in combination with [RFC9396: OAuth 2.0 Rich Authorization Requests][RFC9396].
+
+As Matrix clients are 'public clients' in the sense of [RFC6749] section 2.1, this proposal would not benefit from the security aspects of [RFC9126].
+It could, although, give better feedback to clients when they are trying to start an invalid or unauthorized flow.
+
+Other alternatives for the global proposal are discussed in [MSC3861].
 
 ## Security considerations
 
@@ -261,6 +267,8 @@ None as part of this MSC.
 [RFC6749]: https://tools.ietf.org/html/rfc6749
 [RFC7636]: https://tools.ietf.org/html/rfc7636
 [RFC8414]: https://tools.ietf.org/html/rfc8414
+[RFC9126]: https://tools.ietf.org/html/rfc9126
+[RFC9396]: https://tools.ietf.org/html/rfc9396
 [MSC2965]: https://github.com/matrix-org/matrix-spec-proposals/pull/2965
 [MSC2966]: https://github.com/matrix-org/matrix-spec-proposals/pull/2966
 [MSC2967]: https://github.com/matrix-org/matrix-spec-proposals/pull/2967
