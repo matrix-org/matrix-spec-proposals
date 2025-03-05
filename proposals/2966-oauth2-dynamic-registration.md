@@ -92,7 +92,7 @@ This is why it is critical to have strict validation of the redirect URI.
 The `application_type` metadata is used to determine the type of client.
 It defaults to `web` if not present, and can be set to `native` to indicate that the client is a native application.
 
-In all cases, the redirect URI MUST not have a fragment component.
+In all cases, the redirect URI MUST NOT have a fragment component.
 
 #### Web clients
 
@@ -122,7 +122,7 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
 
  1. Private-Use URI Scheme:
     - the scheme MUST be prefixed with the client URI hostname in reverse-DNS notation. For example, if the client URI is `https://example.com/`, then a valid custom URI scheme would be `com.example.app:/`.
-    - the URI MUST not have an authority component. This means that it MUST have either a single slash or none immediately following the scheme, with no hostname, username, or port.
+    - the URI MUST NOT have an authority component. This means that it MUST have either a single slash or none immediately following the scheme, with no hostname, username, or port.
  2. "http" URIs on the loopback interface:
     - it MUST use the `http` scheme
     - the host part MUST be `localhost`, `127.0.0.1`, or `[::1]`
@@ -222,7 +222,7 @@ A subsequent MSC could be proposed to identify multiple instances of the same cl
 ## Alternatives
 
 An alternative approach would be to have the client host a JSON file containing its metadata and use that URL as the `client_id`.
-This is what the following [*OAuth Client ID Metadata Document* draft](https://datatracker.ietf.org/doc/html/draft-parecki-oauth-client-id-metadata-document) proposes.
+This is what the [*OAuth Client ID Metadata Document* draft](https://datatracker.ietf.org/doc/html/draft-parecki-oauth-client-id-metadata-document) proposes.
 
 This approach has the advantage of being able to use the same `client_id` for different instances of the same client, but it has the disadvantage of requiring the client to host a JSON file on its own domain, as well as difficulties in handling updates to the metadata.
 
