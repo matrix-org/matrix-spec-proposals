@@ -29,6 +29,7 @@ Cache-Control: public, max-age=3600
 
 ```json
 {
+  "issuer": "https://account.example.com/",
   "authorization_endpoint": "https://account.example.com/oauth2/auth",
   "token_endpoint": "https://account.example.com/oauth2/token",
   "registration_endpoint": "https://account.example.com/oauth2/clients/register",
@@ -44,6 +45,7 @@ Cache-Control: public, max-age=3600
 
 **Note**: The fields required for the main flow outlined by [MSC3861] and its sub-proposals are:
 
+- `issuer` (for compliance with [RFC8414])
 - `authorization_endpoint` ([MSC2964])
 - `token_endpoint` ([MSC2964])
 - `revocation_endpoint` ([MSC4254])
