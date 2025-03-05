@@ -63,8 +63,8 @@ The client must know the following parameters, through ways described in [MSC296
 
 It needs to generate the following values:
 
-- Generate a random value for the `state`
-- Generate a random value for the `code_verifier`
+- a random value for the `state`
+- a random value for the `code_verifier`
 
 #### Authorization request
 
@@ -81,7 +81,7 @@ It then constructs the authorization request URL using the `authorization_endpoi
 
 This authorization request URL must be opened in the user's browser:
 
-- For web-based clients, this can be done through a rediretion or by opening the URL in a new tab
+- For web-based clients, this can be done through a redirection or by opening the URL in a new tab
 - For native clients, this can be done by opening the URL:
   - using the system browser
   - through platform-specific APIs when available, such as [`ASWebAuthenticationSession`](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) on iOS or [Android Custom Tabs](https://developer.chrome.com/docs/android/custom-tabs) on Android
@@ -224,7 +224,7 @@ grant_type=refresh_token
 
 ### User registration
 
-User can register themselves by initiating a authorization code flow with the `prompt=create` parameter as defined in [Initiating User Registration via OpenID Connect 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html).
+Users can register themselves by initiating an authorization code flow with the `prompt=create` parameter as defined in [Initiating User Registration via OpenID Connect 1.0](https://openid.net/specs/openid-connect-prompt-create-1_0.html).
 
 Whether the homeserver supports this parameter is advertised by the `prompt_values_supported` authorization server metadata.
 
