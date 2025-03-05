@@ -36,7 +36,7 @@ To support the existing semantic of granting full access to the Matrix C-S API t
 
 | Scope | Purpose | Implementation notes |
 | - | - | - |
-| `urn:matrix:client:api:*` | Grants full access to the Client-Server API | The OP can issue a refresh token for grants with this scope. |
+| `urn:matrix:client:api:*` | Grants full access to the Client-Server API | The homeserver can issue a refresh token for grants with this scope. |
 
 In the future, a client would request more specific actions when required. e.g. something like `urn:matrix:client:api:read:*`
 
