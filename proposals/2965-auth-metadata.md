@@ -86,6 +86,21 @@ The authorization server metadata is relatively large and may change over time. 
 
 ## Alternatives
 
+### Use static Client-Server API endpoints
+
+Instead of using the standard server metadata as defined in [RFC8414], this proposal could have defined a static set of endpoints under the Client-Server API, e.g.:
+
+ - `/_matrix/client/v1/auth/authorize` as the `authorization_endpoint`
+ - `/_matrix/client/v1/auth/token` as the `token_endpoint`
+ - `/_matrix/client/v1/auth/revoke` as the `revocation_endpoint`
+ - `/_matrix/client/v1/auth/register` as the `registration_endpoint`
+
+This approach has been discarded for three reasons:
+
+ - The proposed approach ensures interoperability with existing OAuth 2.0 libraries/clients, complying with [RFC8414].
+ - The `authorization_endpoint` is user-facing, and implementations may have valid reasons to expose it on a different domain than the Client-Server API. For example, iOS may display the domain name of the authorization endpoint in a confirmation prompt before the user is redirected to it, so it has to be recognizeable by the end user.
+ - While the set of metadata fields is currently relatively small and mostly consists of endpoints, it is likely that as the specification evolves and more OAuth 2.0 mechanisms are added, the set of fields will grow. Reusing the authorization server metadata concept as defined in [RFC8414] makes it easier to use existing, well-known OAuth 2.0 flows.
+
 ### Discovery via OpenID Connect Discovery
 
 Instead of directly exposing the metadata through a Client-Server API endpoint, the homeserver could expose only the issuer URL and let clients discover the metadata using OpenID Connect Discovery.
