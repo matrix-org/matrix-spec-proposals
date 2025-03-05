@@ -5,7 +5,7 @@ This MSC proposes a new set of authentication APIs for Matrix, based on the OAut
 ## Motivation
 
 The goal of this MSC is to propose a new set of authentication APIs for Matrix, based on the OAuth 2.0 and OpenID Connect (OIDC) specifications.
-To understand this proposal, it is important to lay out the reasoning which led to this conclusion.
+To understand this proposal, it is important to lay out the reasoning behind it.
 
 This section explains this reasoning before getting into the detailed proposal.
 It is purely informative and not part of the actual proposal.
@@ -524,6 +524,6 @@ The following MSCs were prerequisites for implementing this proposal in a sane w
 [MSC4198]: https://github.com/matrix-org/matrix-spec-proposals/pull/4198
 [MSC4254]: https://github.com/matrix-org/matrix-spec-proposals/pull/4254
 [`m.login.application_service`]: https://spec.matrix.org/v1.13/client-server-api/#appservice-login
-[`m.login.sso`]: https://spec.matrix.org/v1.13/client-server-api/#single-sign-on
+[`m.login.sso`]: https://spec.matrix.org/v1.13/client-server-api/#sso-client-loginauthentication
 [`/_matrix/client/v3/capabilities`]: https://spec.matrix.org/v1.13/client-server-api/#get_matrixclientv3capabilities
 [`/_matrix/client/v3/login`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3login
