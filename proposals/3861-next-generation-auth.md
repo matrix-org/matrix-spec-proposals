@@ -447,9 +447,12 @@ This can be mitigated to some extent by having homeservers implement authorizati
 
 In practice, to provide a good user experience, homeservers have to implement web views for the authentication flows, which is complex to implement well.
 This means having proper accessibility, translations, and UX.
-Those concerns were previously only affecting client implementations, and will now also affect homeserver implementations.
+Those concerns were previously mainly affecting client implementations, and will now also affect homeserver implementations.
 
 On the other hand, the previous registration flow was notoriously complex to implement both for clients and homeservers, and this proposal removes a lot of that complexity from the client side.
+
+Moreover, these concerns should, in theory, already apply to the homeserver-side implementation, as the homeserver is supposed to provide a web-based fallback for all UIA steps.
+In practice, this is often not the case, with either missing fallbacks for some UIA steps or sub-par user experiences in their implementations.
 
 ## Alternatives
 
