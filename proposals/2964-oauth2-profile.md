@@ -35,7 +35,7 @@ Homeservers and clients must:
 - support the auth code flow as per [RFC6749] section 4.1
 - support the refresh token grant as per [RFC6749] section 6
 - use pre-registered, strict redirect URIs
-- use the `fragment` response mode as per [OAuth 2.0 Multiple Response Type Encoding Practices] for public clients with an HTTPS redirect URI
+- use the `fragment` response mode as per [OAuth 2.0 Multiple Response Type Encoding Practices] for clients with an HTTPS redirect URI
 
 ### Refresh token grant
 
@@ -121,7 +121,7 @@ Whether the parameter are in the URL fragment or query parameters is determined 
 - if set to `fragment`, the parameters will be placed in the URL fragment, like `https://example.com/callback#param1=value1&param2=value2`
 - if set to `query`, the parameters will be in placed the query string, like `https://example.com/callback?param1=value1&param2=value2`
 
-Public clients with an HTTPS redirect URI must use the `fragment` response mode, as the fragment is not sent to the server in the redirect.
+Clients with an HTTPS redirect URI must use the `fragment` response mode, as the fragment is not sent to the server in the redirect.
 
 In both success and failure cases, the parameters will have the `state` value used in the authorization request.
 
