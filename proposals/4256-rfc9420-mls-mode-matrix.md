@@ -524,6 +524,20 @@ change membership in a room
 Some of these issues are already explained in the proposal sections. The following list provides
 them and other issues together to allow an easier overview.
 
+## Displayname & Avatars
+
+Currently this proposal does not support per room avatars. Instead clients have to fall back to
+the global user profile to query display name and avatar for users. In the future per room profiles
+could be supported by making them part of the group context. As this has storage overhead and
+possible abuse aspects, this feature is left up to an future MSC to implement.
+
+Falling back to the global profile for users could cause moderation problems as room moderators
+can’t redact problematic display names. As a result we currently recommend not showing the
+display name for users not part of the room.
+
+Querying a number of profiles could also potentially leak room membership to the server. Storing
+profile information as part of the MLS group context could be one way to mitigate this in the future.
+
 ### Redactions
 
 Currently redactions are not supported in the outer protocol layer. This has the benefit of making
