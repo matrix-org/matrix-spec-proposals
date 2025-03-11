@@ -189,8 +189,16 @@ Some possible solutions for bots are:
   from a different device by manually comparing the device keys.  Note that many
   clients do not have the ability to verify by comparing device keys.
 
-TODO: status of cross-signing in bots/application services, which clients can be
-used to cross-sign by comparing device keys
+The following bots support cross-signing:
+
+- [meowlnir](https://github.com/maunium/meowlnir)
+- [Arnie](https://gitlab.com/andybalaam/arnie)
+
+The following bot SDKs support, or plan to support, cross-signing such that any
+bots written using them will support cross-signing:
+
+- [maubot](https://github.com/maubot/maubot) (planned)
+- [mautrix-go](https://github.com/mautrix/go) (planned support for Application Services)
 
 ## Alternatives
 
@@ -214,8 +222,9 @@ Though not strictly dependencies, other MSCs improve the behaviour of this MSC:
 - [Authenticated backups
   (MSC4048)](https://github.com/matrix-org/matrix-spec-proposals/pull/4048)
   will improve the user experience by ensuring that trust information is
-  preserved when loading room keys from backup.  TODO: I think we also need to
-  add information to the backup about the cross-signing status of the device
+  preserved when loading room keys from backup.  We may also need to add
+  information to the backup about the cross-signing status of the device,
+  but this can be addressed in a future MSC.
 - [Including device keys with Olm-encrypted events
   (MSC4147)](https://github.com/matrix-org/matrix-spec-proposals/pull/4147)
   allows recipients to check the cross-signing status of devices that have been
