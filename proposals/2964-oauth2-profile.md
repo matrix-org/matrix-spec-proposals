@@ -124,9 +124,9 @@ Once completed, the user is redirected to the `redirect_uri`, with either a succ
 Whether the parameter are in the URL fragment or query parameters is determined by the `response_mode` value:
 
 - if set to `fragment`, the parameters will be placed in the URL fragment, like `https://example.com/callback#param1=value1&param2=value2`
-- if set to `query`, the parameters will be in placed the query string, like `https://example.com/callback?param1=value1&param2=value2`
+- if set to `query`, the parameters will be in placed the query string, like `com.example.app:/callback?param1=value1&param2=value2`
 
-Clients with an HTTPS redirect URI must use the `fragment` response mode, as the fragment is not sent to the server in the redirect.
+To avoid disclosing the parameters to the web server hosting the `redirect_uri`, clients should use the `fragment` response mode if the `redirect_uri` is an HTTP/HTTPS URI with a remote host.
 
 In both success and failure cases, the parameters will have the `state` value used in the authorization request.
 
