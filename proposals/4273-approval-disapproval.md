@@ -1,4 +1,4 @@
-# MSC0000: Approve and Disapprove ratings for moderation policies
+# MSC4273: Approve and Disapprove ratings for moderation policies
 
 Currently, when watching a moderation policy list, there is no way to express
 approval or disapproval of certain policies.
@@ -133,7 +133,7 @@ See ptoential issues.
 ## Unstable prefix
 
 The event type `m.policy.rule.approval` will use the unstable type
-`org.matrix.msc0000.approval`.
+`org.matrix.msc4273.approval`.
 
 ## Dependencies
 
