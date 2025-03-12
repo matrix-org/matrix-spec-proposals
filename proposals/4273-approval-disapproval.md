@@ -126,6 +126,31 @@ Approval ratings could be kept on local storage rather than in policy rooms.
 However, this would reduce the potential for interoperation of different tools
 and clients.
 
+### Anti-ban
+
+Moderation bots can use anti-ban moderation policies that can make entities
+immune to other policies with the `ban` recommendation.
+[Meowlnir](https://github.com/maunium/meowlnir) currently implements a form of
+anti-ban via "unban" policies, so that if an unban policy is found before a ban
+policy, the unban takes precedence and the ban is ignored. This has the benefit
+of not requiring an existing policy to disapprove of. And their effect remains
+regardless of duplicate `ban` policies.
+
+This approach does however have a few drawbacks:
+
+- anti-ban policies are specific to the `ban` recommendation, and are not
+  generic to policies of all recommendation types.
+
+  - As a consequence, it is also harder to use anti-ban ratings in recommender
+    systems compared to approve/disapprove ratings.
+
+- anti-ban requires careful consideration in policy list subscription profiles,
+  as naive implementation provides a vector for entities immune to any future
+  action unless the list is unwatched or a policy revoked.
+
+- anti-ban policies cannot express disapproval of content within a policy, such
+  as a specific reason or context for the policy.
+
 ## Security considerations
 
 See ptoential issues.
