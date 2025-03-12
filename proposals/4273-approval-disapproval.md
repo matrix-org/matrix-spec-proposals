@@ -94,7 +94,7 @@ from consideration that have been _disapproved_ by a moderator.
 The examples given in this proposal have so far only considered the application
 of these ratings to the room level. However In the future, if policy lists are
 considered for consumption within clients for the purpose of blocking on a user
-level, these ratings provide a fundamental primivive for a subjective
+level, these ratings provide a fundamental primitive for a subjective
 distributed reputation system.
 
 ## Potential issues
