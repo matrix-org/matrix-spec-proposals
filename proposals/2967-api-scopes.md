@@ -24,9 +24,10 @@ All scopes related to Matrix should start with `urn:matrix` and use the `:` deli
 | - | - |
 | `urn:matrix:client` | For mapping of Client Server API access levels |
 
-For future MSCs that build on this namespace unstable sub divisions should be used whilst in development:
+For future MSCs that build on this namespace, unstable subdivisions should be used whilst in development.
 
-e.g. `urn:matrix:com.example.mscXXXX.foo:something` or `urn:matrix:client:com.example.mscXXXX.something`
+For example, if MSCXXX wants to introduce the `urn:matrix:client:foo` scope, it could use `urn:matrix:client:com.example.mscXXXX.foo` during development.
+If it needs to introduce multiple scope, like `urn:matrix:client:foo` and `urn:matrix:client:bar`, it could use `urn:matrix:client:com.example.mscXXXX:foo` and `urn:matrix:client:com.example.mscXXXX:bar`.
 
 ### Allocated scopes
 
