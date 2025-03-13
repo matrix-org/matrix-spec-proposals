@@ -151,6 +151,36 @@ This approach does however have a few drawbacks:
 - anti-ban policies cannot express disapproval of content within a policy, such
   as a specific reason or context for the policy.
 
+### Copy propagation for approval
+
+For the positive approval use case, bots could watch a policy list without
+applying any policy from it. Then to approve policies, they can be copied over
+to a list where policies applied.
+[Meowlnir](https://github.com/maunium/meowlnir) has been considering this
+strategy.
+
+#### Assessment
+
+Copy propagation of policies breaks the audit chain and removes them from their
+original context. For example, copying a ban would remove the from the original
+list and the sender. The community that copies the ban likely will not have any
+information surrounding the circumstances of the ban beyond the data contained
+within the copy of policy.
+
+If the original sender rescinds or revokes the ban, then the audit chain is
+broken, because without additional consideration, the copies will not be
+removed.
+
+This is extremely problematic, especially in the context of social networks such
+as Matrix and the Fediverse. Bans are rescinded because of mistakes,
+forgiveness, changing circumstances, new information, and age all of the time.
+And yet on networks that follow copy propagation, bans are often permanent and
+indefinite. Even after explicit retraction. Moderators are incentivised to keep
+copies active out of an abundance of caution and to create less work.
+
+For this reason, we strongly recommend against using copy propgation not just as
+a strategy for approval, but in all circumstances.
+
 ## Security considerations
 
 See ptoential issues.
