@@ -26,7 +26,9 @@ The request includes the following parameters, encoded as `application/x-www-for
 - `token_type_hint`: This parameter is OPTIONAL, and if present, MUST have a value of either `access_token` or `refresh_token`.  The server MAY use this value to optimize the token lookup process
 - `client_id`: The client identifier obtained during client registration.
 
-If the `client_id` is not provided, or does not match the client associated with the token, the server SHOULD still revoke the token. The server MAY also warn the user that one of their sessions may be compromised in this scenario.
+If the `client_id` is not provided, or does not match the client associated with the token, the server SHOULD still revoke the token.
+This behavior is meant to help good actors like secret scanning tools to proactively revoke leaked tokens.
+The server MAY also warn the user that one of their sessions may be compromised in this scenario.
 
 #### Sample flow
 
