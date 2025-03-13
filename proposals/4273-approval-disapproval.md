@@ -136,20 +136,20 @@ policy, the unban takes precedence and the ban is ignored. This has the benefit
 of not requiring an existing policy to disapprove of. And their effect remains
 regardless of duplicate `ban` policies.
 
-This approach does however have a few drawbacks:
+#### Assessment
 
-- anti-ban policies are specific to the `ban` recommendation, and are not
-  generic to policies of all recommendation types.
+The anti-ban approach is specific to the `ban` recommendation, whereas
+approve/disapprove ratings are generic to any policy type. The
+approve/disapprove ratings are also meant to be future proof and ready for
+consumption by recommender systems due to their generic nature.
 
-  - As a consequence, it is also harder to use anti-ban ratings in recommender
-    systems compared to approve/disapprove ratings.
+Anti-ban also requires careful consideration in policy list subscription
+profiles, as naive implementation provides a vector for entities to become
+immune to any future action unless the targeted list is unwatched or the
+offending policy is revoked.
 
-- anti-ban requires careful consideration in policy list subscription profiles,
-  as naive implementation provides a vector for entities immune to any future
-  action unless the list is unwatched or a policy revoked.
-
-- anti-ban policies cannot express disapproval of content within a policy, such
-  as a specific reason or context for the policy.
+Anti-ban policies also cannot express disapproval of content within a policy,
+such as a specific reason or context for the policy.
 
 ### Copy propagation for approval
 
