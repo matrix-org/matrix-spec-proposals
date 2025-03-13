@@ -221,6 +221,10 @@ It SHOULD reuse the `client_id` for all future authorization requests done again
 
 Because each client on each user device will do its own registration, they will all have different `client_id`s.
 This means that the number of client registrations will grow over time with the number of devices and unique clients.
+
+This can be mitigated by deleting old client registrations after a certain period of time of inactivity.
+The server SHOULD in this case keep a record of old client IDs with their associated `redirect_uris` values, so that they can safely redirect back to the client with an error message in case the client tries to use a deleted client ID.
+
 A subsequent MSC could be proposed to identify multiple instances of the same client using signed client metadata.
 
 ## Alternatives
