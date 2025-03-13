@@ -28,11 +28,13 @@ The metadata names are registered in the IANA [OAuth Dynamic Client Registration
 
 #### `client_uri` and relationship with other URIs
 
-Per [RFC 7591](https://tools.ietf.org/html/rfc7591), the `client_uri` MUST be a valid URL that SHOULD give the user more information about the client.
-This URL SHOULD NOT require authentication to access.
+Per [RFC 7591](https://tools.ietf.org/html/rfc7591), the `client_uri` MUST point to a valid web page that SHOULD give the user more information about the client.
+This URL MUST use the `https` scheme and SHOULD NOT require authentication to access.
+It MUST NOT use a user or password in the authority component of the URI.
 
 The `client_uri` is required and the server MAY reject client registrations with an invalid or missing `client_uri`.
 This URI is a common base for all the other URIs in the metadata: those MUST be either on the same host or on a subdomain of the host of the `client_uri`.
+The port number, path and query components MAY be different.
 For example, if the `client_uri` is `https://example.com/`, then one of the `redirect_uris` can be `https://example.com/callback` or `https://app.example.com/callback`, but not `https://app.com/callback`.
 
 #### User-visible metadata values
@@ -44,9 +46,11 @@ The following metadata values SHOULD be used by clients to help users identify t
  - `tos_uri`: URL that points to a human-readable terms of service document for the client
  - `policy_uri`: URL that points to a human-readable policy document for the client
 
-All the URIs MUST use the `https` scheme and use the `client_uri` as a common base.
+All the URIs MUST use the `https` scheme and use the `client_uri` as a common base, as defined by the previous section.
 
 If provided by the client, the homeserver SHOULD show or link to the `tos_uri` and `policy_uri` to the user.
+They MUST NOT use a user or password in the authority component of the URI.
+They MUST point to a valid web page and SHOULD NOT require authentication to access.
 
 All of these metadata values are optional.
 
