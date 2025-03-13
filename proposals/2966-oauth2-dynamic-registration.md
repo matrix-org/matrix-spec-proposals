@@ -103,20 +103,19 @@ In all cases, the redirect URI MUST NOT have a fragment component.
 `web` clients can use redirect URIs that:
 
  - MUST use the `https` scheme
- - MUST omit the port (to use the default port for https: 443)
- - MUST not use a user or password in the authority component of the URI
- - MUST use the client URI as a common base for the authority component
+ - MUST NOT use a user or password in the authority component of the URI
+ - MUST use the client URI as a common base for the authority component, as defined previously
+ - MAY include an `application/x-www-form-urlencoded` formatted query component
 
 Examples of valid redirect URIs (with `https://example.com/` as the client URI):
 
  - `https://example.com/callback`
  - `https://app.example.com/callback`
- - `https://example.com/?query=value`
+ - `https://example.com:5173/?query=value`
 
 Examples of invalid redirect URIs (with `https://example.com/` as the client URI):
 
  - `https://example.com/callback#fragment`
- - `https://example.com:8080/callback`
  - `http://example.com/callback`
  - `http://localhost/`
 
