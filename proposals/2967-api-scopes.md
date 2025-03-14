@@ -18,11 +18,9 @@ This MSC does not attempt to define all the scopes necessary to cover all Matrix
 
 ### Scope format
 
-All scopes related to Matrix should start with `urn:matrix` and use the `:` delimiter for further sub-division.
+All scopes related to Matrix should start with `urn:matrix:` and use the `:` delimiter for further sub-division.
 
-| Prefix | Purpose |
-| - | - |
-| `urn:matrix:client:` | For mapping of Client Server API access levels |
+Scopes related to mapping of Client-Server API access levels should start with `urn:matrix:client:`.
 
 For future MSCs that build on this namespace, unstable subdivisions should be used whilst in development.
 
