@@ -26,7 +26,7 @@ A Tag have three properties: `"name"`, `"color"` and `"icon"`.
   "name": "Admin",
   "color": "#000000",
   "icon": {
-    "url": "mxc:abc",
+    "key": "",
     "info": {
       "h": 152,
       "mimetype": "image/webp",
@@ -40,6 +40,7 @@ A Tag have three properties: `"name"`, `"color"` and `"icon"`.
 - `"name"` For what a tag represent. **Required**.
 - `"color"` Color as `hex` value. To create graphical emphasis and distinction between tags. (_Optional_)
 - `"icon"` To display graphical representation of tags name. (_Optional_)
+  - `"key"` Key can have value as mxc or emojis. `info` object should can be considered valid if `key` is mxc.
 
 ### Attaching Tag to Power Level
 
@@ -54,7 +55,7 @@ state key as value of power level.
     "name": "Admin",
     "color": "#000000",
     "icon": {
-      "url": "mxc://admin_icon",
+      "key": "mxc://admin_icon",
       "info": {
         "h": 152,
         "mimetype": "image/webp",
