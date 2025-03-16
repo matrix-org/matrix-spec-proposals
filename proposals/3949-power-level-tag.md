@@ -4,8 +4,10 @@ Currently permissions in a certain room are handle via `m.room.power_levels`. A 
 integer value, bigger the integer bigger the power. When we assign power level to a user we gave
 them power represented as integer value. This integer value is abstract and does not tell what kind
 of power it represent. Currently spec only suggest mapping abstract integer value to idea as: 0 - 49
-to User, 50 - 99 to Moderator - 100 to Admin. This suggestion limits the wide range of power level
+to User, 50 - 99 to Moderator and 100 to Admin. This suggestion limits the wide range of power level
 integers to only three idea's.
+
+## Proposal
 
 This MSC propose tags for power levels. A tag represent a configurable information that can be
 tagged to any power level integer. This configurable information will give an idea of what a power
@@ -14,8 +16,6 @@ managing permission as now power level can be able to represent the wide range o
 level can be assigned to users, we can also display room member by associating idea of power in room
 timeline and member list. This association will enhance the experience as tag will represent
 responsibility's of members at glance.
-
-## Proposal
 
 ### What is Tag?
 
