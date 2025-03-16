@@ -100,7 +100,7 @@ None?
 
 ## Unstable prefix
 
-TODO
+Implementations SHOULD refer to `m.room.power_level_tags` as `in.cinny.room.power_level_tags`.
 
 ## Dependencies
 
