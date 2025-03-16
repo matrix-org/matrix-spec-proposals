@@ -24,10 +24,7 @@ A Tag have three properties: `"name"`, `"color"` and `"icon"`.
 ```json
 {
   "name": "Admin",
-  "color": {
-    "on_light": "#023020",
-    "on_dark": "#90EE90"
-  },
+  "color": "#000000",
   "icon": {
     "url": "mxc:abc",
     "info": {
@@ -41,9 +38,7 @@ A Tag have three properties: `"name"`, `"color"` and `"icon"`.
 ```
 
 - `"name"` For what a tag represent. **Required**.
-- `"color"` Color of tag. To create graphical emphasis and distinction between tags. (_Optional_)
-  - `"on_light"` Tag color for lighter background.
-  - `"on_dark"` Tag color for darker background.
+- `"color"` Color as `hex` value. To create graphical emphasis and distinction between tags. (_Optional_)
 - `"icon"` To display graphical representation of tags name. (_Optional_)
 
 ### Attaching Tag to Power Level
@@ -57,10 +52,7 @@ state key as value of power level.
   "state_key": "100",
   "content": {
     "name": "Admin",
-    "color": {
-      "on_light": "#023020",
-      "on_dark": "#90EE90"
-    },
+    "color": "#000000",
     "icon": {
       "url": "mxc://admin_icon",
       "info": {
