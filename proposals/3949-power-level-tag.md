@@ -26,7 +26,7 @@ A Tag have three properties: `name`, `color` and `icon` as described in table:
 |----------|---------|----------------------------------------------------------------------------|
 | name     | string  | Name of the tag. **Required**                                              |
 | color    | string  | Color as `hex` value. For graphical emphasis and distinction between tags. |
-| icon     | TagIcon | Graphical representation of tags name.                                     |
+| icon     | TagIcon | Graphical representation of tag.                                     |
 
 #### TagIcon
 | Property | Type      | Description                                                             |
@@ -35,47 +35,55 @@ A Tag have three properties: `name`, `color` and `icon` as described in table:
 | info     | ImageInfo | Standard `info` object for image if key is `mxc`.                       |
 
 
-### Attaching Tag to Power Level
+### Saving Tags
 
-Tag can be attached to a power level by send a state event with key as `m.room.power_level_tag` and
-state key as value of power level.
+Tags can be saved by sending a state event of type `m.room.power_level_tags` with `state_key` as
+empty string. The content will be a map of power level integer to Tag.
 
 ```json
 {
-  "type": "m.room.power_level_tag",
+  "type": "m.room.power_level_tags",
   "state_key": "100",
   "content": {
-    "name": "Admin",
-    "color": "#000000",
-    "icon": {
-      "key": "mxc://admin_icon",
-      "info": {
-        "h": 152,
-        "mimetype": "image/webp",
-        "size": 30001,
-        "w": 152
+    "100": {
+      "name": "Admin",
+      "color": "#000000",
+      "icon": {
+        "key": "mxc://admin_icon",
+        "info": {
+          "h": 152,
+          "mimetype": "image/webp",
+          "size": 30001,
+          "w": 152
+        }
       }
+    },
+    "50": {
+      "name": "Moderator"
+    },
+    "38": {
+      "name": "Bot",
+      "icon": {
+        "key": "🤖"
+      }
+    },
+    "0": {
+      "name": "Default"
     }
   }
 }
 ```
 
-### Deleting a Tag
-
-A tag can be deleted by clearing all content from it's state event.
-
 ### How it fit with existing system?
 
-If a room does not have any `m.room.power_level_tag` events client can fallback to suggest 0-49 as
-Default, 50-99 as Mod and 100 as Admin or alternatively create tag automatically as Default for 0,
-Mod for 50 and 100 for Admin.
+If a room does not have any `m.room.power_level_tags` event client can fallback to suggest 0-49 as
+Default, 50-99 as Mod and 100 as Admin, alternatively client can create default content client side
+by following the fallback strategy.
 
 #### What if we have power level with undefined tag?
 
 If a power level is not defined client can consider to display it with the lower defined power level
-tag. If there is no lower defined tag, client can consider displaying tag defined with
-`m.room.power_level_tag` state event + state key as `"state_key": ""`, if no such event find client
-can display it power level itself or with the way of it's own choice.
+tag. If there is no lower defined tag, client can display it with the way of it's own choice.
 
 ### What else it fix?
 
