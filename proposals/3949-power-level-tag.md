@@ -17,30 +17,23 @@ level can be assigned to users, we can also display room member by associating i
 timeline and member list. This association will enhance the experience as tag will represent
 responsibility's of members at glance.
 
-### What is Tag?
+### Tag Definition
 
-A Tag have three properties: `"name"`, `"color"` and `"icon"`.
+A Tag have three properties: `name`, `color` and `icon` as described in table:
 
-```json
-{
-  "name": "Admin",
-  "color": "#000000",
-  "icon": {
-    "key": "",
-    "info": {
-      "h": 152,
-      "mimetype": "image/webp",
-      "size": 30001,
-      "w": 152
-    }
-  }
-}
-```
+#### Tag
+| Property | Type    | Description                                                                |
+|----------|---------|----------------------------------------------------------------------------|
+| name     | string  | Name of the tag. **Required**                                              |
+| color    | string  | Color as `hex` value. For graphical emphasis and distinction between tags. |
+| icon     | TagIcon | Graphical representation of tags name.                                     |
 
-- `"name"` For what a tag represent. **Required**.
-- `"color"` Color as `hex` value. To create graphical emphasis and distinction between tags. (_Optional_)
-- `"icon"` To display graphical representation of tags name. (_Optional_)
-  - `"key"` Key can have value as mxc or emojis. `info` object should can be considered valid if `key` is mxc.
+#### TagIcon
+| Property | Type      | Description                                                             |
+|----------|-----------|-------------------------------------------------------------------------|
+| key      | string    | This can be emoji similar to key in `m.reaction` or an `mxc` for image. |
+| info     | ImageInfo | Standard `info` object for image if key is `mxc`.                       |
+
 
 ### Attaching Tag to Power Level
 
