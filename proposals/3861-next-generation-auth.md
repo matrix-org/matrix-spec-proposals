@@ -43,10 +43,10 @@ A few issues can be highlighted from this particular example:
 
 **Note**: Many of these points could be improved with individual improvements to each of those stages, and multiple MSCs already exist to address some of them.
 
-### Benefits of authenticating end-users through the user's default browser
+### Benefits of authenticating end-users through a web browser
 
 Rather than trying to fix the existing flows, this MSC proposes an alternative approach to authentication.
-Authenticating end-users through the user's default browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
+Authenticating end-users through a web browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
 Though, some applications may wish to retain browser-less authentication, which this proposal supports thanks to the inherited authentication specifications.
 
 The general idea is simple: to authenticate a user, the client redirects the user to a URL on the homeserver, which completes the authentication flow, and then redirects the user back to the client.
