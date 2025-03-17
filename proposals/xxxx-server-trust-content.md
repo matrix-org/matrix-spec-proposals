@@ -21,7 +21,7 @@ An additional object may be present in the .well-known configuration for the [cl
 
 ```json
 {
-    "m.homeserver" ...,
+    "m.homeserver": {},
     "m.trust": {
       "content_trust_level": "trusted|untrusted"
     }
@@ -58,6 +58,16 @@ The field here merely provides the client with a useful value for setting defaul
 Clients MUST provide users with the ability to override any settings that may base their defaults on
 this field. For instance if a client defaults image previews to enabled on a `trusted` homeserver, then
 the user must be able to switch this setting off.
+
+Clients MUST provide users with a mechanism to see content upon consent being given, even on `untrusted` networks.
+
+This proposal avoids naming each potential point where a client should use this field, rather client developers
+should use this field in any cases where a user may be exposed to content sent by another user. Examples include:
+
+ - Avatars included in room invites.
+ - User avatars.
+ - User messages containing images.
+ - Embedded images in formatted messages.
 
 
 ## Potential issues
