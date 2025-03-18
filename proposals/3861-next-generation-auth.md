@@ -49,7 +49,7 @@ Rather than trying to fix the existing flows, this MSC proposes an alternative a
 Authenticating end-users through a web browser is a well-established approach for many applications and would help solve most of the UI quirks mentioned above.
 Though, some applications may wish to retain browser-less authentication, which this proposal supports thanks to the inherited authentication specifications.
 
-The general idea is simple: to authenticate a user, the client redirects the user to a URL on the homeserver, which completes the authentication flow, and then redirects the user back to the client.
+The general idea is simple: to authenticate a user, the client redirects the user to a URL provided by the homeserver to complete the authentication flow and then to redirect the user back to the client.
 
 This allows the homeserver to implement an authentication (and registration) flow tailored to its requirements.
 A public service with open registration like Matrix.org could have secure CAPTCHA prompts, email verification, and terms of service agreements, with both password-based and social-based authentication.
