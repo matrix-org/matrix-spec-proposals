@@ -104,7 +104,7 @@ Sample authorization request (broken down into multiple lines for readability), 
 - `response_mode` set to `fragment`
 - `code_verifier` set to `ogie4iVaeteeKeeLaid0aizuimairaCh`
 - `code_challenge` computed as `72xySjpngTcCxgbPfFmkPHjMvVDl2jW1aWP7-J6rmwU`
-- `scope` set to `urn:matrix:client:api:* urn:matrix:client:device:AAABBBCCCDDD` (as per [MSC2967])
+- `scope` set to `urn:matrix:client:api:* urn:matrix:client:device:AAABBBCCCDDD` (full access to the C-S API, using the `AAABBBCCCDDD` device ID, as per [MSC2967])
 
 ```
 https://account.example.com/oauth2/auth?
