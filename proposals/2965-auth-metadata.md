@@ -61,7 +61,7 @@ See individual proposals for more details on each field.
 
 If the homeserver does not offer next-generation authentication as described in [MSC3861], this endpoint should return a 404 with the `M_UNRECOGNIZED` error code.
 
-In this case, clients should fall back to using the User-Interactive Authentication flows instead to authenticate the user.
+In this case, clients should fall back to using the existing [login/logout](https://spec.matrix.org/v1.13/client-server-api/#login) and [account-management](https://spec.matrix.org/v1.13/client-server-api/#account-registration-and-management) APIs, as well as [`/account/3pid/add`](https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3account3pidadd), [`/delete_devices`](https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3delete_devices) and [`DELETE /devices/{id}`](https://spec.matrix.org/v1.13/client-server-api/#delete_matrixclientv3devicesdeviceid).
 
 ## Potential issues
 
