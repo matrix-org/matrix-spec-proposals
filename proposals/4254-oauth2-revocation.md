@@ -74,6 +74,15 @@ The client should handle these errors appropriately:
 - If the client is not authorized to revoke the token, the server returns a 401 Unauthorized response
 - For other errors, the server returns a 400 Bad Request response with error details
 
+### Replacement of existing APIs
+
+This proposal replaces the existing [`/_matrix/client/v3/logout`] endpoint for [MSC861]-compatible client.
+Those clients MUST use this mechanism to logout, and clients using the [`/_matrix/client/v3/login`] endpoint to login MUST keep using the existing [`/_matrix/client/v3/logout`] endpoint.
+
+Note that this proposal does not itself provide alternatives to endpoints like [`POST /_matrix/client/v3/login/all`], [`DELETE /_matrix/client/v3/devices/{deviceId}`] or [`POST /_matrix/client/v3/delete_devices`].
+Under the [MSC3861] proposal, management of other devices is not the responsibility of the client, and should instead be provided in a separate user interface by the homeserver.
+
+
 ## Potential issues
 
 The main consideration around token revocation is ensuring proper cleanup of all related tokens and state. The server must:
@@ -105,3 +114,8 @@ Token revocation is a critical security feature that allows users to terminate a
 [RFC7009]: https://tools.ietf.org/html/rfc7009
 [MSC2965]: https://github.com/matrix-org/matrix-spec-proposals/pull/2965
 [MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
+[`/_matrix/client/v3/login`]: https://spec.matrix.org/v1.13/client-server-api/#login
+[`/_matrix/client/v3/logout`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3logout
+[`POST /_matrix/client/v3/login/all`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3loginall
+[`DELETE /_matrix/client/v3/devices/{deviceId}`]: https://spec.matrix.org/v1.13/client-server-api/#delete_matrixclientv3devicesdeviceid
+[`POST /_matrix/client/v3/delete_devices`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3delete_devices
