@@ -162,7 +162,8 @@ While this won't prevent a homeserver from arbitrarily rejecting clients (which 
 
 This proposal introduces a new set of authentication APIs for Matrix, based on OAuth 2.0 and OpenID Connect (OIDC) specifications.
 
-As a first step, it introduces those APIs as alternatives to the existing User-Interactive Authentication (UIA) APIs, both the ones used in authentication and UIA-protected APIs related to account management, acknowledging the complexity of covering all the use cases of the existing APIs.
+As a first step, it introduces those APIs as alternatives to the existing authentication mechanisms -- in particular [`/_matrix/client/v3/login`] and [User-Interactive Authentication](https://spec.matrix.org/v1.13/client-server-api/#user-interactive-authentication-api) (UIA).
+It does not attempt to cover all use cases of the existing APIs at this point.
 The long-term goal is to deprecate the existing UIA APIs and replace them with the new OAuth 2.0/OIDC-based APIs.
 This deprecation is not done in this MSC.
 
