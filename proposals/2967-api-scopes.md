@@ -93,7 +93,7 @@ With a 66 character alphabet and a 10 character device ID, the probability of a 
 
 $$N = 66^{10}$$
 $$K = 10^{8}$$
-$$P \approx 1 - e^{\frac{K^2}{2N}}$$
+$$P \approx 1 - e^{-\frac{K^2}{2N}}$$
 $$P \approx 0.00318$$
 
 This does also restrict the possible alphabet of device IDs, which was not restricted before.
