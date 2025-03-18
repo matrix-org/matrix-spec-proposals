@@ -10,7 +10,7 @@ This proposal introduces access scopes to allow restricting client access to onl
 
 [MSC2964] introduces the usage of the OAuth 2.0 authorization code grant to authenticate against a Matrix homeserver.
 
-A OAuth 2.0 grant has a scope associated to it which provides a framework for obtaining user consent.
+An OAuth 2.0 grant has a scope associated to it which provides a framework for obtaining user consent.
 
 The framework encourages the practise of obtaining additional use consent when a client asks for a new scope that was not granted previously.
 
