@@ -53,7 +53,7 @@ The client can then bind the device ID to the grant by requesting a scope compri
 | - | - | - |
 | `urn:matrix:client:device:<device ID>` | bind the given device ID to the grant/access token | The homeserver must only grant exactly one device scope for a token. |
 
-The device ID scope MUST be present *at most* once in the scope.
+There MUST be *at most* one `urn:matrix:client:device:` token in the requested scope.
 
 When generating a new device ID, the client SHOULD generate a random string with enough entropy.
 It SHOULD only use characters from the unreserved character list defined by [RFC3986]:
