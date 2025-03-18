@@ -206,6 +206,7 @@ With the previous registration request, the server would reply with:
   "tos_uri": "https://example.com/tos.html",
   "policy_uri": "https://example.com/policy.html",
   "redirect_uris": ["https://app.example.com/callback"],
+  "token_endpoint_auth_method": "none",
   "response_types": ["code"],
   "grant_types": ["authorization_code", "refresh_token"],
   "application_type": "web"
