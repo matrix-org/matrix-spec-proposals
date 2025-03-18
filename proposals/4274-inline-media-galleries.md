@@ -54,7 +54,7 @@ the msgtypes `m.image`, `m.video`, `m.audio` and `m.file`. Rather than
 
 ## Potential issues
 
-The size of galleries under this proposal is limitted by the event size limit
+The size of galleries under this proposal is limited by the event size limit
 (65,536 bytes). An encrypted gallery event with a single image, including
 thumbnail, and no caption measures about 2,000 bytes. Each additional image adds
 roughly another 1,000 bytes. Therefore galleries would be capped to about 60
