@@ -128,7 +128,7 @@ Considering the rest of the client-server API, there are two potential locations
 The first option would require making well-known documents mandatory on the server name domain, with a document that may need to be updated more frequently than existing ones.
 This isn't practical for some server deployments, and clients may find it challenging to consistently perform this discovery.
 
-The second option is also impractical, as all other Matrix APIs on this domain are prefixed with `/_matrix`, and it could easily be confused with the set of well-known documents hosted on the server name domain.
+The second option would be very confusing, as all other Matrix APIs on the client-server domain are prefixed with `/_matrix`, whereas the existing `.well-known` documents ([`/.well-known/matrix/client`](https://spec.matrix.org/v1.13/client-server-api/#getwell-knownmatrixclient) and [`/.well-known/matrix/server`](https://spec.matrix.org/v1.13/server-server-api/#getwell-knownmatrixserver)) are hosted on the server name domain.
 
 ### Discovery via existing `.well-known` mechanism
 
