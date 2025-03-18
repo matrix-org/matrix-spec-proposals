@@ -452,7 +452,7 @@ Those concerns were previously mainly affecting client implementations, and will
 
 On the other hand, the previous registration flow was notoriously complex to implement both for clients and homeservers, and this proposal removes a lot of that complexity from the client side.
 
-Moreover, these concerns should, in theory, already apply to the homeserver-side implementation, as the homeserver is supposed to provide a web-based fallback for all UIA steps.
+Moreover, these concerns should, in theory, already apply to the homeserver-side implementation, as the homeserver is supposed to provide a [web-based fallback](https://spec.matrix.org/v1.13/client-server-api/#login-fallback) for the `/login` API,  as well as [fallbacks](https://spec.matrix.org/v1.11/client-server-api/#fallback) for all UIA steps.
 In practice, this is often not the case, with either missing fallbacks for some UIA steps or sub-par user experiences in their implementations.
 
 ## Alternatives
