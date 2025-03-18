@@ -477,8 +477,6 @@ Examples of existing proposals include:
 This proposal was originally known as 'OIDC-native' authentication.
 To avoid the confusion with OIDC as a single sign-on/identity protocol, this proposal removed its dependency on OpenID Connect and was renamed to 'next-generation auth'.
 
-Consistent with [MSC4186], this proposal can also be referred to as 'augmented atomic authentication', abbreviated to 'AAA'.
-
 ## Security considerations
 
 Please refer to individual proposals.
@@ -526,7 +524,6 @@ The following MSCs were prerequisites for implementing this proposal in a sane w
 [MSC3824]: https://github.com/matrix-org/matrix-spec-proposals/pull/3824
 [MSC3967]: https://github.com/matrix-org/matrix-spec-proposals/pull/3967
 [MSC3970]: https://github.com/matrix-org/matrix-spec-proposals/pull/3970
-[MSC4186]: https://github.com/matrix-org/matrix-spec-proposals/pull/4186
 [MSC4190]: https://github.com/matrix-org/matrix-spec-proposals/pull/4190
 [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
 [MSC4198]: https://github.com/matrix-org/matrix-spec-proposals/pull/4198
