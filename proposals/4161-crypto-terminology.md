@@ -119,7 +119,8 @@ and verifying users are similar processes, but with different outcomes.)
 ⚠️ Avoid using "cross-signing", which requires a deeper knowledge of
 cryptography to understand.
 
-⚠️ Avoid mentioning "device keys" - a device is just secure or not.
+⚠️ Avoid mentioning "device keys". While a device may have keys, the user
+is only concerned about whether it is secure or not.
 
 #### Logging out
 
