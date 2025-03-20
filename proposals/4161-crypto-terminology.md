@@ -81,7 +81,7 @@ clients SHOULD use the language specified, except where their own users are
 known to understand different terms more easily. When making such exceptions,
 clients SHOULD document how they deviate from this document, and why.
 
-### Devices
+### Devices (Sessions)
 
 **Note: this section depends on [MSC4153 ("Exclude non-cross-signed devices")](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), which specifies clients should avoid sending
 and receiving encryption info with devices that are not cross-signed by their
@@ -89,9 +89,9 @@ owner ("insecure" devices in our terminology).** While MSC4153 remains unmerged,
 the parts of this section relating to insecure devices should be considered
 non-normative.
 
-Instances of a client are called 'devices' (not 'sessions'). Aligned with
+Instances of a client are called 'devices' or alternatively 'sessions'. Aligned with
 [MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), we take it as granted that all devices taking part in encryption have been cross-signed by the
-user who owns them, and we call these **devices**.
+user who owns them, and we call these simply **devices** or **sessions**.
 
 Devices which have published cryptographic keys (thus being visible as "cryptographic devices" to other users)
 but which have not been cross-signed are considered an error
@@ -121,9 +121,6 @@ and verifying users are similar processes, but with different outcomes.)
 cryptography to understand.
 
 ⚠️ Avoid mentioning "device keys" - a device is just secure or not.
-
-⚠️ Avoid "session" to mean device. Device better describes what most users
-encounter, and is more commonly used in other messaging apps.
 
 #### Logging out
 
@@ -399,33 +396,14 @@ over time.
 
 ### Device vs. Session
 
-There is debate over the use of the word "device" to identify an instance of a
-client. Objections to "device" include:
+There is debate over whether "device" or "session" is the best word to identify
+an instance of a client. In practice, many clients use both words, and there is
+no consensus among the community for which is best.
 
-* Multiple apps on the same physical device will be listed as separate devices,
-  which may cause confusion.
-* Logging out and in on the same physical device will result in a new "device"
-  being created.
-* Some applications, especially on Web, use "session" for this concept.
-
-The most popular alternative is "session". Objections to "session" include:
-
-* It is an unfamiliar word for non-technical users: they have no metaphor to
-  work with to understand it.
-* It has multiple existing alternative meanings within Matrix.
-
-"Device" was chosen in the proposal because:
-
-* It is familiar from similar messaging apps.
-* It has a clear meaning in everyday speech, giving users a stepping-stone
-  towards understanding what it means in this context.
-* For novice users, it corresponds well with the everyday meaning: when they
-  first engage with Matrix, they will use one "device" per physical device.
-* The extension to think of multiple virtual "devices" on a physical device is
-  simple and familiar from other applications.
-* Messaging apps are increasingly used on mobile devices, especially as the
-  first point of contact, and "device" is commonly used in mobile apps.
-* The spec uses "device" for precisely this concept, which is a bonus.
+This proposal initially chose "device" but it became clear that many people had
+strong opinions in both directions, meaning that some clients would probably
+stick with their wording even if the spec recommended otherwise, so it seemed
+more pragmatic to allow either.
 
 ## Further work
 
