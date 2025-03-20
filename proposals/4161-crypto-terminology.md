@@ -82,39 +82,13 @@ clients SHOULD document how they deviate from this document, and why.
 
 ### Devices (Sessions)
 
-**Note: this section depends on [MSC4153 ("Exclude non-cross-signed devices")](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), which specifies clients should avoid sending
-and receiving encryption info with devices that are not cross-signed by their
-owner ("insecure" devices in our terminology).** While MSC4153 remains unmerged,
-the parts of this section relating to insecure devices should be considered
-non-normative.
-
-Instances of a client are called 'devices' or alternatively 'sessions'. Aligned with
-[MSC4153](https://github.com/matrix-org/matrix-spec-proposals/pull/4153), we take it as granted that all devices taking part in encryption have been cross-signed by the
-user who owns them, and we call these simply **devices** or **sessions**.
-
-Devices which have published cryptographic keys (thus being visible as "cryptographic devices" to other users)
-but which have not been cross-signed are considered an error
-state, primarily to be encountered during the transition to MSC4153 and/or due
-to buggy/incomplete/outdated clients. These devices are referred to as **not
-secure** or **insecure** and their existence is considered a serious and dangerous error
-condition, similar to an invalid TLS certificate.
+Instances of a client are called **devices** or alternatively **sessions**.
+Devices that have not been cross-signed by the user who owns them are
+**insecure**.
 
 > "This device is not secure. Please verify it to continue."
 
-> "Ignoring 5 messages that were sent from a device that is not secure."
-
 > "Confirm it's you" (when asking to verify a device during login)
-
-⚠️ Avoid saying "secure device". All devices are considered secure by default;
-the user doesn't typically need to worry about the fact that insecure devices
-are a thing, given they should only ever occur in error (or transitional)
-scenarios.
-
-⚠️ Avoid saying "trusted device" or "verified device". Devices are not users,
-and it is helpful to use different language for users vs. devices. (However, we
-do use the verb "verify" to describe how to make a device secure. By using the
-same verb, we help users understand the confusing fact that verifying devices
-and verifying users are similar processes, but with different outcomes.)
 
 ⚠️ Avoid using "cross-signing", which requires a deeper knowledge of
 cryptography to understand.
