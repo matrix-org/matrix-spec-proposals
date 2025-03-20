@@ -76,7 +76,7 @@ When communicating about cryptography with non-technical users, the following
 terms and concepts SHOULD be used.
 
 When referring to concepts outlined in this document in their user interface,
-clients SHOULD use the language specified, except where their own users are
+clients SHOULD use the language specified in **bold**, except where their own users are
 known to understand different terms more easily. When making such exceptions,
 clients SHOULD document how they deviate from this document, and why.
 
