@@ -59,9 +59,8 @@ endpoints and event types should *not* be updated.
 We hope that this MSC will:
 
 * Cause small changes in the spec (as described in the previous paragraph), and
-* Become an appendix in the spec, with a description that makes clear that the
-  intended audience is different from most of the spec, meaning different words
-  are used from the main spec body.
+* Become part of the spec, with a description that makes clear that the
+  contents are for UX/UI consideration rather than code.
 
 Clients may, of course, choose to use different language. Some clients may
 deliberately choose to use more technical language, to suit the profiles of
