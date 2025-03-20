@@ -125,8 +125,8 @@ is only concerned about whether it is secure or not.
 #### Logging out
 
 In contrast to some other services, **logging out** (or **signing out**) of a
-Matrix device is quite a significant operation: it means the encryption data on
-this device is lost, and if you log out of all devices you will need to use your
+Matrix device is quite a significant operation: it means your encryption data on
+the device is lost, and if you log out of all devices you will need to use your
 recovery key to re-establish your identity and regain access to your old
 messages.
 
