@@ -242,8 +242,8 @@ are "locked in a box" by encrypting them, and "unlocked" by decrypting them.
 ⚠️ Avoid using "room key". These keys are used to decrypt messages, not rooms.
 
 Note: this clashes with the term "message key" in the double ratchet. Since the
-double ratchet algorithm is for a very different audience, we think that this is
-not a problem.
+double ratchet algorithm is for a very different audience, this is not considered
+a blocking conflict.
 
 ### Unable to decrypt
 
