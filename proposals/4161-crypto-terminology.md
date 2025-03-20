@@ -73,8 +73,8 @@ example](https://github.com/matrix-org/matrix-spec/pull/1819/files#diff-8b25d378
 
 ## Proposal
 
-When communicating about cryptography with non-technical users, we propose using
-the following terms and concepts.
+When communicating about cryptography with non-technical users, the following
+terms and concepts SHOULD be used.
 
 When referring to concepts outlined in this document in their user interface,
 clients SHOULD use the language specified, except where their own users are
