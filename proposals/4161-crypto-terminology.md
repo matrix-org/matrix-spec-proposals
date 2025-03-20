@@ -51,10 +51,10 @@ provide, and adapt their user interfaces and documentation to use them. (If this
 MSC is accepted, Element will use it as a reference for English wording in its
 clients.)
 
-Where concepts and terms exactly match existing terms in the Matrix spec, we
-propose changing the spec to use the terms from this document. Where they do not
-match, we are very comfortable with different words being used in the spec,
-given it is a highly technical document, as opposed to a client user interface.
+The Matrix spec SHOULD additionally be updated to use the concepts
+and terms from this proposal, where possible. For example, textual
+descriptions of features should use the terms here, but the API 
+endpoints and event types should *not* be updated. 
 
 We hope that this MSC will:
 
