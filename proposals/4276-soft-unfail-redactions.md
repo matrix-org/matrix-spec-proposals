@@ -1,4 +1,4 @@
-# MSC4275: Soft unfailure for self redactions
+# MSC4276: Soft unfailure for self redactions
 
 When a user is removed from a room, the server may issue several redactions to their messages to clean
 up rooms. Users may also use similar functionality, if supported by their server, to remove their own
