@@ -253,7 +253,7 @@ unable to decrypt it.
 When we expect the key to arrive, we are **waiting for this message**.
 
 > "Waiting for this message" with a button: "learn more" that explains that the message key for
-this message has not yet been received, but that we expect it to
+> this message has not yet been received, but that we expect it to
 > arrive shortly. Further detail may be provided, for instance explaining that
 > connectivity issues between the sender's homeserver and our own can cause
 > key delivery delays.
