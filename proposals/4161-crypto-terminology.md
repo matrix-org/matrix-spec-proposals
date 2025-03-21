@@ -313,8 +313,9 @@ instead of resetting it, other users won't see "Alice's identity has changed"
 messages, and you will be able to read your message history, even if you logged
 out everywhere or lost your devices.
 
-A **recovery passphrase** is an easier-to-remember way of accessing the recovery
-key and has the same purpose as the recovery key.
+A **recovery passphrase** is an easier-to-remember equivalent of the recovery
+key that is user-entered instead of machine-generated. It has the same purpose
+as the recovery key.
 
 In the spec, recovery is referred to as
 [secret storage](https://spec.matrix.org/v1.13/client-server-api/#secret-storage),
