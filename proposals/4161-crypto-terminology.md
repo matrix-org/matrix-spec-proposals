@@ -204,6 +204,25 @@ devices.
 changed could be due to attack rather than because they reset their encryption
 (plus "encryption" is jargony).
 
+References:
+
+* Wikipedia talks about "identity management":
+  https://en.wikipedia.org/wiki/Identity_and_access_management
+* OpenID talks about "identity": https://openid.net/foundation/
+* Keyoxide talks about "identities": https://keyoxide.org/
+* Keybase talks about "identity" and "identity proofs":
+  https://book.keybase.io/docs/server
+* WhatsApp talks about verifying your "identity":
+  https://faq.whatsapp.com/1317564962315842/
+* Signal avoids using a word for this, and talks about using a security number
+  to "verify the security of messages with specific contacts":
+  https://support.signal.org/hc/en-us/articles/360007060632-What-is-a-safety-number-and-why-do-I-see-that-it-changed
+  but elsewhere does use the word "identity" in this context:
+  https://support.signal.org/hc/en-us/articles/6829998083994-Phone-Number-Privacy-and-Usernames-Deeper-Dive#verification
+
+All of the above are describing ways of proving who you are, which is close to
+the use of "identity" here.
+
 ### Message key
 
 A **message key** is used to decrypt a message. The metaphor is that messages
