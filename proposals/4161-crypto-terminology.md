@@ -47,9 +47,9 @@ unique relationship with their users.
 ## Outcomes
 
 We hope that Matrix client developers will like the terms and wording we
-provide, and adapt their user interfaces and documentation to use them. (If this
-MSC is accepted, Element will use it as a reference for English wording in its
-clients.)
+provide, and adapt their user interfaces and documentation to use them.
+Element is using this MSC as its reference so will serve as an implementation
+in terms of FCP approval.
 
 The Matrix spec SHOULD additionally be updated to use the concepts
 and terms from this proposal, where possible. For example, textual
