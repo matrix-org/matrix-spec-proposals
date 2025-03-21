@@ -131,13 +131,13 @@ Bob: Bob verified Alice because they care about proof that no-one is listening,
 and now someone could be. Bob can choose to **withdraw verification** (i.e.
 "demote" Alice from being verified), or **re-verify** with Alice. Until Bob does
 one or the other, Bob's communication with Alice should contain a prominent and
-serious warning that Alice's **verified identity has changed**.
+serious warning that Alice's **identity has been reset**.
 
 > "This user is verified."
 
-> "WARNING: Bob's verified identity has changed!"
+> "WARNING: Bob's identity has been reset!"
 
-> "You verified this user's identity, but it has changed. Please choose to
+> "You verified this user's identity, but it has been reset. Please choose to
 > re-verify them or withdraw verification."
 
 ⚠️ Avoid using "cross-signing", which requires a deeper understanding of
@@ -155,7 +155,7 @@ listening in or tampering with communications.
 
 ⚠️ Avoid talking about "mismatch" or "verification mismatch" which is very
 jargony - it is the identity which is mismatched, not the verification process.
-Just say "Bob's verified identity has changed".
+Just say "Bob's identity has been reset".
 
 ⚠️ Where possible, avoid talking about "cryptographic identity" which is very jargony.
 In many contexts, just the word "identity" is sufficient: the dictionary definition of
@@ -179,7 +179,7 @@ identity, but allows you to re-establish your identity if you lose all your
 devices.
 
 > When a non-verified user resets their identity:
-> "Warning: Alice's identity has changed."
+> "Alice's identity has been reset."
 >
 > Longer explanation:
 > This can happen if the user lost all their devices and the recovery key, but
@@ -187,7 +187,7 @@ devices.
 > verify their identity by going to their profile.
 
 > When a verified user resets their identity:
-> "WARNING: Bob's verified identity has changed!"
+> "WARNING: Bob's identity has been reset!"
 
 (During login, at the "Confirm it's you" stage):
 
@@ -200,9 +200,8 @@ devices.
 
 ⚠️ Avoid saying "master key" - this is an implementation detail.
 
-⚠️ Avoid saying "Alice reset their encryption" - the reason that Alice's identity
-changed could be due to attack rather than because they reset their encryption
-(plus "encryption" is jargony).
+⚠️ Avoid saying "Alice reset their encryption" - the change was to the user's
+identity.
 
 References:
 
@@ -328,7 +327,7 @@ because the new identity does not have access to the old key storage.
 A **recovery key** (or **recovery code**) is a way of re-establishing your
 identity if you lose all your devices. This in turn allows you to access key
 storage, and therefore see message history. If you re-establish your identity
-instead of resetting it, other users won't see "Alice's identity has changed"
+instead of resetting it, other users won't see "Alice's identity has been reset"
 messages, and you will be able to read your message history, even if you logged
 out everywhere or lost your devices.
 
@@ -373,7 +372,7 @@ identity.
 
 If the user still has a secure device, then that device has its own copy of the
 identity information, so they can **change recovery key** without losing their
-identity, meaning other users will not see "Alice's identity has changed", and
+identity, meaning other users will not see "Alice's identity has been reset", and
 they will be able to continue using key storage to access message history.
 
 Note: users should be encouraged to change their recovery key if they have forgotten
@@ -383,7 +382,7 @@ message history.
 
 If the user does not have a device, or all their devices are insecure, then they
 will need to reset their identity, meaning other users
-see "Alice's identity has changed", and they lose access to their old key
+see "Alice's identity has been reset", and they lose access to their old key
 storage, meaning they cannot read message history.
 
 > "If you lose your recovery key you can generate a new one if you are signed in
