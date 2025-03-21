@@ -33,7 +33,7 @@ On all three endpoints:
 
 1.  The `reason` parameter is made optional.
 
-2.  Servers MAY report with 200 and no content regardless of whether the
+2.  Servers MAY respond with 200 and no content regardless of whether the
     reported subject exists or not to combat enumeration attacks.
 
 3.  Servers MAY add a random delay or use constant time functions when
