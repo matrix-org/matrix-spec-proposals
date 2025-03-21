@@ -222,7 +222,10 @@ a blocking conflict.
 ### Unable to decrypt
 
 When we have an encrypted message but no message key to decrypt it, we are
-unable to decrypt it.
+unable to decrypt it. There are three different situations, which clients
+should distinguish clearly:
+
+#### Waiting for this message
 
 When we expect the key to arrive, we are **waiting for this message**.
 
@@ -232,12 +235,23 @@ When we expect the key to arrive, we are **waiting for this message**.
 > connectivity issues between the sender's homeserver and our own can cause
 > key delivery delays.
 
+#### You don't have access to this message
+
 When the user does not have the message key for a permanent and well-understood
 reason, for example if it was sent before they joined the room, we say **you
 don't have access to this message**.
 
 > "You don't have access to this message" e.g. if it was sent before the user
 > entered the room, or the user does not have key storage set up.
+
+#### An error occurred
+
+When an error has occurred with the decryption process, we surface that error
+with a different message e.g. "something went wrong with this message" - the
+exact wording will depend on the communication style of the client.
+
+Examples of errors like this include an incorrectly-formatted message, or a
+problem with the client's storage of message keys.
 
 ### Message history
 
