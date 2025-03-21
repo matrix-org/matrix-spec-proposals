@@ -402,7 +402,7 @@ over time.
 
 ## Alternatives
 
-### Device vs. Session
+### Device vs. Session and others
 
 There is debate over whether "device" or "session" is the best word to identify
 an instance of a client. In practice, many clients use both words, and there is
@@ -412,6 +412,23 @@ This proposal initially chose "device" but it became clear that many people had
 strong opinions in both directions, meaning that some clients would probably
 stick with their wording even if the spec recommended otherwise, so it seemed
 more pragmatic to allow either.
+
+Several other words could also be used:
+
+* "Login" is close in meaning to a device or session, but it could be confused
+  with the actions of logging out or in, rather than an ongoing session.
+
+* "Client" is commonly used in the context of email. This word originates in the
+  technical idea of a client-server protocol, and is rarely used in
+  non-technical contexts. Further, where it is used, it is most commonly
+  referring to a program rather than a logged-in session.
+
+* "App/Application" is very widely used, but is usually referring to a program
+  rather than a logged-in session.
+
+* "Account" is used quite widely, but is normally used to refer to a user's
+  general identity or set of credentials, rather than a specific instance where
+  the user logged in.
 
 ## Further work
 
