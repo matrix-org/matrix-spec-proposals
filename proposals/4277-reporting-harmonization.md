@@ -9,7 +9,7 @@ Matrix currently has three reporting endpoints:
 - `/_matrix/client/v3/users/{userId}/report` (to be [added][2] to Matrix as per
   [MSC4260])
 
-The currently spec contains a number of subtle differences for these endpoints:
+The spec contains a number of subtle differences for these endpoints:
 
 1.  The `reason` parameter on the event reporting endpoint was made optional by
     [MSC2414]. The other two reporting endpoints didn't pick up on this,
