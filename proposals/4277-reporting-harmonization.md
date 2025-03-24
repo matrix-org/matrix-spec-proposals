@@ -11,32 +11,32 @@ Matrix currently has three reporting endpoints:
 
 The spec contains a number of subtle differences for these endpoints:
 
-1.  The `reason` parameter on the event reporting endpoint was made optional by
-    [MSC2414]. The other two reporting endpoints didn't pick up on this,
-    however, and still require `reason` to be present while allowing it to be
-    blank.
-2.  The user reporting endpoint [allows] servers to respond with 200 even if the
+1.  The user reporting endpoint [allows] servers to respond with 200 even if the
     user doesn't exist to deny enumerating users. This option is not allowed in
     the event and room reporting endpoints.
-3.  The user and event reporting endpoints allow servers to add a random delay
+2.  The user and event reporting endpoints allow servers to add a random delay
     when generating responses. This is a more sophisticated measure against
     enumeration attacks. While the spec doesn't explicit forbid this technique
-    on the room reporting endpoint it doesn't explicitly mention or recommend
-    it either.
+    on the room reporting endpoint it doesn't explicitly mention or recommend it
+    either.
 
 These differences seem unnecessary and were likely introduced by accident only.
 The present proposal, therefore, seeks to align the three endpoints.
+
+Note that additionally, the endpoints also differ in their handling of the
+`reason` parameter. [MSC2414] made `reason` optional on the event reporting
+endpoint. The other two endpoints, however, went the opposite direction and made
+`reason` required (while allowing it to be blank) to limit spam. Resolving this
+inconsistency is not covered by this proposal.
 
 ## Proposal
 
 On all three endpoints:
 
-1.  The `reason` parameter is made optional.
-
-2.  Servers MAY respond with 200 and no content regardless of whether the
+1.  Servers MAY respond with 200 and no content regardless of whether the
     reported subject exists or not to combat enumeration attacks.
 
-3.  Servers MAY add a random delay or use constant time functions when
+2.  Servers MAY add a random delay or use constant time functions when
     processing responses to combat enumeration attacks.
 
 All of these changes appear applicable regardless of the reported subject and it
@@ -73,5 +73,5 @@ None.
   [MSC4151]: https://github.com/matrix-org/matrix-spec-proposals/pull/4151
   [2]: https://github.com/matrix-org/matrix-spec/pull/2093
   [MSC4260]: https://github.com/matrix-org/matrix-spec-proposals/pull/4260
-  [MSC2414]: https://github.com/matrix-org/matrix-spec-proposals/pull/2414
   [allows]: https://github.com/matrix-org/matrix-spec-proposals/pull/4260/files#diff-cbb17920e2617e7a20ab0838879675f7aa70e828f0263a3cfa5f4c53913ce5f7R34-R35
+  [MSC2414]: https://github.com/matrix-org/matrix-spec-proposals/pull/2414
