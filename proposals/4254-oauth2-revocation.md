@@ -79,7 +79,7 @@ The client should handle these errors appropriately:
 This proposal replaces the existing [`/_matrix/client/v3/logout`] endpoint for [MSC3861]-compatible clients.
 Those clients MUST use this mechanism to logout, and clients using the [`/_matrix/client/v3/login`] endpoint to login MUST keep using the existing [`/_matrix/client/v3/logout`] endpoint.
 
-Note that this proposal does not itself provide alternatives to endpoints like [`POST /_matrix/client/v3/login/all`], [`DELETE /_matrix/client/v3/devices/{deviceId}`] or [`POST /_matrix/client/v3/delete_devices`].
+Note that this proposal does not itself provide alternatives to endpoints like [`POST /_matrix/client/v3/logout/all`], [`DELETE /_matrix/client/v3/devices/{deviceId}`] or [`POST /_matrix/client/v3/delete_devices`].
 Under the [MSC3861] proposal, management of other devices is not the responsibility of the client, and should instead be provided in a separate user interface by the homeserver.
 
 
@@ -116,6 +116,6 @@ Token revocation is a critical security feature that allows users to terminate a
 [MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
 [`/_matrix/client/v3/login`]: https://spec.matrix.org/v1.13/client-server-api/#login
 [`/_matrix/client/v3/logout`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3logout
-[`POST /_matrix/client/v3/login/all`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3loginall
+[`POST /_matrix/client/v3/logout/all`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3logoutall
 [`DELETE /_matrix/client/v3/devices/{deviceId}`]: https://spec.matrix.org/v1.13/client-server-api/#delete_matrixclientv3devicesdeviceid
 [`POST /_matrix/client/v3/delete_devices`]: https://spec.matrix.org/v1.13/client-server-api/#post_matrixclientv3delete_devices
