@@ -72,14 +72,14 @@ For instance, given the following hierarchy of rooms within a space tree:
   - Support <no-value>
     - Room C <"off">
   - Room D <"off">
-  - Room F <no-value>
+  - Room E <no-value>
 - Room F
 
 The result would be:
  - Room A, Room C and Room D would be "off".
  - Room B would be "private".
  - Room E would be "on".
- - Room E is out of the space, and would default to the user's global rule.
+ - Room F is out of the space, and would default to the user's global rule.
 
 
 ### Notes
