@@ -30,7 +30,7 @@ This key contains the following content.
 
 `media_previews` refers to media in the room timeline, that may be thumbnailed.
 
-`invite_avatars` refers to any *room* avatar rendered in the client, where the client has a `membership` of `invited`.
+`invite_avatars` refers to any *room* avatar rendered in the client, where the client has a `membership` of `invite`.
 
 The field `media_previews` and `invite_avatars` may be one of three values.
 
