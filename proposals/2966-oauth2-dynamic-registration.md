@@ -54,6 +54,8 @@ They MUST point to a valid web page and SHOULD NOT require authentication to acc
 
 All of these metadata values are optional.
 
+##### Metadata localization
+
 As per [RFC 7591 sec. 2.2](https://tools.ietf.org/html/rfc7591#section-2.2), these metadata values MAY be localized.
 For example:
 
