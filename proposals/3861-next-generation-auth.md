@@ -172,7 +172,7 @@ This proposal introduces a new set of authentication APIs for Matrix, based on O
 
 As a first step, it introduces those APIs as alternatives to the existing authentication mechanisms -- in particular [`/_matrix/client/v3/login`] and [User-Interactive Authentication](https://spec.matrix.org/v1.13/client-server-api/#user-interactive-authentication-api) (UIA).
 It does not attempt to cover all use cases of the existing APIs at this point.
-The long-term goal is to deprecate the existing UIA APIs and replace them with the new OAuth 2.0/OIDC-based APIs.
+The long-term goal is to deprecate the existing account management APIs and UIA-protected endpoints, providing alternatives where necessary.
 This deprecation is not done in this MSC.
 
 While not directly part of this proposal, it paves the way for providing only partial access to the user's account.
