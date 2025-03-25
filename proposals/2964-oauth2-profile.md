@@ -121,7 +121,7 @@ https://account.example.com/oauth2/auth?
 #### Callback
 
 Once completed, the user is redirected to the `redirect_uri`, with either a successful or failed authorization in the URL fragment or query parameters.
-Whether the parameter are in the URL fragment or query parameters is determined by the `response_mode` value:
+Whether the parameters are in the URL fragment or query parameters is determined by the `response_mode` value:
 
 - if set to `fragment`, the parameters will be placed in the URL fragment, like `https://example.com/callback#param1=value1&param2=value2`
 - if set to `query`, the parameters will be in placed the query string, like `com.example.app:/callback?param1=value1&param2=value2`
