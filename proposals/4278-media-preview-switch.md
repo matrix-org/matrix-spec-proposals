@@ -32,7 +32,7 @@ This key contains the following content.
 
 `invite_avatars` refers to any *room* avatar rendered in the client, where the client has a `membership` of `invite`.
 
-The field `media_previews` and `invite_avatars` may be one of three values.
+The fields `media_previews` and `invite_avatars` may be one of three values.
 
 #### `off`
 
