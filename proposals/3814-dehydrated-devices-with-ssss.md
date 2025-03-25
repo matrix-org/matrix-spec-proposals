@@ -39,13 +39,25 @@ To upload a new dehydrated device, a client will use `PUT /dehydrated_device`.
 Each user has at most one dehydrated device; uploading a new dehydrated device
 will remove any previously-set dehydrated device.
 
-The dehydrated device *must* be cross-signed and have a fallback key.
+The dehydrated device MUST be cross-signed and have a fallback key.
 
-The client *must* use the public [Curve25519] [identity key] of the device,
+The client MUST use the public [Curve25519] [identity key] of the device,
 encoded as unpadded Base64, as the device ID.
 
-The `device_keys`, `one_time_keys`, and `fallback_keys` fields use the same
-structure as for the [`/keys/upload`] request.
+The request body has the following properties:
+
+- `device_id` (required): the dehydrated device's ID, which MUST be the public
+  [Curve25519] [identity key] of the device, encoded as unpadded Base64.
+- `device_data` (required): the data about the dehydrated device that will be
+  used later to rehydrate the device.  This is a JSON object that has, at
+  minimum, an `algorithm` property.  The value of the `algorithm` property
+  determines the other properties in the object.  In this MSC, we define the
+  `m.dehydration.v2` algorithm.
+- `initial_device_display_name` (optional): the display name for the device
+- `device_keys` (required), `one_time_keys` (optional), `fallback_keys`
+  (optional): the dehydrated device's device keys, one-time keys, and fallback
+  keys, respectively, using the same structure as for the [`/keys/upload`]
+  request.
 
 We add a new optional property to the device keys: `dehydrated`, which is set to
 `true` for dehydrated devices.  Defaults to `false`.  Clients that support
@@ -56,9 +68,9 @@ device should not be sending messages.  Clients can use also this flag for
 other purposes, such as:
 
 - Display dehydrated devices differently from normal devices, to avoid confusing
-  from users who do not expect to see another device.
-- Don't send key forwarding requests to the dehydrated device, since it will
-  not respond to them.
+  users who do not expect to see another device.
+- Don't send key forwarding or verification requests to the dehydrated device,
+  since it will not respond to them.
 - Don't send room keys to the dehydrated device if the user has a sufficient
   number of other devices, with the assumption that if the user logs in to a
   new device, they can get the room keys from one of their other devices and/or
@@ -73,7 +85,7 @@ other purposes, such as:
   "device_id": "dehydrated_device_id",
   "device_data": {
     "algorithm": "m.dehydration.v2"
-    "other_fields": "other_values"
+    "...": "..." // algorithm-dependent properties
   },
   "initial_device_display_name": "foo bar", // optional
   "device_keys": {
@@ -114,7 +126,7 @@ Result:
 
 ```json
 {
-  "device_id": "dehydrated device's ID"
+  "device_id": "dehydrated_device_id"
 }
 ```
 
@@ -130,13 +142,16 @@ Response:
 
 ```json
 {
-  "device_id": "dehydrated device's ID",
+  "device_id": "dehydrated_device_id",
   "device_data": {
     "algorithm": "m.dehydration.v2",
     "other_fields": "other_values"
   }
 }
 ```
+
+The `device_id` and `device_data` properties are the same as the values given in
+the previous `PUT /dehydrated_device` call.
 
 If no dehydrated device is available, the server responds with an error code of
 `M_NOT_FOUND`, HTTP code 404.
@@ -200,7 +215,7 @@ Response:
 
 ```json
 {
-  "device_id": "dehydrated device's ID"
+  "device_id": "dehydrated_device_id"
 }
 ```
 
