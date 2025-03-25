@@ -225,10 +225,14 @@ It SHOULD reuse the `client_id` for all future authorization requests done again
 Because each client on each user device will do its own registration, they may all have different `client_id`s.
 This means that the number of client registrations will grow over time with the number of devices and unique clients.
 
-This can be mitigated by deleting old client registrations after a certain period of time of inactivity.
-The server SHOULD in this case keep a record of old client IDs with their associated `redirect_uris` values, so that they can safely redirect back to the client with an error message in case the client tries to use a deleted client ID.
+This increase can be mitigated by de-duplicating client registrations that have identical metadata.
+By doing so, different users on different devices using the same client can share a single `client_id`, reducing the overall number of registrations.
 
-A subsequent MSC could be proposed to identify multiple instances of the same client using signed client metadata.
+A subsequent MSC could be proposed to reliably identify multiple instances of the same client beyond strict comparison using signed client metadata.
+
+Another way this could be mitigated is by deleting old client registrations after a period of inactivity.
+This would require a mechanism for the client to verify the validity of its client ID, which the current proposal lacks.
+This could be achieved by introducing the client read request as specified by the [RFC7592: OAuth 2.0 Dynamic Client Registration Management Protocol][RFC7592], or by introducing [RFC9126: OAuth 2.0 Pushed Authorization Requests][RFC9126] for authorization requests.
 
 ## Alternatives
 
@@ -254,4 +258,6 @@ In both cases, it is crucial for the server to strictly enforce these restrictio
 None relevant.
 
 [RFC7591]: https://tools.ietf.org/html/rfc7591
+[RFC7592]: https://tools.ietf.org/html/rfc7592
+[RFC9126]: https://tools.ietf.org/html/rfc9126
 [MSC2964]: https://github.com/matrix-org/matrix-spec-proposals/pull/2964
