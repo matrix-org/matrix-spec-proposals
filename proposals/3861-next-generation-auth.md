@@ -1,13 +1,22 @@
 # MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC
 
-This MSC proposes a new set of authentication APIs for Matrix, based on the OAuth 2.0 and OpenID Connect (OIDC) specifications.
-
-## Motivation
-
 The goal of this MSC is to propose a new set of authentication APIs for Matrix, based on the OAuth 2.0 and OpenID Connect (OIDC) specifications.
 To understand this proposal, it is important to lay out the reasoning behind it.
 
-This section explains this reasoning before getting into the detailed proposal.
+## Rationale
+
+Matrix currently uses a [custom protocol for authentication](https://spec.matrix.org/v1.13/client-server-api/#client-authentication), one that hasn't been significantly updated in many years.
+This leads to two main problems:
+
+ 1. The custom protocol does not follow best practices, nor does it use the collective experience of other authentication protocols.
+ 2. While relatively generic, the custom protocol does not currently support many desired features that users and organizations actually want.
+
+These points could be addressed by iterating on the current protocol; however, using the industry standard OAuth 2.0 allows us to benefit from its experience without having to build a competing (relatively generic) authentication protocol.
+We also will benefit more easily from any further enhancements or best practice recommendations of OAuth 2.0.
+
+## Background and motivation
+
+This section expands on the benefits of moving to OAuth 2.0.
 It is purely informative and not part of the actual proposal.
 The proposal itself is high-level, and the technical implications are split into separate, more focused MSCs.
 
