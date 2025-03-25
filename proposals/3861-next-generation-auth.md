@@ -162,8 +162,7 @@ This usually implies a contractual relationship between the service provider and
 
 This has been a notorious problem with [OAuth 2.0 in email protocols][thunderbird-oauth2], where email clients are forced to register their applications with each email provider, giving the email provider the right to reject any application.
 
-The goal of this proposal is to keep the ecosystem open by defining a way for clients to dynamically register themselves with the homeserver.
-While this won't prevent a homeserver from arbitrarily rejecting clients (which is already possible with [`/_matrix/client/v3/login`], based on the client's user-agent string or redirect URI, for example), this proposal will provide homeserver operators greater visibility into which clients are being used, aiding decisions to approve third-party clients.
+This proposal aims to mitigate this problem by defining a way for clients to dynamically register themselves with the homeserver.
 
 [thunderbird-oauth2]: https://wiki.mozilla.org/Thunderbird:Autoconfiguration:ConfigFileFormat#OAuth2
 
