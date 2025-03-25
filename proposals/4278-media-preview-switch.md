@@ -1,6 +1,6 @@
-# MSCXXXX: Media preview controls
+# MSC4278: Media preview controls
 
-Matrix caters to a wide varity of networks configurations. Some networks are closed and the users have a high
+Matrix caters to a wide variety of networks configurations. Some networks are closed and the users have a high
 degree of safety, and other networks are open to the public internet and are inheriently less safe. This proposal
 aims to give the user more universal control over the content they see on Matrix, starting with media previews.
 
@@ -33,7 +33,7 @@ The field `media_previews` may be one of three values.
 
 The client MUST not show any previews for any media, in the room.
 
-Users may indivdually consent to seeing media, for example by clicking on a prompt to show a preview.
+Users may individually consent to seeing media, for example by clicking on a prompt to show a preview.
 
 If consent is given, the client SHOULD then track that consent and show the media again in the future.
 
@@ -41,7 +41,7 @@ If consent is given, the client SHOULD then track that consent and show the medi
 
 Previews for media MAY be shown in any room without a prompt. 
 
-Users may indivdually hide media, and this preference must be respected over the room defaults.
+Users may individually hide media, and this preference must be respected over the room defaults.
 
 #### `private`
 
@@ -63,10 +63,10 @@ all rooms, unless a per-room setting overrides it.
 It is also possible for rules to cascade via spaces. A top level space may set a specific rule, and child
 rooms may set their own rules. When this is the case, the strictest rule must always be applied.
 
-For instance, given the following heirachy of rooms within a space tree:
+For instance, given the following hierarchy of rooms within a space tree:
 
 - Acme Corp <"on">
-  - Enginnering <"private">
+  - Engineering <"private">
     - Room A <"off">
     - Room B <no-value>
   - Support <no-value>
@@ -95,7 +95,7 @@ their own variant of this setting in the short term.
 
 ### The field is extremely coarse 
 
-This provides a blanket setting for all rooms and content recieved, rather than this applying to rooms
+This provides a blanket setting for all rooms and content received, rather than this applying to rooms
 specifically (via a state key or otherwise). 
 
 
@@ -154,7 +154,7 @@ As with all account data fields, the content should be validated.
 
 ## Unstable prefix
 
-The field should use `io.element.mscXXXX.media_preview_config` while the field is unstable.
+The field should use `io.element.msc4278.media_preview_config` while the field is unstable.
 
 ## Dependencies
 
