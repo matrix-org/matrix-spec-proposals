@@ -69,7 +69,7 @@ The client must know the following parameters, through ways described in [MSC296
 It needs to generate the following values:
 
 - a random value for the `state`
-- a random value for the `code_verifier`
+- a cryptographically random value for the `code_verifier`
 
 #### Authorization request
 
