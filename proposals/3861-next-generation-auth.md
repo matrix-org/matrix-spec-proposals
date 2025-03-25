@@ -73,7 +73,7 @@ Implementers of said flows can focus on the specifics of their deployment withou
 
 Bouncing between the client and the browser may lead to user confusion, especially on operating systems with limited window management capabilities.
 Mobile operating systems such as iOS and Android provide a way to embed a secure browser view within an application ([`ASWebAuthenticationSession`](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) on iOS, [Custom Tabs](https://developer.android.com/develop/ui/views/layout/webapps/overview-of-android-custom-tabs) on Android).
-In those cases, the host application cannot control or monitor what is happening within the embedded browser view, protecting the user's credentials, but that view shares the same context as the system-wide browser.
+In those cases the host application cannot control or monitor what is happening within the embedded browser view, but that view shares the same context as the system-wide browser.
 
 ### Concealing the user's credentials
 
