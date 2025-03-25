@@ -24,7 +24,7 @@ The request includes the following parameters, encoded as `application/x-www-for
 
 - `token`: This parameter MUST contain either the access token or the refresh token to be revoked.
 - `token_type_hint`: This parameter is OPTIONAL, and if present, MUST have a value of either `access_token` or `refresh_token`.  The server MAY use this value to optimize the token lookup process
-- `client_id`: The client identifier obtained during client registration.
+- `client_id`: The client identifier obtained during client registration. This parameter is OPTIONAL.
 
 If the `client_id` is not provided, or does not match the client associated with the token, the server SHOULD still revoke the token.
 This behavior is meant to help good actors like secret scanning tools to proactively revoke leaked tokens.
@@ -76,7 +76,7 @@ The client should handle these errors appropriately:
 
 ### Replacement of existing APIs
 
-This proposal replaces the existing [`/_matrix/client/v3/logout`] endpoint for [MSC861]-compatible client.
+This proposal replaces the existing [`/_matrix/client/v3/logout`] endpoint for [MSC3861]-compatible clients.
 Those clients MUST use this mechanism to logout, and clients using the [`/_matrix/client/v3/login`] endpoint to login MUST keep using the existing [`/_matrix/client/v3/logout`] endpoint.
 
 Note that this proposal does not itself provide alternatives to endpoints like [`POST /_matrix/client/v3/login/all`], [`DELETE /_matrix/client/v3/devices/{deviceId}`] or [`POST /_matrix/client/v3/delete_devices`].
