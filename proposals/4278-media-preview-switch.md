@@ -23,11 +23,16 @@ This key contains the following content.
 
 ```json
 {
-  "media_previews": "off|on|private"
+  "media_previews": "off|on|private",
+  "invite_avatars": "on|off"
 }
 ```
 
-The field `media_previews` may be one of three values.
+`media_previews` refers to media in the room timeline, that may be thumbnailed.
+
+`invite_avatars` refers to any *room* avatar rendered in the client, where the client has a `membership` of `invited`.
+
+The field `media_previews` and `invite_avatars` may be one of three values.
 
 #### `off`
 
@@ -39,7 +44,7 @@ If consent is given, the client SHOULD then track that consent and show the medi
 
 #### `on`
 
-Previews for media MAY be shown in any room without a prompt. 
+Media MAY be shown in any room without a prompt. 
 
 Users may individually hide media, and this preference must be respected over the room defaults.
 
@@ -54,6 +59,10 @@ room is public and previews should be shown. Future join rules may be added to t
 that clients adopt a safety first approach here.
 
 This value is the **default** setting when no account data exists on the user's account.
+
+Note that this setting has no effect for `invite_avatars`. Avatars can only be `off` or `on` for all invites. 
+Bad actors can easily send a DM to a user (which would pass the `private` check) containing unwanted
+content.
 
 ### Levels
 
@@ -81,12 +90,12 @@ The result would be:
  - Room E would be "on".
  - Room F is out of the space, and would default to the user's global rule.
 
-
 ### Notes
 
 It's important here that this account data MUST be configurable by a user.
 
-While a homeserver MAY be allowed to specify a default value ahead of time for the user, it must be mutable.
+Homeservers COULD specify a default value ahead of time for the user, by setting a default
+value internally for the account data. The user *must* be able to mutate this value.
 
 Not all clients will respect this configuration initially, and many clients will continue to support
 their own variant of this setting in the short term.
