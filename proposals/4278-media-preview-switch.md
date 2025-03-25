@@ -24,7 +24,7 @@ This key contains the following content.
 ```json
 {
   "media_previews": "off|on|private",
-  "invite_avatars": "on|off"
+  "invite_avatars": "off|on"
 }
 ```
 
