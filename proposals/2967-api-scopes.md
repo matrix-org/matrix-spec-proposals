@@ -24,7 +24,7 @@ Scopes related to mapping of Client-Server API access levels should start with `
 
 For future MSCs that build on this namespace, unstable subdivisions should be used whilst in development.
 
-For example, if MSCXXX wants to introduce the `urn:matrix:client:foo` scope, it could use `urn:matrix:client:com.example.mscXXXX.foo` during development.
+For example, if MSCXXXX wants to introduce the `urn:matrix:client:foo` scope, it could use `urn:matrix:client:com.example.mscXXXX.foo` during development.
 If it needs to introduce multiple scopes, like `urn:matrix:client:foo` and `urn:matrix:client:bar`, it could use `urn:matrix:client:com.example.mscXXXX:foo` and `urn:matrix:client:com.example.mscXXXX:bar`.
 
 ### Allocated scopes
