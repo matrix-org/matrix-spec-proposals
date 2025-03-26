@@ -12,7 +12,7 @@ With that in mind, this MSC provides a simple switch for users and homeservers t
 preference.
 
 For the purposes of this MSC, the term "undesirable content" refers to images that the user does not want to see,
-be it illegal, abusive or otherwise wanted.
+be it illegal, abusive or otherwise unwanted.
 
 
 ## Proposal
