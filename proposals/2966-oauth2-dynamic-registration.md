@@ -218,21 +218,21 @@ With the previous registration request, the server would reply with:
 **Note**: in this example, the server has not registered the locale-specific values for `client_name`, `tos_uri`, and `policy_uri`, which is why they are not present in the response. The server also does not support the `urn:ietf:params:oauth:grant-type:token-exchange` grant type, which is why it is not present in the response.
 
 The client MUST store the `client_id` for future use.
-It SHOULD reuse the `client_id` for all future authorization requests done against the same homeserver.
+
+To avoid the number of client registrations growing over time, the server MAY choose to delete client registrations that don't have an active session.
+The server MUST NOT delete client registrations that have an active session.
+
+Clients SHOULD perform a new client registration at the start of each authorization flow.
 
 ## Potential issues
 
 Because each client on each user device will do its own registration, they may all have different `client_id`s.
-This means that the number of client registrations will grow over time with the number of devices and unique clients.
+This means that the server may store the same client registration multiple times, which could lead to a large number of client registrations.
 
-This increase can be mitigated by de-duplicating client registrations that have identical metadata.
+This can be mitigated by de-duplicating client registrations that have identical metadata.
 By doing so, different users on different devices using the same client can share a single `client_id`, reducing the overall number of registrations.
 
-A subsequent MSC could be proposed to reliably identify multiple instances of the same client beyond strict comparison using signed client metadata.
-
-Another way this could be mitigated is by deleting old client registrations after a period of inactivity.
-This would require a mechanism for the client to verify the validity of its client ID, which the current proposal lacks.
-This could be achieved by introducing the client read request as specified by the [RFC7592: OAuth 2.0 Dynamic Client Registration Management Protocol][RFC7592], or by introducing [RFC9126: OAuth 2.0 Pushed Authorization Requests][RFC9126] for authorization requests.
+A subsequent MSC could be proposed to reliably identify multiple instances of the same client beyond a strict comparison using signed client metadata.
 
 ## Alternatives
 
