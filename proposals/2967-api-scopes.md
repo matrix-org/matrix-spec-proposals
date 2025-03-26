@@ -47,10 +47,10 @@ This MSC proposes that the Matrix client is responsible for generating/allocatin
 A client can create a new device ID by generating a random string and asking for its associated scope on login.
 A client can adopt and rehydrate an existing device ID by asking for its associated scope on login.
 
-The client can then add the requested device ID to the grant by including following token in the requested scope:
+The client must then add the requested device ID to the grant by including following token in the requested scope:
 `urn:matrix:client:device:<device ID>`, where `<device ID>` is the requested device ID.
 
-There MUST be *at most* one `urn:matrix:client:device:` token in the requested scope.
+There MUST be exactly one `urn:matrix:client:device:<device ID>` token in the requested scope.
 
 When generating a new device ID, the client SHOULD generate a random string with enough entropy.
 It SHOULD only use characters from the unreserved character list defined by [RFC3986]:
