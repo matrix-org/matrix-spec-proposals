@@ -222,7 +222,7 @@ The client MUST store the `client_id` for future use.
 To avoid the number of client registrations growing over time, the server MAY choose to delete client registrations that don't have an active session.
 The server MUST NOT delete client registrations that have an active session.
 
-Clients SHOULD perform a new client registration at the start of each authorization flow.
+Clients MUST perform a new client registration at the start of each authorization flow.
 
 ## Potential issues
 
