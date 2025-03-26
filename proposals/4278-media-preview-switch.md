@@ -55,7 +55,7 @@ Previws for media MAY be shown in "private" rooms without a prompt. A private ro
   - The `join_rule` key of this state is `invite`, `knock`, `restricted`, or `knock_restricted`.
 
 If any other `join_rule` is set, or cannot be determined by the client then the assumption MUST be that the
-room is public and previews should be shown. Future join rules may be added to this list, but it's critical
+room is public and previews should not be shown. Future join rules may be added to this list, but it's critical
 that clients adopt a safety first approach here.
 
 This value is the **default** setting when no account data exists on the user's account.
