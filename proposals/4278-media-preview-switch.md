@@ -94,7 +94,7 @@ The result would be:
 
 It's important here that this account data MUST be configurable by a user.
 
-Homeservers COULD specify a default value ahead of time for the user, by setting a default
+Homeservers MAY specify a default value ahead of time for the user, by setting a default
 value internally for the account data. The user *must* be able to mutate this value.
 
 Not all clients will respect this configuration initially, and many clients will continue to support
