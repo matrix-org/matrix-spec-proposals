@@ -36,7 +36,7 @@ The fields `media_previews` and `invite_avatars` may be one of three values.
 
 #### `off`
 
-The client MUST not show any previews for any media, in the room.
+The client MUST NOT show any previews for any media in affected rooms.
 
 Users may individually consent to seeing media, for example by clicking on a prompt to show a preview.
 
