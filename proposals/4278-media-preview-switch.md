@@ -46,7 +46,7 @@ If consent is given, the client SHOULD then track that consent and show the medi
 
 Media MAY be shown in any room without a prompt. 
 
-Users may individually hide media, and this preference must be respected over the room defaults.
+Users may individually hide media, and this preference MUST be respected over any defaults defined in `m.media_preview_config`.
 
 #### `private`
 
