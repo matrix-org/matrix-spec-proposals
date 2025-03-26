@@ -57,7 +57,7 @@ It SHOULD only use characters from the unreserved character list defined by [RFC
 
 > unreserved = a-z / A-Z / 0-9 / "-" / "." / "_" / "~"
 
-Using this alphabet, a 10 character string is enough to stand a sufficient chance of being unique.
+Using this alphabet, a 10 character string is enough to stand a sufficient chance of being unique per user.
 The homeserver MAY reject a request for a device ID that is not long enough or contains characters outside the unreserved list.
 
 In any case it MUST only use characters allowed by the OAuth 2.0 scope definition in [RFC6749] section 3.3,
