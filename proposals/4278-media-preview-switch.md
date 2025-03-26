@@ -34,6 +34,7 @@ This key contains the following content.
 
 The fields `media_previews` and `invite_avatars` may be one of three values.
 
+
 #### `off`
 
 The client MUST NOT show any previews for any media in affected rooms.
@@ -41,6 +42,8 @@ The client MUST NOT show any previews for any media in affected rooms.
 Users may individually consent to seeing media, for example by clicking on a prompt to show a preview.
 
 If consent is given, the client SHOULD then track that consent and show the media again in the future.
+
+This value is the **default** setting for `invite_avatars` when no account data exists on the user's account.
 
 #### `on`
 
@@ -58,7 +61,7 @@ If any other `join_rule` is set, or cannot be determined by the client then the 
 room is public and previews should not be shown. Future join rules may be added to this list, but it's critical
 that clients adopt a safety first approach here.
 
-This value is the **default** setting when no account data exists on the user's account.
+This value is the **default** setting for `media_previews` when no account data exists on the user's account.
 
 Note that this setting has no effect for `invite_avatars`. Avatars can only be `off` or `on` for all invites. 
 Bad actors can easily send a DM to a user (which would pass the `private` check) containing unwanted
