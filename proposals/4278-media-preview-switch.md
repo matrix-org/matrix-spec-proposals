@@ -102,20 +102,7 @@ their own variant of this setting in the short term.
 
 ## Potential issues
 
-### The field is extremely coarse 
-
-This provides a blanket setting for all rooms and content received, rather than this applying to rooms
-specifically (via a state key or otherwise). 
-
-
-### Requires adjustments to well-known
-
-This proposal requires administrators to adjust their well-known, which means that bad-actor homeservers
-may potentially set the value of `content_trust_level` to `trusted` even if the content is not trusted.
-
-This is mitigated by users being able to override settings, but does however mean that unsuspecting users
-may be more exposed to content than they should be.
-
+TODO: Write this up.
 
 ## Alternatives
 
