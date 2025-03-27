@@ -261,6 +261,11 @@ This was considered acceptable, as the benefit of being able to use a single pac
 well as this MSC originally allowing multiple usages-per-pack for much of its implementation lifespan, were 
 considered to outweigh the alternative.
 
+### Event size limits
+
+Due to size limitations of events (65535 bytes), image packs are limted to around 400 emotes per pack. This 
+has been deemed sufficient for the vast majority of use cases.
+
 ## Alternatives
 One can easily think of near infinite ways to implement emotes. The aspect of sending an `<img>` tag
 and marking it as an emote with `data-mx-emoticon` seems to be pretty universal though, so the question
