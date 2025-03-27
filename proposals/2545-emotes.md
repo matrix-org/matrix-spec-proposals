@@ -40,8 +40,8 @@ send them.
 
 ## Proposal
 ### Emoticons in the formatted body
-Emoticons have at least a shortcode and a mxc uri. They are sent as `<img>` tags, which are currently in
-the spec. As such, many existing clients are able to render them.
+Emoticons have at least a shortcode and a mxc uri. A shortcode is a short identifier for an emoji. They 
+are sent as `<img>` tags, which are currently in the spec. As such, many existing clients are able to render them.
 To allow clients to distinguish emoticons from other inline images, a new
 property, `data-mx-emoticon`, is introduced. A client can choose to ignore the size attributes of emoticons
 when rendering, and instead pick the size based on other circumstances. This could e.g. be used to
