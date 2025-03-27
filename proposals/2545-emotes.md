@@ -254,6 +254,8 @@ Some other implementations currently also call the `images` key `emoticons`.
 
 ## Potential Issues
 
+### Multiple usages per pack complicates pack management client UI
+
 It's possible that allowing a pack to have multiple usages can complicate implementing UI for managing packs. 
 This was considered acceptable, as the benefit of being able to use a single pack in multiple contexts, as 
 well as this MSC originally allowing multiple usages-per-pack for much of its implementation lifespan, were 
