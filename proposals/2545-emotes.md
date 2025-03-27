@@ -301,3 +301,7 @@ custom emoticons. Each warrant an MSC for themselves however, as they touch more
  - Allow SVGs in the `<img>` tag. Current problem: Clients typically try to thumbnail the mxc URL,
    and most media repositories can't thumbnail SVGs. Possible solution: Somehow embed the mimetype.
  - For stickers: Recommend rendering sizes / resolutions
+
+## Dependencies
+
+This MSC does not depend on any other MSCs.
