@@ -234,22 +234,36 @@ The `info` object of the `m.sticker` event should be set to the `info` object of
 an empty object.
 
 ## Security Considerations
-When sending an `<img>` tag in an encrypted room, the client will make a request to fetch
-said image, in this case an emote. As there is no way to encrypt content behind `<img>` tags yet,
-this could potentially leak part of the conversation. This is **not** a new security consideration,
-it already exists. This, however, isn't much different from posting someone a link in an e2ee chat and
-the recipient opens the link. Additionally, images, and thus emotes, are often cached by the client,
-not even necessarily leading to a http query.
 
-This MSC considers that imag epacks are not encrypted and that is a privacy and security concern.
+This MSC considers that image packs, and the images contained within them, are
+not encrypted. That means media included in image packs cannot be hidden from the
+homeserver. That is a privacy and security concern.
 
-Encrypting image packs is dependent on encrypted state events being implemented in the protocol, potentially 
-by MSC3414 or another MSC.
+In addition, a homeserver could deduce from traffic patterns that an encrypted
+event contains a certain emoticon by correlating the time an event was sent with
+other local, participating user's access requests to a particular piece of media.
+This is not a new concern, as the same attack can be performed for links sent in
+a chat with URL previews enabled in clients. In addition, caching of images across
+clients can help with reducing the need to download the media again.
 
-End to End Encryption isn't in the scope of this MSC. Clients should warn users that images in image packs 
-sent in E2EE rooms are not encrypted and thus visible to homeservers.
+Encrypting image packs is dependent on encrypted state events being implemented
+in the protocol; potentially by MSC3414 or another MSC.
 
-Related issue: https://github.com/matrix-org/matrix-doc/issues/2418
+Once encrypted state events are implemented, images could be encrypted before upload
+with a symmetric key included within the encrypted state event. Then, said key will
+be sent within the `<img>` tag emoticons are sent in, allowing other clients to download
+and decrypt the media. [This matrix-spec
+issue](https://github.com/matrix-org/matrix-doc/issues/2418) calls for standardising
+this behaviour for any kind of inline image.
+
+Encrypted emoticons sent in *non-E2EE* rooms would leak these keys, but this may be deemed
+acceptable as many emoticons would not be leaked. Plus, it still raises the barrier for
+homeserver operators to implement tooling to browse messages in E2EE rooms.
+
+Ultimately end-to-end encryption of image packs or emoticons is purposefully
+not within the scope of this MSC. That being said, clients SHOULD warn users
+that images in image packs sent in E2EE rooms are not encrypted and thus
+visible to homeservers.
 
 ## Unstable prefix
 The `m.image_pack` in the account data is replaced with `im.ponies.user_emotes`. The `m.image_pack` in
