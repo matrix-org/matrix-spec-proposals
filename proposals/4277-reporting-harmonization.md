@@ -19,15 +19,21 @@ The spec contains a number of subtle differences for these endpoints:
     enumeration attacks. While the spec doesn't explicit forbid this technique
     on the room reporting endpoint it doesn't explicitly mention or recommend it
     either.
+3.  The event reporting endpoint contains a `score` property in the request body
+    that was made optional by [MSC2414] in 2020. The other two endpoints, when
+    introduced much later, didn't include this property. Evidently, this is
+    because `score` hasn't proved useful on event reports.
 
-These differences seem unnecessary and were likely introduced by accident only.
-The present proposal, therefore, seeks to align the three endpoints.
+These differences seem unnecessary and at least some of them were likely
+introduced by accident only. The present proposal, therefore, seeks to align the
+three endpoints.
 
-Note that additionally, the endpoints also differ in their handling of the
-`reason` parameter. [MSC2414] made `reason` optional on the event reporting
-endpoint. The other two endpoints, however, went the opposite direction and made
-`reason` required (while allowing it to be blank) to limit spam. Resolving this
-inconsistency is not covered by this proposal.
+Note that in addition to the list above, the endpoints also differ in their
+handling of the `reason` property in the request body. [MSC2414] made `reason`
+optional on the event reporting endpoint. The other two endpoints, however, went
+the opposite direction and made `reason` required (while allowing it to be
+blank) to limit spam. Resolving this inconsistency is not covered by this
+proposal.
 
 ## Proposal
 
@@ -35,16 +41,18 @@ On all three endpoints:
 
 1.  Servers MAY respond with 200 and no content regardless of whether the
     reported subject exists or not to combat enumeration attacks.
-
 2.  Servers MAY add a random delay or use constant time functions when
     processing responses to combat enumeration attacks.
+3.  The `score` property is removed.
 
 All of these changes appear applicable regardless of the reported subject and it
 is not clear why the spec should differentiate the endpoints here.
 
 ## Potential issues
 
-None.
+Some Clients may send `score` on event reports today. These clients are not
+broken by this proposal because servers that implement it will simply ignore any
+`score` property.
 
 ## Alternatives
 
