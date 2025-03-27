@@ -44,10 +44,7 @@ is not clear why the spec should differentiate the endpoints here.
 
 ## Potential issues
 
-The `reason` field on the room and user reporting endpoints is currently
-required. Making it optional, therefore, is a breaking change. Clients should
-either act on the servers supported version or blanketly include an empty string
-if the user doesn't provide a reason.
+None.
 
 ## Alternatives
 
