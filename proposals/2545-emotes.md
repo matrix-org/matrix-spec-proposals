@@ -252,6 +252,13 @@ a dict called `short` which is just a map of the shortcode to the mxc url.
 
 Some other implementations currently also call the `images` key `emoticons`.
 
+## Potential Issues
+
+It's possible that allowing a pack to have multiple usages can complicate implementing UI for managing packs. 
+This was considered acceptable, as the benefit of being able to use a single pack in multiple contexts, as 
+well as this MSC originally allowing multiple usages-per-pack for much of its implementation lifespan, were 
+considered to outweigh the alternative.
+
 ## Alternatives
 One can easily think of near infinite ways to implement emotes. The aspect of sending an `<img>` tag
 and marking it as an emote with `data-mx-emoticon` seems to be pretty universal though, so the question
