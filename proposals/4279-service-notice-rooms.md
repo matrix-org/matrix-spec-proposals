@@ -216,7 +216,7 @@ most possible while an older server and newer client are in use: the server does
 to be filtering the room, and the client is simply responding to input it was given.
 
 An approach for fixing this would be for the client to check the supported specification versions by
-the server, determining whether the filtering code *should *be present. If the server doesn't support
+the server, determining whether the filtering code *should* be present. If the server doesn't support
 the relevant specification version (or newer), the client should disable server notice room support.
 
 A future MSC may also create ways to verify the creator/sender, allowing the server to drop its filter.
