@@ -153,7 +153,7 @@ To ensure consistent experience for users, the following constraints apply to No
    than part of a room list.
 5. Notice rooms SHOULD be created with suitable encryption enabled.
 6. Servers SHOULD NOT allow notice rooms to be created without the use of the presets defined by this
-   proposal. This is to force developers to *really *think about whether they need to override the
+   proposal. This is to force developers to *really* think about whether they need to override the
    default properties and change the behaviour of the room. They can still set things like `name`,
    `power_level_content_override`, etc.
 7. When a user leaves a notice room, the notice is considered "archived". Archived notices may be
