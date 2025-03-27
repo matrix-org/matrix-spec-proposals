@@ -54,8 +54,9 @@ servers when sending reactions, but servers should not reject events coming acro
 too many bytes in the shortcode field. Servers may still opt to locally redact events having too many bytes 
 in the shortcode field.
 
-The : character MUST NOT be included in the emote shortcode, so as not to end up with fragmentation with 
-some clients removing : from the UI.
+The `:` character MUST NOT be included in the emote shortcode, so as not to end up with fragmentation with 
+some clients removing `:` from the UI. Other than `:`, any other character is explicitly allowed so that 
+we do not exclude languages which do not use the Latin alphabet.
 
 ```html
 <img data-mx-emoticon src="mxc://example.org/emote" alt="emote" title="emote" height="32" />
