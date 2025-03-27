@@ -49,8 +49,16 @@ display messages with only emoticons and emoji as larger than usual, which is co
 messengers. Such an `<img>` tag of a shortcode `emote` and a mxc uri `mxc://example.org/emote`
 could look as follows:
 
+The shortcode must have a length of less than or equal to 100 bytes. This restriction must be enforced by 
+servers when sending reactions, but servers should not reject events coming across federation due to having 
+too many bytes in the shortcode field. Servers may still opt to locally redact events having too many bytes 
+in the shortcode field.
+
+The : character MUST NOT be included in the emote shortcode, so as not to end up with fragmentation with 
+some clients removing : from the UI.
+
 ```html
-<img data-mx-emoticon src="mxc://example.org/emote" alt=":emote:" title=":emote:" height="32" />
+<img data-mx-emoticon src="mxc://example.org/emote" alt="emote" title="emote" height="32" />
 ```
 
 `alt` and `title` are required attributes for their roles in accessibility and
@@ -197,7 +205,7 @@ Here three emote packs are globally accessible to the user: Two defined in `!som
 (one with blank state key and one with state key `de.sorunome.mx-puppet-bridge.discord`) and one in
 `!someotherroom:example.org` (with a blank state key).
 
-### Image pack source priority and deduplicating
+### Image pack source priority
 If a client gives image suggestions (emotes, stickers) to the user in some ordered fashion (e.g. an
 ordered list where you click an entry), the order of the images should be predictable between rooms.
 A suggestion for clients of image pack ordering is as follows:
@@ -205,13 +213,6 @@ A suggestion for clients of image pack ordering is as follows:
 2. Image pack rooms (defined in the `m.image_pack.rooms` account data object)
 3. Space image packs (defined in the hierarchy of canonical spaces for the current room)
 4. Room image packs (defined in the currently open room's state)
-
-Furthermore, clients are expected to de-duplicate images so that same images are not displayed multiple
-times. Such scenarios include:
-1. when viewing a room that has a pack defined in the `m.image_pack.rooms` account data object, and
-2. a bot which syncs emotes over multiple rooms.
-
-This could be done by deduplicating by the mxc URI.
 
 ### Sending
 #### Emoticons
