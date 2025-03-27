@@ -241,6 +241,14 @@ it already exists. This, however, isn't much different from posting someone a li
 the recipient opens the link. Additionally, images, and thus emotes, are often cached by the client,
 not even necessarily leading to a http query.
 
+This MSC considers that imag epacks are not encrypted and that is a privacy and security concern.
+
+Encrypting image packs is dependent on encrypted state events being implemented in the protocol, potentially 
+by MSC3414 or another MSC.
+
+End to End Encryption isn't in the scope of this MSC. Clients should warn users that images in image packs 
+sent in E2EE rooms are not encrypted and thus visible to homeservers.
+
 Related issue: https://github.com/matrix-org/matrix-doc/issues/2418
 
 ## Unstable prefix
