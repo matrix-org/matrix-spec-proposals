@@ -44,7 +44,7 @@ Note that rooms the user has been invited to or knocked at might result in
 outdated or partial information, or even a 404 `M_NOT_FOUND` response, since
 the the homeserver may not have access to the current state of the room. (In
 particular: the federation API does not provide a mechanism to get the current
-state of a non-publically-joinable room where the requesting server has no
+state of a non-publicly-joinable room where the requesting server has no
 joined members. Improving this is left for a future MSC.)
 
 A request could look like this:
