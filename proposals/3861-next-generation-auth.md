@@ -503,7 +503,7 @@ The following MSCs map the aforementioned OAuth 2.0/OIDC requirements to Matrix 
 - [MSC2967: API scopes][MSC2967]
 - [MSC4254: Usage of RFC7009 Token Revocation for Matrix client logout][MSC4254]
 
-The following MSCs are meant to cover less escential parts of the authentication and account management flows.
+The following MSCs are meant to cover less essential parts of the authentication and account management flows.
 They are not strictly required for this proposal to be accepted, but should be considered shortly afterwards:
 
 - [MSC3824: OIDC-aware clients][MSC3824]
