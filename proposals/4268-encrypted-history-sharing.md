@@ -1,56 +1,101 @@
-# MSC0000: Template for new MSCs
+# MSC4268: Sharing room keys for past messages
 
-*Note: Text written in italics represents notes about the section or proposal process. This document
-serves as an example of what a proposal could look like (in this case, a proposal to have a template)
-and should be used where possible.*
+In Matrix, rooms can be configured via the
+[`m.room.history_visibility`](https://spec.matrix.org/v1.14/client-server-api/#room-history-visibility)
+state event such that previously-sent messages can be visible to users that
+join the room. However, this is ineffective in encrypted rooms, where new
+joiners will lack the keys necessary to decrypt historical messages.
 
-*In this first section, be sure to cover your problem and a broad overview of the solution. Covering
-related details, such as the expected impact, can also be a good idea. The example in this document
-says that we're missing a template and that things are confusing and goes on to say the solution is
-a template. There's no major expected impact in this proposal, so it doesn't list one. If your proposal
-was more invasive (such as proposing a change to how servers discover each other) then that would be
-a good thing to list here.*
+This proposal defines a mechanism by which existing room members can share the
+decryption keys with new members, for example when inviting them, thus giving
+the new members access to historical messages.
 
-*If you're having troubles coming up with a description, a good question to ask is "how
-does this proposal improve Matrix?" - the answer could reveal a small impact, and that is okay.*
-
-There can never be enough templates in the world, and MSCs shouldn't be any different. The level
-of detail expected of proposals can be unclear - this is what this example proposal (which doubles
-as a template itself) aims to resolve.
-
+A previous propsal,
+[MSC3061](https://github.com/matrix-org/matrix-spec-proposals/pull/3061) aimed
+to solve a similar problem; however, the mechanism used did not scale well. In
+addition, the implementation in `matrix-js-sdk` was subject to a [security
+vulnerability](https://matrix.org/blog/2024/10/security-disclosure-matrix-js-sdk-and-matrix-react-sdk/)
+which this proposal addresses.
 
 ## Proposal
 
-*Here is where you'll reinforce your position from the introduction in more detail, as well as cover
-the technical points of your proposal. Including rationale for your proposed solution and detailing
-why parts are important helps reviewers understand the problem at hand. Not including enough detail
-can result in people guessing, leading to confusing arguments in the comments section. The example
-here covers why templates are important again, giving a stronger argument as to why we should have
-a template. Afterwards, it goes on to cover the specifics of what the template could look like.*
+### `shared_history` property in `m.room_key` events
 
-Having a default template that everyone can use is important. Without a template, proposals would be
-all over the place and the minimum amount of detail may be left out. Introducing a template to the
-proposal process helps ensure that some amount of consistency is present across multiple proposals,
-even if each author decides to abandon the template.
+Suppose Alice and Bob are participating in an encrypted room, and Bob now
+wishes to invite Charlie to join the chat. If the [history
+visibility](https://spec.matrix.org/v1.14/client-server-api/#room-history-visibility)
+settings allow, Bob can share the message decryption keys for previously sent
+messages with Charlie. However, it is dangerous for Bob to take the server's
+word for the history visibility setting: a malicious server admin collaborating
+with Charlie could tell Bob that the history visibility was open when in fact
+it was restricted. In addition, the history visibility in a given room may have
+been changed over time and it can be difficult for clients to estalish which
+setting was in force for a particular Megolm session.
 
-The default template should be a markdown document because the MSC process requires authors to write
-a proposal in markdown. Using other formats wouldn't make much sense because that would prevent authors
-from copy/pasting the template.
+To counter this, we add a `shared_history` property to `m.room_key` messages,
+indicating that the creator of that Megolm session understands and agrees that
+the session keys may be shared with newly-invited users in future. For example:
 
-The template should have the following sections:
+```json
+{
+  "type": "m.room_key",
+  "content": {
+    "algorithm": "m.megolm.v1.aes-sha2",
+    "room_id": "!room_id",
+    "session_id": "session_id",
+    "session_key": "session_key",
+    "shared_history": true
+  }
+}
+```
 
-* **Introduction** - This should cover the primary problem and broad description of the solution.
-* **Proposal** - The gory details of the proposal.
-* **Potential issues** - This is where problems with the proposal would be listed, such as changes
-  that are not backwards compatible.
-* **Alternatives** - This section lists alternative solutions to the same
-  problem which have been considered and dismsissed.
-* **Security considerations** - Discussion of what steps were taken to avoid security issues in the
-  future and any potential risks in the proposal.
+In other words: when Alice wants to send a message in the room she shares with
+Bob, she first checks the `history_visibility`. If it is `shared` or
+`world_readable`, then when she sends the Megolm keys to Bob, she sets
+`shared_history` to `true`.
 
-Furthermore, the template should not be required to be followed. However it is strongly recommended to
-maintain some sense of consistency between proposals.
+Clients SHOULD show a visual indication to users that their encrypted messages
+may be shared with future room members in this way.
 
+If the history visibility changes in a way that would affect the
+`shared_history` flag (i.e., it changes from `joined` or `invited` to `shared`
+or `world_readable`, or vice versa), then clients MUST rotate their outbound
+megolm session before sending more messages.
+
+In addition, a `shared_history` property is added to the [`BackedUpSessionData`
+type](https://spec.matrix.org/v1.14/client-server-api/#definition-backedupsessiondata)
+in key backups (that is, the plaintext object that gets encrypted into the
+`session_data` field) and the [`ExportedSessionData`
+type](https://spec.matrix.org/v1.14/client-server-api/#definition-exportedsessiondata). In
+both cases, the new property is set to `true` if the session was shared with us
+with `shared_history: true`, and `false` otherwise.
+
+For example:
+
+```json
+{
+  "algorithm": "m.megolm.v1.aes-sha2",
+  "forwarding_curve25519_key_chain": [
+    "hPQNcabIABgGnx3/ACv/jmMmiQHoeFfuLB17tzWp6Hw"
+  ],
+  "sender_claimed_keys": {
+    "ed25519": "aj40p+aw64yPIdsxoog8jhPu9i7l7NcFRecuOQblE3Y"
+  },
+  "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
+  "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8Llf...",
+  "shared_history": true
+}
+```
+
+In all cases, an absent or non-boolean `shared_history` property is treated the same as
+`shared_history: false`.
+
+
+### Key bundle format
+
+TODO
+
+### To-device message format
 
 ## Potential issues
 
