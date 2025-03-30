@@ -85,10 +85,10 @@ property with an empty string for an image pack's `state_key`.
   "state_key": "Blobcats",
   "content": {
     "images": {
-      "blob_amused": { ... Image Object ... },
-      "blob_angel": { ... Image Object ... }
+      "blob_amused": { /* ... Image Object ... */ },
+      "blob_angel": { /* ... Image Object ... */ }
     },
-    "pack": { ... Pack Object ... }
+    "pack": { /* ... Pack Object ... */ }
   },
   // ...
 }
