@@ -23,7 +23,8 @@ These values are used to describe the client to the user and define how the clie
 
 This MSC specifies what metadata values are required by the Matrix specification and how a client can register itself with a Matrix homeserver to get a client identifier.
 
-The metadata names are registered in the IANA [OAuth Dynamic Client Registration Metadata](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata) registry, and normative definitions of them are available in their respective RFCs in the registry.
+None of the metadata values are specific to Matrix: they are all registered by various specificaitons in the [OAuth Dynamic Client Registration Metadata](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata) registry, and normative definitions of them are available in their respective RFCs in the registry.
+
 
 #### `client_uri` and relationship with other URIs
 
@@ -159,6 +160,8 @@ Examples of invalid redirect URIs (with `https://example.com/` as the client URI
 Before initiating an authorization flow, the client MUST advertise its metadata to the homeserver to get back a `client_id`.
 
 This is done through the `registration_endpoint` as described by [RFC7591 sec. 3](https://tools.ietf.org/html/rfc7591#section-3).
+
+**Note**: Nothing in the usage of the `registration_endpoint` is specific to Matrix. The behaviours described here are the same as the ones defined in [RFC7591 sec. 3](https://tools.ietf.org/html/rfc7591#section-3).
 
 To register, the client sends an HTTP POST to the `registration_endpoint` with its metadata as JSON in the body.
 For example, the client could send the following registration request:
