@@ -1,10 +1,10 @@
 # MSC2966: Usage of OAuth 2.0 Dynamic Client Registration in Matrix
 
-This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
+This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, based on OAuth 2.0/OIDC][MSC3861].
 
 This MSC specifies how Matrix clients SHOULD leverage the OAuth 2.0 Dynamic Client Registration Protocol ([RFC 7591](https://tools.ietf.org/html/rfc7591)) to register themselves before initiating an authorization flow.
 
-In brief, once a client has obtained the homeserver's OAuth 2.0 metadata per [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965), and before it can initiate an authorization request per [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964), the client needs a `client_id`, which it can obtain by registering itself with that homeserver.
+In brief, once a client has obtained the homeserver's OAuth 2.0 metadata per [MSC2965], and before it can initiate an authorization request per [MSC2964], the client needs a `client_id`, which it can obtain by registering itself with that homeserver.
 
 ## Proposal
 
@@ -14,7 +14,7 @@ This proposal requires the client to know the following authorization server met
 
  - `registration_endpoint`: the URL where the client is able to register itself.
 
-The discovery of the above metadata is out of scope for this MSC and is currently covered by [MSC2965](https://github.com/matrix-org/matrix-doc/pull/2965).
+The discovery of the above metadata is out of scope for this MSC and is currently covered by [MSC2965].
 
 ### Client metadata
 
@@ -260,3 +260,5 @@ None relevant.
 [RFC7592]: https://tools.ietf.org/html/rfc7592
 [RFC9126]: https://tools.ietf.org/html/rfc9126
 [MSC2964]: https://github.com/matrix-org/matrix-spec-proposals/pull/2964
+[MSC2965]: https://github.com/matrix-org/matrix-spec-proposals/pull/2965
+[MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
