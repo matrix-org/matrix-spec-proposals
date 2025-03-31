@@ -4,8 +4,7 @@ This proposal is part of the broader [MSC3861: Next-generation auth for Matrix, 
 
 This MSC specifies how Matrix clients SHOULD leverage the OAuth 2.0 Dynamic Client Registration Protocol ([RFC 7591](https://tools.ietf.org/html/rfc7591)) to register themselves before initiating an authorization flow.
 
-In brief, once a client has obtained the homeserver's OAuth 2.0 metadata per [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965), and before it can initiate an authorization request per [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964), the client must register itself with that homeserver to obtain a `client_id`.
-It stores this `client_id` and uses it for all future authorization requests against the homeserver.
+In brief, once a client has obtained the homeserver's OAuth 2.0 metadata per [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965), and before it can initiate an authorization request per [MSC2964](https://github.com/matrix-org/matrix-spec-proposals/pull/2964), the client needs a `client_id`, which it can obtain by registering itself with that homeserver.
 
 ## Proposal
 
