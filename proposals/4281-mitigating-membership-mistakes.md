@@ -1,4 +1,4 @@
-# MSCxxxx: Mitigating Membership Mistakes, or "Invisible" Cryptography
+# MSC4281: Mitigating Membership Mistakes, or "Invisible" Cryptography
 
 End-to-end encryption protects messages from people who are outside of an
 encrypted room.  However, it does not protect against accidentally inviting an
@@ -93,7 +93,7 @@ rooms where it is in use.
 ## Unstable prefix
 
 Until this proposal is accepted, clients should use the property name
-`org.matrix.mscxxxx.invisible`.
+`org.matrix.msc4281.invisible`.
 
 ## Dependencies
 
