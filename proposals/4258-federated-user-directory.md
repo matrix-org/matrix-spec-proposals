@@ -80,8 +80,7 @@ Example of the content of a `m.user_directory` account data:
   "limit": 10,
   "search_term": "foo",
   "search_token": "a1d29g4f73",
-  "search_scope": "remote",
-  ""
+  "search_scope": "remote"
 }
 ```
 
@@ -97,6 +96,8 @@ Possible values are:
 - `restricted`: search users known to this homeserver, this must not trigger a federated search
 - `remote`: on top of users known to this homeserver, it should include results coming from other homeservers via the newly introduced federated search endpoint.
 
+This parameter is optional and default to remote.
+
 #### Response
 ```json
 {
@@ -106,7 +107,7 @@ Possible values are:
     {
       "avatar_url": "mxc://bar.com/foo",
       "display_name": "Foo",
-      ""m.tz": "America/New_York",
+      "m.tz": "America/New_York",
       "user_id": "@foo:bar.com"
     }
   ]
@@ -157,4 +158,5 @@ Now with this change, it is possible to list all the restricted users from other
 
 ## Dependencies
 
-This MSC builds on [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133)
+This MSC references [MSC4133](https://github.com/matrix-org/matrix-spec-proposals/pull/4133) but does not depend on it.
+
