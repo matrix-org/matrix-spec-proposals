@@ -31,7 +31,7 @@ and
 may generate, under some implementation-specific conditions, federation requests to
 [backfill](https://spec.matrix.org/v1.14/server-server-api/#backfilling-and-retrieving-missing-events)
 the room timeline, and fetch more events from other servers. This slows down reception of the
-response in the client, since it now be blocking on the server waiting for the federation responses
+response in the client, since it is now blocking on the server waiting for the federation responses
 to come. Moreover, the time spent retrieving those responses is theoretically unbounded, so the
 homeserver and the clients may have to wait forever for such requests to complete.
 
