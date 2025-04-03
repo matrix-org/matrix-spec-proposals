@@ -49,16 +49,29 @@ semantics breaking change, in that the server behavior will remain the same if t
 hasn't been set.
 
 When the query parameter is set to `true`, then the server is expected to do a best-effort attempt
-at providing a response *in a reasonably short time*. Implementations may use one of the following
-strategies to achieve this:
+at providing a response *in a reasonably short time*. There are several cases to consider:
 
-- avoid blocking on a backfill request to other homeservers, by not starting such requests at all,
-  or by starting them in the background in a non-blocking way.
-- start the backfill request, and race between waiting for its completion and timing out after a
-  short amount of time. This can be a nice tradeoff in case backfill requests resolve quickly.
-- not do anything differently. This doesn't solve the problem, but the query parameter really is a
-  hint that the response is expected to come in quickly, not a strong requirement.
-- do something completely different, not mentioned in this MSC, that achieves the same goal.
+- if the homeserver has reached its known end of the room, and must backfill older events from
+  federation, then it shall:
+    - either block on the backfill request to complete, before returning the response to the
+      client,
+    - or race the completion of the backfill request with a timeout, and return an empty response
+      if the backfill request didn't complete in time. In that case, clients are expected to retry
+      the back-pagination request later.
+- otherwise, the server shall immediately return events it had in its local state, and if needed it
+  shall start a backfill request in the background (so the next request has chances to complete
+  quickly, be it interactive or not).
+
+### Why is it fine to ignore the hint in the first case?
+
+Let's consider the case where the server is mandated to respect the hint in the first case. If the
+server must backfill to fetch older events from federation, and if, in that case, it would
+immediately return, then a client would get an empty response from the server. Such a client might
+be tempted to ask for more events, i.e. send a similar request to the server… which will respond
+immediately again. This would cause the client to busy-loop until the backfill request has
+completed, wasting CPU and bandwidth on both the client and the server (and potentially leading to
+battery exhaustion on mobile clients). That's why the server shall ignore the hint in this very
+specific case, to avoid the busy-loop behavior.
 
 ## Potential issues
 
