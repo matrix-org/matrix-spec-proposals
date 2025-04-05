@@ -52,15 +52,20 @@ This endpoint no longer requires User-Interactive Authentication for application
 
 ### **`POST /_matrix/client/v3/register`**
 
-This endpoint no longer generates a new access token for application services,
-as if `inhibit_login` was set to `true` in the request by default.
+Application services will no longer receive access tokens or device IDs and
+MUST call the endpoint with `inhibit_login=true`. Calls without the parameter,
+or with a different value than `true`, will return HTTP 400 with a new
+`M_APPSERVICE_LOGIN_UNSUPPORTED` error code.
 
 ## Potential issues
 
-The change to `/v3/register` is technically backwards-incompatible. However,
-most application services likely ignore the returned access token, and next-gen
-auth will break the token generation anyway. It's better to stop returning a
-token than break the endpoint entirely by returning an error.
+The change to `/v3/register` is technically backwards-incompatible, but it will
+break when switching to next-gen auth in any case, so a new endpoint version
+would not be useful.
+
+The endpoint could just stop returning access tokens to avoid breaking existing
+appservices that don't read that field, but an explicit error was chosen to
+avoid silent breakage of appservices that do depend on the field.
 
 ## Security considerations
 
