@@ -26,6 +26,9 @@ This MSC proposes to extend existing endpoints to allow application services to
 create and delete devices for their users without relying on the `/login` and
 `/logout` mechanisms.
 
+As all changes here only apply to application services, guest access is not
+relevant.
+
 ### **`PUT /_matrix/client/v3/devices/{deviceId}`**
 
 This endpoint is updated to allow the creation of a new device for a user, if
@@ -34,6 +37,10 @@ services.
 
 This endpoint will use the 201 status code to indicate that a new device was
 created, in addition to the existing 200 status code for existing devices.
+
+The endpoint is rate limited. Servers may want to use login rate limits for
+device creation, although in most cases application services will disable all
+rate limits anyway.
 
 ### **`DELETE /_matrix/client/v3/devices/{deviceId}`**
 
@@ -45,8 +52,21 @@ This endpoint no longer requires User-Interactive Authentication for application
 
 ### **`POST /_matrix/client/v3/register`**
 
-This endpoint no longer generates a new access token, as if `inhibit_login` was
-set to `true` in the request by default.
+This endpoint no longer generates a new access token for application services,
+as if `inhibit_login` was set to `true` in the request by default.
+
+## Potential issues
+
+The change to `/v3/register` is technically backwards-incompatible. However,
+most application services likely ignore the returned access token, and next-gen
+auth will break the token generation anyway. It's better to stop returning a
+token than break the endpoint entirely by returning an error.
+
+## Security considerations
+
+This MSC lets application services delete devices without the usual
+re-authentication requirement. It is considered an acceptable risk, as
+application services have to be registered by the server admin.
 
 ## Alternatives
 
@@ -54,6 +74,10 @@ A new set of endpoints dedicated to application services could be added to the
 specification, like `GET|PUT|DELETE /_matrix/client/v3/appservices/{appId}/devices/{deviceId}`.
 
 This would have the advantage of not changing the behavior of existing endpoints.
+
+## Dependencies
+
+None. While this MSC is meant for next-gen auth, it can be used independently.
 
 ## Unstable prefix
 
