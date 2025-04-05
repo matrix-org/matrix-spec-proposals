@@ -23,7 +23,7 @@ These values are used to describe the client to the user and define how the clie
 
 This MSC specifies what metadata values are required by the Matrix specification and how a client can register itself with a Matrix homeserver to get a client identifier.
 
-None of the metadata values are specific to Matrix: they are all registered by various specificaitons in the [OAuth Dynamic Client Registration Metadata](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata) registry, and normative definitions of them are available in their respective RFCs in the registry.
+None of the metadata values are specific to Matrix: they are all registered by various specifications in the [OAuth Dynamic Client Registration Metadata](https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#client-metadata) registry, and normative definitions of them are available in their respective RFCs in the registry.
 
 
 #### `client_uri` and relationship with other URIs
