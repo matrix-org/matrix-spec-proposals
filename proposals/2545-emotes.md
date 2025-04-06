@@ -294,8 +294,16 @@ displaying emote shortcodes and others leaving it in, the `:` character is
 barred from the shortcode grammar. This is in attempt to standardise `:` as the
 delimiter character for shortcodes.
 
-Any other character is explicitly allowed. This allows shortcodes
-containing non-Latin characters for communities of those languages.
+In addition, the space character is not allowed. This helps avoid common
+usability paper-cuts (multiple spaces between words, spaces at the beginning/end
+of a shortcode). Shortcodes containing multiple words are encouraged to use alterantive separators like hyphens or underscores.
+
+Specifically, the `U+0020` character (normal space) is disallowed. There are
+multiple other byte sequences associated with spaces in Unicode.
+
+Any other character is explicitly allowed. This allows shortcodes containing
+non-Latin characters for communities of those languages, and ensures
+forwards-compatibility with future Unicode updates.
 
 ### Sending
 
