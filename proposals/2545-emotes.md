@@ -77,7 +77,7 @@ property with an empty string for an image pack's `state_key`.
 `m.image_pack` state events contain the following keys within their `content`:
 
 * `images`: **Required, Map[String, Object]**. A map from a shortcode to an Image Object.
-* `pack`" **Optional, Object**. A Pack Object.
+* `pack` **Optional, Object**. A Pack Object.
 
 ```jsonc
 {
@@ -143,7 +143,7 @@ An image object consists of the following keys:
 - `info`: **Optional, ImageInfo**. The already specified
     [`ImageInfo`](https://spec.matrix.org/v1.14/client-server-api/#msticker_imageinfo) 
     object (from `m.sticker`).
-- `usage`: **Optional, Array of String**. An array of the usages for this
+- `usage`: **Optional, Array[String]**. An array of the usages for this
     image. The possible values match those of the `usage` key of a pack object.
 
     If present and non-empty, this overrides the usage defined at pack level for
@@ -305,7 +305,7 @@ Custom emotes are sent into rooms as `<img>` tags within the `formatted_body`
 field of an
 [`m.room.message`](https://spec.matrix.org/v1.14/client-server-api/#mroommessage)
 event. Many existing clients already render `<img>` tags in message bodies when
-they render HTML, and its logical to reuse that functionality here.
+they render HTML, and it's logical to reuse that functionality here.
 
 To allow clients to distinguish custom emotes from other inline images, a new
 attribute, `data-mx-emoticon`, is introduced to the `<img>` tag:
@@ -432,8 +432,8 @@ visible to homeservers.
 
 Due to the [size limitation of
 events](https://spec.matrix.org/v1.14/client-server-api/#size-limits) (65536
-bytes), image packs are limited to roughly 400 emotes per pack (see [this
-calculation](https://github.com/matrix-org/matrix-spec-proposals/pull/2545/files#r1705977956).
+bytes), room image packs are limited to roughly 400 emotes per pack (see [this
+calculation](https://github.com/matrix-org/matrix-spec-proposals/pull/2545/files#r1705977956)).
 
 This has been deemed sufficient for the vast majority of use cases.
 
