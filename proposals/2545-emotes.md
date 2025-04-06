@@ -117,7 +117,7 @@ A pack object consists of the following keys:
     for the pack. If unset, and the pack is within a room, defaults to the
     room's avatar.
     Otherwise, the pack does not have an avatar.
-- `usage`: **Optional, Array of String**. An array of the usages for this pack.
+- `usage`: **Optional, Array[String]**. An array of the usages for this pack.
     Possible usages are `emoticon` and `sticker`. If the usage is absent or
     empty, all possible usage types are assumed.
 - `attribution`: **Optional, String**. The attribution for this pack.
@@ -351,11 +351,13 @@ their own messages.
 The `height` attribute MUST be present. This maintains backwards-compatibility
 with clients that do not support custom emotes.
 
-Clents SHOULD set `height` to "32px". This is a default that looks good on most
-devices. In practice, receiving clients are expected to override the height when
-rendering emotes based on their particular environment (the user's font size,
-etc.). Or they may choose to display messages containing only emoticons in a
-larger font.
+Clents SHOULD set `height` to "32px". This is a default intended to look good on
+most devices, and is for the benefit of legacy clients that do not treat custom
+emotes differently from other inline images.
+
+Clients implementing this MSC are expected to override the height when rendering
+emotes, based on their particular environment (the user's font size, etc.). Or
+they may choose to display messages containing only emoticons in a larger font.
 
 A `width` attribute is not required, in order to maintain the aspect ratio of
 non-square emotes.
