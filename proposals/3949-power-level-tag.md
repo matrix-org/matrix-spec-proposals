@@ -43,7 +43,7 @@ empty string. The content will be a map of power level integer to Tag.
 ```json
 {
   "type": "m.room.power_level_tags",
-  "state_key": "100",
+  "state_key": "",
   "content": {
     "100": {
       "name": "Admin",
