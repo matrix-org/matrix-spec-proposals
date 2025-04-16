@@ -181,8 +181,7 @@ While this proposal is not considered stable, implementations should use the fol
 | Stable | Unstable |
 |-|-|
 | `/_matrix/policy/v1/event/:eventId/check` | `/_matrix/policy/unstable/org.matrix.msc4284/event/:eventId/check` |
-| `m.room.server_assignments` | `org.matrix.msc4284.server_assignments` |
-| `m.policy` | `org.matrix.msc4284.policy` |
+| `m.room.policy` | `org.matrix.msc4284.policy` |
 
 ## Dependencies
 
