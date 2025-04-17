@@ -1,7 +1,7 @@
 # MSC4278: Media preview controls
 
 Matrix caters to a wide variety of networks configurations. Some networks are closed and the users have a high
-degree of safety, and other networks are open to the public internet and are inheriently less safe. This proposal
+degree of safety, and other networks are open to the public internet and are inherently less safe. This proposal
 aims to give the user more universal control over the content they see on Matrix, starting with media previews.
 
 Most graphical Matrix clients display media in the timeline of a room with a preview. Often these are delivered
@@ -23,27 +23,67 @@ This key contains the following content.
 
 ```json
 {
-  "media_previews": "off|on|private",
+  "media_previews": "off|private|on",
   "invite_avatars": "off|on"
 }
 ```
 
-`media_previews` refers to media in the room timeline, that may be thumbnailed.
+### `media_previews`
 
-`invite_avatars` refers to any *room* avatar rendered in the client, where the client has a `membership` of `invite`.
+`media_previews` refers to any media that may be automatically rendered in the context of a room without user
+interaction, like a thumbnail.
 
-The fields `media_previews` and `invite_avatars` may be one of three values.
+Clients should show show or hide media depending upon this setting, on at least the following content types:
 
+ - Media message types `m.image`, `m.video`, `m.file` which all can include thumbnail information or be thumbnailed
+ by the home server.
+ - The `m.sticker` event type.
+ - Inline media via `img`.
+ - Any event which includes thumbnail information or may be thumbnailed by the home server.
+
+The above list is not exhaustive as future event types may increase the scope of media in the context of a room,
+but offers a reference point for clients. 
+
+Avatars of users in rooms are considered outside the scope of a room for the purposes of this MSC, and are not
+required to be filtered by the same logic. A future MSC may explore how to handle user avatars.
+
+### `invite_avatars`
+
+`invite_avatars` refers to any **room** avatar rendered in the client, where the client has a `membership` of `invite`.
+
+This may typically be rendered in the form of an invite dialog, or a room list preview of a room.
+
+The avatar may refer to:
+
+ - The `m.room.avatar` state event.
+ - The inviting user's `avatar_url` from their profile (in the case of a DM).
+
+In *all* cases where an avatar may be rendered for a room invite, the preview should be controlled by the setting.
+
+### Property value
 
 #### `off`
 
-The client MUST NOT show any previews for any media in affected rooms.
+The client MUST NOT show any previews for any media in affected rooms. Clients SHOULD hide the media entirely,
+behind a click-to-view prompt, or some other mechanism where a user is either prevented entirely or must consent
+to see the media.
 
 Users may individually consent to seeing media, for example by clicking on a prompt to show a preview.
 
 If consent is given, the client SHOULD then track that consent and show the media again in the future.
 
-This value is the **default** setting for `invite_avatars` when no account data exists on the user's account.
+#### `private`
+
+Previews for media MAY be shown in "private" rooms without a prompt. A private room is any room where 
+the `m.room.join_rules` state exists AND `join_rule` key of this state is `invite`, `knock`, `restricted`, or `knock_restricted`.
+
+If any other `join_rule` is set, or cannot be determined by the client then the assumption MUST be that the
+room is public and previews MUST not be shown. Future join rules may be added to this list, but it's critical
+that clients adopt a safety first approach here.
+
+Note that this setting has no effect for `invite_avatars`. Avatars can only be `off` or `on` for all invites. 
+Bad actors can easily send a DM to a user (which would pass the `private` check) containing unwanted
+content.
 
 #### `on`
 
@@ -51,67 +91,47 @@ Media MAY be shown in any room without a prompt.
 
 Users may individually hide media, and this preference MUST be respected over any defaults defined in `m.media_preview_config`.
 
-#### `private`
-
-Previws for media MAY be shown in "private" rooms without a prompt. A private room is any room where:
-  - The `m.room.join_rules` state exists.
-  - The `join_rule` key of this state is `invite`, `knock`, `restricted`, or `knock_restricted`.
-
-If any other `join_rule` is set, or cannot be determined by the client then the assumption MUST be that the
-room is public and previews should not be shown. Future join rules may be added to this list, but it's critical
-that clients adopt a safety first approach here.
-
-This value is the **default** setting for `media_previews` when no account data exists on the user's account.
-
-Note that this setting has no effect for `invite_avatars`. Avatars can only be `off` or `on` for all invites. 
-Bad actors can easily send a DM to a user (which would pass the `private` check) containing unwanted
-content.
+This value is the **default** setting for both properties when no value is set, to keep with the previous defaults.
 
 ### Levels
 
 The account data may exist at both the global and room level. The global setting defines the preference for
 all rooms, unless a per-room setting overrides it.
 
-It is also possible for rules to cascade via spaces. A top level space may set a specific rule, and child
-rooms may set their own rules. When this is the case, the strictest rule must always be applied.
-
-For instance, given the following hierarchy of rooms within a space tree:
-
-- Acme Corp <"on">
-  - Engineering <"private">
-    - Room A <"off">
-    - Room B <no-value>
-  - Support <no-value>
-    - Room C <"off">
-  - Room D <"off">
-  - Room E <no-value>
-- Room F
-
-The result would be:
- - Room A, Room C and Room D would be "off".
- - Room B would be "private".
- - Room E would be "on".
- - Room F is out of the space, and would default to the user's global rule.
 
 ### Notes
 
-It's important here that this account data MUST be configurable by a user.
-
 Homeservers MAY specify a default value ahead of time for the user, by setting a default
-value internally for the account data. The user *must* be able to mutate this value.
+value internally for the account data. The user *must* be able to mutate this value, as it's
+considered a safety feature.
 
 Not all clients will respect this configuration initially, and many clients will continue to support
-their own variant of this setting in the short term.
+their own variant of this setting in the short term. In time this MSC should be adopted, so that
+a user's safety settings is carried over to new sessions.
 
 ## Potential issues
 
-TODO: Write this up.
+### Holding more state
+
+This requires clients to hold more state about the room than they would do previously to render a room. This may
+present a challenge, particularly for mobile clients who may need this information to render push notifications.
+
+### Spaces
+
+A previous version of this MSC also explored the idea of the setting cascading through a space tree, but
+it was difficult to design for both because it required clients to hold more state about the room (e.g. traversing
+a large amount of state locally to determine the rules) as well as challenges in rendering the setting to users.
+
+A future MSC may explore the possibility of this applying to spaces, but this initial version will operate only
+globally and per-room.
+
+However, not having this feature means many room may need apply their own rules.
 
 ## Alternatives
 
 This MSC has been iterated on a few times before being published, and several alternatives were considered.
 
-### A well-known field for a global trust policy
+### A well-known property for a global trust policy
 
 This was [originally considered](https://github.com/matrix-org/matrix-spec-proposals/tree/hs/homeserver-content-trust-level)
 to change the default policy on a server, so that users on that server would see previews based on their admin's preferences.
@@ -126,7 +146,6 @@ then it would require you to mark your own server as untrusted, which felt wrong
 This is actually part of the proposal under the "private" flag, but this alone wasn't satisfactory for all users. The join
 rules have no direct bearing on the content in the room, and bad actors inviting many people to a private room
 containing undesirable content would slip under this check.
-
 
 ### Use space membership
 
@@ -144,16 +163,21 @@ responsibility on safety on room administrators, who may lack the knowledge or t
 It also exposes another possible attack where users are invited to a room similar to a phishing attack, and the
 room state would override their personal safety settings to deliver undesirable content.
 
+### Trust users you share a DM with
+
+We could seek to trust media if we share a room with a user (e.g. the `m.direct`), which might be a cheap way to
+establish a basis of trust for users.
+
 ## Security considerations
 
-This field is ultimately held by the homeserver, and a malicious homeserver may expose you to unwanted content. This is
+This property is ultimately held by the homeserver, and a malicious homeserver may expose you to unwanted content. This is
 true today, and users should take caution with who they choose to host their account with.
 
-As with all account data fields, the content should be validated.
+As with all account data properties, the content should be validated.
 
 ## Unstable prefix
 
-The field should use `io.element.msc4278.media_preview_config` while the field is unstable.
+The property should use `io.element.msc4278.media_preview_config` while the property is unstable.
 
 ## Dependencies
 
