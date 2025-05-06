@@ -1,4 +1,4 @@
-# MSCxxxx: App store compliant handling of payment links within events
+# MSC4286: App store compliant handling of payment links within events
 
 ## Background
 
@@ -123,7 +123,7 @@ No additional requirements. The client should continue apply the existing securi
 
 The following should be used:
 
-- `data-mscXXXX-external-payment-details` instead of `data-mx-external-payment-details`
+- `data-msc4286-external-payment-details` instead of `data-mx-external-payment-details`
 
 ## Dependencies
 
