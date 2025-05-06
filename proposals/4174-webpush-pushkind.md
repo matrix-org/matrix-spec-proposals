@@ -59,15 +59,42 @@ If the `kind` is "email", this is the email address to send notifications to.
 If the `kind` is `webpush`, this is the user agent public key encoded in base64 url. The public key comes from a ECDH
 keypair using the P-256 (prime256v1, cf. FIPS186) curve.
 
+If the request creates a new pusher or modify the `pushkey`, the `PusherData.endpoint`, or the `PusherData.auth`, then
+the server responde with a 201, "The pusher is set but needs to be activated". The Server send a push notification to the
+endpoint, encrypted with `pushKey` and `PusherData.auth`, authenticated with the VAPID key with a message containing
+the `app_id` and a `ack_token`, a UUIDv4 token in the hyphen form, valid for 5 minutes:
+
+```
+{
+	"app_id": "face.mcapp.appy.prod",
+	"ack_token": "6fc76b70-5fad-4eb7-93ea-a1af7a03258b"
+}
+```
+
+A new endpoint is dedicated to pusher validation:
+- POST `/_matrix/client/v3/pushers/ack`
+- Rate limited: No, Requires authentication: Yes
+- The request contains the `app_id` and `ack_token` parameters, received with the push notification.
+- The response, with status code 200, contains the `app_id` and `status`, which can be one of the following valules:
+    - "unknown_app_id" if no pusher with this app_id exists
+		- "expired" if this token for this app_id is expired
+		- "unknown_token" if a pusher with this app_id exists, but the token is not known. An expired token may send this status too
+		- "ok" if the pusher has been activated
+
+The Pusher Data get a new optional field, `activated`, a boolean which is false until the pusher is activated with the request to
+`/_matrix/client/v3/pushers/ack`.
+
 A VAPID (Voluntary Application Server Identification, cf RFC8292) is often needed to be able to register with a push
 server.
 It is proposed to add a `m.webpush` capability to the `/capabilities` endpoint with this format:
+
 ```
 "m.webpush": {
 	"enabled": true,
 	"vapid": "BNbXV88MfMI0fSxB7cDngopoviZRTbxIS0qSS-O7BZCtG04khMOn-PP2ueb_X7Aeci42n02kJ0-JJJ0uQ4ELRTs"
 }
 ```
+
 It is also useful to decide if the client should register a pusher using `http` kind and and old style
 Sygnal WebPush semantic. A client that supports this kind of pusher should use it if the server supports it too, and
 not register another `http` pusher to avoid duplicate pushes.
