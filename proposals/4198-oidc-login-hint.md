@@ -99,10 +99,13 @@ This can help if the user has forgotten if they set a password or used a social 
 
 **Note:** See security consideration #1.
 
-#### Passing a login_hint to upstream providers
+#### Passing a `login_hint` to upstream providers
 
-To take full advantage of the benefits of `login_hint`, a suitable value could be forwarded to an upstream provider.
-The vague nature of the values for `login_hint` could make this difficult to implement, however.
+To take full advantage of the benefits of `login_hint`, a suitable value that the upstream provider expects could be
+supplied when logging in with one.
+Since this proposal only covers the Matrix protocol, upstream providers likely won't follow the format laid out in this
+proposal and any upstream hint value would have to be configured on a per provider basis by the administrator of the
+homeserver.
 
 **Note:** See security consideration #2.
 
