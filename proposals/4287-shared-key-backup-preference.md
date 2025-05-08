@@ -88,6 +88,12 @@ change their key backup behaviour when it changes. This would increase the
 severity of the security issues discussed below. Whether this behaviour would be
 more or less surprising for the user is a potential discussion point.
 
+### A proper unstable prefix
+
+Because an existing implementation exists, the proposed unstable prefix has
+different semantics from the final proposal. If this is deemed unacceptable, a
+more normal unstable prefix could be used.
+
 ## Security considerations
 
 Unencrypted account data is under the control of the server, so a malicious
