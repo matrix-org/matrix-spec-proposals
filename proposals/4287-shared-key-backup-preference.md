@@ -16,7 +16,7 @@ the user does not want key backups.
 
 ## Proposal
 
-We propose an event type to be stored in global account data with event type
+We propose an event type to be stored in global account data,
 `m.key_backup` whose contents consist of a single field `enabled` whose value is
 boolean.
 
@@ -32,7 +32,7 @@ like:
 
 If `enabled` is `true`, key backup for new sign-ins is on. If `enabled` is
 `false`, key backup for new sign-ins is off. Otherwise, the value is
-undetermined and client should either treat it as off, or make a choice and
+undetermined and the client should either treat it as off, or make a choice and
 update the value to reflect it.
 
 ### Behaviour on sign-in
@@ -77,7 +77,8 @@ let us know.
 There are alternative possibilities for the default behaviour (e.g. a
 missing/invalid event could simply mean "off") but the described behaviour is
 intended to be unambiguous and prevent two clients interpreting the same setting
-differently.
+differently, while also allowing clients to choose default behaviour suitable
+for their audience.
 
 ### Dynamically reacting to changes
 
@@ -92,7 +93,7 @@ more or less surprising for the user is a potential discussion point.
 Unencrypted account data is under the control of the server, so a malicious
 server could:
 
-* increase the attack surface by tricking clients into performing key backups
+* increase the user's attack surface by tricking clients into performing key backups
   against the user's will, or
 
 * cause data loss by tricking clients into not performing key backups.
