@@ -1,4 +1,4 @@
-# MSCXXXX: Sharing key backup preference between clients
+# MSC4287: Sharing key backup preference between clients
 
 Matrix allows for clients to [store backups of room
 keys](https://spec.matrix.org/v1.14/client-server-api/#server-side-key-backups)
