@@ -285,6 +285,9 @@ API action:
 }
 ```
 
+When no `state_key` is present, the client will respond with message-like events (i.e. non-state
+events) matching the event type.
+
 When a `state_key` is present, the client will respond with state events matching that state key. If
 `state_key` is instead a boolean `true`, the client will respond with state events of the given type
 with any state key.
