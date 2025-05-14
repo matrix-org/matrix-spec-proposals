@@ -45,7 +45,7 @@ liable to change somewhat frequently. Currently, profile data isn't propagated/s
 between servers, but that's left to a future MSC to solve. It is recommended that
 clients cache the value for 12 - 24 hours.
 
-There should not be backwards compatibilty concerns since clients should be ignoring
+There should not be backwards compatibility concerns since clients should be ignoring
 unknown profile fields.
 
 
