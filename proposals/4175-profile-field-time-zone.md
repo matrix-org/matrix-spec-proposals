@@ -17,6 +17,10 @@ Clients can set and fetch this via the [normal API endpoints](https://spec.matri
   they MUST return a 400 error with error code `M_INVALID_PARAM`.
 * Clients MUST handle invalid or unknown values.
 
+The rationale for somewhat loose validation is that different clients/servers may have
+different understanding of valid time zones, e.g. different versions of the time zone
+database.
+
 If the field is not provided it SHOULD be interpreted as having no time zone information
 for that user.
 
@@ -28,6 +32,9 @@ Some languages make this easy, e.g. JavaScript can handle this using
 [`Date.toLocaleString()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleString).
 This may cause clients to bundle the IANA time zone database (and thus also keep it
 up to date).
+
+Using the IANA time zone name has the downside that it does now allow arbitrary offsets,
+which may be required for time zones which are not internationally recognized.
 
 Clients will need to manually update the profile field when the user changes time zone.
 This could be automated by clients based on location, or left as a manual change to
@@ -44,6 +51,15 @@ clients cache the value for 12 - 24 hours.
 The time zone offset could be included directly (in minutes/seconds or in `[+-]HH:MM` form).
 This would require clients to manually update the profile field during daylight
 savings. Using the IANA time zone name is robust against this.
+
+### Delegate profile fields
+
+There are several standards related to storing of contact information electronically,
+notably vCard and its derivatives (see below). It is unclear if Matrix profile
+information is similar enough to the contact information found in vCard to warrant using
+that format directly, although there is certainly some overlap.
+
+Some of the JSON formats for vCard which include time zone information are detailed below:
 
 [RFC7095: jCard The JSON Format for vCard](https://datatracker.ietf.org/doc/html/rfc7095)
 format could be used instead, but this doesn't make much sense unless the entire
