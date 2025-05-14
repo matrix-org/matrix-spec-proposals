@@ -45,12 +45,16 @@ liable to change somewhat frequently. Currently, profile data isn't propagated/s
 between servers, but that's left to a future MSC to solve. It is recommended that
 clients cache the value for 12 - 24 hours.
 
+There should not be backwards compatibilty concerns since clients should be ignoring
+unknown profile fields.
+
 
 ## Alternatives
 
 The time zone offset could be included directly (in minutes/seconds or in `[+-]HH:MM` form).
 This would require clients to manually update the profile field during daylight
 savings. Using the IANA time zone name is robust against this.
+
 
 ### Delegate profile fields
 
@@ -113,6 +117,9 @@ the option to not include it in their profile.
 ## Unstable prefix
 
 `us.cloke.msc4175.tz` should be used in place of `m.tz`. 
+
+Clients may immediately use the stable profile field once this MSC is accepted. This is
+a client-to-client protocol and no feature negotiation is necessary.
 
 
 ## Dependencies
