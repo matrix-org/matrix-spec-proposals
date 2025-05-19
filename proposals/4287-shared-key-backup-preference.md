@@ -88,6 +88,9 @@ change their key backup behaviour when it changes. This would increase the
 severity of the security issues discussed below. Whether this behaviour would be
 more or less surprising for the user is a potential discussion point.
 
+Note that clients should already notice if a key backup is deleted, because
+attempts to upload new keys will start failing.
+
 ### A proper unstable prefix
 
 Because an existing implementation exists, the proposed unstable prefix has
