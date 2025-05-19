@@ -50,7 +50,7 @@ When a user signs in:
     * EITHER choose whether to perform key backup (possibly based on user input)
       and update account data to reflect the choice,
 
-    * OR turn key backup off.
+    * OR not perform key backup.
 
 ### Behaviour on setting change
 
