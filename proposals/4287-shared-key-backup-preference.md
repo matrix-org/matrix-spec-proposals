@@ -104,6 +104,9 @@ server could:
 
 * cause data loss by tricking clients into not performing key backups.
 
+This can be mitigated if clients make the setting, or any change to the setting,
+visible to users, especially at the time when it affects behaviour (on sign-in).
+
 ## Unstable prefix
 
 This is currently partially implemented in Element clients using a
