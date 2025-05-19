@@ -105,7 +105,8 @@ server could:
 * increase the user's attack surface by tricking clients into performing key backups
   against the user's will, or
 
-* cause data loss by tricking clients into not performing key backups.
+* cause data loss by tricking clients into not performing key backups. (But
+  servers can delete data from key backups at will, so this seems unimportant.)
 
 This can be mitigated if clients make the setting, or any change to the setting,
 visible to users, especially at the time when it affects behaviour (on sign-in).
