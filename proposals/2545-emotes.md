@@ -234,6 +234,61 @@ An example of a `m.image_pack.rooms` account data event:
 }
 ```
 
+Note that an empty object under a room ID, for example:
+
+```json
+{
+  "rooms": {
+    "!someroom:example.org": {}
+  }
+}
+```
+
+translates to *all image packs that a room defines*, rather than *no image
+packs*. This is intended as an optimisation to reduce event size versus
+listing the (potentially many) packs a room may have.
+
+"All image packs that a room defines" does not include second-order packs listed
+in `m.image_pack.rooms` state events (defined below) in the room. This is to
+prevent loops when sourcing image packs.
+
+Clients should be aware that users may not be in the room referenced by this
+event, and MAY wish to show appropriate UX around this.
+
+#### `m.image_pack.rooms` state event
+
+This state event can be added to a room in order to reference an existing image
+pack from another room. This allows room administrators to make an image pack
+available to their local community without copying (and continuously updating)
+said packs.
+
+This state event has a similar structure to the equivalent account data event,
+and must have an empty state key:
+
+```json
+{
+  "type": "m.image_pack.rooms",
+  "state_key": "",
+  "content": {
+    "rooms": {
+      "!someroom:example.org": {
+        "": {},
+        "de.sorunome.mx-puppet-bridge.discord": {}
+      },
+      "!someotherroom:example.org": {
+        "": {}
+      }
+    }
+  }
+}
+```
+
+The definition of an empty object under a room ID from the `m.image_pack.rooms`
+account data event holds for this state event as well.
+
+Clients should be aware that users may not be in the room referenced by this
+event, and MAY wish to show appropriate UX around this.
+
 #### Space image packs
 
 Clients SHOULD suggest image packs of a room's canonical space, if the user is
@@ -258,6 +313,8 @@ A suggestion for clients of image pack ordering is as follows:
 3. Space image packs (defined in the hierarchy of canonical spaces for the
     current room)
 4. Room image packs (defined in the currently open room's state)
+5. Referenced room image packs (defined in the `m.image_pack.rooms` room
+    state event)
 
 Note: this MSC does not define an ordering for images within packs. That is left
 to a future MSC.
