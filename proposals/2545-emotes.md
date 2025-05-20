@@ -451,6 +451,8 @@ the image, or if absent, an empty object.
 
 ## Security Considerations
 
+### Encrypted image packs
+
 This MSC considers that image packs, and the images contained within them, are
 not encrypted. That means media included in image packs cannot be hidden from
 the homeserver. That is a privacy and security concern.
@@ -484,6 +486,29 @@ Ultimately end-to-end encryption of image packs or emoticons is purposefully
 not within the scope of this MSC. That being said, clients SHOULD warn users
 that images in image packs sent in E2EE rooms are not encrypted and thus
 visible to homeservers.
+
+### Abusive images in packs
+
+There is the potential for the administrator of an image pack, after getting
+users and rooms to add the pack, to add abusive imagery to the pack that
+users will then be exposed to. This is enabled by the `m.image_pack.rooms`
+state and account data events, which allow referencing external image packs.
+
+This can be mitigated after the fact depending on how the user's client has
+sourced the offensive images:
+
+1. The user has enabled a pack globally that's defined by a room
+2. The user is suggested a pack by their client as the current room they're
+    typing in references a pack (space, the new `m.image_pack.rooms` state
+    event, etc.)
+
+For 1., the user should remove the pack from their global configuration. For 2.,
+the user should inform the room admin. If the room admin should disappear, then
+this is fairly similar to an attacker spamming a room which has no moderation.
+
+Given the benefits of the features, and the assumption that such an attack has
+limited impact and rarely affects other messaging services, the features are
+left in.
 
 ## Unstable prefix
 
