@@ -550,6 +550,12 @@ In general, MSC1951 feels like a heavier approach to image pack sources, while t
 A couple of interesting points have been raised in discussions of this MSC that
 tangentially touch custom emotes. Each warrant an MSC for themselves.
 
+- Include a backlink to image packs from custom emotes/stickers in events,
+  allowing users to see an image pack an emote or sticker came from. See [this
+  thread](https://github.com/matrix-org/matrix-spec-proposals/pull/2545/files#r2020176546)
+  and
+  [this thread](https://github.com/matrix-org/matrix-spec-proposals/pull/2545#discussion_r753881475)
+  for discussion on the matter.
 - Allow SVGs in the `<img>` tag. Currently clients try to thumbnail the mxc URL,
     and most media repositories can't thumbnail SVGs. Possible solution: Somehow embed the mimetype.
 - For stickers: Recommend rendering sizes / resolutions
