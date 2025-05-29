@@ -1,4 +1,4 @@
-# MSC0666: Ignore and mass ignore invites
+# MSC4294 Ignore and mass ignore invites
 
 
 ## Proposal
