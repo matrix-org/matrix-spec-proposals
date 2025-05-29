@@ -72,7 +72,7 @@ The properties in the object are defined as:
 
  * `withheld`: an array of objects with the same format as the content of an
    [`m.room_key.withheld`](https://spec.matrix.org/v1.14/client-server-api/#mroom_keywithheld)
-   messsage, usually with code `m.unauthorised` to indicate that the recipient
+   message, usually with code `m.unauthorised` to indicate that the recipient
    isn't allowed to receive the key.
 
 A single session MUST NOT appear in both the `room_keys` and `withheld` sections.
@@ -219,7 +219,7 @@ For example:
 In all cases, an absent or non-boolean `shared_history` property is treated the same as
 `shared_history: false`.
 
-### Actions as a receving client
+### Actions as a receiving client
 
 When Bob's client receives an `m.room_key_bundle` event from Alice, there are two possibilities:
 
