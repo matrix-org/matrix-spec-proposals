@@ -10,7 +10,7 @@ This proposal defines a mechanism by which existing room members can share the
 decryption keys with new members, for example when inviting them, thus giving
 the new members access to historical messages.
 
-A previous propsal,
+A previous proposal,
 [MSC3061](https://github.com/matrix-org/matrix-spec-proposals/pull/3061) aimed
 to solve a similar problem; however, the mechanism used did not scale well. In
 addition, the implementation in `matrix-js-sdk` was subject to a [security
@@ -19,7 +19,134 @@ which this proposal addresses.
 
 ## Proposal
 
-### `shared_history` property in `m.room_key` events
+### Room key bundle format
+
+When Alice is about to invite Bob to a room, she first assembles a "room key
+bundle" containing all of the room keys for megolm sessions that she believes
+future members of the room should have access to. Specifically, those are the
+megolm sessions associated with that room which were marked with
+`shared_history`: see [below](#shared_history-property-in-mroom_key-events).
+
+The keys are assembled into a JSON object with the following structure:
+
+```json5
+{
+  "room_keys": [
+    {
+      "algorithm": "m.megolm.v1.aes-sha2",
+      "room_id": "!Cuyf34gef24t:localhost",
+      "sender_claimed_keys": { "ed25519": "aj40p+aw64yPIdsxoog8jhPu9i7l7NcFRecuOQblE3Y" },
+      "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
+      "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ",
+      "session_key": "AgAAAADxKHa9uFxcXzwYoNueL5Xqi69IkD4sni8Llf..."
+    },
+    // ... etc
+  ],
+  "withheld": [
+    {
+      "algorithm": "m.megolm.v1.aes-sha2",
+      "code": "m.unauthorised",
+      "reason": "History not shared",
+      "room_id": "!Cuyf34gef24t:localhost",
+      "sender_key": "RF3s+E7RkTQTGF2d8Deol0FkQvgII2aJDf3/Jp5mxVU",
+      "session_id": "X3lUlvLELLYxeTx4yOVu6UDpasGEVO0Jbu+QFnm0cKQ"
+    }
+  ]
+}
+```
+
+The properties in the object are defined as:
+
+  * `room_keys`: an array of objects each with the following fields from [`ExportedSessionData`](https://spec.matrix.org/v1.14/client-server-api/#definition-exportedsessiondata):
+  
+     * `algorithm`
+     * `room_id`
+     * `sender_claimed_keys`
+     * `sender_key`
+     * `session_id`
+     * `session_key`
+
+   `forwarding_curve_key_chain` is omitted since it is useless in this case.
+   The `shared_history` flag defined below is omitted (it is `true` by
+   implication).
+
+ * `withheld`: an array of objects with the same format as the content of an
+   [`m.room_key.withheld`](https://spec.matrix.org/v1.14/client-server-api/#mroom_keywithheld)
+   messsage, usually with code `m.unauthorised` to indicate that the recipient
+   isn't allowed to receive the key.
+
+A single session MUST NOT appear in both the `room_keys` and `withheld` sections.
+
+The JSON object is then encrypted using the same algorithm as [encrypted
+attachments](https://spec.matrix.org/v1.14/client-server-api/#sending-encrypted-attachments)
+(i.e., with AES256-CTR), and uploaded with [`POST
+/_matrix/media/v3/upload`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixmediav3upload).
+
+The details of this key bundle are then shared with Bob, as below.
+
+### `m.room_key_bundle` to-device message
+
+Having uploaded the encrypted key bundle, Alice must share the details with each of Bob's devices.
+
+She first ensures she has an up-to-date list of his devices (performing a
+[`/keys/query`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3keysquery)
+request if necessary. She then sends a to-device message to each of his devices
+**which are correctly signed by his cross-signing keys**.
+
+A new to-device message type is defined, `m.room_key_bundle`, which MUST be
+encrypted using
+[Olm](https://spec.matrix.org/v1.14/client-server-api/#molmv1curve25519-aes-sha2).
+
+The plaintext content of such a message should be:
+
+```
+{
+  "type": "m.room_key_bundle",
+  "content": {
+    "room_id": "!Cuyf34gef24t:localhost",
+    "file": {
+      "v": "v2",
+      "url": "mxc://example.org/FHyPlCeYUSFFxlgbQYZmoEoe",     
+      "key": {
+          "alg": "A256CTR",
+          "ext": true,
+          "k": "aWF6-32KGYaC3A_FEUCk1Bt0JA37zP0wrStgmdCaW-0",
+          "key_ops": ["encrypt","decrypt"],
+          "kty": "oct"
+      },
+      "iv": "w+sE15fzSc0AAAAAAAAAAA",
+      "hashes": {
+        "sha256": "fdSLu/YkRx3Wyh3KQabP3rd6+SFiKg5lsJZQHtkSAYA"
+      }
+    }
+  },
+  "sender": "@alice:example.com",
+  "recipient": "@bob:example.org", 
+  "recipient_keys": { "ed25519": "<bob_ed25519_key>" }
+  "keys": { "ed25519": "<alice_ed25519_key>" },
+  "sender_device_keys": { ... }
+}
+```
+
+The properties within the `content` are defined as:
+
+ * `room_id`: the room to which the keys in the key bundle relate. (This is
+   required so that Bob can download the key bundle at the right time.)
+ 
+ * `file`: `EncryptedFile` from the [encrypted attachment
+   format](https://spec.matrix.org/v1.13/client-server-api/#extensions-to-mroommessage-msgtypes).
+
+`sender`, `recipient`, `recipient_keys` and `keys` are the normal fields
+required by Olm-encrypted messages.
+
+`sender_device_keys` are the sender's device keys, as defined by
+[MSC4147](https://github.com/matrix-org/matrix-spec-proposals/pull/4147), which
+are **required** for `m.room_key_bundle` messages. The sender MUST include
+them, and recipients SHOULD ignore `m.room_key_bundle` messages which omit
+them.
+
+
+### `shared_history` property in `m.room_key` messages
 
 Suppose Alice and Bob are participating in an encrypted room, and Bob now
 wishes to invite Charlie to join the chat. If the [history
@@ -32,9 +159,11 @@ it was restricted. In addition, the history visibility in a given room may have
 been changed over time and it can be difficult for clients to estalish which
 setting was in force for a particular Megolm session.
 
-To counter this, we add a `shared_history` property to `m.room_key` messages,
-indicating that the creator of that Megolm session understands and agrees that
-the session keys may be shared with newly-invited users in future. For example:
+To counter this, we add a `shared_history` property to
+[`m.room_key`](https://spec.matrix.org/v1.14/client-server-api/#mroom_key)
+messages, indicating that the creator of that Megolm session understands and
+agrees that the session keys may be shared with newly-invited users in
+future. For example:
 
 ```json
 {
@@ -90,73 +219,96 @@ For example:
 In all cases, an absent or non-boolean `shared_history` property is treated the same as
 `shared_history: false`.
 
+### Actions as a receving client
 
-### Key bundle format
+When Bob's client receives an `m.room_key_bundle` event from Alice, there are two possibilities:
 
-TODO
+ * If Bob has recently accepted an invite to the room from Alice, the client
+   should immediately download the key bundle and start processing it. Note,
+   however, that this process must be resilient to Bob's client being restarted
+   before the download/import completes.
 
-### To-device message format
+   TODO: what does "recently" mean?
+
+ * Otherwise, Bob's client should store the details of the key bundle but not
+   download it immediately.  If he later accepts an invite to the room from
+   Alice, his client downloads and processes the bundle at that point.
+
+   Delaying the download in this way avoids a potential DoS vector in which an
+   attacker can cause the victim to download a lot of useless data.
+   
+Once Bob has downloaded the key bundle, the sessions are imported as they would
+be when importing a key export; however:
+
+  * Only keys for the relevant room should be imported.
+  
+  * Bob's client should remember who sent the keys (Alice, in this case), and
+    MUST show that information to the user, since he has only that user's word
+    for the authenticity of those sessions.
+
+TODO: tell the sender we have finished with the bundle, so they can delete it?
 
 ## Potential issues
 
-*Not all proposals are perfect. Sometimes there's a known disadvantage to implementing the proposal,
-and they should be documented here. There should be some explanation for why the disadvantage is
-acceptable, however - just like in this example.*
-
-Someone is going to have to spend the time to figure out what the template should actually have in it.
-It could be a document with just a few headers or a supplementary document to the process explanation,
-however more detail should be included. A template that actually proposes something should be considered
-because it not only gives an opportunity to show what a basic proposal looks like, it also means that
-explanations for each section can be described. Spending the time to work out the content of the template
-is beneficial and not considered a significant problem because it will lead to a document that everyone
-can follow.
-
-
 ## Alternatives
-
-*This is where alternative solutions could be listed. There's almost always another way to do things
-and this section gives you the opportunity to highlight why those ways are not as desirable. The
-argument made in this example is that all of the text provided by the template could be integrated
-into the proposals introduction, although with some risk of losing clarity.*
-
-Instead of adding a template to the repository, the assistance it provides could be integrated into
-the proposal process itself. There is an argument to be had that the proposal process should be as
-descriptive as possible, although having even more detail in the proposals introduction could lead to
-some confusion or lack of understanding. Not to mention if the document is too large then potential
-authors could be scared off as the process suddenly looks a lot more complicated than it is. For those
-reasons, this proposal does not consider integrating the template in the proposals introduction a good
-idea.
-
 
 ## Security considerations
 
-**All proposals must now have this section, even if it is to say there are no security issues.**
+* The proposed mechanism allows clients to share the decryption keys for
+  significant amounts of encrypted content. Sharing historical keys in this way
+  represents a significantly greater security risk than sharing keys for future
+  messages on an ad-hoc basis, as when sending `m.room_key` messages.
 
-*Think about how to attack your proposal, using lists from sources like
-[OWASP Top Ten](https://owasp.org/www-project-top-ten/) for inspiration.*
+  It is therefore **crucial** that the inviting client take careful measures to
+  ensure that the recipient devices genuinely belong to the intended
+  recipient, rather than having been injected by an intruder.
 
-*Some proposals may have some security aspect to them that was addressed in the proposed solution. This
-section is a great place to outline some of the security-sensitive components of your proposal, such as
-why a particular approach was (or wasn't) taken. The example here is a bit of a stretch and unlikely to
-actually be worthwhile of including in a proposal, but it is generally a good idea to list these kinds
-of concerns where possible.*
+  For example, the recipient must cross-sign his devices, and the sender must
+  ensure that the devices are correctly signed. Further, the sender should keep
+  records of cross-signing keys seen for each user, and if a change is
+  observed, consider this a red flag suggesting that the account may be
+  compromised and confirm with the user.
 
-MSCs can drastically affect the protocol. The authors of MSCs may not have a security background. If they
-do not consider vulnerabilities with their design, we rely on reviewers to consider vulnerabilities. This
-is easy to forget, so having a mandatory 'Security Considerations' section serves to nudge reviewers
-into thinking like an attacker.
+* Recipients must be mindful that there is no authoritative evidence of the
+  sender of messages decrypted using a room key bundle: a malicious (or buggy)
+  inviter working in cahoots with a homeserver administrator could make it
+  appear as though events sent by one user were in fact sent by another.
+
+  Ultimately, the recipient of a key bundle is taking the world of the sender
+  of that key bundle as to the actual owner of each megolm session. This is an
+  inevitable consequence of the deniability property of encrypted messaging.
+
+  Recipient clients should make this constraint obvious to the user, for
+  example by showing the affected messages with a label "Alice shared this message".
+
+* Recipients should be mindful of the potential of denial-of-service (DoS) and
+  cache-poisoning attacks from malicious senders.
+
+  In particular, a malicious sender could try to prompt a recipient to download
+  significant amounts of data from the media store by sending
+  `m.room_key_bundle` messages pointing to large media files.
+
+  Further, a malicious sender might attempt to make the recipient believe that
+  a megolm session belonged to Alice, whereas it actually belonged to
+  Charlie. Even if the recipient later receives a key bundle from an honest
+  user, they may now have difficulty deciding which user was correct.
+  
+  Both problems can be mitigated by only accepting key bundles when accepting
+  an invite from that user.
 
 ## Unstable prefix
 
-*If a proposal is implemented before it is included in the spec, then implementers must ensure that the
-implementation is compatible with the final version that lands in the spec. This generally means that
-experimental implementations should use `/unstable` endpoints, and use vendor prefixes where necessary.
-For more information, see [MSC2324](https://github.com/matrix-org/matrix-doc/pull/2324). This section
-should be used to document things such as what endpoints and names are being used while the feature is
-in development, the name of the unstable feature flag to use to detect support for the feature, or what
-migration steps are needed to switch to newer versions of the proposal.*
+Until this MSC is accepted, the following identifiers should be used:
+
+ * `io.element.msc4268.room_key_bundle` instead of `m.room_key_bundle` for the
+   to-device message containing details of the key bundle.
+ 
+ * `org.matrix.msc3061.shared_history` instead of `shared_history` for the
+   property in `BackedUpSessionData` and `ExportedSessionData` indicating that
+   the key can be shared with new members.
+
 
 ## Dependencies
 
-This MSC builds on MSCxxxx, MSCyyyy and MSCzzzz (which at the time of writing have not yet been accepted
-into the spec).
+This MSC depends on [MSC4147](https://github.com/matrix-org/matrix-spec-proposals/pull/4147), which has recently been accepted into the spec.
+
