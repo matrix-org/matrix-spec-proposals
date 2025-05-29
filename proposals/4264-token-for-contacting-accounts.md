@@ -107,10 +107,10 @@ side.
     chat history).
   * Semi-public rooms must be made identifiable as such.
 
-An implementation could possibly rely upon #4155. It's
-"m.invite_permission_config" might be amended to include the token list,
+An implementation could possibly rely upon [MSC4155]. It's
+`m.invite_permission_config` might be amended to include the token list,
 possibly including expiration dates as well. If implemented in this way, this
-MSC might be seen as an extension to #4155.
+MSC might be seen as an extension to [MSC4155].
 
 
 ## Potential issues
