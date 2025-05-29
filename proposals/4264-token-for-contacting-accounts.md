@@ -164,3 +164,5 @@ not known.
 ## Dependencies
 
 not known.
+
+[MSC4155]: https://github.com/matrix-org/matrix-spec-proposals/pull/4155
