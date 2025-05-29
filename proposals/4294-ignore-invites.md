@@ -1,8 +1,6 @@
 # MSC4294 Ignore and mass ignore invites
 
-
 ## Proposal
-
 
 ### Introduction 
 
@@ -27,7 +25,7 @@ Ignores are currently handled by `m.ignored_user_list` (`account_data` [APIs](ht
 
 Current spec only handles `ignored_users` list.
 
-I propose to have it extended by `ignored_inviters` list the following way:
+I propose to have it extended by **`ignored_inviters`** list the following way:
 
 - the type is `m.ignored_inviters_list`
 - it is a mapping of userId to empty object, similar to `ignored_users`
@@ -36,7 +34,7 @@ I propose to have it extended by `ignored_inviters` list the following way:
 #### Server behaviour
 
 - Following an update of the `m.ignored_user_list`, the sync API for all clients should immediately start ignoring (or un-ignoring) all invites from all the listed users.
-- Servers are **required** to reject all pending invites from all the ignored users.
+- Servers are **required** to reject all pending invites from all the ignored inviter users.
 - Servers could choose to provide a boilerplate `reason` for rejection (but see security considerations below)
 
 ## Potential issues
@@ -48,6 +46,8 @@ Clients should be aware of the success of the ignore somehow since they need a m
 This proposal does not handle rejection of all future invites.
 
 This proposal does not handle rejection of future invites of various logical classification, like "invites from actors not sharing a room with the user", "invites from actors matching a pattern or regex", "invites from actors on a given server". These are often requested features but would make this proposal much more complex, which would slow down its acceptance. These could be covered in a later proposal.
+
+`ignored_users` and `ignored_inviters` may overlap. It seems to be logical to remove already completely ignored users from `ignored_inviters`, however this would cause loss of information, since when the user unignores someone then their invites would be automagically unignored as well. Servers **should not** deduplicate and let the clients decide how they handle this situation and what interface they provide to the users to handle this. Internally, servers should ignore processing `ignored_inviters` for already ignored users at all.
 
 ## Alternatives
 
