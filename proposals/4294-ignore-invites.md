@@ -8,7 +8,7 @@ Invite spam is getting more problematic and clients have no good way to handle m
 
 **Ignoring** users seem to help this but it has two serious problems:
 
-- completely igoring users make them completely disappear for the user, and if the user is also a moderator/adminstrator it makes impossible to detect and handle further abuse
+- completely ignoring users make them completely disappear for the user, and if the user is also a moderator/adminstrator it makes impossible to detect and handle further abuse
 - servers are not _required_ to clean up [invites] after ignored users (by the spec).
 
 **Rejecting ignores** also creates problem for clients:
