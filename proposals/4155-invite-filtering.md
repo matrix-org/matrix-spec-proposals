@@ -51,7 +51,7 @@ apply the following order:
 4.  Otherwise allow.
 
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
-feedback to the inviter whereas blocking rejects the invite.
+feedback to the inviter whereas blocking rejects (or refuses, in the case of servers) the invite.
 
 The semantics and order of evaluation enable a number of use cases, for instance:
 
