@@ -36,7 +36,7 @@ All properties in `content` are optional arrays. A missing or `null` property MU
 empty array. The array elements are [glob expressions] to be matched against user IDs and server names,
 respectively.
 
-When evaluating an invite against the contents of `m.invite_permission_config`, implementations should
+When evaluating an invite against the contents of `m.invite_permission_config`, implementations MUST
 apply the following order:
 
 1.  If the invite matches any `allow_*` setting, stop processing and allow.
