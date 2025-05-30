@@ -169,7 +169,7 @@ a different event schema.
 
 ## Dependencies
 
-This proposal depends on [MSC4283] for the semantics of "ignore" and "block".
+This proposal loosely depends on [MSC4283] for the semantics of "ignore" and "block".
 
 
 [gematik specification]: https://github.com/gematik/api-ti-messenger/blob/9b9f21b87949e778de85dbbc19e25f53495871e2/src/schema/permissionConfig.json
