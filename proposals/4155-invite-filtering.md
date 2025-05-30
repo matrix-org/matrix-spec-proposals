@@ -87,6 +87,16 @@ The semantics and order of evaluation enable a number of use cases, for instance
   }
 }
 
+// Only invites from goodguys.org except for @notactuallyguy:goodguys.org
+{
+  "type": "m.invite_permission_config",
+  "content": {
+    "blocked_users": [ "@notactuallyguy:goodguys.org" ],
+    "allowed_servers": [ "goodguys.org" ]
+    "blocked_servers": [ "*" ]
+  }
+}
+
 // No invites from badguys.org unless it's @goodguy:badguys.org
 {
   "type": "m.invite_permission_config",
