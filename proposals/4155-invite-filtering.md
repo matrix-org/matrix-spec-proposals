@@ -27,7 +27,7 @@ event `m.invite_permission_config` is introduced.
     // Server-level settings
     "allowed_servers": [ ... ],
     "ignored_servers": [ ... ],
-    "blocked_servers": [ "*" ] // Glob expressions allowed
+    "blocked_servers": [ "*" ] // A feature of all the fields at this level, globs
   }
 }
 ```
