@@ -147,7 +147,10 @@ A comprehensive comparison of existing invite filtering proposals may be found i
 present proposal is functionally inferior to some of the alternatives outline there. It does, for
 instance, not cover the change history of the permission config or sharing the config among different
 users. The proposal is, however, a straightforward and easy to implement extension of the existing
-`m.ignored_user_list` mechanism. See also [this comment] for further details.
+`m.ignored_user_list` mechanism. See also [this comment] for further details. This proposal is additionally
+extensible for further types of blocking in the future. For example, a future MSC could create definitions
+and behaviours to block/ignore/allow invites from contacts, of a particular type (DM, space, etc), 
+to a particular room, or even with given keywords.
 
 
 ## Security considerations
