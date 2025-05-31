@@ -122,7 +122,7 @@ Here are two example events:
 The behavior of a client:
 
 1. If a message is sent by a human, `m.bounce_limit` is RECOMMENDED to be missing. In the case when the definition of "sent by a human" is ambiguous in certain applications, a message is considered equivalently "sent by a human" only if there is absolutely no risk of bot loops except for software malfunctions. In other words, bridged messages MUST NOT be considered "sent by human."
-2. A bot supporting `m.bounce_limit` MUST define its own `max_outgoing_bounce_limit` value. It MUST be an integer between and including 1 and 2^53-1. We RECOMMENDED that a bot allows its operator to configure the `max_outgoing_bounce_limit` to suit their needs.
+2. A bot supporting `m.bounce_limit` MUST define its own `max_outgoing_bounce_limit` value. It MUST be an integer between and including 1 and 2^53-1. We RECOMMENDED that a bot allows its operator to configure the `max_outgoing_bounce_limit` to suit their needs. We also RECOMMEND `max_outgoing_bounce_limit` defaults to be between and including 1 and 3, depending on the bot's job.
 3. A bot is allowed to process any incoming messages, but MUST NOT send response messages (including stickers) to any incoming messages:
    1. with an `m.bounce_limit` of 1 after normalization, or
    2. whose `m.bounce_limit` is missing after normalization AND with a `msgtype` of `m.notice`, or
