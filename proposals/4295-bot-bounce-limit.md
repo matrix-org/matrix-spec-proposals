@@ -52,7 +52,7 @@ There are three existing solutions to prevent bot loops:
 
    There are two downsides of vendor-specific tags:
    1. One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
-   2. The purpose of some vendor-specific tags (e.g., `fi.mau.double_puppet_source`) may be intra-bot loop prevention, instead of inter-bot, thus serves a different purpose than this proposal.
+   2. Vendor-specific tags exist for a reason: they sometimes serve a different purpose than this proposal. For example, `fi.mau.double_puppet_source` prevents intra-bot loops, instead of inter-bot loops.
 
 3. An ignore list:
 
