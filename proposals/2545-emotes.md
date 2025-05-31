@@ -310,11 +310,11 @@ A suggestion for clients of image pack ordering is as follows:
 1. User image pack (defined in the user's account data)
 2. Image pack rooms (defined in the `m.image_pack.rooms` user account data
     object)
-3. Space image packs (defined in the hierarchy of canonical spaces for the
-    current room)
-4. Room image packs (defined in the currently open room's state)
-5. Referenced room image packs (defined in the `m.image_pack.rooms` room
+3. Room image packs (defined in the currently open room's state)
+4. Referenced room image packs (defined in the `m.image_pack.rooms` room
     state event)
+5. Space image packs (defined in the hierarchy of canonical spaces for the
+    current room)
 
 Note: this MSC does not define an ordering for images within packs. That is left
 to a future MSC.
