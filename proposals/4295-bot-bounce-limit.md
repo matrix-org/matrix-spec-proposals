@@ -7,18 +7,18 @@ Matrix is an open platform that welcomes bots and bridges. Unlike other platform
 Here are some examples of multi-bot interactions and their needs for loop prevention:
 
 1. The room operator can run a "CAPTCHA bot" that screens every new member joining the room, but doesn't want these CAPTCHAs to be bridged to other platforms [[1]](https://github.com/mautrix/telegram/issues/918).
-2. The room operator can run a "GitHub CI bot" that sends CI task reports, and another "URL previewer bot" that generates URL previews from the former bot's output. (It is a separate debate whether a central-managed URL previewer bot is more privacy-preserving than the URL preview feature provided by each member's homeserver.)
-3. For a room purposed for technical support, the operator can run an AI-powered bot to automatically answer common questions. Such AI bot is allowed to trigger other bots for certain helpful tasks.
-4. The room operator can run a "UTD notification bot" that notifies room members that their messages can't be decrypted by others. However, it is very important to prevent it from replying another bot's message.
+2. The room operator can run a "GitHub CI bot" that sends CI task reports, and another "URL previewer bot" that generates URL previews from the former bot's output. (It is a separate debate whether a centrally-managed URL previewer bot is more privacy-preserving than the URL preview feature provided by each member's homeserver.)
+3. For a room purposed for technical support, the operator can run an AI-powered bot to automatically answer common questions. Such an AI bot is allowed to trigger other bots for certain helpful tasks.
+4. The room operator can run a "UTD notification bot" that notifies room members that their messages can't be decrypted by others. However, it is very important to prevent it from replying to another bot's message.
 5. When bridging rooms across three or more platforms (e.g., Matrix ⇌ Telegram ⇌ IRC ⇌ Matrix), it is necessary to make sure each bridge doesn't pick up another bridge's messages.
-6. Bridges supporting double-puppeting needs to ignore messages sent by a reverse puppet. Although they already employ proprietary methods (e.g., vendor-prefixed tags like `fi.mau.double_puppet_source` or a list of ignored user IDs), it could be very useful to provide a standardized loop-preventing mechanism, allowing bridges from different vendors to work in harmony at the same room.
+6. If the same bot provides native versions for multiple platforms, the room operator may want to let the bot itself provide native experiences on different platforms (e.g., `!bot help` on Matrix and IRC, `/help@bot` on Telegram, `/help` on Discord, etc.). This bot needs to bridge its outputs by itself to make command palettes work, thus it needs to inform any existing bridges to ignore its output to prevent double bridging.
 
 Currently, it is usually a room operator's responsibility to prevent bot loops, for example, by carefully configuring each bot's ignore list, ensuring all possible outputs of one bot don't contain trigger words of another bot, and removing unauthorized bots invited by some random member. Nonetheless, a well-maintained configuration can be very fragile, and the room operator may not be able to monitor the room at all times.
 
-The goal of of this proposal is to:
+The goal of this proposal is to:
 
 1. Reduce the burden on room operators --- they still carry the responsibility to prevent loops, but less effort is needed.
-2. Allow bot developers to follow a standardized guideline for their bots to not cause trouble in a multi-bot environment.
+2. Allow bot developers to follow a standardized guideline for their bots not to cause trouble in a multi-bot environment.
 3. In the event of a bot loop due to misconfiguration, ensure "specification-compliant" bots will eventually stop, giving the room operator time to react.
 4. In rooms with no moderators, or even no human presence, reduce the risk that remaining bots generate an infinite amount of traffic without being noticed.
 5. Promote a healthier Matrix ecosystem where multiple bots can collaborate better.
@@ -41,14 +41,14 @@ There are three existing solutions to prevent bot loops:
 
    1. It is analogous to `m.text`, which doesn't support attached files or encrypted images.
    2. It is designed for automated messages, not bridged messages sent originally by a human.
-   3. Similarly, `m.notice` won't be picked up by bridges to forward to a bridged platform.
-   4. It prevents multiple bots from collaborating. As shown above, bot collaborating can be helpful.
-   5. It is difficult to decide whether an AI-powered bot should use `m.notice` or `m.text`. --- Should we give it ability to interact with other bots?
+   3. The current Matrix specification doesn't define whether bridges should forward `m.notice` to different platforms.
+   4. It prevents multiple bots from collaborating. As shown above, bot collaboration can be helpful.
+   5. It is difficult to decide whether an AI-powered bot should use `m.notice` or `m.text`. --- Should we give it the ability to interact with other bots?
    6. `m.notice` is often displayed in a distinct manner, such as with a different text color, which, depending on the semantics of the message, may not always be ideal.
 
 2. Vendor-specific tags:
 
-   For example, Mautrix attaches `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to human, but can be inspected through "View JSON Source." Mautrix won't forward a message if the sender is a is a reverse puppet account managed by the same Mautrix instance and the message has such tag [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964).
+   For example, Mautrix attaches the `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to humans, but can be inspected through "View JSON Source." Mautrix won't forward a message if the sender is a reverse puppet account managed by the same Mautrix instance and the message has such a tag [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964).
 
    The downside of vendor-specific tags is obvious: One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
 
@@ -73,7 +73,7 @@ A valid `m.bounce_limit` value can be in either of the following forms:
 These are invalid forms, and their normalization rules upon receiving:
 
 1. The number 0, which should be treated as missing. (This design is to simplify the development of bots in certain programming languages, such as Go.)
-2. Floating-point numbers are not permitted by Matrix protocol.
+2. Floating-point numbers are not permitted by the Matrix protocol.
 3. Any other values, including but not limited to negative numbers, strings, etc., which should be treated as the number 1.
 
 Here are two example events:
@@ -126,7 +126,7 @@ The behavior of a client:
 2. A bot supporting `m.bounce_limit` MUST define its own `max_outgoing_bounce_limit` value, which does not need to be shared.
    1. It MUST be an integer between and including 1 and 2^53-1.
    2. We RECOMMENDED that a bot allows its operator to configure the `max_outgoing_bounce_limit` to suit their needs.
-   3. We also RECOMMEND `max_outgoing_bounce_limit` defaults to be 1, or with a valid reason (e.g., due to the bot's job), no more 3.
+   3. We also RECOMMEND `max_outgoing_bounce_limit` default to 1, or with a valid reason (e.g., due to the bot's job), no more than 3.
 3. A bot is allowed to process any incoming messages, but MUST NOT send response messages (including stickers) to any incoming messages:
    1. with an `m.bounce_limit` of 1 after normalization, or
    2. whose `m.bounce_limit` is missing after normalization AND with a `msgtype` of `m.notice`, or
@@ -152,21 +152,21 @@ There are a few issues to consider:
 
 2. If the response of a bot is not a message (or a sticker), the behavior is not defined.
 
-   For example, if the bot's job is to change the room name, room topic, or pinned messages, this proposal does not define its behavior of loop prevention.
+   For example, if the bot's job is to change the room name, room topic, or pinned messages, this proposal does not define its loop prevention behavior.
 
-   Two bots racing with each other changing room states surely causes a bigger havoc, but we can't analyze a fictional problem unless we observe it real.
+   Two bots racing with each other changing room states would surely cause greater havoc, but we can't analyze such a hypothetical problem until it is observed in practice.
 
 3. How `m.bounce_limit` propagates across bridges is undefined.
 
-   Some platforms, such as Telegram, already prevents bot loops by forbidding bots from seeing each other's messages.
+   Some platforms, such as Telegram, already prevent bot loops by forbidding bots from seeing each other's messages.
 
-   Some other platforms, such as IRC, has bot loops as a long-standing problem. We don't aim to solve other people's problems.
+   Some other platforms, such as IRC, have bot loops as a long-standing problem. We don't aim to solve other people's problems.
 
    If a platform has a similar bounce limit mechanism, the bridge developer SHOULD try to pass the bounce limit value across the bridge as `m.bounce_limit - 1`.
 
    Or, if a platform has an equivalent of `m.notice`, the bridge developer SHOULD try to map messages with `m.bounce_limit` of 2 to the `m.notice` equivalent of that platform.
 
-4. A probable implementation pitfall of unconditionally ignoring messages of `m.bounce_limit` of 1.
+4. A probable implementation pitfall of unconditionally ignoring messages with an `m.bounce_limit` of 1.
 
    If a bot's job is to prevent flooding or remove spam messages, it MUST NOT ignore messages based on their `m.bounce_limit` values.
 
@@ -174,7 +174,7 @@ There are a few issues to consider:
 
 ## Alternatives
 
-There are two alternative considerations:
+There are three alternative considerations:
 
 1. Whether to put `m.bounce_limit` into the **encrypted** `content`.
 
@@ -193,12 +193,12 @@ There are two alternative considerations:
 
    Regarding this question, here are my reasons:
 
-   1. It is impossible to standardize `m.bot_data_exange`, because it has to be flexible enough to accept any valid JSON. Vendor-prefixed tags should be a better choice for inter-bot data exchange.
+   1. It is impossible to standardize `m.bot_data_exchange`, because it has to be flexible enough to accept any valid JSON. Vendor-prefixed tags should be a better choice for inter-bot data exchange.
    2. Obviously, `m.bot_data_exchange` has to be encrypted, while I propose that the bounce limit be unencrypted.
 
-3. Whether we should simply ban the usage of inter-bot interaction.
+3. Whether we should simply ban inter-bot interaction.
 
-   As Matrix is an open platform, this is impossible. Additionally, the ability to perform bot-to-bot interaction sets Matrix bot apart from bots on other platforms, such as Telegram bots.
+   As Matrix is an open platform, this is impossible. Additionally, the ability to perform bot-to-bot interaction sets Matrix bots apart from bots on other platforms, such as Telegram bots.
 
    Inter-bot interaction even enables some creative use cases, for example, allowing bots that primarily serve users on other platforms to use a bot-only Matrix room as an out-of-band communication channel.
 
@@ -206,7 +206,7 @@ There are two alternative considerations:
 
 1. Denial-of-Service
 
-   Bot loops can cause intentional or unintentional Denial-of-Service attacks. If two bots, one supports `m.bounce_limit` and the other doesn't, there could be a risk of causing bot loops, which leads to a Denial-of-Service. However, the severity is not worse than before. A room operator's typical responsiblity of keeping an eye on the bots hasn't changed, therefore, the room operator should be aware which bots don't support `m.bounce_limit` and configure accordingly.
+   Bot loops can cause intentional or unintentional Denial-of-Service attacks. If two bots, one supports `m.bounce_limit` and the other doesn't, there could be a risk of causing bot loops, which leads to a Denial-of-Service. However, the severity is not worse than before. A room operator's typical responsibility of keeping an eye on the bots hasn't changed, therefore, the room operator should be aware which bots don't support `m.bounce_limit` and configure accordingly.
 
 2. Information leakage from the cleartext `m.bounce_limit`.
 
