@@ -50,9 +50,10 @@ There are three existing solutions to prevent bot loops:
 
    For example, Mautrix attaches the `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to humans, but can be inspected through "View JSON Source." Mautrix won't forward a message if the sender is a reverse puppet account managed by the same Mautrix instance and the message has such a tag [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964).
 
-   There are two downsides of vendor-specific tags:
+   There are two concerns of vendor-specific tags:
+
    1. One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
-   2. Vendor-specific tags exist for a reason: they sometimes serve a different purpose than this proposal. For example, `fi.mau.double_puppet_source` prevents intra-bot loops — double puppeting's unique challenge, instead of inter-bot loops.
+   2. Vendor-specific tags exist for a reason: they sometimes serve a different purpose than this proposal and can't replace each other. For example, `fi.mau.double_puppet_source` prevents intra-bot loops — double puppeting's unique challenge, instead of inter-bot loops.
 
 3. An ignore list:
 
@@ -60,7 +61,7 @@ There are three existing solutions to prevent bot loops:
 
    However, a valid ignore list that allows multi-bot collaboration without bot loops is fragile. Adding new bots to the room, or adding new features to an existing bot, may lead to new bot loops.
 
-   The new proposal won't replace ignore lists. Instead, it aims to complement them, enabling new creative use cases of Matrix bots.
+   The new proposal won't replace ignore lists. Instead, it aims to complement the mechanism, enabling new creative use cases of Matrix bots.
 
 ## Proposal: `m.bounce_limit`
 
@@ -75,7 +76,7 @@ A valid `m.bounce_limit` value can be in either of the following forms:
 These are invalid forms, and their normalization rules upon receiving:
 
 1. The number 0, which should be treated as missing. (This design is to simplify the development of bots in certain programming languages, such as Go.)
-2. Floating-point numbers are not permitted by the Matrix protocol.
+2. Floating-point numbers, which are not permitted by the Matrix protocol.
 3. Any other values, including but not limited to negative numbers, strings, etc., which should be treated as the number 1.
 
 Here are two example events:
@@ -128,7 +129,7 @@ The behavior of a client:
 2. A bot supporting `m.bounce_limit` MUST define its own `max_outgoing_bounce_limit` value, which does not need to be shared.
    1. It MUST be an integer between and including 1 and 2^53-1.
    2. We RECOMMENDED that a bot allows its operator to configure the `max_outgoing_bounce_limit` to suit their needs.
-   3. We also RECOMMEND `max_outgoing_bounce_limit` default to 1, or with a valid reason (e.g., due to the bot's job), no more than 3.
+   3. We also RECOMMEND `max_outgoing_bounce_limit` default to 1, or in case of a special reason (e.g., due to the bot's job), no more than 3.
 3. A bot is allowed to process any incoming messages, but MUST NOT send response messages (including stickers) to any incoming messages:
    1. with an `m.bounce_limit` of 1 after normalization, or
    2. whose `m.bounce_limit` is missing after normalization AND with a `msgtype` of `m.notice`, or
@@ -208,7 +209,7 @@ There are three alternative considerations:
 
 1. Denial-of-Service
 
-   Bot loops can cause intentional or unintentional Denial-of-Service attacks. If two bots, one supports `m.bounce_limit` and the other doesn't, there could be a risk of causing bot loops, which leads to a Denial-of-Service. However, the severity is not worse than before. A room operator's typical responsibility of keeping an eye on the bots hasn't changed, therefore, the room operator should be aware which bots don't support `m.bounce_limit` and configure accordingly.
+   Bot loops can cause intentional or unintentional Denial-of-Service attacks. If among two bots, one supports `m.bounce_limit` and the other doesn't, there could be a risk of causing bot loops, which leads to a Denial-of-Service. However, this proposal doesn't increase the severity than before. A room operator's typical responsibility of keeping an eye on the bots hasn't changed, therefore, the room operator should be aware which bots don't support `m.bounce_limit` and configure accordingly.
 
 2. Information leakage from the cleartext `m.bounce_limit`.
 
