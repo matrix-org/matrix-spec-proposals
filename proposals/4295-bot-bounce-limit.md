@@ -218,6 +218,12 @@ When implementing this proposal, the unstable tag `io.github.m13253.bounce_limit
 |--------------------------|---------------------------------|
 | `m.bounce_limit`         | `io.github.m13253.bounce_limit` |
 
+## Unstable Implementations
+
+This proposal requires no client modification.
+
+However, SDKs, bots, or bot frameworks can implement an unstable version of the proposal prior to its official acceptance.
+
 ## Dependencies
 
-This MSC does not depend on any MSCs that are yet to be accepted.
+This MSC does not depend on any other MSCs that are yet to be accepted.
