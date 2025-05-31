@@ -50,7 +50,9 @@ There are three existing solutions to prevent bot loops:
 
    For example, Mautrix attaches the `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to humans, but can be inspected through "View JSON Source." Mautrix won't forward a message if the sender is a reverse puppet account managed by the same Mautrix instance and the message has such a tag [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964).
 
-   The downside of vendor-specific tags is obvious: One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
+   There are two downsides of vendor-specific tags:
+   1. One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
+   2. The purpose of some vendor-specific tags (e.g., `fi.mau.double_puppet_source`) may be intra-bot loop prevention, instead of inter-bot, thus serves a different purpose than this proposal.
 
 3. An ignore list:
 
