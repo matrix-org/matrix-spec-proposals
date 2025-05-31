@@ -72,7 +72,7 @@ A valid `m.bounce_limit` value can be in either of the following forms:
 
 These are invalid forms, and their normalization rules upon receiving:
 
-1. The number 0, which should be treated as missing. (This design is to simplify the development of bots in certain programming languages, such as Go.)
+1. The number ±0, which should be treated as missing. (This design is to simplify the development of bots in certain programming languages, such as Go.)
 2. Any other values, including but not limited to negative numbers, decimal fractions, strings, etc., which should be treated as 1.
 
 Here are two example events:
