@@ -7,7 +7,7 @@ Matrix is an open platform that welcomes bots and bridges. Unlike other platform
 Here are some examples of multi-bot interactions and their needs for loop prevention:
 
 1. The room operator can run a "CAPTCHA bot" that screens every new member joining the room, but doesn't want these CAPTCHAs to be bridged to other platforms [[1]](https://github.com/mautrix/telegram/issues/918).
-2. The room operator can run a "GitHub CI bot" that reports CI task reports, and another "URL previewer bot" that generates URL previews from the former bot's output. (It is a separate debate whether a central-managed URL previewer bot is more privacy-preserving than the URL preview feature provided by each member's homeserver.)
+2. The room operator can run a "GitHub CI bot" that sends CI task reports, and another "URL previewer bot" that generates URL previews from the former bot's output. (It is a separate debate whether a central-managed URL previewer bot is more privacy-preserving than the URL preview feature provided by each member's homeserver.)
 3. For a room purposed for technical support, the operator can run an AI-powered bot to automatically answer common questions. Such AI bot is allowed to trigger other bots for certain helpful tasks.
 4. The room operator can run a "UTD notification bot" that notifies room members that their messages can't be decrypted by others. However, it is very important to prevent it from replying another bot's message.
 5. When bridging rooms across three or more platforms (e.g., Matrix ⇌ Telegram ⇌ IRC ⇌ Matrix), it is necessary to make sure each bridge doesn't pick up another bridge's messages.
