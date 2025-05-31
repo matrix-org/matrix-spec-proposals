@@ -200,7 +200,7 @@ There are two alternative considerations:
 
    As Matrix is an open platform, this is impossible. Additionally, the ability to perform bot-to-bot interaction sets Matrix bot apart from bots on other platforms, such as Telegram bots.
 
-   Inter-bot interaction even enables some creative use cases, for example, allowing bots that primarily serve users on other platforms to use a bot-only Matrix rooms as an out-of-band communication channel.
+   Inter-bot interaction even enables some creative use cases, for example, allowing bots that primarily serve users on other platforms to use a bot-only Matrix room as an out-of-band communication channel.
 
 ## Security considerations
 
