@@ -133,8 +133,9 @@ The behavior of a client:
    3. whose `m.bounce_limit` is missing after normalization AND the bot is unable to decrypt the message.
 4. When the bot sends a response message (including stickers), it MUST set its outgoing `m.bounce_limit` to `min(incoming_bounce_limit - 1, max_outgoing_bounce_limit)`, where `incoming_bounce_limit` is the `m.bounce_limit` value of the incoming message, or `max_outgoing_bounce_limit` if the `m.bounce_limit` value of the incoming message is missing.
 5. When a bot sends an outgoing message (including stickers) that is not a response to any incoming message, it MUST set its outgoing `m.bounce_limit` to `max_outgoing_bounce_limit`.
-6. The bot SHOULD use `m.notice` unless there is a reason not to. Examples of valid reasons are listed in the [Existing solutions](#existing-solutions) section.
-7. If the sole purpose of an SDK or library is to develop bots, and if it is convenient to do so, it SHOULD make `m.bounce_limit` support on by default.
+6. The bot SHOULD use `m.notice` unless there is a reason not to. Examples of such reasons are listed in the [Existing solutions](#existing-solutions) section.
+7. Bridges consume one bounce similar to bots. In other words, if a message MUST NOT be responded by a bot, it MUST NOT be forwarded by a bridge either.
+8. If the sole purpose of an SDK or library is to develop bots or bridges, and if it is convenient to do so, it SHOULD make `m.bounce_limit` support on by default.
 
 Compatibility advantages of this design:
 
