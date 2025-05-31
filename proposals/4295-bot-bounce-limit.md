@@ -31,7 +31,7 @@ The goal of this proposal is **NOT** to:
 
 ## Existing solutions
 
-There are three existing solutions to prevent bot loops:
+There are four existing solutions to prevent bot loops:
 
 1. The `m.notice` message type:
 
@@ -46,7 +46,11 @@ There are three existing solutions to prevent bot loops:
    5. It is difficult to decide whether an AI-powered bot should use `m.notice` or `m.text`. —Should we give it the ability to interact with other bots?
    6. `m.notice` is often displayed in a distinct manner, such as with a different text color, which, depending on the semantics of the message, may not always be ideal.
 
-2. Vendor-specific tags:
+2. [MSC3955](https://github.com/matrix-org/matrix-spec-proposals/pull/3955): Extensible Events - Automated event mixin
+
+   It is similar to `m.notice`, except it has one less disadvantage than `m.notice`, because it supports multimedia messages.
+
+3. Vendor-specific tags:
 
    For example, Mautrix attaches the `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to humans, but can be inspected through "View JSON Source." Mautrix won't forward a message if the sender is a reverse puppet account managed by the same Mautrix instance and the message has such a tag [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964).
 
@@ -55,7 +59,7 @@ There are three existing solutions to prevent bot loops:
    1. One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
    2. Vendor-specific tags exist for a reason: they sometimes serve a different purpose than this proposal and can't replace each other. For example, `fi.mau.double_puppet_source` prevents intra-bot loops — double puppeting's unique challenge, instead of inter-bot loops.
 
-3. An ignore list:
+4. An ignore list:
 
    In the configuration file of a Matrix bot with such a feature, the operator can specify a list of users whose messages are ignored by the bot.
 
