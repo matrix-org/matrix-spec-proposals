@@ -154,7 +154,7 @@ There are a few issues to consider:
 
    For example, if the bot's job is to change the room name, room topic, or pinned messages, this proposal does not define its behavior of loop prevention.
 
-   Two bots racing with each other changing room states surely causes a bigger havoc, but we can't analyze it unless we observe a real problem.
+   Two bots racing with each other changing room states surely causes a bigger havoc, but we can't analyze a fictional problem unless we observe it real.
 
 3. How `m.bounce_limit` propagates across bridges is undefined.
 
