@@ -181,7 +181,7 @@ There are two alternative considerations:
    Regarding this question, here are my reasons:
 
    1. `sender` and `m.relates_to` are unencrypted. The information that can be inferred from `m.bounce_limit` is the same as what can be inferred from analyzing `sender` and `m.relates_to`.
-   2. `m.bounce_limit` is similar to TTL in IPv4 or hop_limit in IPv6, which are unencrypted even under IPsec encryption.
+   2. `m.bounce_limit` is similar to TTL in IPv4 or Hop Limit in IPv6, which are unencrypted even under IPsec encryption.
    3. The occurrence of bot loops does not require messages to be decrypted successfully.
    4. Putting `m.bounce_limit` in the cleartext allows a useful application of "UTD notification bot," described in the [Background](#background) section.
 
