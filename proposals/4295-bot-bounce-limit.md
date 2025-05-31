@@ -17,7 +17,7 @@ Currently, it is usually a room operator's responsibility to prevent bot loops, 
 
 The goal of this proposal is to:
 
-1. Reduce the burden on room operators --- they still carry the responsibility to prevent loops, but less effort is needed.
+1. Reduce the burden on room operators — they still carry the responsibility to prevent loops, but less effort is needed.
 2. Allow bot developers to follow a standardized guideline for their bots not to cause trouble in a multi-bot environment.
 3. In the event of a bot loop due to misconfiguration, ensure "specification-compliant" bots will eventually stop, giving the room operator time to react.
 4. In rooms with no moderators, or even no human presence, reduce the risk that remaining bots generate an infinite amount of traffic without being noticed.
@@ -43,7 +43,7 @@ There are three existing solutions to prevent bot loops:
    2. It is designed for automated messages, not bridged messages sent originally by a human.
    3. The current Matrix specification doesn't define whether bridges should forward `m.notice` to different platforms.
    4. It prevents multiple bots from collaborating. As shown above, bot collaboration can be helpful.
-   5. It is difficult to decide whether an AI-powered bot should use `m.notice` or `m.text`. --- Should we give it the ability to interact with other bots?
+   5. It is difficult to decide whether an AI-powered bot should use `m.notice` or `m.text`. —Should we give it the ability to interact with other bots?
    6. `m.notice` is often displayed in a distinct manner, such as with a different text color, which, depending on the semantics of the message, may not always be ideal.
 
 2. Vendor-specific tags:
@@ -52,7 +52,7 @@ There are three existing solutions to prevent bot loops:
 
    There are two downsides of vendor-specific tags:
    1. One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
-   2. Vendor-specific tags exist for a reason: they sometimes serve a different purpose than this proposal. For example, `fi.mau.double_puppet_source` prevents intra-bot loops, instead of inter-bot loops.
+   2. Vendor-specific tags exist for a reason: they sometimes serve a different purpose than this proposal. For example, `fi.mau.double_puppet_source` prevents intra-bot loops — double puppeting's unique challenge, instead of inter-bot loops.
 
 3. An ignore list:
 
