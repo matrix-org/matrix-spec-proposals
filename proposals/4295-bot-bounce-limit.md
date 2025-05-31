@@ -161,7 +161,7 @@ There are a few issues to consider:
 
    Some other platforms, such as IRC, has bot loops as a long-standing problem. We don't aim to solve other people's problems.
 
-   If a platform has a similar bounce limit mechanism, the bridge developer SHOULD try to pass the value across the bridge.
+   If a platform has a similar bounce limit mechanism, the bridge developer SHOULD try to pass `m.bounce_limit - 1` across the bridge.
 
    Or, if a platform has an equivalent of `m.notice`, the bridge developer SHOULD try to map messages with `m.bounce_limit` of 2 to the `m.notice` equivalent of that platform.
 
