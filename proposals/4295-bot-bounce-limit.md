@@ -209,7 +209,7 @@ There are three alternative considerations:
 
 1. Denial-of-Service
 
-   Bot loops can cause intentional or unintentional Denial-of-Service attacks. If among two bots, one supports `m.bounce_limit` and the other doesn't, there could be a risk of causing bot loops, which leads to a Denial-of-Service. However, this proposal doesn't increase the severity than before. A room operator's typical responsibility of keeping an eye on the bots hasn't changed, therefore, the room operator should be aware which bots don't support `m.bounce_limit` and configure accordingly.
+   Bot loops can cause intentional or unintentional Denial-of-Service attacks. If among two bots, one supports `m.bounce_limit` and the other doesn't, there could be a risk of causing bot loops, which leads to a Denial-of-Service. However, this proposal doesn't increase the severity from its previous level. A room operator's typical responsibility of keeping an eye on the bots hasn't changed, therefore, the room operator should be aware which bots don't support `m.bounce_limit` and configure accordingly.
 
 2. Information leakage from the cleartext `m.bounce_limit`.
 
