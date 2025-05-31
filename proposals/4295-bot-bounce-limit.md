@@ -48,7 +48,7 @@ There are four existing solutions to prevent bot loops:
 
 2. [MSC3955](https://github.com/matrix-org/matrix-spec-proposals/pull/3955): Extensible Events - Automated event mixin
 
-   It is similar to `m.notice`, except it has one less disadvantage than `m.notice`, because it supports multimedia messages.
+   It is similar to `m.notice` but it supports multimedia messages. This solution still bears the same five remaining disadvantages of `m.notice`.
 
 3. Vendor-specific tags:
 
