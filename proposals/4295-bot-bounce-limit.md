@@ -6,7 +6,7 @@ Matrix is an open platform that welcomes bots and bridges. Unlike other platform
 
 Here are some examples of multi-bot interactions and their needs for loop prevention:
 
-1. The room operator can run a "CAPTCHA bot" that screens every new member joining the room, but doesn't want these CAPTCHAs to be bridged to other platforms. [[1]](https://github.com/mautrix/telegram/issues/918)
+1. The room operator can run a "CAPTCHA bot" that screens every new member joining the room, but doesn't want these CAPTCHAs to be bridged to other platforms [[1]](https://github.com/mautrix/telegram/issues/918).
 2. The room operator can run a "GitHub CI bot" that reports CI task reports, and another "URL previewer bot" that generates URL previews from the former bot's output. (It is a separate debate whether a central-managed URL previewer bot is more privacy-preserving than the URL preview feature provided by each member's homeserver.)
 3. For a room purposed for technical support, the operator can run an AI-powered bot to automatically answer common questions. Such AI bot is allowed to trigger other bots for certain helpful tasks.
 4. The room operator can run a "UTD notification bot" that notifies room members that their messages can't be decrypted by others. However, it is very important to prevent it from replying another bot's message.
@@ -46,9 +46,9 @@ There are three existing solutions to prevent bot loops:
    5. It is difficult to decide whether an AI-powered bot should use `m.notice` or `m.text`. --- Should we give it ability to interact with other bots?
    6. `m.notice` is often displayed in a distinct manner, such as with a different text color, which, depending on the semantics of the message, may not always be ideal.
 
-2. A vendor-specific tags:
+2. Vendor-specific tags:
 
-   For example, Mautrix attaches `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to human, but can be inspected through "View JSON Source". Mautrix won't forward a message if the sender is a is a reverse puppet account managed by the same Mautrix instance and the message has such tag. [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964)
+   For example, Mautrix attaches `fi.mau.double_puppet_source` tag to messages sent by a reverse puppet account. This tag is not visible to human, but can be inspected through "View JSON Source." Mautrix won't forward a message if the sender is a is a reverse puppet account managed by the same Mautrix instance and the message has such tag [[2]](https://github.com/mautrix/python/blob/8eac9db01e2b5fd9a30620bcbc8ebbaa36c71ecb/mautrix/bridge/matrix.py#L960-L964).
 
    The downside of vendor-specific tags is obvious: One bot developer cannot expect all other bot developers to support their custom tag unless it's standardized.
 
@@ -182,7 +182,7 @@ There are two alternative considerations:
    1. `sender` and `m.relates_to` are unencrypted. The information that can be inferred from `m.bounce_limit` is the same as what can be inferred from analyzing `sender` and `m.relates_to`.
    2. `m.bounce_limit` is similar to TTL in IPv4 or hop_limit in IPv6, which are unencrypted.
    3. The occurrence of bot loops does not require messages to be decrypted successfully.
-   4. Putting `m.bounce_limit` in the cleartext allows a useful application of "UTD notification bot", described in the [Background](#background) section.
+   4. Putting `m.bounce_limit` in the cleartext allows a useful application of "UTD notification bot," described in the [Background](#background) section.
 
    In my personal experience, I set all my rooms to end-to-end encrypted. Such a "UTD notification bot" reduces the friction of this switch, as members can be notified of a potentially misconfigured client or an E2EE-incompatible homeserver almost immediately. My room members were skeptical before the E2EE switch but became satisfied afterward. By allowing more large-scale rooms to be encrypted, I believe the overall privacy of the Matrix ecosystem increases.
 
