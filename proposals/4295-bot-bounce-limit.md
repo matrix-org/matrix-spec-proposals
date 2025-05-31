@@ -12,6 +12,7 @@ Here are some examples of multi-bot interactions and their needs for loop preven
 4. The room operator can run a "UTD notification bot" that notifies room members that their messages can't be decrypted by others. However, it is very important to prevent it from replying another bot's message.
 5. When bridging rooms across three or more platforms (e.g., Matrix ⇌ Telegram ⇌ IRC ⇌ Matrix), it is necessary to make sure each bridge doesn't pick up another bridge's messages.
 6. Bridges supporting double-puppeting needs to ignore messages sent by a reverse puppet. Although they already employ proprietary methods (e.g., vendor-prefixed tags like `fi.mau.double_puppet_source` or a list of ignored user IDs), it could be very useful to provide a standardized loop-preventing mechanism, allowing bridges from different vendors to work in harmony at the same room.
+
 Currently, it is usually a room operator's responsibility to prevent bot loops, for example, by carefully configuring each bot's ignore list, ensuring all possible outputs of one bot don't contain trigger words of another bot, and removing unauthorized bots invited by some random member. Nonetheless, a well-maintained configuration can be very fragile, and the room operator may not be able to monitor the room at all times.
 
 The goal of of this proposal is to:
