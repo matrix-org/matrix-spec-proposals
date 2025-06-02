@@ -48,7 +48,6 @@ apply the following order:
   2.  If it matches `ignored_servers`, stop processing and ignore.
   3.  If it matches `blocked_servers`, stop processing and block.
 3.  Otherwise, allow.
-4.  Otherwise allow.
 
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
 feedback to the inviter whereas blocking rejects (or refuses, in the case of servers) the invite.
