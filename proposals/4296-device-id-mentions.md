@@ -1,7 +1,7 @@
 # MSC4296: Mentions for device IDs
 
 The [`m.mentions`] content property on events allows senders to include an indicator about whether
-the event should triggger a specialised notification for some or all room members. Among others,
+the event should trigger a specialised notification for some or all room members. Among others,
 this can be used to direct events at a certain recipient group within the room. It is, however,
 not currently possible to direct events at a certain subset of devices within a room. This can
 be helpful, for instance, in cases where devices with different capabilities are participating
