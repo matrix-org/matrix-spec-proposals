@@ -116,23 +116,8 @@ The semantics and order of evaluation enable a number of use cases, for instance
 }
 ```
 
-Servers SHOULD enforce `m.invite_permission_config` against incoming invites but MAY also delegate
-the task to clients to allow them to let users review ignored and blocked invites. Clients MUST
-enforce the permission config, if their server doesn't do it. In either case, servers MUST communicate
-their behaviour to clients through a new capability `m.invite_permission_config_enforced`.
-
-```json5
-{
-  "capabilities": {
-    "m.invite_permission_config_enforced": {
-      "enabled": true
-    }
-  }
-}
-```
-
-If `enabled` is set to `true`, the server enforces the permission config. If the capability is missing,
-clients SHOULD behave as if `enabled` was set to `false`.
+Servers MUST enforce `m.invite_permission_config` against incoming new invites. Additionally, Servers
+SHOULD apply the config against existing pending invites as well.
 
 
 ## Potential issues
