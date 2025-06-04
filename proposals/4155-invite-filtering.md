@@ -122,7 +122,10 @@ SHOULD apply the config against existing pending invites as well.
 
 ## Potential issues
 
-None.
+Enforcing the permission configuration exclusively on the server means users have no way to review
+processed invites. This is desirable in most cases as a spam protection measure. It does mean, however,
+that if the user has accidentally blocked a good actor and is informed about it through a different
+communication channel, they'll have to update their permission configuration and request a re-invite.
 
 
 ## Alternatives
