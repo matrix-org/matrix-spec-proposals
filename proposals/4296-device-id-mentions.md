@@ -38,7 +38,8 @@ the following example should mention all of Bob's devices _and_ one of Alice's d
 
 ## Potential issues
 
-None.
+Clients that don't support this proposal will recognise no mentions for their logged in user at all if
+only `device_ids` is specified within `m.mentions`.
 
 ## Alternatives
 
