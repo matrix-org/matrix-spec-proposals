@@ -11,16 +11,30 @@ the message. This proposal makes it possible to mention specific devices via the
 
 ## Proposal
 
-A new optional property `device_ids` is introduced in [`m.mentions`] to allow specifying an array
-of device IDs to be mentioned by the message.
+A new optional property `device_ids` is introduced in [`m.mentions`] to allow specifying device IDs
+to be mentioned by a message. Since device IDs need to be namespaced to user IDs, `device_ids` is a
+a map from user ID to an array of device IDs.
 
 ```json5
 "m.mentions": {
-  "device_ids": ["ABC1234"]
+  "device_ids": {
+    "@alice:example.org": ["ABC1234"]
+  }
 }
 ```
 
 It is legal for `room` and `user_ids` to be present within `m.mentions` simultaneously to `device_ids`.
+As before, when applying mentions, the different properties inside `m.mentions` are OR'ed. This means
+the following example should mention all of Bob's devices _and_ one of Alice's devices.
+
+```json5
+"m.mentions": {
+  "user_ids": ["@bob:example.org"],
+  "device_ids": {
+    "@alice:example.org": ["ABC1234"]
+  }
+}
+```
 
 ## Potential issues
 
