@@ -50,7 +50,22 @@ apply the following order:
 3.  Otherwise, allow.
 
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
-feedback to the inviter whereas blocking rejects (or refuses, in the case of servers) the invite.
+feedback to the invite whereas blocking rejects (or refuses, in the case of servers) the invite.
+
+When blocking an inviter, the server must respond to the following endpoints with an error:
+
+- `PUT /_matrix/federation/(v1|v2)/invite/{roomId}/{eventId}`
+- `POST /_matrix/client/v3/rooms/{roomId}/invite`
+- `POST /_matrix/client/v3/createRoom` (checking the `invite` list)
+- `PUT /_matrix/client/v3/rooms/{roomId}/state/m.room.member/{stateKey}` (for invite membership)
+
+The error SHOULD be `M_INVITE_BLOCKED` with a HTTP 403 status code.
+
+When ignoring an invite, these endpoints MUST handle an invite normally as if accepted. However, the server MUST not include the invite down client synchronization endpoints such as  `GET /_matrix/client/v3/sync` or MSC4186's sliding sync endpoint. In addition, these invites MUST be ignored when calculating push notifications.
+
+Otherwise, all other endpoints (such as `GET /_matrix/client/v3/rooms/{roomId}/state`) should work as before. 
+
+Servers are not expected to process these rules for appservice users when calculating events to send down `PUT /_matrix/app/v1/transactions`. Appservices are not expected to be run directly by client users, and should be able to handle their own spam prevention.
 
 The semantics and order of evaluation enable a number of use cases, for instance:
 
