@@ -61,7 +61,9 @@ When blocking an inviter, the server must respond to the following endpoints wit
 
 The error SHOULD be `M_INVITE_BLOCKED` with a HTTP 403 status code.
 
-When ignoring an invite, these endpoints MUST handle an invite normally as if accepted. However, the server MUST not include the invite down client synchronization endpoints such as  `GET /_matrix/client/v3/sync` or MSC4186's sliding sync endpoint. In addition, these invites MUST be ignored when calculating push notifications.
+When ignoring an invite, these endpoints MUST handle an invite normally as if accepted. However, the server
+MUST not include the invite down client synchronization endpoints such as `GET /_matrix/client/v3/sync` or
+MSC4186's sliding sync endpoint. In addition, these invites MUST be ignored when calculating push notifications.
 
 Otherwise, all other endpoints (such as `GET /_matrix/client/v3/rooms/{roomId}/state`) should work as before. 
 
