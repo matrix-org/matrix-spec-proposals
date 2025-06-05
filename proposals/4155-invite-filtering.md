@@ -67,7 +67,9 @@ MSC4186's sliding sync endpoint. In addition, these invites MUST be ignored when
 
 Otherwise, all other endpoints (such as `GET /_matrix/client/v3/rooms/{roomId}/state`) should work as before. 
 
-Servers are not expected to process these rules for appservice users when calculating events to send down `PUT /_matrix/app/v1/transactions`. Appservices are not expected to be run directly by client users, and should be able to handle their own spam prevention.
+Servers are not expected to process these rules for appservice users when calculating events to send down
+`PUT /_matrix/app/v1/transactions`. Appservices are not expected to be run directly by client users, and
+should be able to handle their own spam prevention.
 
 The semantics and order of evaluation enable a number of use cases, for instance:
 
