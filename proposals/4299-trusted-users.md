@@ -10,7 +10,7 @@ expansion in the future as needs of the protocol change.
 
 For clarity's sake, the following words are used with the associated context throughout this proposal:
 
-- Ignored: (users that are ignored OR blocked)[2]
+- Ignored: [users that are ignored OR blocked][4283]
 - Non-trusted: users who are neither trusted nor ignored (the default state)
 - Trusted: users who are explicitly added to the trusted users account data object
 
@@ -74,18 +74,19 @@ This proposal also has potentially overlapping behaviour with other proposals, s
 Due to ignores and trusts being mutually exclusive, there is the risk that they will become desynchronised, and
 have overlapping entries. As defined above, ignores should take priority over trusts.
 
-
 ## Alternatives
 
-- [MSC4155](4155) implements invite filtering by defining allowed/ignored/blocked users & servers. The allow function
+- [MSC4155][4155] implements invite filtering by defining allowed/ignored/blocked users & servers. The allow function
   of that proposal has potentially overlapping functionality and semantics with this one, although lacks the future
   extensibility that this one aims to provide. Contrarily, 4155 could be used to build on top of this one.
 - Doing away with ignores, and instead only using trusts, and adding the ability to mark a trust as an ignore/untrust,
   or some other semantically similar meaning. This would be complicated and just generally expensive
-
 
 ## Unstable prefix
 
 Until this proposal is accepted, implementations should make use of the account data event type
 `uk.timedout.msc4299.trusted_users`, instead of `m.trusted_users`.
 
+[1]: https://spec.matrix.org/unstable/client-server-api/#mignored_user_list
+[4283]: https://github.com/matrix-org/matrix-spec-proposals/pull/4283
+[4155]: https://github.com/matrix-org/matrix-spec-proposals/pull/4155
