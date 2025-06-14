@@ -32,6 +32,14 @@ The field is allowed for all message events, which currently means
 `m.room.message` and `m.sticker`. A future MSC may expand the field to other
 events, such as reactions.
 
+### Field limits
+After JSON decoding, `id` and `displayname` MUST be at most 255 bytes of UTF-8
+and every code point MUST be a Unicode scalar. Null bytes (`\u0000`) are not
+allowed.
+
+Like with other images and avatars, clients should ignore any avatar URL that
+is not a `mxc://` URI.
+
 ### Encrypted avatars
 Because the profile is inside the ciphertext in encrypted events, the entire
 profile can be hidden from the server, as long as the avatar is also encrypted.
