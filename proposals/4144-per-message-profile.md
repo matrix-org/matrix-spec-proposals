@@ -94,6 +94,58 @@ implement them. However, in case extensible profiles are implemented as
 something that can be referenced (e.g. room IDs), the MSC adding them could
 allow per-message profiles to specify which extensible profile is used.
 
+### Fallbacks for old clients
+In order for users on old clients to see the per-message profile data, sending
+clients SHOULD include a fallback containing the per-message displayname.
+When a fallback is used, the per-message profile object MUST include
+`"has_fallback": true`.
+
+#### Plaintext fallback
+The fallback MUST be at the beginning of the plaintext `body` and consist of
+the exact value of the `displayname` property, followed by a colon (`:`) and
+a space (`\x20`), e.g. `cat: original message`.
+
+To remove the plaintext fallback, trim the prefix `{displayname}: ` from the body.
+
+#### HTML fallback
+If a `formatted_body` of type `org.matrix.custom.html` is present, it SHOULD
+include the same fallback text inside a `strong` tag with the `data-mx-profile-fallback`
+attribute, e.g. `<strong data-mx-profile-fallback>cat: </strong>original message`.
+
+The displayname MUST be HTML-escaped and there MUST NOT be any HTML tags inside
+the fallback. The tag MUST NOT have any other attributes. The attribute MAY
+have an empty string as its value (`=""`) for compatibility with all HTML
+generators, but MUST NOT have any other value. The HTML fallback is not mandated
+to be at the beginning of the string, as there may be valid reasons to put it
+inside another tag, such as a `<p>` tag.
+
+To remove the HTML fallback, either use a HTML parser to drop the entire `strong`
+tag with a `data-mx-profile-fallback` attribute, or replace matches of the
+following regex with an empty string: `<strong\s+data-mx-profile-fallback(?:="")?\s*>([^<]+): </strong\s*>`
+
+#### Other details
+If a fallback is used in a media message, the `filename` property MUST be set
+to ensure the `body` is treated as a caption rather than a file name.
+
+Fallbacks MUST only be used when the `displayname` property is a non-empty
+string, i.e. they are not used when falling back to the member event name.
+
+#### Example with fallback
+```json
+{
+  "msgtype": "m.text",
+  "body": "cat: Hello, World!",
+  "format": "org.matrix.custom.html",
+  "formatted_body": "<p><strong data-mx-profile-fallback>cat: </strong>Hello, World!</p>",
+  "m.per_message_profile": {
+    "id": "meow",
+    "displayname": "cat",
+    "avatar_url": "mxc://maunium.net/hgXsKqlmRfpKvCZdUoWDkFQo",
+    "has_fallback": true
+  }
+}
+```
+
 ## Use cases
 
 ### Bridging
