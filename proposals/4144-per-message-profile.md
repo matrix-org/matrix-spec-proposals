@@ -188,6 +188,10 @@ which has other benefits, but is much more cumbersome to manage.
 Implementing encrypted avatars could cause difficulty for clients that assume
 that avatars are always unencrypted mxc URIs.
 
+When per-message profiles are used for bridging, there's no way to mention
+specific users, as mentions will just target the single bridge bot. A future
+MSC could define a way to specify which profile to mention.
+
 ## Alternatives
 ### New state events
 Per-message profiles could be transmitted more compactly by defining the profile
