@@ -8,7 +8,7 @@ must comply with the [App Review Guidelines](https://developer.apple.com/app-sto
 These guidelines include restrictions on which payment methods are offered and how they are accessed.
 
 If a homeserver operator requires a paid plan for usage of some capabilities then a conflict of
-interests can arise between the homserver operator and the application developer:
+interests can arise between the homeserver operator and the application developer:
 
 The homeserver operator may wish to promote the paid service by sending
 [Server Notices](https://spec.matrix.org/v1.14/client-server-api/#server-notices) to the user or
