@@ -106,6 +106,12 @@ would allow senders to look up recipient capabilities ahead of time but would no
 to communicate back detailed information about their processing status of individual events. As a
 result, the two mechanisms are not necessarily competing and could also play together.
 
+Delivery receipts as proposed in [MSC4089] are a partial alternative to this proposal. These
+receipts only convey receipt and decryption status but not whether the decrypted event was actually
+understood and processed successfully. Additionally, delivery receipts don't cover the case where an
+event was received but failed to be processed. Lastly, receipts in their current form also don't
+support including additional encrypted information about the processing result.
+
 ## Security considerations
 
 Communicating the processing status via room events leaks metadata by revealing client capabilities
@@ -128,3 +134,4 @@ should be referred to as `de.gematik.msc4300.request.status` and
 None.
 
   [MSC1767]: https://github.com/matrix-org/matrix-spec-proposals/pull/1767
+  [MSC4089]: https://github.com/matrix-org/matrix-spec-proposals/pull/4089
