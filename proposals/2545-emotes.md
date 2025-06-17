@@ -35,7 +35,7 @@ also known in short as "emotes".
 Emotes are images or text describing emotions or other things. Emoji are a
 subset of emotes, namely those found within the Unicode spec. Custom emoji,
 therefore, would actually refer to a custom emoji font; one's own rendering of
-Unicode's 🦊, 🐱, etc. This differs from new images; which is what custom
+Unicode's 🦊, 🐱, etc. This differs from new images, which is what custom
 emoticons are for.
 
 A client may of course choose to name these however they like. In the spec's
@@ -46,7 +46,7 @@ after what they are.
 #### Stickers
 
 Stickers already exist in Matrix (see the [`m.sticker` event
-type](https://spec.matrix.org/v1.14/client-server-api/#msticker). They are
+type](https://spec.matrix.org/v1.14/client-server-api/#msticker)). They are
 reusable images one can send; typically as a reaction to something sent in the
 timeline. The value this MSC brings to stickers is creating a mechanism to
 distribute them, such that a client can surface them to a user to choose and
@@ -57,7 +57,7 @@ send.
 A "shortcode" is a short, unique identifier for an emote or a sticker.
 
 A shortcode is NOT intended to be a visual description of an image, often to
-aide the visually impaired. That is more suitable to the `body` field; defined
+aide the visually impaired. That is more suitable to the `body` field, defined
 as part of an "Image object" below and on
 [`m.sticker`](https://spec.matrix.org/v1.14/client-server-api/#msticker) events.
 
@@ -76,8 +76,8 @@ property with an empty string for an image pack's `state_key`.
 
 `m.image_pack` state events contain the following keys within their `content`:
 
-* `images`: **Required, Map[String, Object]**. A map from a shortcode to an Image Object.
-* `pack` **Optional, Object**. A Pack Object.
+* `images`: **Required, Map[String, Object]**. A map from a shortcode to an [Image Object](#image-object).
+* `pack` **Optional, Object**. A [Pack Object](#pack-object).
 
 ```jsonc
 {
@@ -234,7 +234,7 @@ An example of a `m.image_pack.rooms` account data event:
 }
 ```
 
-Note that an empty object under a room ID, for example:
+An empty object under a room ID, for example:
 
 ```json
 {
