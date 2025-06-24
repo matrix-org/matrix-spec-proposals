@@ -1,6 +1,6 @@
-# MSC4222: Adding `state_after` to sync v2
+# MSC4222: Adding `state_after` to `/sync`
 
-The current sync v2 API does not differentiate between state events in the timeline and updates to state, and so can
+The current [`/sync`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3sync) API does not differentiate between state events in the timeline and updates to state, and so can
 cause the client's view of the current state of the room to diverge from the actual state of the room. This is
 particularly problematic for use-cases that rely on state being consistent between different clients.
 
@@ -20,7 +20,7 @@ This change is gated behind the client adding a `?use_state_after=true` (the uns
 `org.matrix.msc4222.use_state_after`) query param.
 
 When enabled, the Homeserver will **omit** the `state` section in the room response sections. This is replaced by
-`state_after` (the unstable field name is `org.matrix.msc4222.use_state_after`), which will include all state changes between the
+`state_after` (the unstable field name is `org.matrix.msc4222.state_after`), which will include all state changes between the
 previous sync and the *end* of the timeline section of the current sync. This is in contrast to the old `state` section
 that only included state changes between the previous sync and the *start* of the timeline section. Note that this does
 mean that a new state event will (likely) appear in both the timeline and state sections of the response.
@@ -28,11 +28,10 @@ mean that a new state event will (likely) appear in both the timeline and state 
 This is basically the same as how state is returned in [MSC4186 - Simplified Sliding
 Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186).
 
-State events that appear in the timeline section **MUST NOT** update the current state. The current state **MUST** only be
-updated with the contents of `state_after`.
+Clients **MUST** only update their local state using `state_after` and **NOT** consider the events that appear in the timeline section of `/sync`.
 
 Clients can tell if the server supports this change by whether it returns a `state` or `state_after` section in the
-response.
+response. Servers that support this change **MUST** return the `state_after` property, even if empty.
 
 ### Examples
 
@@ -140,7 +139,7 @@ Next, let’s look at what would happen if we receive a state event that does no
 Since the current state of the room does not include the new state event, it's excluded from the `state_after` section.
 
 > [!IMPORTANT]
-> Both responses are the same, but the client **MUST NOT** update its state with the event.
+> Even though both responses look very similar, the client **MUST NOT** update its state with the event from the timeline section when using `state_after`.
 
 
 ## Potential issues
@@ -149,11 +148,10 @@ With the proposed API the common case for receiving a state update will cause th
 `timeline` and `state` sections, potentially increasing bandwidth usage. However, it is common for the HTTP responses to
 be compressed, heavily reducing the impact of having duplicated data.
 
-Clients will not be able to tell when a state change happened within the timeline. This was used by some clients to
+As before, clients will not be able to reliably tell when a state change happened within the timeline. Currently, some clients walk through the timeline to
 render e.g. display names of users at the time they sent the message (rather than their current display name), though
-e.g. Element clients have moved away from this UX. This behavior can be replicated in the same way that clients dealt
-with messages received via pagination (i.e. calling `/messages`), by walking the timeline backwards and inspecting the
-`unsigned.prev_state` field. While this can lead to incorrect results, this is no worse than the previous situation.
+e.g. Element clients have moved away from this UX.
+This MSC allows to compute the current state correctly. It does not fix the behavior for the state history in the timeline. So clients using such an approach still will face the same issues they had before this MSC.
 
 
 ## Alternatives
@@ -161,7 +159,7 @@ with messages received via pagination (i.e. calling `/messages`), by walking the
 There are a number of options for encoding the same information in different ways, for example the response could
 include both the `state` and a `state_delta` section, where `state_delta` would be any changes that needed to be applied
 to the client calculated state to correct it. However, since
-[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) is likely to replace the sync v2 API, we may as
+[MSC4186](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) is likely to replace the current `/sync` API, we may as
 well use the same mechanism. This also has the benefit of showing that the proposed API shape can be successfully
 implemented by clients, as the MSC is implemented and in use by clients.
 
