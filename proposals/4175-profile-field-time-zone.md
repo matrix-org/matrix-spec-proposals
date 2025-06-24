@@ -11,11 +11,11 @@ to respond or not. Example uses include:
 
 Profiles can provide an optional `m.tz` field with values equal to names from the
 [IANA Time Zone Database](https://www.iana.org/time-zones).
-Clients can set and fetch this via the [normal API endpoints](https://spec.matrix.org/unstable/client-server-api/#profiles).
+Clients can set and fetch this via the [normal API endpoints](https://spec.matrix.org/v1.14/client-server-api/#profiles).
 
 * Servers MAY validate that the value is a valid IANA time zone. If deemed invalid
   they MUST return a 400 error with error code `M_INVALID_PARAM`.
-* Clients MUST handle invalid or unknown values.
+* Clients MUST handle invalid or unknown values. One approach may be processing the value as though it was never set.
 
 The rationale for somewhat loose validation is that different clients/servers may have
 different understanding of valid time zones, e.g. different versions of the time zone
