@@ -47,8 +47,9 @@ sending the flag.
 ## Potential issues
 
 Clients may lie about the flag which would cause unexpected behaviour, for example, an image which
-was not presented might then animate when the user clicks to enlarge it, allowing for 'jump scares'
-or similar. Clients may wish to prevent images from being animated if the flag is set to false.
+the client did not tell the user was animated might then animate when the user clicks to enlarge it,
+allowing for 'jump scares' or similar. Clients may wish to prevent images from being animated if the
+flag is set to false.
 
 As above, supporting animated images becomes harder for sending clients because they must work out if
 an image is animated in order to set the flag.
