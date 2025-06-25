@@ -209,6 +209,12 @@ to events in the timeline. Clients attempting to build a best-effort view of thi
 the timeline may still do so, with the same caveats as before about correctness, but they should be
 sure to make their view of the final state consistent with the changes provided in `state_after`.
 
+The format of returned state in `state_after` in this proposal is a list of events. This
+does not allow the server to indicate if an entry has been removed from the state. As with
+[MSC4186 - Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186),
+this limitation is acknowledged but not addressed here. This is not a new issue and is left for
+resolution in a future MSC.
+
 
 ## Alternatives
 
