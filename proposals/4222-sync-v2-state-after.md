@@ -148,10 +148,17 @@ With the proposed API the common case for receiving a state update will cause th
 `timeline` and `state` sections, potentially increasing bandwidth usage. However, it is common for the HTTP responses to
 be compressed, heavily reducing the impact of having duplicated data.
 
-As before, clients will not be able to reliably tell when a state change happened within the timeline. Currently, some clients walk through the timeline to
-render e.g. display names of users at the time they sent the message (rather than their current display name), though
-e.g. Element clients have moved away from this UX.
-This MSC allows to compute the current state correctly. It does not fix the behavior for the state history in the timeline. So clients using such an approach still will face the same issues they had before this MSC.
+Both before and after this proposal, clients are not able to calculate reliably exactly when in the
+timeline the state changed (e.g. to figure out which message should show a user's previous/updated
+display name - note that some clients e.g. Element have moved away from this UX). This is because
+the accurate picture of the current state at an event is calculated by the server based on the room
+DAG, including the state resolution process, and not based on a linear list of state updates.
+
+This proposal ensures that the client has a more accurate view of the room state *after the sync has
+finished*, but it does not provide any more information about the *history of state* as it relates
+to events in the timeline. Clients attempting to build a best-effort view of this history by walking
+the timeline may still do so, with the same caveats as before about correctness, but they should be
+sure to make their view of the final state consistent with the changes provided in `state_after`.
 
 
 ## Alternatives
