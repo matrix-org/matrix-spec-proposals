@@ -1,11 +1,12 @@
 # MSC4230: 'Animated' flag for images
 
 Since animated images are thumbnailed to a still image, clients need to download the full
-image in order to display an animated image. However, there is currently no way of telling that
-an image is animated without downloading the original image. This means that clients wishing
-to display the image as animated must download the original image for any image format which
-is capable of being animated. This means they download the full size image for non-animated
-images even when the user never chooses to enlarge the image.
+image in order to display an animated image (or even to tell whether or not it is animated).
+However, there is currently no way of telling that an image is animated without downloading
+the original image. This means that clients wishing to display the image as animated must
+download the original image for any image format which is capable of being animated. This
+means they download the full size image for non-animated images even when the user never
+chooses to enlarge the image.
 
 Even clients that animate images on hover must pre-fetch the full size image if they want the
 animation to start without a delay while it's downloaded.
