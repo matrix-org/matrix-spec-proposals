@@ -36,8 +36,8 @@ Example:
     }
 ```
 
-If this flag is `false`, receiving clients can assume that the image is not animated. If `true`, they should
-assume that it is.
+If this flag is `false`, receiving clients SHOULD assume, but not trust, that the image is not animated.
+If `true`, they SHOULD assume that it is, again, without trusting.
 
 Behaviour when the field is omitted is left up to the client. They might choose to behave as if it is present
 and set to `true`, ensuring backwards compatibility whilst still saving bandwidth for images where the flag
