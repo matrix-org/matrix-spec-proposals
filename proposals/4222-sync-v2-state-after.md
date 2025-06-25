@@ -1,13 +1,62 @@
 # MSC4222: Adding `state_after` to `/sync`
 
-The current [`/sync`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3sync) API does not differentiate between state events in the timeline and updates to state, and so can
-cause the client's view of the current state of the room to diverge from the actual state of the room. This is
-particularly problematic for use-cases that rely on state being consistent between different clients.
+The current [`/sync`](https://spec.matrix.org/v1.14/client-server-api/#get_matrixclientv3sync) API does not
+differentiate between state events in the timeline and updates to state, and so can cause the client's view
+of the current state of the room to diverge from the actual state of the room as seen by the server.
 
-This behavior stems from the fact that the clients update their view of the current state with state events that appear
-in the timeline. To handle gappy syncs, the `state` section includes state events that are from *before* the start of
-the timeline, and so are replaced by any matching state events in the timeline. This provides little opportunity for the
-server to ensure that the clients come to the correct conclusion about the current state of the room.
+The fundamental issue is that clients need to know the current authoritative room state, but the current model
+lacks an explicit representation of that. Clients derive state by assuming a linear application of events, for
+example:
+
+```
+state_before + timeline => state_after
+```
+
+However, room state evolves as a DAG (Directed Acyclic Graph), not a linear chain. A simple example illustrates:
+```diagram
+   A
+   |
+   B
+  / \
+ C   D
+
+```
+Each of A, B, C, and D are non-conflicting state events.
+- State after C = `{A, B, C}`
+- State after D = `{A, B, D}`
+- Current state = `{A, B, C, D}`
+
+In this case, both C and D are concurrent, so the correct current state includes both. Clients that try to reconstruct
+state from a timeline such as `[A, B, C, D]` or `[A, B, D, C]` might trivially compute a union — and for non-conflicting
+cases, this works.
+
+However, once conflicting state enters, resolution is needed. Consider this more complex example:
+```diagram
+   A
+   |
+   B
+  / \
+ C   C'   <-- C' wins via state resolution
+  \ / \
+   D   E
+```
+Here, C and C' are conflicting state events — for example, both might define a different `m.room.topic`. Let's say C' wins
+according to the server's state resolution rules. Then D and E are independent non-conflicting additions.
+- State after C = `{A, B, C}`
+- State after D = `{A, B, C'}`
+- State after E = `{A, B, C', E}`
+- Current state = `{A, B, C', D, E}`
+
+Now suppose the client first receives timeline events `[A, B, C', E]`. The state it constructs is:
+```
+{A, B, C', E}  ← Correct so far
+```
+Then it receives a subsequent sync with timeline `[C, D]`, and the state block includes only `{B}`. Under the current
+`/sync` behavior:
+- The timeline includes state event C, which incorrectly replaces C'.
+- The client ends up with `{A, B, C, D, E}`, which is **invalid** — it prefers the wrong version of C.
+This happens because the client re-applies C from the timeline, unaware that C' had already been resolved and accepted
+earlier. There's no way for the client to know that C' is supposed to win, based solely on the timeline.
 
 In [MSC4186 - Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186) this problem is
 solved by the equivalent `required_state` section including all state changes between the previous sync and the end of
