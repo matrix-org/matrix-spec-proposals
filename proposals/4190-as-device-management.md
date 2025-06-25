@@ -52,10 +52,15 @@ This endpoint no longer requires User-Interactive Authentication for application
 
 ### **`POST /_matrix/client/v3/register`**
 
-Application services will no longer receive access tokens or device IDs and
-MUST call the endpoint with `inhibit_login=true`. Calls without the parameter,
-or with a different value than `true`, will return HTTP 400 with a new
-`M_APPSERVICE_LOGIN_UNSUPPORTED` error code.
+Currently, the default behavior for `/register` is to create a new device and
+access token (i.e. login) in addition to creating the user. Similar to `/login`,
+creating an access token would no longer be possible with [MSC3861]. However,
+creating users via the endpoint is still required, so unlike `/login`, `/register`
+will not be removed entirely.
+
+Therefore, application services MUST call the endpoint with `inhibit_login=true`.
+Calls without the parameter, or with a different value than `true`, will return
+HTTP 400 with a new `M_APPSERVICE_LOGIN_UNSUPPORTED` error code.
 
 ## Potential issues
 
