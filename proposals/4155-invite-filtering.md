@@ -149,6 +149,15 @@ communication channel, they'll have to update their permission configuration and
 
 ## Alternatives
 
+The split between user settings and server settings is technically not needed because glob expressions
+are powerful enough to allow matching either. Splitting them is more explicit and prevents unintended
+globbing mistakes, however. The fact that a user glob and a server glob can overlap does not seem
+problematic because this proposal includes a deterministic processing order for all settings.
+
+A previous version of this proposal included a base setting of block / allow all with user and
+server exceptions applied on top. In this scheme, flipping the base setting also inverts the semantics
+of all exceptions, however, which makes changing the configuration quite complicated.
+
 A comprehensive comparison of existing invite filtering proposals may be found in [MSC4192]. The
 present proposal is functionally inferior to some of the alternatives outline there. It does, for
 instance, not cover the change history of the permission config or sharing the config among different
