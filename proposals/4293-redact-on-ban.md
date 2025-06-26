@@ -31,9 +31,13 @@ events of that type to keep the same expectations within rooms. If the sender do
 to redact an event normally, no redaction is applied.
 
 If the sender is allowed to redact, the redaction behaviour continues until the membership event itself
-is redacted (thus removing the field) or another membership event removes the field. For example, if
-the user is unbanned, the moderator MAY NOT choose to carry the `redact_events` flag to that kick
-(unban) event. Or, when the user rejoins after a kick, the flag is implicitly dropped.
+is redacted (thus removing the field), another membership event removes the field, or the flag is set
+to `false`. Events already redacted up to that point remain redacted after the flag changes to a falsey
+value. For example, if the user is unbanned, the moderator MAY NOT choose to carry the `redact_events`
+flag to that kick (unban) event. Or, when the user rejoins after a kick, the flag is implicitly dropped.
+
+In essence, the `redact_events` flag applies to all events which topologically come before the falsey
+value.
 
 Events which are delivered after the ban are likely [soft failed](https://spec.matrix.org/v1.14/server-server-api/#soft-failure)
 and are still redacted if the current membership event in the room has a valid `redact_events`
@@ -108,6 +112,21 @@ Moderation bots/clients which attempt to reduce the amount of duplicate work the
 inspect `redacted_because` instead of checking for its presence to determine which kind of redaction
 was applied to a given event. This is especially true if the moderation bot/client is providing the
 fallback support described above.
+
+If a user is banned using `redact_events: true`, unbanned, rejoins, sends more events, and is banned
+again using `redact_events: true`, the user's events between bans will be subsequently redacted. The
+events redacted by the first ban may also be re-redacted by servers/clients depending on implementation.
+This is considered expected behaviour, and implementations can internally track which events they've
+already auto-redacted to avoid duplicate work.
+
+With respect to the fallback behaviour, a client might not know if a server is applying fallback
+redactions and may not wish to wait an arbitrary amount of time to see if it does. One solution would
+be to have the server expose a [capability](https://spec.matrix.org/v1.15/client-server-api/#capabilities-negotiation),
+however such a flag would be longer lived than the fallback behaviour itself (hopefully). Instead,
+clients which don't implement watchdog functionality SHOULD send redactions anyway, even if it
+duplicates the server's fallback efforts. Further, as already mentioned above, server MAY deduplicate
+redactions to lower their federation load, though this is closer to a SHOULD considering clients are
+already sending their own redaction events (like in the case of Mjolnir).
 
 ## Alternatives
 
