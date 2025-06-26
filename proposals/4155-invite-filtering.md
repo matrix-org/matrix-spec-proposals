@@ -39,14 +39,14 @@ respectively.
 When evaluating an invite against the contents of `m.invite_permission_config`, implementations MUST
 apply the following order:
 
-1.  Verify the invite against each `*_users` setting: 
-  1.  If it matches `allowed_users`, stop processing and allow.
-  2.  If it matches `ignored_users`, stop processing and ignore.
-  3.  If it matches `blocked_users`, stop processing and block.
-2.  Verify the invite against each `*_servers` setting: 
-  1.  If it matches `allowed_servers`, stop processing and allow.
-  2.  If it matches `ignored_servers`, stop processing and ignore.
-  3.  If it matches `blocked_servers`, stop processing and block.
+1.  Verify the invite against each `*_users` setting:
+    1.  If it matches `allowed_users`, stop processing and allow.
+    2.  If it matches `ignored_users`, stop processing and ignore.
+    3.  If it matches `blocked_users`, stop processing and block.
+2.  Verify the invite against each `*_servers` setting:
+    1.  If it matches `allowed_servers`, stop processing and allow.
+    2.  If it matches `ignored_servers`, stop processing and ignore.
+    3.  If it matches `blocked_servers`, stop processing and block.
 3.  Otherwise, allow.
 
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
