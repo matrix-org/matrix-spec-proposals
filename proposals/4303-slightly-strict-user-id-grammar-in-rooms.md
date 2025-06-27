@@ -39,7 +39,9 @@ In short, this MSC starts a multi-year process to formally phase out non-complia
 Unlike [MSC4044](https://github.com/matrix-org/matrix-spec-proposals/pull/4044), this MSC does
 not define all historical user IDs as non-compliant. Therefore, real users who registered historical
 user IDs should not be affected. Only accounts registered by modified servers will be prohibited
-from participating in new rooms.
+from participating in new rooms. Additionally, the existing spec already recommends servers drop
+traffic from such non-compliant user IDs outside of rooms (e.g. in to-device events), which means
+such users may already not be able to participate in encrypted rooms.
 
 ## Alternatives
 
