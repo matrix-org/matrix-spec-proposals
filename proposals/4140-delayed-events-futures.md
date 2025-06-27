@@ -260,12 +260,14 @@ Content-Type: application/json
     {
       "delay_id": "abcdefgh",
       "room_id": "!roomid:example.com",
-      "type": "m.call.member",
+      "type": "m.rtc.member",
       "state_key": "@user:example.com_DEVICEID",
       "delay": 5000,
       "running_since": 1721732853284,
       "content":{
-        "memberships": []
+        "application": "m.call",
+        "call_id": "",
+        ...
       }
     }
   ],
@@ -430,15 +432,13 @@ With this proposal, the client can use delayed events to implement a "heartbeat"
 On joining the call, the client sends a "join" state event as normal to indicate that it is participating:
 
 ```http
-PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.call.member/@someone:example.com
+PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com
 Content-Type: application/json
 
 {
-  "memberships": [
-    {
-      ...membership data here...
-    }
-  ]
+  "application": "m.call",
+  "call_id": "",
+  ...
 }
 ```
 
@@ -446,11 +446,13 @@ Before sending the join event, it also schedules a delayed "hangup" state event 
 marks the end of its participation:
 
 ```http
-PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.call.member/@someone:example.com?delay=10000
+PUT /_matrix/client/v1/rooms/!wherever:example.com/state/m.rtc.member/@someone:example.com?delay=10000
 Content-Type: application/json
 
 {
-  "memberships": []
+  "application": "m.call",
+  "call_id": "",
+  ...
 }
 ```
 
