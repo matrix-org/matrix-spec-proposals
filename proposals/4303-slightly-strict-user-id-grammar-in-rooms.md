@@ -8,7 +8,7 @@ causing a variety of issues for software projects.
 The historical grammar can be split into two classes:
 
 1. printable ASCII (U+0021 to U+007E), aka. historical-but-compliant
-2. arbitrary unicode, aka. non-compliant
+2. arbitrary unicode and blank localparts, aka. non-compliant
 
 This proposal uses a future room version to prohibit the second class, while still allowing the first.
 Users with non-ASCII user IDs will not be able to join or participating in those room versions.
@@ -23,7 +23,8 @@ all places a user ID can appear in an event.
 * The `join_authorised_via_users_server` field in `m.room.member` events.
 * Keys of the `users` object in `m.room.power_levels`.
 
-User IDs in the new room version must only consist of ASCII characters between U+0021 and U+007E.
+User IDs in the new room version must only consist of ASCII characters between U+0021 and U+007E
+and the localpart must not be empty.
 
 By making this change in a room version, non-compliant user IDs are slowly removed from the public
 federation. Several rooms will naturally upgrade to a room version which includes this MSC's change
