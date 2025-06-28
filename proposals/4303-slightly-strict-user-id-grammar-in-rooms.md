@@ -11,7 +11,7 @@ The historical grammar can be split into two classes:
 2. arbitrary unicode and blank localparts, aka. non-compliant
 
 This proposal uses a future room version to prohibit the second class, while still allowing the first.
-Users with non-ASCII user IDs will not be able to join or participating in those room versions.
+Users with non-ASCII user IDs will not be able to join or participate in those room versions.
 
 This proposal does not cover room ID grammar, as that will be handled by another MSC,
 such as [MSC4051](https://github.com/matrix-org/matrix-spec-proposals/pull/4051).
