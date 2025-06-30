@@ -38,7 +38,7 @@ respectively.
 
 When evaluating an invite, implementations MUST first apply the existing `m.ignored_user_list` as per
 the current spec. If the invite didn't match, implementations MUST then apply `m.invite_permission_config`.
-The complete processing logic is as followsÖ
+The complete processing logic is as follows:
 
 1.  Verify the invite against `m.ignored_user_list`:
     1.  If it matches `ignored_users`, stop processing and ignore.
