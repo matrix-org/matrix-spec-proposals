@@ -36,17 +36,19 @@ All properties in `content` are optional arrays. A missing or `null` property MU
 empty array. The array elements are [glob expressions] to be matched against user IDs and server names,
 respectively.
 
-When evaluating an invite against the contents of `m.invite_permission_config`, implementations MUST
-apply the following order:
+When evaluating an invite, implementations MUST first apply the existing `m.ignored_user_list` as per
+the current spec. If the invite didn't match, implementations MUST then apply `m.invite_permission_config`.
+The complete processing logic is as followsÖ
 
-1.  Verify the invite against each `*_users` setting:
+1.  Verify the invite against `m.ignored_user_list`:
+    1.  If it matches `ignored_users`, stop processing and ignore.
+2.  Verify the invite against `m.invite_permission_config`:
     1.  If it matches `allowed_users`, stop processing and allow.
     2.  If it matches `ignored_users`, stop processing and ignore.
     3.  If it matches `blocked_users`, stop processing and block.
-2.  Verify the invite against each `*_servers` setting:
-    1.  If it matches `allowed_servers`, stop processing and allow.
-    2.  If it matches `ignored_servers`, stop processing and ignore.
-    3.  If it matches `blocked_servers`, stop processing and block.
+    4.  If it matches `allowed_servers`, stop processing and allow.
+    5.  If it matches `ignored_servers`, stop processing and ignore.
+    6.  If it matches `blocked_servers`, stop processing and block.
 3.  Otherwise, allow.
 
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
