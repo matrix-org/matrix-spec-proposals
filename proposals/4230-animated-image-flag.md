@@ -52,7 +52,8 @@ allowing for 'jump scares' or similar. Clients may wish to prevent images from b
 flag is set to false.
 
 As above, supporting animated images becomes harder for sending clients because they must work out if
-an image is animated in order to set the flag.
+an image is animated in order to set the flag. We must accept that some clients, particularly browser-based
+clients, may get this wrong.
 
 ## Alternatives
 
