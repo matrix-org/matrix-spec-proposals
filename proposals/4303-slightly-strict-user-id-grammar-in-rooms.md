@@ -60,8 +60,8 @@ appearing in user IDs.
 
 ## Unstable prefix
 
-This MSC can be implemented in a room version identified as `fi.mau.msc4303`. A future MSC will
-be required to incorporate this MSC into a stable room version.
+This MSC can be implemented in a room version identified as `fi.mau.msc4303` building on top of
+room version 11. A future MSC will be required to incorporate this MSC into a stable room version.
 
 ## Dependencies
 
