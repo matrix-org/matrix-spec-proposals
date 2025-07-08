@@ -1,8 +1,10 @@
 # MSC4210: Remove legacy mentions
-Matrix v1.7 introduced intentional mentions, where events list users they
+Matrix v1.7 introduced [intentional mentions], where events list users they
 mention explicitly, instead of the recipients inferring mentions from the raw
 message text. For backwards-compatibility reasons, messages without the new
 `m.mentions` field still use the old plaintext matching for mentions.
+
+[intentional mentions]: https://spec.matrix.org/v1.15/client-server-api/#user-and-room-mentions
 
 Plaintext matching means it's very difficult for automated tools to tell which
 users are mentioned in a message. This means that it's easy to spam mentions by
@@ -17,11 +19,13 @@ notifying entirely.
 Support for legacy mentions is dropped. Specifically, the following deprecated
 standard push rules are removed entirely:
 
-* `.m.rule.contains_display_name`
-* `.m.rule.contains_user_name`
-* `.m.rule.roomnotif`
+* [`.m.rule.contains_display_name`](https://spec.matrix.org/v1.15/client-server-api/#_m_rule_contains_display_name)
+* [`.m.rule.contains_user_name`](https://spec.matrix.org/v1.15/client-server-api/#_m_rule_contains_user_name)
+* [`.m.rule.roomnotif`](https://spec.matrix.org/v1.15/client-server-api/#_m_rule_roomnotif)
 
-Additionally, the `contains_display_name` push rule condition is deprecated.
+Additionally, the `contains_display_name` [push rule condition] is deprecated.
+
+[push rule condition]: https://spec.matrix.org/v1.15/client-server-api/#conditions-1
 
 Including an empty `m.mentions` key is still required for clients that are
 aware of intentional mentions, as omitting it would cause current clients to
