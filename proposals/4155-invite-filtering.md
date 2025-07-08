@@ -32,10 +32,9 @@ event `m.invite_permission_config` is introduced.
 }
 ```
 
-All properties in `content` are optional arrays. A missing or `null` property MUST be treated like an
-empty array. The array elements are [glob expressions]. Any `*_users` glob is to be matched against
-full user IDs (localpart and domain). Any `*_servers` glob is to be matched against server names /
-domain parts of user IDs.
+All properties in `content` are optional arrays. The array elements are [glob expressions]. Any `*_users`
+glob is to be matched against full user IDs (localpart and domain). Any `*_servers` glob is to be matched
+against server names / domain parts of user IDs.
 
 When evaluating an invite, implementations MUST first apply the existing `m.ignored_user_list` as per
 the current spec. If the invite didn't match, implementations MUST then apply `m.invite_permission_config`.
