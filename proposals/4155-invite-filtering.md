@@ -1,6 +1,6 @@
 # MSC4155: Invite filtering
 
-Matrix supports ignoring users via the eponymous [module] and the `m.ignored_user_list` account data
+Matrix supports ignoring users via the ["Ignoring Users" module] and the `m.ignored_user_list` account data
 event. This is a nuclear option though and will suppress both invites and room events from the ignored
 users. Additionally, the `m.ignored_user_list` event only allows for block-list configurations that ignore
 specific users but doesn't have a mechanism to ignore entire servers. These shortcomings make the module
@@ -194,5 +194,5 @@ This proposal loosely depends on [MSC4283] for the semantics of "ignore" and "bl
 [glob expressions]: https://spec.matrix.org/v1.14/appendices/#glob-style-matching
 [MSC4192]: https://github.com/matrix-org/matrix-spec-proposals/pull/4192
 [MSC4283]: https://github.com/matrix-org/matrix-spec-proposals/pull/4283
-[module]: https://spec.matrix.org/v1.10/client-server-api/#ignoring-users
+["Ignoring Users" module]: https://spec.matrix.org/v1.10/client-server-api/#ignoring-users
 [this comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4192#discussion_r2025188127
