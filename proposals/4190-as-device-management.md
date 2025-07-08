@@ -87,7 +87,8 @@ This would have the advantage of not changing the behavior of existing endpoints
 
 ## Dependencies
 
-None. While this MSC is meant for next-gen auth, it can be used independently.
+In order to use the devices created using this MSC, appservices need to be able
+to use device IDs as a part of identity assertion, as defined by [MSC3202].
 
 ## Unstable prefix
 
