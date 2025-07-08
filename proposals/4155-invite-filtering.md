@@ -154,10 +154,16 @@ communication channel, they'll have to update their permission configuration and
 
 ## Alternatives
 
-The split between user settings and server settings is technically not needed because glob expressions
-are powerful enough to allow matching either. Splitting them is more explicit and prevents unintended
-globbing mistakes, however. The fact that a user glob and a server glob can overlap does not seem
-problematic because this proposal includes a deterministic processing order for all settings.
+Instead of introducing a separate account data event, the existing `m.ignored_user_list` could have
+been expanded. This would, however, not only effect invites but also events in existing rooms which
+makes it a much more nuclear option. Additionally, the existing schema of `m.ignored_user_list`
+complicates morphing it into something that optionally supports allow-list semantics.
+
+Regarding `m.invite_permission_config`, the split between user settings and server settings is
+technically not needed because glob expressions are powerful enough to allow matching either.
+Splitting them is more explicit and prevents unintended globbing mistakes, however. The fact that
+a user glob and a server glob can overlap does not seem problematic because this proposal includes
+a deterministic processing order for all settings.
 
 A previous version of this proposal included a base setting of block / allow all with user and
 server exceptions applied on top. In this scheme, flipping the base setting also inverts the semantics
