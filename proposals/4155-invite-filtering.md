@@ -34,7 +34,8 @@ event `m.invite_permission_config` is introduced.
 
 All properties in `content` are optional arrays. The array elements are [glob expressions]. Any `*_users`
 glob is to be matched against full user IDs (localpart and domain). Any `*_servers` glob is to be matched
-against server names / domain parts of user IDs.
+against server names / domain parts of user IDs after stripping any port suffix. This matches the way the
+globs from [server ACLs] are applied.
 
 When evaluating an invite, implementations MUST first apply the existing `m.ignored_user_list` as per
 the current spec. If the invite didn't match, implementations MUST then apply `m.invite_permission_config`.
@@ -204,3 +205,4 @@ This proposal loosely depends on [MSC4283] for the semantics of "ignore" and "bl
 [MSC4283]: https://github.com/matrix-org/matrix-spec-proposals/pull/4283
 ["Ignoring Users" module]: https://spec.matrix.org/v1.10/client-server-api/#ignoring-users
 [this comment]: https://github.com/matrix-org/matrix-spec-proposals/pull/4192#discussion_r2025188127
+[server ACLs]: https://spec.matrix.org/v1.15/client-server-api/#mroomserver_acl
