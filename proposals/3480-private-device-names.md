@@ -69,7 +69,7 @@ public display name and a private display name, as suggested in
 https://github.com/matrix-org/matrix-doc/issues/1826.  However, having to
 manage public and private names could be confusing for a user.  In addition,
 this would require API changes, whereas making device names private does not
-require API changes.  (Note that #1826 also suggests making other information
+require API changes.  (Note that https://github.com/matrix-org/matrix-doc/issues/1826 also suggests making other information
 about the device available privately.  This can be done independently of this
 MSC.)
 
