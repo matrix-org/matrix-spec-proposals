@@ -113,8 +113,8 @@ the event is sent immediately as normal.
 
 The body of the request is the same as it is currently.
 
-If a `delay` is provided, the homeserver schedules the event to be sent with the specified delay and responds with a
-`delay_id` field (omitting the `event_id` as it is not available):
+If a `delay` is provided, the homeserver schedules the event to be sent with the specified delay and responds with an
+opaque `delay_id` field (omitting the `event_id` as it is not available):
 
 ```http
 200 OK
@@ -127,7 +127,7 @@ Content-Type: application/json
 
 The homeserver can optionally enforce a maximum delay duration. If the requested delay exceeds the maximum, the homeserver
 can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) status code
-and a body with a Matrix error code `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
+and a body with a new Matrix error code `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
 
 For example, the following specifies a maximum delay of 24 hours:
 
@@ -145,7 +145,8 @@ Content-Type: application/json
 The homeserver **should** apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
 
-The homeserver **may** apply a limit on the maximum number of outstanding delayed events in which case the Matrix error code
+The homeserver **may** apply a limit on the maximum number of
+outstanding delayed events in which case a new Matrix error code
 `M_MAX_DELAYED_EVENTS_EXCEEDED` can be returned:
 
 ```http
@@ -167,9 +168,9 @@ The body of the request is a JSON object containing the following fields:
 
 - `action` - The action to take on the delayed event.\
 Must be one of:
-  - `send` - Send the delayed event immediately.
+  - `send` - Send the delayed event immediately instead of waiting for the delay time to be reached.
   - `cancel` - Cancel the delayed event so that it is never sent.
-  - `restart` - Restart the timeout of the delayed event.
+  - `restart` - Reset the send time to be `now + original_delay`.
 
 For example, the following would send the delayed event with delay ID `1234567890` immediately:
 
@@ -200,7 +201,7 @@ page size.
 The response is a JSON object containing the following fields:
 
 - For the `GET /_matrix/client/v1/delayed_events/scheduled` endpoint:
-  - `delayed_events` - Required. An array of delayed events that have been scheduled to be sent,
+  - `scheduled` - Required. An array of delayed events that have been scheduled to be sent,
   sorted by `running_since + delay` in increasing order (event that will timeout soonest first).
     - `delay_id` - Required. The ID of the delayed event.
     - `room_id` - Required. The room ID of the delayed event.
@@ -214,7 +215,7 @@ The response is a JSON object containing the following fields:
   - `next_batch` - Optional. A token that can be used to paginate the list of delayed events.
 
 - For the `GET /_matrix/client/v1/delayed_events/finalised` endpoint:
-  - `finalised_events` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
+  - `finalised` - Required. An array of finalised delayed events, that have either been sent or resulted in an error,
   sorted by `origin_server_ts` in decreasing order (latest finalised event first).
     - `delayed_event` - Required. Describes the original delayed event in the same format as the `delayed_events` array.
     - `outcome`: `"send"|"cancel"`
@@ -229,9 +230,9 @@ The response is a JSON object containing the following fields:
 The batch size and the amount of terminated events that stay on the homeserver can be chosen, by the homeserver.
 The recommended values are:
 
-- `finalised_events` retention: 7 days
-- `finalised_events` batch size: 10
-- `finalised_events` max cached events: 1000
+- `finalised` retention: 7 days
+- `finalised` batch size: 10
+- `finalised` max cached events: 1000
 
 There is no guarantee for a client that all events will be available in the
 finalised events list if they exceed the limits of their homeserver.
@@ -245,7 +246,7 @@ An example for a response to the `GET /_matrix/client/v1/delayed_events/schedule
 Content-Type: application/json
 
 {
-  "delayed_events": [
+  "scheduled": [
     {
       "delay_id": "1234567890",
       "room_id": "!roomid:example.com",
@@ -598,10 +599,10 @@ This was considered, but when sending a delayed event the `event_id` is not yet 
 
 The Matrix spec says that the `event_id` must use the [reference hash](https://spec.matrix.org/v1.10/rooms/v11/#event-ids)
 which is [calculated from the fields](https://spec.matrix.org/v1.10/server-server-api/#calculating-the-reference-hash-for-an-event)
-of an event including the `origin_server_timestamp` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
+of an event including the `origin_server_ts` as defined in [this list](https://spec.matrix.org/v1.10/rooms/v11/#client-considerations)
 
-Since the `origin_server_timestamp` should be the timestamp the event has when entering the DAG (required for call
-duration computation), the `event_id` cannot be computed when using the `send` endpoint before the delayed event has resolved.
+Since the `origin_server_ts` may change due to re-scheduling the event's send time, the event ID cannot be relied upon
+as it would also change.  
 
 ### MSC4018 (use client sync loop)
 
@@ -741,7 +742,7 @@ power levels at the time of the delayed event being sent (i.e. added to the DAG)
 This has the risk that this feature could be used by a malicious actor to circumvent existing rate limiting measures which
 corresponds to the [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages)
 threat. The homeserver **should** apply rate-limiting to both the scheduling of delayed events and the later sending to
-mitigate this risk.
+mitigate this risk, as well as limiting the number of scheduled events a user can have at any one time.
 
 ## Unstable prefix
 
