@@ -321,7 +321,8 @@ If the power level situation has changed at the time the delay passes, the event
 If a new state event is sent to the same room at the same entry (`event_type`, `state_key` pair) as a delayed event by a
 **different matrix user**, any delayed event for this entry (`event_type`, `state_key` pair) is cancelled.
 
-This only happens if its a state update from a different user. If it is from the same user, the delayed event will not get cancelled.
+This only happens if its a state update from a different user. If it is from the same user, the delayed event will not
+get cancelled.
 If the same user is updating the state which has associated delayed events, this user is in control of those delayed events.
 They can just cancel and check the events manually using the `/delayed_events` and the `/delayed_events/scheduled` endpoint.
 
@@ -579,7 +580,8 @@ become a generic Matrix concept as proposed with `/send_pdus`. (see: [MSC4080: C
 
 [MSC2716: Incrementally importing history into existing rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/2716)
 already proposes a `batch_send` endpoint. However, it is limited to application services and focuses on historic
-data. Since the additional capability to use a template `event_id` parameter is also needed, this probably is not a good fit.
+data. Since the additional capability to use a template `event_id` parameter is also needed,
+this probably is not a good fit.
 
 ### Not reusing the `send`/`state` endpoint
 
@@ -647,7 +649,7 @@ resolving the inconsistency feels more complex than if the event was never sent 
 
 [MSC3277: Scheduled messages](https://github.com/matrix-org/matrix-spec-proposals/pull/3277) proposes a similar feature
 and there is an extensive analysis of the pros and cons of this MSC vs MSC3277
-[here](https://github.com/matrix-org/matrix-spec-proposals/pull/4140#discussion_r1653083566).
+[in this discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4140#discussion_r1653083566).
 
 If it's not needed to allow modification of a delayed event after it has been scheduled, there is a benefit in
 federating the scheduled event (adding it to the DAG immediately). It increases resilience: the sender's homeserver can
