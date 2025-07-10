@@ -54,7 +54,7 @@ This creates a chicken/egg problem when upgrading rooms because:
  - The create event of the new room needs the tombstone event ID in `content.predecessor.event_id`.
  - The `m.room.tombstone` event needs ...
 
-<img width="793" alt="Creator chicken egg problem" src="/images/4291-creator-chicken-egg.png" />
+<img width="793" alt="Creator chicken egg problem" src="images/4291-creator-chicken-egg.png" />
 
 
 To break this cycle, this MSC removes the `content.predecessor.event_id` field from the `m.room.create` event. There appear to be no security
