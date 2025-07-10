@@ -20,6 +20,7 @@ time and then distributing it as normal via federation.
     - [Power levels are evaluated at the point of sending](#power-levels-are-evaluated-at-the-point-of-sending)
     - [Delayed state events are cancelled by a more recent state event](#delayed-state-events-are-cancelled-by-a-more-recent-state-event)
     - [Rate-limiting at the point of sending](#rate-limiting-at-the-point-of-sending)
+  - [Guest accounts](#guest-accounts)
 - [Use case specific considerations](#use-case-specific-considerations)
   - [MatrixRTC](#matrixrtc)
     - [Background](#background)
@@ -201,8 +202,6 @@ expensive as sending a rate limit error response.
 
 ### Getting delayed events
 
-#### On demand
-
 New authenticated client-server API endpoints `GET /_matrix/client/v1/delayed_events/scheduled` and
 `GET /_matrix/client/v1/delayed_events/finalised` allows clients to get a list of
 all the delayed events owned by the requesting user that have been scheduled to send, have been sent, or failed to be sent.
@@ -299,26 +298,6 @@ This can be used by clients to display events that have been scheduled to be sen
 For use cases where the existence of a delayed event is also of interest for other room members
 (e.g. self-destructing messages), it is recommended to include this information in the original/affected event itself.
 
-#### On push
-
-A new optional key, `finalised_events`, is added to the response body of `/sync`. The shape of its
-value is equivalent to that of the response body of `GET /_matrix/client/v1/delayed_events/finalised`.
-It is an array of the syncing user's delayed events that were sent or failed to be sent after the
-`since` timestamp parameter of the associated `/sync` request, or all of them for full `/sync`s.
-When no such delayed events exist, the `finalised_events` key is absent from the `/sync` response.
-
-A new key, `finalised_events`, is defined for `POST /_matrix/client/v3/user/{userId}/filter`.
-Its value is a boolean which, if set to `false`, causes an associated `/sync` response to exclude
-any `finalised_events` key it may have otherwise included.
-
-The only delayed events included in `finalised_events` are ones that have been retained by the homeserver,
-as per the same retention policies as for the `GET /_matrix/client/v1/delayed_events/finalised` endpoint.
-Additionally, a homeserver may discard finalised delayed events that have been returned by a `/sync` response.
-
-The `finalised_events` key is added to the request bodies of the appservice API `/transactions` endpoint.
-It has the same content as the key for `/sync`, and contains all of the target appservice's delayed events
-that were sent or failed to be sent since the previous transaction.
-
 ### Homeserver implementation details
 
 #### Power levels are evaluated at the point of sending
@@ -381,6 +360,11 @@ but has specified a `delay` that corresponds to a common point of time in the fu
 
 A limit on the maximum number of delayed events that can be outstanding at one time could also provide some mitigation against
 this attack.
+
+### Guest accounts
+
+All delayed event related endpoints are available to guest accounts.
+This allows guest accounts to participate in MatrixRTC sessions.
 
 ## Use case specific considerations
 
@@ -769,8 +753,6 @@ Whilst the MSC is in the proposal stage, the following should be used:
   the `POST /_matrix/client/v1/delayed_events/{delay_id}` endpoint.
 - `GET /_matrix/client/unstable/org.matrix.msc4140/delayed_events` should be used instead of
   the `GET /_matrix/client/v1/delayed_events` endpoint.
-- `org.matrix.msc4140.finalised_events` should be used as keys of `/sync`, `/transactions`, and
-  `/filter` instead of `finalised_events`.
 - The `M_UNKNOWN` `errcode` should be used instead of `M_MAX_DELAY_EXCEEDED` as follows:
 
 ```json
