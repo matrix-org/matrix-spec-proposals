@@ -1,5 +1,5 @@
 
-# MSC0000: Finalised delayed events on sync
+# MSC4309: Finalised delayed events on sync
 
 ## Proposal
 
