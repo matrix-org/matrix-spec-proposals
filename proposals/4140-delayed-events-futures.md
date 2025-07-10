@@ -736,7 +736,15 @@ Some alternatives for the `running_since` field on the `GET` response are:
 
 All new endpoints are authenticated.
 
-Servers **should** impose a maximum timeout value for delay timeouts of not more than a month.
+To mitigate the risk of users flooding the delayed events database, servers **must** make it possible to configure
+the values for the maximum amount and the maximum timeout value for scheduled delayed events.
+(When the server returns the `M_MAX_DELAYED_EVENTS_EXCEEDED` and the `M_MAX_DELAY_EXCEEDED` error)
+
+It is the server maintainers responsibility to evaluate the best tradoff between what usecases
+their users have for delayed events for and the resources they are able to provide.
+
+Its the homeserver implementers responsibility to communicate this and educate the server hosters about the tradeoffs
+and potentially give sane example values for those configurations.
 
 As described [above](#power-levels-are-evaluated-at-the-point-of-sending), the homeserver **must** evaluate and enforce the
 power levels at the time of the delayed event being sent (i.e. added to the DAG).
