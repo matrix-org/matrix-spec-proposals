@@ -239,6 +239,9 @@ finalised events list if they exceed the limits of their homeserver.
 Additionally, a homeserver may discard finalised delayed events that have been returned by a
 `GET /_matrix/client/v1/delayed_events/finalised` response.
 
+The homeserver **should** apply rate limiting to the `finalised` and `scheduled` delayed events `GET` endpoints.
+Both most likely require (dependent on the implementation) serialization steps and can be used to slow down the server.
+
 An example for a response to the `GET /_matrix/client/v1/delayed_events/scheduled` endpoint:
 
 ```http
