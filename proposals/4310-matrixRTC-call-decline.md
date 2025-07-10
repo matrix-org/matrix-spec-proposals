@@ -1,4 +1,4 @@
-# MSXXXX: MatrixRTC decline `m.rtc.notify`
+# MSC4310: MatrixRTC decline `m.rtc.notify`
 
 MatrixRTC is the base layer that defines how devices participate in a call. For the specific
 usecase of a voice/video call we need additional signalling (outside of MatrixRTC) to provide
