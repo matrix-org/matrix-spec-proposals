@@ -186,7 +186,14 @@ The `thread_subscription` push condition is satisfied if and only if all the fol
 
 ## Unstable prefix
 
-TODO!
+Whilst this proposal is unstable, the following changes should be noted:
+
+- the endpoint is renamed to `/_matrix/client/unstable/io.element.msc4306.thread_subscriptions`
+- the push rules' IDs are renamed to:
+  - `.io.element.msc4306.rule.unsubscribed_thread`
+  - `.io.element.msc4306.rule.subscribed_thread`
+- the push rule condition `kind` is renamed to:
+  - `io.element.msc4306.thread_subscription`
 
 
 ## Dependencies
@@ -197,4 +204,4 @@ TODO!
 
 This proposal is known to be depended upon by the following MSCs:
 
-- <a name="ref-ss-ext"></a>\<proto-MSC for Thread Subscriptions extension to Sliding Sync\>
+- [MSC4308: Thread Subscriptions extension to Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/blob/rei/msc_ssext_threadsubs/proposals/4308-sliding-sync-ext-thread-subscriptions.md)
