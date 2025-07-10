@@ -186,6 +186,19 @@ Content-Type: application/json
 Where the `action` is `send`, the homeserver **should** apply rate limiting to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
 
+Once a delayed event has been sent or canceled, it is finalized and cannot be
+accessed via this endpoint.
+
+The server will return a `M_NOT_FOUND` error.
+
+Managing the delayed events does not require rate limits.
+The rate limits will be applied when evets are send after the delay times out (or when the event is send by calling `send`).
+
+If the user has scheduled a large amount of delayed events they can cancel all of them without rate limiting,
+because scheduling of the events itself is rate limited this is not causing issues.
+Implementers should make cancelling delayed events similarly
+expensive as sending a rate limit error response.
+
 ### Getting delayed events
 
 #### On demand
