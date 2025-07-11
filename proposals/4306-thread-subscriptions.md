@@ -188,7 +188,7 @@ The `thread_subscription` push condition is satisfied if and only if all the fol
 
 Whilst this proposal is unstable, the following changes should be noted:
 
-- the endpoint is renamed to `/_matrix/client/unstable/io.element.msc4306.thread_subscriptions`
+- the endpoint is renamed to `/_matrix/client/unstable/io.element.msc4306/rooms/{roomId}/thread/{eventId}/subscription`
 - the push rules' IDs are renamed to:
   - `.io.element.msc4306.rule.unsubscribed_thread`
   - `.io.element.msc4306.rule.subscribed_thread`
