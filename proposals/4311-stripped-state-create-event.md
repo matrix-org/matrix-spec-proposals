@@ -50,7 +50,8 @@ while one without a domain component (and happens to be `!<43 unpadded urlsafe b
 affected. This is done to ensure the server is not potentially confused by a malicious server providing
 a create event for a different, unaffected, room.
 
-When a room is affected, the server MUST validate the `m.room.create` event as follows:
+When a room is affected, the server MUST validate the `m.room.create` event as follows for the purposes
+of the above:
 
 1. If the event has a `room_id`, reject.
 2. If the event does not otherwise comply with the event format for its self-described room version,
