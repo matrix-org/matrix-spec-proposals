@@ -25,7 +25,7 @@ where applicable. An `m.room.redaction` event is not actually sent, however.
 compatible with the redaction `reason` field and shows up accordingly.
 
 Similar to regular redactions, if the sender of the membership event can't actually redact the target's
-events, the redaction doesn't apply. This means having a power level higher than or equal to `redacts`
+events, the redaction doesn't apply. This means having a power level higher than or equal to `redact`
 *and* `events["m.room.redaction"]` (if set). We maintain the `events` check despite not actually sending
 events of that type to keep the same expectations within rooms. If the sender doesn't have permission
 to redact an event normally, no redaction is applied.
