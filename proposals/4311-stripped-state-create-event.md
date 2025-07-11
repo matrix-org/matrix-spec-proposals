@@ -92,6 +92,11 @@ server is required to treat those events as untrusted for the reasons described 
   event reasonably available in its full form to those applications. Typically, this will be an internal
   representation of the event which still has the capability to serialize down to a PDU.
 
+* For unaffected room versions, it's a little awkward that the Federation API SHOULD use PDU format,
+  but the Client-Server API SHOULD NOT format the event as a real event. This proposal makes this
+  choice to give *some* amount of information to intermediary toolling within the server, but can
+  easily be modified to be a "SHOULD NOT" for both cases.
+
 
 ## Alternatives
 
