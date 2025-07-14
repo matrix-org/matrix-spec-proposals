@@ -194,7 +194,7 @@ Since the current state of the room does not include the new state event, it's e
 ## Potential issues
 
 With the proposed API the common case for receiving a state update will cause the event to come down in both the
-`timeline` and `state` sections, potentially increasing bandwidth usage. However, it is common for the HTTP responses to
+`timeline` and `state_after` sections, potentially increasing bandwidth usage. However, it is common for the HTTP responses to
 be compressed, heavily reducing the impact of having duplicated data.
 
 Both before and after this proposal, clients are not able to calculate reliably exactly when in the
