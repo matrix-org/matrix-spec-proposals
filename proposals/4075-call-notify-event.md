@@ -26,6 +26,7 @@ This event contains the following fields by leveraging intentional mentions.
 {
   "content": {
     "m.mentions": {"user_ids": [], "room": true | false},
+    "m.relates_to": {"rel_type":"m.rtc.notification", "eventId":"$rtc_member_event_id"},
     "notification_type": "ring | notification",
   }
 }
@@ -38,8 +39,13 @@ The fields are defined as follows:
 - `notification_type` required string:\
   The type of notification to send.\
   `ring`: The client should ring.\
-  `notification`: The client should show a notification.
-- `session` required object: the `session` content from the corresponding `m.rtc.member` event.
+  `notification`: The client should show a notification.\
+- `m.relates_to`: optional:\
+  A relation (with type: `m.rtc.session_parent`) to the session participation event (`m.rtc.member`) of the notifying member.
+  If available this can be used to gather session data for this notify event.
+  It should always be used if the notify is related to an rtc session. (Eventually this event might be used to send
+  RTC session independent ringing notifications with a custom message. A bot controlled tea timer for instance.)
+The `session` information for this notify event can be obtained by the relation to the `m.rtc.member` event.
 
 In the following we define **call** as any MatrixRTC session with the
 same `"session"` contents.
@@ -99,6 +105,8 @@ Sending a `m.rtc.notification` should happen only if all of these conditions app
 - If the user has not yet received a `m.rtc.notification` for the **call** they want to
   participate but the other condition applies. (So the obvious case is, that this
   is the first user in a new call session).
+- If possible the user should first send their `m.rtc.member` event first to allow setting up the relation
+  for the notify event.
 
 ### Limitations and recommendations
 
@@ -192,6 +200,7 @@ level to ring the whole room.
 While this MSC is not present in the spec, clients and widgets should:
 
 - Use `org.matrix.msc4075.rtc.notification` in place of `m.rtc.notification` as the event type
+- Use `org.matrix.msc4075.rtc.session_parent` in place of `m.rtc.session_parent` relation type.
 
 ## Dependencies
 
