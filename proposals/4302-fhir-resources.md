@@ -45,7 +45,7 @@ A new event type `m.fhir.resource` is introduced with the following properties i
     },
     "m.file": {
       "url": "mxc://example.org/abcd1234",
-      "mimetype": "application/json",
+      "mimetype": "application/fhir+json",
       // further properties as per MSC3551
   }
 }
