@@ -48,7 +48,7 @@ This is a clear break in communication, since this message has an entirely diffe
 from Bob's intended meaning, but also as it is viewed from different client implementations.
 
 This MSC proposes to alter the spec such that a client implementing rendering of the `ol` HTML tag
-in `formatted_body`s is also required ("MUST") to implement its `start` attribute, in oder to prevent
+in `formatted_body`s is also required ("MUST") to implement its `start` attribute, in order to prevent
 loss of meaning of a message.
 
 
@@ -63,7 +63,7 @@ which could mean that fewer clients could choose to implement `ol` at all.
 - Define a list of all HTML tags whose displaying must be supported if `formatted_body` is used to display
   messages at all, based on whether tags can replace characters such as in the demonstrated example.
   This could apply recursively also for all attributes.
-- Find a way for clients to dermine whether the `body` matches its supported interpretation of the
+- Find a way for clients to determine whether the `body` matches its supported interpretation of the
   `formatted_body`.
   This could end up very similar to the previous alternative and additionally lead to inconsistent
   behavior on clients where `formatted_body` is only sometimes used for display as a result.
