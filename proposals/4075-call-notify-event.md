@@ -120,29 +120,27 @@ Sending a `m.rtc.notification` should happen only if all of these conditions app
 - The sending client can compute the "exact" (or at least "a good approximation" if the local clocks are not configured correctly)
   at which the `m.rtc.notification` ring will end using the `lifeitime` + `start_ts`. This allows the sending client to
   show a local dialing/ringing animation/indicator/sound.
-
-### Limitations and recommendations
-
-- Encrypted rooms configured as `mentions only` are currently not sending push
-  notifications for encrypted events. Hence the client would not ring even though
-  the ring event contains `m.mentions`.
-  - As a stop gat, it is recommended, that the client sends unencrypted `m.rtc.notification`
-    events in such rooms.
-  - As soon as [MSC3996: Encrypted mentions-only rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/3996)
-    is supported `m.has_mentions` should be used instead of unencrypted call
-    notify events.
-- Wanting to ring a user who you do not have a shared room with is not possible.
-  It might be an undesired capability that your device can be started to ring
-  by users you have not yet interacted on matrix.
-  On the other hand this might be desired to mimic what ppl expect from using
-  the telephone network.
-  Entering a matrix userId allows to call someone (Ring their phone).
-  (It would be possible to disable/configure this on the receiving
+ the receiving
   device)
   - The location to put this information would be the invite event.
     This would be an edge case and only required for the specific usecase
     of being able to ring without a shared DM/Room.
     It should be discussed in an additional MSC and is not part of this proposal.
+
+### Extensible Events
+
+The concept of [extensible events](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md)
+is used to offer a fallback f clients that do not support noticiation events and benefit from a fallback text reperentation.
+
+The body should contain a `m.text` field with the following content:
+
+```json5
+// notification
+ m.text: [{"body": "Call started by {sender}"}]
+
+// ring event
+ m.text: [{"body": "Call started by {sender} 🎶"}]
+```
 
 ## Alternatives
 
