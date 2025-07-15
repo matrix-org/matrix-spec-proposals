@@ -1,4 +1,4 @@
-# MSC4310: MatrixRTC decline `m.call.notify`
+# MSC4310: MatrixRTC decline `m.rtc.notification`
 
 MatrixRTC is the base layer that defines how devices participate in a call. For the specific
 usecase of a voice/video call we need additional signalling (outside of MatrixRTC) to provide
@@ -10,13 +10,13 @@ signalling and general purpose MatrixRTC session state.
 ## Context
 
 This proposal builds on the concept of [MSC4075: MatrixRTC Call Ringing](https://github.com/matrix-org/matrix-spec-proposals/pull/4075)
-introducint the `m.call.notify` event.
+introducint the `m.rtc.notification` event.
 This event lives in parallel with the MatrixRTC session and uses intentional mentions to make the receiving clients ring.
 The receiving clients will then monitor the room state and stop ringing once the user joined with one of their devices.
 
 ## Proposal
 
-Conceptually this MSC will introduce a new notify type, that will be sent as a relation to the `m.call.notify` event
+Conceptually this MSC will introduce a new notify type, that will be sent as a relation to the `m.rtc.notification` event
 which communicates a decline from one or more parties. It can be used on the clients to provide a good UX around
 a call decline (stop ringing, play a decline sound, prompt the user with: "the call has been declined" ...)
 
@@ -26,7 +26,7 @@ While the concept of this proposal is simple it is important to outline what nee
 the proposed solution.
 
 - A client needs to easily react to such an event and needs to be able to **correlate the decline** with a
-  `m.call.notify` event and best case even the **MatrixRTC session** to check if the declien is relevant.
+  `m.rtc.notification` event and best case even the **MatrixRTC session** to check if the declien is relevant.
 - It needs to be **flexible for 1:1 calls and group calls**. It should be possible to design a group ring
   and per group participant decline flow with this proposal even if some products might not need this feature.
 - Clients have two possible ways of displaying **historic calls in the timeline**. They can compute the exact call
@@ -36,20 +36,21 @@ the proposed solution.
 
 ### Proposal (Changes)
 
-This MSC Proposes to extend the `m.call.notify` event with two more properties and a new `notify_type` :
+This MSC Proposes to extend the `m.rtc.notification` with a new `notification_type`, a new relation and a new `decline_reason`
+field.
 
-- relation: `"m.relates_to": {"rel_type":"m.decline", "eventId":"$call_notify_event_id"}`
+- relation: `"m.relates_to": {"rel_type":"m.rtc.decline", "eventId":"$call_notify_event_id"}`
 - reason:
 
   ```json
   "decline_reason"?: "decline description"
   ```
 
-- decline type: `notify_type: "decline" | "ring" | "notify"`
+- decline type: `notification_type: "decline" | "ring" | "notify"`
 
 The `m.relates_to` field allows to reference the original notify event. The optional reason
 allows to provide a message to the user receiving the decline.
-the `notify_type` from the `m.call.notify` event gets a new case. The decline case.
+the `notification_type` from the `m.rtc.notification` event gets a new case. The decline case.
 
 This results in a tree of notify events on `m.rtc.member` events.
 
@@ -61,9 +62,9 @@ the call by ringing others ...
 
 ## Potential issues
 
-Since this is reusing the `m.call.notify` event type which did not have this usecase in mind,
+Since this is reusing the `m.rtc.notification` event type which did not have this usecase in mind,
 the event type name might be a bit off:
-Instead of calling it`m.call.notify`, `m.call.signalling` might be more approprita.
+Instead of calling it`m.rtc.notification`, `m.rtc.signalling` might be more approprita.
 
 ### Alternatives
 
@@ -99,8 +100,9 @@ Relations are unencrypted and the custom relation type will leak metadata about 
 
 ## Unstable prefix
 
-While this is an open proposal the prefix `org.matrix.mscXXXX.decline` needs to be used for the new relation type
-(and the `m.call.notify` event type will use the `org.matrix.msc4075.call.notify` prefixed version as described in [MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075))
+While this is an open proposal the prefix `org.matrix.msc4310.rtc.decline` needs to be used for the new relation type
+(and the `m.rtc.notification` event type will use the `org.matrix.msc4075.rtc.notification` prefixed version
+as described in [MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075))
 
 ## Dependencies
 
