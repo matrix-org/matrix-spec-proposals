@@ -75,7 +75,7 @@ While this MSC is not considered stable, `m.cross_signing_reset` should be refer
 
 ## Dependencies
 
-None.
+This proposal doesn't strictly depend on but works better with [MSC4191].
 
 [^1]: [matrix-authentication-service], for instance, uses a [Synapse admin API] to temporarily lift
     UIA on the endpoint.
@@ -83,5 +83,6 @@ None.
   [OAuth APIs]: https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api
   [User-Interactive Authentication (UIA)]: https://spec.matrix.org/v1.15/client-server-api/#user-interactive-authentication-api
   [`/_matrix/client/v3/keys/device_signing/upload`]: https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3keysdevice_signingupload
+  [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
   [matrix-authentication-service]: https://github.com/element-hq/matrix-authentication-service
   [Synapse admin API]: https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#allow-replacing-master-cross-signing-key-without-user-interactive-auth
