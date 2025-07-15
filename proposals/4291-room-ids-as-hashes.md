@@ -68,6 +68,7 @@ It is not immediately obvious which server created the room in the first place. 
 for a discussion on the pros/cons of this.
 
 The loss of `content.predecessor.event_id` may negatively impact the way clients stitch together timelines in upgraded rooms.
+In particular, some clients may crash if the field is missing (possibly Element iOS?).
 
 ### Alternatives
 
@@ -77,6 +78,7 @@ We could keep the colon+server suffix as it contains useful information about th
 and has historically been used as routing information / auth checks in several places:
  - event auth for `m.federate` [in Synapse](https://github.com/element-hq/synapse/blob/9d43bec/synapse/event_auth.py#L312), though the specification [states]((https://spec.matrix.org/v1.15/rooms/v11/#authorization-rules)) this should be applied to the `sender` instead - Step 3.
  - It’s used as a last resort `?via=` candidate [in Synapse](https://github.com/element-hq/synapse/blob/v1.133.0/synapse/handlers/room_member.py#L1177).
+ - It's used as a last resort `?via=` candidate in [Rory&::LibMatrix](https://cgit.rory.gay/matrix/LibMatrix.git/tree/LibMatrix/RoomTypes/GenericRoom.cs?h=0a82b7e2acc18def93818d8e405bf620c328975e#n223), NeoChat and others.
 
 It is also desirable to know the creator's server name without having to join and get the full create event
 for Trust & Safety purposes. The create event in invites can be spoofed, as can the room ID, but spoofing the
@@ -94,7 +96,9 @@ same ID, causing confusion. We therefore need to create a new namespace for vNex
 with earlier room versions. This is why the colon+server suffix has been removed. We could alternatively encode the
 room version along with the domain to form a new namespace e.g `!localpart:domain@version` where `@` has never been
 allowed in the set of `domain` characters, but there isn't a strong enough reason to encode such information in
-every event.
+every event. By doing this, we would allow implementation confusion by specifying the wrong creator domain and/or
+wrong room version in the ID, which is important when the room ID is read in isolation without the matching create
+event (e.g invite handling, moderation tooling).
 
 #### Removing `room_id` entirely from all events
 
