@@ -3,7 +3,11 @@
 Currently rooms are identified by a room ID [made from a random string](https://spec.matrix.org/v1.14/appendices/#room-ids)
 selected by the creating server, namespaced to the origin server. This allows a malicious server to
 create a room whose ID collides with an existing ID, causing security issues if the rooms are confused
-together.
+together. Furthermore, despite the specification stating that room IDs are opaque identifiers, both clients
+and servers in the wild introspect the room ID for routing or moderation purposes. This is fundamentally
+_unsafe_ as there are no guarantees the room ID is accurate without some verified events in the room.
+By removing the domain from the room ID we ensure real world clients and servers cannot be manipulated
+by an attacker who may claim domains they do not control.
 
 This supplants [MSC4051](https://github.com/matrix-org/matrix-spec-proposals/pull/4051) with more information.
 
@@ -120,6 +124,15 @@ We could generate an ephemeral keypair, sign the create event with the private k
 key as the room ID. [MSC1228](https://github.com/matrix-org/matrix-spec-proposals/pull/1228) proposed this.
 The problem with this approach is that we cannot guarantee that servers will actually treat the keypair
 as ephemeral: they could reuse the same keypair to create a spoofed room.
+
+#### Blocking servers which eclipse their own rooms
+
+We could make honest servers block other servers when they detect that the other server has reused a
+room ID. However, this is a reactive approach compared to the proactive approach this proposal takes.
+By relying on servers to "detect" when a room ID is reused, malicious servers can selectively disclose
+the duplicate room to target servers. This would allow the malicious server to force servers with
+admins in the room to no longer participate in the room, effectively removing the ability to moderate
+the room.
 
 ### Security Considerations
 
