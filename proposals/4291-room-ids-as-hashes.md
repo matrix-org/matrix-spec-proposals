@@ -40,7 +40,7 @@ The following changes on a new room version are made:
      >
      > Must contain less than or equal to 10 events. Note that if the relevant auth event selection rules are used,
      > this restriction should never be encountered.
-     > **NEW: MUST NOT contain the create event ID (room ID).**
+     > **NEW: MUST NOT contain the create event ID. This is already implied by the `room_id` field.**
    * The "Description" field for `room_id` is adjusted to state:
      > Required: Room identifier. Omitted on `m.room.create` events.
  - Concerning [auth rules](https://spec.matrix.org/v1.14/rooms/v11/#authorization-rules):
