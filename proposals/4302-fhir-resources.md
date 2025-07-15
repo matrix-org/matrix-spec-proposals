@@ -33,14 +33,14 @@ A new event type `m.fhir.resource` is introduced with the following properties i
   "content": {
     "canonical_url": "http://hl7.org/fhir/patient.html|4.0.1",
     "m.fhir.resource": {
-      "resourceType" : "Patient",
-      "name" : [{
-        "use" : "official",
-        "given" : ["John", "James"],
-        "family" : "Doe"
+      "resourceType": "Patient",
+      "name": [{
+        "use": "official",
+        "given": ["John", "James"],
+        "family": "Doe"
       }],
-      "gender" : "male",
-      "birthDate" : "1970-01-01",
+      "gender": "male",
+      "birthDate": "1970-01-01",
       // further properties as per the Patient schema
     },
     "m.file": {
