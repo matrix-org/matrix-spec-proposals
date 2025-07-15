@@ -184,14 +184,18 @@ Cons
   specific list of users to notify want to be specified.
 - It would not make it possible to ring without participating.
 
-### Explicitly unspecified conditions
+### Which properties are defined by the sender vs receiver
 
-- The duration of the ring sound is deliberately chosen
- to be a clients decision.
-- The ring sound is a client choice as well. (It was considered to
- add the ring sound to the notify event but how "ringing" actually should
- look like is intentionally in control of the receiver. So that users can use
- clients that suit them in terms of accessibility and personal taste.)
+- The duration of the ring sound could be the receiving clients decision. This MSC tries to find a middle ground by
+  allowing the sender to define a lifetime but the receiver and overwrite it in case that it is
+  necessary for the expected client UX. This at least provides
+  an expected ring duration that can be used for the sender UX.
+  Ultimately the sender can never know how the receiving client
+  will implement the ring. See [the related discussion](https://github.com/matrix-org/matrix-spec-proposals/pull/4075#discussion_r1597704775)
+- The ring sound is a client choice. (It was considered to
+  add the ring sound to the notify event but how "ringing" actually should
+  look like is intentionally in control of the receiver. So that users can use
+  clients that suit them in terms of accessibility and personal taste.)
 
 ## Security considerations
 
