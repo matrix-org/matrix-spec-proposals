@@ -1,4 +1,4 @@
-# MSC4310: MatrixRTC decline `m.rtc.notify`
+# MSC4310: MatrixRTC decline `m.call.notify`
 
 MatrixRTC is the base layer that defines how devices participate in a call. For the specific
 usecase of a voice/video call we need additional signalling (outside of MatrixRTC) to provide
@@ -16,7 +16,7 @@ The receiving clients will then monitor the room state and stop ringing once the
 
 ## Proposal
 
-Conceptually this MSC will introduce a new event that will be sent as a relation to the `m.call.notify` event
+Conceptually this MSC will introduce a new notify type, that will be sent as a relation to the `m.call.notify` event
 which communicates a decline from one or more parties. It can be used on the clients to provide a good UX around
 a call decline (stop ringing, play a decline sound, prompt the user with: "the call has been declined" ...)
 
@@ -53,7 +53,7 @@ the `notify_type` from the `m.call.notify` event gets a new case. The decline ca
 
 This results in a tree of notify events on `m.rtc.member` events.
 
-<img src="./XXXX-matrixRTC-call-decline-realtions.svg" width=400 alt="matrixRTC-call-decline-relations"/>
+<img src="./4310-matrixRTC-call-decline-realtions.svg" width=400 alt="matrixRTC-call-decline-relations"/>
 
 Fetching the `m.rtc.member` events to compute a timeline item summarizing the call allows to easily get all the
 related elements and provide additional context in the timeline tile. If a call was declined, who (can be multiple) started
