@@ -74,6 +74,11 @@ for a discussion on the pros/cons of this.
 The loss of `content.predecessor.event_id` may negatively impact the way clients stitch together timelines in upgraded rooms.
 In particular, some clients may crash if the field is missing (possibly Element iOS?).
 
+This proposal relies on the server being able to verify the create event in the room. This generally
+means the server must be joined to the room. In particular, invites/knocks are not protected against
+room confusion by this proposal alone. The security guarantees of this proposal are enhanced with
+[MSC4311: Ensuring the create event is available on invites and knocks](https://github.com/matrix-org/matrix-spec-proposals/pull/4311).
+
 ### Alternatives
 
 #### Keeping the domain suffix
