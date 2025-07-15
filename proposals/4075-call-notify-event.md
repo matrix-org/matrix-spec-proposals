@@ -25,6 +25,8 @@ This event contains the following fields by leveraging intentional mentions.
 ```json5
 {
   "content": {
+    "sender_ts": 1752583130365,
+    "lifetime": 30000,
     "m.mentions": {"user_ids": [], "room": true | false},
     "m.relates_to": {"rel_type":"m.rtc.notification", "eventId":"$rtc_member_event_id"},
     "notification_type": "ring | notification",
@@ -34,6 +36,14 @@ This event contains the following fields by leveraging intentional mentions.
 
 The fields are defined as follows:
 
+- `sender_ts` the local timestamp observed by the sender device. Is used in combination with lifetime to evaluate if
+  the notification event is valid. To mitigate clients lying about the `sender_ts` this value has to be checked with `origin_server_ts`.
+  The diff between `sender_ts` and `origin_server_ts` should be at most 20s.
+  If not the `origin_server_ts` should be used for the lifetime
+  computation instead.
+- `lifetime` the relative time to the `sender_ts` for which the `ring` is active or to define the window in which the
+  `notification` is not ignored. The recommended value is **30 seconds**.
+  The receiving client **should** cap the lifetime to an upper bound. (recommended: **2 minutes**).
 - `m.mentions` optional:\
   Has the structure as defined for `m.mentions` in the [Client-Server API](https://spec.matrix.org/v1.11/client-server-api/#definition-mmentions).
 - `notification_type` required string:\
@@ -86,12 +96,12 @@ The client should only inform the user if all of the following conditions apply:
   This includes stopping the current ring sound if the room state updates so
   this condition is true.
 - If a notify event is received in "real time":\
-  Notify events that are older then **20 seconds** are ignored (using the local
-  timestamp computed via `unsigned.age`).\
+  Notify events that are older then **`lifetime`** are ignored (using the
+  `sender_ts` timestamp).\
   Otherwise a client syncing for the first time would ring for outdated call events.
-  In general ringing only makes sense in "real time". A 20 second syncing latency
-  is allowed. Any client which is not able to receive the event in this period should
-  not ring to prohibit (annoying/misleading/irrelevant) outdated rings.
+  In general ringing only makes sense in "real time".
+  Any client which is not able to receive the event in the `lifetime` period should
+  not ring to prohibit annoying/misleading/irrelevant/outdated rings.
 
 ### Client behaviour when sending a `m.rtc.notification` event
 
@@ -107,6 +117,9 @@ Sending a `m.rtc.notification` should happen only if all of these conditions app
   is the first user in a new call session).
 - If possible the user should first send their `m.rtc.member` event first to allow setting up the relation
   for the notify event.
+- The sending client can compute the "exact" (or at least "a good approximation" if the local clocks are not configured correctly)
+  at which the `m.rtc.notification` ring will end using the `lifeitime` + `start_ts`. This allows the sending client to
+  show a local dialing/ringing animation/indicator/sound.
 
 ### Limitations and recommendations
 
@@ -138,8 +151,8 @@ Sending a `m.rtc.notification` should happen only if all of these conditions app
 It would be possible to use the call member room state events to determine a call
 start.
 The logic would be as following:
-_If we receive an event we check if  are already other members
-(call.member events) for the call. In case there is not we make the phone ring._
+*If we receive an event we check if  are already other members
+(call.member events) for the call. In case there is not we make the phone ring.*
 
 Pros:
 
