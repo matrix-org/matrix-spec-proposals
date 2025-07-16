@@ -32,13 +32,13 @@ Bob replies:
 
 Let's assume Bob's client takes the option to translate the plain text `2.` to HTML.
 Assuming further that Bob's client has full support to the extent recommended by the spec, then Bob's
-message becomes `"formatted_body": "<ol start=\"2\"></ol>"`, i.e. an ordered ("numbered") list with a single,
+message becomes `"formatted_body": "<ol start=\"2\"><li></li></ol>"`, i.e. an ordered ("numbered") list with a single,
 empty entry, that starts at an index of two.
 
 Let's assume Alice's client also implements HTML markup in a configuration allowed by the spec:
 Her client supports `ol` tags, but not the `start` attribute.
 A common implementation is to parse the HTML and simply remove any tags not implemented by the client.
-After safely ingesting the message, Alice's client ends up with `"formatted_body": "<ol></ol>"`.
+After safely ingesting the message, Alice's client ends up with `"formatted_body": "<ol><li></li></ol>"`.
 Rendering this, Alices screen shows:
 
 Bob said:  
