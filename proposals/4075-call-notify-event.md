@@ -51,7 +51,8 @@ The fields are defined as follows:
   `ring`: The client should ring.\
   `notification`: The client should show a notification.\
 - `m.relates_to`: optional:\
-  A relation (with type: `m.rtc.session_parent`) to the session participation event (`m.rtc.member`) of the notifying member.
+  A relation (with type: `m.rtc.notification.parent`) to the session participation event (`m.rtc.member`) of the
+  notifying member.
   If available this can be used to gather session data for this notify event.
   It should always be used if the notify is related to an rtc session. (Eventually this event might be used to send
   RTC session independent ringing notifications with a custom message. A bot controlled tea timer for instance.)
@@ -215,7 +216,7 @@ level to ring the whole room.
 While this MSC is not present in the spec, clients and widgets should:
 
 - Use `org.matrix.msc4075.rtc.notification` in place of `m.rtc.notification` as the event type
-- Use `org.matrix.msc4075.rtc.session_parent` in place of `m.rtc.session_parent` relation type.
+- Use `org.matrix.msc4075.rtc.notification.parent` in place of `m.rtc.notification.parent` relation type.
 
 ## Dependencies
 
