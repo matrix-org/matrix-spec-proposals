@@ -187,7 +187,7 @@ Thanks to Timo Kösters for initiating discussion around this MSC.
 
 ### Unstable prefix
 
-During development this room version is referred to as `org.matrix.hydra.11` alongside MSC4291 and MSC4297 (embargoed until Aug 14, 2025).
+During development this room version is referred to as `org.matrix.hydra.11` alongside MSC4289 and MSC4297 (embargoed until Aug 14, 2025).
 
 ### Dependencies
 
