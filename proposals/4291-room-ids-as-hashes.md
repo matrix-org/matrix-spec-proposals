@@ -56,12 +56,16 @@ This creates a chicken/egg problem when upgrading rooms because:
  - The `m.room.tombstone` event needs a `content.replacement_room`.
  - The `content.replacement_room` ID is now the create event of the new room.
  - The create event of the new room needs the tombstone event ID in `content.predecessor.event_id`.
+   - While the spec [does not require](https://spec.matrix.org/v1.15/client-server-api/#server-behaviour-19)
+     the predecessor event to be the tombstone, there may be more than one "last event" if the DAG
+     has forward extremities. Prior to sending the tombstone event, servers could heal the DAG using
+     a dummy event, though this is far from elegant when the tombstone event performs this function.
  - The `m.room.tombstone` event needs ...
 
 <img width="793" alt="Creator chicken egg problem" src="images/4291-creator-chicken-egg.png" />
 
-
-To break this cycle, this MSC removes the `content.predecessor.event_id` field from the `m.room.create` event. There appear to be no security
+To break this cycle, this MSC deprecates the `content.predecessor.event_id` field from the `m.room.create` event. Clients
+MUST NOT expect the field to be set, but SHOULD continue to use it if set. There appear to be no security
 reasons why this field exists. This field is sometimes used in clients to jump back to the correct part in the old room's timeline when the tombstone
 occurred, which can be relevant when there are lots of leave events after the tombstone. Clients that wish to preserve this behaviour may instead
 search the old room state for the `m.room.tombstone` event and then jump to that.
@@ -78,6 +82,12 @@ This proposal relies on the server being able to verify the create event in the 
 means the server must be joined to the room. In particular, invites/knocks are not protected against
 room confusion by this proposal alone. The security guarantees of this proposal are enhanced with
 [MSC4311: Ensuring the create event is available on invites and knocks](https://github.com/matrix-org/matrix-spec-proposals/pull/4311).
+
+Clients which were previously parsing the room ID to identify a server for `via` or similar puporposes
+are not able to do so. For `m.space.child` and similar cases, the user's own server may be used to
+populate `via` on the event, at least initially. For permalinks, `via` candidates are now more important
+when creating links (or the use of aliases). Clients can get their own server name by parsing the
+user ID they are operating under.
 
 ### Alternatives
 
