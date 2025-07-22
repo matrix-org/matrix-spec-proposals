@@ -170,6 +170,10 @@ room). This has always been implied due to the federation endpoint `/event/{even
 makes the data model rely on global uniqueness. See [MSC2848](https://github.com/matrix-org/matrix-spec-proposals/pull/2848)
 for more discussion.
 
+### Unstable prefix
+
+During development this room version is referred to as `org.matrix.hydra.11` alongside MSC4291 and MSC4297 (embargoed until Aug 14, 2025).
+
 ### Dependencies
 
 This MSC has no dependencies.
