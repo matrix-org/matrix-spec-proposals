@@ -116,6 +116,25 @@ This proposal does not require an unstable prefix as the behaviour can be accomp
 affecting client or server implementations.
 
 
+## Migration
+
+*This section is non-normative for spec writing purposes. It only affects implementations which have
+implemented room version 12 upon its release.*
+
+Room version 12 contains MSC4291 and is expected to be used in production prior to this proposal
+becoming stable itself. To account for this, servers SHOULD treat "MUST" as "MAY" throughout this
+proposal until 1 full spec release cycle has passed since this MSC's own release in the specification.
+
+This translates to a timeline anywhere between 2 and 6 months, depending on ecosystem rollout. An
+example *possible* release schedule is:
+
+1. August 2025 - Matrix 1.16 is released with Room Version 12.
+2. October 2025 - Matrix 1.17 is released with this proposal; servers use "MAY" keywords.
+3. January 2026 - Matrix 1.18 is released; servers switch to "MUST" keywords.
+
+Servers MAY switch to "MUST" keywords early if their local ecosystems are prepared for the change.
+
+
 ## Dependencies
 
 This proposal requires [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291) in
