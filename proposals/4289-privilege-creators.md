@@ -154,6 +154,13 @@ the _entire set_ of additional creators are specified up-front. For example, con
 
 This allows the creator status to move between users.
 
+**Note** (added July 28, 2025 post-acceptance for clarity): If `additional_creators` is specified on
+`/upgrade` but the new room version doesn't support `additional_creators`, the field is not used and
+does nothing. For example, if a room was being upgraded to `11` with `additional_creators: [@alice:example.org]`,
+the request would (probably) 200 OK but the new room's `m.room.create` event would *not* have an
+`additional_creators` field. If the room was instead being upgraded to `12` (which contains this MSC),
+then `additional_creators` would show up in the create event's `content`.
+
 ### Potential Issues
 
 Any update to the set of creators in a room requires a room upgrade. This means room upgrades will occur
