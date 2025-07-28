@@ -1,8 +1,8 @@
 ## MSC4289: Explicitly privilege room creators
 
-**NOTE**: This MSC is part of the security update to Matrix announced at https://matrix.org/blog/2025/07/security-predisclosure/.
-This is a lightly edited version of the final MSC, released ahead of the disclosure in order to aid
-client implementors with implementation, and will be updated with full security context upon disclosure.
+**NOTE**: This MSC was part of the security update to Matrix announced at https://matrix.org/blog/2025/07/security-predisclosure/.
+
+This MSC was updated on August 14th, 2025 to include previously-embargoed details.
 
 ### Problem
 
@@ -12,7 +12,20 @@ Despite warnings from clients about these limitations, it is still surprising to
 
 This MSC gives the room creator(s) an ability to demote those admins (or promote themselves).
 
-This MSC also addresses other forthcoming security considerations.
+Additionally, despite the nominal power level rules, in practice under circumstances the room creator's
+server could craft a power level event that predates the promotion in order to roll it back (or indeed
+roll back other power level changes). This behaviour is not exposed in the Client-Server API or power
+level rules however, and so is somewhat unexpected behaviour.
+
+* This behaviour happens because Matrix currently does not enforce finality on a room's DAG: any server
+  can retrospectively send events referencing older parts of the DAG. This provides full resilience
+  to arbitrary network partitions across the network as well as within a given server cluster, but
+  also means that a user can try to contradict themselves retrospectively to roll back their actions.
+* As a result, in practice the room creator *does* have implicit administrative control over the rooms
+  they create, which is desirable in terms of solving the first problem above. However, the Client-Server
+  API (and UI) does not correctly reflect this.
+* This MSC embraces the room creator's privilege in practice and formalizes their power level to be
+  infinitely high, always.
 
 ### Proposal
 
@@ -182,11 +195,51 @@ confusion and technical debt, given clients are already making breaking changes 
 
 ### Alternatives
 
-(Embargoed until Aug 14, 2025)
+1. We could implement DAG finality, stopping servers forking the DAG at points known by all servers to
+   be in the past. However, there is an open question on how to handle faulty servers which break the
+   finality rule by referencing old events (e.g. after a database rollback) - and the current best
+   solution is to have an admin upgrade the room to solve the resulting splitbrain. Given this requires
+   (complicated and confusing) manual intervention, it feels that the simpler solution presented here
+   is preferable.
+
+2. We could have implemented creator permissions as a high valued power level (as per MSC3915’s “owner”
+   PL), but this does not actually provide more security. The reason why "Creators" aren't just a new
+   tier above "Admins" is because of two reasons:
+
+   1. The set of creators is immutable.
+   2. The creators are defined in the earliest event in the room.
+
+   These two properties ensure that it's not possible to backdate events and provides additional
+   security against self-demotions (creators cannot self-demote as the set of creators is immutable)
+   above and beyond alternatives such as adding a new PL150 tier above "Admins" PL100.
 
 ### Security Considerations
 
-(Embargoed until Aug 14, 2025)
+This MSC makes a distinction between creators and admins which did not formally exist before. If a room
+is upgraded to this room version, the admin doing the upgrade will gain privileges they did not have
+before. This allows admins to escalate their privileges to creator level. Early versions of this proposal
+suggested that only the room creator would be able to upgrade to this new room version. However, many
+existing rooms on the public federation have absent creators, making it impossible for those rooms to
+upgrade to more secure room versions. As such, this proposal does not impose additional restrictions
+on the upgrade process, and accepts the risk that admins may gain power over other admins if they were
+first to upgrade the room.
+
+Specifying `additional_creators` removes the ability to demote those additional creators, effectively
+creating the same problem we have today where admins cannot be demoted. Care must be taken that clients
+emphasise this to end-users that this cannot be changed.
+
+In some cases, a room may outlast the creator's interest or participation in the room. Prior to this
+happening it is considered best practice for at least one other user to be given enough power level
+to send tombstone events (and therefore perform upgrades in the future), or to make use of
+`additional_creators` per above. Communities may prefer to exclusively create rooms using a dedicated
+account or give that account creator power via `additional_creators` too.
+
+It is critical that all servers agree on the same create event and thus the creator(s) of the room in
+order to apply auth checks correctly. Therefore, this MSC depends on [MSC4291: Room IDs as hashes of the create event](https://github.com/matrix-org/matrix-spec-proposals/pull/4291).
+
+The room creator has always been able to leave an invite-only room and then rejoin it without an invite.
+Clients may want to display left creators in a unique way such as keeping them in the membership list
+but greying out their name, or displaying `(Creator: left)`.
 
 ### Credits
 
@@ -194,7 +247,7 @@ Thanks to Timo Kösters for initiating discussion around this MSC.
 
 ### Unstable prefix
 
-During development this room version is referred to as `org.matrix.hydra.11` alongside MSC4291 and MSC4297 (embargoed until Aug 14, 2025).
+During development this room version is referred to as `org.matrix.hydra.11` alongside MSC4291 and MSC4297.
 
 ### Dependencies
 
