@@ -40,13 +40,21 @@ with request body:
 
 ```jsonc
 {
-  // Whether the subscription was made automatically
-  // by a client, not by manual user choice.
-  "automatic": true
+  // If the subscription was made automatically
+  // by a client, this is the ID of the latest event that caused
+  // the automatic subscription.
+  //
+  // If the subscription was made manually,
+  // this field is omitted.
+  "automatic": "$abcdef"
 }
 ```
 
-Returns 200 with empty body `{}`.
+In the general case, returns 200 with empty body `{}`.
+
+If an automatic subscription was requested but the provided cause event ID is not within the thread, returns 400/`M_NOT_IN_THREAD`.
+
+If an automatic subscription was requested but the automatic subscription is skipped by the server, returns 409 (Conflict) with `M_SKIPPED`. See the section below on *'Server-side automatic subscription ordering'*.
 
 If the thread does not exist, or if the user does not have access to it, returns 404/`M_NOT_FOUND`.
 
@@ -88,10 +96,29 @@ On success (200), returns:
 
 If there is no subscription to that thread, or the thread does not exist, or the thread is inaccessible, returns 404/`M_NOT_FOUND`.
 
+#### Server-side automatic subscription ordering
+
+It would be undesirable if a user was automatically re-subscribed to a thread, after having already unsubscribed, because they opened a dormant device which was not aware of the automatic subscription having already taken place.
+
+To this end, we must prevent automatic subscriptions being re-applied when an unsubscription occurred *after* receipt of the event causing a subscription.
+
+As clients are currently not privy to the ordering of events, we propose that the server is left in charge of making the ordering decision.
+
+For this to work, when a client requests an automatic subscription, it presents the event ID of the latest event it has seen that would give rise to this automatic subscription (**the 'cause event'**).
+
+The server will skip the subscription if it determines that the automatic subscription is for an event that was already acknowledged at the time a manual unsubscription was requested.
+
+To determine this ordering, the server can consider either:
+
+- physical timestamps (comparing the time of the manual unsubscription to the time of receipt of the cause event); or
+- logical timestamps (for example, position of the events within an event stream and/or topological ordering position within the room event DAG)
+
+In either case, servers must ensure that an automatic subscription cannot keep getting retriggered by clients.
+
 
 ### New Client Behaviour: subscribe on mention
 
-When a user is mentioned in a thread (by another user — the *mentioning user*), the user's client should perform an automatic subscription to that thread using `PUT /subscription` with `{"automatic": true}`.
+When a user is mentioned in a thread (by another user — the *mentioning user*), the user's client should perform an automatic subscription to that thread using `PUT /subscription` with `{"automatic": "$eventId"}`.
 
 The server does not perform this action on the client's behalf, principally because the server is not able to detect mentions in encrypted rooms.
 
