@@ -77,6 +77,13 @@ of the Matrix room:
     that was given to the previous version of the state event.
 - `focus_active` required Focus object - specifies the algorithm that defines how to choose a Focus for this member. See below for details.
 - `foci_preferred` required array of Focus objects - specifies the input data for this algorithm contributed by this member. See below for details.
+- `versions` A list of supported versions of the MatricRTC protocol. The goal is to make the protocol extensible, allow peers to provide backward
+compatibility if needed and also add the possibility to retire a feature/version. It is a list of free-form strings.
+
+ The version encapsulate several behavior than could later change or be dropped:
+ - How members converge on the FOCUS to use.
+ - When and how to encrypt media. How to rotate keys.
+ - How to distribute keys (room, to-device,..).
 
 Additional fields may be added depending on the application type.
 
@@ -100,12 +107,16 @@ A full `m.rtc.member` state event for a joined member looks like this:
   "foci_preferred": [
     {...FOCUS_1},
     {...FOCUS_2}
-  ]
+  ],
+  "versions": [
+    "v0",
+    "v1",
+  }
 }
 ```
 
-This gives us the information, that user: `@user:matrix.domain` with member ID `DEVICEID_m:call_123456789`
-is part of a session identified by `{}` using application of type `m.call` connected over `FOCUS_A`.
+This gives us the information, that user: `@user:matrix.domain` with member ID `xyzABCDEF10123`
+is part of a session using application of type `m.call` connected over `FOCUS_A`.
 This is sufficient information for another room member to detect the running session and join it.
 
 `created_ts` is an optional property that caches the time of creation. It is not required
@@ -196,7 +207,11 @@ For example:
     "foci_preferred": [
       {...FOCUS_1},
       {...FOCUS_2}
-    ]
+    ],
+    "versions": [
+      "v0",
+      "v1",
+    }
   }
 }
 ```
