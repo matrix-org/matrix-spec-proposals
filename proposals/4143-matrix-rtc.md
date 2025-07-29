@@ -547,8 +547,21 @@ solutions and answers for how and why they provide the infrastructure.)
 
 Earlier iterations of this MSC used an encrypted `m.rtc.encryption_keys` room event to distribute the per-participant sender keys.
 
-Whilst reducing traffic by only needing to send one event per participant, this approach does not allow for perfect forward secrecy
-as the keys are stored in the room history.
+#### Issues Encountered
+
+1. **Scalability Problems**
+   - Generated high volumes of message traffic in rooms
+   - Frequently hit rate limiting thresholds
+
+2. **Timeline Pollution**
+   - Introduced invisible events into the room timeline
+   - Created notification noise depending on user settings
+   - Negatively impacted backpagination experience
+
+3. **Security Concerns**
+   - Over-exposed call keys by sharing them with all room participants
+   - Failed to limit key distribution to active call participants only (impossibility to rotate key on leaver)
+
 
 The encrypted content of the `m.rtc.encryption_keys` event was as follows:
 
