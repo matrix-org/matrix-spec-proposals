@@ -21,6 +21,13 @@ This proposal consists of three main parts:
 - a new push rule (including a new push rule condition) that prevents notifying about threads that the user has not subscribed to.
 
 
+### Terminology
+
+This proposal introduces the concept of being 'subscribed' to and 'unsubscribed' from a thread.
+
+The default state is unsubscribed.
+
+
 ### New Endpoints
 
 #### Subscribing to a thread
