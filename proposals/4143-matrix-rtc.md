@@ -431,69 +431,66 @@ can use this input material to generate the needed secrets (by stretching/HKDF a
 
 A participant can share it's chosen key with other participants by sending Matrix [to-device messaging](https://spec.matrix.org/v1.11/client-server-api/#send-to-device-messaging) to the other participants.
 
-The key is sent as an event of type `m.rtc.encryption_keys` as an encrypted to-device message.
+The key is sent as an event of type `m.rtc.encryption_key` as an encrypted to-device message.
 
 The device ID that is being sent to is the `member`.`device_id` from the `m.rtc.member` events.
 
 The event contains the following fields:
 
-- `session` required object: The contents of the `session` from the `m.rtc.member` event.
-- `member` required object: The contents of the `member` from the corresponding `m.rtc.member` event.
-- `keys` required array of objects: The sender keys to be distributed to the participant:
+- `member_id` required object: The unique identifier for this session membership, must match the `member.id` of the `m.rtc.member` event.
+- `media_key` The media key to use to decrypt the participant media:
   - `key` required string: The base64 encoded key material.
   - `index` required int: The index of the key to distinguish it from other keys. This must be a between 0 and 255 inclusive.
     In some implementations of MatrixRTC this may correspond to the `keyID` field of the WebRTC [SFrame](https://www.w3.org/TR/webrtc-encoded-transform/#sframe) header.
-  - `invalidates_key_index` optional int: The index of the key that is invalidated by this key. If this is set, the application should invalidate the key identified
-    by `invalidates_key_index` once it receives a frame with the new `index`. This is to protect against an exfiltrated key being used to forge frames.
-  - `invalidates_after_ms` optional int: The number of milliseconds after the key identified by `invalidates_key_index` is invalidated by this key even if no frames
-    are received. Again, this is to protect against an exfiltrated key being used to forge frames.
 
 Depending on the RTC application, additional fields may be added to this event.
 
 An example to-device event:
 
 ```json5
-// event type: "m.rtc.encryption_keys"
+// event type: "m.rtc.encryption_key"
 {
-    "session": {
-      "application": "m.call",
-      "call_id": "",
-      "scope": "m.room"
-    },
-    "member": {
-      "id": "xyzABCDEF10123",
-      "device_id": "DEVICEID",
-      "user_id": "@user:matrix.domain"
-    },
+    "member_id": "xyzABCDEF10123",
     "room_id": "!roomid:matrix.domain",
-    "keys": [
-        {
-            "index": 10,
-            "key": "base64encodedkey",
-            "invalidates_key_index": 9,
-            "invalidates_after_ms": 5000
-        },
-    ],
+    "media_key":  {
+      "index": 10,
+      "key": "base64encodedkey",
+    },
 }
 ```
 
-On receipt of the `m.rtc.encryption_keys` event the application can associate the received key with the RTC session by matching the `session` and `member` contents with the corresponding `m.rtc.member` event.
+**Validation of incoming decrypted `m.rtc.encryption_key`**
 
-When the application joins the session it should send the key to all the existing participants.
+The receiving client should use the Olm decryption info to get the sender `user_id`, and `device_id` as well as the device verification state.
+A `m.rtc.encryption_key` to-device event sent in clear should be discarded.
+The sender information is claimed unless the device is verified.
 
-To ensure forward secrecy and post compromise security, the key material should be rotated (i.e. a new key generated) when a participant joins or leaves the session.
+The recieving client should find the matching `m.rtc.member` state event using the `m.rtc.encryption_key` `member_id` information (should match the `member.id`).
+
+The receiving must apply the current check:
+- The `sender` property from the decryption result must match the `sender` of the `m.rtc.member` state event.
+- The `device_id` property from the decryption result must match the `device_id` of the `member.device_id` of `m.rtc.member`  state event.
+
+Any `m.rtc.encryption_key` event that does not comply with these checks MUST be discarded.
+
+**Sending keys**
+
+When a member joins the session it should send its owm media key to all the existing participants.
+
+To ensure proper security, the key material should be rotated (i.e. a new key generated) when a participant joins or leaves the session.
 
 Key rotation is done as follows:
 
-- the sending application generates the new key material for the participant.
-- the sending application sends the new key material to all the participants with a new `index` value and `invalidates_key_index` set to the current `index`.
-- the receiving application stores the new key material for the specified `index`.
-- the sending application continues to use the old/current key to encrypt media.
-- the sending application waits for a period of time. The default should be 3 seconds.
+- the sending client generates the new key material for the participant.
+- the sending client sends the new key material to all the participants with a new `index` value.
+- the sending application should wait for a period of time before using the new key, to ensure every participant get the key. The default should be 3 seconds.
+- the receiving client stores the new key material for the specified `index`, and forward it to the application.
+
  It is possible to overwrite this on a per application basis in case an application has specific requirements on security or wants to minimize missed stream data.
  Also negotiation approaches can be defined where the RTC application uses data channels to communicate if everyone has received the next key.
-- the sending application starts to use the new key to encrypt media.
-- the receiving application invalidates the existing key with the `invalidates_key_index` value.
+
+It is possible to tweak a bit the key rotation to limit key exchange traffic for rapid fire joiners or leavers.
+Not rotating a key would mean that a member colluding with a RTC backend could be able to decrypt media he is not supposed to have access to.
 
 ### Discovery/negotiation of application types
 
