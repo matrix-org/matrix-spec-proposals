@@ -417,17 +417,15 @@ defined:
 There is a use-case in which a `m.call` app might want to participate in a session of type (application) `custom-call-with-more-features`. A native mobile matrix client might support `m.call` and is at hand to join the feature rich application/session.
 
 There could be fallback mechanisms but the most flexible approach is to treat it per application type. If it makes sense for an application type to fully conform to `m.call` a client that can connect to an `m.call` RTC session (application) could claim that it is also compatible with `custom-call-with-more-features` . It is than the job of the `custom-call-with-more-features` session type (application) to define some kind of feature list so that it can tell if users are joining with an m.call client or a dedicated `custom-call-with-more-features` client.
+
 ### End-to-end encryption of media streams
 
 We define how the key material is shared between the participants of the call to facilitate end-to-end encryption of the media streams.
 
-The backend (e.g. LiveKit) MSC defines how the key material is actually used.
+Calls started in non-encrypted room will be non-encrypted. Calls started in encrypted rooms will be encrypted.
 
-#### Shared password
-
-A shared password may be used to encrypt the media streams sent via the RTC backend that has been distributed ahead of time to the participants.
-
-For example, it could be in the query parameter of a private URL attached to a calendar invitation.
+The backend (e.g. LiveKit) MSC defines how the key material is actually used. E.g. The RTC client will generate a random 256 key material, then the application
+can use this input material to generate the needed secrets (by stretching/HKDF as see fit).
 
 #### Per-participant sender key
 
