@@ -121,7 +121,7 @@ While this MSC is not considered stable, `external` should be referred to as
 
 ## Dependencies
 
-None.
+This proposal doesn't depend on but plays together with [MSC4317].
 
   [cross-signing]: https://spec.matrix.org/v1.15/client-server-api/#cross-signing
   [device verification]: https://spec.matrix.org/v1.15/client-server-api/#device-verification
@@ -130,3 +130,4 @@ None.
   [format]: https://spec.matrix.org/v1.15/appendices/#signing-details
   [unpadded base64]: https://spec.matrix.org/v1.15/appendices/#unpadded-base64
   [avoid leaking social graphs]: https://spec.matrix.org/v1.15/client-server-api/#key-and-signature-security
+  [MSC4317]: https://github.com/matrix-org/matrix-spec-proposals/pull/4317
