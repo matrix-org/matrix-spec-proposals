@@ -97,11 +97,11 @@ The server does not perform this action on the client's behalf, principally beca
 
 If the client is already aware of the user being subscribed to the thread, then making a `PUT /subscription` request is not necessary.
 
-If the mentioning user is banned, the automatic thread subscription should not occur.
+If the mentioning user is banned in the room or ignored by the user, the automatic thread subscription should not occur.
 
 #### Reversal of automatic subscriptions
 
-If an automatic thread subscription occurs and the mentioning user is subsequently banned, then:
+If an automatic thread subscription occurs and the mentioning user is subsequently banned (or ignored by the user, but without loss of generality we refer to the user as banned hereinafter), then:
 
 - the thread subscription should be reversed,
 - provided that there aren't any other mentions by other, non-banned, users that would have caused the same automatic subscription.
