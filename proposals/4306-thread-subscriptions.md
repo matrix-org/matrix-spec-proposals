@@ -101,6 +101,8 @@ If the mentioning user is banned in the room or ignored by the user, the automat
 
 #### Reversal of automatic subscriptions
 
+*This section is an optional aspect. Clients can choose not to implement it, particularly in scenarios where it doesn't make sense.*
+
 If an automatic thread subscription occurs and the mentioning user is subsequently banned (or ignored by the user, but without loss of generality we refer to the user as banned hereinafter), then:
 
 - the thread subscription should be reversed,
