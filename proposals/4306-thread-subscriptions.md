@@ -163,11 +163,13 @@ The `thread_subscription` push condition is satisfied if and only if all the fol
 1. the event, which we are running push rules for, is part of a thread.
 2. the user is subscribed to the thread (`subscribed` = `true`) or is not subscribed to the thread (`subscribed` = `false`).
 
-## Limitations
+## Limitations and Potential Future Expansions
 
 - Users will not have enough granularity to subscribe to threads in a way that lets them keep track of threads (being able to 'catch up' through some mechanism in their client) without also getting notifications for them, except by disabling ALL thread subscription notifications altogether.
   - There is precedent for this granularity in the popular forum software *Discourse*, but the author is not aware of Instant Messaging software with this granularity.
   - With that said, this could be feasibly extended by a later MSC with no apparent issues.
+- Users will not be given any functionality allowing them to permanently 'mute' a thread, preventing future automatic subscriptions.
+  - This could, however, be introduced in the future as an extension to MSC.
 
 ## Alternatives
 
