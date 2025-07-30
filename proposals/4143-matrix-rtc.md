@@ -61,8 +61,13 @@ Sending a well-formed `m.rtc.member` event that describes a connected state for 
 The fields are as follows:
 
 - `member` required object - describes the participant of the RTC session:
-  - `id` required string - a unique identifier for this session membership as defined above. Recommended to be a UUID. It can be reused if the user leaves and rejoins the session.
-  It should be unique across all devices of the user. TODO: define grammar
+  - `id` required string - a unique identifier for this session membership.
+  It should be reused if the user leaves and rejoins the session from the same device.
+  It has to be unique for:
+    - each devices of the user
+    - each session (application + optional application specific id if multiples
+    sessions with the same application are possible, defined per application)
+  The proposed grammar for the id is: `<device_id>_<application><optional_application_id>`
   - `device_id` required string - the Matrix device ID of the device that is joining the session. This is used when sending
     [to-device messages](https://spec.matrix.org/v1.11/client-server-api/#send-to-device-messaging).
   - `user_id` required string - the Matrix user ID of the user that is joining the session. This is needed as we cannot rely
