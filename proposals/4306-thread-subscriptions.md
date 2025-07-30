@@ -137,6 +137,16 @@ If the client is already aware of the user being subscribed to the thread, then 
 
 If the mentioning user is banned in the room or ignored by the user, the automatic thread subscription should not occur.
 
+#### What counts as a mention
+
+The following things count as a mention for the sake of 'subscribe on mention' behaviour:
+
+- `@room` — both intentional and fallback;
+- intentional user mentions;
+- fallback plaintext mentions when intentional mentions are not in use; and
+- keyword mentions, if the user has configured some.
+
+
 #### Reversal of automatic subscriptions
 
 *This section is an optional aspect. Clients can choose not to implement it, particularly in scenarios where it doesn't make sense.*
