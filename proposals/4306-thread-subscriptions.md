@@ -160,7 +160,7 @@ As motivation, we want threads to have the following notification semantics:
 
 To achieve this, we propose the addition of two new push rules:
 
-1. a `content` push rule, called `.m.rule.unsubscribed_thread`, at the end of the content rule list. This rule causes events in unsubscribed threads to skip notification processing without generating a notification.
+1. an `underride` push rule, called `.m.rule.unsubscribed_thread`, at the beginning of the underride list. This rule causes events in unsubscribed threads to skip notification processing without generating a notification.
    The rule occurs after mention-specific rules and keyword mention rules, meaning that mentions continue to generate notifications.
    ```jsonc
    {
@@ -176,7 +176,7 @@ To achieve this, we propose the addition of two new push rules:
        "actions": []
    }
    ```
-2. an `underride` push rule, called `.m.rule.subscribed_thread`, at the beginning of the underride list. This rule causes events in subscribed threads to generate notifications.
+2. an `underride` push rule, called `.m.rule.subscribed_thread`, at the beginning of the underride list (following `.m.rule.unsubscribed_thread`). This rule causes events in subscribed threads to generate notifications.
    ```jsonc
    {
        "rule_id": ".m.rule.subscribed_thread",
