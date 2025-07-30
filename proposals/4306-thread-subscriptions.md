@@ -15,8 +15,9 @@ We then add a new push rule so that users can receive push notifications only fo
 
 ## Proposal
 
-This proposal consists of three main parts:
+This proposal consists of four main parts:
 - 3 simple endpoints for subscribing to and unsubscribing from threads;
+- new prescribed client behaviour when the user sends a message in a thread;
 - new prescribed client behaviour when the user is mentioned in a thread; and
 - a new push rule (including a new push rule condition) that prevents notifying about threads that the user has not subscribed to.
 
@@ -114,6 +115,16 @@ To determine this ordering, the server can consider either:
 - logical timestamps (for example, position of the events within an event stream and/or topological ordering position within the room event DAG)
 
 In either case, servers must ensure that an automatic subscription cannot keep getting retriggered by clients.
+
+
+### New Client Behaviour: subscribe when sending in a thread
+
+When a user is sending a message in a thread, the user's client SHOULD simultaneously perform a manual subscription to that thread using `PUT /subscription`.
+The subscription is not considered automamtic, because it was initiated by a user action (sending a message). Further, it'd be best for latency to perform the subscription concurrently with sending the message, so the client doesn't yet have an event ID to attach a hypothetical automatic subscription to anyway.
+
+Clients MUST only perform these subscriptions for messages sent by the same client and at the time of the messages being sent. In other words, client MUST NOT apply them for existing messages or messages sent by other devices.
+
+Clients MAY offer the user the ability to disable this feature, or disable it by default depending on use case.
 
 
 ### New Client Behaviour: subscribe on mention
