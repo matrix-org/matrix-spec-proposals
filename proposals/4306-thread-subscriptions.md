@@ -232,7 +232,7 @@ The `thread_subscription` push condition is satisfied if and only if all the fol
 
 - Since clients will be automatically updating the Thread Subscription Settings when their user is mentioned, server implementations should be ready to handle concurrent updates by multiple of the user's devices/clients when they are online at the same time.
 
-## Unstable prefix
+## Unstable amendments
 
 Whilst this proposal is unstable, the following changes should be noted:
 
@@ -243,6 +243,7 @@ Whilst this proposal is unstable, the following changes should be noted:
 - the push rule condition `kind` is renamed to:
   - `io.element.msc4306.thread_subscription`
 
+For servers implementing this MSC, the `org.matrix.msc4306` feature should be advertised through `/_matrix/clients/versions`.
 
 ## Dependencies
 
