@@ -92,7 +92,8 @@ A full `m.rtc.member` state event for a joined member looks like this:
 // state key: see next section for definition
 {
   "session": {
-    "application": "m.call"
+    "application": "m.call",
+    "id": UUID | ApplicationSpecificDefaultEnum
     // further fields for the application
   },
   "member": {
