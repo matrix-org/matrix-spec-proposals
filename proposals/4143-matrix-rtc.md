@@ -158,9 +158,14 @@ For example with a `member`.`id` of `xyzABCDEF10123` for user `@user:matrix.doma
 For a client parsing the state key we would treat anything before the first `_` as the Matrix ID of the user
 and anything after as the `member`.`id` field.
 
+The state key should/can **never** be used to imply any information about the user device or application.
+Even thought the proposed format is`<device_id>_<application><optional_application_id>`,
+the state key only has to fulfill be unique in regards to device, application and application_id.
+
 #### Leaving a session
 
-Sending an empty `m.rtc.member` event represents a leave action. The state key must be the same as boefore
+Sending an empty `m.rtc.member` event represents a leave action
+for the associated rtc membership.
 
 There is an optional `leave_reason` field that can be used to provide a reason for leaving the session:
 
