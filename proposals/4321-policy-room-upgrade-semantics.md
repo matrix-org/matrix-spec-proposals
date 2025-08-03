@@ -125,7 +125,7 @@ There are a few considerations that implementations must take:
 
 ### Ad-hoc upgrades
 
-### Loss of policy context
+#### Loss of policy context
 
 With ad-hoc upgrades there is a loss of data when the upgrade happens
 and policies are naively cloned. The original creator and timestamp
