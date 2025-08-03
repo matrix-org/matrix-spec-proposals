@@ -1,4 +1,4 @@
-# MSC0000: Policy Room Upgrade Semantics
+# MSC4321: Policy Room Upgrade Semantics
 
 In the wake of the predisclosure of [project
 hydra](https://matrix.org/blog/2025/07/security-predisclosure/), it is
@@ -25,7 +25,7 @@ illustrative only:
 
 ### Annotation of `m.room.tombstone` with the policy room upgrade semantic
 
-A new property is added to the `m.room.tombstone` event `org.matrix.msc0000.policy_room_upgrade_type`
+A new property is added to the `m.room.tombstone` event `org.matrix.msc4321.policy_room_upgrade_type`
 
 This property is expected to have a value of the string type. Move modes specified in this MSC are:
 
@@ -40,17 +40,17 @@ state_key and type combination. They are not the events themselves.
 The metadata here is purely representing the current state of the
 original room at the time the policy was moved.
 
-#### The `org.matrix.msc0000.original_sender` property
+#### The `org.matrix.msc4321.original_sender` property
 
 This is the top level `sender` property of the original policy event
 that is being moved to the replacement room.
 
-#### The `org.matrix.msc0000.original_timestamp` property
+#### The `org.matrix.msc4321.original_timestamp` property
 
 This is the top level `origin_server_ts` of the original policy event that is
 being moved to the replacement room.
 
-#### The `org.matrix.msc0000.original_event_id` property
+#### The `org.matrix.msc4321.original_event_id` property
 
 This is the `event_id` of the original policy event that is being
 moved to the replacement room.
@@ -58,7 +58,7 @@ moved to the replacement room.
 ### The `move` policy room upgrade type
 
 When a policy room has been marked as moved as a result of the
-`org.matrix.msc0000.policy_room_upgrade_type` property being present
+`org.matrix.msc4321.policy_room_upgrade_type` property being present
 with the value `"moved"`, moderation tools should at their convenience
 watch the replacement room and stop watching the old one.
 
