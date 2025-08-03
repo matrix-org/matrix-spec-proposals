@@ -13,8 +13,10 @@ Required fields if `type` is `m.rpc.media`:
 - `artist` containing the artist.
 - `album` containing the album.
 - `track` containing the track name.
+
 Required fields if `type` is `m.rpc.activity`:
 - `name` containing the activity name.
+
 Optional fields if `type` is `m.rpc.media`:
 - `progress` containing `length` with the length of the track in seconds.
 	- `time_complete` is needed for clients to show the media progress. It should only be updated in the event of the timestamp not being able to be guessed by a client.
@@ -22,6 +24,7 @@ Optional fields if `type` is `m.rpc.media`:
 - `cover_art` containing a MXC with the album art. Clients should hash the album art and re-use the MXC for album art matching that hash to avoid duplicating uploads.
 - `player` containing the media player.
 - `streaming_link` containing a link to the song on streaming services (i.e. Spotify, YouTube). Clients should warn the user before opening the link.
+
 Optional fields if `type` is `m.rpc.activity`:
 - `image` containing an MXC to show as an activity image. Clients should hash the image and re-use the MXC for album art matching that hash to avoid duplicating uploads.
 - `details` containing details (i.e. current map, location, etc).
@@ -31,11 +34,11 @@ Media:
 ```json
 {
 	"avatar_url": "…", "displayname": "…",
-    "m.rpc": {
+	"m.rpc": {
 	    "type": "m.rpc.media",
 	    "progress"{
-		    "length": 204,
-		    "complete": 102,
+		"length": 204,
+		"complete": 102,
 	    },
 	    "artist": "ari melody",
 	    "album": "free2play",
@@ -43,18 +46,18 @@ Media:
 	    "cover_art": "mxc://ip-logger.com/YS5tqBewwZ4HFF3hU9KT8OskREUmlPfM",
 	    "player": "Spotify",
 	    "streaming_link": "https://open.spotify.com/track/1zJWGrUJ7dy7wQuMSVbvCn"
-    }
+	}
 }
 ```
 Games:
 ```json
 {
 	"avatar_url": "…", "displayname": "…",
-    "m.rpc": {
-	    "type": "m.rpc.activity",
+	"m.rpc": {
+		"type": "m.rpc.activity",
 		"name": "SuperTuxKart",
 		"details": "Playing Oliver's Math Class as Xenia on Intermediate"
-    }
+	}
 }
 ```
 ### Potential implementations
