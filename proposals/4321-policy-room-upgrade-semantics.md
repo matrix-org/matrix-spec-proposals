@@ -87,6 +87,14 @@ the UX that this is a distinct scenario from an upgrade.
 
 Any existing watched policy room should remain watched.
 
+### Noting `/upgrade`
+
+We expect that most clients to avoid `/upgrade` and perform moving
+manually. It is left as an implementation detail whether servers will
+choose to move policies on behalf of clients. Currently `/upgrade`'s
+behaviour is underspecified and more options need to be presented to
+clients about what state events the server should copy and how.
+
 ## Security considerations
 
 ### Replicated properties in moved policies are loosely trusted
