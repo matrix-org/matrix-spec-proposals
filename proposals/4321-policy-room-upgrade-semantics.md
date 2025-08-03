@@ -114,7 +114,7 @@ It may be possible for policy rooms to be hijacked by malicious parties via the 
 
 There are a few considerations that implementations must take:
 
-- Moderation tools MUST NOT automatically follow tombstone events. A manual step
+- Moderation tools SHOULD NOT automatically follow tombstone events. A manual step
   SHOULD be taken by a moderator before the tool follows to the replacement room and
   watches the list.
 - Moderation tools SHOULD attempt to provide enough information about
