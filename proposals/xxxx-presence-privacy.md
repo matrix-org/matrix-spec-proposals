@@ -17,20 +17,20 @@ Determining the destination of the info is left up to the receiving homeserver.
 
 From a user perspective, it may make sense to limit sharing presence, e.g. in the following ways:
 - A default value (allow or deny)
-- A list of MXID to be treated as exceptions to the default
-- A list of server to be treated as exceptions to the default
+- A list of MXIDs to be treated as exceptions to the default
+- A list of servers to be treated as exceptions to the default
 - Allowing to share presence with all users the user shares a DM with
 - Per-room settings to share presence with everyone in this room
 
 Clients can choose to implement UI for this as they consider appropriate.
-Regardless of this MSC, clients have the ability of not sending presence at all.
+Regardless of this MSC, clients retain the option to not send presence at all.
 
-This improves user choice, privacy, and the potential to reduce server load
+This improves user choice, privacy, and has the potential to reduce server load
 significantly.
 
 ### Client-Server API
 
-Clients change the presence configuration by modifying a new `m.presence_sharing_config` event with the following content:
+Clients change the presence configuration by modifying a new `m.presence_sharing_config` event in the account data with the following content:
 
 ```jsonc
 {
@@ -48,12 +48,15 @@ Clients change the presence configuration by modifying a new `m.presence_sharing
 
 The sending user's homeserver reads these settings to determine to which users to send presence updates.
 To do this, the server follows this algorithm:
-1. Send presence to all users matching a user id explicitely listed, or matching a glob in, `allowed_users`
-2. Send presence to all users in a room with an id listed in `allowed_users` in join state `join`. (Here, we do *not* allow globs, since there generally are no groups of rooms sharing useful patterns in their room id)
+1. Send presence to all users matching a user ID explicitely listed, or matching a glob in, `allowed_users`
+2. Send presence to all users in a room with a room ID listed in `allowed_users` in membership state `join`. (Here, we do *not* allow globs, since there generally are no groups of rooms sharing useful patterns in their room ID)
 3. Send presence to all users the user shares a room with, **unless**
   1. The receiving user is listed in `denied_users` explicitely or by matching a glob
-  2. The room's id is listed under `denied_users`
-  
+  2. The room's ID is listed under `denied_users`
+
+TODO: consider ignored users
+TODO: consider whether the denied users MXID glob should override allowed room IDs
+
 This makes it explicit that a server MUST NOT send presence to any user that the sending user does share a room with or lists in `allowed_users`.
 
 Servers MAY pre-configure arbitrary values for this event.
@@ -63,6 +66,7 @@ some of these rooms are listed under `denied_users`, the user still receives pre
 least one room which is not listed in `denied_users`. If *all* shared rooms are listed under `denied_users`, the user does not receive presence.
 
 Clients SHOULD update the list of room IDs in the exception list when following room upgrades.
+TODO: should clients do anything automatically when leaving rooms on the list? I think otherwise we might have stale rooms on the list of which the local server is not receiving membership updates?
 
 ### Server-Server API
 
@@ -87,8 +91,8 @@ To the `m.presence` EDU ([spec](https://spec.matrix.org/v1.15/server-server-api/
 ```
 
 `allowed_recipients` is a list of MXIDs or MXID-globs. This means that the sending server has to resolve
-room ids to their joined members before sending this event. The receiving homeserver MUST only distribute the presence update
-to local users whose MXID matches this list. The sending server SHOULD NOT include any MXIDs or globs not matching the
+room IDs to their joined members before sending this event. The receiving homeserver MUST only distribute the presence update
+to local users whose MXIDs match this list. The sending server SHOULD NOT include any MXIDs or globs not matching the
 receiving homeserver.
 
 If `allowed_recipients` is not present, empty, or null, the update is to be treated as before this MSC for backwards compatibility.
@@ -96,26 +100,32 @@ This typically means sending the presence to all users the respective user share
 
 ## Potential issues
 
-Presence is resource-heavy. We don't expect this change to increase the resource in any relevant way.
+Presence is resource-heavy. We don't expect this change to increase the resource usage in any relevant way.
+
+The list of `allowed_recipients` in the federation EDU may get very large.
+A possible solution would be for servers to federate presence to servers with many recipients less frequently or based
+on additional heuristics (e.g. prioritise DMs, invite-only rooms, etc).
 
 TODO: event size limit EDU?
 
 ## Alternatives
 
 Many variations of the allow/blocklist configuration mechanism are possible, such as with or without globs, including or not
-including rooms, setting a default value, splitting user ids and room ids into separate lists, etc.
+including rooms, setting a default value, splitting user IDs and room IDs into separate lists, etc.
 For consistency, we consider to align the mechanism with similar ones in other places in spec or similar MSCs, such as
 [MSC4155](https://github.com/matrix-org/matrix-spec-proposals/pull/4155).
 
-It would be a possible variation of the proposed Server-Server API to leave resolving of room ids to user ids to the receiving server.
-This could somewhat reduce the size of the event
-This would introduce the minor risk that the receiving server sees a different member
+It would be a possible variation of the proposed Server-Server API to leave resolving of room IDs to user IDs to the receiving server.
+This has the potential to reduce the size of the EDU sent over federation when allowing room IDs.
+However this would introduce the minor risk of discrepancy that the receiving server sees a different member
 list than the sending server.
 
 ## Security considerations
 
 Since presence is sent non-e2ee via federation, the homeserver of a receiving user will know the presence and could also show it to more of its users than intended.
-We regard this as acceptable since it's similar to regular metadata leaks in matrix and still an improvement over the current situation.
+This can break user expectations when a user denies sending presence to `@alice:example.org` but allows
+`@bob:example.org` and `example.org` delivers the presence to Alice regardless.
+We regard this as acceptable since it's similar to regular metadata leaks in Matrix and realistically still an improvement over the current situation.
 
 ## Unstable prefix
 
@@ -124,4 +134,5 @@ Instead of `m.presence_sharing_config`, unstable implementations shall use the u
 
 ## Dependencies
 
-For consistency, we consider to align the mechanism with similar ones in other places in spec or similar MSCs, such as [MSC4155](https://github.com/matrix-org/matrix-spec-proposals/pull/4155). This is not strictly a dependency, though.
+While not strictly a dependency, we consider to align the mechanism with similar ones in other places in spec or similar MSCs,
+such as [MSC4155](https://github.com/matrix-org/matrix-spec-proposals/pull/4155) for the sake of consistency.
