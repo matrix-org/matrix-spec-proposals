@@ -141,7 +141,7 @@ We regard this as acceptable since it's similar to regular metadata leaks in Mat
 
 ## Unstable prefix
 
-Instead of `m.presence_sharing_config`, unstable implementations shall use the unstable identified
+Instead of `m.presence_sharing_config`, unstable implementations shall use the unstable identifier
 `events.matrix-community.presence_sharing_config`.
 
 ## Dependencies
