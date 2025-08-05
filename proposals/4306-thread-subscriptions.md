@@ -55,7 +55,7 @@ In the general case, returns 200 with empty body `{}`.
 
 If an automatic subscription was requested but the provided cause event ID is not within the thread, returns 400/`M_NOT_IN_THREAD`.
 
-If an automatic subscription was requested but the automatic subscription is skipped by the server, returns 409 (Conflict) with `M_SKIPPED`. See the section below on *'Server-side automatic subscription ordering'*.
+If an automatic subscription was requested but the automatic subscription is skipped by the server, returns 409 (Conflict) with `M_CONFLICTING_UNSUBSCRIPTION`. See the section below on *'Server-side automatic subscription ordering'*.
 
 If the thread does not exist, or if the user does not have access to it, returns 404/`M_NOT_FOUND`.
 
@@ -252,6 +252,9 @@ Whilst this proposal is unstable, the following changes should be noted:
   - `.io.element.msc4306.rule.subscribed_thread`
 - the push rule condition `kind` is renamed to:
   - `io.element.msc4306.thread_subscription`
+- the error codes are renamed to:
+  - `IO.ELEMENT.MSC4306.M_CONFLICTING_UNSUBSCRIPTION`
+  - `IO.ELEMENT.MSC4306.M_NOT_IN_THREAD`
 
 For servers implementing this MSC, the `org.matrix.msc4306` feature should be advertised through `/_matrix/clients/versions`.
 
