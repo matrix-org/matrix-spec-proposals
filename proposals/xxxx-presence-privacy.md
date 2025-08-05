@@ -10,6 +10,18 @@ Sharing [presence](https://spec.matrix.org/v1.15/server-server-api/#presence) in
   - Either they go fully private and disable presence in their client,
   - or they accept that their presence will be shared with anyone they share a room with (depending on server behavior; the spec also leaves the option for servers to not limit this at all).
 
+## Prior Art
+
+Prior to [MSC1819](https://github.com/matrix-org/matrix-spec-proposals/pull/1819), there existed a mechanism to
+subscribe to other users' presence updates via "presence lists".
+Users would have to request and the request be approved in order to subscribe and receive presence info.
+While in theory this was more privacy-preserving than the status quo, it never was implemented in a way that let users
+choose by approving requests.
+We consider that the back and forth of requesting and approving requests is likely tiring UX, and the ability to send requests added a possible spam vector.
+
+In contrast to this now historic concept, the approach in this MSC gives the opportunity to users to manage their
+presence visibility proactively, including some comfort features with globs and room IDs.
+
 ## Proposal
 
 Presence is currently sent over federation as an object containing the sending user's info.
