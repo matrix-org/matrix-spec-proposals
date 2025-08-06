@@ -43,6 +43,22 @@ See [security considerations](#security-considerations) for more information.
 This MSC will be superseded by [MSC3911][3911] by nature, however it fills a gap that is currently
 missing in functionality in a simpler, easier to implement manner.
 
+The suggestion for the method+route `DELETE /_matrix/client/v1/media/{server_name}/{media_uri}`
+has both been considered and suggested, however, the current layout for media controls looks like
+
+1. `POST /media/create`
+2. `POST /media/upload`
+3. `PUT /media/upload/{sn}/{mid}`
+4. `GET /media/download/{sn}/{mid}`
+5. `GET /media/thumbnail/{sn}/{mid}`
+
+So adding in `DELETE /media/{sn}/{mid}` would not fit the current pattern. Additionally,
+`POST` is used instead of `DELETE`, since semantically speaking, there is already nothing at
+`/media/redact/{server_name}/{media_uri}`.
+
+A future MSC may be created to unify the media endpoints, however in an effort to keep this MSC
+as simple as possible, it will not be done here.
+
 ## Security considerations
 
 As mentioned in [potential issues](#potential-issues), abusive users may upload abusive media,
