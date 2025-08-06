@@ -129,7 +129,8 @@ has PL100). For this reason and the ones listed above, no compatibility shim is 
 #### Tombstone changes
 
 The _initial power levels event in the room_ MUST have the level required to send `m.room.tombstone` events
-be higher than the level required to send state events. This is to ensure only creators are able to upgrade
+be higher than all other specified power levels in the event (**Changed by MSC4324: `state_default`->"all other power
+levels"**). This is to ensure only creators are able to upgrade
 the room _by default_, but allowing them to transfer ownership by increasing the PL of any user to PL150 (for example)
 to allow them to send the tombstone event. Note: this may still be overridden by `power_level_content_override`.
 
