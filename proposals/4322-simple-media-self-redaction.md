@@ -1,7 +1,7 @@
 # MSC4322: Simple Media Self-Redaction
 
 Currently, clients are able to create MXCs and upload media, however, are unable to remove that
-media without the help of a server administrator. As #3911 is still a ways away from being
+media without the help of a server administrator. As [MSC3911][3911] is still a ways away from being
 finished, media is currently retained *forever*, even when the user deletes the event that
 contained the media in the first place. This proposal outlines a simple method to allow clients
 to redact their media at their discretion.
@@ -10,7 +10,7 @@ to redact their media at their discretion.
 
 A new endpoint, `POST /_matrix/client/v1/media/redact/{server_name}/{media_uri}`, should be created.
 This endpoint must ensure that the user calling it is the same user that created the media URI.
-Implementations may rate-limit calls to the `/redact/` endpoint in order to prevent a user
+Implementations may rate-limit calls to the endpoint in order to prevent a user
 causing strain on disk operations, however this is not required.
 
 This endpoint should be treated similarily to the [redact event][spec_redact] endpoint, allowing
@@ -20,8 +20,6 @@ if delayed.
 
 Implementations **must not** re-use MXC URIs which have been redacted.
 See [security considerations](#security-considerations) for more information.
-
-[spec_redact]: https://spec.matrix.org/v1.15/client-server-api/#put_matrixclientv3roomsroomidredacteventidtxnid
 
 ## Potential issues
 
@@ -34,7 +32,7 @@ See [security considerations](#security-considerations) for more information.
    primary use-case is users redacting their media soon after redacting an associated event,
    voiding this concern.
 3. Abusive users may upload abusive media and then attempt to delete it after their victim
-   has retreived the media. This is remediated by retention, in a similar vein to redacted 
+   has retreived the media. This is remediated by retention, in a similar vein to redacted
    message retention.
 4. This side-steps power level forbidden redaction mechanisms. This is seen as a
    technicality rather than a problem, since until #3911, media is not tied to events
@@ -42,8 +40,8 @@ See [security considerations](#security-considerations) for more information.
 
 ## Alternatives
 
-This MSC will be superseded by #3911 by nature, however it fills a gap that is currently missing
-in functionality in a simpler, easier to implement manner.
+This MSC will be superseded by [MSC3911][3911] by nature, however it fills a gap that is currently
+missing in functionality in a simpler, easier to implement manner.
 
 ## Security considerations
 
@@ -64,3 +62,8 @@ by making it appear as if a trusted member of a community had uploaded media tha
 ## Dependencies
 
 None
+
+<!--        -->
+
+[3911]: https://github.com/matrix-org/matrix-spec-proposals/pull/3911
+[spec_redact]: https://spec.matrix.org/v1.15/client-server-api/#put_matrixclientv3roomsroomidredacteventidtxnid
