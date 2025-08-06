@@ -139,7 +139,15 @@ If the mentioning user is banned in the room or ignored by the user, the automat
 
 #### What counts as a mention
 
-The following things count as a mention for the sake of 'subscribe on mention' behaviour:
+To determine whether an event within a thread is considered as 'mentioning' the user,
+for the sake of the 'subscribe on mention' behaviour,
+clients evaluate the push rules against that event.
+
+If the evaluation of the push rules results in a `notify` action as the outcome, then
+that event is considered to be 'mentioning' the user.
+
+As a result, along with automatically supporting future notification rules,
+this definition includes, by default, all of the following circumstances:
 
 - `@room` — both intentional and fallback;
 - intentional user mentions;
