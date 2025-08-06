@@ -13,7 +13,7 @@ This endpoint must ensure that the user calling it is the same user that created
 Implementations may rate-limit calls to the endpoint in order to prevent a user
 causing strain on disk operations, however this is not required.
 
-This endpoint should be treated similarily to the [redact event][spec_redact] endpoint, allowing
+This endpoint should be treated similarly to the [redact event][spec_redact] endpoint, allowing
 implementations to optionally retain the redacted media for a period of time, however choosing
 not to serve it. This must not be read as a "quarantine", as redactions must be permanent, even
 if delayed.
@@ -32,7 +32,7 @@ See [security considerations](#security-considerations) for more information.
    primary use-case is users redacting their media soon after redacting an associated event,
    voiding this concern.
 3. Abusive users may upload abusive media and then attempt to delete it after their victim
-   has retreived the media. This is remediated by retention, in a similar vein to redacted
+   has retrieved the media. This is remediated by retention, in a similar vein to redacted
    message retention.
 4. This side-steps power level forbidden redaction mechanisms. This is seen as a
    technicality rather than a problem, since until #3911, media is not tied to events
@@ -66,7 +66,7 @@ and then redact it before an administrator can investigate. This is remediated b
 
 Additionally, implementations are forbidden from re-using MXC URIs, as without linked media,
 there is no way to know if a URI is still referenced somewhere. As a result, if it is, and a new
-peice of media replaces it, an attacker may be able to strike lucky and engage a phishing attack
+piece of media replaces it, an attacker may be able to strike lucky and engage a phishing attack
 by making it appear as if a trusted member of a community had uploaded media that they had not.
 
 ## Unstable prefix
