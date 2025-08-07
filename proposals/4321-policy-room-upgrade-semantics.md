@@ -62,6 +62,35 @@ When a policy room has been marked as moved as a result of the
 with the value `"moved"`, moderation tools should at their convenience
 watch the replacement room and stop watching the old one.
 
+#### Moving policies
+
+When policies are moved, all of their content properties should be
+preserved. Additionally, the `state_key` should be preserved as this
+often represents an identifier for the policy.
+
+#### Handling legacy and unstable recommendations
+
+When a policy with an unstable recommendation is being moved,
+implementations may change the recommendation to the stable version.
+Implementations should not change the `state_key` in this situation
+unless it is determined that the `state_key` was derived from the
+recommendation and other properties in the policy. Caution should be
+exercised here as the `state_key` may intentionally be unique.
+
+An example of an unstable recommendation change could be
+`org.matrix.mjolnir.ban` to `m.ban`.
+
+#### Handling legacy and unstable policy types
+
+When a policy with an unstable type is being moved, implementations
+may change the type to the stable version. Implementations should not
+change the type unless it is determined that the transformed policy
+will not conflict with any other policy (share the `state_key` and
+`type`).
+
+An example of an unstable policy type change could be
+`org.matrix.mjolnir.rule.user` to `m.policy.rule.user`.
+
 ### The `transition` policy room upgrade type
 
 When a policy room has been marked as `transition`, moderation tools
