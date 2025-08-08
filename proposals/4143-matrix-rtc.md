@@ -126,7 +126,7 @@ and a missing `created_ts` field implies that it is a join state event.
 All membership events that belong to one member session can be grouped with the index
 `created_ts()`+`state_key`. This is why the `m.rtc.member` events deliberately do NOT include something akin to a `membership_id`.
 
-Other then the membership sessions, there is **no event** to represent a RTC session (containing all members).
+Other than the membership sessions, there is **no event** to represent a RTC session (containing all members).
 This event would include shared information where it is not trivial to decide who has authority over it.
 Instead the session is a computed value based on `m.rtc.member` events.
 The list of events with the same `session` content represent one session.
