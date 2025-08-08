@@ -10,23 +10,30 @@ Threads Subscriptions are proposed in [MSC4306](https://github.com/matrix-org/ma
 Sliding Sync is proposed in [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/blob/erikj/sss/proposals/4186-simplified-sliding-sync.md) as a paginated replacement to `/_matrix/client/v3/sync` with smaller response bodies and lower latency.
 The `/_matrix/client/v3/sync` endpoint is notorious in real-world applications of Matrix for producing large response bodies (to the amplified detriment of mobile clients) and the high latency caused by waiting for the server to calculate that full payload.
 
-This MSC proposes an 'extension' to Sliding Sync that allows clients to opt-in to receiving updates to the user's thread subscriptions.
+This MSC proposes an 'extension' to Sliding Sync that allows clients to opt-in to receiving real-time updates to the user's thread subscriptions.
+
+To handle the case in which there have been many updates to the user's thread subscriptions and there are too many to return in
+Sliding Sync, a new companion endpoint is proposed to allow backpaginating thread subscriptions on the client's terms.
 
 ## Proposal
+
+### Sliding Sync extension
 
 The Sliding Sync request format is extended to include the `thread_subscriptions` extension as follows:
 
 ```jsonc
 {
   // ...
-  
+
   "extensions": {
     // ...
-    
-    // Used to opt-in to receiving updates to thread subscriptions.
+
+    // Used to opt-in to receiving changes to thread subscriptions.
     "thread_subscriptions": {
-      // Maximum number of thread subscription changes to receive.
+      // Maximum number of thread subscription changes to receive
+      // in the response.
       // Defaults to 100.
+      // Servers may impose a smaller limit than what is requested here.
       "limit": 100,
     }
   }
@@ -38,41 +45,105 @@ The response format is then extended to compensate:
 ```jsonc
 {
   // ...
-  
+
   "extensions": {
     // ...
-    
-    // Returns a limited window of updates to thread subscriptions
+
+    // Returns a limited window of changes to thread subscriptions
+    // Only the latest changes are returned in this window.
     "thread_subscriptions": {
-      "changed": [
-        {
-          "room_id": "!roomid:example.org",
-          "root_event_id": "$abc123",
-          
-          "subscribed": true,
-          
-          // must be present when subscribed is true,
-          // but must be absent when subscribed is false
-          "automatic": true
+      "changed": {
+        "!roomId1:example.org": {
+          // New subscription
+          "$threadId1": {
+            "automatic": true
+          },
+          // New subscription
+          // or subscription changed to manual
+          "$threadId2": {
+            "automatic": false
+          },
+          // Represents a removed subscription
+          "$threadId3": null
         },
-        {
-          "room_id": "!roomid:example.org",
-          "root_event_id": "$def456",
-          
-          "subscribed": false
-        },
-        ...
-      ]
+        "$roomId2:example.org": {
+          // ...
+        }
+        // ...
+      },
+
+      // A token that can be used to backpaginate other thread subscription
+      // changes that occurred since the last sync, but that were not
+      // included in this response.
+      //
+      // Only present when some thread subscriptions have been missed out
+      // from the response because there are too many of them.
+      "gap": "OPAQUE_TOKEN"
     }
   }
 }
 ```
 
+If two changes occur to the same subscription, only the latter change ever needs
+to be sent to the client. \
+Servers do not need to store intermediate subscription states.
+
+
+### Companion endpoint for backpaginating thread subscription changes
+
+```
+GET /_matrix/v1/thread_subscriptions
+```
+
+URL parameters:
+
+- `pos` (string, optional): a token used to continue backpaginating \
+  The token is either acquired from a previous `/thread_subscriptions` response,
+  or a Sliding Sync response. \
+  The token is opaque and has no client-discernible meaning. \
+  If this token is not provided, then backpagination starts from the 'end'.
+
+- `limit` (int, optional; default `100`): a maximum number of thread subscriptions to fetch
+  in one response. \
+  Must be greater than zero. Servers may impose a smaller limit than requested.
+
+Response body:
+
+```
+{
+  // Required
+  "chunk": {
+    "!roomId1:example.org": {
+      // New subscription
+      "$threadId1": {
+        "automatic": true
+      },
+      // New subscription
+      // or subscription changed to manual
+      "$threadId2": {
+        "automatic": false
+      },
+      // Represents a removed subscription
+      "$threadId3": null
+    },
+    "$roomId2:example.org": {
+      // ...
+    }
+  },
+  // If there are still more thread subscriptions to fetch,
+  // a new `pos` token the client can use to walk further
+  // backwards.
+  "pos": "OPAQUE_TOKEN"
+}
+```
+
+If two changes occur to the same subscription, only the latter change ever needs
+to be sent to the client. \
+Servers do not need to store intermediate subscription states.
+
+
 ## Potential issues
 
-When clients start a fresh sync with no initial state, it may be the case that there is a backlog of many thread_subscriptions to send down to the client.
-
-Servers MAY choose to return Thread Subscription Settings in an order that is more heuristically-useful to the client, such as 'most recently updated' or 'threads with most recent activity first', instead of 'oldest first'. This could be either for all Thread Subscriptions, or only the backlogged ones.
 
 ## Alternatives
 
@@ -86,7 +157,11 @@ Servers MAY choose to return Thread Subscription Settings in an order that is mo
 
 ## Unstable prefix
 
-TODO
+Whilst this proposal is unstable, a few unstable prefixes must be observed by experimental implementations:
+
+- the Sliding Sync extension is called `io.element.msc4306.thread_subscriptions` instead of `thread_subscriptions`
+- the companion endpoint is called `/_matrix/client/unstable/io.element.msc4308/thread_subscriptions` instead of `/_matrix/v1/thread_subscriptions`
+
 
 ## Dependencies
 
