@@ -21,10 +21,10 @@ exposed outside of their respective management interfaces.
 Taking advantage of the 10.22 section of the client-to-server specification,
 four new endpoints are introduced:
 
-- `GET /_matrix/client/v3/admin/suspend/{userId}`
-- `PUT /_matrix/client/v3/admin/suspend/{userId}`
-- `GET /_matrix/client/v3/admin/lock/{userId}`
-- `PUT /_matrix/client/v3/admin/lock/{userId}`
+- `GET /_matrix/client/v1/admin/suspend/{userId}`
+- `PUT /_matrix/client/v1/admin/suspend/{userId}`
+- `GET /_matrix/client/v1/admin/lock/{userId}`
+- `PUT /_matrix/client/v1/admin/lock/{userId}`
 
 These new endpoints complement the already existing
 `/_matrix/client/v3/admin/whois/{userId}` endpoint, however, are restricted to only permitting
@@ -132,7 +132,8 @@ where appropriate.
 
 | Stable | Unstable |
 | ------ | -------- |
-| `/_matrix/client/v3/admin/...` | `/_matrix/client/unstable/uk.timedout.msc4323/...` |
+| `/_matrix/client/v1/admin/...` | `/_matrix/client/unstable/uk.timedout.msc4323/...` |
+| `account_moderation` | `uk.timedout.msc4323` |
 
 `locked` and `suspended` in the request/response bodies do not require an unstable prefix
 as the entire body is new.
