@@ -66,23 +66,17 @@ of the above:
 
 ### Client-Server API
 
-Using the same "affected" calculation above, when serving `m.room.create` in [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state)
-to clients in affected room versions, servers MUST format that event in the same way it would for
-[`GET /rooms/:roomId/event/:eventId`](https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3roomsroomideventeventid).
+A prior iteration of this proposal required that servers format the `m.room.create` event as a full
+client event in affected rooms, however that format did not have a strong use case for deviating from
+the regular [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state) format.
+Instead, this proposal makes *no* changes to the format of `m.room.create` in stripped state over the
+Client-Server API, meaning the `m.room.create` event is represented as a regular stripped state event.
+For history on this change, see [this thread](https://github.com/matrix-org/matrix-spec-proposals/pull/4311/files#r2232855570).
 
-For unaffected room versions, servers SHOULD NOT format the create event, if known, any different than
-what stripped state already requires. This is to ensure clients do not accidentally rely on information
-which may be confusing to them, such as the "creator server name". This is especially true because the
-server is required to treat those events as untrusted for the reasons described in MSC4291.
-
-**Note**: "serving to clients" includes [pushing to Application Services](https://spec.matrix.org/v1.15/application-service-api/#pushing-events).
-
+**Note**: Servers can technically return more than specified in stripped state if they like, though
+this is not usually recommended as clients may unintentionally rely on that behaviour.
 
 ## Potential issues
-
-* Not using the same format for both affected and unaffected room versions may lead to parser complexity.
-  This is considered tolerable by this proposal to ensure that clients (and servers) have limited
-  ability to confuse themselves.
 
 * This technique is not applied to other state events present in stripped state. A future MSC or
   series of MSCs is expected to address this particular concern.
@@ -91,11 +85,6 @@ server is required to treat those events as untrusted for the reasons described 
   the Federation API and Client-Server API. Such implementations are encouraged to make the create
   event reasonably available in its full form to those applications. Typically, this will be an internal
   representation of the event which still has the capability to serialize down to a PDU.
-
-* For unaffected room versions, it's a little awkward that the Federation API SHOULD use PDU format,
-  but the Client-Server API SHOULD NOT format the event as a real event. This proposal makes this
-  choice to give *some* amount of information to intermediary tooling within the server, but can
-  easily be modified to be a "SHOULD NOT" for both cases.
 
 
 ## Alternatives
