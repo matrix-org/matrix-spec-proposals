@@ -2,33 +2,30 @@
 
 Historically, when processing an invite or knock, safety tooling would parse the room ID despite
 [being opaque](https://spec.matrix.org/v1.15/appendices/#room-ids) to determine the server which
-originally created the room. If that server was considered abusive, the invite/knock may be rejected
-or blocked early by the tooling. This approach is preferred because the user sending the invite may
-not be on the same server as the user who created the room, but is often still checked by safety
-tooling.
+originally created the room. If that server was considered abusive, the incoming invite or outbound
+knock may be rejected or blocked early by the tooling. This approach is preferred because the user
+sending the invite may not be on the same server as the user who created the room, but is often still
+checked by safety tooling.
 
 With [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291), room IDs lose their
-domain component, which can make the first check described above harder if not impossible. When
-speaking over federation however, [invites](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
-and [knocks](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1make_knockroomiduserid)
-contain a concept of "stripped state events" which give (unsigned) context about the room for the
-consuming clients. The Client-Server API [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state)
-section has more information about what these 'events' are and how they work.
+domain component. This, combined with [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state)
+recommending rather than requiring the `m.room.create` event, makes the above check harder if not
+impossible in some cases.
 
-This MSC aims to reintroduce the accessibility of the creator's server name to clients (and safety
-tooling) by requiring the `m.room.create` event *at least* be a full and proper PDU in affected room
-versions when transiting the Federation API via stripped state, allowing intermediary servers and
-clients to inspect the creator's domain name.
+This MSC shifts the `m.room.create` event to a *required* stripped state event, and imposes validation
+to ensure the event matches the room. To support the new validation, the `m.room.create` event must
+be formatted as a full PDU in the stripped state of [invites](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
+and [knocks](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1make_knockroomiduserid)
+over federation. Together, these changes allow safety tooling (and servers) to better validate invites
+in particular.
 
 
 ## Proposal
 
-This proposal is split into the Federation API changes and Client-Server API changes for clarity.
+On the Client-Server API, `m.room.create` MUST be provided in [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state),
+where available. No other changes are proposed to the Client-Server API.
 
-
-### Federation API
-
-For room versions affected by [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291),
+Over federation, for room versions affected by [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291),
 the `m.room.create` event MUST be included in [`invite_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
 and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1make_knockroomiduserid)
 and MUST be a properly-formatted PDU according to that room version's event format specification.
@@ -64,18 +61,6 @@ of the above:
 5. Otherwise, allow.
 
 
-### Client-Server API
-
-A prior iteration of this proposal required that servers format the `m.room.create` event as a full
-client event in affected rooms, however that format did not have a strong use case for deviating from
-the regular [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state) format.
-Instead, this proposal makes *no* changes to the format of `m.room.create` in stripped state over the
-Client-Server API, meaning the `m.room.create` event is represented as a regular stripped state event.
-For history on this change, see [this thread](https://github.com/matrix-org/matrix-spec-proposals/pull/4311/files#r2232855570).
-
-**Note**: Servers can technically return more than specified in stripped state if they like, though
-this is not usually recommended as clients may unintentionally rely on that behaviour.
-
 ## Potential issues
 
 * This technique is not applied to other state events present in stripped state. A future MSC or
@@ -95,8 +80,8 @@ equivalent to "don't do this".
 
 ## Security considerations
 
-Security considerations are made throughout, especially in areas where a server may accidentally trust
-data it shouldn't.
+Security considerations are made throughout, especially in areas where an implementation may accidentally
+trust data it shouldn't.
 
 
 ## Unstable prefix
@@ -112,7 +97,8 @@ implemented room version 12 upon its release.*
 
 Room version 12 contains MSC4291 and is expected to be used in production prior to this proposal
 becoming stable itself. To account for this, servers SHOULD treat "MUST" as "MAY" throughout this
-proposal until 1 full spec release cycle has passed since this MSC's own release in the specification.
+proposal, with the exception of the Client-Server API changes, until 1 full spec release cycle has
+passed since this MSC's own release in the specification.
 
 This translates to a timeline anywhere between 2 and 6 months, depending on ecosystem rollout. An
 example *possible* release schedule is:
