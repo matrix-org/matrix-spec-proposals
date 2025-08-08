@@ -84,8 +84,21 @@ the user is not a server administrator.
 If a user is deactivated, `M_NOT_FOUND` should also be returned, as deactivated users are not
 suspended nor locked, and typically are to be permanently treated as gone.
 
-If the server does not support the requested action, e.g. the server only supports suspension and
-not locking, the respective unsupported endpoint should return `M_NOT_FOUND` as expected.
+The server should advertise support for these endpoints by including the following new capability:
+
+```json5
+{
+  "capabilities": {
+    "account_moderation": {
+      "suspend": true, // or false
+      "lock": true // or false
+    }
+  }
+}
+```
+
+The server should only advertise these capabilities if the requesting user is a
+server administrator, or otherwise has permission to suspend or lock users.
 
 If the user is already in the state requested by a `PUT` request (e.g. a new
 `PUT` request with `{"suspended":true}` is sent for a user that is already suspended),
@@ -94,7 +107,7 @@ the action was changed in the request (such as who locked the target), this shou
 reflected.
 
 Servers may choose to retain implementation-specific versions of these endpoints, however should
-still implement this uniform endpoint for compatibility
+still implement this uniform endpoint for compatibility.
 
 ## Potential issues
 
