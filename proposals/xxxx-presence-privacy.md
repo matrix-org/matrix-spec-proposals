@@ -61,13 +61,13 @@ Clients change the presence configuration by modifying a new `m.presence_sharing
 The sending user's homeserver reads these settings to determine to which users to send presence updates.
 To do this, the server follows this algorithm:
 1. Send presence to all users matching a user ID explicitely listed, or matching a glob in, `allowed_users`
-2. Send presence to all users in a room with a room ID listed in `allowed_users` in membership state `join`. (Here, we do *not* allow globs, since there generally are no groups of rooms sharing useful patterns in their room ID)
+2. Send presence to all users in a room with a room ID listed in `allowed_users` in membership state `join` (here, we do *not* allow globs, since there generally are no groups of rooms sharing useful patterns in their room ID), **unless**
+  1. The user is [ignored](https://spec.matrix.org/latest/client-server-api/#ignoring-users)
+  2. The receiving user is listed in `denied_users` explicitely or by matching a glob
 3. Send presence to all users the user shares a room with, **unless**
-  1. The receiving user is listed in `denied_users` explicitely or by matching a glob
-  2. The room's ID is listed under `denied_users`
-  3. The user is [ignored](https://spec.matrix.org/latest/client-server-api/#ignoring-users)
-
-TODO: consider whether the denied users MXID glob should override allowed room IDs
+  1. The user is [ignored](https://spec.matrix.org/latest/client-server-api/#ignoring-users)
+  2. The receiving user is listed in `denied_users` explicitely or by matching a glob
+  3. The room's ID is listed under `denied_users`
 
 This makes it explicit that a server MUST NOT send presence to any user that the sending user does share a room with or lists in `allowed_users`.
 
