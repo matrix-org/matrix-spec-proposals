@@ -78,7 +78,10 @@ some of these rooms are listed under `denied_users`, the user still receives pre
 least one room which is not listed in `denied_users`. If *all* shared rooms are listed under `denied_users`, the user does not receive presence.
 
 Clients SHOULD update the list of room IDs in the exception list when following room upgrades.
-TODO: should clients do anything automatically when leaving rooms on the list? I think otherwise we might have stale rooms on the list of which the local server is not receiving membership updates?
+
+Servers SHOULD ignore rooms on the list when the user is not a member and remove rooms from either allow or denied list when the user
+leaves the room.
+This is to avoid users "subscribing" to rooms that the server is not a member of anymore and thus has stale membership info about.
 
 ### Server-Server API
 
