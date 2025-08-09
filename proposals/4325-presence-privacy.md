@@ -1,4 +1,4 @@
-# MSC0000: Presence Privacy
+# MSC4325: Presence Privacy
 
 Sharing [presence](https://spec.matrix.org/v1.15/server-server-api/#presence) in Matrix currently has the following problems [acknowledged in the specification](https://spec.matrix.org/v1.15/client-server-api/#security-considerations-4):
 
