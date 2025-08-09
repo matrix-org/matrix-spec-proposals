@@ -119,7 +119,7 @@ A new authenticated federation endpoint,
 `POST /_matrix/federation/v1/media/redact/{server_name}/{media_id}`,
 should be created in order to allow a server to notify other servers that a piece of media
 has been redacted. The same rules apply as client-to-server (e.g. a server may retain the media),
-however, the receiveing server **must** ensure that the calling server is the same server
+however, the receiving server **must** ensure that the calling server is the same server
 that the media URI belongs to. For example, `a.example` cannot redact media that belongs to
 `b.example`.
 
