@@ -65,8 +65,8 @@ To do this, the server follows this algorithm:
 3. Send presence to all users the user shares a room with, **unless**
   1. The receiving user is listed in `denied_users` explicitely or by matching a glob
   2. The room's ID is listed under `denied_users`
+  3. The user is [ignored](https://spec.matrix.org/latest/client-server-api/#ignoring-users)
 
-TODO: consider ignored users
 TODO: consider whether the denied users MXID glob should override allowed room IDs
 
 This makes it explicit that a server MUST NOT send presence to any user that the sending user does share a room with or lists in `allowed_users`.
