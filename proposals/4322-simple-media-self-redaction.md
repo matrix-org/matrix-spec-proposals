@@ -15,8 +15,6 @@ proposal.
 
 ### Client-to-server changes
 
-#### Delete media endpoint
-
 A new client-to-server endpoint, `POST /_matrix/client/v1/media/redact/{server_name}/{media_id}`,
 should be created. It should respond with a `200 OK` response, and an empty body upon success.
 
@@ -43,75 +41,6 @@ This parameter should either be a string, or omitted entirely.
 
 Implementations **must not** re-use MXC URIs which have been redacted.
 See [security considerations](#security-considerations) for more information.
-
-#### List media endpoint
-
-Some clients may wish to provide clients with a way to list media that they have uploaded,
-potentially in an effort to allow users to manage their media quota. Another, **optional**, endpoint is defined - `GET /_matrix/client/v1/media/list/{user_id}`.
-Non-privileged users should only be able to list their own media, however privileged users
-(such as server administrators) may be able to list media for other users.
-Listing media of remote users must not be allowed, and should return a `400 Bad Request` response
-with an error code of `M_INVALID_PARAM`.
-
-This new endpoint should return an object of media IDs, following the following schema:
-
-<details>
-<summary>JSON Schema</summary>
-
-```json
-{
-  "$schema": "https://json-schema.org/draft-07/schema",
-  "type": "object",
-  "properties": {
-    "files": {
-      "type": "object",
-      "description": "",
-      "properties": {
-        "media_id_N": {
-          "type": "object",
-          "properties": {
-            "size": {
-              "type": "integer",
-              "description": "Size on disk (in bytes)"
-            },
-            "filename": {
-              "type": "string",
-              "description": "The originally provided file name, if any"
-            },
-            "created_at": {
-              "type": "number",
-              "description": "The origin timestamp in unix milliseconds"
-            }
-          }
-        }
-      }
-    }
-  },
-  "required": [
-    "files"
-  ]
-}
-```
-
-</details>
-
-For example:
-
-```json
-{
-   "files": {
-      "media_id_1": {
-         "size": 123456,
-         "filename": "example.jpg",
-         "created_at": 1700000000000
-      },
-      "media_id_2": {
-         "size": 654321,
-         "created_at": 1700000001000
-      }
-   }
-}
-```
 
 ### Server-to-server changes
 
