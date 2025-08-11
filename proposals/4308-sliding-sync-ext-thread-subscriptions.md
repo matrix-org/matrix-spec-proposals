@@ -159,7 +159,7 @@ Servers do not need to store intermediate subscription states.
 
 Whilst this proposal is unstable, a few unstable prefixes must be observed by experimental implementations:
 
-- the Sliding Sync extension is called `io.element.msc4306.thread_subscriptions` instead of `thread_subscriptions`
+- the Sliding Sync extension is called `io.element.msc4308.thread_subscriptions` instead of `thread_subscriptions`
 - the companion endpoint is called `/_matrix/client/unstable/io.element.msc4308/thread_subscriptions` instead of `/_matrix/v1/thread_subscriptions`
 
 
