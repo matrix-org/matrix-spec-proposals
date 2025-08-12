@@ -88,12 +88,12 @@ This would have the advantage of not changing the behavior of existing endpoints
 ## Dependencies
 
 In order to use the devices created using this MSC, appservices need to be able
-to use device IDs as a part of identity assertion, as defined by [MSC3202].
+to use device IDs as a part of identity assertion, as defined by [MSC4326].
 
 ## Unstable prefix
 
 Until this MSC is stable, application services must opt-in to the new behavior
 by setting the `io.element.msc4190` flag to `true` in their registration file.
 
-[MSC3202]: https://github.com/matrix-org/matrix-spec-proposals/pull/3202
+[MSC4326]: https://github.com/matrix-org/matrix-spec-proposals/pull/4326
 [MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
