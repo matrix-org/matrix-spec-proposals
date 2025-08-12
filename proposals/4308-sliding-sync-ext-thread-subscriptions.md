@@ -72,13 +72,16 @@ The response format is then extended to compensate:
         // ...
       },
 
-      // A token that can be used to backpaginate other thread subscription
+      // A pair of tokens that can be used to backpaginate other thread subscription
       // changes that occurred since the last sync, but that were not
       // included in this response.
       //
+      // The tokens are to be used with the `/thread_subscriptions` endpoint
+      // as `from` and `to` parameters with `dir=b`.
+      //
       // Only present when some thread subscriptions have been missed out
       // from the response because there are too many of them.
-      "gap": "OPAQUE_TOKEN"
+      "prev": {"from": "OPAQUE_TOKEN", "to": "OPAQUE_TOKEN"}
     }
   }
 }
@@ -97,16 +100,23 @@ GET /_matrix/v1/thread_subscriptions
 
 URL parameters:
 
-- `pos` (string, optional): a token used to continue backpaginating \
+- `dir` (string, required): always `b` (backward), to mirror other pagination
+  endpoints. The forward direction is not yet specified to be implemented.
+
+- `from` (string, optional): a token used to continue backpaginating \
   The token is either acquired from a previous `/thread_subscriptions` response,
   or a Sliding Sync response. \
   The token is opaque and has no client-discernible meaning. \
   If this token is not provided, then backpagination starts from the 'end'.
 
+- `to` (string, optional): a token used to limit the backpagination \
+  The token can be acquired from a Sliding Sync response.
+
 - `limit` (int, optional; default `100`): a maximum number of thread subscriptions to fetch
   in one response. \
   Must be greater than zero. Servers may impose a smaller limit than requested.
 
+  
 Response body:
 
 ```jsonc
@@ -131,9 +141,9 @@ Response body:
     }
   },
   // If there are still more thread subscriptions to fetch,
-  // a new `pos` token the client can use to walk further
+  // a new `from` token the client can use to walk further
   // backwards.
-  "pos": "OPAQUE_TOKEN"
+  "end": "OPAQUE_TOKEN"
 }
 ```
 
@@ -141,6 +151,9 @@ If two changes occur to the same subscription, only the latter change ever needs
 to be sent to the client. \
 Servers do not need to store intermediate subscription states.
 
+The pagination structure of this endpoint matches that of the `/messages` endpoint, but fixed
+to the backward direction (`dir=b`).
+For simplicity, the `start` response field is removed as it is entirely redundant.
 
 ## Potential issues
 
