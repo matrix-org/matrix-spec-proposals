@@ -32,7 +32,9 @@ where available. No other changes are proposed to the Client-Server API.
 Over federation, for room versions affected by [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291),
 the `m.room.create` event MUST be included in [`invite_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
 and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1make_knockroomiduserid)
-and MUST be a properly-formatted PDU according to that room version's event format specification.
+and MUST be a properly-formatted PDU according to that room version's event format specification. The
+full PDU format is used to ensure that receiving applications can independently verify the room ID
+by calculating the reference hash of the create event themselves.
 
 If the `m.room.create` event is not present, not a PDU, or not for the room ID specified, the server
 MUST fail to continue processing the invite or knock. For invites, this is a `400 M_MISSING_PARAM`
@@ -68,7 +70,11 @@ of the above:
 ## Potential issues
 
 * This technique is not applied to other state events present in stripped state. A future MSC or
-  series of MSCs is expected to address this particular concern.
+  series of MSCs is expected to address this particular concern. Specifically, future work is expected
+  to make it easier for applications to independently verify other events included in "stripped" state
+  when they become formatted as full PDUs too. (A rename from "stripped state" to something else may
+  also be required at that stage.) Until then, the other events are left in their stripped form to
+  indicate that they are explicitly untrusted data.
 
 * Some server implementations allow safety tooling and other applications to hook into them between
   the Federation API and Client-Server API. Such implementations are encouraged to make the create
