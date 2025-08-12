@@ -109,7 +109,7 @@ URL parameters:
 
 Response body:
 
-```
+```jsonc
 {
   // Required
   "chunk": {
