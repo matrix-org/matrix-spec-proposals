@@ -104,22 +104,25 @@ affecting client or server implementations.
 
 ## Migration
 
-*This section is non-normative for spec writing purposes. It only affects implementations which have
-implemented room version 12 upon its release.*
+*This section is for server implementations to follow upon release of room version 12. It is not
+intended to enter the spec in any way.*
 
 Room version 12 contains MSC4291 and is expected to be used in production prior to this proposal
-becoming stable itself. To account for this, servers SHOULD treat "MUST" as "MAY" throughout this
-proposal, with the exception of the Client-Server API changes, until 1 full spec release cycle has
-passed since this MSC's own release in the specification.
+becoming stable itself. To account for this, for 1 spec release cycle, servers are encouraged to
+warn rather than fail on invites which don't have a complete `m.room.create` PDU in the `invite_room_state`.
+If the PDU is complete, but for a different room, the invite should still fail per the proposal text
+above.
 
 This translates to a timeline anywhere between 2 and 6 months, depending on ecosystem rollout. An
 example *possible* release schedule is:
 
-1. August 2025 - Matrix 1.16 is released with Room Version 12.
-2. October 2025 - Matrix 1.17 is released with this proposal; servers use "MAY" keywords.
-3. January 2026 - Matrix 1.18 is released; servers switch to "MUST" keywords.
+1. August 2025 - Matrix 1.16 is released with Room Version 12 and this proposal; servers log warnings
+   about invites missing complete `m.room.create` PDUs.
+2. October 2025 - Matrix 1.17 is released; servers stop using warnings and instead fully apply the
+   validation logic of this proposal, causing invites missing full create event PDUs to fail.
 
-Servers MAY switch to "MUST" keywords early if their local ecosystems are prepared for the change.
+Servers are encouraged to make the switch to full validation early if their ecosystem conditions
+allow. For example, if logged warnings are sufficiently low or of insignicant consequence.
 
 
 ## Dependencies
