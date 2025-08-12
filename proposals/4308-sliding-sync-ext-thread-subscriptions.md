@@ -95,7 +95,7 @@ Servers do not need to store intermediate subscription states.
 ### Companion endpoint for backpaginating thread subscription changes
 
 ```
-GET /_matrix/v1/thread_subscriptions
+GET /_matrix/client/v1/thread_subscriptions
 ```
 
 URL parameters:
@@ -173,7 +173,7 @@ For simplicity, the `start` response field is removed as it is entirely redundan
 Whilst this proposal is unstable, a few unstable prefixes must be observed by experimental implementations:
 
 - the Sliding Sync extension is called `io.element.msc4308.thread_subscriptions` instead of `thread_subscriptions`
-- the companion endpoint is called `/_matrix/client/unstable/io.element.msc4308/thread_subscriptions` instead of `/_matrix/v1/thread_subscriptions`
+- the companion endpoint is called `/_matrix/client/unstable/io.element.msc4308/thread_subscriptions` instead of `/_matrix/client/v1/thread_subscriptions`
 
 
 ## Dependencies
