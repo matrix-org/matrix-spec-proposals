@@ -142,7 +142,7 @@ Response body:
   },
   // If there are still more thread subscriptions to fetch,
   // a new `from` token the client can use to walk further
-  // backwards.
+  // backwards. (The `to` token, if used, should be reused.)
   "end": "OPAQUE_TOKEN"
 }
 ```
