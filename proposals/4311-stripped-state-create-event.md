@@ -48,8 +48,9 @@ For room versions *not* affected by MSC4291, servers SHOULD include the properly
 PDU. This is not made mandatory to avoid a situation where servers trust data that shouldn't be trusted
 for the reasons described by MSC4291.
 
-To determine whether a room is "affected" by MSC4291, servers MUST inspect the `room_id` rather than
-the create event's `room_version`. Specifically, a room ID with a domain component is *not* affected
+To determine whether a room is "affected" by MSC4291, servers MUST use the `room_id` rather than
+the create event's `room_version` (note: for MSC4291 rooms, the server must calculate the room ID
+because `room_id` will not be present on the event). Specifically, a room ID with a domain component is *not* affected
 while one without a domain component (and happens to be `!<43 unpadded urlsafe base64 chars>`) *is*
 affected. This is done to ensure the server is not potentially confused by a malicious server providing
 a create event for a different, unaffected, room.
