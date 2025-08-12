@@ -31,17 +31,18 @@ where available. No other changes are proposed to the Client-Server API.
 
 Over federation, for room versions affected by [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291),
 the `m.room.create` event MUST be included in [`invite_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
-and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1make_knockroomiduserid)
+and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1send_knockroomideventid)
 and MUST be a properly-formatted PDU according to that room version's event format specification. The
 full PDU format is used to ensure that receiving applications can independently verify the room ID
 by calculating the reference hash of the create event themselves.
 
 If the `m.room.create` event is not present, not a PDU, or not for the room ID specified, the server
-MUST fail to continue processing the invite or knock. For invites, this is a `400 M_MISSING_PARAM`
-standard Matrix error (new to the endpoint). For knocks, this means the server drops the `make_knock`
-response and never completes a `send_knock`. For both operations, the associated Client-Server API
-request is failed with `500 M_BAD_STATE`. A 4xx error isn't used for the Client-Server API because
-there's nothing the client can materially do differently to fix that request.
+MUST respond to invites with a `400 M_MISSING_PARAM` standard Matrix error (new to the endpoint). For
+knocks, the server SHOULD remove the `m.room.create` event from `knock_room_state` before passing the
+information along to clients. Ideally, the server would be able to prevent the knock from happening,
+though by the time the server can see the `knock_room_state`, the knock has already happened. A 4xx
+error isn't used for the Client-Server API because there's nothing the client can materially do
+differently to fix that request.
 
 For room versions *not* affected by MSC4291, servers SHOULD include the properly-formatted `m.room.create`
 PDU. This is not made mandatory to avoid a situation where servers trust data that shouldn't be trusted
