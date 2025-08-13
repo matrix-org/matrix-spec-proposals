@@ -96,6 +96,9 @@ Including certificates in [`/_matrix/client/v3/keys/query`] will increase the si
 
 ## Alternatives
 
+[MSC2882] solves a similar problem by introducing transitive trust and letting users vouch for other
+users. This only works when a first level of trusted users exists though.
+
 External signatures and certificates could be combined by using PKCS \#7 detached signatures.
 
 ``` json5
@@ -130,4 +133,5 @@ This proposal doesn't depend on but plays together with [MSC4317].
   [format]: https://spec.matrix.org/v1.15/appendices/#signing-details
   [unpadded base64]: https://spec.matrix.org/v1.15/appendices/#unpadded-base64
   [avoid leaking social graphs]: https://spec.matrix.org/v1.15/client-server-api/#key-and-signature-security
+  [MSC2882]: https://github.com/matrix-org/matrix-spec-proposals/pull/2882
   [MSC4317]: https://github.com/matrix-org/matrix-spec-proposals/pull/4317
