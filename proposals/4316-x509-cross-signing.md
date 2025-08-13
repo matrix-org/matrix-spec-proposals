@@ -27,7 +27,7 @@ both the signing algorithm and the public key, the generic string `x509` is used
 identifier while the certificate's SHA-256 fingerprint encoded in [unpadded base64] is used as the
 key identifier.
 
-As a result, an externally signed device key looks like this:
+As an example, an externally signed device key looks like this:
 
 ``` json5
 {
