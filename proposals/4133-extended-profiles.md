@@ -148,8 +148,7 @@ Clients MAY check for this capability before attempting to create or modify a pr
   (or all) changes, it SHOULD use the capability to advertise this, improving the client experience.
 
 - **When `enabled` is `false`**: Clients SHOULD expect to display profiles but NOT create or update
-  fields. Any attempt to do so SHOULD result in a `403 Forbidden` error. This does not affect
-  `avatar_url` and `displayname` fields, which are allowed for compatibility purposes.
+  fields. Any attempt to do so SHOULD result in a `403 Forbidden` error.
 
 - **When `enabled` is `true`**: Clients SHOULD allow users to create or update fields, except those
   keys listed in the `disallowed` array. Servers MAY specify an `allowed` array to allowlist fields
