@@ -147,6 +147,9 @@ We regard this as acceptable since it's similar to regular metadata leaks in Mat
 Instead of `m.presence_sharing_config`, unstable implementations shall use the unstable identifier
 `events.matrix-community.presence_sharing_config`.
 
+To detect server support, clients can either rely on the spec version (when stable)
+or the presence of a `events.matrix-community.presence_sharing_config` flag in `unstable_features` on `/versions`.
+
 ## Dependencies
 
 While not strictly a dependency, we consider to align the mechanism with similar ones in other places in spec or similar MSCs,
