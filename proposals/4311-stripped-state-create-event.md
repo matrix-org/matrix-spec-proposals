@@ -16,7 +16,7 @@ MSC4291+ room versions.
 This MSC shifts the `m.room.create` event to a *required* stripped state event, and imposes validation
 to ensure the event matches the room. To support the new validation, the `m.room.create` event must
 be formatted as a full PDU in the stripped state of [invites](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
-over federation. This is not applied to other events for reasons described later in the proposal.
+over federation. Similar treatment is applied to other stripped state events for uniformity.
 
 [Knocks](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1send_knockroomideventid)
 additionally include the full PDU format, though only to ensure symmetry between the two instances of
@@ -27,73 +27,56 @@ have already sent the knock before stripped state is received.
 ## Proposal
 
 On the Client-Server API, `m.room.create` MUST be provided in [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state),
-where available. No other changes are proposed to the Client-Server API.
+where available. No other changes are proposed to the Client-Server API. For clarity, this means clients
+continue to receive events which only have `content`, `sender`, `state_key` (optional), and `type` in
+the `invite_room_state`, `knock_room_state`, and whereever else stripped state is used.
 
-Over federation, for room versions affected by [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291),
-the `m.room.create` event MUST be included in [`invite_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
-and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1send_knockroomideventid)
-and MUST be a properly-formatted PDU according to that room version's event format specification. The
-full PDU format is used to ensure that receiving applications can independently verify the room ID
-by calculating the reference hash of the create event themselves.
+Over federation, servers MUST include the `m.room.create` event in the [`invite_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
+and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1send_knockroomideventid).
+Servers MUST additionally format events in `invite_room_state` and `knock_room_state` as PDUs according
+to that room version's event format specification. Together, these changes allow servers to validate
+the room ID matches the invite (or knock, though it's already sent by the time validation would happen).
 
-If the `m.room.create` event is not present, not a PDU, or not for the room ID specified, the server
-MUST respond to invites with a `400 M_MISSING_PARAM` standard Matrix error (new to the endpoint). For
-knocks, the server SHOULD remove the `m.room.create` event from `knock_room_state` before passing the
-information along to clients. Ideally, the server would be able to prevent the knock from happening,
-though by the time the server can see the `knock_room_state`, the knock has already happened. A 4xx
-error isn't used for the Client-Server API because there's nothing the client can materially do
-differently to fix that request.
+Specifically, including the `m.room.create` event as a full PDU allows servers to calculate the room
+ID by hashing the event in MSC4291+ room versions. For other room versions (1 through 11), the server
+can at most compare the `room_id` field of the create event with the invite/knock membership event.
 
-For room versions *not* affected by MSC4291, servers SHOULD include the properly-formatted `m.room.create`
-PDU. This is not made mandatory to avoid a situation where servers trust data that shouldn't be trusted
-for the reasons described by MSC4291.
+If any of the events are not a PDU, not for the room ID specified, or fail [signature checks](https://spec.matrix.org/v1.15/server-server-api/#validating-hashes-and-signatures-on-received-events),
+or the `m.room.create` event is missing, the receiving server MUST respond to invites with a `400 M_MISSING_PARAM`
+standard Matrix error (new to the endpoint). For knocks, the server SHOULD remove any events from
+`knock_room_state` which fail the same validation check before passing the details along to clients.
+Ideally, the server would be able to prevent the knock from happening, though by the time the server
+can see the `knock_room_state`, the knock has already happened.
 
-To determine whether a room is "affected" by MSC4291, servers MUST use the `room_id` rather than
-the create event's `room_version` (note: for MSC4291 rooms, the server must calculate the room ID
-because `room_id` will not be present on the event). Specifically, a room ID with a domain component is *not* affected
-while one without a domain component (and happens to be `!<43 unpadded urlsafe base64 chars>`) *is*
-affected. This is done to ensure the server is not potentially confused by a malicious server providing
-a create event for a different, unaffected, room.
+The `400 M_MISSING_PARAM` error SHOULD be translated to a 5xx error by the sending server over the
+Client-Server API. This is done because there's nothing the client can materially do differently to
+make the request succeed.
 
-When a room is affected, the server MUST validate the `m.room.create` event as follows for the purposes
-of the above:
-
-1. If the event has a `room_id`, reject.
-2. If the event does not otherwise comply with the event format for its self-described room version,
-   reject.
-3. If the event fails [signature checks](https://spec.matrix.org/v1.15/server-server-api/#validating-hashes-and-signatures-on-received-events),
-   reject. The content hash check MAY be skipped as the event can safely be redacted prior to all of
-   these checks.
-4. If the event's [reference hash](https://spec.matrix.org/v1.15/server-server-api/#calculating-the-reference-hash-for-an-event)
-   does not match the event ID contained in the room ID, reject.
-5. Otherwise, allow.
+When comparing the room IDs, servers will need to calculate the room ID from the `m.room.create` event
+as described by MSC4291 (take the reference hash of the event for an event ID, swap the sigil).
 
 
 ## Potential issues
-
-* This technique is not applied to other state events present in stripped state. A future MSC or
-  series of MSCs is expected to address this particular concern. Specifically, future work is expected
-  to make it easier for applications to independently verify other events included in "stripped" state
-  when they become formatted as full PDUs too. (A rename from "stripped state" to something else may
-  also be required at that stage.) Until then, the other events are left in their stripped form to
-  indicate that they are explicitly untrusted data.
 
 * Some server implementations allow safety tooling and other applications to hook into them between
   the Federation API and Client-Server API. Such implementations are encouraged to make the create
   event reasonably available in its full form to those applications. Typically, this will be an internal
   representation of the event which still has the capability to serialize down to a PDU.
 
+* Implementations should take care to not unintentionally trust the events contained in `invite_room_state`
+  and `knock_room_state`, despite appearing as complete events. This is due to the lack of each event's
+  auth chain being included, and reassurance that the events are the current events.
 
 ## Alternatives
 
 This proposal fills a potential gap in information created by MSC4291, making the alternatives roughly
-equivalent to "don't do this".
+equivalent to "don't do this". A possible alternative is in the shape of [MSC4329](https://github.com/matrix-org/matrix-spec-proposals/pull/4329)
+where the `/invite` endpoint changes, however the changes are roughly the same as this proposal's.
 
 
 ## Security considerations
 
-Security considerations are made throughout, especially in areas where an implementation may accidentally
-trust data it shouldn't.
+Security considerations are made throughout, especially around validating the events included.
 
 
 ## Unstable prefix
