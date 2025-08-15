@@ -1,4 +1,4 @@
-# MSC0000: Inviting with authorization
+# MSC4329: Inviting with authorization
 
 One of the purposes of [MSC4311](https://github.com/matrix-org/matrix-spec-proposals/pull/4311) is
 to restore access to the server name of the room's creator(s), allowing decision making to happen
@@ -109,7 +109,7 @@ for rooms other than the one described by the invite event.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `/_matrix/federation/unstable/org.matrix.msc0000/invite/:roomId` instead of the v3 endpoint.
+While this proposal is not considered stable, implementations should use `/_matrix/federation/unstable/org.matrix.msc4329/invite/:roomId` instead of the v3 endpoint.
 
 
 ## Dependencies
