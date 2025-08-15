@@ -19,7 +19,7 @@ A new endpoint, `PUT /_matrix/federation/v3/invite/:roomId` is created, copying 
 specification from the [existing v2 endpoint](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv2inviteroomideventid).
 The only changes are:
 
-* The `{eventId}` path parameter is removed because it is an uneccessary footgun in modern room
+* The `{eventId}` path parameter is removed because it is an unnecessary footgun in modern room
   versions. The event ID can instead be calculated from hashing the event in the request body.
 * The new endpoint MUST only be used in room versions 3 and above due to the above. The older v2 or
   v1 variants would need to be used for room versions 1 and 2.
