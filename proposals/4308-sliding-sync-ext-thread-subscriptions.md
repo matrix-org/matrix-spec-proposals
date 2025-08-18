@@ -72,16 +72,18 @@ The response format is then extended to compensate:
         // ...
       },
 
-      // A pair of tokens that can be used to backpaginate other thread subscription
+      // A token that can be used to backpaginate other thread subscription
       // changes that occurred since the last sync, but that were not
       // included in this response.
       //
-      // The tokens are to be used with the `/thread_subscriptions` endpoint
-      // as `from` and `to` parameters with `dir=b`.
+      // The token is to be used with the `/thread_subscriptions` endpoint
+      // as `from`, with `dir`=`b`.
+      // The `pos` parameter in the **request** would be used for the `to`
+      // parameter.
       //
       // Only present when some thread subscriptions have been missed out
       // from the response because there are too many of them.
-      "prev": {"from": "OPAQUE_TOKEN", "to": "OPAQUE_TOKEN"}
+      "prev_batch": "OPAQUE_TOKEN"
     }
   }
 }
@@ -105,7 +107,7 @@ URL parameters:
 
 - `from` (string, optional): a token used to continue backpaginating \
   The token is either acquired from a previous `/thread_subscriptions` response,
-  or a Sliding Sync response. \
+  or the `prev_batch` in a Sliding Sync response. \
   The token is opaque and has no client-discernible meaning. \
   If this token is not provided, then backpagination starts from the 'end'.
 
@@ -149,11 +151,12 @@ Response body:
 
 If two changes occur to the same subscription, only the latter change ever needs
 to be sent to the client. \
-Servers do not need to store intermediate subscription states.
+Servers MUST not send intermediate subscription states to clients.
 
 The pagination structure of this endpoint matches that of the `/messages` endpoint, but fixed
 to the backward direction (`dir=b`).
 For simplicity, the `start` response field is removed as it is entirely redundant.
+
 
 ## Potential issues
 
