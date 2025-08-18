@@ -176,9 +176,9 @@ As motivation, we want threads to have the following notification semantics:
     - Exceptions: if the user is mentioned, this should generate a notification as usual. (The push notification thus generated is also useful for the client to realise it needs to create an automatic thread subscription.)
 - Messages in subscribed threads should always count as a notification, and the (effective) room notification settings should not matter at all. E.g. the room can be muted, but if I, as a user, am subscribed to a thread, I still want to get a notification for new messages in that thread. If I do not want that, then I will unsubscribe.
 
-To achieve this, we propose the addition of two new push rules:
+To achieve this, we propose the addition of two new push rules, both added to a new push rule `kind` called `postcontent`, which is ordered between `content` and `room` but can contain general-purpose rules:
 
-1. an `underride` push rule, called `.m.rule.unsubscribed_thread`, at the beginning of the underride list. This rule causes events in unsubscribed threads to skip notification processing without generating a notification.
+1. `.m.rule.unsubscribed_thread`, at the beginning of the underride list. This rule causes events in unsubscribed threads to skip notification processing without generating a notification.
    The rule occurs after mention-specific rules and keyword mention rules, meaning that mentions continue to generate notifications.
    ```jsonc
    {
@@ -194,7 +194,7 @@ To achieve this, we propose the addition of two new push rules:
        "actions": []
    }
    ```
-2. an `underride` push rule, called `.m.rule.subscribed_thread`, at the beginning of the underride list (following `.m.rule.unsubscribed_thread`). This rule causes events in subscribed threads to generate notifications.
+2. `.m.rule.subscribed_thread`, at the beginning of the underride list (following `.m.rule.unsubscribed_thread`). This rule causes events in subscribed threads to generate notifications.
    ```jsonc
    {
        "rule_id": ".m.rule.subscribed_thread",
