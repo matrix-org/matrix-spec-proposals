@@ -22,11 +22,14 @@ A new push rule action `notify_in_app` is introduced.
 
 -   `notify_in_app` -- This causes each matching event to generate a
     notification **without sending a push**. In particular, this means,
-    like `notify`, the server should consider the event when computing
+    like `notify`, the server MUST consider the event when computing
     `notification_count` and `highlight_count` in the `/sync` response.
-    Unlike `notify`, the server should not forward the notification to
-    any of its pushers. Clients should display in-app notifications just
-    like for `notify`.
+    Unlike `notify`, the server MAY skip forwarding the notification to
+    any of its pushers. Suppressing the push is OPTIONAL because clients
+    need to locally reapply push rules upon receiving push notifications
+    anyway due to E2EE. Clients MUST suppress push notifications that
+    resulted from `notify_in_app` but SHOULD display in-app notifications
+    just like for `notify`.
 
 The existing `notify` action is changed to imply `notify_in_app`.
 
@@ -45,6 +48,9 @@ None.
 
 ## Alternatives
 
+[MSC3881] and [MSC3890] solve a similar problem but can only disable
+notifications globally and not per-room.
+
 Several attempts at fixing similar problems have been made in the past.
 Most of these alternatives fell through because they separated unread
 and notification counts. For the specific case of in-app-only
@@ -61,7 +67,7 @@ latter exhibits the same semantics as `notify_in_app`, its naming
 disguises the fact that notifications are still being displayed in-app.
 The PR was abandoned in favor of [MSC2625].
 
-### MSC2625:mark_unread action / unread_count field
+### MSC2625: Add `mark_unread` push rule action #2625 
 
 [MSC2625] went a step further by introducing a `mark_unread` action
 together with an explicit `unread_count` next to the existing
@@ -94,3 +100,5 @@ None.
   [Synapse PR]: https://github.com/matrix-org/synapse/pull/6061
   [MSC2625]: https://github.com/matrix-org/matrix-spec-proposals/pull/2625
   [MSC2654]: https://github.com/matrix-org/matrix-spec-proposals/pull/2654
+  [MSC3881]: https://github.com/matrix-org/matrix-spec-proposals/pull/3881
+  [MSC3890]: https://github.com/matrix-org/matrix-spec-proposals/pull/3890
