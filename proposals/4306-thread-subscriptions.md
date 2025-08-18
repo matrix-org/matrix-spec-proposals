@@ -176,7 +176,7 @@ As motivation, we want threads to have the following notification semantics:
     - Exceptions: if the user is mentioned, this should generate a notification as usual. (The push notification thus generated is also useful for the client to realise it needs to create an automatic thread subscription.)
 - Messages in subscribed threads should always count as a notification, and the (effective) room notification settings should not matter at all. E.g. the room can be muted, but if I, as a user, am subscribed to a thread, I still want to get a notification for new messages in that thread. If I do not want that, then I will unsubscribe.
 
-To achieve this, we propose the addition of two new push rules, both added to a new push rule `kind` called `postcontent`, which is ordered between `content` and `room` but can contain general-purpose rules:
+To achieve this, we propose the addition of two new push rules, both added to a new push rule `kind` called `postcontent`, which is ordered between `content` and `room` but which can contain general-purpose rules:
 
 1. `.m.rule.unsubscribed_thread`, at the beginning of the underride list. This rule causes events in unsubscribed threads to skip notification processing without generating a notification.
    The rule occurs after mention-specific rules and keyword mention rules, meaning that mentions continue to generate notifications.
@@ -220,6 +220,33 @@ These push rules use a new push condition `thread_subscription`, which takes an 
 The `thread_subscription` push condition is satisfied if and only if all the following hold:
 1. the event, which we are running push rules for, is part of a thread.
 2. the user is subscribed to the thread (`subscribed` = `true`) or is not subscribed to the thread (`subscribed` = `false`).
+
+### Explanation of the rationale behind the `postcontent` push rule kind
+
+We need a new push rule kind ordered between `content` and `room` because:
+
+**For `.m.rule.unsubscribed_thread`**
+- this rule must come after any keyword mentions the user has configured (which would be configured in `content`)
+  as those should still trigger mentions (and thus automatic thread subscriptions).
+- the rule must come before any room settings the user has configured, such as notifying on all messages in a room,
+  as that would cause automatic subscriptions to every thread in the room and it would cause inconsistencies
+  between the default 'notified for all messages' behaviour and 'notified for all messages in this room'.
+
+**For `.m.rule.subscribed_thread`**
+- it seems inappropriate for an `override` rule to produce notifications, given the `override` rules generally
+  are intended to suppress them.
+  - more concretely, we should allow rules in the `override` and `content` block the opportunity to produce
+    notifications with specific tweaks, e.g. `content` rules to match mentions might highlight the messages
+    rather than simply notifying.
+      - `.m.rule.contains_user_name` and user-specified keyword mention rules must therefore execute first
+        so they can make use of `"set_tweak": "highlight"`.
+- this rule should come after `content` in case any users perform negative filtering (i.e. suppressing
+  notifications for messages containing certain keywords), although the author is not aware of clients with
+  such functionality.
+- this rule must come before `room` to avoid thread subscriptions being defeated by user rules such as
+  the ones underlying 'Mentions only' or 'Mentions & Keywords' settings available in common clients.
+
+For the time being, servers MUST ensure that clients MUST NOT be able to create custom rules with this push rule kind.
 
 ## Limitations and Potential Future Expansions
 
