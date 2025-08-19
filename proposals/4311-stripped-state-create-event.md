@@ -29,7 +29,7 @@ have already sent the knock before stripped state is received.
 On the Client-Server API, `m.room.create` MUST be provided in [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state),
 where available. No other changes are proposed to the Client-Server API. For clarity, this means clients
 continue to receive events which only have `content`, `sender`, `state_key` (optional), and `type` in
-the `invite_room_state`, `knock_room_state`, and whereever else stripped state is used.
+the `invite_room_state`, `knock_room_state`, and wherever else stripped state is used.
 
 Over federation, servers MUST include the `m.room.create` event in the [`invite_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
 and [`knock_room_state`](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1send_knockroomideventid).
