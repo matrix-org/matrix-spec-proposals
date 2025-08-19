@@ -52,23 +52,38 @@ The response format is then extended to compensate:
     // Returns a limited window of changes to thread subscriptions
     // Only the latest changes are returned in this window.
     "thread_subscriptions": {
-      "changed": {
+      // Threads that have been subscribed, or had their subscription
+      // changed.
+      //
+      // Optional. If omitted, has the same semantics as an empty map.
+      "subscribed": {
         "!roomId1:example.org": {
           // New subscription
           "$threadId1": {
-            "automatic": true
+            "automatic": true,
+            "bump_stamp": 4000
           },
           // New subscription
           // or subscription changed to manual
           "$threadId2": {
-            "automatic": false
-          },
-          // Represents a removed subscription
-          "$threadId3": null
+            "automatic": false,
+            "bump_stamp": 4210
+          }
         },
         "$roomId2:example.org": {
           // ...
         }
+      },
+      // Threads that have been unsubscribed.
+      //
+      // Optional. If omitted, has the same semantics as an empty map.
+      "unsubscribed": {
+        "!roomId3:example.org": {
+          // Represents a removed subscription
+          "$threadId3": {
+            "bump_stamp": 4242
+          }
+        },
         // ...
       },
 
@@ -81,8 +96,8 @@ The response format is then extended to compensate:
       // The `pos` parameter in the **request** would be used for the `to`
       // parameter.
       //
-      // Only present when some thread subscriptions have been missed out
-      // from the response because there are too many of them.
+      // Optional. Only present when some thread subscriptions have been
+      // missed out from the response because there are too many of them.
       "prev_batch": "OPAQUE_TOKEN"
     }
   }
@@ -92,7 +107,6 @@ The response format is then extended to compensate:
 If two changes occur to the same subscription, only the latter change ever needs
 to be sent to the client. \
 Servers do not need to store intermediate subscription states.
-
 
 ### Companion endpoint for backpaginating thread subscription changes
 
@@ -123,24 +137,32 @@ Response body:
 
 ```jsonc
 {
-  // Required
-  "chunk": {
+  "subscribed": {
     "!roomId1:example.org": {
       // New subscription
       "$threadId1": {
-        "automatic": true
+        "automatic": true,
+        "bump_stamp": 4000
       },
       // New subscription
       // or subscription changed to manual
       "$threadId2": {
-        "automatic": false
-      },
-      // Represents a removed subscription
-      "$threadId3": null
+        "automatic": false,
+        "bump_stamp": 4210
+      }
     },
     "$roomId2:example.org": {
       // ...
     }
+  },
+  "unsubscribed": {
+    "!roomId3:example.org": {
+      // Represents a removed subscription
+      "$threadId3": {
+        "bump_stamp": 4242
+      }
+    },
+    // ...
   },
   // If there are still more thread subscriptions to fetch,
   // a new `from` token the client can use to walk further
@@ -157,6 +179,20 @@ The pagination structure of this endpoint matches that of the `/messages` endpoi
 to the backward direction (`dir=b`).
 For simplicity, the `start` response field is removed as it is entirely redundant.
 
+### Use of `bump_stamp`
+
+The `bump_stamp`s within each thread subscription can be used for determining which
+state is latest, for example when a concurrent `/thread_subscriptions` backpagination request
+and `/sync` request both return information about the same thread subscription.
+
+The semantics of the `bump_stamp` are that for two updates about the same thread,
+the update with the higher `bump_stamp` is later and renders the update with the lower
+`bump_stamp` obsolete.
+
+Clients MUST NOT interpret any other semantics of the `bump_stamp`; other than the semantics
+above they do not have any special meaning.
+Notably, `bump_stamp`s MUST NOT be compared between different threads, because servers MAY
+treat `bump_stamp`s as per-thread.
 
 ## Potential issues
 
