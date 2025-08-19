@@ -48,6 +48,9 @@ standard Matrix error (new to the endpoint). For knocks, the server SHOULD remov
 Ideally, the server would be able to prevent the knock from happening, though by the time the server
 can see the `knock_room_state`, the knock has already happened.
 
+**Note**: Servers SHOULD consider their local ecosystems before imposing this validation completely,
+per the "Migration" section later in this document.
+
 The `400 M_MISSING_PARAM` error SHOULD be translated to a 5xx error by the sending server over the
 Client-Server API. This is done because there's nothing the client can materially do differently to
 make the request succeed.
@@ -87,25 +90,13 @@ affecting client or server implementations.
 
 ## Migration
 
-*This section is for server implementations to follow upon release of room version 12. It is not
-intended to enter the spec in any way.*
+Mentioned above, existing server implementations SHOULD warn rather than fail on invites which don't
+have complete PDUs inside `invite_room_state` until their local ecosystem adoption allows for the
+full set of validation to be applied. If PDUs are complete, but for a different room, the invite MUST
+still fail per the validation above.
 
-Room version 12 contains MSC4291 and is expected to be used in production prior to this proposal
-becoming stable itself. To account for this, for 1 spec release cycle, servers are encouraged to
-warn rather than fail on invites which don't have a complete `m.room.create` PDU in the `invite_room_state`.
-If the PDU is complete, but for a different room, the invite should still fail per the proposal text
-above.
-
-This translates to a timeline anywhere between 2 and 6 months, depending on ecosystem rollout. An
-example *possible* release schedule is:
-
-1. August 2025 - Matrix 1.16 is released with Room Version 12 and this proposal; servers log warnings
-   about invites missing complete `m.room.create` PDUs.
-2. October 2025 - Matrix 1.17 is released; servers stop using warnings and instead fully apply the
-   validation logic of this proposal, causing invites missing full create event PDUs to fail.
-
-Servers are encouraged to make the switch to full validation early if their ecosystem conditions
-allow. For example, if logged warnings are sufficiently low or of insignicant consequence.
+This proposal suggests that servers wait no longer than 3 months (or about 1 full spec release cycle)
+after this proposal is released to enforce the full validation.
 
 
 ## Dependencies
