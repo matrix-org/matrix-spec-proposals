@@ -40,7 +40,7 @@ Clients will need to manually update the profile field when the user changes tim
 This could be automated by clients based on location, or left as a manual change to
 users.
 
-Clients may wish to periodically fetch the time one of other users as it is
+Clients may wish to periodically fetch the time zone of other users as it is
 liable to change somewhat frequently. Currently, profile data isn't propagated/synchronized
 between servers, but that's left to a future MSC to solve. It is recommended that
 clients cache the value for 12 - 24 hours.
