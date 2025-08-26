@@ -36,26 +36,27 @@ the proposed solution.
 
 ### Proposal (Changes)
 
-This MSC Proposes the `m.rtc.notification.decline` event type, with a relation and a `decline_reason`
-field.
+This MSC Proposes the `m.rtc.decline` event type, with a standard `m.reference`
+relation and a `reason` field.
 
-- relation: `"m.relates_to": {"rel_type":"m.rtc.decline", "eventId":"$call_notify_event_id"}`
+- relation: `"m.relates_to": {"rel_type":"m.reference", "event_id":"$call_notify_event_id"}`
 - reason:
 
   ```json
-  "decline_reason"?: "decline description"
+  "reason"?: "decline description"
   ```
 
-The `m.relates_to` field allows to reference the original notify event. The optional reason
-allows to provide a message to the user receiving the decline.
-the `notification_type` from the `m.rtc.notification` event gets a new case. The decline case.
+The `m.relates_to` field allows to reference the original `m.rtc.notification` event.
+The optional reason can provide a message to the user receiving the decline.
 
 This results in a tree of notify events on `m.rtc.member` events.
 
 <img src="./4310-matrixRTC-call-decline-realtions.svg" width=400 alt="matrixRTC-call-decline-relations"/>
 
-Fetching the `m.rtc.member` events to compute a timeline item summarizing the call allows to easily get all the
-related elements and provide additional context in the timeline tile. If a call was declined, who (can be multiple) started
+Fetching the `m.rtc.member` events to compute a timeline item summarizing the
+call allows to easily get all the
+related elements and provide additional context in the timeline tile.
+If a call was declined, who declined the call and who (can be multiple) started
 the call by ringing others ...
 
 ## Potential issues
@@ -97,9 +98,7 @@ Relations are unencrypted and the custom relation type will leak metadata about 
 
 ## Unstable prefix
 
-While this is an open proposal the prefix `org.matrix.msc4310.rtc.decline` needs to be used for the new relation type
-(and the `m.rtc.notification` event type will use the `org.matrix.msc4075.rtc.notification` prefixed version
-as described in [MSC4075](https://github.com/matrix-org/matrix-spec-proposals/pull/4075))
+While this is an open proposal the prefix `org.matrix.msc4310.rtc.decline` needs to be used for the new event type
 
 ## Dependencies
 

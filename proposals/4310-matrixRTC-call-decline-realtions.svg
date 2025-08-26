@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="1.7318196"
-     inkscape:cx="298.24123"
-     inkscape:cy="264.46173"
+     inkscape:zoom="2.6042167"
+     inkscape:cx="265.14691"
+     inkscape:cy="339.83347"
      inkscape:window-width="2056"
      inkscape:window-height="1257"
      inkscape:window-x="0"
@@ -125,7 +125,7 @@
          sodipodi:role="line"
          x="14.100647"
          y="80.222412"
-         id="tspan22">    &quot;rel_type&quot;: &quot;m.call.notification&quot;,</tspan><tspan
+         id="tspan22">    &quot;rel_type&quot;: &quot;m.reference&quot;,</tspan><tspan
          sodipodi:role="line"
          x="14.100647"
          y="84.739655"
@@ -161,7 +161,7 @@
          sodipodi:role="line"
          x="13.680081"
          y="123.15298"
-         id="tspan20-3">  &quot;decline_reason: &quot;some reason&quot;</tspan><tspan
+         id="tspan20-3">  &quot;reason: &quot;some reason&quot;</tspan><tspan
          sodipodi:role="line"
          x="13.680081"
          y="127.67022"
@@ -169,7 +169,7 @@
          sodipodi:role="line"
          x="13.680081"
          y="132.18745"
-         id="tspan22-0">    &quot;rel_type&quot;: &quot;m.rtc.decline&quot;,</tspan><tspan
+         id="tspan22-0">    &quot;rel_type&quot;: &quot;m.reference&quot;,</tspan><tspan
          sodipodi:role="line"
          x="13.680081"
          y="136.7047"
