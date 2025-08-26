@@ -10,13 +10,13 @@ signalling and general purpose MatrixRTC session state.
 ## Context
 
 This proposal builds on the concept of [MSC4075: MatrixRTC Call Ringing](https://github.com/matrix-org/matrix-spec-proposals/pull/4075)
-introducint the `m.rtc.notification` event.
+introducing the `m.rtc.notification` event.
 This event lives in parallel with the MatrixRTC session and uses intentional mentions to make the receiving clients ring.
 The receiving clients will then monitor the room state and stop ringing once the user joined with one of their devices.
 
 ## Proposal
 
-Conceptually this MSC will introduce a new notify type, that will be sent as a relation to the `m.rtc.notification` event
+Conceptually this MSC will introduce a event, that will be sent as a relation to the `m.rtc.notification` event
 which communicates a decline from one or more parties. It can be used on the clients to provide a good UX around
 a call decline (stop ringing, play a decline sound, prompt the user with: "the call has been declined" ...)
 
@@ -36,7 +36,7 @@ the proposed solution.
 
 ### Proposal (Changes)
 
-This MSC Proposes to extend the `m.rtc.notification` with a new `notification_type`, a new relation and a new `decline_reason`
+This MSC Proposes the `m.rtc.notification.decline` event type, with a relation and a `decline_reason`
 field.
 
 - relation: `"m.relates_to": {"rel_type":"m.rtc.decline", "eventId":"$call_notify_event_id"}`
@@ -45,8 +45,6 @@ field.
   ```json
   "decline_reason"?: "decline description"
   ```
-
-- decline type: `notification_type: "decline" | "ring" | "notify"`
 
 The `m.relates_to` field allows to reference the original notify event. The optional reason
 allows to provide a message to the user receiving the decline.
@@ -61,10 +59,6 @@ related elements and provide additional context in the timeline tile. If a call 
 the call by ringing others ...
 
 ## Potential issues
-
-Since this is reusing the `m.rtc.notification` event type which did not have this usecase in mind,
-the event type name might be a bit off:
-Instead of calling it`m.rtc.notification`, `m.rtc.signalling` might be more approprita.
 
 ### Alternatives
 
@@ -84,15 +78,18 @@ Use already existing reactions to the notify event. This makes it extremely triv
   - Might collide with already existing reaction logic in clients
   - Hard to include into an rtc member based timeline rendering
 
-#### Custom Event
+#### Reusing the existing `m.rtc.notification` event
 
-Introduce a new custom event and a new reaction type.
+Reusing the `m.rtc.notification` event type which did not have this usecase in mind,
+the event type name might be a bit off.
+
 This custom event will be sent as a reaction to the initial notify event:
 
 - Pros ✅
-  - clear separation and usecase
+  - using the same event type does not need new widget permissions. And no additional
+  event types would need to be introduced in js-sdk and rust sdk.
 - Cons ❌
-  - new event needs new widget permissions and more event types introduced in js-sdk and rust sdk
+  - There would be no a clear separation and usecase.
 
 ## Security considerations
 
