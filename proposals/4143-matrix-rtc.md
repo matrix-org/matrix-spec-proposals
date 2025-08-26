@@ -8,14 +8,27 @@ a session.
 
 The MatrixRTC specification is separated into different modules:
 
-
-- The MatrixRTC room state that defines the state of the real time session.\
+- **The MatrixRTC room state** that defines the state of the real time session.\
   It is the source of truth for:
   - Who is part of a session
   - Who is connected via what technology/backend
   - Metadata per device used by other participants to decide whether the streams
     from this source are of interest / need to be subscribed.
-- The MatrixRTC backend.
+- Key sharing for rtc data and media
+  - Everyone needs a secret for any other participant to encrypt media and other
+  real time data.
+  - There can be multiple keys or just one shared with the whole call.
+  The keys can get changed over time or stay the same during the whole session.
+  At the end every participant needs one valid key for every other participant
+  at any time of the session.
+  - This MSC also defines how keys are shared.
+
+This MSC will focus on the Matrix room state, which is responsible for
+the high level signalling of a RTC session and the key sharing.
+
+The other modules are defined by other MSC's:
+
+- The MatrixRTC backend/real time data transport.
   - Allows for multiple backend implementations to be used.
   - It defines how to discover the available backend(s).
   - It defines how to connect the participating peers.
@@ -31,10 +44,6 @@ The MatrixRTC specification is separated into different modules:
     - What streams to connect to.
     - What data in which format to sent over the RTC channels.
     - What MatrixRTC backends are supported.
-- End-to-end encryption of media streams
-
-This MSC will focus on the Matrix room state which is responsible for the high
-level signalling of a RTC session:
 
 ## Proposal
 
