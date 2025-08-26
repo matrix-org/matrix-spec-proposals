@@ -43,14 +43,9 @@ needs to be achievable with the proposed solution.
 ### Proposal (Changes)
 
 This MSC proposes the `m.rtc.decline` event type, with a standard `m.reference`
-relation and a `reason` field.
+relation.
 
 - relation: `"m.relates_to": {"rel_type": "m.reference", "event_id": "$call_notification_event_id"}`
-- reason:
-
-  ```json
-  "reason"?: "decline description"
-  ```
 
 The `m.relates_to` field allows referencing the original `m.rtc.notification` event.
 The optional reason can provide a message to the user receiving the decline.
@@ -78,7 +73,6 @@ Unencrypted (stable) example:
       "rel_type": "m.reference",
       "event_id": "$call_notification_event_id"
     },
-    "reason": "Busy"
   }
 }
 ```
@@ -87,11 +81,9 @@ Client handling guidance:
 
 - For 1:1 rings, on receipt of a decline, stop ringing and show a declined state.
 - For group rings, on receipt of a decline from a participant, update that
-  participant’s state. The ring should continue until at least one participant
-  accepts or all have declined/timeout.
-- Ignore declines which do not relate to a known `m.rtc.notification` event,
-  or where the sender is not a targeted/mentioned recipient of that
-  notification.
+  participant’s state. The clients are free if and in which way they want to inform
+  the user about a decline.
+- Ignore declines which do not relate to a known `m.rtc.notification` event.
 - If the user has since joined the MatrixRTC session (per `m.rtc.member`),
   declines for the corresponding notification can be ignored.
 - Decline events SHOULD NOT mention users and SHOULD NOT trigger push
@@ -132,6 +124,12 @@ This custom event will be sent as a reaction to the initial notify event:
   event types would need to be introduced in SDKs.
 - Cons ❌
   - There would be no clear separation of concerns, and the semantics would be muddled.
+
+#### Additional fields
+
+A `reason` field was considered but due to the lack of an immediate product feature
+it was not justifiable to have it in this MSC. Future MSC's with a dedicated usecase
+for such a feature can be created.
 
 ## Security considerations
 
