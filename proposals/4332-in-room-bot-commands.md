@@ -112,6 +112,8 @@ When the user sends the command, the client creates either an `m.room.message` e
   "m.mentions": {
     "user_ids": ["@bot:example.org"] // should be a single element array, containing the bot's user ID
                                      // from the `m.bot.commands` state event's `state_key` (or `sender`).
+                                     // Note: doesn't include other users which may be referenced by the
+                                     // command being sent, such as via `user_id` arguments.
   },
 
   // This is a new content block so bots don't *need* to do string unpacking when
