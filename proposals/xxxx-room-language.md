@@ -7,7 +7,7 @@ Features such as message search require a tokenizer which depend on the language
 Enabling per-room language setting would allow a multi-lingual user to have search working in 
 different languages across rooms.
 
-Accessibility features such as screen readers would also benifit from knowing what language they
+Accessibility features such as screen readers would also benefit from knowing what language they
 are reading.
 
 ## Proposal
