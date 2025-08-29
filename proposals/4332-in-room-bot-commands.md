@@ -35,22 +35,49 @@ The `content` for such an event fits the following implied schema:
                 // becomes `!botname` upon sending.
   "commands": [
     {
-      "syntax": "botname example {roomId} {userId}", // `{words}` are variables.
-      "variables": {
-        // Variables use m.text from MSC1767 Extensible Events to later support MSC3554-style translations.
-        // See https://spec.matrix.org/v1.15/client-server-api/#mroomtopic_topiccontentblock
-        // See https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md
-        // See https://github.com/matrix-org/matrix-spec-proposals/pull/3554
-        "roomId": {
-          "m.text": [{"body": "The room ID"}]
+      "syntax": "botname {action} {roomId} {timeoutSeconds} {applyToPolicy} {userId...}", // `{words}` are positional arguments.
+      "arguments": [
+        // First argument implied as `{action}` due to position.
+        {
+          "type": "enum", // can also be more types discussed later in this proposal
+          "description": {
+            // Descriptions use m.text from MSC1767 Extensible Events to later support MSC3554-style translations.
+            // See https://spec.matrix.org/v1.15/client-server-api/#mroomtopic_topiccontentblock
+            // See https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/1767-extensible-events.md
+            // See https://github.com/matrix-org/matrix-spec-proposals/pull/3554
+            "m.text": [{"body": "The room ID"}]
+          },
+          "enum": [ // only required (and used) when type == enum.
+            "ban",
+            "ban_and_suspend"
+          ]
         },
-        "userId": {
-          "m.text": [{"body": "The user ID"}]
+
+        {
+          "type": "room_id",
+          "description": { "m.text": [{"body": "The room ID"}] }
+        },
+
+        {
+          "type": "integer",
+          "description": { "m.text": [{"body": "The timeout in seconds"}] },
+        },
+
+        {
+          "type": "boolean",
+          "description": { "m.text": [{"body": "Whether to apply this to the policy"}] },
+        },
+
+        // The final argument is variadic in this case, but doesn't need to be.
+        {
+          "type": "user_id",
+          "description": { "m.text": [{"body": "The user ID(s)"}] },
+          "variadic": true // can only apply to the last argument. Default false when not supplied.
         }
-      },
+      ],
       "description": {
-        // We also use m.text here for the same reason as the variables.
-        "m.text": [{"body": "An example command with variables"}]
+        // We also use m.text here for the same reason as the argument descriptions above.
+        "m.text": [{"body": "An example command with arguments"}]
       }
     }
   ]
@@ -59,14 +86,15 @@ The `content` for such an event fits the following implied schema:
 
 **Note**: It's not currently proposed that a command can include a literal `{` in its syntax. A future
 iteration of this MSC may introduce an escape sequence, but for now the text between an opening curly
-brace and closing curly brace is considered the variable name. This includes more curly braces: `{{var}}`
-becomes the variable `{var}` with another `}` tacked on. `{var with spaces}` becomes `var with spaces`.
+brace and closing curly brace is considered the argument name. This includes more curly braces: `{{var}}`
+becomes the argument `{var}` with another `}` tacked on. `{var with spaces}` becomes `var with spaces`.
 
 **Reminder**: A convention among Matrix bots is to use their project name as the prefix for commands.
 It's expected that this prefix goes into the `syntax` rather than `sigil` to avoid conflicts with
-built-in client commands (discussed later in this proposal).
+built-in client commands (discussed later in this proposal). **TODO**: change this if clients ultimately
+implement `/ban@botname` support instead of showing `/ban` as-is.
 
-A client may show the variables and commands similar to Discord:
+A client may show the arguments and commands similar to Discord:
 
 ![](./images/4332-discord-example.png)
 
@@ -76,7 +104,7 @@ When the user sends the command, the client creates either an `m.room.message` e
 ```jsonc
 {
   // These fields would be replaced by MSC1767 Extensible Events in future.
-  "body": "!botname example !room:example.org @alice:example.org", // note that the syntax template is populated
+  "body": "!botname ban_and_suspend !room:example.org 42 true @alice:example.org @bob:example.org", // note that the syntax template is populated
   "msgtype": "m.text",
 
   // Mentions should always be added, to lower the chances of command conflicts.
@@ -88,16 +116,24 @@ When the user sends the command, the client creates either an `m.room.message` e
 
   // This is a new content block so bots don't *need* to do string unpacking when
   // commands are sent this way. Bots may still need to unpack `body` when users
-  // send commands without client support/manually.
+  // send commands manually or without client support.
   "m.bot.command": {
     // The syntax is effectively used as a "command ID", so bots can identify which
     // command the client is using without needing to track arbitrary strings. Whether
     // the bot unpacks this string is an implementation detail for the bot.
-    "syntax": "botname example {roomId} {userId}",
-    "variables": {
-      // These are just the variables and their user-supplied values.
-      "roomId": "!room:example.org",
-      "userId": "@alice:example.org"
+    "syntax": "botname {action} {roomId} {timeoutSeconds} {applyToPolicy} {userId...}",
+    "arguments": {
+      // These are just the arguments and their user-supplied values.
+      "action": "ban_and_suspend", // enums have a value type of string
+      "roomId": { // Room IDs are special because they can carry routing information too.
+        "id": "!room:example.org",
+        "via": ["second.example.org"] // Optional, but recommended.
+      },
+      "timeoutSeconds": 42, // integers and booleans use appropriate value types (converted from (probably) strings)
+      "applyToPolicy": true, // tip: clients can convert user input like "yes" to booleans
+      "userId": ["@alice:example.org", "@bob:example.org"] // variadic arguments have array value types
+
+      // Note: all other types are represented as simple string values
     }
   }
 }
@@ -113,22 +149,25 @@ this to avoid future conflicts with built-in commands. From an implementation pe
 might cause their built-in commands to always take precedence over any bot's commands to avoid users
 becoming confused.
 
-**Tip**: Bots which don't use `m.bot.command` and need to support spaces in their variables can use
+**Tip**: Bots which don't use `m.bot.command` and need to support spaces in their arguments can use
 quotes in the command syntax to surround user input. For example, `"syntax": "gif \"{search}\""`.
 
-To aid consistency, clients SHOULD apply the described grammar validation to the following predefined
-variables:
+The following are the predefined `types` for an argument:
 
-* `userId` - Must be a valid [user ID](https://spec.matrix.org/v1.15/appendices/#user-identifiers) for
+* `string` - An arbitrary string.
+* `integer` - An arbitrary whole number. May be negative or zero.
+* `boolean` - `true` or `false` literal.
+* `enum` - When paired with the `enum` options array, a string representing one of the options.
+* `user_id` - Must be a valid [user ID](https://spec.matrix.org/v1.15/appendices/#user-identifiers) for
   the room version.
-* `roomId` - Must be a valid [room ID](https://spec.matrix.org/v1.15/appendices/#room-ids).
-* `roomAlias` - Must be a valid [room alias](https://spec.matrix.org/v1.15/appendices/#room-aliases).
-* `eventId` - Must be a valid [event ID](https://spec.matrix.org/v1.15/appendices/#event-ids).
-* `serverName` - Must be a valid [server name](https://spec.matrix.org/v1.15/appendices/#server-name).
+* `room_id` - Must be a valid [room ID](https://spec.matrix.org/v1.15/appendices/#room-ids).
+* `room_alias` - Must be a valid [room alias](https://spec.matrix.org/v1.15/appendices/#room-aliases).
+* `event_id` - Must be a valid [event ID](https://spec.matrix.org/v1.15/appendices/#event-ids).
+* `server_name` - Must be a valid [server name](https://spec.matrix.org/v1.15/appendices/#server-name).
 * `permalink` - Must be a valid [permalink URI](https://spec.matrix.org/v1.15/appendices/#uris)
-  (either `matrix.to` or `matrix:`).
+  (either `matrix.to` or `matrix:`) for an event ID.
 
-**Note**: For clarity, the above variables do not have to point at a room/user/server/etc that is known
+**Note**: For clarity, the above arguments do not have to point at a room/user/server/etc that is known
 to the client. They just need to *look* valid per the grammar.
 
 
@@ -150,18 +189,16 @@ The following extensions/features are best considered by future MSCs:
   For example, a client which doesn't yet have support for polls may suggest adding a "poll bot" that
   sets its command event template to [an `m.poll.start` event](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/3381-polls.md).
 
-* Support for non-text variables like images/files, booleans, integers, etc.
+* Support for non-text-like arguments like images, files, etc.
 
-* Support for regex(-ish) validation on variables.
+* Some predefined validation on arguments, like a range for integers or maximum/minimum length of strings.
 
-* Support for repeated variables. For example: `{userId...}` to specify multiple user IDs.
-
-* Support for optional variables. For example: `[userId]`, if a user ID is not required.
+* Support for optional arguments. For example: `[userId]`, if a user ID is not required.
 
 
 ## Potential issues
 
-Mentioned in the proposal, the lack of variable escaping isn't great.
+Mentioned in the proposal, the lack of argument escaping isn't great.
 
 Using state events limits a bot's ability to advertise commands if it isn't given power to do so.
 
