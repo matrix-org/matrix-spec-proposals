@@ -35,13 +35,6 @@ Here is an example event:
 }
 ```
 
-## Potential issues
-
-Potential issues with this approach are that they do not allow for ranked choice. For example,
-one may know French and Spanish but not English. If said person sets a room to French and the 
-client only supports Spanish and English, then the client could default to English when for the
-user, Spanish would've been the better choice.
-
 ## Alternatives
 
 Rather than adding a new state event, this could be a client setting. However, the drawbacks of
