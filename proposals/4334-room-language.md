@@ -3,7 +3,7 @@
 This MSC is to add a new `m.room.language` state event. This would allow users to set a desired
 language preference for each room which would aid in client feature development.
 
-Features such as message search require a tokenizer which depend on the language being toknized.
+Features such as message search require a tokenizer which depend on the language being tokenized.
 Enabling per-room language setting would allow a multi-lingual user to have search working in 
 different languages across rooms.
 
