@@ -170,6 +170,10 @@ The following are the predefined `types` for an argument:
 **Note**: For clarity, the above arguments do not have to point at a room/user/server/etc that is known
 to the client. They just need to *look* valid per the grammar.
 
+**Tip**: Clients can accept a wider variety of inputs for some types, provided they reduce them down
+to the expected value types when sending the command. For example, accepting a room permalink for a
+`room_id` type, or "yes" in place of `true` for a `boolean`.
+
 
 ## Extensions
 
