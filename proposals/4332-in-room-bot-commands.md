@@ -131,7 +131,7 @@ When the user sends the command, the client creates either an `m.room.message` e
       },
       "timeoutSeconds": 42, // integers and booleans use appropriate value types (converted from (probably) strings)
       "applyToPolicy": true, // tip: clients can convert user input like "yes" to booleans
-      "userId": ["@alice:example.org", "@bob:example.org"] // variadic arguments have array value types
+      "userId...": ["@alice:example.org", "@bob:example.org"] // variadic arguments have array value types
 
       // Note: all other types are represented as simple string values
     }
@@ -193,7 +193,7 @@ The following extensions/features are best considered by future MSCs:
 
 * Some predefined validation on arguments, like a range for integers or maximum/minimum length of strings.
 
-* Support for optional arguments. For example: `[userId]`, if a user ID is not required.
+* Support for optional arguments. For example: `[roomId]`, if a room ID is not required.
 
 
 ## Potential issues
