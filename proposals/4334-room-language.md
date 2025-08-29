@@ -1,4 +1,4 @@
-# MSC0000: Per-room language support.
+# MSC4334: Per-room language support.
 
 This MSC is to add a new `m.room.language` state event. This would allow users to set a desired
 language preference for each room which would aid in client feature development.
