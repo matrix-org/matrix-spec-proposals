@@ -1,4 +1,4 @@
-# MSC0000: Template for new MSCs
+# MSC0000: Per-room language support.
 
 This MSC is to add a new `m.room.language` state event. This would allow users to set a desired
 language preference for each room which would aid in client feature development.
@@ -15,6 +15,25 @@ are reading.
 Add a new `m.room.language` state event. This would hold a single field `"language": <language>`, 
 similar to the `m.room.name`, using the 
 [IETF BCP 47](https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag).
+
+Here is an example event:
+```json
+{
+  "content": {
+    "language": "en-US"
+  },
+  "event_id": "$143273582443PhrSn:example.org",
+  "origin_server_ts": 1432735824653,
+  "room_id": "!jEsUZKDJdhlrceRyVU:example.org",
+  "sender": "@example:example.org",
+  "state_key": "",
+  "type": "m.room.language",
+  "unsigned": {
+    "age": 1234,
+    "membership": "join"
+  }
+}
+```
 
 ## Potential issues
 
