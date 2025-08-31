@@ -79,7 +79,8 @@ For example:
 Sending a `GET` to the respective endpoints should return `404` with `M_NOT_FOUND` if the
 requested user ID is not found. `400` and `M_INVALID_PARAM` should be returned if the specified
 user ID is valid, but not local to the server. `403` `M_FORBIDDEN` should be returned if
-the user is not a server administrator.
+the user is not a server administrator. To prevent enumeration, credentials should be checked
+before validity.
 
 If a user is deactivated, `M_NOT_FOUND` should also be returned, as deactivated users are not
 suspended nor locked, and typically are to be permanently treated as gone.
@@ -132,7 +133,7 @@ where appropriate.
 
 | Stable | Unstable |
 | ------ | -------- |
-| `/_matrix/client/v1/admin/...` | `/_matrix/client/unstable/uk.timedout.msc4323/...` |
+| `/_matrix/client/v1/admin/...` | `/_matrix/client/unstable/uk.timedout.msc4323/admin/...` |
 | `account_moderation` | `uk.timedout.msc4323` |
 
 `locked` and `suspended` in the request/response bodies do not require an unstable prefix
