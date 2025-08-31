@@ -139,6 +139,10 @@ where appropriate.
 `locked` and `suspended` in the request/response bodies do not require an unstable prefix
 as the entire body is new.
 
+Servers should advertise `"uk.timedout.msc4323":true` in their `/versions` response while this
+proposal is unstable. It is left as an implementation detail whether to require authentication
+to view this version flag or not.
+
 ## Dependencies
 
 None
