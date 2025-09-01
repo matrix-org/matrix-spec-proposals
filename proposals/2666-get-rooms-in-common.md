@@ -21,7 +21,7 @@ user.
 
 ## Proposal
 
-Homeservers will implement a new endpoint `/_matrix/client/v1/user/mutual_rooms`.
+Homeservers will implement a new endpoint `/_matrix/client/v1/mutual_rooms`.
 
 This endpoint will take a query parameter of `user_id` which will contain the MXID of the user
 matched against.
@@ -113,7 +113,7 @@ to request all state ahead of time.
 
 ## Unstable prefix
 
-The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/user/mutual_rooms`.
+The implementation MUST use `/_matrix/client/unstable/uk.half-shot.msc2666/mutual_rooms`.
 
 The /versions endpoint MUST include a new key in `unstable_features` with the name
 `uk.half-shot.msc2666.query_mutual_rooms`.
@@ -125,5 +125,5 @@ Previous iterations of this MSC has used the following `unstable_features` key(s
 If the value is false or the key is not present, clients MUST assume the feature is not available.
 
 Once the MSC has been merged, and the homeserver has advertised support for the Matrix version that
-this endpoint is included in, clients should use `/_matrix/client/v1/user/mutual_rooms` and will no
+this endpoint is included in, clients should use `/_matrix/client/v1/mutual_rooms` and will no
 longer need to check for the `unstable_features` flag.
