@@ -1,12 +1,12 @@
-# MSC4337: Appservice API to suppliment user profiles
+# MSC4337: Appservice API to supplement user profiles
 
 User profiles in Matrix are currently largely stored on the homeserver statically. Clients can
 update the static information as often as they like, but it's expected that the homeserver
 maintains a copy in it's datastore. This means that having dynamic profile values that may change
 depending on a user's status (e.g. "In a meeting") or profiles that may change depending on the
-requestor are hard to achieve. 
+requester are hard to achieve. 
 
-This proposal extends the appservice API to offer a new route to suppliment a user's profile with
+This proposal extends the appservice API to offer a new route to supplement a user's profile with
 additional fields, or to replace existing ones. 
 
 ## Proposal
@@ -23,8 +23,8 @@ This API is authenticated as with the rest of the application service APIs, and 
  - `from_user_id` The user MxID of the user requesting the profile, *if* the requesting user is known.
    Otherwise, omit.
 
-The path parameters match the C-S API `/profile` GET paramters, where `userId` is the user profile to be
-fetched and `key` is an optional field on the profile. If the `key` is ommited, the full profile should be returned.
+The path parameters match the C-S API `/profile` GET parameters, where `userId` is the user profile to be
+fetched and `key` is an optional field on the profile. If the `key` is omitted, the full profile should be returned.
 
 The response to the API should be an object representing the profile. Homeservers should call this API
 whenever a user's profile is requested by a client or a federated service, and the appservice should return
@@ -120,7 +120,7 @@ the timeout should not prevent a client from reading the resulting profile, with
 ### Instability
 
 As per the previous section, application service querying is not inheriently stable across homeserver implementations
-so overlaps in profiles may lead to unpredicatable results.
+so overlaps in profiles may lead to unpredictable results.
 
 ## Alternatives
 
@@ -131,8 +131,8 @@ of changes needed to be made to the homeservers stores.
 ## Security considerations
 
 The most obvious security risk is that this MSC opens up the ability to do authed profile requests and alter the response
-depending on the requestor. The application service and the homeserver must ensure not to cache these responses globally,
-and be careful when validating the requestor.
+depending on the requester. The application service and the homeserver must ensure not to cache these responses globally,
+and be careful when validating the requester.
 
 TODO: There must be more things that can go wrong here.
 
