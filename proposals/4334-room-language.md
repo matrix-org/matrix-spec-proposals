@@ -43,3 +43,8 @@ this are that each member of a room would have to ensure they have the right lan
 ## Security considerations
 
 There are no security concerns. 
+
+## Unstable prefix
+
+Unstable implementations of this proposal should use `org.matrix.msc4334.room.language` which will 
+chang to `m.room.language` when stable.
