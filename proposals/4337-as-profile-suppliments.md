@@ -1,4 +1,4 @@
-# MSC4336: Appservice API to suppliment user profiles
+# MSC4337: Appservice API to suppliment user profiles
 
 User profiles in Matrix are currently largely stored on the homeserver statically. Clients can
 update the static information as often as they like, but it's expected that the homeserver
@@ -139,8 +139,8 @@ TODO: There must be more things that can go wrong here.
 ## Unstable prefix
 
 While this MSC is not considered stable:
-  - the endpoint will be `/_matrix/app/v1/profile/@alice:example.org`
-  - the registration file flag will be `msc4336_supports_profile_lookup`
+  - the endpoint will be `/_matrix/app/uk.half-shot.msc4337/profile/@alice:example.org`
+  - the registration file flag will be `msc4337_supports_profile_lookup`
 
 ## Dependencies
 
