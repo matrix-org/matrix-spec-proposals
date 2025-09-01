@@ -75,12 +75,26 @@ The `content` for such an event fits the following implied schema:
           "variadic": true // can only apply to the last argument. Default false when not supplied.
         }
       ],
+      "options": {
+        // These are named options.
+        // They can optionally appear once anywhere within a command.
+        // This is to keep the number of arguments deterministic.
+        // This does mean that you cannot use accumulating or counting flags.
+        // However, the same semantic can be achieved by accepting a list as a value for the argument. 
+        "notify-moderators": {
+          "type": "boolean",
+          "description": { "m.text": [{"body": "Whether to notify moderators that the policy is being enacted"}]}
+        }
+      },
       "description": {
         // We also use m.text here for the same reason as the argument descriptions above.
         "m.text": [{"body": "An example command with arguments"}]
       }
     }
-  ]
+  ],
+  // The prefix that clients should use for named options when emitting the string
+  // representation of a command.
+  "options_prefix": "--"
 }
 ```
 
@@ -104,7 +118,7 @@ When the user sends the command, the client creates either an `m.room.message` e
 ```jsonc
 {
   // These fields would be replaced by MSC1767 Extensible Events in future.
-  "body": "!botname ban_and_suspend !room:example.org 42 true @alice:example.org @bob:example.org", // note that the syntax template is populated
+  "body": "!botname ban_and_suspend !room:example.org 42 true @alice:example.org @bob:example.org --notify-moderators", // note that the syntax template is populated
   "msgtype": "m.text",
 
   // Mentions should always be added, to lower the chances of command conflicts.
@@ -136,6 +150,18 @@ When the user sends the command, the client creates either an `m.room.message` e
       "userId...": ["@alice:example.org", "@bob:example.org"] // variadic arguments have array value types
 
       // Note: all other types are represented as simple string values
+    },
+    "options": {
+      // User supplied values to any options.
+      // Clients are free to determine how options are set, including their syntax if they are parsing
+      // from a string representation of the command in their composer. This is to allow clients to
+      // keep conventions consistent between bots which may have inconsistent syntax.
+      // So they must emit the option into the `body` as specified in the `options_prefix`
+      // from the command description.
+      // This includes determining how options are associated with values, if at all.
+      // FIXME: what about --notify-moderators=true
+      // ie both the `=` and providing a value instead of just the flag `--notify-moderators`.
+      "notify-moderators": true,
     }
   }
 }
