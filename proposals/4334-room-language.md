@@ -12,9 +12,9 @@ are reading.
 
 ## Proposal
 
-Add a new `m.room.language` state event. This would hold a single field `"language": <language>`, 
-similar to the `m.room.name`, using the 
-[IETF BCP 47](https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag).
+Add a new `m.room.language` state event. This would hold a single field `"language": <language>`
+and an empty `state_key`, similar to the `m.room.name`, using the 
+[IETF BCP 47](https://datatracker.ietf.org/doc/bcp47/).
 
 Here is an example event:
 ```json
