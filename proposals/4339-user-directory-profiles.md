@@ -64,7 +64,7 @@ fields. Otherwise, this doesn't increase the surface of available information.
 
 ## Unstable prefix
 
-While this proposal is not considered stable, implementations should use `/_matrix/client/unstable/org.matrix.mscXXXX/user_directory/search` 
+While this proposal is not considered stable, implementations should use `/_matrix/client/unstable/org.matrix.msc4339/user_directory/search` 
 instead. Clients should note the [`M_UNRECOGNIZED` behaviour](https://spec.matrix.org/v1.10/client-server-api/#common-error-codes)
 for servers which do not support the (un)stable endpoint.
 
