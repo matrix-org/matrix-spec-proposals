@@ -9,7 +9,7 @@ the argument.
 ### The promptable property on parameters
 
 Within the parameter description for a command argument, we specify a new property `promptable`
-which when given the value `true` signals to clients that they may send a _partial commmand_ to the
+which when given the value `true` signals to clients that they may send a _partial command_ to the
 bot to receive suggestions for the argument.
 
 ### The `m.bot.command_prompt` event
