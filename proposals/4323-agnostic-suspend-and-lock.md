@@ -30,8 +30,8 @@ These new endpoints complement the already existing
 `/_matrix/client/v3/admin/whois/{userId}` endpoint, however, are restricted to only permitting
 execution on local users.
 
-The requests and responses are outlined as below. Remember that custom properties may be
-provided, given that they use proper namespaces.
+The requests and responses are outlined as below. Custom properties may be used provided they
+utilise proper namespacing.
 
 The response body of both the `GET` and `PUT` endpoints, as well as the request body of the
 `PUT` endpoint should be:
@@ -76,16 +76,17 @@ For example:
 
 ---
 
-Sending a `GET` to the respective endpoints should return `404` with `M_NOT_FOUND` if the
-requested user ID is not found. `400` and `M_INVALID_PARAM` should be returned if the specified
-user ID is valid, but not local to the server. `403` `M_FORBIDDEN` should be returned if
-the user is not a server administrator. To prevent enumeration, credentials should be checked
+Sending a `GET` to the respective endpoints returns `404` with `M_NOT_FOUND` if the
+requested user ID is not found. `400` and `M_INVALID_PARAM` is returned if the specified
+user ID is valid, but not local to the server. `403` `M_FORBIDDEN` is returned if
+the user is not a server administrator. To prevent enumeration, credentials are checked
 before validity.
 
-If a user is deactivated, `M_NOT_FOUND` should also be returned, as deactivated users are not
+If a user is deactivated, `M_NOT_FOUND` is returned, as deactivated users are not
 suspended nor locked, and typically are to be permanently treated as gone.
 
-The server should advertise support for these endpoints by including the following new capability:
+The server should advertise that these new endppints are available to the authenticated user
+by including the following new capability:
 
 ```json5
 {
@@ -120,7 +121,9 @@ or retain their own endpoints and encourage operators to block these new ones.
 
 ## Alternatives
 
-None
+A full user-info endpoint has been suggested, which would include more information about a user's
+account that could interest server administrators. While this may happen in future, it would
+drastically increase the scope of this proposal and deliberately omitted.
 
 ## Security considerations
 
