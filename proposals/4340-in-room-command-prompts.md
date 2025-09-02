@@ -1,4 +1,4 @@
-# MSC0000: Prompts and partial commands for in room commands.
+# MSC4340: Prompts and partial commands for in room commands.
 
 When composing a command, a user may not know what to provide for as an argument to a command. In
 this situation, it is desirable for the client to be able to prompt the user with suggestions for
@@ -124,7 +124,7 @@ users.
 
 ## Unstable prefix
 
-`m.bot.command_prompt` -> `org.matrix.msc0000.command_prompt`
+`m.bot.command_prompt` -> `org.matrix.msc4340.command_prompt`
 
 ## Dependencies
 
