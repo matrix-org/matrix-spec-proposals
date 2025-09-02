@@ -21,8 +21,29 @@ The rationale for somewhat loose validation is that different clients/servers ma
 different understanding of valid time zones, e.g. different versions of the time zone
 database.
 
-If the field is not provided it SHOULD be interpreted as having no time zone information
+If the field is not provided, it SHOULD be interpreted as having no time zone information
 for that user.
+
+An example request to set the time zone would be:
+
+```
+PUT /_matrix/client/v3/profile/@alice:example.org/m.tz
+
+{
+  "m.tz": "America/New_York"
+}
+```
+
+Similarly when retrieving a user's profile:
+
+```
+GET /_matrix/client/v3/profile/@alice:example.org
+
+{
+  "displayname": "Alice",
+  "m.tz": "Europe/Paris"
+}
+```
 
 
 ## Potential issues
@@ -110,7 +131,7 @@ Discord, Twitter, and IRC don't provide a user's time zone.
 Showing a user's time zone gives some information to their location. There is currently
 no way to limit what profile fields other users can see.
 
-Clients may wish to warn users when providing a timezone and give
+Clients may wish to warn users when providing a time zone and give
 the option to not include it in their profile.
 
 
