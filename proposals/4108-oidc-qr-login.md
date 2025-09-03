@@ -1,4 +1,4 @@
-# MSC4108: Mechanism to allow OIDC sign in and E2EE set up via QR code
+# MSC4108: Mechanism to allow OAuth sign in and E2EE set up via QR code
 
 We propose a method to allow an existing authenticated Matrix client to sign in a new client by scanning a QR code. The
 new client will be a fully bootstrapped Matrix cryptographic device, possessing all the necessary secrets, namely the
@@ -7,7 +7,7 @@ cryptographic user identity ("cross-signing") and the server-side key backup dec
 This MSC supersedes [MSC3906](https://github.com/matrix-org/matrix-spec-proposals/pull/3906),
 [MSC3903](https://github.com/matrix-org/matrix-spec-proposals/pull/3903) and
 [MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) which achieved a similar feature but did not
-work with a homeserver using the delegated OIDC mechanism proposed by [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861).
+work with a homeserver using [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api).
 
 ## Proposal
 
@@ -24,7 +24,7 @@ This proposal is split into three parts:
 
 1. An insecure rendezvous session API to allow the two devices to exchange the necessary data
 2. A secure channel to protect the data exchanged over the rendezvous session
-3. The OIDC login part and set up of E2EE
+3. The OAuth login part and set up of E2EE
 
 ### Insecure rendezvous session
 
@@ -229,7 +229,7 @@ The server enforce a maximum payload size of 4KB.
 The rendezvous session needs to persist for the duration of the login. So a timeout such as 60 seconds should be adequate.
 
 It does need to allow the user another time to confirm that the secure channel has been established and complete any extra
-OIDC Provider mandated login steps such as MFA.
+homeserver mandated login steps such as MFA.
 
 Clients should handle the case of the rendezvous session being cancelled or timed out by the server.
 
@@ -673,11 +673,11 @@ own key.
 - The attack is only thwarted in step 7, because Device S won't ever display the indicator of success to the user. The
 user then must cancel the process on Device G, preventing it from sharing any sensitive material.
 
-### The OIDC login part and set up of E2EE
+### The OAuth login part and set up of E2EE
 
 Once the secure channel has been established, the two devices can then communicate securely.
 
-#### Login via OIDC Device Authorization Grant
+#### Login via OAuth Device Authorization Grant
 
 In this section the sequence of steps depends on whether the new device generated or scanned the QR code.
 
@@ -697,7 +697,7 @@ Otherwise the new device waits to be informed by receiving an `m.login.protocols
 
 The existing device would need to determine which "protocols" are available for the new device to use.
 
-Currently this could only be device_authorization_grant meaning the OIDC Provider supports the
+Currently this could only be device_authorization_grant meaning the homeserver supports the
 `urn:ietf:params:oauth:grant-type:device_code` grant type.
 
 If it is available then the existing device informs the new device by sending the `m.login.protocols` message with the
@@ -720,35 +720,13 @@ Once the existing device has determined the server name it then undertakes steps
 The steps are as follows:
 
 - use [Server Discovery](https://spec.matrix.org/v1.10/client-server-api/#server-discovery) to determine the `base_url` from the well-known URI
-- checks that the homeserver is using delegated OIDC by calling `GET /_matrix/client/v1/auth_issuer` from [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965):
+- checks that the homeserver has the OAuth 2.0 API available by [`GET /_matrix/client/v1/auth_metadata`](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
 
 *New device => Homeserver via HTTP*
 
 ```http
-GET /_matrix/client/v1/auth_issuer HTTP/1.1
+GET /_matrix/client/v1/auth_metadata HTTP/1.1
 Host: synapse-oidc.lab.element.dev
-Accept: application/json
-```
-
-With response like:
-
-```http
-200 OK
-Content-Type: application/json
-
-{
-    "issuer": "https://auth-oidc.lab.element.dev/"
-}
-```
-
-- parses the OIDC Provider (`issuer`) from the response
-- fetches the OIDC Provider metadata as per [MSC2965](https://github.com/matrix-org/matrix-spec-proposals/pull/2965):
-
-*New device => OIDC Provider via HTTP*
-
-```http
-GET /.well-known/openid-configuration HTTP/1.1
-Host: auth-oidc.lab.element.dev
 Accept: application/json
 ```
 
@@ -778,13 +756,13 @@ Content-Type: application/json
 }
 ```
 
-- either does Dynamic Client Registration as per [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966)
-or uses a static OIDC client_id. We will use `my_client_id` as an example `client_id`.
+- either does Dynamic Client Registration as per the existing [spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration)
+or uses a static `client_id`. We will use `my_client_id` as an example `client_id`.
 
-- sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the OIDC
-Provider using the `device_authorization_endpoint`:
+- sends a [RFC8628 Device Authorization Request](https://datatracker.ietf.org/doc/html/rfc8628#section-3.1) to the homeserver
+using the `device_authorization_endpoint` as described by [MSC4341]:
 
-*New device => OIDC Provider via HTTP*
+*New device => Homeserver via HTTP*
 
 ```http
 POST /oauth2/device HTTP/1.1
@@ -843,7 +821,6 @@ sequenceDiagram
     participant E as Existing device <br>already signed in
     participant Z as Rendezvous server
     participant N as New device <br>wanting to sign in
-    participant OP as OIDC Provider
     participant HS as Homeserver
 
 
@@ -866,15 +843,13 @@ sequenceDiagram
     rect rgba(0,255,0, 0.1)
     note over N: 2) New device checks if it can use an available protocol:
     note over N: Use well-known discovery to get the homeserver base URL
-        N->>+HS: GET /_matrix/client/v1/auth_issuer
+        N->>+HS: GET /_matrix/client/v1/auth_metadata
     activate N
-        HS-->>-N: 200 OK {"issuer": "https://id.matrix.org"}
-        Note over N: New device checks that it can communicate<br> with the issuer (OIDC Provider). Completing dynamic registration if needed 
-        N->>+OP: GET /.well-known/openid-configuration
-        OP->>-N: 200 OK {..., "device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
-        Note over N: Device now knows the OP and what the endpoint is, so then attempts to start the login
-        N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
-        OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
+        HS->>-N: 200 OK {"device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
+        Note over N: New device checks that it can communicate with the homeserver. Completing dynamic registration if needed
+        Note over N: Device now knows the device_authorization_endpoint, so then attempts to start the login
+        N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
+        HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
         N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
@@ -914,7 +889,6 @@ sequenceDiagram
     participant E as Existing device <br>already signed in
     participant Z as Rendezvous server
     participant N as New device <br>wanting to sign in
-    participant OP as OIDC Provider
     participant HS as Homeserver
 
 
@@ -937,15 +911,13 @@ sequenceDiagram
     rect rgba(0,255,0, 0.1)
     note over N: 2) New device checks if it can use an available protocol:
     note over N: Use well-known discovery to get the homeserver base URL
-        N->>+HS: GET /_matrix/client/v1/auth_issuer
+        N->>+HS: GET /_matrix/client/v1/auth_metadata
     activate N
-        HS-->>-N: 200 OK {"issuer": "https://id.matrix.org"}
-        Note over N: New device checks that it can communicate<br> with the issuer (OIDC Provider). Completing dynamic registration if needed 
-        N->>+OP: GET /.well-known/openid-configuration
-        OP->>-N: 200 OK {..., "device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
-        Note over N: Device now knows the OP and what the endpoint is, so then attempts to start the login
-        N->>+OP: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
-        OP->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
+        HS->>-N: 200 OK {"device_authorization_endpoint":<br> "https://id.matrix.org/auth/device", ...}
+        Note over N: New device checks that it can communicate<br> with the homeserver. Completing dynamic registration if needed
+        Note over N: Device now knows the device_authorization_endpoint, so then attempts to start the login
+        N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
+        HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
         N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
@@ -977,17 +949,19 @@ sequenceDiagram
 
 Then we continue with the actual login:
 
-4. **New device waits for approval from OIDC Provider**
+4. **New device waits for approval from homeserver**
 
 On receipt of the `m.login.protocol_accepted` message:
 
 - In accordance with [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.3.1) the new device must display
-the `user_code` in order that the user can confirm it on the OIDC Provider if required.
-- The new device then starts to poll the OIDC Provider by making
+the `user_code` in order that the user can confirm it on the homeserver if required.
+- The new device then starts to poll the homeserver by making
 [Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the interval and bounded
 by `expires_in`.
 
-*New device => OIDC Provider via HTTP*
+The above is as per [MSC4341].
+
+*New device => Homeserver via HTTP*
 
 ```http
 POST /oauth2/token HTTP/1.1
@@ -1002,9 +976,9 @@ grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
 - It then parses the [Device Access Token Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.5) and
 handles the different responses
 - If the user consents in the next step then the new device will receive an `access_token` and `refresh_token` etc. as
-normal for OIDC with MSC3861.
+normal as per [MSC4341].
 
-5. **User is asked by OIDC Provider to consent on existing device**
+5. **User is asked by homeserver to consent on existing device**
 
 On receipt of the `m.login.protocol` message above, and having completed step 7 of the secure channel establishment, the
 existing device then asserts that there is no existing device corresponding to the `device_id` from the
@@ -1031,10 +1005,10 @@ The existing device then sends an acknowledgement message to let the other devic
 }
 ```
 
-The user is then prompted to consent by the OIDC Provider. They may be prompted to undertake additional actions by the
-OIDC Provider such as 2FA, but this is all handled within the browser.
+The user is then prompted to consent by the homeserver. They may be prompted to undertake additional actions by the
+homeserver such as 2FA, but this is all handled within the browser.
 
-Note that the existing device does not see the new access token. This is one of the benefits of the OIDC architecture.
+Note that the existing device does not see the new access token. This is one of the benefits of the OAuth architecture.
 
 The sequence diagram for steps 4 and 5 is as follows:
 
@@ -1043,7 +1017,6 @@ sequenceDiagram
     participant E as Existing device <br>already signed in
     participant UA as Web Browser
     participant N as New device <br>wanting to sign in
-    participant OP as OIDC Provider
     participant HS as Homeserver
 
     rect rgba(0,255,0, 0.1)
@@ -1057,20 +1030,20 @@ sequenceDiagram
         end
         par
             E->>N: SecureSend({"type":"m.login.protocol_accepted"})
-        note over N: 4) New device polls the OIDC Provider awaiting the outcome as per RFC8628 OIDC
+        note over N: 4) New device polls the homeserver awaiting the outcome as per RFC 8628 / MSC4341
             loop Poll for result at interval <interval> seconds
-                N->>OP: POST /token client_id=xyz<br>&grant_type=urn:ietf:params:oauth:grant-type:device_code<br>&device_code=XYZ
+                N->>HS: POST /token client_id=xyz<br>&grant_type=urn:ietf:params:oauth:grant-type:device_code<br>&device_code=XYZ
                 alt pending
-                    OP-->>N: 400 Bad Request {"error": "authorization_pending"}
+                    HS-->>N: 400 Bad Request {"error": "authorization_pending"}
                 else granted
-                    OP-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
+                    HS-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
                     N->>E: SecureSend({ "type": "m.login.success" })
                     Note over N: Device now has an access_token and can start to talk to the homeserver
                 else denied
-                    OP-->>N: 400 Bad Request {"error": "authorization_declined"}
+                    HS-->>N: 400 Bad Request {"error": "authorization_declined"}
                     N->>E: SecureSend({"type":"m.login.declined"})
                 else expired
-                    OP-->>N: 400 Bad Request {"error": "expired_token"}
+                    HS-->>N: 400 Bad Request {"error": "expired_token"}
                     N->>E: SecureSend({"type":"m.login.failure", "reason": "authorization_expired"})
                 end
             end
@@ -1078,9 +1051,9 @@ sequenceDiagram
             E->>UA: 5) Existing device opens <br>verification_uri_complete (with fallback to verification_uri)<br> in the system web browser/ASWebAuthenticationSession:
             Note over E: n.b. in the case of a Web Browser the user needs to have<br> clicked a button in order for the navigation to happen
             rect rgba(240,240,240,0.5)
-                UA->>OP: GET https://id.matrix.org/device/abcde
-                OP->>UA: <html/> consent screen showing the user_code
-                UA->>OP: POST /allow or /deny
+                UA->>HS: GET https://id.matrix.org/device/abcde
+                HS->>UA: <html/> consent screen showing the user_code
+                UA->>HS: POST /allow or /deny
             end
             Note over UA: User closes browser
         end
@@ -1093,8 +1066,8 @@ Once the new device has logged in and obtained an access token it will want to o
 end-to-end encryption on the device and make itself cross-signed.
 
 Before sharing the end-to-end encryption secrets the existing device should validate that the new device has
-successfully obtained an access token from the OIDC Provider. The purpose of this is so that, if the user or OIDC
-Provider has disallowed the login, the secrets are not leaked.
+successfully obtained an access token from the homeserver. The purpose of this is so that, if the user or homeserver
+has disallowed the login, the secrets are not leaked.
 
 If checked successfully then the existing device sends the following secrets to the new device:
 
@@ -1180,7 +1153,6 @@ The sequence diagram for this would look as follows:
 sequenceDiagram
     participant E as Existing device <br>already signed in
     participant N as New device <br>wanting to sign in
-    participant OP as OIDC Provider
     participant HS as Homeserver
 
     rect rgba(0,255,0, 0.1)
@@ -1260,7 +1232,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.protocol`|
 |`protocol`|required `string`|One of: `device_authorization_grant`|
-|`device_authorization_grant`|Required `object` where `protocol` is `device_authorization_grant`|These values are taken from the RFC8628 Device Authorization Response that the new device received from the OIDC Provider: <table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> </tr> <tr> <td><code>verification_uri</code> </td> <td>required <code>string</code> </td> </tr> <tr> <td><code>verification_uri_complete</code> </td> <td><code>string</code> </td> </tr></table>|
+|`device_authorization_grant`|Required `object` where `protocol` is `device_authorization_grant`|These values are taken from the RFC8628 Device Authorization Response that the new device received from the homeserver: <table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> </tr> <tr> <td><code>verification_uri</code> </td> <td>required <code>string</code> </td> </tr> <tr> <td><code>verification_uri_complete</code> </td> <td><code>string</code> </td> </tr></table>|
 |`device_id`|required `string`|The device ID that the new device will use|
 
 Example:
@@ -1460,13 +1432,13 @@ Before offering this capability it would make sense that the device can check th
 Where the homeserver is known:
 
 1. Check if the homeserver has a rendezvous session API available (/versions) from this MSC
-1. Check that the homeserver is using the OIDC architecture (/auth_issuer) from MSC2965
-1. Check that the Device Authorization Grant is available on the OIDC Provider from MSC2965
+1. Check that the homeserver is using the OAuth 2.0 API using [server metadata discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
+1. Check that the Device Authorization Grant is available as per [MSC4341]
 
 For a new device it would need to know the homeserver ahead of time in order to do these checks.
 
-Additionally the new device needs to either have an existing (i.e. static) OIDC client registered with the OIDC Provider
-already, or the OIDC Provider must support and allow dynamic client registration as described in [MSC2966](https://github.com/matrix-org/matrix-spec-proposals/pull/2966).
+Additionally the new device needs to either have an existing (i.e. static) OAuth client registered with the homeserver
+already, or the homeserver must support and allow dynamic client registration as described in the [spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration).
 
 The feature is also only available where a user has cross-signing set up and the existing device to be used has the
 Master Signing Key, Self Signing Key and User Signing Key stored locally so that they can be shared with the new device.
@@ -1542,8 +1514,8 @@ This proposed mechanism has been designed to protects users and their devices fr
 - A malicious actor who can intercept and modify traffic on the application layer, even if protected by encryption like TLS.
 - Both of the above at the same time.
 
-Additionally, the OIDC Provider is able to define and enforce policies that can prevent a sign in on a new device.
-Such policies depend on the OIDC Provider in use and could include, but are not limited to, time of day, day of the week,
+Additionally, the homeserver is able to define and enforce policies that can prevent a sign in on a new device.
+Such policies depend on the homeserver in use and could include, but are not limited to, time of day, day of the week,
 source IP address and geolocation.
 
 A threat analysis has been done within each of the key layers in the proposal above.
@@ -1588,5 +1560,6 @@ The server should send:
 
 ## Dependencies
 
-This MSC builds on [MSC3861](https://github.com/matrix-org/matrix-spec-proposals/pull/3861) (and its dependencies) which
-proposes the adoption of OIDC for authentication in Matrix.
+This MSC builds on [MSC4341]  which proposes support for RFC 8628 Device Authorization Grant in Matrix.
+
+[MSC4341]: https://github.com/matrix-org/matrix-spec-proposals/pull/4341 "MSC4341 Support for RFC 8628 Device Authorization Grant"
