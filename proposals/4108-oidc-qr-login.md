@@ -425,7 +425,7 @@ Device G displays a QR code containing:
 - The insecure rendezvous session **URL**
 - An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
 that wishes to "reciprocate" a login
-- If the intent is to reciprocate a login, then the Matrix homeserver **[server name](https://spec.matrix.org/v1.10/appendices/#server-name)**
+- If the intent is to reciprocate a login, then the Matrix homeserver **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**
 
 To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
 similar structure to that of the existing Device Verification QR code encoding described in [Client-Server
@@ -434,7 +434,7 @@ API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
 This is defined in detail in a separate section of this proposal.
 
 Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the Matrix homeserver
-**[server name](https://spec.matrix.org/v1.10/appendices/#server-name)**.
+**[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**.
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
 
@@ -690,8 +690,8 @@ This can make it hard to read what is going on.
 
 The new device needs to know which homeserver it will be authenticating with.
 
-In the case that the new device scanned the QR code then the [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the Matrix homeserver can be taken from the QR code and the
-new device proceeds to step 2 immediately.
+In the case that the new device scanned the QR code then the [server name](https://spec.matrix.org/v1.15/appendices/#server-name)
+of the Matrix homeserver can be taken from the QR code and the new device proceeds to step 2 immediately.
 
 Otherwise the new device waits to be informed by receiving an `m.login.protocols` message from the existing device.
 
@@ -719,7 +719,7 @@ Once the existing device has determined the server name it then undertakes steps
 
 The steps are as follows:
 
-- use [Server Discovery](https://spec.matrix.org/v1.10/client-server-api/#server-discovery) to determine the `base_url` from the well-known URI
+- use [Server Discovery](https://spec.matrix.org/v1.15/client-server-api/#server-discovery) to determine the `base_url` from the well-known URI
 - checks that the homeserver has the OAuth 2.0 API available by [`GET /_matrix/client/v1/auth_metadata`](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
 
 *New device => Homeserver via HTTP*
@@ -1210,7 +1210,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.protocols`|
 |`protocols`|required `string[]`|Array of: one of: `device_authorization_grant` |
-|`homeserver`|required `string`|The [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the Matrix homeserver|
+|`homeserver`|required `string`|The [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the Matrix homeserver|
 
 ```json
 {
@@ -1276,7 +1276,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.failure`|
 |`reason`|required `string`| One of: <table> <tr> <td><strong>Value</strong> </td> <td><strong>Description</strong> </td> </tr><tr> <td><code>authorization_expired</code> </td> <td>The Device Authorization Grant expired</td> </tr> <tr> <td><code>device_already_exists</code> </td> <td>The device ID specified by the new client already exists in the Homeserver provided device list</td> </tr><tr><td><code>device_not_found</code></td><td>The new device is not present in the device list as returned by the Homeserver</td></tr><tr><td><code>unexpected_message_received</code></td><td>Sent by either device to indicate that they received a message of a type that they weren't expecting</td></tr><tr><td><code>unsupported_protocol</code></td><td>Sent by a device where no suitable protocol is available or the requested protocol requested is not supported</td></tr><tr><td><code>user_cancelled</code></td><td>Sent by either new or existing device to indicate that the user has cancelled the login</td></tr></table>|
-|`homeserver`|`string`| When the existing device is sending this it can include the [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the Matrix homeserver so that the new device can at least save the user the hassle of typing it in|
+|`homeserver`|`string`| When the existing device is sending this it can include the [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the Matrix homeserver so that the new device can at least save the user the hassle of typing it in|
 
 Example:
 
@@ -1340,7 +1340,7 @@ Fields:
 |--- |--- |--- |
 |`type`|required `string`|`m.login.secrets`|
 |`cross_signing`|required `object`|<table> <tr> <td><strong>Field</strong> </td> <td><strong>Type</strong> </td> <td> </td> </tr> <tr> <td><code>master_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>self_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr> <tr> <td><code>user_signing_key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private key </td> </tr></table>|
-|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.10/client-server-api/#post_matrixclientv3room_keysversion)</td> </tr></table>|
+|`backup`|`object`|<table> <tr> <td>Field </td> <td>Type </td> <td> </td> </tr> <tr> <td><code>algorithm</code></td> <td>required <code>string</code></td> <td>One of the algorithms listed at <a href="https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups">https://spec.matrix.org/v1.9/client-server-api/#server-side-key-backups</a> </td> </tr> <tr> <td><code>key</code></td> <td>required <code>string</code></td> <td>Unpadded base64 encoded private/secret key</td> </tr> <tr> <td><code>backup_version</code></td> <td>required <code>string</code></td> <td>The backup version as returned by [`POST /_matrix/client/v3/room_keys/version`](https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3room_keysversion)</td> </tr></table>|
 
 Example:
 
@@ -1380,7 +1380,7 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session URL as a UTF-8
   string
   - the rendezvous session URL as a UTF-8 string
-- If the QR code intent/mode is `0x04` then the [server name](https://spec.matrix.org/v1.10/appendices/#server-name) of the homeserver encoded as:
+- If the QR code intent/mode is `0x04` then the [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the homeserver encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the server name as a UTF-8 string
   - the server name as a UTF-8 string
 
