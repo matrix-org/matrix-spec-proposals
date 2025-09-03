@@ -1520,6 +1520,31 @@ source IP address and geolocation.
 
 A threat analysis has been done within each of the key layers in the proposal above.
 
+### Malicious session spawning
+
+This mechanism could be used by an attacker who has gained temporary access to a client to escalate the attack to creation
+of a new client session that has ongoing access.
+
+For example, if you leave your if you leave your phone unlocked briefly someone could quickly use QR code login to login on
+their device.
+
+It also makes it easier to get the private keys of the user from an unlocked client, as you can login with a new device,
+extract the keys from that, and logout again to cover your tracks.
+
+Sophisticated attackers can today already use specialist equipment to extract private keys and access tokens from the memory
+of a process. However: a) that is a much higher bar for attack; and b) cloning an access token will quickly be detected via
+refresh tokens.
+
+Recommendations to mitigate this are:
+
+- Before the login on the existing device, native clients SHOULD gate QR code login behind some form of extra protection,
+  e.g. biometrics on mobile apps. These should be minimally invasive though as otherwise it heavily erodes the benefit of
+  using QR code login in the first place. We don't necessarily think this protection is worth while on web clients, as it is
+  trivial to access the devtools to extract the secrets directly and/or bypass any extra protections.
+- During the login, servers MAY require additional factors of authentication (e.g. biometrics or smart card).
+- After the login, servers SHOULD send new device login notifications to the user (this could be to other Matrix devices or
+  out of band such as by email).
+
 ## Unstable prefix
 
 While this feature is in development the new `POST` endpoint should be exposed using the following unstable prefix:
