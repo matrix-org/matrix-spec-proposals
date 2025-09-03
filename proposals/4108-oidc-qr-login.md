@@ -226,12 +226,15 @@ The server enforce a maximum payload size of 4KB.
 
 ###### Maximum duration of a rendezvous
 
-The rendezvous session needs to persist for the duration of the login. So a timeout such as 60 seconds should be adequate.
-
-It does need to allow the user another time to confirm that the secure channel has been established and complete any extra
-homeserver mandated login steps such as MFA.
+The rendezvous session needs to persist for the duration of the login including allowing the user another time to
+confirm that the secure channel has been established and complete any extra homeserver mandated login steps such as MFA.
 
 Clients should handle the case of the rendezvous session being cancelled or timed out by the server.
+
+The server MUST enforce a timeout on each rendezvous. When picking a value to use:
+
+- the minimum timeout SHOULD be 120 seconds for usability
+- the maximum timeout SHOULD be 300 seconds for security
 
 ###### ETags
 
