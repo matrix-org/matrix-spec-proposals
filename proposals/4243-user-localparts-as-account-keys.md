@@ -60,7 +60,7 @@ Terminology for the rest of this proposal:
 > - Accounts are heavily implied to live server-side which matches the storage location of this key.
 > - It implies the key is user ID scoped, which it is (as opposed to room / device scoped).
 > - It isn't a term used in Matrix today (unlike Master Key, User-Signing Key, Self-Signing Key which are all cross-signing keys, or Sender Key which is used in E2EE)
-> - As the key is static for this user, it doesn't imply unlinkability of the key between rooms (unlike Pseudonymous Identities).
+> - As the key is per-user, it doesn't imply unlinkability of the key between rooms (unlike Pseudonymous Identities).
 > - It provides reasonable flexibility for extensions to the key e.g if they become per-room, a 'Pseudonymous Account Key' works well.
 >   If the key moves client-side, a 'Local Account Key' also works as a descriptor, even combined as a 'Pseudonymous Local Account Key'.
 
@@ -98,7 +98,7 @@ Returns:
     }
 }
 ```
-Unknown keys are omitted from the map. Like all federation requests, this request _is authorised_ using the server's signing key.
+Unknown account keys are omitted from the map. Like all federation requests, this request _is authenticated_ using the server's signing key.
 This creates a bidirectional link:
  - By signing event JSON, the account key claims to belong to a particular domain. This is embedded into the DAG.
  - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so not all servers will agree on this.
@@ -271,6 +271,8 @@ This has knock-on effects because the inability to retrieve the underlying user 
 to see ugly user IDs which can't be mapped to any human-readable identifier. Assuming these problems could be addressed, this proposal
 would require no extra changes to support per-room per-user keys as it would just result in more `/accounts` requests to servers. 
 It is technically possible with this proposal alone for some servers to use per-room per-user keys and some servers to use per-user keys.
+Care must be taken to ensure that any "aggregate" operations which intend to operate on a user across all rooms use the account name and
+not the account key (e.g like fetching device lists for a user).
 
 ### Future work
 
