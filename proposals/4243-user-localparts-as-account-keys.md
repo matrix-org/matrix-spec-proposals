@@ -4,7 +4,7 @@ User IDs should be public keys because:
  - User IDs as they are today are direct personal data. For [GDPR](https://github.com/matrix-org/matrix-spec/issues/342)
    reasons we would like to be able to remove direct personal data from the immutable append-only DAG. This proposal
    replaces user IDs with indirect personal data.
- - As user IDs are user controlled, spammers set their localpart to abusive messages in order to harrass and intimidate others. Redactions
+ - As user IDs are user controlled, spammers set their localpart to abusive messages in order to harass and intimidate others. Redactions
    do not remove the user ID so these messages persist in the room.
 
 This follows the wider pattern of IDs becoming cryptographic primitives:
@@ -27,7 +27,7 @@ Instead, this proposal solely addresses the problem with allowing direct persona
 
 ### Proposal
 
-Starting in room verion `vNext`:
+Starting in room version `vNext`:
  - User ID _localparts_ in rooms are replaced with an ed25519 public key: an "Account Key".
    Leaving and rejoining the same room MUST NOT change the _account key_. The _account key_ is encoded as unpadded
    urlsafe base 64. An example _user ID_ is: `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
@@ -115,7 +115,7 @@ as clients will invite the `account_name` to a room, and will not know the accou
 > names to discover all the accounts on any server.
 >
 > Considering the chicken/egg problem only exists for invites and pre-emptive bans, it feels acceptable to keep the scope small and
-> only add a generic lookup function as and when the use cases present themeselves. This allows servers to rate-limit these requests to
+> only add a generic lookup function as and when the use cases present themselves. This allows servers to rate-limit these requests to
 > prevent enumeration of accounts.
 >
 > An alternative design would be to exclude the `/ban` endpoint entirely, making it impossible to do pre-emptive bans in room version `vNext`.
@@ -191,7 +191,7 @@ and the `unsigned.account.name` property of the event JSON to be the account nam
 }
 ```
 
-Clients can then use the `unsigned.acount.key` field as an unchanging identifier for the sender of the event, akin to how they use the `sender` field today.
+Clients can then use the `unsigned.account.key` field as an unchanging identifier for the sender of the event, akin to how they use the `sender` field today.
 A later room version can then:
  - Revert the `sender` of the event to be the wire-format over federation and not modify it, meaning the `sender` becomes identical to `unsigned.account.key`.
  - Tell clients to form the user ID by replacing the account key with the `unsigned.account.name` if it is present. The absence of a `name` means the
