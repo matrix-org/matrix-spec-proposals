@@ -3,8 +3,9 @@
 The current [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) requires the user to complete
 authentication using a web browser on the device where the Matrix client is running.
 
-This can be problematic if the device does not have a built in web browser or the user wishes to use a different device
-to complete login.
+This can be problematic if the device does not have a built in web browser or the user wishes to use a different device.
+It would also be useful in scenarios where catching the redirect back to the client is hard, like in CLI apps, or
+desktop apps with no redirect custom schemes.
 
 [RFC 8628](https://datatracker.ietf.org/doc/html/rfc8628) defines the OAuth 2.0 Device Authorization Grant which can be
 used for this purpose.
@@ -73,9 +74,8 @@ Content-Type: application/json
 {
   "device_code": "GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS",
   "user_code": "WDJB-MJHT",
-  "verification_uri": "https://account.matrix.org/oauth2/device",
-  "verification_uri_complete":
-      "https://account.matrix.org/oauth2/device?user_code=WDJB-MJHT",
+  "verification_uri": "https://account.matrix.org/link",
+  "verification_uri_complete": "https://account.matrix.org/link?user_code=WDJB-MJHT",
   "expires_in": 1800,
   "interval": 5
 }
@@ -84,7 +84,8 @@ Content-Type: application/json
 It is recommended that the server provides a `verification_uri_complete` such that the user does not need to type in the
 `user_code`.
 
-5. The Matrix client device conveys the returned `verification_uri_complete` (or `verification_uri`+`user_code`) to the user.
+5. The Matrix client device conveys the returned `verification_uri_complete` (and/or `verification_uri`+`user_code`) to
+the user.
 
 Exactly how the client does this depends on the specific device characteristics and use case.
 
