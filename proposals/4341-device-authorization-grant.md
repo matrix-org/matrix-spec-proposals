@@ -1,4 +1,4 @@
-# MSC0000: Support for RFC 8628 Device Authorization Grant
+# MSC4341: Support for RFC 8628 Device Authorization Grant
 
 The current [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) requires the user to complete
 authentication using a web browser on the device where the Matrix client is running.
