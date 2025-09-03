@@ -136,7 +136,11 @@ This is as per the current spec.
 
 ## Potential issues
 
-None identified.
+Some literature refers to the Device Authorization Grant as the
+[Device Code](https://oauth.net/2/grant-types/device-code/) grant type or [Device Flow](https://curity.io/resources/learn/oauth-device-flow/).
+This MSC uses the name from the actual RFC.
+
+Otherwise, none identified.
 
 ## Alternatives
 
