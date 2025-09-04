@@ -11,14 +11,15 @@ but can be made up of singular rooms or loose collections of rooms. These commun
 desire to push unwelcome content out of their chats, and rely on bots like [Mjolnir](https://github.com/matrix-org/mjolnir),
 [Draupnir](https://github.com/the-draupnir-project/Draupnir), and [Meowlnir](https://github.com/maunium/meowlnir)
 to help manage their community. Many of these communities have additionally seen a large increase in
-abusive content being sent to their rooms recently. While these existing tools allow for reactive
+abusive content being sent to their rooms recently (as of originally writing). While these existing tools allow for reactive
 moderation (redactions after the fact), some impacted communities may benefit from having an option
 to use a server of their choice to automatically filter events at a server level, reducing the spread
 of abusive content. This proposal experiments with this idea, calling the concept *Policy Servers*.
 
 This proposal does not seek to replace community management provided by the existing moderation bots,
 but does intend to supplement a large part of the "protections" concept present in many of these bots
-to the room's designated policy server.
+to the room's designated policy server. It is expected that protections will continue to be developed
+and maintained within moderation bots as an additional layer of safety.
 
 At a high level, policy servers are *optional* recommendation systems which help proactively moderate
 communities on Matrix. Communities which elect to use a policy server advertise their choice through
@@ -50,8 +51,22 @@ time.
 **This is a work in progress.**
 
 A *Policy Server* (PS) is a server which implements the newly-defined `/check` API described below.
-This may be an existing logical server, such as matrix.org, or a dedicated host which serves no other
-purpose.
+This may be an existing logical server, such as matrix.org, or a dedicated host which implements the
+minimum surface of the [Federation API](https://spec.matrix.org/v1.15/server-server-api/) to operate
+the API and exist in the room. In practice, this means:
+
+* Supporting [normal server name resolution](https://spec.matrix.org/v1.15/server-server-api/#resolving-server-names).
+* [Publishing a signing key](https://spec.matrix.org/v1.15/server-server-api/#publishing-keys).
+* [Understanding authentication](https://spec.matrix.org/v1.15/server-server-api/#authentication).
+* Being able to [make and send join requests](https://spec.matrix.org/v1.15/server-server-api/#joining-rooms).
+
+Some implementations may also wish to support:
+
+* [Invites](https://spec.matrix.org/v1.15/server-server-api/#inviting-to-a-room) to be added to rooms.
+* [Receiving transactions](https://spec.matrix.org/v1.15/server-server-api/#transactions) (possibly
+  routing to `/dev/null`) to minimize risk of remote servers flagging them as "down".
+* Supporting [device lookups](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1userdevicesuserid)
+  to again minimize risk of remote servers flagging the policy server as down.
 
 Rooms which elect to use a policy server would do so via the new `m.room.policy` state
 event (empty state key). The `content` would be something like:
@@ -66,10 +81,13 @@ event (empty state key). The `content` would be something like:
 
 Provided `policy.example.org` is in the room, that server receives events as any other homeserver
 in the room would, *plus* becomes a Policy Server. If `policy.example.org` is not in the room, the
-assignment acts as though it was undefined: the room does not use a policy server.
+assignment acts as though it was undefined: the room does not use a policy server. This check is to
+ensure the policy server has agency to decide which rooms it actually generates recommendations for,
+as otherwise any random (potentially malicious) community could drag the policy server into rooms and
+overwhelm it.
 
 If a policy server is in use by the room, homeservers SHOULD call the `/check` API defined below on
-all locally-generated events before fanning them out and on all remote events before delivering them
+all locally-generated events before fanning them out, and on all remote events before delivering them
 to local users. If the policy server recommends treating the event as spam, the event SHOULD be soft
 failed if remote and rejected if local. This means local users should encounter an error if they
 attempt to send "spam" (by the policy server's definition), and events sent by remote users will
