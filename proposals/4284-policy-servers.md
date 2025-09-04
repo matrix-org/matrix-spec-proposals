@@ -94,10 +94,64 @@ attempt to send "spam" (by the policy server's definition), and events sent by r
 never make it to a local user's client. If the policy server recommends allowing the event, the event
 should pass unimpeded.
 
-The new `/check` is described as follows:
+<!-- TODO: Put signing details here -->
+
+In some implementations, a homeserver may cooperate further with the policy server to issue redactions
+for spammy events, helping to keep the room clear for users on servers which didn't check with the
+policy server ahead of sending their event(s). For example, `matrix.example.org` may have a user in
+the room with permission to send redactions and `/check`s all events.
+
+## Potential issues
+
+**TODO**: This section.
+
+Broadly:
+* Lack of batching is unfortunate (**TODO**: Fix this)
+
+## Safety considerations
+
+**TODO**: This section.
+
+## Security considerations
+
+**TODO**: This section.
+
+## Alternatives
+
+**TODO**: This section. Many of the inline TODOs describe some alternatives.
+
+An alternative was considered where, in a future room version, all events must be signed by the policy
+server before they're able to be added to the DAG. However, this results in compulsory centralization
+and usage, removing the room's agency to choose which moderation tools they utilize and that room's
+ability to survive network partitions. This alternative does have an advantage of reducing bandwidth
+spend across the federation (as there's no point in sending a spammy event if the policy server won't
+sign it), but would require that communities upgrade their rooms to a compatible room version, which
+typically take significant time to specify and deploy.
+
+## Unstable prefix
+
+While this proposal is not considered stable, implementations should use the following unstable identifiers:
+
+| Stable | Unstable |
+|-|-|
+| `/_matrix/policy/v1/event/:eventId/check` | `/_matrix/policy/unstable/org.matrix.msc4284/event/:eventId/check` |
+| `m.room.policy` | `org.matrix.msc4284.policy` |
+
+## Dependencies
+
+This proposal has no direct dependencies.
+
+## Prior iteration
+
+This proposal has iterated since it was originally written. This section exists to capture a summarized
+form of the prior experiments, but is not intended to enter the spec - this exists for reference only.
+
+### `/check` API
+
+A new `/check` is described as follows:
 
 ```
-POST /_matrix/policy/v1/event/:eventId/check
+POST /_matrix/policy/unstable/org.matrix.msc4284/event/:eventId/check
 Authorization: X-Matrix ...
 Content-Type: application/json
 
@@ -144,59 +198,16 @@ Content-Type: application/json
 {"error":"It broke","errcode":"M_UNKNOWN"}
 ```
 
-**TODO**: Figure out a way to expose which filters (if any) caused an event to be flagged as spam, to
-allow for more nuanced decision making by servers/bots. Also, if exposed, figure out a way to do so
-which doesn't expose that detail to potential attackers. Consider exposing with score metrics per filter.
-
 As shown, `recommendation` may either be `spam` or `ok`. (**TODO**: Consider different keywords)
-
-**TODO**: Support namespaced identifiers in an array for more recommendations? ie: `[ok, org.example.warn_user]`
 
 Homeserver implementations SHOULD fail safely and assume events are *not* spam when they cannot reach
 the policy server. However, they SHOULD also attempt to retry the request for a reasonable amount of
 time.
 
-In some implementations, a homeserver may cooperate further with the policy server to issue redactions
-for spammy events, helping to keep the room clear for users on servers which didn't check with the
-policy server ahead of sending their event(s). For example, `matrix.example.org` may have a user in
-the room with permission to send redactions and `/check`s all events.
-
-## Potential issues
-
-**TODO**: This section.
-
-Broadly:
-* Lack of batching is unfortunate (**TODO**: Fix this)
-
-## Safety considerations
-
-**TODO**: This section.
-
-## Security considerations
-
-**TODO**: This section.
-
-## Alternatives
-
-**TODO**: This section. Many of the inline TODOs describe some alternatives.
-
-An alternative was considered where, in a future room version, all events must be signed by the policy
-server before they're able to be added to the DAG. However, this results in compulsory centralization
-and usage, removing the room's agency to choose which moderation tools they utilize and that room's
-ability to survive network partitions. This alternative does have an advantage of reducing bandwidth
-spend across the federation (as there's no point in sending a spammy event if the policy server won't
-sign it), but would require that communities upgrade their rooms to a compatible room version, which
-typically take significant time to specify and deploy.
-
-## Unstable prefix
-
-While this proposal is not considered stable, implementations should use the following unstable identifiers:
-
-| Stable | Unstable |
-|-|-|
-| `/_matrix/policy/v1/event/:eventId/check` | `/_matrix/policy/unstable/org.matrix.msc4284/event/:eventId/check` |
-| `m.room.policy` | `org.matrix.msc4284.policy` |
-
-## Dependencies
-
-This proposal has no direct dependencies.
+Comments not incorporated into text:
+* https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2107839742 - Why optional body?
+* https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2051075167 - Require signature check on body?
+* https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2254883244 - Error for when the policy server
+  knows it's not protecting that room?
+* https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2089903103 - Warnings system.
+* https://github.com/matrix-org/matrix-spec-proposals/pull/4284/files#r2254826194 - Check ACLs?
