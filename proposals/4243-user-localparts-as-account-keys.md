@@ -98,7 +98,7 @@ Returns:
     }
 }
 ```
-Unknown account keys are omitted from the map. Like all federation requests, this request _is authenticated_ using the server's signing key.
+ account keys are omitted from the map. Like all federation requests, this request _is authenticated_ using the server's signing key.
 This creates a bidirectional link:
  - By signing event JSON, the account key claims to belong to a particular domain. This is embedded into the DAG.
  - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so not all servers will agree on this.
@@ -138,7 +138,7 @@ account keys into three categories:
 This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
 with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
  - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
- - The server should replace the `domain` of the user ID with "unknown" for unverified keys. E.g `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:unknown`.
+ - The server should replace the `domain` of the user ID with "invalid" for unverified keys. E.g `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:invalid`.
  - The server should prefix the account key with `_` when the domain is unreachable. E.g `@_l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
 
 >[!NOTE]
@@ -152,25 +152,27 @@ with the account name in the user ID where possible in event JSON sent to client
 > if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
 > impersonation attack, but that is orthogonal to this proposal.
 >
-> We replace the domain with 'unknown' when the domain explicitly responds without information for that key
+> We replace the domain with 'invalid' when the domain explicitly responds without information for that key
 > because otherwise it implies that user ID is an account on that server. The domain part of the user ID is
-> not verified with this proposal. If we did not replace the domain with 'unknown', abusive or illegal activity
-> may be incorrectly tied back to a particular victim server. Conversely, by doing this we enable domainless accounts
+> not verified with this proposal. If we did not replace the domain with 'invalid', abusive or illegal activity
+> may be incorrectly tied back to a particular victim server. The word "invalid" is specifically
+> [reserved](https://www.rfc-editor.org/rfc/rfc2606.html#section-2) so it cannot become a valid TLD in the future.
+> Conversely, by doing this we enable domainless accounts
 > because malicious servers may purposefully omit their own users from the response, thus causing all their users
-> to appear with an "unknown" domain. [Moderation tooling](https://github.com/matrix-org/matrix-spec-proposals/pull/4284)
+> to appear with an "invalid" domain. [Moderation tooling](https://github.com/matrix-org/matrix-spec-proposals/pull/4284)
 > may decide to automatically soft-fail events sent from unverified domains to protect against abuse. On the flip side,
 > this is exactly what we want for peer-to-peer applications, where the identity and routing information is solely the
 > public key (e.g used in a distributed hash table).
 >
-> Unknown keys are prefixed with `_` down the CSAPI to provide a temporary namespace to avoid conflicts with _account names_
+>  keys are prefixed with `_` down the CSAPI to provide a temporary namespace to avoid conflicts with _account names_
 > which happen to look like `l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ`. The `_` prefix is used by application services,
 > and major server implementations disallow creating users starting with `_`, thus ensuring the namespaces remain separate.
 > This is a temporary measure until clients become account key aware.
 
-Once a mapping has been verified or unverified, it can be permanently cached. An unknown mapping should be periodically retried until it is either verified or unverified. Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
-If a client has been told an _unknown_ account key user ID which then subsequently becomes verified / unverified, the server MUST:
+Once a mapping has been verified or unverified, it can be permanently cached. An  mapping should be periodically retried until it is either verified or unverified. Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
+If a client has been told an __ account key user ID which then subsequently becomes verified / unverified, the server MUST:
  - resend the `m.room.member` event for all rooms with that account key user ID, replacing the user ID sections appropriately.
- - issue a synthetic leave event for the unknown account key user ID for all the rooms with that user ID.
+ - issue a synthetic leave event for the  account key user ID for all the rooms with that user ID.
 
 This ensures the member list remains accurate on clients. State events sent by that account key user ID MAY be resent with an updated `sender` field.
 
