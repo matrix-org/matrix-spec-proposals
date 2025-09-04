@@ -79,7 +79,8 @@ For example:
 Sending a `GET` to the respective endpoints returns `404` with `M_NOT_FOUND` if the
 requested user ID is not found. `400` and `M_INVALID_PARAM` is returned if the specified
 user ID is valid, but not local to the server. `403` `M_FORBIDDEN` is returned if
-the user is not a server administrator. To prevent enumeration, credentials are checked
+the user is not a server administrator, the user is trying to suspend their own account, or the user
+is trying to suspend another server administrator. To prevent enumeration, credentials are checked
 before validity.
 
 If a user is deactivated, `M_NOT_FOUND` is returned, as deactivated users are not
