@@ -18,7 +18,7 @@ Note: what defines a "server administrator" is left up to the implementation,
 most already have their own systems for defining administrators which rarely has a reason to be
 exposed outside of their respective management interfaces.
 
-Taking advantage of the 10.22 section of the client-to-server specification,
+Taking advantage of [section 10.22 (Server Administration)][p1] of the client-to-server specification,
 four new endpoints are introduced:
 
 - `GET /_matrix/client/v1/admin/suspend/{userId}`
@@ -110,6 +110,8 @@ reflected.
 
 Servers may choose to retain implementation-specific versions of these endpoints, however should
 still implement this uniform endpoint for compatibility.
+
+[p1]: https://spec.matrix.org/v1.15/client-server-api/#server-administration
 
 ## Potential issues
 
