@@ -50,17 +50,17 @@ time.
 
 **This is a work in progress.**
 
-A *Policy Server* (PS) is a server which implements the newly-defined `/check` API described below.
+A *Policy Server* (PS) is a server which implements the newly-defined `/sign` API described below.
 This may be an existing logical server, such as matrix.org, or a dedicated host which implements the
 minimum surface of the [Federation API](https://spec.matrix.org/v1.15/server-server-api/) to operate
-the API and exist in the room. In practice, this means:
+the `/sign` API and exist in the room. For a dedicated host, this means:
 
 * Supporting [normal server name resolution](https://spec.matrix.org/v1.15/server-server-api/#resolving-server-names).
 * [Publishing a signing key](https://spec.matrix.org/v1.15/server-server-api/#publishing-keys).
-* [Understanding authentication](https://spec.matrix.org/v1.15/server-server-api/#authentication).
+* Understanding [authentication](https://spec.matrix.org/v1.15/server-server-api/#authentication).
 * Being able to [make and send join requests](https://spec.matrix.org/v1.15/server-server-api/#joining-rooms).
 
-Some implementations may also wish to support:
+Some dedicated host implementations may also wish to support:
 
 * [Invites](https://spec.matrix.org/v1.15/server-server-api/#inviting-to-a-room) to be added to rooms.
 * [Receiving transactions](https://spec.matrix.org/v1.15/server-server-api/#transactions) (possibly
@@ -68,12 +68,22 @@ Some implementations may also wish to support:
 * Supporting [device lookups](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1userdevicesuserid)
   to again minimize risk of remote servers flagging the policy server as down.
 
+Logical servers may prefer to have dedicated software run their `/sign` API, but otherwise leave the
+remaining Federation API endpoints to be served by their existing software.
+
+Existing homeserver software, such as Synapse, may further benefit by supporting `/sign`, but deferring
+the actual spam/neutral check to a module or appservice (via API not defined by this MSC). In this
+setup, Synapse would take on the request authentication and signature requirements while the module
+simply returns `spam: true/false`. This would support moderation bots being policy servers themselves
+without needing to implement the same requirements as dedicated hosts above.
+
 Rooms which elect to use a policy server would do so via the new `m.room.policy` state
-event (empty state key). The `content` would be something like:
+event (empty state key). The `content` has the following implied schema:
 
 ```json5
 {
-    "via": "policy.example.org"
+    "via": "policy.example.org", // the server name of the policy server
+    "public_key": "unpadded_base64_signing_key" // that server's *public* signing key used for `/sign`
 }
 ```
 
@@ -86,27 +96,100 @@ ensure the policy server has agency to decide which rooms it actually generates 
 as otherwise any random (potentially malicious) community could drag the policy server into rooms and
 overwhelm it.
 
-If a policy server is in use by the room, homeservers SHOULD call the `/check` API defined below on
-all locally-generated events before fanning them out, and on all remote events before delivering them
-to local users. If the policy server recommends treating the event as spam, the event SHOULD be soft
-failed if remote and rejected if local. This means local users should encounter an error if they
-attempt to send "spam" (by the policy server's definition), and events sent by remote users will
-never make it to a local user's client. If the policy server recommends allowing the event, the event
-should pass unimpeded.
+When creating an event locally, homeservers SHOULD call the `/sign` API defined below to acquire a
+signature from the policy server, if one is configured for the room. The homeserver then appends the
+signature to the event prior to delivering the event to other servers in the room.
 
-<!-- TODO: Put signing details here -->
+Upon receipt of an event in a room with a policy server, the homeserver SHOULD verify that the policy
+server's signature is present on the event *and* uses the key from the `m.room.policy` state event.
+If the signature is missing, invalid, or for the wrong key, the homeserver SHOULD [soft fail](https://spec.matrix.org/v1.15/server-server-api/#soft-failure)
+the event.
+
+Servers MUST NOT validate that policy server signatures exist on `m.room.policy` state events with
+empty state keys. This is to ensure that rooms have agency to remove/disable the policy server,
+especially if the policy server they're using has become obstructive to the room's function.
+
+**Note**: Policy servers are consulted on *all* other event types. This includes membership events,
+power level changes, room name changes, room messages, reactions, redactions, etc.
+
+For clarity, when a room doesn't use a policy server (either because the state event is unset, or
+because the policy server isn't joined), events SHOULD NOT be impeded by lack of policy server signatures.
+This also applies to events which are topologically ordered at a point in the DAG where a policy
+server was not in effect, but were received late.
+
+When implemented fully, users attempting to send "spammy" events according to the policy server will
+not be sent to the room because the homeserver will have failed to acquire a signature. Users also
+won't see events which lacked a valid signature from the policy server, for events which originate
+from a homeserver that sent events without asking the policy server to sign them (or did ask and got
+a refusal to sign, but sent the event anyway).
+
+**Note**: A future MSC may make the signature required in a future room version, otherwise the event
+is rejected. The centralization concerns of that architecture are best reserved for that future MSC.
+
+The new `/sign` endpoint uses normal Federation API authentication, per above, and MAY be rate limited.
+It has the following implied schema:
+
+```
+POST /_matrix/policy/v1/sign
+Authorization: X-Matrix ...
+Content-Type: application/json
+
+{PDU-formatted event}
+```
+
+The request body is **required**.
+
+If the policy server deems the event "neutral" (or "probably not spam"), the policy server returns
+a signature for the event using the key implied by `public_key` in the state event and a Key ID of
+`ed25519:policy_server`, like so:
+
+```jsonc
+{
+    "policy.example.org": {
+        "ed25519:policy_server": "zLFxllD0pbBuBpfHh8NuHNaICpReF/PAOpUQTsw+bFGKiGfDNAsnhcP7pbrmhhpfbOAxIdLraQLeeiXBryLmBw"
+    }
+}
+```
+
+If the policy server refuses to sign the event, it returns 200 OK with an empty JSON object instead
+of a normal error response. This is to leave error codes open for problems with the request itself,
+such as invalid events for the room version (`400 Bad Request`). **TODO**: define such error codes.
+
+For improved security, policy servers SHOULD NOT publish the key they use inside the state event on
+[`/_matrix/key/v2/server`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixkeyv2server).
+This is to prevent an attack surface where a signing key is compromised and thus allows the attacker
+to impersonate the server itself (though, they'll still be able to spam events as much as they want
+because they can self-sign).
 
 In some implementations, a homeserver may cooperate further with the policy server to issue redactions
-for spammy events, helping to keep the room clear for users on servers which didn't check with the
-policy server ahead of sending their event(s). For example, `matrix.example.org` may have a user in
-the room with permission to send redactions and `/check`s all events.
+for spammy events, helping to keep the room clear for users on servers which don't validate the signature
+on events. For example, `matrix.example.org` may have a user in the room with permission to send
+redactions and redacts all events that aren't properly signed by the policy server.
+
+### Implementation considerations
+
+When determining whether to sign an event, policy servers might wish to consider the following cases
+in addition to any implementation-specific checks/filters:
+
+* Is the requesting server [ACL'd](https://spec.matrix.org/v1.15/server-server-api/#server-access-control-lists-acls)?
+  The `/sign` endpoint is open to ACL'd servers, but that doesn't mean it needs to return a signature
+  for such servers.
+* **TODO**: Add more as they are encountered.
 
 ## Potential issues
 
 **TODO**: This section.
 
-Broadly:
-* Lack of batching is unfortunate (**TODO**: Fix this)
+Notes for TODO:
+* Redacting the policy server event is 😬, especially because it causes the key to vanish
+* Broadly: Lack of batching is unfortunate (**TODO**: Fix this(maybe??))
+* "SHOULD soft fail when no signature is present" is problematic when operating a room with outdated
+  servers which don't know they're supposed to get a signature. **TODO**: figure out migration plan
+  and/or advice for how to handle that case (allow anyway but (somehow) flag as "possible spam"?).
+* If the policy server can't be reached, servers are forced to assume that the event is spammy. Those
+  servers probably should retry the request. As of writing, it's believed to be a feature that *no*
+  events can be sent when the policy server is down (aside from removing the policy server, so rooms
+  have an escape hatch during extended outages).
 
 ## Safety considerations
 
@@ -116,17 +199,35 @@ Broadly:
 
 **TODO**: This section.
 
+Notes for TODO:
+* Policy servers are natural targets for DDoS attempts, especially because when they can't be reached,
+  the room is unusable.
+
 ## Alternatives
 
-**TODO**: This section. Many of the inline TODOs describe some alternatives.
+**TODO**: More alternatives.
 
-An alternative was considered where, in a future room version, all events must be signed by the policy
-server before they're able to be added to the DAG. However, this results in compulsory centralization
-and usage, removing the room's agency to choose which moderation tools they utilize and that room's
-ability to survive network partitions. This alternative does have an advantage of reducing bandwidth
-spend across the federation (as there's no point in sending a spammy event if the policy server won't
-sign it), but would require that communities upgrade their rooms to a compatible room version, which
-typically take significant time to specify and deploy.
+One possible alternative is to have servers `/check` events at time of receipt rather than `/sign` at
+send time, though this has a few issues:
+
+1. It's non-deterministic. If the policy server forgets what it replied for a given event, it may
+   cause one server to soft fail it while another doesn't. This has proven to be the case in practice,
+   especially when the policy server cannot be reached right away.
+
+2. It's `O(n)` rather than `O(1)` scale, where `n` is the number of servers in the room. This can lead
+   to traffic patterns in the single-digit kHz range in practice.
+
+3. It requires the policy server to have near-100% uptime as a `/check` request could come in late
+   when a receiving server has fallen behind on federation traffic. By putting the signing key into
+   the room state itself, we ensure that servers can validate the signatures without needing the
+   policy server to be online. Outages on the policy server will still affect net-new event sending,
+   but events already signed and working their way through federation don't need 100% SLA uptime to
+   work.
+
+   The approach of putting the key into the room itself is similarly used in [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243)
+   to ensure that user-sent events have less dependency on their server being online and reachable to
+   accept into the DAG. Readers are encouraged to review MSC4243 for additional context on why it's
+   important to remove the network dependency from signature verification (where possible).
 
 ## Unstable prefix
 
@@ -134,8 +235,12 @@ While this proposal is not considered stable, implementations should use the fol
 
 | Stable | Unstable |
 |-|-|
-| `/_matrix/policy/v1/event/:eventId/check` | `/_matrix/policy/unstable/org.matrix.msc4284/event/:eventId/check` |
+| `/_matrix/policy/v1/sign` | `/_matrix/policy/unstable/org.matrix.msc4284/sign` |
 | `m.room.policy` | `org.matrix.msc4284.policy` |
+
+**Note**: Due to iteration within this proposal, implementations SHOULD fall back to `/check` (described
+below) when `/sign` is unavailable or when `public_key` is not present in the `org.matrix.msc4284.policy`
+state event.
 
 ## Dependencies
 
