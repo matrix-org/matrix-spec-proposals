@@ -134,6 +134,13 @@ restricted access to implementation-specific endpoints, usually by preventing ac
 proxy. Operators should keep this in mind and apply similar restrictions to these new endpoints
 where appropriate.
 
+These endpoints also increase the compromise value of an administrator account, as an attacker who
+breaches one of these accounts will be able to suspend or lock other users on the server. While
+the attacker would not be able to lock out other administrators, this may still result in
+frustration for anyone affected by it. It may possibly also allow an attacker to disable other
+room-level moderation tooling, such as moderation bots, presuming those tools are not also server
+administrators.
+
 ## Unstable prefix
 
 | Stable | Unstable |
