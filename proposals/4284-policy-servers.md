@@ -94,10 +94,6 @@ attempt to send "spam" (by the policy server's definition), and events sent by r
 never make it to a local user's client. If the policy server recommends allowing the event, the event
 should pass unimpeded.
 
-For Synapse homeservers, the above paragraph's consequences are natural behaviour of the spam checker
-module feature. A server could, with some performance penalty, deploy a module which calls the `/check`
-API to enact the consequences described above.
-
 The new `/check` is described as follows:
 
 ```
