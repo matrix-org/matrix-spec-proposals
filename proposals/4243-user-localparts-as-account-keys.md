@@ -51,9 +51,9 @@ Signatures on an event follow the same format as today for backwards compatibili
 Terminology for the rest of this proposal:
  - Account Key: the ed25519 public key for the user's account.
  - Account Name: The human-readable localpart today e.g `alice`.
- - Human-readable User ID: user IDs as they exist today, formed of an account name and domain e.g `@alice:example.com`
+ - Account Name User ID: user IDs as they exist today, formed of an account name and domain e.g `@alice:example.com`
  - Account Key User ID: user IDs of the form `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`, formed of an account key and domain.
- - Localpart / Domain: segments of a user ID as they are defined today. 'Localpart' is ambiguous and should be qualified as 'human-readable' or 'account key'.
+ - Localpart / Domain: segments of a user ID as they are defined today. 'Localpart' is ambiguous and should be qualified as 'account name' or 'account key'.
 
 >[!NOTE]
 > Naming is a famously hard problem. The term "Account Key" was chosen for a few reasons:
@@ -106,7 +106,7 @@ This creates a bidirectional link:
 The server receiving this response SHOULD persist the mapping in persistent storage. The `account_name` MUST NOT change upon subsequent
 requests for the same account key.[^1] When a user is created on a server, the account key SHOULD[^2] be created and SHOULD[^3] be kept immutable for the lifetime of that user. There is a chicken/egg problem for some federation operations e.g invites,
 as clients will invite the `account_name` to a room, and will not know the account key yet. Specifically, any federation operation which acts on another server's user needs to talk to that server to discover the account key mapping. To aid this, the following adjustments are made:
- - `/_matrix/federation/v2/invite`: The sender sets the `state_key` of the invite `event` to the human-readable user ID (as we do today), which the receiver then replaces with an account key user ID when signing the invite event. The sender then signs this JSON, creating the double-signed event.
+ - `/_matrix/federation/v2/invite`: The sender sets the `state_key` of the invite `event` to the account name user ID (as we do today), which the receiver then replaces with an account key user ID when signing the invite event. The sender then signs this JSON, creating the double-signed event.
  - A new endpoint `/_matrix/federation/v2/ban` is created, which is identical to `/invite` but for pre-emptive bans when the account key is not known. Omits the `invite_room_state` field.
 
 >[!NOTE]
@@ -128,7 +128,7 @@ as clients will invite the `account_name` to a room, and will not know the accou
 When a server joins a room, it will receive a list of account keys that are joined to the room. No external requests need to be made in order to verify
 the event signatures of the DAG or to apply auth rules, thus ensuring that all servers will converge on the same room state.
 
-The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the human-readable account name for each
+The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
 account key. This SHOULD be done prior to sending the room information to clients. Based on the result of the query, the server should then group
 account keys into three categories:
  - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
@@ -148,7 +148,7 @@ with the account name in the user ID where possible in event JSON sent to client
 > Eve on evil.com could generate an account key with the name 'alice' then claim the domain part as example.com.
 > If other servers fail to query example.com e.g because it is temporarily unavailable, we would then incorrectly
 > assume that the account key _is_ for alice on example.com, which it isn't. Due to this, we rely on `/accounts` to
-> know the human-readable account name, and must handle the cases where we cannot perform that operation. As an aside,
+> know the account name, and must handle the cases where we cannot perform that operation. As an aside,
 > if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
 > impersonation attack, but that is orthogonal to this proposal.
 >
@@ -209,7 +209,7 @@ to fetch device lists for that user and E2EE will break. This is reasonable beca
 the remote server is unavailable, in which case E2EE will break anyway.
 
 >[!NOTE]
-> This is done in order to not break cross-signing keys, which sign the `user_id`. This will be signed with the Human-readable User ID.
+> This is done in order to not break cross-signing keys, which sign the `user_id`. This will be signed with the Account Name User ID.
 
 #### Impacts on restricted rooms
 
