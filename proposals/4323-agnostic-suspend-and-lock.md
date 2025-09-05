@@ -26,30 +26,21 @@ four new endpoints are introduced:
 - `GET /_matrix/client/v1/admin/lock/{userId}`
 - `PUT /_matrix/client/v1/admin/lock/{userId}`
 
-These new endpoints complement the already existing
-`/_matrix/client/v3/admin/whois/{userId}` endpoint, however, are restricted to only permitting
+These new endpoints complement the already existing administrator-only endpoint,
+[`/_matrix/client/v3/admin/whois/{userId}`][p2], however are restricted to only permitting
 execution on local users.
 
 The requests and responses are outlined as below. Custom properties may be used provided they
-utilise proper namespacing.
+utilise [proper namespacing][p3].
+
+### New endpoint definitions
 
 The response body of both the `GET` and `PUT` endpoints, as well as the request body of the
-`PUT` endpoint should be:
+`PUT` endpoints should be:
 
 **Suspend**:
 
-```json
-{
-  "$schema": "https://json-schema.org/draft-07/schema",
-  "type": "object",
-  "properties": {
-    "suspended": {"type": "boolean"}
-  },
-  "required": ["suspended"]
-}
-```
-
-For example:
+A single key, `suspended`, with a boolean indicating if the target account is suspended:
 
 ```json
 {"suspended": true}
@@ -57,37 +48,16 @@ For example:
 
 **Lock**:
 
-```json
-{
-  "$schema": "https://json-schema.org/draft-07/schema",
-  "type": "object",
-  "properties": {
-    "locked": {"type": "boolean"}
-  },
-  "required": ["locked"]
-}
-```
-
-For example:
+A single key, `locked`, with a boolean indicating if the target account is locked:
 
 ```json
 {"locked": false}
 ```
 
----
+### New capability definition
 
-Sending a `GET` to the respective endpoints returns `404` with `M_NOT_FOUND` if the
-requested user ID is not found. `400` and `M_INVALID_PARAM` is returned if the specified
-user ID is valid, but not local to the server. `403` `M_FORBIDDEN` is returned if
-the user is not a server administrator, the user is trying to suspend their own account, or the user
-is trying to suspend another server administrator. To prevent enumeration, credentials are checked
-before validity.
-
-If a user is deactivated, `M_NOT_FOUND` is returned, as deactivated users are not
-suspended nor locked, and typically are to be permanently treated as gone.
-
-The server should advertise that these new endppints are available to the authenticated user
-by including the following new capability:
+The server should advertise that these new endpoints are available for the authenticated user
+to actively use by including the following new capability:
 
 ```json5
 {
@@ -100,19 +70,28 @@ by including the following new capability:
 }
 ```
 
-The server should only advertise these capabilities if the requesting user is a
-server administrator, or otherwise has permission to suspend or lock users.
+This allows clients to determine whether they are able to suspend/lock users on this homeserver,
+allowing them to do things like dynamically show or hide a "suspend user" button, etc.
 
-If the user is already in the state requested by a `PUT` request (e.g. a new
-`PUT` request with `{"suspended":true}` is sent for a user that is already suspended),
-the server should simply respond with `200 OK` as if a change was made. If metadata surrounding
-the action was changed in the request (such as who locked the target), this should still be
-reflected.
+Implementations may choose to allow disabling the capability advertisement if their configuration
+disables the new endpoints altogether in some form, but how and when this happens is left to the
+implementation.
 
-Servers may choose to retain implementation-specific versions of these endpoints, however should
-still implement this uniform endpoint for compatibility.
+### Errors and restrictions
+
+Sending a `GET` to the respective endpoints returns:
+
+- `400 / M_INVALID_PARAM`: The user ID does not belong to the local server.
+- `403 / M_FORBIDDEN`: The requesting user is not a server administrator, is trying to suspend/lock
+  their own account, or the target user is another administrator.
+- `404 / M_NOT_FOUND`: The user ID is not found, or is deactivated.
+
+In order to prevent user enumeration, implementations have to ensure that authorization is checked
+prior to trying to do account lookups.
 
 [p1]: https://spec.matrix.org/v1.15/client-server-api/#server-administration
+[p2]: https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3adminwhoisuserid
+[p3]: https://spec.matrix.org/v1.15/appendices/#common-namespaced-identifier-grammar
 
 ## Potential issues
 
