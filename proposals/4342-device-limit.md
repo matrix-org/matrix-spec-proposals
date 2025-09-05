@@ -27,6 +27,7 @@ In comparison to other encrypted apps:
 ### Proposal
 
 The maximum number of devices a user can have at any one time is reduced to 10.
+Servers MAY have an even lower limit than this. Servers MUST NOT have a higher limit than this.
 
 >[!NOTE]
 > 10 was chosen based on a statistical analysis of the matrix.org database:
