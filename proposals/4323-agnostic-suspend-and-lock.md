@@ -6,19 +6,20 @@ However, it does not currently define an endpoint which server administrators ca
 and unsuspend users on their server.
 As a result, moderation tooling such as Draupnir and Meowlnir have to implement
 implementation-specific calls, which is not sustainable as more implementations other than Synapse
-integrate this feature. This is also exacerbated by externally managed accounts that may be
-provided by an entirely separate service.
+integrate this feature.
 
-This MSC will outline new endpoints that will allow server administrators to
+This proposal will outline new endpoints that will allow server administrators to
 suspend, unsuspend, lock, and unlock given users.
 
 ## Proposal
 
-Note: what defines a "server administrator" is left up to the implementation,
-most already have their own systems for defining administrators which rarely has a reason to be
-exposed outside of their respective management interfaces.
+> [!IMPORTANT]
+> What defines a "server administrator" is left up to the implementation itself as most already have
+> their own systems for defining administrators (e.g. Synapse has a database flag, Conduit has room
+> membership) which rarely has a reason to be exposed outside of their respective management
+> interfaces.
 
-Taking advantage of [section 10.22 (Server Administration)][p1] of the client-to-server specification,
+Complementing [section 10.22 (Server Administration)][p1] of the client-to-server specification,
 four new endpoints are introduced:
 
 - `GET /_matrix/client/v1/admin/suspend/{userId}`
@@ -26,17 +27,15 @@ four new endpoints are introduced:
 - `GET /_matrix/client/v1/admin/lock/{userId}`
 - `PUT /_matrix/client/v1/admin/lock/{userId}`
 
-These new endpoints complement the already existing administrator-only endpoint,
-[`/_matrix/client/v3/admin/whois/{userId}`][p2], however are restricted to only permitting
-execution on local users.
-
-The requests and responses are outlined as below. Custom properties may be used provided they
-utilise [proper namespacing][p3].
+These new endpoints are similar to [`GET /_matrix/client/v3/admin/whois/{userId}`][p2] in that they
+are clearly defined as administration endpoints, however are restricted to only permitting
+execution on local server users.
 
 ### New endpoint definitions
 
 The response body of both the `GET` and `PUT` endpoints, as well as the request body of the
-`PUT` endpoints should be:
+`PUT` endpoints, are defined below. Custom properties may be used provided they utilise
+[proper namespacing][p3] in their fields.
 
 **Suspend**:
 
@@ -56,15 +55,15 @@ A single key, `locked`, with a boolean indicating if the target account is locke
 
 ### New capability definition
 
-The server should advertise that these new endpoints are available for the authenticated user
+The server can advertise that these new endpoints are available for the authenticated user
 to actively use by including the following new capability:
 
 ```json5
 {
   "capabilities": {
     "account_moderation": {
-      "suspend": true, // or false
-      "lock": true // or false
+      "suspend": true, // or false if unavailable/unimplemented
+      "lock": true // or false if unavailable/unimplemented
     }
   }
 }
@@ -73,13 +72,12 @@ to actively use by including the following new capability:
 This allows clients to determine whether they are able to suspend/lock users on this homeserver,
 allowing them to do things like dynamically show or hide a "suspend user" button, etc.
 
-Implementations may choose to allow disabling the capability advertisement if their configuration
-disables the new endpoints altogether in some form, but how and when this happens is left to the
-implementation.
+The capability should not be advertised at all if both `suspend` and `lock` would be `false`.
+Omitting a key is equivalent to it being `false`.
 
 ### Errors and restrictions
 
-Sending a `GET` to the respective endpoints returns:
+Sending a request to the respective endpoints returns:
 
 - `400 / M_INVALID_PARAM`: The user ID does not belong to the local server.
 - `403 / M_FORBIDDEN`: The requesting user is not a server administrator, is trying to suspend/lock
@@ -95,31 +93,33 @@ prior to trying to do account lookups.
 
 ## Potential issues
 
-This MSC does not outline any additional fields for management, such as action reasons,
-temporary actions, etc, which implementation-specific methods may currently have.
-This is for the sake of brevity and simplicity, and may be expanded upon
-in a future proposal. If implementations need further data, they may use custom properties,
-or retain their own endpoints and encourage operators to block these new ones.
+This proposal does not outline any metadata fields for management, such as action reasons,
+temporary actions, authors, etc, which implementation-specific methods may currently have.
+This is for the sake of brevity and simplicity, and may be expanded upon by a future proposal.
 
 ## Alternatives
 
-A full user-info endpoint has been suggested, which would include more information about a user's
-account that could interest server administrators. While this may happen in future, it would
-drastically increase the scope of this proposal and deliberately omitted.
+A full "user-info" endpoint has been suggested, which would include more information about a user's
+account that could interest server administrators. This proposal focuses solely on providing
+tooling with the capability to suspend and lock without needing to maintain several
+implementation-specific versions of their code, and adding a full-fleged user-info endpoint is
+almost entirely out of scope.
 
 ## Security considerations
 
-Server operators who may not want their administrators to be able to suspend/lock users may have
-restricted access to implementation-specific endpoints, usually by preventing access at the reverse
-proxy. Operators should keep this in mind and apply similar restrictions to these new endpoints
-where appropriate.
+Adding these new endpoints may provide a path to circumvent restrictions previously imposed on
+implementation-specific versions of the suspend and lock endpoints (such as them being blocked off
+at the reverse proxy) - server developers will likely want to ensure that their users are made
+appropriate aware of this (via release notes or some other similar high-visibility channel) so that
+they can apply those same restrictions to these new endpoints if necessary.
 
 These endpoints also increase the compromise value of an administrator account, as an attacker who
 breaches one of these accounts will be able to suspend or lock other users on the server. While
-the attacker would not be able to lock out other administrators, this may still result in
-frustration for anyone affected by it. It may possibly also allow an attacker to disable other
-room-level moderation tooling, such as moderation bots, presuming those tools are not also server
-administrators.
+the attacker would not be able to lock out other administrators, a single-administrator homeserver
+may be vulnerable to a temporary takeover if the sole administrator account is breached and
+the deployment cannot be secured & have the change reverted quickly.
+It may possibly also allow an attacker to disable other room-level moderation tooling, such as
+moderation bots, assuming those tools are not also server administrators.
 
 ## Unstable prefix
 
@@ -132,8 +132,9 @@ administrators.
 as the entire body is new.
 
 Servers should advertise `"uk.timedout.msc4323":true` in their `/versions` response while this
-proposal is unstable. It is left as an implementation detail whether to require authentication
-to view this version flag or not.
+proposal is unstable in order to advertise support for this new feature.
+It is left as an implementation detail whether to require authentication to view this version flag
+or not, as the capabilities endpoint requires authentication regardless.
 
 ## Dependencies
 
