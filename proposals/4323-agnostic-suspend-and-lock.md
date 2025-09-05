@@ -86,6 +86,8 @@ Sending a request to the respective endpoints returns:
 
 In order to prevent user enumeration, implementations have to ensure that authorization is checked
 prior to trying to do account lookups.
+As this endpoint requires authentication with an administrator account, guest access is not
+permitted. Additionally, no rate-limiting is imposed.
 
 [p1]: https://spec.matrix.org/v1.15/client-server-api/#server-administration
 [p2]: https://spec.matrix.org/v1.15/client-server-api/#get_matrixclientv3adminwhoisuserid
