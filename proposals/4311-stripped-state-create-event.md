@@ -1,11 +1,11 @@
-# MSC4311: Ensuring the create event is available on invites and knocks
+# MSC4311: Ensuring the create event is available on invites
 
-Historically, when processing an invite or knock, safety tooling would parse the room ID despite
-[being opaque](https://spec.matrix.org/v1.15/appendices/#room-ids) to determine the server which
-originally created the room. If that server was considered abusive, the incoming invite or outbound
-knock may be rejected or blocked early by the tooling. This approach is preferred because the user
-sending the invite may not be on the same server as the user who created the room, though both sender
-and creator are checked by safety tooling.
+Historically, when processing an incoming invite or outgoing knock, safety tooling would parse the room ID despite
+[being opaque](https://spec.matrix.org/v1.15/appendices/#room-ids), to determine the server which
+originally created the room. If that server was considered abusive, the invite or 
+knock may be rejected or blocked early by the tooling. Note that checking the domain of the
+sender of an invite is inadequate, because the sender may not be on the same server as the
+user who created the room.
 
 With [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/pull/4291), room IDs lose their
 domain component. This, combined with [Stripped State](https://spec.matrix.org/v1.15/client-server-api/#stripped-state)
@@ -13,7 +13,8 @@ recommending rather than requiring the `m.room.create` event, makes the above ch
 impossible when the create event is missing or incomplete, as the room ID cannot be confirmed in
 MSC4291+ room versions.
 
-This MSC shifts the `m.room.create` event to a *required* stripped state event, and imposes validation
+To mitigate the problem in the case of invites,
+this MSC shifts the `m.room.create` event to a *required* stripped state event, and imposes validation
 to ensure the event matches the room. To support the new validation, the `m.room.create` event must
 be formatted as a full PDU in the stripped state of [invites](https://spec.matrix.org/v1.15/server-server-api/#put_matrixfederationv1inviteroomideventid)
 over federation. Similar treatment is applied to other stripped state events for uniformity.
