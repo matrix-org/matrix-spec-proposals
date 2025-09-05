@@ -2,7 +2,7 @@
 
 Historically, when processing an incoming invite or outgoing knock, safety tooling would parse the room ID despite
 [being opaque](https://spec.matrix.org/v1.15/appendices/#room-ids), to determine the server which
-originally created the room. If that server was considered abusive, the invite or 
+originally created the room. If that server was considered abusive, the invite or
 knock may be rejected or blocked early by the tooling. Note that checking the domain of the
 sender of an invite is inadequate, because the sender may not be on the same server as the
 user who created the room.
@@ -43,8 +43,9 @@ ID by hashing the event in MSC4291+ room versions. For other room versions (1 th
 can at most compare the `room_id` field of the create event with the invite/knock membership event.
 
 If any of the events are not a PDU, not for the room ID specified, or fail [signature checks](https://spec.matrix.org/v1.15/server-server-api/#validating-hashes-and-signatures-on-received-events),
-or the `m.room.create` event is missing, the receiving server MUST respond to invites with a `400 M_MISSING_PARAM`
-standard Matrix error (new to the endpoint). For knocks, the server SHOULD remove any events from
+or the `m.room.create` event is missing, the receiving server MAY respond to invites with a `400 M_MISSING_PARAM`
+standard Matrix error (new to the endpoint). For invites to room version 12+ rooms, servers SHOULD
+rather than MAY respond to such requests with `400 M_MISSING_PARAM`. For knocks, the server SHOULD remove any events from
 `knock_room_state` which fail the same validation check before passing the details along to clients.
 Ideally, the server would be able to prevent the knock from happening, though by the time the server
 can see the `knock_room_state`, the knock has already happened.
@@ -93,11 +94,12 @@ affecting client or server implementations.
 
 Mentioned above, existing server implementations SHOULD warn rather than fail on invites which don't
 have complete PDUs inside `invite_room_state` until their local ecosystem adoption allows for the
-full set of validation to be applied. If PDUs are complete, but for a different room, the invite MUST
-still fail per the validation above.
+full set of validation to be applied. If PDUs are complete, but for a different room, the invite SHOULD
+still fail in v12 rooms per the validation above.
 
 This proposal suggests that servers wait no longer than 3 months (or about 1 full spec release cycle)
-after this proposal is released to enforce the full validation.
+after this proposal is released to enforce the full validation, though servers may extend this as
+needed for their ecosystems to gain support.
 
 
 ## Dependencies
