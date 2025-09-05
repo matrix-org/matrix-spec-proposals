@@ -97,6 +97,10 @@ This proposal does not outline any metadata fields for management, such as actio
 temporary actions, authors, etc, which implementation-specific methods may currently have.
 This is for the sake of brevity and simplicity, and may be expanded upon by a future proposal.
 
+This proposal is also written under the assumption that all server administrators are equal, and
+cannot be suspended or locked. If a server permits such actions against a priviliged user, without
+stripping their privileges, conflicting behaviours may be encountered.
+
 ## Alternatives
 
 A full "user-info" endpoint has been suggested, which would include more information about a user's
