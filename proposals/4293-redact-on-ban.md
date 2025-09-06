@@ -29,7 +29,7 @@ have a few issues:
    unable to opt out of incompatible room versions.
 
    It's also possible to mitigate this concern by using a new event type for mass redactions instead.
-   This alternative is explored in **TODO: Future MSC here**.
+   This alternative is explored in [MSC4343](https://github.com/matrix-org/matrix-spec-proposals/pull/4343).
 
 4. Due to changes in event authorization, MSC2244 requires a new room version in order to function.
    This limits the feature to new rooms or those which upgrade to a new enough version. Theoretically,
