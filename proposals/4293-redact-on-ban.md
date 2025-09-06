@@ -66,7 +66,8 @@ banned. This proposal does not support such a use case, but mass redactions do.
 ## Proposal
 
 A new flag is added to [`m.room.member`](https://spec.matrix.org/v1.14/client-server-api/#mroommember)
-events where the target user is kicked or banned: `redact_events`. This flag is a boolean and has two
+events where the target user is kicked or banned: `redact_events`. Discussed later, this new flag has
+no effect when applied to self-leaves or other membership states. This flag is a boolean and has two
 effects when `true`:
 
 1. Clients apply the redaction algorithm to events sent by that user which are cached locally, up to
