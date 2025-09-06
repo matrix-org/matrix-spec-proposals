@@ -31,7 +31,7 @@ implementation.
 To honour the older MSC process as best as possible, MSC2244 is considered to remain accepted, but
 is modified directly by this MSC as a pre-merge change. This MSC requires an implementation before
 the modifications are accepted into the spec, and further MSC2244. This is why the PR for this MSC
-modifes MSC2244 itself.
+modifies MSC2244 itself.
 
 
 ## Potential issues
