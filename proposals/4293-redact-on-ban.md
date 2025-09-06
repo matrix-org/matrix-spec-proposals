@@ -1,16 +1,67 @@
-# MSC4293: Redact on ban
+# MSC4293: Redact on kick/ban
 
 [MSC2244 (accepted)](https://github.com/matrix-org/matrix-spec-proposals/blob/main/proposals/2244-mass-redactions.md)-style
-mass redactions are incredibly helpful for cleaning up large volumes of spam, but still require sending
-a dedicated event to clean up the spam. In a typical case, a user will get kicked/banned from a room
-and the moderators will further redact some or all of their messages. Mass redactions have more use
-cases, but the specific case of "redact everything upon ban" is something which may be easily backported
-to existing room versions.
+mass redactions are incredibly helpful for cleaning up large volumes of spam, especially because they
+reduce the total number of events a server needs to process in order to clean up a room. However, they
+have a few issues:
 
-This proposal suggests adding a new flag to membership events to indicate to clients and servers that
-all of that user's events should be redacted in addition to being kicked or banned. The flag isn't
-protected from redaction itself, so may have some consistency issues, but overall should still provide
-relatively high amounts of protection to rooms.
+1. To populate the target events, the sender needs to know which event IDs to target. Events may be
+   [soft failed](https://spec.matrix.org/v1.15/server-server-api/#soft-failure) by the moderator's
+   local homeserver, which may prevent the sender's client from seeing them. Further, there may be
+   timeline gaps which limit the sender's visibility on the events to target.
+
+   This may be fixed by adding a "sugar API" like `/room/:roomId/redact/:userId` which causes the
+   server to calculate event ID targets and send out one or more mass redactions, though this would
+   only be effective if the server had all of the user's events at the time of the call. If an event
+   came in late for any reason, the sent redactions might not target it, allowing the likely spam
+   through to the room.
+
+   Proposals such as [MSC4194](https://github.com/matrix-org/matrix-doc/pull/4194) explore this
+   solution.
+
+2. Dedicated events must still be sent in order to perform the redaction, many of which might not be
+   small if there's lots of events being targeted. This can impact bandwidth and data storage, though
+   not as badly as trying to redact large volumes of spam without mass redactions.
+
+3. MSC2244 mass redactions are breaking for clients which perform redaction locally due to changing
+   the type of `redacts` on `m.room.redaction` events from a string (single event ID) to an array.
+   This is in part mitigated by MSC2244 through a new room version, though clients are currently
+   unable to opt out of incompatible room versions.
+
+   It's also possible to mitigate this concern by using a new event type for mass redactions instead.
+   This alternative is explored in **TODO: Future MSC here**.
+
+4. Due to changes in event authorization, MSC2244 requires a new room version in order to function.
+   This limits the feature to new rooms or those which upgrade to a new enough version. Theoretically,
+   it's possible to allow mass redactions in existing room versions anyway, though the redactions may
+   get rejected due to the very authorization rules MSC2244 changes. This may cause senders to target
+   a small number of events per mass redaction to avoid the possibility of spam being left visible
+   due to a single event target not being present on the receiving homeserver.
+
+To work around these issues, this proposal suggests adding a new flag to membership events to indicate
+to clients and servers that all of that user's events should be redacted in addition to being kicked
+or banned. There are still drawbacks for existing room versions with this approach, namely that the
+new flag isn't protected from redaction itself and may cause problems, but it does allow moderators
+to take an action they were going to anyway: ban & redact everything the user ever sent, without
+needing to wait for a new room version to roll out.
+
+By applying the flag to a user ID instead of an event ID (or set of event IDs), the consumer's local
+view is considered instead of the sender's: a redaction for "all of `@alice:example.org`'s events"
+when applied by a client removes all events visible to that client. Similarly, that redaction applied
+by a server to their local database will redact whatever events the server has already seen, or will
+see in the future.
+
+Though this MSC isn't breaking for clients in the same way that MSC2244 is, clients (and to a degree,
+servers) may not support the MSC right away. This means that senders may still have to send "fallback
+redactions" to ensure the room is cleaned up, though those senders can begin to treat those redactions
+as best effort (currently, moderation bots in particular work incredibly hard to ensure they get *every*
+event redacted, but can run into delivery, reliability, and completeness issues with 1:1 redactions).
+
+It's also important to note that this proposal intends to compliment mass redactions and coexist in
+whatever room version mass redactions land in. This proposal has narrow scope and is fairly blunt as
+a measure, which may not be desirable in all situations. For example, only a user's last dozen or so
+messages may be worth redacting rather than the hundreds they sent prior to the ones which got them
+banned. This proposal does not support such a use case, but mass redactions do.
 
 ## Proposal
 
