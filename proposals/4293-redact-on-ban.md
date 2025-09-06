@@ -66,44 +66,80 @@ banned. This proposal does not support such a use case, but mass redactions do.
 ## Proposal
 
 A new flag is added to [`m.room.member`](https://spec.matrix.org/v1.14/client-server-api/#mroommember)
-events where the target user is kicked or banned: `redact_events`. This flag is a boolean and, when
-`true`, causes servers (and clients) to redact all of the user's events as though they received an
-[`m.room.redaction`](https://spec.matrix.org/v1.14/client-server-api/#mroomredaction), including
-adding [`redacted_because`](https://spec.matrix.org/v1.14/client-server-api/#redactions) to `unsigned`
-where applicable. An `m.room.redaction` event is not actually sent, however.
+events where the target user is kicked or banned: `redact_events`. This flag is a boolean and has two
+effects when `true`:
 
-**Note**: This also means that if the user was kicked/banned with a `reason`, that event is automatically
-compatible with the redaction `reason` field and shows up accordingly.
+1. Clients apply the redaction algorithm to events sent by that user which are cached locally, up to
+   the point of the user's previous membership event. No [`m.room.redaction`](https://spec.matrix.org/v1.14/client-server-api/#mroomredaction)
+   events are sent by the client, but the user's events are redacted as though there was such an event.
 
-Similar to regular redactions, if the sender of the membership event can't actually redact the target's
-events, the redaction doesn't apply. This means having a power level higher than or equal to `redact`
-*and* `events["m.room.redaction"]` (if set). We maintain the `events` check despite not actually sending
-events of that type to keep the same expectations within rooms. If the sender doesn't have permission
-to redact an event normally, no redaction is applied.
+2. Servers perform the same function as clients, also not actually sending any `m.room.redaction`
+   events. Instead, the user's events are redacted locally by the server. When serving events redacted
+   in this way, the [`redacted_because`](https://spec.matrix.org/v1.14/client-server-api/#redactions)
+   field is populated using the membership event, like so:
 
-If the sender is allowed to redact, the redaction behaviour continues until the membership event itself
-is redacted (thus removing the field), another membership event removes the field, or the flag is set
-to `false`. Events already redacted up to that point remain redacted after the flag changes to a falsey
-value. For example, if the user is unbanned, the moderator MAY NOT choose to carry the `redact_events`
-flag to that kick (unban) event. Or, when the user rejoins after a kick, the flag is implicitly dropped.
+   ```jsonc
+   {
+    // irrelevant fields not shown
 
-In essence, the `redact_events` flag applies to all events which topologically come before the falsey
-value.
+    "type": "m.room.message",
+    "sender": "@banned:example.org",
+    "content": {}, // because the event is redacted, `content` is empty
+    "unsigned": {
+      "redacted_because": {
+        // irrelevant fields also not shown here
 
-Events which are delivered after the ban are likely [soft failed](https://spec.matrix.org/v1.14/server-server-api/#soft-failure)
-and are still redacted if the current membership event in the room has a valid `redact_events`
-field.
+        "type": "m.room.member",
+        "sender": "@moderator:example.org",
+        "state_key": "@banned:example.org",
+        "content": {
+          "membership": "ban",
+          "reason": "spam",
+          "redact_events": true
+        }
+      }
+    }
+   }
+   ```
 
-Other membership states with the flag no-op, such as joins, knocks, and invites.
+   Note that because `m.room.redaction` supports a `reason` field in the same place as `m.room.member`,
+   clients which look up that reason by going `event["unsigned"]["content"]["reason"]` will still get
+   a renderable, human-readable, string for their UI regardless of how the event was actually redacted.
 
-Moderation bots and similar MAY still wish to issue (mass) redactions upon kick/ban to protect users
-on servers or clients which don't have this feature.
+When `redact_events` is `false`, it acts as though it was not specified: no redactions are applied,
+exactly like how bans work prior to this proposal.
 
-Example ban:
+Prior to applying the effects of redaction above, clients and servers MUST ensure that the sender of
+the kick or ban has power level to redact the target user's events. This means having a power level
+higher than or equal to `redact` *and* `events["m.room.redaction"]` (if set). We maintain the `events`
+check despite not actually sending events of that type to keep the same expectations within rooms. If
+the sender doesn't have permission to redact an event normally, no the `redact_events` flag is ignored
+(and therefore no redaction effect is applied).
+
+Events which are delivered after the kick or ban are likely [soft failed](https://spec.matrix.org/v1.14/server-server-api/#soft-failure)
+and are still redacted by servers if the user's *current* membership event has `redact_events: true`.
+
+The `redact_events` flag has no effect when present on any other membership state, such as joins,
+knocks, invites, and voluntary leaves (non-kicks).
+
+**Note**: Due to this proposal being enabled in existing room versions, the `redact_events` flag may
+become redacted when a user's `m.room.member` event is redacted too. When this happens, the redactions
+already applied up to that point are *not* undone, though clients/servers which purge the events and
+re-fetch them might receive unredacted copies if they originate from a server which didn't apply this
+proposal's effects. Future proposals like [MSC4298](https://github.com/matrix-org/matrix-spec-proposals/pull/4298)
+protect the flag from redaction, avoiding the awkward state where events might be redacted for no
+discernable reason after the membership event itself is redacted.
+
+`redact_events` is also added to the [`/kick`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3roomsroomidkick)
+and [`/ban`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3roomsroomidban)
+endpoints and is proxied to the resulting event just like `reason` is. It is optional on these endpoints.
+
+An example ban event is:
 
 ```jsonc
 {
   // Irrelevant fields excluded
+
   "type": "m.room.member",
   "state_key": "@spam:example.org",
   "sender": "@mod:example.org",
@@ -115,9 +151,26 @@ Example ban:
 }
 ```
 
-The new field is proxied through to the event by the [`/kick`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3roomsroomidkick)
-and [`/ban`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3roomsroomidban)
-sugar APIs, like `reason` is.
+An example sccenario would be:
+
+1. Alice joins the room.
+2. Alice sends events A, B, and C.
+3. Alice leaves the room.
+4. For whatever reason, Alice rejoins the room.
+5. Alice sends events D, E, and F.
+6. Bob bans Alice with `redact_events: true`.
+7. Clients and servers apply redactions to events D, E, and F, but *not* A, B, or C. No actual
+   `m.room.redaction` events are sent in this example.
+8. Alice's event F arrive's late to Bob's server.
+9. Bob's server soft fails F because it fails current auth state (Alice is banned), and redacts it
+   because `redact_events: true` is set on Alice's ban. There are still no actual `m.room.redaction`
+   events sent here.
+
+Events A, B, and C are not redacted because Alice's leave event at step 3 has an implied `redact_events: false`.
+
+Moderation bots and similar MAY still wish to issue (mass) redactions upon kick/ban to protect users
+on servers or clients which don't have this feature.
+
 
 ## Fallback behaviour
 
@@ -126,20 +179,21 @@ to fill gaps or backfill. This is considered expected behaviour.
 
 Clients which don't support this feature may see events remain unredacted until they clear their local
 cache. Upon clearing or invalidating their cache, they will either receive redacted events if their
-server supports the feature or unredacted events otherwise.
+server supports the feature, or unredacted events otherwise. This is also considered expected behaviour.
 
-To (primarily) help protect users on unsupported *clients*, implementations SHOULD continue to try
-sending individual redaction events in addition to the redact-on-ban flag. They MAY cease to do so
-once they are comfortable with the level of adoption for this proposal. Servers in particular SHOULD
-assist clients and send individual redaction events on their behalf, meaning clients SHOULD wait a
-little bit before trying to issue redactions themselves. For example, a client may ban a user, wait
-a minute, then start sending redactions if it hasn't seen an `m.room.redaction` event targeting some
-of the banned user's events. Servers MAY deduplicate redactions to lower federation load, as they
-always could.
+Though this proposal makes it clear that `m.room.redaction` events aren't actually sent, senders of
+kicks/bans MAY still send actual redactions in addition to `redact_events: true` to ensure that older
+clients and servers have the best possible chance of redacting the event. These redactions SHOULD be
+considered "best effort" by the sender as they may encounter delivery issues, especially when using
+1:1 redactions instead of mass redactions. "Best effort" might mean using endpoints like
+[MSC4194](https://github.com/matrix-org/matrix-spec-proposals/pull/4194)'s batch redaction, or using
+the less reliable `/messages` endpoint to locate target event IDs to redact. Senders SHOULD note that
+this fallback behaviour will only target events they can see (or be made to see via MSC4194) and might
+not be the same events that a receiving client or server sees.
 
-**Note**: It is possible due to implementation and real-world constraints that not all individual
-redactions will "make it" over federation to another server. This is why mass redaction approaches
-are preferred, as they are significantly more reliable.
+Senders are encouraged to evaluate when they can cease sending fallback redactions like those described
+above to minimize the event traffic involved in a ban. For moderation bots this may mean waiting for
+sufficiently high *client* implementations existing in their communities.
 
 ## Potential issues
 
@@ -160,7 +214,7 @@ Servers which miss the event will eventually receive or retrieve it, just like t
 other event.
 
 Moderation bots/clients which attempt to reduce the amount of duplicate work they do may need to
-inspect `redacted_because` instead of checking for its presence to determine which kind of redaction
+inspect `redacted_because`'s `type` instead of checking for its presence to determine which kind of redaction
 was applied to a given event. This is especially true if the moderation bot/client is providing the
 fallback support described above.
 
@@ -170,21 +224,14 @@ events redacted by the first ban may also be re-redacted by servers/clients depe
 This is considered expected behaviour, and implementations can internally track which events they've
 already auto-redacted to avoid duplicate work.
 
-With respect to the fallback behaviour, a client might not know if a server is applying fallback
-redactions and may not wish to wait an arbitrary amount of time to see if it does. One solution would
-be to have the server expose a [capability](https://spec.matrix.org/v1.15/client-server-api/#capabilities-negotiation),
-however such a flag would be longer lived than the fallback behaviour itself (hopefully). Instead,
-clients which don't implement watchdog functionality SHOULD send redactions anyway, even if it
-duplicates the server's fallback efforts. Further, as already mentioned above, server MAY deduplicate
-redactions to lower their federation load, though this is closer to a SHOULD considering clients are
-already sending their own redaction events (like in the case of Mjolnir).
+With respect to the fallback behaviour, it's not great that implementations, and in particular
+moderation bots, need to maintain their "find all events sent by this user and redact them" behaviour.
+[MSC4194](https://github.com/matrix-org/matrix-spec-proposals/pull/4194) should help with this, though
+has the limitations discussed throughout this MSC when applied to this proposal's use case.
 
 ## Alternatives
 
-Mass redactions are the cited major alternative, where a single event can target approximately 1500
-other events in the room. New rooms can benefit from that functionality, especially for cases not
-covered by this proposal, while existing rooms can be given an option to protect their users with
-relative ease.
+Alternatives are discussed inline on this proposal and in the introduction.
 
 ## Future considerations
 
