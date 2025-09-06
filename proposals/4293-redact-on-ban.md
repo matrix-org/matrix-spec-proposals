@@ -129,7 +129,7 @@ already applied up to that point are *not* undone, though clients/servers which 
 re-fetch them might receive unredacted copies if they originate from a server which didn't apply this
 proposal's effects. Future proposals like [MSC4298](https://github.com/matrix-org/matrix-spec-proposals/pull/4298)
 protect the flag from redaction, avoiding the awkward state where events might be redacted for no
-discernable reason after the membership event itself is redacted.
+discernible reason after the membership event itself is redacted.
 
 `redact_events` is also added to the [`/kick`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3roomsroomidkick)
 and [`/ban`](https://spec.matrix.org/v1.14/client-server-api/#post_matrixclientv3roomsroomidban)
