@@ -230,6 +230,23 @@ sufficiently high *client* implementations existing in their communities.
    [MSC4194](https://github.com/matrix-org/matrix-spec-proposals/pull/4194) should help with this, though
    has the limitations discussed throughout this MSC when applied to this proposal's use case.
 
+7. If a user is banned without the flag then banned again with the flag, their events sent before the
+   first ban won't be redacted. This is already the case with moderation bots which support autoredaction
+   when certain ban reasons are used: if there's a typo/problem with the reason, the bot's operator
+   may need to issue more commands/requests to reach the intended result.
+
+   Clients and moderation bots are encouraged to implement UX which reduces the chances of this sort
+   of thing happening. Moderation teams are also encouraged to develop operating procedures which
+   limit the opportunity for accidentally encountering this case.
+
+8. A spammer may attempt to work around this MSC's effects by joining and leaving the room during
+   their spam. This has relatively high cost (the impact of spam is lesser when they aren't joined
+   to the room, and re-joining will hit a more restrictive rate limit on most servers).
+
+   Moderation bots and similar community safety tools are encouraged to add restrictions to the number
+   of join+leave cycles a user may perform in a short window. This will further reduce the effectiveness
+   of such an attack. Issue 7 above also applies here.
+
 ## Alternatives
 
 Alternatives are discussed inline on this proposal and in the introduction.
