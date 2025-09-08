@@ -24,16 +24,33 @@ In comparison to other encrypted apps:
 - WhatsApp restricts to [5 devices](https://faq.whatsapp.com/378279804439436/?cms_platform=android) (one primary, 4 linked).
 - Signal restricts to [6 devices](https://support.signal.org/hc/en-us/articles/360007320551-Linked-Devices) (one primary, 5 linked).
 
+Unlike these apps however, Matrix is a decentralised protocol with many different types of clients/apps available. This biases towards
+users running multiple apps for the same account.
+
 ### Proposal
 
-The maximum number of devices a user can have at any one time is reduced to 10.
+The maximum number of devices a user can have at any one time is reduced to 30.
 Servers MAY have an even lower limit than this. Servers MUST NOT have a higher limit than this.
 
 >[!NOTE]
-> 10 was chosen based on a statistical analysis of the matrix.org database:
+> This proposal has to balance the needs and desires of users with the needs and desires of server admins
+> who cannot allow unbounded amounts of data. This proposal aims to balance this by affecting <1% of "power users"
+> where "power users" is defined as having >= 2 devices logged into matrix.org as of Sept 2025.
+>
+> 30 was chosen based on a statistical analysis of the matrix.org database:
 > - 99.312% of users have <= 5 devices. A limit of 5 will affect 1 in every 145 users.
 > - 99.839% of users have <= 10 devices. A limit of 10 will affect 1 in every 621 users.
 > - 99.931% of users have <= 15 devices. A limit of 15 will affect 1 in every 1449 users.
+> - 99.978% of users have <= 30 devices. A limit of 30 will affect 1 in every 4545 users.
+>
+> Excluding users with only 1 device (e.g throwaway accounts or users who try Matrix once and never again):
+> - 79.809% of users with >1 device have <= 5 devices. A limit of 5 will affect 1 in every 5 users with >1 device.
+> - 95.277% of users with >1 device have <= 10 devices. A limit of 10 will affect 1 in every 21 users with >1 device.
+> - 98.818% of users with >1 device have <= 20 devices. A limit of 20 will affect 1 in every 85 users with >1 device.
+> - 99.367% of users with >1 device have <= 30 devices. A limit of 30 will affect 1 in every 158 users with >1 device.
+> - 99.558% of users with >1 device have <= 40 devices. A limit of 40 will affect 1 in every 226 users with >1 device.
+> - 99.654% of users with >1 device have <= 50 devices. A limit of 50 will affect 1 in every 289 users with >1 device.
+> - 99.712% of users with >1 device have <= 60 devices. A limit of 60 will affect 1 in every 347 users with >1 device.
 
 Attempts to login and exceed this limit returns the error code `M_TOO_MANY_DEVICES`. A client receiving this
 error code should instruct the user to logout an existing device and try again.
@@ -49,6 +66,9 @@ Application service users will be unaffected by this restriction.
 > Application services may have workflows outside expected use cases. To reduce the risk of this proposal
 > having unintended consequences, application service users (and their exclusive namespaced users) are exempt
 > from this limit.
+
+Servers which retrospectively apply this MSC MAY arbitrarily logout the oldest devices to reclaim resources from those users.
+Users SHOULD be informed of this beforehand e.g via a Server Notices room.
 
 ### Potential Issues
 
