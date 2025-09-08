@@ -56,13 +56,13 @@ attestation that ownership has been verified by the sender of the
 event. This property is protected from redaction.
 
 This property is not required, as it may be desirable to hide the
-domain when setting the server's participation to `deny`. Particularly
+domain when setting the server's participation to `denied`. Particularly
 in the event of attempted impersonation or an abusive domain name.
 
 #### The `participation` property
 
 `participation` can be one of `permitted`, `accepted` or
-`deny`. `perticipation` is protected from redaction.
+`denied`. `perticipation` is protected from redaction.
 
 A denied server must not be sent a `m.server.participation` event
 unless the targeted server is already present within the room. This is
@@ -98,10 +98,10 @@ We define a _key revocation event_ to be an `m.server.participation`
 event with the following properties:
 
 1. The event's signature can be verified with the key found in the `state_key`.
-2. The event's `participation` is `deny`.
+2. The event's `participation` is `denied`.
 3. The _considered event's acknowledged events_ is not a subset of the
    _origin server's acknowledged events_.
-4. If the current `participation` is `deny`:
+4. If the current `participation` is `denied`:
    1. If the current `participation` is not signed with the same key.
    2. The _considered event's acknowledged events_ is equal to the
       the _origin server's acknowledged events_.
@@ -116,7 +116,7 @@ check for `m.room.member`.
    1. If the sender's signature matches the `state_key` of the
       considered event:
    1. If the `participation` field of the considered event is
-      `deny`, allow.
+      `denied`, allow.
    1. If the `participation` field of the considered event is not
       `accepted`, reject.
    1. If the sender is a room owner, allow.
@@ -125,13 +125,13 @@ check for `m.room.member`.
    1. Otherwise, reject.
 2. If the `sender`'s current participation state is not `accepted`, reject.
 3. If `participation` is `accepted`, reject[^participation-accept].
-4. If there is no current participation state for the target: 2. If `partcipation` is `deny`:
+4. If there is no current participation state for the target: 2. If `partcipation` is `denied`:
    1. If the `sender`'s power level is greater than or equal to the _ban level_,
       is greater than or equal to the target server's ambient power level, allow.
    2. Otherwise, reject.
    3. If `participation` is `permitted`:
       1. If the _target server_'s current participation state is `accepted`, reject.
-   4. If the _target server_'s current participation state is `deny`:
+   4. If the _target server_'s current participation state is `denied`:
       1. If the origin of the current participation state is the target key, reject[^revocation].
       2. If the `sender`'s power level is less than the _ban
          level_ or is less than the target server's ambient power
@@ -145,13 +145,13 @@ check for `m.room.member`.
     This rule prevents anyone but the owner of
     the key from setting the participation to accept
 
-### The authorization rule for `deny` participation
+### The authorization rule for `denied` participation
 
 This rule should be inserted at the begining of auth rules and noted
 in the description of soft failure
 https://spec.matrix.org/latest/server-server-api/#soft-failure.
 
-1. If the `sender`'s current participation is `deny`:
+1. If the `sender`'s current participation is `denied`:
    1. If the considered event is a _key revocation event_, allow[^revocation].
    2. If the the _current participation_ event's _origin server's
       acknowledged events_ does not include the considered event, reject.
@@ -256,7 +256,7 @@ data to the DAG.
 
 ### MSC4104: Auth Lock: Soft-failure-be-gone!
 
-This proposal encodes a special auth rule for `deny` participation to
+This proposal encodes a special auth rule for `denied` participation to
 avoid soft failure and the probelms discussed in MSC4104.
 
 ## Security considerations
