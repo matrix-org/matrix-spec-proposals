@@ -94,14 +94,24 @@ Returns:
             "account_name": "matthew",
             "domain": "matrix.org",
             "signatures": { ... }
+        },
+        "cWm64pdXOGz1DbIXTuH+24szY/+9HjPP7jZwbDjn12s": {
+            // alternatively this can be another error code to indicate why this key is unknown
+            "errcode": "M_UNKNOWN"
         }
     }
 }
 ```
- account keys are omitted from the map. Like all federation requests, this request _is authenticated_ using the server's signing key.
+Unknown account keys are explicitly marked as unknown. If an account key is missing, then the sending server should try again later with that key
+to resolve it. Like all federation requests, this request _is authenticated_ using the server's signing key.
 This creates a bidirectional link:
  - By signing event JSON, the account key claims to belong to a particular domain. This is embedded into the DAG.
  - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so not all servers will agree on this.
+
+>[!NOTE]
+> Earlier versions of this proposal just omitted unknown account keys rather than returned an explicit `errcode` for them. This was changed
+> in order to A) provide a mechanism to provide context on the unknown account and B) protect against stale caches / reverse proxies accidentally
+> causing account keys to be unknown by omission.
 
 The server receiving this response SHOULD persist the mapping in persistent storage. The `account_name` MUST NOT change upon subsequent
 requests for the same account key.[^1] When a user is created on a server, the account key SHOULD[^2] be created and SHOULD[^3] be kept immutable for the lifetime of that user. There is a chicken/egg problem for some federation operations e.g invites,
@@ -169,7 +179,9 @@ with the account name in the user ID where possible in event JSON sent to client
 > and major server implementations disallow creating users starting with `_`, thus ensuring the namespaces remain separate.
 > This is a temporary measure until clients become account key aware.
 
-Once a mapping has been verified or unverified, it can be permanently cached. An  mapping should be periodically retried until it is either verified or unverified. Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
+Once a mapping has been verified or unverified, it can be permanently cached. A mapping should be periodically retried until it is either verified or unverified.
+Servers MAY retry explicitly unverified mappings in the future, but should do this with a much longer delay than unknown mappings.
+Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
 If a client has been told an __ account key user ID which then subsequently becomes verified / unverified, the server MUST:
  - resend the `m.room.member` event for all rooms with that account key user ID, replacing the user ID sections appropriately.
  - issue a synthetic leave event for the  account key user ID for all the rooms with that user ID.
