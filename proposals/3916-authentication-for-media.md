@@ -396,6 +396,17 @@ While this proposal is in development, the new endpoints should be named as foll
     The `serverName` was later dropped in favour of explicit scoping. See `allow_remote` details
     in the MSC body for details.
 
+## Stable flag
+
+After the proposal is accepted servers may advertise support for the stable
+endpoints by setting `org.matrix.msc3916.stable` to `true` in the
+`unstable_features` section of the
+[versions endpoint](https://spec.matrix.org/v1.11/client-server-api/#get_matrixclientversions)
+in addition to the usual version-based feature support. This option is provided
+to encourage a faster rollout in the wider Matrix ecosystem until servers
+support the full feature set of the respective version of the Matrix
+specification.
+
 ## Dependencies
 
 None.
