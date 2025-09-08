@@ -1,11 +1,11 @@
 # MSC4345: Server key identity and room membership
 
-Events in Matrix signed by the sending server's domain-scoped sigining
-key, which is also a rotating key. During signature verification, a
-server must obtain the public key used to sign an event. This presents
-problems when the origin server is offline or has been
-decommissioned. As this forces servers to rely on notaries to supply
-historical keys.
+Events in Matrix are signed by the sending server's domain-scoped
+sigining key, which is also a rotating key. During signature
+verification, a server must obtain the public key used to sign an
+event. This presents problems when the origin server is offline or has
+been decommissioned. As this forces servers to rely on notaries to
+supply historical keys.
 
 There are several issues with this system that lead to inconsistent
 views of the DAG:
