@@ -128,10 +128,11 @@ check for `m.room.member`.
    1. Otherwise, reject.
 2. If the `sender`'s current participation state is not `accepted`, reject.
 3. If `participation` is `accepted`, reject[^participation-accept].
-4. If there is no current participation state for the target: 2. If `partcipation` is `denied`:
-   1. If the `sender`'s power level is greater than or equal to the _ban level_,
-      is greater than or equal to the target server's ambient power level, allow.
-   2. Otherwise, reject.
+4. If there is no current participation state for the target:
+   2. If `partcipation` is `denied`:
+      1. If the `sender`'s power level is greater than or equal to the _ban level_,
+         is greater than or equal to the target server's ambient power level, allow.
+      2. Otherwise, reject.
    3. If `participation` is `permitted`:
       1. If the _target server_'s current participation state is `accepted`, reject.
    4. If the _target server_'s current participation state is `denied`:
