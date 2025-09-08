@@ -276,6 +276,20 @@ It is technically possible with this proposal alone for some servers to use per-
 Care must be taken to ensure that any "aggregate" operations which intend to operate on a user across all rooms use the account name and
 not the account key (e.g like fetching device lists for a user).
 
+We could have the server co-sign events sent by their accounts, such that they are now signed by the account key and the server key.
+The reason for this would be to provide information of the origin of the event. However, failed server key signatures
+can't result in events getting dropped or rejected if they are not signed correctly by the server because of the aforementioned split brain
+scenarios. As a result, there seems to be little benefit to having the server cosign since you can't take any action without diverging
+from other servers who may or may not be able to get the server key.
+
+Another alternative would be to have some dedicated server which everyone in the room agrees on to co-sign events e.g the creator server,
+a policy server or a per-room notary server. The problem with this approach is that:
+ - server keys are not per-room, so you can't really enforce any domain wide rules using it.
+ - all rooms would be required to communicate with this dedicated server in order to get their events signed, centralising writes in the protocol
+  and breaking partition tolerance.
+ - the dedicated server would need to remain forever accessible. If the dedicated server dies, the
+   room becomes read-only.
+
 ### Future work
 
 We want to eventually support portable accounts, where a user can migrate seamlessly to a different server. This would require the
