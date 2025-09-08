@@ -7,14 +7,14 @@ User IDs should be public keys because:
  - As user IDs are user controlled, spammers set their localpart to abusive messages in order to harass and intimidate others. Redactions
    do not remove the user ID so these messages persist in the room.
 
-This follows the wider pattern of IDs becoming cryptographic primitives:
- - Event IDs were converted to SHA-256 hashes of the event JSON in [MSC1659](https://github.com/matrix-org/matrix-spec-proposals/pull/1659)
- - Room IDs were converted to SHA-256 hashes of the create event in [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc4291/proposals/4291-room-ids-as-hashes.md)
-
 Furthermore, we would like to remove the need for servers to sign events with their federation signing
 key to:
  - improve the security of the federation API by reducing split-brain opportunities,
  - [improve the robustness](https://github.com/matrix-org/synapse/issues/3121) of the client-server API.
+
+This follows the wider pattern of IDs becoming cryptographic primitives:
+ - Event IDs were converted to SHA-256 hashes of the event JSON in [MSC1659](https://github.com/matrix-org/matrix-spec-proposals/pull/1659)
+ - Room IDs were converted to SHA-256 hashes of the create event in [MSC4291](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc4291/proposals/4291-room-ids-as-hashes.md)
 
 Several proposals already exist to do this, notably [MSC4014: Pseudonymous Identities](https://github.com/matrix-org/matrix-spec-proposals/pull/4014)
 and its parent [MSC1228: Removing mxids from events](https://github.com/matrix-org/matrix-spec-proposals/pull/1228).
