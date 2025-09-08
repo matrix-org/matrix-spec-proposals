@@ -6,36 +6,28 @@ The `/redact` endpoint is also forwards-compatible because it works in all room
 versions. However, `/send` was not made backwards-compatible. This means that
 clients can't switch to using `/send` unless they keep track of room versions.
 
+Additionally, [MSC4140] currently only defines delaying events for `/send`.
+While it could be extended to support `/redact` for self-destructing messages,
+the MSC can also work as-is if `/send` supported redactions in all room
+versions.
+
+[MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 [MSC2174]: https://github.com/matrix-org/matrix-spec-proposals/pull/2174
 
 ## Proposal
-The proposed solution is to have the server adjust the content of
-`/send/m.room.redaction` calls based on the room version. To future-proof the
-backwards compatibility for [MSC2244], conversion between arrays and strings is
-also introduced.
+The proposed solution is to have the server move the `redacts` key from the
+content to the top level of the event when `/send/m.room.redaction` is called
+in a pre-v11 room.
 
 Additionally, the `/redact` endpoint is deprecated, as there is no longer any
 reason to use it.
 
-[MSC2244]: https://github.com/matrix-org/matrix-spec-proposals/pull/2244
-
-* When `/send` is called with a string value for `redacts` in pre-v11 room,
-  versions the server will move the `redacts` field from the content (request
-  body) to the top level of the event being formed.
-* When `/send` is called with a string value for `redacts` in post-MSC2244 room
-  versions, the server will replace the `redacts` field with an array containing
-  the string value provided by the client.
-* When `/send` is called with an array value for `redacts` in pre-MSC2244 room
-  versions, the behavior depends on the number of items in the array:
-  * if the array contains a single item, the server will replace the `redacts`
-    field with the only item inside the array.
-    * if the call is in a pre-v11 room, the field is also moved to the top
-      level.
-  * if the field contains multiple items, the server will return a standard
-    error with `M_MASS_REDACTION_UNSUPPORTED` as the errcode and HTTP 400 as
-    the status code.
-
 ## Potential issues
+Servers that don't support this MSC may behave unexpectedly if a client tries
+to redact using `/send` in an old room. Synapse currently throws an assertion
+error (which turns into HTTP 500) when trying to redact with /send in a pre-v11
+room, which shouldn't cause any issues other than the request failing. Clients
+can avoid issues by confirming server support using `/versions` first.
 
 ## Alternatives
 ### Client-side switching
@@ -45,19 +37,20 @@ does not work for things like bots which have minimal local state.
 
 ### Just use `/redact`
 `/redact` works fine for all room versions. We could discourage using `/send`
-for redactions and prefer `/redact` instead. Extending `/redact` to allow an
-array may also feel less weird than the server modifying content in `/send`.
+for redactions and prefer `/redact` instead.
 
 ## Security considerations
-Clients may accidentally send invalid redaction events if they try to redact
-using `/send` in an old room on a server that does not implement this MSC.
-
-TODO: find out what current servers do if you /send a redaction in old rooms.
+This allows clients to send arbitrary content in pre-v11 redaction events.
+It shouldn't cause any security issues, as it's already possible in v11+ rooms
+or with a modified server.
 
 ## Unstable prefix
+The endpoint itself has no unstable prefix as it can already be used to send
+redactions in v11+ rooms. Support for the transformation in old room versions
+can be detected using the `com.beeper.msc4169` unstable feature flag in the
+`/versions` response. The feature flag should continue to be advertised after
+the MSC is accepted until the server advertises support for the stable spec
+release that includes this MSC.
 
 ## Dependencies
-This MSC defines additional behavior for [MSC2244], which has been accepted,
-but not yet implemented. However, MSC2244 should not be considered to be a hard
-dependency: the post-MSC2244 room version behavior can simply be skipped until
-MSC2244 is implemented.
+None.
