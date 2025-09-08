@@ -1,4 +1,4 @@
-# MSC0000: Server key identity and room membership
+# MSC4345: Server key identity and room membership
 
 Events in Matrix signed by the sending server's domain-scoped sigining
 key, which is also a rotating key. During signature verficiation, a
@@ -268,9 +268,9 @@ See [Impositions on client UI](#impositions-on-client-ui).
 
 ## Unstable prefix
 
-`m.server.participation` -> `org.matrix.msc0000.participation`
+`m.server.participation` -> `org.matrix.msc4345.participation`
 
-`_matrix` => `_matrix/msc0000/` or whatever the norm is here.
+`_matrix` => `_matrix/msc4345/` or whatever the norm is here.
 
 ## Dependencies
 
