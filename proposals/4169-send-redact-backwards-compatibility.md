@@ -19,9 +19,6 @@ The proposed solution is to have the server move the `redacts` key from the
 content to the top level of the event when `/send/m.room.redaction` is called
 in a pre-v11 room.
 
-Additionally, the `/redact` endpoint is deprecated, as there is no longer any
-reason to use it.
-
 ## Potential issues
 Servers that don't support this MSC may behave unexpectedly if a client tries
 to redact using `/send` in an old room. Synapse currently throws an assertion
@@ -38,6 +35,12 @@ does not work for things like bots which have minimal local state.
 ### Just use `/redact`
 `/redact` works fine for all room versions. We could discourage using `/send`
 for redactions and prefer `/redact` instead.
+
+### Deprecate `/redact`
+In addition to allowing `/send`, we could encourage everyone to switch over by
+formally deprecating `/redact`. However, there are some other sugar APIs like
+`/ban` which do nothing `/state` can't, so `/redact` is also kept fully
+supported for now. A future MSC may choose to deprecate it.
 
 ## Security considerations
 This allows clients to send arbitrary content in pre-v11 redaction events.
