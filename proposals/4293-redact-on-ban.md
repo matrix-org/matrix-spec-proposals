@@ -198,37 +198,37 @@ sufficiently high *client* implementations existing in their communities.
 
 ## Potential issues
 
-It's a little annoying that the flag is redacted when the membership event is redacted, however it's
-extremely rare for a moderator/admin to redact a kick or ban event. This can be fixed in a future
-room version, like what is proposed by [MSC4298](https://github.com/matrix-org/matrix-spec-proposals/pull/4298).
+1. It's a little annoying that the flag is redacted when the membership event is redacted, however it's
+   extremely rare for a moderator/admin to redact a kick or ban event. This can be fixed in a future
+   room version, like what is proposed by [MSC4298](https://github.com/matrix-org/matrix-spec-proposals/pull/4298).
 
-Though extremely rare, if an existing server in the room didn't apply the redactions *and* a sender's
-ban was redacted, a new server to the room may backfill through that existing server and see unredacted
-events without knowing it's supposed to redact them due to the ban having lost the `redact_events`
-field. This is fixed for future room versions by implementing something like [MSC4298](https://github.com/matrix-org/matrix-spec-proposals/pull/4298).
+2. Though extremely rare, if an existing server in the room didn't apply the redactions *and* a sender's
+   ban was redacted, a new server to the room may backfill through that existing server and see unredacted
+   events without knowing it's supposed to redact them due to the ban having lost the `redact_events`
+   field. This is fixed for future room versions by implementing something like [MSC4298](https://github.com/matrix-org/matrix-spec-proposals/pull/4298).
 
-Clients may miss the membership event if they are using lazy loading, though servers should already
-be tracking which membership events the client has received and needs to render events in the timeline.
-This should mean that those clients will still receive the event.
+3. Clients may miss the membership event if they are using lazy loading, though servers should already
+   be tracking which membership events the client has received and needs to render events in the timeline.
+   This should mean that those clients will still receive the event.
 
-Servers which miss the event will eventually receive or retrieve it, just like they would with any
-other event.
+   Servers which miss the event will eventually receive or retrieve it, just like they would with any
+   other event.
 
-Moderation bots/clients which attempt to reduce the amount of duplicate work they do may need to
-inspect `redacted_because`'s `type` instead of checking for its presence to determine which kind of redaction
-was applied to a given event. This is especially true if the moderation bot/client is providing the
-fallback support described above.
+4. Moderation bots/clients which attempt to reduce the amount of duplicate work they do may need to
+   inspect `redacted_because`'s `type` instead of checking for its presence to determine which kind of redaction
+   was applied to a given event. This is especially true if the moderation bot/client is providing the
+   fallback support described above.
 
-If a user is banned using `redact_events: true`, unbanned, rejoins, sends more events, and is banned
-again using `redact_events: true`, the user's events between bans will be subsequently redacted. The
-events redacted by the first ban may also be re-redacted by servers/clients depending on implementation.
-This is considered expected behaviour, and implementations can internally track which events they've
-already auto-redacted to avoid duplicate work.
+5. If a user is banned using `redact_events: true`, unbanned, rejoins, sends more events, and is banned
+   again using `redact_events: true`, the user's events between bans will be subsequently redacted. The
+   events redacted by the first ban may also be re-redacted by servers/clients depending on implementation.
+   This is considered expected behaviour, and implementations can internally track which events they've
+   already auto-redacted to avoid duplicate work.
 
-With respect to the fallback behaviour, it's not great that implementations, and in particular
-moderation bots, need to maintain their "find all events sent by this user and redact them" behaviour.
-[MSC4194](https://github.com/matrix-org/matrix-spec-proposals/pull/4194) should help with this, though
-has the limitations discussed throughout this MSC when applied to this proposal's use case.
+6. With respect to the fallback behaviour, it's not great that implementations, and in particular
+   moderation bots, need to maintain their "find all events sent by this user and redact them" behaviour.
+   [MSC4194](https://github.com/matrix-org/matrix-spec-proposals/pull/4194) should help with this, though
+   has the limitations discussed throughout this MSC when applied to this proposal's use case.
 
 ## Alternatives
 
