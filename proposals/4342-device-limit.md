@@ -80,7 +80,7 @@ or else they will eventually be unable to login.
 
 ### Alternatives
 
-The number can be higher or lower than 10. 10 was chosen to limit the impact on existing users using matrix.org
+The number can be higher or lower than 30. 30 was chosen to limit the impact on existing users using matrix.org
 as their homeserver.
 
 We could continue to have no limit. However, this will eventually become untenable due to the unbounded
