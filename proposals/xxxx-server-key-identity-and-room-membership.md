@@ -1,17 +1,17 @@
 # MSC4345: Server key identity and room membership
 
 Events in Matrix signed by the sending server's domain-scoped sigining
-key, which is also a rotating key. During signature verficiation, a
+key, which is also a rotating key. During signature verification, a
 server must obtain the public key used to sign an event. This presents
 problems when the origin server is offline or has been
-decomissioned. As this forces servers to rely on notaries to supply
+decommissioned. As this forces servers to rely on notaries to supply
 historical keys.
 
 There are several issues with this system that lead to inconsistent
 views of the DAG:
 
 - Centralisation of trust: Signature verification depends on notaries
-  being online and honest about historial keys.
+  being online and honest about historical keys.
 
 - Fragility: Notaries may never have been present in the rooms that a
   server is trying to join. This is especially true of matrix.org
@@ -47,7 +47,7 @@ rules that allow servers to be removed without the need for
 soft-failure.
 
 This allows both public and private rooms to benefit from DAG
-reproducibility and premptive access control for servers without the
+reproducibility and preemptive access control for servers without the
 use of a policy server.
 
 ### The `m.server.participation` state event, `state_key: ${origin_server_key}`
@@ -65,7 +65,7 @@ in the event of attempted impersonation or an abusive domain name.
 #### The `participation` property
 
 `participation` can be one of `permitted`, `accepted` or
-`denied`. `perticipation` is protected from redaction.
+`denied`. `participation` is protected from redaction.
 
 A denied server must not be sent a `m.server.participation` event
 unless the targeted server is already present within the room. This is
@@ -92,7 +92,7 @@ already been authorized. This set is empty if the origin server has
 not sent any prior events to the room.
 
 The _origin server's acknowledged events_ is the set of events that
-are connected to the _origin server's acknoweldged extremities_ set,
+are connected to the _origin server's acknowledged extremities_ set,
 including the _acknowledged extremities_ themselves.
 
 ### Key revocation
@@ -150,7 +150,7 @@ check for `m.room.member`.
 
 ### The authorization rule for `denied` participation
 
-This rule should be inserted at the begining of auth rules and noted
+This rule should be inserted at the beginning of auth rules and noted
 in the description of soft failure
 https://spec.matrix.org/latest/server-server-api/#soft-failure.
 
@@ -195,7 +195,7 @@ The following endpoint is defined: GET `/_matrix/federation/v1/request_participa
 
 The following query parameters are supported:
 
-- `ver` the room versions the sending server has suport for (identical to `make_join`).
+- `ver` the room versions the sending server has support for (identical to `make_join`).
 
 - `omit_members` whether to omit members from the response (identical to `send_join`).
 
@@ -254,13 +254,13 @@ sign each event.
 
 This proposal borrows the principle of constrained server membership
 from MSC4124. Specifically changing authorization to stop
-unencountered servers from suddenly apending an infinite amount of
+unencountered servers from suddenly appending an infinite amount of
 data to the DAG.
 
 ### MSC4104: Auth Lock: Soft-failure-be-gone!
 
 This proposal encodes a special auth rule for `denied` participation to
-avoid soft failure and the probelms discussed in MSC4104.
+avoid soft failure and the problems discussed in MSC4104.
 
 ## Security considerations
 
