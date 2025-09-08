@@ -22,6 +22,9 @@ views of the DAG:
   unnecessarily crossed concern with verification of ownership of a
   domain.
 
+This MSC is inspired the work of @kegsay in
+[MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243).
+
 ## Proposal
 
 We propose to tie the server's identity within a room to a long lived
