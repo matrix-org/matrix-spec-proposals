@@ -327,7 +327,8 @@ are invasive: one changes the user ID format and the other subverts the existing
 
 ### Dependencies
 
-This MSC has no dependencies.
+The MSC may depend on [MSC4284: Policy Servers](https://github.com/matrix-org/matrix-spec-proposals/pull/4284) to ensure that events sent
+by invalid domains can be moderated safely.
 
 [^1]: Because the JSON with the `account_name` and `domain` is signed, we could use transparency logs to detect when a server
 tells some people one account name and other people a different account name. In addition, it opens up the possibility of having
