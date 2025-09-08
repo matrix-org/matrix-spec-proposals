@@ -27,6 +27,9 @@ specifications include:
 - Supported room versions (replaces 
 [MSC4292](https://github.com/matrix-org/matrix-spec-proposals/pull/4292)).
 - Client software version identifier.
+- Client capabilities and preferences.
+	- e.g. Format for `redacts` in
+	[MSC2244 Mass Redactions](https://github.com/matrix-org/matrix-spec-proposals/pull/2244)
 - Encryption metadatas.
 
 ## Client-server endpoints
