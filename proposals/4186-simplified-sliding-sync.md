@@ -15,8 +15,8 @@ usage.
 ## High level overview
 
 From a high level, sliding sync works by the client specifying a set of rules to match rooms (via "lists" and
-"subscriptions"). The server will use the rules to match relevant rooms to the user, and return any rooms that have had
-changes since the previous time the room was returned to the client. If no rooms have changes, the server will block
+"subscriptions"). The server will use these rules to match relevant rooms to the user, and return any rooms that have
+had changes since the previous time the room was returned to the client. If no rooms have changes, the server will block
 waiting for a change (aka long-polling, like sync v2).
 
 By judicious use of lists and subscriptions the client can control exactly what data is returned when, and help ensure
@@ -46,6 +46,9 @@ to the old one; the client repeatedly calls `/sync` which will return with any n
 See the API section below for the request and response schemas.
 
 ## Connections
+
+Each request may include a `pos` token, and each response includes a `pos` token that can be used for subsequent
+requests.
 
 A "connection" (aka "sync loop") is a long-running set of sync requests where each new request uses the `pos` from the
 previous request. Clients can have multiple connections with the server, so long as each connection has a different
@@ -113,7 +116,9 @@ ordering is determined by the server implementation.
 
 ### Subscriptions
 
-Subscriptions are simply the room ID to match. This is useful if e.g. the user has opened the room and the client always wants to get the latest data for that room.
+Subscriptions are a rule that simply matches against a specified room ID, i.e. they allow the client to specify that a
+given room should always be returned (if there are updates). This is useful if e.g. the user has opened the room and the
+client always wants to get the latest data for that room.
 
 The server MUST ensure that user has permission to see any information the server returns. However, the user need not be
 in the room, e.g.clients can specify room IDs for world-readable rooms and they would be returned.
@@ -154,24 +159,25 @@ data returned is the full response or a delta based on the `initial` flag.
 If a room matches multiple rules, and therefore multiple room configs, then the room configs must be combined into one
 before being applied.
 
-The fields are combined by:
+The fields are combined by taking the "superset", i.e.:
 - Timeline limit — take the maximum timeline limit across all room configs.
-- Required state — take the superset of required, i.e. if a state event would be returned by any room config it is returned by the combined room config.
+- Required state — take the superset of the required state fields, i.e. if a state event would be returned by any room
+  config it is returned by the combined room config.
 
 
 ### Changing room configs
 
 When a room matches one or more rules (i.e. is eligible to be returned in the sync response) that has previously been
 returned to the client, the server checks whether the combined room config is different than when the room was last
-eligible to be returned. If the new config is a superset of the previous config, then the server handles the config
-differently.
+eligible to be returned. If the new config has fields that are a superset of the previous config, then the server
+handles the config differently.
 
 #### Timeline events
 
 Normally the timeline events returned are only the events that have been received since the last time the room was sent
 to the client (i.e. only new events). However, if the `timeline_limit` has increased (to say `N`) the server SHOULD
 ignore this and send down the latest `N` events, even if some of those events have previously been sent. The server MAY
-ignore behaviour if the server knows it has previously sent down all of the latest `N` events.
+ignore this behaviour if the server knows it has previously sent down all of the latest `N` events.
 
 > [!IMPORTANT]
 > The server should return rooms that have expanded timelines immediately, rather than waiting for the next update to
@@ -201,7 +207,7 @@ response. The server MAY chose not to send that state if the client has previous
 For requesting data other than room events (such as account data or typing notifications), clients can use "extensions".
 These are split out into separate sections to a) make it easier for clients to specify just what they need, and b) to make it easier to extend in the future.
 
-Example extensions, which will be specified elsewhere:
+Examples of extensions, which will be specified elsewhere, are:
 - To Device Messaging
 - End-to-End Encryption
 - Typing Notifications
@@ -329,15 +335,45 @@ correctly account for wildcards, i.e. one cannot simply join the lists together.
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `is_dm` | `bool` | No | Flag which only returns rooms present (or not) in the DM section of account data. If unset, both DM rooms and non-DM rooms are returned. If False, only non-DM rooms are returned. If True, only DM rooms are returned. |
-| `spaces` | `` | No | Filter the room based on the space they belong to according to `m.space.child` state events. If multiple spaces are present, a room can be part of any one of the listed spaces (OR'd). The server will inspect the `m.space.child` state events for the JOINED space room IDs given. Servers MUST NOT navigate subspaces. It is up to the client to give a complete list of spaces to navigate. Only rooms directly mentioned as `m.space.child` events in these spaces will be returned. Unknown spaces or spaces the user is not joined to will be ignored. |
-| `is_encrypted` | `[string]` | No | Flag which only returns rooms which have an `m.room.encryption` state event. If unset, both encrypted and unencrypted rooms are returned. If `False`, only unencrypted rooms are returned. If `True`, only encrypted rooms are returned. |
-| `is_invite` | `bool` | No | Flag which only returns rooms the user is currently invited to. If unset, both invited and joined rooms are returned. If `False`, no invited rooms are returned. If `True`, only invited rooms are returned. |
-| `room_types` | `[string \| null]` | No | If specified, only rooms where the `m.room.create` event has a `type` matching one of the strings in this array will be returned. If this field is unset, all rooms are returned regardless of type. This can be used to get the initial set of spaces for an account. For rooms which do not have a room type, use `null` to include them. |
-| `not_room_types` | `[string \| null]` | No | Same as `room_types` but inverted. This can be used to filter out spaces from the room list. If a type is in both `room_types` and `not_room_types`, then `not_room_types` wins and they are not included in the result. |
-| `room_name_like` | `string` | No | Filter the room name. Case-insensitive partial matching e.g 'foo' matches 'abFooab'. The term 'like' is inspired by SQL 'LIKE', and the text here is similar to '%foo%'. |
-| `tags` | `[string]` | No | Filter the room based on its room tags. If multiple tags are  present, a room can have any one of the listed tags (OR'd). |
-| `not_tags` | `[string]` | No | Filter the room based on its room tags. Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful if your rooms list does NOT include the list of favourite rooms again. |
+| `is_dm` | `bool` | No | Flag which only returns rooms present (or not) in the DM section of account data.<br/><br/> If unset, both DM rooms and non-DM rooms are returned. If False, only non-DM rooms are returned. If True, only DM rooms are returned. |
+| `spaces` | `[string]` | No | Filter the room based on the space they belong to according to `m.space.child` state events. <br/><br/> If multiple spaces are present, a room can be part of any one of the listed spaces (OR'd). The server will inspect the `m.space.child` state events for the JOINED space room IDs given. Servers MUST NOT navigate subspaces. It is up to the client to give a complete list of spaces to navigate. Only rooms directly mentioned as `m.space.child` events in these spaces will be returned. Unknown spaces or spaces the user is not joined to will be ignored. |
+| `is_encrypted` | `[string]` | No | Flag which only returns rooms which have an `m.room.encryption` state event. <br/><br/> If unset, both encrypted and unencrypted rooms are returned. If `False`, only unencrypted rooms are returned. If `True`, only encrypted rooms are returned. |
+| `is_invite` | `bool` | No | Flag which only returns rooms the user is currently invited to. <br/><br/> If unset, both invited and joined rooms are returned. If `False`, no invited rooms are returned. If `True`, only invited rooms are returned. |
+| `room_types` | `[string \| null]` | No | If specified, only rooms where the `m.room.create` event has a `type` matching one of the strings in this array will be returned. <br/><br/> If this field is unset, all rooms are returned regardless of type. This can be used to get the initial set of spaces for an account. For rooms which do not have a room type, use `null` to include them. |
+| `not_room_types` | `[string \| null]` | No | Same as `room_types` but inverted.<br/><br/> This can be used to filter out spaces from the room list. If a type is in both `room_types` and `not_room_types`, then `not_room_types` wins and they are not included in the result. |
+| `room_name_like` | `string` | No | Filter the room name. <br/><br/>Case-insensitive partial matching e.g 'foo' matches 'abFooab'. The term 'like' is inspired by SQL 'LIKE', and the text here is similar to '%foo%'. |
+| `tags` | `[string]` | No | Filter the room based on its room tags.<br/><br/> If multiple tags are  present, a room can have any one of the listed tags (OR'd). |
+| `not_tags` | `[string]` | No | Filter the room based on its room tags.<br/><br/> Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful if your rooms list does NOT include the list of favourite rooms again. |
+
+### Example request
+
+```jsonc
+{
+    "conn_id": "main",
+
+    // Sliding Window API
+    "lists": {
+        "foo-list": {
+            "ranges": [ [0, 99] ],
+            "required_state": [
+                ["m.room.create", ""],
+                ["m.room.member", "$LAZY"],
+            ],
+            "timeline_limit": 10,
+            "filters": {
+                "is_dm": true
+            },
+        }
+    },
+    // Room Subscriptions API
+    "room_subscriptions": {
+        "!sub1:bar": {
+            "required_state": [ ["*","*"] ],
+            "timeline_limit": 10,
+        }
+    }
+}
+```
 
 
 ## Response Body
@@ -383,11 +419,11 @@ When a user is or has been in the room, the following field are returned:
 | `initial` | `bool` | No | Flag which is set when this is the first time the server is sending this data on this connection, or if the client should replace all room data with what is returned. Clients can use this flag to replace or update their local state. The absence of this flag means `false`. |
 | `unstable_expanded_timeline` | `bool` | No | Flag which is set if we're returning more historic events due to the timeline limit having increased. See "Changing room configs" section. |
 | `required_state` | `[Event]` | No | Changes in the current state of the room. |
-| `timeline_events` | `[Event]` | No | Latest events in the room. May not include all events because e.g. there were more events than the configured `timeline_limit`, see `limited` field. If `limited` is true then we include bundle aggregations for the event, as per sync v2. The last event is the most recent. |
-| `bump_stamp` | `int` | No | An integer that can be used to sort rooms based on the last "proper" activity in the room. Greater means more recent. <br/><br/> "Proper" activity is defined as an event being received of one of the following types: `m.room.create`, `m.room.message`, `m.room.encrypted`, `m.sticker`, `m.call.invite`, `m.poll.start`, `m.beacon_info`. <br/><br/> For rooms that the user is not currently joined to, this instead represents when the relevant membership happened, e.g. when the user left the room. <br/><br/> The exact value of `bump_stamp` is opaque to the client, a server may use e.g. an auto-incrementing integer, or a timestamp, etc. <br/><br/> The `bump_stamp` may decrease in subsequent responses, if e.g. an event was redacted/removed (or purged in cases of retention policies). |
+| `timeline_events` | `[Event]` | No | The latest events in the room. May not include all events if e.g. there were more events than the configured `timeline_limit`, c.f. the `limited` field. <br/><br/> If `limited` is true then we include bundle aggregations for the event, as per sync v2. <br/><br/> The last event is the most recent. |
+| `bump_stamp` | `int` | No | An integer that can be used to sort rooms based on the last "proper" activity in the room. Greater means more recent. <br/><br/> "Proper" activity is defined as an event being received is one of the following types: `m.room.create`, `m.room.message`, `m.room.encrypted`, `m.sticker`, `m.call.invite`, `m.poll.start`, `m.beacon_info`. <br/><br/> For rooms that the user is not currently joined to, this instead represents when the relevant membership happened, e.g. when the user left the room. <br/><br/> The exact value of `bump_stamp` is opaque to the client, a server may use e.g. an auto-incrementing integer, a timestamp, etc. <br/><br/> The `bump_stamp` may decrease in subsequent responses, if e.g. an event was redacted/removed (or purged in cases of retention policies). |
 | `prev_batch` | `string` | No | A token that can be passed as a start parameter to the `/rooms/<room_id>/messages` API to retrieve earlier messages. |
-| `limited` | `bool` | No | True if there are more events since the previous sync than were included in the `timeline_events` field, or that the client should paginate to fetch more events. Note that server may return fewer than the requested number of events and still set `limited` to true, e.g. because there is a gap in the history the server has for the room. Absence means `false` |
-| `num_live` | `int` | No | The number of timeline events which have just occurred and are not historical. The last `N` events are 'live' and should be treated as such. This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
+| `limited` | `bool` | No | True if there are more events since the previous sync than were included in the `timeline_events` field, or that the client should paginate to fetch more events.<br/><br/> Note that server may return fewer than the requested number of events and still set `limited` to true, e.g. because there is a gap in the history the server has for the room. <br/><br/>Absence means `false` |
+| `num_live` | `int` | No | The number of timeline events which have just occurred and are not historical. The last `N` events are 'live' and should be treated as such.<br/><br/> This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
 | `joined_count` | `int` | No | The number of users with membership of join, including the client's own user ID. (same as sync `v2 m.joined_member_count`) |
 | `invited_count` | `int` | No |  The number of users with membership of invite. (same as sync v2 `m.invited_member_count`) |
 | `notification_count` | `int` | No | The total number of unread notifications for this room. (same as sync v2) |
@@ -400,7 +436,7 @@ When a user is or has been in the room, the following field are returned:
 
 #### Invite
 
-For rooms the user is invited to, the client only gets the stripped state events:
+For rooms the user is invited to, the client only gets the stripped state events and `bump_stamp`:
 
 | Name | Type | Comment |
 | - | - | - |
@@ -413,7 +449,7 @@ For rooms the user is invited to, the client only gets the stripped state events
 
 #### Knock
 
-For rooms the user has knocked, the client only gets the stripped state events:
+For rooms the user has knocked, the client only gets the stripped state events and `bump_stamp`:
 
 | Name | Type | Comment |
 | - | - | - |
@@ -424,7 +460,7 @@ For rooms the user has knocked, the client only gets the stripped state events:
 > This hasn't been implemented in Synapse.
 
 
-#### `StrippedHero` type
+### `StrippedHero` type
 
 The `StrippedHero` has the following fields:
 
@@ -434,6 +470,48 @@ The `StrippedHero` has the following fields:
 | `user_id` | string | Yes | The user ID of the hero. |
 | `displayname` | string | No | The display name of the user from the membership event, if set |
 | `avatar_url` | string | No | The avatar url from the membership event, if set |
+
+
+### Example response
+
+```jsonc
+{
+  "pos": "s58_224_0_13_10_1_1_16_0_1",
+  "lists": {
+      "foo-list": {
+          "count": 1337,
+      }
+  },
+  "rooms": {
+      "!sub1:bar": {
+          "name": "Alice and Bob",
+          "avatar": "mxc://...",
+          "initial": true,
+          "required_state": [
+              {
+                "sender":"@alice:example.com",
+                "type":"m.room.create",
+                "state_key":"",
+                "content": {}
+              },
+              ...
+          ],
+          "timeline": [
+              {"sender":"@alice:example.com","type":"m.room.message", "content":{"body":"B"}},
+              ...
+          ],
+          "prev_batch": "t111_222_333",
+          "joined_count": 41,
+          "invited_count": 1,
+          "notification_count": 1,
+          "highlight_count": 0,
+          "num_live": 2
+      },
+      ...
+  },
+  "extensions": {}
+}
+```
 
 # Common patterns
 
