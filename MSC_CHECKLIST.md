@@ -26,7 +26,7 @@ clarification of any of these points.
 - [ ] Are the [endpoint conventions](https://spec.matrix.org/latest/appendices/#conventions-for-matrix-apis) honoured?
   - [ ] Do HTTP endpoints `use_underscores_like_this`?
   - [ ] Will the endpoint return unbounded data? If so, has pagination been considered?
-  - [ ] If the endpoint utilises pagination, is it consistent with [the appendices](https://spec.matrix.org/v1.8/appendices/#pagination)?
+  - [ ] If the endpoint utilises pagination, is it consistent with [the appendices](https://spec.matrix.org/latest/appendices/#pagination)?
 - [ ] An introduction exists and clearly outlines the problem being solved. Ideally, the first paragraph should be understandable by a non-technical audience.
 - [ ] All outstanding threads are resolved
   - [ ] All feedback is incorporated into the proposal text itself, either as a fix or noted as an alternative
