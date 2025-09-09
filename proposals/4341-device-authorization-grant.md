@@ -4,7 +4,7 @@ The current [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oau
 authentication using a web browser on the device where the Matrix client is running.
 
 This can be problematic if the device does not have a built in web browser or the user wishes to use a different device.
-It would also be useful in scenarios where catching the redirect back to the client is hard, like in CLI apps, or
+It also causes issues in scenarios where catching the redirect back to the client is hard, like in CLI apps, or
 desktop apps with no redirect custom schemes.
 
 [RFC 8628](https://datatracker.ietf.org/doc/html/rfc8628) defines the OAuth 2.0 Device Authorization Grant which can be
