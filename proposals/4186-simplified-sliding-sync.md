@@ -543,6 +543,8 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
    this themselves, and Synapse currently doesn't implement it nor does Element X use it.
 1. Should we support subscribing to rooms the user is not a member of, i.e. peeking for world readable rooms.
 1. Should we support timeline filtering?
+1. Should we move `pos`, and other URL params, into the request body? This would allow web clients to cache the CORS
+   requests, rather than having to pre-flight each request.
 
 ## TODOs
 
