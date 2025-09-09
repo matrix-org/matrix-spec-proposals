@@ -48,20 +48,28 @@ This has several advantages:
   keys and cannot be accessed by clients until their homeserver has
   independently verified ownership of the domain.
 
-In addition to this, we strengthen the conditions of server participation in the DAG:
+In addition to this, we strengthen the conditions of server
+participation in the DAG:
 
 - We also introduce server participation, which allows servers to be
   denied access to the room at the DAG level.
 
 - Servers are unable to participate within a room until their key has
-  been added by an existing participant. This feature provides room
-  participants that have invite permission the opportunity to
-  challenge previously undiscovered homeservers. Whereas previously
-  for public rooms, there was no protocol step to enable this.
+  been added by an existing participant. This principally ensures the
+  introduction of server keys is traceable to existing
+  participants. Without this traceability, the ability to add an
+  infinite number of new server keys is available ambiently to anyone
+  who is able to federate with a by-standing participant or malicious
+  leaky server. In addition, this provides participants that have
+  invite permission the opportunity to challenge previously
+  undiscovered homeservers. Whereas there is no current protocol step
+  to enable this for public rooms.
 
 - Rules are introduced that allow servers to be removed without the
   need for soft-failure by canonicalising their history as part of the
-  deny event.
+  deny event. This is a necessary change because it prevents servers
+  from reusing their stale participation in the room, along with their
+  invite permission, to add new keys to the room.
 
 This allows both public and private rooms to benefit from DAG
 reproducibility and preemptive access control for servers without the
