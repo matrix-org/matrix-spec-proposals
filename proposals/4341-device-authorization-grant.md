@@ -95,7 +95,7 @@ type into their other device.
 Or, another example would be the `verification_uri_complete` (with fallback to the `verification_uri`) could be encoded
 and displayed as a QR code for scanning on the other device (e.g. on a TV).
 
-6. The user visits opens the `verification_uri_complete` (or `verification_uri`) on their other device that has a web browser.
+6. The user opens the `verification_uri_complete` (or `verification_uri`) on their other device that has a web browser.
 
 The user then completes authentication and authorization for the login.
 
