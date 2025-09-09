@@ -34,7 +34,10 @@ does not work for things like bots which have minimal local state.
 
 ### Just use `/redact`
 `/redact` works fine for all room versions. We could discourage using `/send`
-for redactions and prefer `/redact` instead.
+for redactions and prefer `/redact` instead. However, this would require more
+special-casing for various things that send events, like MSC4140. It is
+preferable to reduce unnecessary special-casing by allowing `/send` in all room
+versions.
 
 ### Deprecate `/redact`
 In addition to allowing `/send`, we could encourage everyone to switch over by
