@@ -312,7 +312,8 @@ This is (almost) the same as lazy loaded memberships in sync v2. When specified,
 events for:
 1. All the senders of events in `timeline_events` unless previously returned. This ensures that the client can render
    all the timeline events without having to fetch more events from the server.
-2. All membership updates since the last sync when `limited` is false (i.e. non-gappy syncs). This allows the client to
+1. The target (i.e. `state_key`) of all membership events in `timeline_events`.
+1. All membership updates since the last sync when `limited` is false (i.e. non-gappy syncs). This allows the client to
    cache the membership list without requiring the server to send all membership updates for large gaps.
 
 
