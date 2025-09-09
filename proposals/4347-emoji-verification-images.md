@@ -88,14 +88,15 @@ images may continue to use Unicode code points as before.
 ### Sourcing the images
 
 I propose taking a snapshot of the relevant images from
-[OpenMoji](https://openmoji.org/) at the time of incorporating this proposal
+[twemoji](https://github.com/twitter/twemoji) at the time of incorporating this proposal
 into the spec, and freezing the set of images at that time. (Until/unless some
 other MSC requires them to be changed.)
 
 These images are attractive and clear.
 
-These images are provided under the CC BY-SA 4.0 license so may be used with
-proper attribution, which should be added to the spec text.
+These images are provided under the CC BY 4.0 license so may be used with
+proper attribution, which should be added to the spec text and client
+applications.
 
 ## Potential issues
 
@@ -105,25 +106,21 @@ proper attribution, which should be added to the spec text.
   way of exposing an accessible interface for the verification process, and
   nothing about this proposal changes that.
 
-* The visual style of the OpenMoji emojis may not fit well with some client
+* The visual style of the twemoji emojis may not fit well with some client
   applications. I consider this aesthetic disruption worth it if it makes the
   verification process easier to use.
 
-* My understanding of the
-  [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) ("You
-  must give appropriate credit, provide a link to the license, ... If you remix,
-  transform, or build upon the material, you must distribute your contributions
-  under the same license as the original") is that both the Matrix foundation
-  and client developers are allowed to distribute these images unmodified so
-  long as they give attribution, even if they are distributed within a
-  proprietary application or one under another license. However, I am not a
-  lawyer, and the foundation would need to satisfy itself as to the situation
-  here, or obtain some alternative set of images. (It is even possible the <=64
-  original authors of the relevant images on OpenMojo might grant permission for
-  use under a more permissive license if needed.) It would seem polite to
-  contact OpenMojo either way before incorporating this change into the spec.
-  See the alternatives section for some other emoji sets that are released under
-  the more permissive CC-BY license.
+* Some client developers may be concerned at the legal ramifications of
+  incorporating CC-licensed artwork into their applications, but my
+  understanding of twemoji's license (CC BY 4.0) is that this is allowed for
+  applications distributed under any license, so long as they comply with the
+  attribution requirement. The
+  [README](https://github.com/twitter/twemoji#attribution-requirements) file for
+  twemoji lists multiple very easy ways of giving attribution that should be
+  possible for any client application. Of course, I am not a lawyer so the
+  foundation would need to satisfy itself as to the situation. Client developers
+  who really felt unable to adopt the images could continue to display emoji
+  using Unicode code points.
 
 ## Alternatives
 
@@ -136,13 +133,13 @@ proper attribution, which should be added to the spec text.
   further improve consistency, but might make life difficult for client
   developers who are not able to render certain image types.
 
-* We could use a different emoji set for the images, especially if the CC BY-SA
-  license of OpenMoji is judged to be too restrictive. These emoji sets are
-  released under more permissive licenses:
+* We could use a different emoji set for the images, for example:
 
     * [Emojitwo](https://emojitwo.github.io)
-    * [twemoji](https://github.com/twitter/twemoji)
     * [noto-emoji](https://github.com/googlefonts/noto-emoji)
+
+    but twemoji is already in widespread use in Matrix clients, so seems the
+    least disruptive alternative.
 
 ## Security considerations
 
