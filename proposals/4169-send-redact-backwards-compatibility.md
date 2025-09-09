@@ -1,7 +1,7 @@
 # MSC4169: Backwards-compatible redaction sending using `/send`
-[MSC2174] moved the `redacts` key from the top level to inside `content`. It
+[MSC2174] moved the `redacts` key from the top level to inside `content` for `v11` and later room versions. It
 also defined forwards- and backwards-compatibility for receiving by defining
-that servers will copy the key to both locations when serving events to clients.
+that servers will copy the key to both locations when serving events to clients, regardless of room version.
 The `/redact` endpoint is also forwards-compatible because it works in all room
 versions. However, `/send` was not made backwards-compatible. This means that
 clients can't switch to using `/send` unless they keep track of room versions.
