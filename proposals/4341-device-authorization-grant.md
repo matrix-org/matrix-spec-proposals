@@ -32,7 +32,8 @@ reflect that more than one login grant type exists.
 As with the existing authorization code grant, when authorization is granted to a client, the homeserver MUST issue a
 refresh token to the client in addition to the access token.
 
-The access token MUST be short-lived and SHOULD be refreshed using the `refresh_token` when expired.
+The access token and refresh token should have the same lifetime constraints as described for the authorization
+code grant in the current [spec](https://spec.matrix.org/v1.15/client-server-api/#refresh-token-grant).
 
 ### Sample flow
 
