@@ -83,6 +83,11 @@ servers that builds upon this proposal. Servers still have to send
 events through their users in both MSCs and we don't intend to change
 that in future MSCs in this series either.
 
+### Terminiology
+
+- A server's _ambient power level_ is the highest power level of any
+  user that is resident to the server.
+
 ### The `m.server.participation` state event, `state_key: ${origin_server_key}`
 
 #### The `advertised_domain` property
@@ -109,6 +114,106 @@ not yet discovered.
 
 An optional reason property may be present in order to explain the
 reason why a server has been denied or permitted to participate.
+
+### Participation semantics
+
+In this section, we describe the semantics of server participation.
+Later, we make an attempt of implementing these in authorization
+rules, but auth rules are difficult to parse, and the intent and
+context of statments is lost. Where authorization rules are
+inconsistent this text takes precedence.
+
+- Reminder: In this MSC _Server_ refers to the controller of a ed25519
+  keypair, not a particular domain or deployment.
+
+#### Accepted participation
+
+The purpose of the `accepted` participation state is to bring the
+`m.server.participation` event into a _subject controlled state_.
+This means that only the controller of the keypair for which the
+participation describes can change the `advertised_domain` in the
+event.
+
+This stops other room participants with the _invite_ power level from
+changing the `advertised_domain`.
+
+#### Permitted participation
+
+The purpose of the `permitted` participation state is for a user to
+permit another server to begin participaiting in the room.  This adds
+traceability to the origin of keys within a room. Without this
+traceability, the ability to add an infinite number of new server keys
+is available ambiently to anyone who is able to federate with a
+by-standing participant or malicious leaky server. In addition, this
+provides participants that have invite permission the opportunity to
+challenge previously undiscovered homeservers. Whereas there is no
+current protocol step to enable this for public rooms.
+
+#### Denied participation when set by room admins
+
+A user with the _ban_ power level, may change the
+`m.server.participation` event of any server with less ambient power
+level to `denied`. This power level comparison is the sending user's
+power level compared to the denied server's ambient power level.
+
+#### Denied participation when set by the key controller
+
+The server may revoke its own key at any time by setting its own
+participation to `denied`. A server can do this even if its current
+participation is already `denied` becasue a server admin banned them.
+This allows for keys that have been stolen by room admins to still be
+revoked.  The effect of a server setting its own participation to
+`denied` is permanent, to rejoin the room, a new keypair must be
+created. If keys are stolen to invoke revoction maliciously, then that
+is a good thing that they only stole the key for that purpose.
+
+#### Are clients responsible for `m.server.participation` ?
+
+Almost always the server sends the event on behalf of a user
+indirectly as a part of another client-server API interaction, such as
+accepting an invitation. Most flows have no need for dedicated client
+UI or management with exception of:
+
+- Banning servers via setting the state to `denied`.
+- Revoking the server key.
+
+In these situations, the event is sent as a direct result of a user's
+action communicated in client UI.
+
+#### Room creation flow
+
+After creating the room, the room creator's origin server should set
+its own `participation` via the room creator's account to `accepted`,
+and set the advertised `advertised_domain` property of their
+participation event to include a domain for which they can prove
+ownership.
+
+#### Room join flow
+
+In order to join a room, the `/request_participation` endpoint is used
+to first ensure that a participation event exists in the room for the
+joining server's public key.
+
+The joining server uses the response from this endpoint to create a
+`participation` event that sets the current participation to
+`accepted`. The joining server should also set the `advertised_domain`
+that they are advertising their public key from.
+
+Servers MUST accept or deny their own participation before emitting
+any events to the room. This is enforced by authorization rules.
+
+#### Room invitation flow
+
+To invite participants, prior to sending the invite membership events,
+the public key of the target user's resident server will need to have
+a `m.server.participation` event in the room's current state with a
+`participation` of `permited` or `accepted`.  If there is no current
+participation, an `m.server.participation` event will need to be sent
+by the inviter to ensure the invited user's resident server can accept
+participation. This event will have a `participation` of `permitted`.
+
+Servers can only accept invitations and emit a join event when their
+current participation state in the room is set to `accepted`.
 
 ### Terminology for authorization
 
