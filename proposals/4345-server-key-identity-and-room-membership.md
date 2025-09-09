@@ -27,7 +27,7 @@ This MSC is inspired the work of @kegsay in
 
 ## Proposal
 
-We propose to make the server's identity within a room soley a long
+We propose to make the server's identity within a room solely a long
 lived ed25519 public key. This key is explicitly appended to the DAG
 via an auth event. This event also sets the terms for routing
 information and the server's participation within the room.
@@ -55,8 +55,8 @@ In addition to this, we strengthen the conditions of server participation in the
 
 - Servers are unable to participate within a room until their key has
   been added by an existing participant. This feature provides room
-  participants that have invite permission the oppertunity to
-  challenge previously undiscovered homeservers. Whereas previosuly
+  participants that have invite permission the opportunity to
+  challenge previously undiscovered homeservers. Whereas previously
   for public rooms, there was no protocol step to enable this.
 
 - Rules are introduced that allow servers to be removed without the
