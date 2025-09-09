@@ -20,6 +20,8 @@ event `m.invite_permission_config` is introduced.
 {
   "type": "m.invite_permission_config",
   "content": {
+    // Global on/off toggle
+    "enabled": true,
     // User-level settings
     "allowed_users": [ "@john:goodguys.org", ... ],
     "ignored_users": [ ... ],
@@ -32,7 +34,10 @@ event `m.invite_permission_config` is introduced.
 }
 ```
 
-All properties in `content` are optional arrays. The array elements are [glob expressions]. Any `*_users`
+`enabled` is a boolean property and defaults to `true` if omitted. It provides clients with a convenience on/off
+toggle that lets them deactivate the configuration without purging it.
+
+All other properties in `content` are optional arrays. The array elements are [glob expressions]. Any `*_users`
 glob is to be matched against full user IDs (localpart and domain). Any `*_servers` glob is to be matched
 against server names / domain parts of user IDs after stripping any port suffix. This matches the way the
 globs from [server ACLs] are applied.
@@ -44,12 +49,13 @@ The complete processing logic is as follows:
 1.  Verify the invite against `m.ignored_user_list`:
     1.  If it matches `ignored_users`, stop processing and ignore.
 2.  Verify the invite against `m.invite_permission_config`:
-    1.  If it matches `allowed_users`, stop processing and allow.
-    2.  If it matches `ignored_users`, stop processing and ignore.
-    3.  If it matches `blocked_users`, stop processing and block.
-    4.  If it matches `allowed_servers`, stop processing and allow.
-    5.  If it matches `ignored_servers`, stop processing and ignore.
-    6.  If it matches `blocked_servers`, stop processing and block.
+    1.  If `enabled` is `false`, stop processing and allow.
+    2.  If it matches `allowed_users`, stop processing and allow.
+    3.  If it matches `ignored_users`, stop processing and ignore.
+    4.  If it matches `blocked_users`, stop processing and block.
+    5.  If it matches `allowed_servers`, stop processing and allow.
+    6.  If it matches `ignored_servers`, stop processing and ignore.
+    7.  If it matches `blocked_servers`, stop processing and block.
 3.  Otherwise, allow.
 
 The semantics of "ignore" and "block" follow [MSC4283] which means ignoring hides the invite with no
