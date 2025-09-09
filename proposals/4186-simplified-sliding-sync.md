@@ -212,7 +212,7 @@ Example extensions, which will be specified elsewhere:
 
 # API
 
-The endpoint is a `POST` request with a JSON body to `/org.matrix.simplified_msc3575/sync`.
+The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/org.matrix.simplified_msc3575/sync`.
 
 ## Request URL parameters
 
@@ -519,8 +519,8 @@ response.
 
 # Unstable prefix
 
-The unstable URL for simplified sliding sync is `/org.matrix.simplified_msc3575/sync`. The flag in `/versions` is
-`org.matrix.simplified_msc3575`.
+The unstable URL for simplified sliding sync is `/_matrix/client/unstable/org.matrix.simplified_msc3575/sync`. The flag
+in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 
 
 # Appendix
