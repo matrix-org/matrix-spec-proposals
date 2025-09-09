@@ -67,6 +67,14 @@ This allows both public and private rooms to benefit from DAG
 reproducibility and preemptive access control for servers without the
 use of a policy server.
 
+We make no attempt to change the relationship of users to the DAG and
+servers within this MSC. [MSC4348: Portable and serverless accounts in
+rooms](https://github.com/matrix-org/matrix-spec-proposals/pull/4348)
+is an MSC that does explore changing the relationship of users to
+servers that builds upon this proposal. Servers still have to send
+events through their users in both MSCs and we don't intend to change
+that in future MSCs in this series either.
+
 ### The `m.server.participation` state event, `state_key: ${origin_server_key}`
 
 #### The `advertised_domain` property
