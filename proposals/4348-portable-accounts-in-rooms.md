@@ -1,4 +1,4 @@
-# MSC0000: Portable and serverless accounts in rooms
+# MSC4348: Portable and serverless accounts in rooms
 
 This MSC is a more ambitious an adaptation of [MSC4243: User ID
 localparts as Account
@@ -132,7 +132,7 @@ advantage.
 ## Unstable prefix
 
 - The endpoint `/_matrix/federation/v1/query/accounts` is
-  `/_matrix/federation/v1/query/org.matrix.0000.accounts
+  `/_matrix/federation/v1/query/org.matrix.4348.accounts
 
 ## Dependencies
 
