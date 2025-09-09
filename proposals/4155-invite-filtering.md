@@ -158,6 +158,13 @@ processed invites. This is desirable in most cases as a spam protection measure.
 that if the user has accidentally blocked a good actor and is informed about it through a different
 communication channel, they'll have to update their permission configuration and request a re-invite.
 
+The multitude of properties in `m.invite_permission_config` offers powerful configuration options. However,
+making changes in complex configurations can lead to side effects that may be unanticipated for users. For
+example, if the user already allowed `@alice:example.org` to send them invites and then adds a block for
+`example.org` as a server, Alice can still send them invites which might be unexpected. To mitigate this,
+clients that expose more advanced configuration interfaces SHOULD inform users about the impact of their
+changes.
+
 
 ## Alternatives
 
