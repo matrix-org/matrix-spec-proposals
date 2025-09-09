@@ -256,14 +256,14 @@ check for `m.room.member`.
 1. If type is `m.server.participation`:
    1. If the sender's signature matches the `state_key` of the
       considered event:
-   1. If the `participation` field of the considered event is
-      `denied`, allow.
-   1. If the `participation` field of the considered event is not
-      `accepted`, reject.
-   1. If the sender is a room owner, allow.
-   1. If the current participation state for the target is `permitted`
+      1. If the `participation` field of the considered event is
+         `denied`, allow.
+      2. If the `participation` field of the considered event is not
+         `accepted`, reject.
+   2. If the sender is a room owner, allow.
+   3. If the current participation state for the target is `permitted`
       or `accepted`, allow.
-   1. Otherwise, reject.
+   4. Otherwise, reject.
 2. If the `sender`'s current participation state is not `accepted`, reject.
 3. If `participation` is `accepted`, reject[^participation-accept].
 4. If there is no current participation state for the target:
