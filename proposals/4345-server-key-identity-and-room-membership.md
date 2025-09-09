@@ -13,14 +13,14 @@ views of the DAG:
 - Centralisation of trust: Signature verification depends on notaries
   being online and honest about historical keys.
 
-- Fragility: Notaries may never have been present in the rooms that a
-  server is trying to join. This is especially true of matrix.org
-  which is the notary used by default in synapse. If no notary has the
-  key history for a given server, none of the events can be verified.
+- Notaries may never have been present in the rooms that a server is
+  trying to join. This is especially true of matrix.org which is the
+  notary used by default in synapse. If no notary has the key history
+  for a given server, none of the events can be verified.
 
-- Complexity and insecurity: Verifying authenticity of events is an
-  unnecessarily crossed concern with verification of ownership of a
-  domain.
+- As server keys are domain scoped and the domain name provides the
+  identity of servers in the DAG, verifying authenticity of events is
+  a crossed concern with verification of ownership of a domain.
 
 This MSC is inspired the work of @kegsay in
 [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243).
