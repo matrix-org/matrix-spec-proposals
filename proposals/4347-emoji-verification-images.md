@@ -122,6 +122,8 @@ proper attribution, which should be added to the spec text.
   original authors of the relevant images on OpenMojo might grant permission for
   use under a more permissive license if needed.) It would seem polite to
   contact OpenMojo either way before incorporating this change into the spec.
+  See the alternatives section for some other emoji sets that are released under
+  the more permissive CC-BY license.
 
 ## Alternatives
 
@@ -133,6 +135,14 @@ proper attribution, which should be added to the spec text.
 * We could choose either SVG or PNG images and not supply both. This would
   further improve consistency, but might make life difficult for client
   developers who are not able to render certain image types.
+
+* We could use a different emoji set for the images, especially if the CC BY-SA
+  license of OpenMoji is judged to be too restrictive. These emoji sets are
+  released under more permissive licenses:
+
+    * [Emojitwo](https://emojitwo.github.io)
+    * [twemoji](https://github.com/twitter/twemoji)
+    * [noto-emoji](https://github.com/googlefonts/noto-emoji)
 
 ## Security considerations
 
