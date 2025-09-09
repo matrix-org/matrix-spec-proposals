@@ -109,6 +109,20 @@ proper attribution, which should be added to the spec text.
   applications. I consider this aesthetic disruption worth it if it makes the
   verification process easier to use.
 
+* My understanding of the
+  [CC BY-SA 4.0 license](https://creativecommons.org/licenses/by-sa/4.0/) ("You
+  must give appropriate credit, provide a link to the license, ... If you remix,
+  transform, or build upon the material, you must distribute your contributions
+  under the same license as the original") is that both the Matrix foundation
+  and client developers are allowed to distribute these images unmodified so
+  long as they give attribution, even if they are distributed within a
+  proprietary application or one under another license. However, I am not a
+  lawyer, and the foundation would need to satisfy itself as to the situation
+  here, or obtain some alternative set of images. (It is even possible the <=64
+  original authors of the relevant images on OpenMojo might grant permission for
+  use under a more permissive license if needed.) It would seem polite to
+  contact OpenMojo either way before incorporating this change into the spec.
+
 ## Alternatives
 
 * We could miss out the image URLs in `sas-emoji.json` and expect client
