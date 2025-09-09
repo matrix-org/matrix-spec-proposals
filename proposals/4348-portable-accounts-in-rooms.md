@@ -106,12 +106,33 @@ localparts as Account
 Keys](https://github.com/matrix-org/matrix-spec-proposals/pull/4243) provides
 the prior work for this MSC and much of the inspiration.
 
-The difference is MSC4243 takes an iterative approach towards
-portable identity without exploring its implications or making the
-changes necessary to facilitate it. MSC4243 also requires use of a
-policy server in order to keep the room secure, whereas this proposal
-does not, as we depend upon MSC4345 server participation to provide us
-security from malicious keys and malicious backfill.
+The differences between this and is MSC4243 are
+
+- MSC4243 takes an iterative approach towards
+  portable identity without exploring its implications or making the
+  changes necessary to facilitate it.
+
+- MSC4243 requires use of a policy server in order to keep the room
+  secure, whereas this proposal does not, as we depend upon MSC4345
+  server participation to provide us security from malicious keys and
+  malicious backfill.
+
+- Because MSC4243 takes an iterative approach, the User ID format does
+  not need to change. This provides the argument that the MSC is
+  non-breaking. But the reality is different because of the security
+  implications that the MSC imposes on clients and servers. We believe
+  that the MSC still imposes breaking changes on clients that interact
+  with power levels and also moderation.  It also mandates changes in
+  clients to ensure that unverified users are shown in a safe way.
+
+- MSC4243 embeds the domain into the account key user ID, which always
+  allows for that information to be faked at the DAG level. Clients
+  must be protected by servers from this with consideration to replace
+  User ID's in client formatted events. This likely will be a
+  complicating factor for that MSC when events interact with the power
+  level and access control mechanism of the room.
+
+
 
 ## Security considerations
 
