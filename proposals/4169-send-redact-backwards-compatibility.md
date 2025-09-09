@@ -6,10 +6,10 @@ The `/redact` endpoint is also forwards-compatible because it works in all room
 versions. However, `/send` was not made backwards-compatible. This means that
 clients can't switch to using `/send` unless they keep track of room versions.
 
-Additionally, [MSC4140] currently only defines delaying events for `/send`.
-While it could be extended to support `/redact` for self-destructing messages,
-the MSC can also work as-is if `/send` supported redactions in all room
-versions.
+The inability to use `/send` in all room versions makes it more difficult for
+clients to abstract event sending without special-casing redactions and to
+implement features such as self-destructing messages (utilising [MSC4140]'s
+delayed events functionality, which is only implemented for `/send`).
 
 [MSC4140]: https://github.com/matrix-org/matrix-spec-proposals/pull/4140
 [MSC2174]: https://github.com/matrix-org/matrix-spec-proposals/pull/2174
