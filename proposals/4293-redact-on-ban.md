@@ -114,7 +114,7 @@ Prior to applying the effects of redaction above, clients and servers MUST ensur
 the kick or ban has power level to redact the target user's events. This means having a power level
 higher than or equal to `redact` *and* `events["m.room.redaction"]` (if set). We maintain the `events`
 check despite not actually sending events of that type to keep the same expectations within rooms. If
-the sender doesn't have permission to redact an event normally, no the `redact_events` flag is ignored
+the sender doesn't have permission to redact an event normally, the `redact_events` flag is ignored
 (and therefore no redaction effect is applied).
 
 Events which are delivered after the kick or ban are likely [soft failed](https://spec.matrix.org/v1.14/server-server-api/#soft-failure)
@@ -152,7 +152,7 @@ An example ban event is:
 }
 ```
 
-An example sccenario would be:
+An example scenario would be:
 
 1. Alice joins the room.
 2. Alice sends events A, B, and C.
