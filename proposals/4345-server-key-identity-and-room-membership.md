@@ -27,24 +27,41 @@ This MSC is inspired the work of @kegsay in
 
 ## Proposal
 
-We propose to tie the server's identity within a room to a long lived
-ed25519 public key. This key is explicitly appended to the DAG via an
-auth event. This event also sets the terms for routing information and
-the server's participation within the room.
+We propose to make the server's identity within a room soley a long
+lived ed25519 public key. This key is explicitly appended to the DAG
+via an auth event. This event also sets the terms for routing
+information and the server's participation within the room.
 
-Therefore the DAG itself becomes a record of which keys were held by
-participants, which eliminates the need for notaries in public key
-discovery.
+This has several advantages:
 
-In addition, servers are unable to participate within a room until
-their key has been added by an existing participant. This allows for
-current participants to verify ownership of a domain before
-participation is permitted.
+- The the DAG itself becomes a record of which keys were held by
+  participants, which eliminates the need for notaries in public key
+  discovery.
 
-We also introduce server participation, which allows servers to be
-denied access to the room at the DAG level, and we also introduce
-rules that allow servers to be removed without the need for
-soft-failure.
+- Client UI associates servers with the server key, not the domain.
+  We provide a friendly alternative to domain names that can be
+  associated with the server key in clients as a substitution for
+  servers with unverified domains.
+
+- Verification of domain ownership happens subjectively at any time
+  independently of the DAG. Domains are not associated with server
+  keys and cannot be accessed by clients until their homeserver has
+  independently verified ownership of the domain.
+
+In addition to this, we strengthen the conditions of server participation in the DAG:
+
+- We also introduce server participation, which allows servers to be
+  denied access to the room at the DAG level.
+
+- Servers are unable to participate within a room until their key has
+  been added by an existing participant. This feature provides room
+  participants that have invite permission the oppertunity to
+  challenge previously undiscovered homeservers. Whereas previosuly
+  for public rooms, there was no protocol step to enable this.
+
+- Rules are introduced that allow servers to be removed without the
+  need for soft-failure by canonicalising their history as part of the
+  deny event.
 
 This allows both public and private rooms to benefit from DAG
 reproducibility and preemptive access control for servers without the
@@ -206,6 +223,19 @@ The response is identical to `send_join`.
 
 `valid_until_ts` is removed. Keys are never time-bounded and
 revocation is explicit via DAG state.
+
+To verify domain ownership from an `m.server.participation` event:
+
+1. The event must have a `participation` of `accepted`.
+2. The event must contain an `advertised_domain` property.
+3. The event must be signed with the private key associated with the
+   public key found in the state_key (auth rules also enforce the
+   state key is consistent with the origin server key).
+4. The same public key is advertised in `/_matrix/key/v3/query` when requested
+   from the `advertised_domain`
+
+The server that performed verification of domain ownership may now
+permanently cache the mapping.
 
 ### Changes to the user ID format
 
