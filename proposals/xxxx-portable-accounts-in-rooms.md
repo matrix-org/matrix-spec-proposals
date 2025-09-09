@@ -16,12 +16,12 @@ The following is a quote from MSC4244:
 >  - As user IDs are user controlled, spammers set their localpart to abusive messages in order to harass and intimidate others. Redactions
 >    do not remove the user ID so these messages persist in the room.
 
-In addition to the above, we go further and remove the server from user ID's completly:
+In addition to the above, we go further and remove the server from user ID's completely:
 
 This is desirable because:
 
 - Portable snd serverless accounts accounts are now native to this new room model.
-- Psuedo identity is supported in the room model for servers and room
+- Pseudo identity is supported in the room model for servers and room
   admins that wish to immediately implement it.
 - Servers can immediately be implemented as relays for P2P clients.
 - Within the context of MSC4345, the server key can be rotated without
@@ -50,7 +50,7 @@ This is desirable because:
   by the room scoped server key. This is both a security and
   consistency enhancement.
 
-### Chanages to room events
+### Changes to room events
 
 Events must always be sent with the account key user ID.
 
@@ -106,7 +106,7 @@ localparts as Account
 Keys](https://github.com/matrix-org/matrix-spec-proposals/pull/4243) provides
 the prior work for this MSC and much of the inspiration.
 
-The difference is MSC4243 takes an interative approach towards
+The difference is MSC4243 takes an iterative approach towards
 portable identity without exploring its implications or making the
 changes necessary to facilitate it. MSC4243 also requires use of a
 policy server in order to keep the room secure, whereas this proposal
