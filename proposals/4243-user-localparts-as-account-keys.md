@@ -63,7 +63,7 @@ Signatures on an event follow the same format as today for backwards compatibili
 ```
 
 Terminology for the rest of this proposal:
- - Account Key: the ed25519 public key for the user's account.
+ - Account Key: the ed25519 public key for the user's account, e.g. `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ`.
  - Account Name: The human-readable localpart today e.g `alice`.
  - Account Name User ID: user IDs as they exist today, formed of an account name and domain e.g `@alice:example.com`
  - Account Key User ID: user IDs of the form `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`, formed of an account key and domain.
@@ -120,7 +120,7 @@ Unknown account keys are explicitly marked as unknown. If an account key is miss
 to resolve it. Like all federation requests, this request _is authenticated_ using the server's signing key.
 This creates a bidirectional link:
  - By signing event JSON, the account key claims to belong to a particular domain. This is embedded into the DAG.
- - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so not all servers will agree on this.
+ - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so it is possible that not all servers will agree on this.
  - Taken together, the two claims prove that the domain owns the key.
 
 >[!NOTE]
@@ -171,11 +171,13 @@ with the account name in the user ID where possible in event JSON sent to client
 
 >[!NOTE]
 > We could alternatively filter out these events from being delivered to clients, but this would cause
-> split-brains as not all servers would filter out the same users. We do not want to embed the account name
-> into the event JSON as malicious servers could lie about this, creating impersonation attacks. For example,
-> Eve on evil.com could generate an account key with the name 'alice' then claim the domain part as example.com.
-> If other servers fail to query example.com e.g because it is temporarily unavailable, we would then incorrectly
-> assume that the account key _is_ for alice on example.com, which it isn't. Due to this, we rely on `/accounts` to
+> split-brains as not all servers would filter out the same users. 
+>
+> Embedding the account name into the event JSON would not resolve the problem
+> as malicious servers could lie about their domain, creating impersonation attacks. For example,
+> Eve on `evil.com` could generate an account key with the name 'alice' then claim the domain part as `example.com`.
+> A third server might then fail to query `example.com` (e.g because it is temporarily unavailable), and could incorrectly
+> assume that the account key _is_ for `alice` on `example.com`, which it isn't. To avoid this, we rely on `/accounts` to
 > know the account name, and must handle the cases where we cannot perform that operation. As an aside,
 > if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
 > impersonation attack, but that is orthogonal to this proposal.
@@ -192,7 +194,7 @@ with the account name in the user ID where possible in event JSON sent to client
 > this is exactly what we want for peer-to-peer applications, where the identity and routing information is solely the
 > public key (e.g used in a distributed hash table).
 >
->  keys are prefixed with `_` down the CSAPI to provide a temporary namespace to avoid conflicts with _account names_
+> Unknown keys are prefixed with `_` down the CSAPI to provide a temporary namespace to avoid conflicts with _account names_
 > which happen to look like `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ`. The `_` prefix is used by application services,
 > and major server implementations disallow creating users starting with `_`, thus ensuring the namespaces remain separate.
 > This is a temporary measure until clients become account key aware.
@@ -200,7 +202,7 @@ with the account name in the user ID where possible in event JSON sent to client
 Once a mapping has been verified or unverified, it can be permanently cached. A mapping should be periodically retried until it is either verified or unverified.
 Servers MAY retry explicitly unverified mappings in the future, but should do this with a much longer delay than unknown mappings.
 Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
-If a client has been told an __ account key user ID which then subsequently becomes verified / unverified, the server MUST:
+If a client has been told an `_`-prefixed account key user ID which then subsequently becomes verified / unverified, the server MUST:
  - resend the `m.room.member` event for all rooms with that account key user ID, replacing the user ID sections appropriately.
  - issue a synthetic leave event for the  account key user ID for all the rooms with that user ID.
 
@@ -233,7 +235,8 @@ This is slightly more wasteful on bandwidth, but provides much more convenience 
 
 #### Impacts on end-to-end encryption
 
-Device lists are fetched based on the user ID over federation via `GET /_matrix/federation/v1/user/devices/{userId}`. This MUST continue to use
+Device lists are fetched based on the user ID over federation via [`GET /_matrix/federation/v1/user/devices/{userId}`](https://spec.matrix.org/v1.15/server-server-api/#get_matrixfederationv1userdevicesuserid).
+This MUST continue to use
 the human-readable account name form of the user ID. This means if a server is unable to map an account key to an account name, it will be unable
 to fetch device lists for that user and E2EE will break. This is reasonable because servers are in general only unable to perform the mapping if
 the remote server is unavailable, in which case E2EE will break anyway.
