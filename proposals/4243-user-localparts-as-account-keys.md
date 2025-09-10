@@ -151,6 +151,32 @@ on another server's user needs to talk to that server to discover the account ke
 > than flooding the DAG with thousands of potentially unnecessary ban events. This would mean the chicken/egg problem would exist solely for invites,
 > which would then mean a simple modification to the `/invite` API is enough.
 
+#### Handling GDPR erasure
+
+The account keys for erased users MUST return an `errcode` of `M_ERASED` to indicate that the key was valid but is now deleted.
+In addition, the JSON object MUST include the domain and signatures keys to confirm the erasure e.g:
+```json
+{
+    "account_keys": {
+        "cWm64pdXOGz1DbIXTuH+24szY/+9HjPP7jZwbDjn12s": {
+            "errcode": "M_ERASED",
+            "domain": "matrix.org",
+            "signatures": { ... }
+        }
+}
+```
+
+>[!NOTE]
+> The object is signed to prevent DNS takeover attacks erasing users, where DNS is compromised to point to an unauthorised server who then responds
+> with erased users. By including the signature, it forces the attacker to also have access to the private key for the account key.
+>
+> The `domain` is included to ensure that the signature for `{ "errcode": "M_ERASED" }` isn't enough to confirm the erasure, else the signature could
+> be reused for different unauthorised domains.
+>
+> Further work could improve the temporality of these signatures e.g including a timestamp for when this attestation was made, but this is out-of-scope
+> for this proposal.
+
+
 #### Server behaviour
 
 When a server joins a room, it will receive a list of account keys that are joined to the room. No external requests need to be made in order to verify
@@ -170,7 +196,7 @@ with the account name in the user ID where possible in event JSON sent to client
 
 >[!NOTE]
 > We could alternatively filter out unverified events from being delivered to clients, but this would cause
-> split-brains as not all servers would filter out the same users. 
+> clients on different servers to disagree on the room state as not all servers would filter out the same users. 
 >
 > Embedding the account name into the event JSON would not resolve the problem
 > as malicious servers could lie about their domain, creating impersonation attacks. For example,
@@ -362,7 +388,7 @@ Currently servers need to ask for the server keys of the domain directly or via 
 the event is dropped, causing a split-brain. This is why this proposal improves the security of the federation protocol.
 NB: The private key still lives on the server, not clients.
 [^urlsafe]: We want the public account key to be url-safe because it frequently appears in URL paths in the client-server API e.g account data,
-profile data, reporting datas and the Federation API e.g `/make_knock|join|leave/{roomID}/{userID}` and `/users/devices/{userID}`. This aligns
+profile data, user reporting and the Federation API e.g `/make_knock|join|leave/{roomID}/{userID}` and `/users/devices/{userID}`. This aligns
 with other base64 data like event IDs and room IDs which are also urlsafe but notably is in conflict with _signatures_ which are not urlsafe.
 [^keyid]: This format accurately encodes the fact that the public key is not at all related to the claimed domain name. It may allow flexibility
 later on should we want to introduce portable accounts, as the signatures on these events will remain valid.
