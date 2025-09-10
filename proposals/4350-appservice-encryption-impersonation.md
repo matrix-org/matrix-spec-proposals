@@ -109,7 +109,7 @@ APIs regardless of who is querying the keys.
 ```jsonc
 {
     "algorithms": [],
-    "device_id": "S9PN0B1TCA",
+    "device_id": "S9ON0B1TCA",
     "impersonator": {
         "algorithms": [
             "m.olm.v1.curve25519-aes-sha2",
