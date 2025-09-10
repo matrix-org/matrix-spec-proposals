@@ -55,7 +55,7 @@ authorization_.
 
 ### Deferred authorization as causal enforcement
 
-When a server recieves an event which is concurrent with a _causal
+When a server receives an event which is concurrent with a _causal
 barrier_ the receiving server should determine whether it has complete
 knowledge of all of the _causal barrier_ event's causal predecessors.
 
@@ -64,7 +64,7 @@ soft fail the concurrent event (which is what happens currently in
 Matrix).
 
 However once the server has all of the _causal predecessors_ for a
-_causal barrier_ it can infact revist the decision, and make a final
+_causal barrier_ it can infact revisit the decision, and make a final
 decision.
 
 To do this, the server consults the predecessors of the causal barrier
@@ -122,14 +122,14 @@ solutions that can be explored:
 
 - Policy servers as causal authorities: Policy servers can act as
   causal authorities. They could do this by performing a
-  full-synchronisation on each event they recieve. And then only
+  full-synchronisation on each event they receive. And then only
   signing events that are consistent with the policy server's vector
   clock frontier.
 
 - Deferred authorization as causal enforcement (described in the MSC
   introduction), combined with a system that allows distrust to be
   expressed in senders in order to provide a manual resolvation to
-  forks that would constitute a politcal problem.
+  forks that would constitute a political problem.
 
 This would allow us to immediately begin to use consistent terminology
 within the context of [MSC4345: Server key identity and room
