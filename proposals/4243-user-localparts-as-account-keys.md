@@ -41,7 +41,9 @@ Starting in room version `vNext`:
  - The domain part of the user ID is kept for compatibility and to provide _routing information_ to other servers.
    Servers still determine which servers are in the room based on the domain of the user ID.
    
-Signatures on an event follow the same format as today for backwards compatibility with existing server code, but the key ID is now the urlsafe base64 encoded public key:
+Signatures on an event follow the same format as today for backwards compatibility with existing server code, but:
+ - the [entity](https://spec.matrix.org/v1.14/appendices/#checking-for-a-signature) signing the event is now public part of the account key.
+ - the [signing key identifier](https://spec.matrix.org/v1.14/appendices/#checking-for-a-signature) is now the constant `ed25519:1`[^keyid].
 ```json
 {
   "type": "m.room.member",
@@ -53,8 +55,8 @@ Signatures on an event follow the same format as today for backwards compatibili
   "room_id": "!K3DOWWLmkHLl52yJ-vT8J5jX5wuYZati_KvC6PliIPE",
   "sender": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org",
   "signatures": {
-    "matrix.org": {
-      "ed25519:l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+    "l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ": {
+      "ed25519:1": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
     }
   }
 }
@@ -364,3 +366,5 @@ NB: The private key still lives on the server, not clients.
 [^urlsafe]: We want the public account key to be url-safe because it frequently appears in URL paths in the client-server API e.g account data,
 profile data, reporting datas and the Federation API e.g `/make_knock|join|leave/{roomID}/{userID}` and `/users/devices/{userID}`. This aligns
 with other base64 data like event IDs and room IDs which are also urlsafe but notably is in conflict with _signatures_ which are not urlsafe.
+[^keyid]: This format accurately encodes the fact that the public key is not at all related to the claimed domain name. It may allow flexibility
+later on should we want to introduce portable accounts, as the signatures on these events will remain valid.
