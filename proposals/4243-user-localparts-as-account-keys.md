@@ -158,19 +158,18 @@ the event signatures of the DAG or to apply auth rules, thus ensuring that all s
 
 The server SHOULD group each key according to its claimed domain and perform a single `/accounts` query to fetch the account name for each
 account key. This SHOULD be done prior to sending the room information to clients. Based on the result of the query, the server should then group
-account keys into three categories:
+account keys into two categories:
  - Verified: the domain is aware of the account key because it was contained in the response. The JSON in the response has been correctly signed by the account key.
- - Unverified: the domain is unaware of the account key because it was not contained in the response. This indicates that the account key is lying about its `:domain`.
- - Unknown: the domain is unreachable, returned a non 2xx status, or the server cannot decode the response body.
+ - Unverified: the domain is unaware of the account key because it was not contained in the response or the domain is unreachable[^unreach], returned a non 2xx status,
+   or the server cannot decode the response body.
 
 This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
 with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
  - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
  - The server should replace the `domain` of the user ID with "invalid" for unverified keys. E.g `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
- - The server should prefix the account key with `_` when the domain is unreachable. E.g `@_l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
 
 >[!NOTE]
-> We could alternatively filter out these events from being delivered to clients, but this would cause
+> We could alternatively filter out unverified events from being delivered to clients, but this would cause
 > split-brains as not all servers would filter out the same users. 
 >
 > Embedding the account name into the event JSON would not resolve the problem
@@ -182,8 +181,8 @@ with the account name in the user ID where possible in event JSON sent to client
 > if we forced all messages to be cryptographically signed (not necessarily encrypted), we would avoid this
 > impersonation attack, but that is orthogonal to this proposal.
 >
-> We replace the domain with 'invalid' when the domain explicitly responds without information for that key
-> because otherwise it implies that user ID is an account on that server. The domain part of the user ID is
+> We replace the domain with 'invalid' for unverified keys because otherwise it implies that user ID is an
+> account on that server. The domain part of the user ID is
 > not verified with this proposal. If we did not replace the domain with 'invalid', abusive or illegal activity
 > may be incorrectly tied back to a particular victim server. The word "invalid" is specifically
 > [reserved](https://www.rfc-editor.org/rfc/rfc2606.html#section-2) so it cannot become a valid TLD in the future.
@@ -193,20 +192,16 @@ with the account name in the user ID where possible in event JSON sent to client
 > may decide to automatically soft-fail events sent from unverified domains to protect against abuse. On the flip side,
 > this is exactly what we want for peer-to-peer applications, where the identity and routing information is solely the
 > public key (e.g used in a distributed hash table).
->
-> Unknown keys are prefixed with `_` down the CSAPI to provide a temporary namespace to avoid conflicts with _account names_
-> which happen to look like `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ`. The `_` prefix is used by application services,
-> and major server implementations disallow creating users starting with `_`, thus ensuring the namespaces remain separate.
-> This is a temporary measure until clients become account key aware.
 
-Once a mapping has been verified or unverified, it can be permanently cached. A mapping should be periodically retried until it is either verified or unverified.
-Servers MAY retry explicitly unverified mappings in the future, but should do this with a much longer delay than unknown mappings.
+Once a mapping has been verified, it can be permanently cached. Servers MAY retry unverified mappings in the future,
+prioritising servers which have never responded over servers which have responded with the absence of the key.
 Servers should time out requests after a reasonable amount of time in order to ensure they do not delay new rooms appearing on clients.
-If a client has been told an `_`-prefixed account key user ID which then subsequently becomes verified / unverified, the server MUST:
+If a client has been told an `:invalid` account key user ID which then subsequently becomes verified, the server MUST:
  - resend the `m.room.member` event for all rooms with that account key user ID, replacing the user ID sections appropriately.
  - issue a synthetic leave event for the  account key user ID for all the rooms with that user ID.
 
-This ensures the member list remains accurate on clients. State events sent by that account key user ID MAY be resent with an updated `sender` field.
+This ensures the member list remains accurate on clients.
+State events sent by that account key user ID MAY be resent with an updated `sender` field.
 
 #### Gradual compatibility
 
@@ -371,3 +366,9 @@ profile data, reporting datas and the Federation API e.g `/make_knock|join|leave
 with other base64 data like event IDs and room IDs which are also urlsafe but notably is in conflict with _signatures_ which are not urlsafe.
 [^keyid]: This format accurately encodes the fact that the public key is not at all related to the claimed domain name. It may allow flexibility
 later on should we want to introduce portable accounts, as the signatures on these events will remain valid.
+[^unreach]: Earlier versions of this proposal treated unreachable servers as a third category: "unknown" instead of "unverified". The intention
+was that _unverified_ keys were explicit negative ACKs stating that the server is unaware of the given key, and therefore indicated malice on
+the part of the sender of the event. This contrasted with "unknown" keys which were simply network problems. Clients were told of the difference
+due to munging the user ID in a slightly different way. However, there is no guarantee that a server responding negatively to the existence of a
+key is actually malicious (recreating your database would do this for example). Therefore, the distinction isn't important, meaning they can be
+combined into one category.
