@@ -23,36 +23,48 @@ negative effect on the (particularly client) ecosystem as they need to update th
 This was seen in [MSC4291: Room IDs as hashes of the create event](https://github.com/matrix-org/matrix-spec-proposals/pull/4291)
 which removed the `:domain` part of the room ID. Furthermore, both of those MSCs suffer from scope creep: MSC4014 had per-room per-user keys, and MSC1228 had room keys complete with new `^` and `~` sigils. 
 
-Instead, this proposal solely addresses the problem with allowing direct personal data in the user ID and using the server signing key to sign events, taking care to keep the user ID format compatible with the existing ecosystem. This makes the proposal very light, and easier to implement incrementally on top of the existing Matrix ecosystem, whilst leaving room for per-room per-user keys or client-controlled cryptographic keys in the future.
+Instead, this proposal solely addresses the problem with allowing direct personal data in the user ID and using the server signing key
+to sign events, taking care to keep the user ID format compatible with the existing ecosystem. This makes the proposal very light, and
+easier to implement incrementally on top of the existing Matrix ecosystem, whilst leaving room for per-room per-user keys or
+client-controlled cryptographic keys in the future.
 
 ### Proposal
 
 Starting in room version `vNext`:
- - User ID _localparts_ in rooms are replaced with an ed25519 public key: an "Account Key".
-   Leaving and rejoining the same room MUST NOT change the _account key_. The _account key_ is encoded as unpadded
-   urlsafe base 64. An example _user ID_ is: `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
-   TODO: MSC1228 versioned this with a `1:` prefix. Should we do the same? How would you even relate the same user across multiple versions anyway?
- - The private key for this _account key_ signs the event JSON over federation. This means servers do not need to make
-   any network requests to verify the signature on inbound events. Currently servers need to ask for the server keys of
-   the domain directly or via a notary server. If they cannot get the server keys, the event is dropped, causing a split-brain.
-   This is why this proposal improves the security of the federation protocol. NB: The private key still lives on the server, not clients.
+ - Each user is identified using an ed25519 key: an "Account Key". A user SHOULD[^perroom] have exactly 1 immutable _account key_ for all rooms they are a part of.
+ - User ID _localparts_ in rooms are replaced with the unpadded urlsafe[^urlsafe] base64 encoded public part of the _account key_.
+   Leaving and rejoining the same room MUST NOT change the _account key_.
+   An example _user ID_ is: `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
+ - The private key for the `sender`'s _account key_ signs the event JSON over federation. Servers no longer
+   sign events with their [server signing key](https://spec.matrix.org/v1.14/server-server-api/#retrieving-server-keys).[^signing]
+   Co-signed events (e.g invites) are still co-signed, but with _account keys_ not server signing keys.
  - The domain part of the user ID is kept for compatibility and to provide _routing information_ to other servers.
    Servers still determine which servers are in the room based on the domain of the user ID.
    
 Signatures on an event follow the same format as today for backwards compatibility with existing server code, but the key ID is now the urlsafe base64 encoded public key:
 ```json
+{
+  "type": "m.room.member",
+  "state_key": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org",
+  "content": {
+    "membership": "join",
+    "displayname": "Alice",
+  }
+  "room_id": "!K3DOWWLmkHLl52yJ-vT8J5jX5wuYZati_KvC6PliIPE",
+  "sender": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org",
   "signatures": {
     "matrix.org": {
-      "ed25519:l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
+      "ed25519:l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ": "these86bytesofbase64signaturecoveressentialfieldsincludinghashessocancheckredactedpdus"
     }
   }
+}
 ```
 
 Terminology for the rest of this proposal:
  - Account Key: the ed25519 public key for the user's account.
  - Account Name: The human-readable localpart today e.g `alice`.
  - Account Name User ID: user IDs as they exist today, formed of an account name and domain e.g `@alice:example.com`
- - Account Key User ID: user IDs of the form `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`, formed of an account key and domain.
+ - Account Key User ID: user IDs of the form `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`, formed of an account key and domain.
  - Localpart / Domain: segments of a user ID as they are defined today. 'Localpart' is ambiguous and should be qualified as 'account name' or 'account key'.
 
 >[!NOTE]
@@ -70,7 +82,7 @@ account key via a new bulk federation endpoint:
 POST /_matrix/federation/v1/query/accounts
 {
     "account_keys": [
-        "l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ",
+        "l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ",
         "EgdGx+0oy/9IX5k7tCobr0JoiwMvmmQ8sDOVlZODh/o",
         "cWm64pdXOGz1DbIXTuH+24szY/+9HjPP7jZwbDjn12s"
     ]
@@ -81,7 +93,7 @@ Returns:
 200 OK
 {
     "account_keys": {
-        "l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ": {
+        "l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ": {
             "account_name": "kegan",   // The account name. The 'localpart' of a user ID today.
             "domain": "matrix.org", // The 'domain' of a user ID today.
             "signatures": { ... }   // This JSON object is signed with the account key to allow changes in the account name/domain to be detected.
@@ -107,6 +119,7 @@ to resolve it. Like all federation requests, this request _is authenticated_ usi
 This creates a bidirectional link:
  - By signing event JSON, the account key claims to belong to a particular domain. This is embedded into the DAG.
  - By responding to the endpoint with that account key, the domain claims to own that particular account key. This is not embedded into the DAG so not all servers will agree on this.
+ - Taken together, the two claims prove that the domain owns the key.
 
 >[!NOTE]
 > Earlier versions of this proposal just omitted unknown account keys rather than returned an explicit `errcode` for them. This was changed
@@ -114,10 +127,13 @@ This creates a bidirectional link:
 > causing account keys to be unknown by omission.
 
 The server receiving this response SHOULD persist the mapping in persistent storage. The `account_name` MUST NOT change upon subsequent
-requests for the same account key.[^1] When a user is created on a server, the account key SHOULD[^2] be created and SHOULD[^3] be kept immutable for the lifetime of that user. There is a chicken/egg problem for some federation operations e.g invites,
-as clients will invite the `account_name` to a room, and will not know the account key yet. Specifically, any federation operation which acts on another server's user needs to talk to that server to discover the account key mapping. To aid this, the following adjustments are made:
- - `/_matrix/federation/v2/invite`: The sender sets the `state_key` of the invite `event` to the account name user ID (as we do today), which the receiver then replaces with an account key user ID when signing the invite event. The sender then signs this JSON, creating the double-signed event.
- - A new endpoint `/_matrix/federation/v2/ban` is created, which is identical to `/invite` but for pre-emptive bans when the account key is not known. Omits the `invite_room_state` field.
+requests for the same account key.[^1] When a user is created on a server, the account key SHOULD[^2] be created and SHOULD be kept immutable
+for the lifetime of that user. There is a chicken/egg problem for some federation operations e.g invites,
+as clients will invite the `account_name` to a room, and will not know the account key yet. Specifically, any federation operation which acts
+on another server's user needs to talk to that server to discover the account key mapping. To aid this, the following adjustments are made:
+ - `/_matrix/federation/v2/invite`: The sender sets the `state_key` of the invite `event` to the account name user ID (as we do today),
+   which the receiver then replaces with an account key user ID when signing the invite event. The sender then signs this JSON, creating the double-signed event.
+ - A new endpoint `/_matrix/federation/v1/ban` is created, which is identical to `/invite` but for pre-emptive bans when the account key is not known. Omits the `invite_room_state` field.
 
 >[!NOTE]
 > A few designs were considered here, including having a generic bulk lookup function to map **from account name** to account key.
@@ -146,10 +162,10 @@ account keys into three categories:
  - Unknown: the domain is unreachable, returned a non 2xx status, or the server cannot decode the response body.
 
 This proposal tries to avoid clients needing to know or care about these account keys. As such, it takes steps to replace the account key
-with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
+with the account name in the user ID where possible in event JSON sent to clients/bots/bridges/appservices. For a given account key `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`:
  - The server should replace the account key with the account name in the user ID for verified keys. E.g `@kegan:matrix.org`.
- - The server should replace the `domain` of the user ID with "invalid" for unverified keys. E.g `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:invalid`.
- - The server should prefix the account key with `_` when the domain is unreachable. E.g `@_l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
+ - The server should replace the `domain` of the user ID with "invalid" for unverified keys. E.g `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:invalid`.
+ - The server should prefix the account key with `_` when the domain is unreachable. E.g `@_l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org`.
 
 >[!NOTE]
 > We could alternatively filter out these events from being delivered to clients, but this would cause
@@ -175,7 +191,7 @@ with the account name in the user ID where possible in event JSON sent to client
 > public key (e.g used in a distributed hash table).
 >
 >  keys are prefixed with `_` down the CSAPI to provide a temporary namespace to avoid conflicts with _account names_
-> which happen to look like `l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ`. The `_` prefix is used by application services,
+> which happen to look like `l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ`. The `_` prefix is used by application services,
 > and major server implementations disallow creating users starting with `_`, thus ensuring the namespaces remain separate.
 > This is a temporary measure until clients become account key aware.
 
@@ -190,25 +206,25 @@ This ensures the member list remains accurate on clients. State events sent by t
 
 #### Gradual compatibility
 
-To enable clients to gradually become aware of account keys, servers MUST set the `unsigned.account.key` property of the event JSON to be the account key
-and the `unsigned.account.name` property of the event JSON to be the account name returned from `/accounts` e.g:
+To enable clients to gradually become aware of account keys, servers MUST set the `unsigned.sender_account.key` property of the event JSON to be the account key
+and the `unsigned.sender_account.name` property of the event JSON to be the account name returned from `/accounts` e.g:
 
 ```js
 {
     // .. event fields
     "unsigned": {
-        "account": {
-            "key": "@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org",
+        "sender_account": {
+            "key": "@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org",
             "name": "kegan",
         }
     }
 }
 ```
 
-Clients can then use the `unsigned.account.key` field as an unchanging identifier for the sender of the event, akin to how they use the `sender` field today.
+Clients can then use the `unsigned.sender_account.key` field as an unchanging identifier for the sender of the event, akin to how they use the `sender` field today.
 A later room version can then:
- - Revert the `sender` of the event to be the wire-format over federation and not modify it, meaning the `sender` becomes identical to `unsigned.account.key`.
- - Tell clients to form the user ID by replacing the account key with the `unsigned.account.name` if it is present. The absence of a `name` means the
+ - Revert the `sender` of the event to be the wire-format over federation and not modify it, meaning the `sender` becomes identical to `unsigned.sender_account.key`.
+ - Tell clients to form the user ID by replacing the account key with the `unsigned.sender_account.name` if it is present. The absence of a `name` means the
    key is not verified. Abusive `name` strings can be redacted by the server without breaking user identification.
 
 This is slightly more wasteful on bandwidth, but provides much more convenience for clients as the data they need is in the same struct.
@@ -225,7 +241,9 @@ the remote server is unavailable, in which case E2EE will break anyway.
 
 #### Impacts on restricted rooms
 
-Rooms with the `restricted` join rule are impacted because we no longer want to check that the server domain signed the event. Thankfully, the `join_authorised_via_users_server` field is a _user ID_, so we can simply extract the account key from the localpart of the user ID and verify that there is a signature with that key. For clarity, auth rules are modified like so:
+Rooms with the `restricted` join rule are impacted because we no longer want to check that the server domain signed the event.
+Thankfully, the `join_authorised_via_users_server` field is a _user ID_, so we can simply extract the account key from the localpart of the
+user ID and verify that there is a signature with that key. For clarity, auth rules are modified like so:
 
 > If type is `m.room.member`:
 > - [...]
@@ -234,7 +252,9 @@ Rooms with the `restricted` join rule are impacted because we no longer want to 
 
 #### Impacts on key validity
 
-It is critical that all servers agree on which events have valid signatures and which do not. As a result, key validity as a concept is untenable if we wish for all servers to converge because the key validity time can be modified inconsistently for different servers. As a result, this MSC _removes_ the [Signing key validity period](https://spec.matrix.org/v1.15/rooms/v5/#signing-key-validity-period) introduced in room version 5.
+It is critical that all servers agree on which events have valid signatures and which do not. As a result, key validity as a concept is untenable
+if we wish for all servers to converge because the key validity time can be modified inconsistently for different servers. As a result, this
+MSC _removes_ the [Signing key validity period](https://spec.matrix.org/v1.15/rooms/v5/#signing-key-validity-period) introduced in room version 5.
 
 The impact of this is that a compromised private key cannot be cycled by setting an expiry time for it. Instead, the server should:
  - Generate a new account key for this user.
@@ -249,7 +269,7 @@ TODO: if we are serious about this, we should probably introduce some kind of re
 
 ### Potential Issues
 
-Servers may lie about their domain e.g `foo.com` may join the room as `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:bar.com`.
+Servers may lie about their domain e.g `foo.com` may join the room as `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:bar.com`.
 This means `foo.com` will not get events in the room routed to them, but a victim server `bar.com` will instead be pushed events as a form of amplification attack.
 Servers MUST have a global backoff timer per-domain to ensure that attackers cannot repeatedly join users with fake domains to popular rooms to cause amplification attacks.
 
@@ -264,7 +284,7 @@ Servers MUST have a global backoff timer per-domain to ensure that attackers can
 - Servers can masequarade as users on their server, but they could _already_ do this due to the lack of any end-to-end
   cryptographic signing of events.
 - If another domain gets hold of the private key to an identity, they can manufacture valid events with that key
-  e.g `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:matrix.org` => `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:evil.com`.
+  e.g `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:matrix.org` => `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:evil.com`.
   As the domain is not checked when verifying events, this will pass event signature checks. However, this is a new identity at
   a protocol level since the domains are different and as such the user must be allowed to join the room before their events will
   pass event authorisation checks. Alternatively, a stolen identity could manufacture valid events with that key _and domain_.
@@ -309,8 +329,8 @@ _client_ to store the account key, not the server. The underlying identity strin
 the `sender` of the event would have to just be the key, without the domain. It has to do this otherwise when you migrate to a different
 server, the domain of the `sender` will be wrong and critically will never be able to be updated without creating a new identity from a
 room protocol perspective, and thus will have the wrong permissions. Alternatively, we could keep the domain and adjust the auth rules to
-only use the public key to determine identity, meaning `@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:foo.com` and
-`@l8Hft5qXKn1vfHrg3p4+W8gELQVo8N13JkluMfmn2sQ:bar.com` would be treated as the same user from a room permissions perspective. Both options
+only use the public key to determine identity, meaning `@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:foo.com` and
+`@l8Hft5qXKn1vfHrg3p4-W8gELQVo8N13JkluMfmn2sQ:bar.com` would be treated as the same user from a room permissions perspective. Both options
 are invasive: one changes the user ID format and the other subverts the existing room permission model that clients have been coded to expect
 (which can be particularly painful to change, see [MSC4289](https://github.com/matrix-org/matrix-spec-proposals/pull/4289) as an example).
 
@@ -335,6 +355,12 @@ tells some people one account name and other people a different account name. In
 trusted notary servers provide the JSON in the event that the server is unavailable. Notary servers would be trusted to perform
 the federation requests honestly, and only return the JSON for account keys which have a correct `domain`.
 [^2]: Servers are allowed to lazily create account keys on usage.
-[^3]: Previous iterations of this proposal had this be 'MUST', but by dropping it to 'SHOULD' we informally bless servers that wish
-to add additional privacy protections for their users via per-room per-user keys, in which case there will be multiple account keys
-for the same underlying account.
+[^perroom]: By using 'SHOULD' we informally bless servers that wish to add additional privacy protections for their users via
+per-room per-user keys, in which case there will be multiple account keys for the same underlying account.
+[^signing]: This means servers do not need to make any network requests to verify the signature on inbound events.
+Currently servers need to ask for the server keys of the domain directly or via a notary server. If they cannot get the server keys,
+the event is dropped, causing a split-brain. This is why this proposal improves the security of the federation protocol.
+NB: The private key still lives on the server, not clients.
+[^urlsafe]: We want the public account key to be url-safe because it frequently appears in URL paths in the client-server API e.g account data,
+profile data, reporting datas and the Federation API e.g `/make_knock|join|leave/{roomID}/{userID}` and `/users/devices/{userID}`. This aligns
+with other base64 data like event IDs and room IDs which are also urlsafe but notably is in conflict with _signatures_ which are not urlsafe.
