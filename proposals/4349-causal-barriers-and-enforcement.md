@@ -1,5 +1,11 @@
 # MSC4349: Causal barriers and enforcement
 
+_Note: This MSC exists because
+[MSC4345](https://github.com/matrix-org/matrix-spec-proposals/pull/4345)
+described an informal version of the deferred authorization causal
+enforcement model discussed in this MSC. Which uncovered the problem
+of causal barrier conflicts._
+
 Matrix currently uses _causal barriers_ enforced locally by soft
 failure to exclude concurrent events. A _causal barrier_ works in
 Matrix because `prev_events` and `auth_events` specify the _casual
