@@ -1,4 +1,4 @@
-# MSC0000: Causal barriers and enforcement
+# MSC4349: Causal barriers and enforcement
 
 Matrix currently uses _causal barriers_ enforced locally by soft
 failure to exclude concurrent events. A _causal barrier_ works in
