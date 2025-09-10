@@ -8,9 +8,9 @@ of causal barrier conflicts._
 
 Matrix currently uses _causal barriers_ enforced locally by soft
 failure to exclude concurrent events. A _causal barrier_ works in
-Matrix because `prev_events` and `auth_events` specify the _casual
+Matrix because `prev_events` and `auth_events` specify the _causal
 predecessors_ of the event. And with a full synchronisation, it is
-possible to determine which events are concurrent. So therefore
+possible to determine which events are concurrent. So therefore a
 _causal barrier_ is an event which excludes all concurrent events from
 _consideration_. Where consideration usually means what is shown to an
 end user.
@@ -67,7 +67,7 @@ However once the server has all of the _causal predecessors_ for a
 _causal barrier_ it can infact revist the decision, and make a final
 decision.
 
-To do this, the server consults the predecessors of the casual barrier
+To do this, the server consults the predecessors of the causal barrier
 event to form a vector clock frontier for the sender of the
 conflicting event.
 
