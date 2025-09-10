@@ -1,4 +1,4 @@
-# MSC4323: Agnostic user suspension & locking endpoints
+# MSC4323: User suspension & locking endpoints
 
 Currently the specification outlines error codes for suspended and locked users,
 even going as far as to suggest which endpoints can and cannot be executed by suspended users.
