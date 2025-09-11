@@ -50,6 +50,11 @@ from a "non-cross-signed device" if:
 * the user who owns the impersonatable device has cross-signing keys and the
   impersonatable device is not signed by the user's self-signing key
 
+If there are no cross-signing keys on the user, messages are trusted with just
+the device signature. This means ghost users owned by the appservice will not be
+required to upload cross-signing keys at all, reducing the amount of keys that
+need to be managed.
+
 If any of the above conditions match, clients should behave as they do with
 other non-cross-signed messages under [MSC4153]. If not, then the impersonated
 message is trusted and should be displayed as usual. Clients MAY still choose to
@@ -57,8 +62,7 @@ display an indication that the message is from an impersonator device.
 
 The requirement for cross-signing means that bridges will have to get double
 puppeting devices verified, either by asking for the user's recovery key, or
-having the user upload a signature themselves. However, ghost users owned by
-the appservice will not be required to upload cross-signing keys at all.
+having the user upload a signature themselves.
 
 To help verify double puppeting sessions, clients can offer a button to easily
 cross-sign impersonatable devices. When offering such a button, clients SHOULD
@@ -170,8 +174,9 @@ share keys to users.
 ## Security considerations
 The requirement to cross-sign the impersonatable device could be bypassed by a
 malicious server that hides the user's cross-signing keys. However, hiding
-cross-signing will also prevent other devices of that user from working, so it
-should be easily noticeable.
+cross-signing will also prevent other devices of that user from working under
+[MSC4153] (as other clients will stop encrypting messages to all the user's real
+devices), so it should be easily noticeable.
 
 ## Unstable prefix
 `fi.mau.msc4350.impersonator` should be used instead of `impersonator` in
