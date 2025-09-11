@@ -183,4 +183,6 @@ devices), so it should be easily noticeable.
 device metadata.
 
 ## Dependencies
-This MSC enhances [MSC4153], but does not formally depend on it.
+This MSC builds on [MSC4153]. While this proposal would technically work without
+4153, some security properties assume that 4153 is accepted either before or at
+the same time as this MSC.
