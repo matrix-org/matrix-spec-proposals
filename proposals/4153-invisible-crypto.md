@@ -143,6 +143,21 @@ identity keys for the device and upload them to the homeserver, converting the
 device into a cryptographic device and making it subject to the rules given in
 this MSC.
 
+### Clients MAY make provisions for encrypted bridges
+
+Some bridges are structured in a way such that only one user controlled by the
+bridge (often called the bridge bot) participates in encryption, and encrypted
+messages from other bridge users are encrypted by the bridge bot.  Thus
+encrypted messages sent by one user could be encrypted by a Megolm session sent
+by a different user.  Clients MAY accept such messages, provided the bridge
+bot's device is cross-signed. However, the client MUST annotate the message with
+a warning, unless the client has a way to check that the bridge bot is permitted
+to encrypt messages on behalf of the user.
+
+[MSC4350](https://github.com/matrix-org/matrix-spec-proposals/pull/4350)
+presents a way for bridge users to indicate that the bridge bot is allowed to
+perform encryption on their behalf.
+
 ## Potential Issues
 
 ### Client support
@@ -228,4 +243,7 @@ Though not strictly dependencies, other MSCs improve the behaviour of this MSC:
 - [Including device keys with Olm-encrypted events
   (MSC4147)](https://github.com/matrix-org/matrix-spec-proposals/pull/4147)
   allows recipients to check the cross-signing status of devices that have been
-  deleted
+  deleted.
+- [Permitting encryption impersonation for appservices
+  (MSC4350)](https://github.com/matrix-org/matrix-spec-proposals/pull/4350)
+  allows a user to assert that a bridge is allowed to encrypt for them.
