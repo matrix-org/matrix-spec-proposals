@@ -409,9 +409,19 @@ not set, e.g. if `initial` is true and `name` is not set then the room has no na
 ensure that if they previously saw that the room had a name, then it MUST be cleared if it receives a room response with
 `initial: true` and no `name` field.
 
+#### Common fields
+
+These fields are always included no matter the membership.
+
+| Name | Type | Required | Comment |
+| - | - | - | - |
+| `bump_stamp` | `int` | Yes | An integer that can be used to sort rooms based on the last "proper" activity in the room. Greater means more recent. <br/><br/> "Proper" activity is defined as an event being received is one of the following types: `m.room.create`, `m.room.message`, `m.room.encrypted`, `m.sticker`, `m.call.invite`, `m.poll.start`, `m.beacon_info`. <br/><br/> For rooms that the user is not currently joined to, this instead represents when the relevant membership happened, e.g. when the user left the room. <br/><br/> The exact value of `bump_stamp` is opaque to the client, a server may use e.g. an auto-incrementing integer, a timestamp, etc. <br/><br/> The `bump_stamp` may decrease in subsequent responses, if e.g. an event was redacted/removed (or purged in cases of retention policies). |
+| `membership` | `string` | No | The current membership of the user, or omitted if user not in room (for peeking). |
+| `lists` | `[string]` | No | The name of the lists that match this room. The field is omitted if it doesn't match any list and is included only due to a subscription. |
+
 #### Joined/left/banned
 
-When a user is or has been in the room, the following field are returned:
+When a user is or has been in the room, the following field are also returned:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
@@ -423,7 +433,6 @@ When a user is or has been in the room, the following field are returned:
 | `expanded_timeline` | `bool` | No | Flag which is set if we're returning more historic events due to the timeline limit having increased. See "Changing room configs" section. |
 | `required_state` | `[Event\|StateStub]` | No | Changes in the current state of the room. <br/><br/> To handle state being deleted, the list may include a `StateStub` type (c.f. schema below) that only has `type` and `state_key` fields. The presence or absence of `content` field can be used to differentiate between the two cases. |
 | `timeline_events` | `[Event]` | No | The latest events in the room. May not include all events if e.g. there were more events than the configured `timeline_limit`, c.f. the `limited` field. <br/><br/> If `limited` is true then we include bundle aggregations for the event, as per sync v2. <br/><br/> The last event is the most recent. |
-| `bump_stamp` | `int` | No | An integer that can be used to sort rooms based on the last "proper" activity in the room. Greater means more recent. <br/><br/> "Proper" activity is defined as an event being received is one of the following types: `m.room.create`, `m.room.message`, `m.room.encrypted`, `m.sticker`, `m.call.invite`, `m.poll.start`, `m.beacon_info`. <br/><br/> For rooms that the user is not currently joined to, this instead represents when the relevant membership happened, e.g. when the user left the room. <br/><br/> The exact value of `bump_stamp` is opaque to the client, a server may use e.g. an auto-incrementing integer, a timestamp, etc. <br/><br/> The `bump_stamp` may decrease in subsequent responses, if e.g. an event was redacted/removed (or purged in cases of retention policies). |
 | `prev_batch` | `string` | No | A token that can be passed as a start parameter to the `/rooms/<room_id>/messages` API to retrieve earlier messages. |
 | `limited` | `bool` | No | True if there are more events since the previous sync than were included in the `timeline_events` field, or that the client should paginate to fetch more events.<br/><br/> Note that server may return fewer than the requested number of events and still set `limited` to true, e.g. because there is a gap in the history the server has for the room. <br/><br/>Absence means `false` |
 | `num_live` | `int` | No | The number of timeline events which have just occurred and are not historical. The last `N` events are 'live' and should be treated as such.<br/><br/> This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
@@ -440,14 +449,11 @@ When a user is or has been in the room, the following field are returned:
 
 #### Invite/knock
 
-For rooms the user is invited to or has knocked on, the client only gets the stripped state events and `bump_stamp`:
+For rooms the user is invited to or has knocked on, the client also gets the stripped state event:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `stripped_state` | `[StrippedState]` | Yes  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
-| `bump_stamp` | `int` | Yes | Same as for joined/left/banned rooms. |
-| `lists` | `[string]` | No | Same as for joined/left/banned rooms. |
-
 
 > [!Note]
 > Synapse currently may inadvertently return extra fields from the previous section.
@@ -511,7 +517,8 @@ The `StateStub` is used in `required_state` to indicate that a piece of state ha
           "invited_count": 1,
           "notification_count": 1,
           "highlight_count": 0,
-          "num_live": 2
+          "num_live": 2,
+          "membership": "join"
       },
       ...
   },
@@ -621,8 +628,8 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 1. The request `required_state` field is a bit confusing and uses special strings (like `"*"` and `"$LAZY"`).
 1. Duplication between room response `heroes` and `required_state` when specifying `["m.room.member", "$LAZY"]`, e.g.
    should we drop `heroes` if we are returning membership events?
-1. Should the room response include the user's current membership? The client can always request it via
-   `required_state`, but that may be wasted if the client doesn't need any other information from the member event.
+1. <del>Should the room response include the user's current membership? The client can always request it via
+   `required_state`, but that may be wasted if the client doesn't need any other information from the member event.</del>
 1. Should we remove the `highlight_count` and `notification_count` fields, given clients increasingly must calculate
    this themselves, and Synapse currently doesn't implement it nor does Element X use it.
 1. Should we support subscribing to rooms the user is not a member of, i.e. peeking for world readable rooms.
@@ -645,3 +652,4 @@ Changes from the initial implementation of simplified sliding sync.
 3. When state is deleted we return a stub `{"type: "..", "state_key": ".." }` in `required_state`.
 4. Rename `unstable_expanded_timeline` to `expanded_timeline`
 5. Add `lists` to room response
+6. Add `membership` field to room response.
