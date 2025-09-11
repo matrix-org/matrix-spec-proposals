@@ -431,6 +431,7 @@ When a user is or has been in the room, the following field are returned:
 | `invited_count` | `int` | No |  The number of users with membership of invite. (same as sync v2 `m.invited_member_count`) |
 | `notification_count` | `int` | No | The total number of unread notifications for this room. (same as sync v2) |
 | `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as sync v2) |
+| `lists` | `[string]` | No | The name of the lists that match this room. The field is omitted if it doesn't match any list and is included only due to a subscription. |
 
 
 > [!Note]
@@ -441,10 +442,11 @@ When a user is or has been in the room, the following field are returned:
 
 For rooms the user is invited to or has knocked on, the client only gets the stripped state events and `bump_stamp`:
 
-| Name | Type | Comment |
-| - | - | - |
-| `stripped_state` | `[StrippedState]`  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
-| `bump_stamp` | `int` | Same as for joined/left/banned rooms. |
+| Name | Type | Required | Comment |
+| - | - | - | - |
+| `stripped_state` | `[StrippedState]` | Yes  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
+| `bump_stamp` | `int` | Yes | Same as for joined/left/banned rooms. |
+| `lists` | `[string]` | No | Same as for joined/left/banned rooms. |
 
 
 > [!Note]
@@ -610,7 +612,7 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 
 ## Open questions
 
-1. In the response should we specify which lists a room is part of?
+1. <del>In the response should we specify which lists a room is part of?</del>
 1. <del>Should `knock_state` and  `invite_state` use the same name in the room response, e.g. `stripped_state`?</del>
 1. <del>In the room response how do we inform clients that a piece of state was deleted (rather than added/updated)?</del>
 1. <del>We need to decide what to do with `unstable_expanded_timeline`. We can either rename it to `expanded_timeline`, or
@@ -642,3 +644,4 @@ Changes from the initial implementation of simplified sliding sync.
 2. Rename `invite_state` to `stripped_state`
 3. When state is deleted we return a stub `{"type: "..", "state_key": ".." }` in `required_state`.
 4. Rename `unstable_expanded_timeline` to `expanded_timeline`
+5. Add `lists` to room response
