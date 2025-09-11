@@ -32,9 +32,10 @@ puppeting) with the `impersonator` field will be referred to as the
 device.
 
 The `algorithms` and `keys` fields are still present and required, but MUST be
-empty when an impersonator is defined. Because there are no keys, `signatures`
-will not include a signature from the device itself. Instead, there MUST be a
-signature from the user/device combination defined in the `impersonator` field.
+an empty list and an empty object respectively when an impersonator is defined.
+Because there are no keys, `signatures` will not include a signature from the
+device itself. Instead, there MUST be a signature from the user/device
+combination defined in the `impersonator` field.
 
 The lack of keys is used to signal that the impersonatable device can't receive
 keys on its own. Instead, the impersonator user should be a member of the room
