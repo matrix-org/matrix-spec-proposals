@@ -100,11 +100,13 @@ applications.
 
 ## Potential issues
 
-* If existing clients use Unicode code points to aid accessibility (e.g. for
+* If existing clients use Unicode characters to aid accessibility (e.g. for
   blind users), the use of an image might reduce accessibility. However, the
   already-provided word forms of the emoji are intended to give clients an easy
   way of exposing an accessible interface for the verification process, and
-  nothing about this proposal changes that.
+  nothing about this proposal changes that. Clients may also use the standard
+  accessibility mechanisms for their platform (e.g. the `alt` or `aria-label`
+  properties in HTML) to supply the Unicode characters.
 
 * The visual style of the twemoji emojis may not fit well with some client
   applications. I consider this aesthetic disruption worth it if it makes the
