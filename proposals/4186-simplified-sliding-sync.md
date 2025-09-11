@@ -639,7 +639,8 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 
 ## TODOs
 
-1. If we're keeping the notification counts we should add `unread_thread_notifications`
+1. <del>If we're keeping the notification counts we should add `unread_thread_notifications`</del>
+    - This should exist in the thread extension
 1. We should add `knock_servers` as per MSC4233, if that lands.
 
 
