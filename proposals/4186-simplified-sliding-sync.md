@@ -435,30 +435,21 @@ When a user is or has been in the room, the following field are returned:
 > Synapse always returns 0 for `notification_count` and `highlight_count`
 
 
-#### Invite
+#### Invite/knock
 
-For rooms the user is invited to, the client only gets the stripped state events and `bump_stamp`:
+For rooms the user is invited to or has knocked on, the client only gets the stripped state events and `bump_stamp`:
 
 | Name | Type | Comment |
 | - | - | - |
-| `invite_state` | `[StrippedState]`  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` in sync v2. |
+| `stripped_state` | `[StrippedState]`  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
 | `bump_stamp` | `int` | Same as for joined/left/banned rooms. |
 
 
 > [!Note]
 > Synapse currently may inadvertently return extra fields from the previous section.
 
-#### Knock
-
-For rooms the user has knocked, the client only gets the stripped state events and `bump_stamp`:
-
-| Name | Type | Comment |
-| - | - | - |
-| `knock_state` | `[StrippedState]`  | Stripped state events (for rooms where the user has knocked). Same as `rooms.invite.$room_id.knock_state` in sync v2. |
-| `bump_stamp` | `int` | Same as for joined/left/banned rooms. |
-
 > [!Note]
-> This hasn't been implemented in Synapse.
+> Knock support hasn't been implemented in Synapse.
 
 
 ### `StrippedHero` type
@@ -608,7 +599,7 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 ## Open questions
 
 1. In the response should we specify which lists a room is part of?
-1. Should `knock_state` and  `invite_state` use the same name in the room response, e.g. `stripped_state`?
+1. <del>Should `knock_state` and  `invite_state` use the same name in the room response, e.g. `stripped_state`?</del>
 1. In the room response how do we inform clients that a piece of state was deleted (rather than added/updated)?
 1. We need to decide what to do with `unstable_expanded_timeline`. We can either rename it to `expanded_timeline`, or
    remove the functionality and replace it with a bulk `/messages` endpoint (for multiple rooms). See "Timeline event
@@ -636,3 +627,4 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 Changes from the initial implementation of simplified sliding sync.
 
 1. Add `set_presence` URL param.
+2. Rename `invite_state` to `stripped_state`
