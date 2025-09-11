@@ -226,6 +226,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | - | - | - | - |
 | `pos` | string | No | Omitted if this is the first request of a connection. Otherwise, the `pos` token from the previous call to `/sync` |
 | `timeout` | int | No | How long to wait for new events in milliseconds. If omitted the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
+| `set_presence` | string | No | Same as in sync v2, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. |
 
 
 ## Request Body
@@ -626,6 +627,12 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 
 ## TODOs
 
-1. We should implement `set_presence` as per sync v2
 1. If we're keeping the notification counts we should add `unread_thread_notifications`
 1. We should add `knock_servers` as per MSC4233, if that lands.
+
+
+## Changelog
+
+Changes from the initial implementation of simplified sliding sync.
+
+1. Add `set_presence` URL param.
