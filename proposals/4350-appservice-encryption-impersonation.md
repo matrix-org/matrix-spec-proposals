@@ -146,9 +146,9 @@ all rooms (see alternative below).
 To remove the requirement for the bridge bot being a member of all rooms, we
 could define that clients must send keys to any impersonator devices in the
 room. However, we prefer an explicit bot membership over a hidden key sharing
-mechanism. Additionally, there would need to be a way to turn off sending keys
-to impersonator devices to avoid the bridge receiving keys in all encrypted
-rooms when using double puppeting.
+mechanism. Additionally, there would need to be a way to turn off sending
+message keys to impersonator devices to avoid the bridge receiving message keys
+in all encrypted rooms when using double puppeting.
 
 ### Disable encryption
 As mentioned in the introduction, bridges could simply not use encryption. This
