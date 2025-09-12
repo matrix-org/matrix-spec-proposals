@@ -248,7 +248,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
-| `required_state` | [RequiredStateTuple] | Yes | Required state for each room returned. |
+| `required_state` | [RequiredStateRequest] | Yes | Required state for each room returned. |
 | `ranges` | `[[int, int]]` | No | Sliding window ranges. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*. (This is a list of 2-tuples.) |
 | `filters` | `RoomFilter` | No | Filters to apply to the list before sorting. |
 
@@ -257,65 +257,33 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | Same as in `SyncListConfig` |
-| `required_state` | [RequiredStateTuple] | Yes | Same as in `SyncListConfig` |
+| `required_state` | [RequiredStateRequest] | Yes | Same as in `SyncListConfig` |
 
-### `RequiredStateTuple`
+### `RequiredStateRequest`
 
-An array of event type and state key tuples. Elements in this array are ORd together to produce the final set of state
-events to return.
+Describes the set of state that the server should return for the room.
 
-For example, the following would return the create event and current power levels:
-
-```jsonc
-    {
-        "required_state": [
-            ["m.room.create", ""],
-            ["m.room.power_levels", ""]
-        ]
-    }
-```
+| Name | Type | Required | Comment |
+| - | - | - | - |
+| `include` | `[RequiredStateElement]` | Yes | The set of state to return (unless filtered out by `exclude`). |
+| `exclude` | `[RequiredStateElement]` | No | The set of state to filter out before returning, if any. |
+| `lazy_members` | `bool` | No | Whether to enable lazy loaded membership behaviour. Defaults to false. |
 
 
-#### Special values
+#### `RequiredStateElement`
 
-There are a number of special values that the client can use in place of either the event type or state key:
+| Name | Type | Required | Comment |
+| - | - | - | - |
+| `type` | `string` | No | The event type to match. If omitted then matches all types. |
+| `state_key` | `string` | No | The event state key to match. If omitted then matches all state keys. |
 
-1. `"*"` — Can be used in either the type or state key position to match any type or state key.
-1. `"$LAZY"` — Can be used in the state key position when the type is `m.room.member`. This triggers the lazy loading
-   membership behaviour (as in sync v2), described in the next sections.
-1. `"$ME"` — Can be used in the state key position to match the user's full user ID. This is merely a convenience for
-   clients, and has the same semantics as if the client used the full user ID (e.g. `"@user:example.com"`).
 
-#### Wildcards
-
-The wildcard (`"*"`) can be used in either the type or state key position, and matches any type or state key. The client
-can use `["*", "*"]` to request all state.
-
-There is a special case when `["*", "*"]` is used with additional entries: the additional entries are FILTERED OUT the
-of the returned set of state events. These additional entries cannot use `*` themselves. For example, `["*", "*"],
-["m.room.member", "@alice:example.com"]` will *exclude* every `m.room.member` event *except* for `@alice:example.com`,
-and include every other state event. In addition, `["*", "*"], ["m.space.child", "*"]` is an error, the `m.space.child`
-filter is not required as it would have been returned anyway.
-
-> [!Note]
-> Synapse doesn't currently support filtering out state, and simply returns all state.
 
 #### Lazy loaded memberships
 
-Room members can be lazily-loaded by using the special `$LAZY` state key (`["m.room.member", "$LAZY"]`). Typically, when
-you view a room, you want to retrieve all state events except for m.room.member events which you want to lazily load. To
-get this behaviour, clients can send the following:
-
-```jsonc
-    {
-        "required_state": [
-            // activate lazy loading
-            ["m.room.member", "$LAZY"],
-            // request all state events _except_ for m.room.member events which are lazily loaded
-            ["*", "*"]
-        ]
-    }
-```
+Room members can be lazily-loaded by using the `lazy_members` flag is set. Typically, when you view a room, you want to
+retrieve all state events except for m.room.member events which you want to lazily load. To get this behaviour, clients
+can send the following:
 
 This is (almost) the same as lazy loaded memberships in sync v2. When specified, the server will return the membership
 events for:
@@ -326,12 +294,41 @@ events for:
    cache the membership list without requiring the server to send all membership updates for large gaps.
 
 
+Memberships returned to the client due to `lazy_members` are *not* filtered by `exclude`.
+
+
 #### Combining `required_state`
 
-When combining room configs with different `required_state` fields the result must be the superset of the different sets
-of `required_state`.  There are two approaches server-side for handling this: a) keep the `required_state` sets
-separates and return any state that matches any set, or b) merge the sets together, however care must be taken to
-correctly account for wildcards, i.e. one cannot simply join the lists together.
+When combining room configs with different `required_state` fields the result must be the superset of them all. There
+are two approaches server-side for handling this: a) keep the `required_state` separate and return any state that
+matches any of them, or b) merge the fields together, however care must be taken to correctly account for wildcards.
+
+#### Examples
+
+Simple example that returns the create event and power levels:
+
+```jsonc
+    {
+        "required_state": {
+            "include": [
+                {"type": "m.room.create", "state_key": ""},
+                {"type": "m.room.power_levels", "state_key": ""},
+            ],
+        }
+    }
+```
+
+An example that returns all the state except the create event:
+
+```jsonc
+    {
+        "required_state": {
+            "include": [{}],  // An empty object matches everything
+            "exclude": [{"type": "m.room.create", "state_key": ""}]
+        }
+    }
+```
+
 
 
 ### `RoomFilter`
@@ -358,10 +355,12 @@ correctly account for wildcards, i.e. one cannot simply join the lists together.
     "lists": {
         "foo-list": {
             "ranges": [ [0, 99] ],
-            "required_state": [
-                ["m.room.create", ""],
-                ["m.room.member", "$LAZY"],
-            ],
+            "required_state": {
+                "include": [
+                    {"type": "m.room.create", "state_key": ""},
+                ],
+                "lazy_members": true,
+            },
             "timeline_limit": 10,
             "filters": {
                 "is_dm": true
@@ -371,7 +370,7 @@ correctly account for wildcards, i.e. one cannot simply join the lists together.
     // Room Subscriptions API
     "room_subscriptions": {
         "!sub1:bar": {
-            "required_state": [ ["*","*"] ],
+            "required_state": { "include": [{}] },
             "timeline_limit": 10,
         }
     }
@@ -625,9 +624,9 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 1. <del>We need to decide what to do with `unstable_expanded_timeline`. We can either rename it to `expanded_timeline`, or
    remove the functionality and replace it with a bulk `/messages` endpoint (for multiple rooms). See "Timeline event
    trickling" section.</del>
-1. The request `required_state` field is a bit confusing and uses special strings (like `"*"` and `"$LAZY"`).
-1. Duplication between room response `heroes` and `required_state` when specifying `["m.room.member", "$LAZY"]`, e.g.
-   should we drop `heroes` if we are returning membership events?
+1. <del>The request `required_state` field is a bit confusing and uses special strings (like `"*"` and `"$LAZY"`).</del>
+1. Duplication between room response `heroes` and `required_state` when specifying `lazy_members`, e.g. should we drop
+   `heroes` if we are returning membership events?
 1. <del>Should the room response include the user's current membership? The client can always request it via
    `required_state`, but that may be wasted if the client doesn't need any other information from the member event.</del>
 1. Should we remove the `highlight_count` and `notification_count` fields, given clients increasingly must calculate
@@ -636,6 +635,7 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
 1. Should we support timeline filtering?
 1. Should we move `pos`, and other URL params, into the request body? This would allow web clients to cache the CORS
    requests, rather than having to pre-flight each request.
+1. How do we make it so that the clients don't have to send up the same body each time?
 
 ## TODOs
 
@@ -654,3 +654,4 @@ Changes from the initial implementation of simplified sliding sync.
 4. Rename `unstable_expanded_timeline` to `expanded_timeline`
 5. Add `lists` to room response
 6. Add `membership` field to room response.
+7. Change the format of `required_state` in the request.
