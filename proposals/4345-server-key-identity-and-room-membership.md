@@ -25,6 +25,11 @@ views of the DAG:
 This MSC is inspired the work of @kegsay in
 [MSC4243](https://github.com/matrix-org/matrix-spec-proposals/pull/4243).
 
+Additionally, this MSC uses terminology from [MSC4349: Causal barriers
+and
+enforcement](https://github.com/matrix-org/matrix-spec-proposals/pull/4349):
+ie _causal barrier_ and _causal enforcement_.
+
 ## Proposal
 
 We propose to make the server's identity within a room solely a long
@@ -52,7 +57,9 @@ In addition to this, we strengthen the conditions of server
 participation in the DAG:
 
 - We also introduce server participation, which allows servers to be
-  denied access to the room at the DAG level.
+  denied access to the room at the DAG level. This allows both public
+  and private rooms to benefit from DAG reproducibility and preemptive
+  access control. Denied participation forms a _casual barrier_.
 
 - Servers are unable to participate within a room until their key has
   been added by an existing participant. This principally ensures the
@@ -64,16 +71,6 @@ participation in the DAG:
   invite permission the opportunity to challenge previously
   undiscovered homeservers. Whereas there is no current protocol step
   to enable this for public rooms.
-
-- Rules are introduced that allow servers to be removed without the
-  need for soft-failure by canonicalising their history as part of the
-  deny event. This is a necessary change because it prevents servers
-  from reusing their stale participation in the room, along with their
-  invite permission, to add new keys to the room.
-
-This allows both public and private rooms to benefit from DAG
-reproducibility and preemptive access control for servers without the
-use of a policy server.
 
 We make no attempt to change the relationship of users to the DAG and
 servers within this MSC. [MSC4348: Portable and serverless accounts in
@@ -87,6 +84,22 @@ that in future MSCs in this series either.
 
 - A server's _ambient power level_ is the highest power level of any
   user that is resident to the server.
+
+- A _causal barrier_ is an event which excludes all concurrent events
+  from _consideration_. A ban event is a causal barrier that is
+  enforced locally by soft failure. A causal barrier can be scoped to
+  a specific sender, like the ban event is. In this proposal, we
+  introduce a barrier scoped to a specific server. Which is an
+  `m.server.participation` event with a `participation` of `denied`.
+
+#### A note on _causal barriers_
+
+This MSC does not propose changes to the enforcement of _causal
+barriers_. But its security is greatly enhanced with different
+enforcement tehniques to soft failure, such as a trusted authority in
+a policy server. Alternative options for _causal enforcement_ are
+discussed in [MSC4349: Causal barriers and
+enforcement](https://github.com/matrix-org/matrix-spec-proposals/pull/4349).
 
 ### The `m.server.participation` state event, `state_key: ${origin_server_key}`
 
@@ -215,24 +228,6 @@ participation. This event will have a `participation` of `permitted`.
 Servers can only accept invitations and emit a join event when their
 current participation state in the room is set to `accepted`.
 
-### Terminology for authorization
-
-The _considered event extremities_ is the set of events provided by
-`prev_events` and `auth_events` of the considered event.
-
-The _considered event's acknowledged events_ is the set of events
-connected to the `prev_events` of the considered event.
-
-The _origin server's acknowledged extremities_ is the set of events
-that are the tips of all DAG fragments which the origin server has
-previously referenced in the `prev_events` of any event that has
-already been authorized. This set is empty if the origin server has
-not sent any prior events to the room.
-
-The _origin server's acknowledged events_ is the set of events that
-are connected to the _origin server's acknowledged extremities_ set,
-including the _acknowledged extremities_ themselves.
-
 ### Key revocation
 
 We define a _key revocation event_ to be an `m.server.participation`
@@ -240,12 +235,17 @@ event with the following properties:
 
 1. The event's signature can be verified with the key found in the `state_key`.
 2. The event's `participation` is `denied`.
-3. The _considered event's acknowledged events_ is not a subset of the
-   _origin server's acknowledged events_.
-4. If the current `participation` is `denied`:
-   1. If the current `participation` is not signed with the same key.
-   2. The _considered event's acknowledged events_ is equal to the
-      the _origin server's acknowledged events_.
+
+Key revocations are enforced by auth rules to be immutable.
+
+### Additional causal restrictions on `m.server.participation` when participation is `denied`
+
+These restrictions can be enforced locally or by another causal
+authority. See
+[MSC4349](https://github.com/matrix-org/matrix-spec-proposals/pull/4349).
+
+- The considered event MUST NOT be conflicting to the known _vector
+  clock frontier_ of the sender.
 
 ### The `m.server.participation` authorization rule
 
@@ -257,55 +257,41 @@ check for `m.room.member`.
    1. If the sender's signature matches the `state_key` of the
       considered event:
       1. If the `participation` field of the considered event is
-         `denied`, allow.
+         `denied` AND the current participation is not `denied`, allow.
       2. If the `participation` field of the considered event is not
          `accepted`, reject.
-   2. If the sender is a room owner, allow.
-   3. If the current participation state for the target is `permitted`
-      or `accepted`, allow.
-   4. Otherwise, reject.
-2. If the `sender`'s current participation state is not `accepted`, reject.
-3. If `participation` is `accepted`, reject[^participation-accept].
-4. If there is no current participation state for the target:
-   2. If `partcipation` is `denied`:
-      1. If the `sender`'s power level is greater than or equal to the _ban level_,
-         is greater than or equal to the target server's ambient power level, allow.
-      2. Otherwise, reject.
-   3. If `participation` is `permitted`:
-      1. If the _target server_'s current participation state is `accepted`, reject.
-   4. If the _target server_'s current participation state is `denied`:
+      3. If the sender is a room creator, allow[^room-creator].
+      4. If the current participation state for the target is `permitted`
+         or `accepted`, allow.
+      5. Otherwise, reject.
+   2. If `participation` is `accepted`, reject[^participation-accept].
+   3. If `partcipation` is `denied`:
       1. If the origin of the current participation state is the target key, reject[^revocation].
-      2. If the `sender`'s power level is less than the _ban
-         level_ or is less than the target server's ambient power
-         level, reject.
-   5. if the `sender`'s power level is greater than or equal to
-      the _invite level_, allow. 3. Otherwise, reject.
+	  2. If the `sender`'s power level is greater than or equal to the _ban level_,
+            is greater than or equal to the target server's ambient power level, allow.
+	  3. Otherwise, reject.
+   4. If `participation` is `permitted`:
+      1. If the _target server_'s current participation state is `accepted`, reject.
+      2. If the _target server_'s current participation state is `denied`:
+         1. If the origin of the current participation state is the target key, reject[^revocation].
+         2. If the `sender`'s power level is less than the _ban
+            level_ or is less than the target server's ambient power
+            level, reject[^denied-removal-ie-unbanning].
+      3. If the `sender`'s power level is greater than or equal to
+         the _invite level_, allow.
+	  4. Otherwise, reject.
+   5. Otherwise, reject.
+2. If the `sender`'s current participation state is not `accepted`, reject.
 
-5. If the `sender`'s current participation state is not `accepted`, reject.
+[^denied-removal-ie-unbanning]:
+	This allows server to be unbanned.
+
+[^room-creator]:
+	This rule allows the room creator to set their own participation.
 
 [^participation-accept]:
     This rule prevents anyone but the owner of
     the key from setting the participation to accept
-
-### The authorization rule for `denied` participation
-
-This rule should be inserted at the beginning of auth rules and noted
-in the description of soft failure
-https://spec.matrix.org/latest/server-server-api/#soft-failure.
-
-1. If the `sender`'s current participation is `denied`:
-   1. If the considered event is a _key revocation event_, allow[^revocation].
-   2. If the the _current participation_ event's _origin server's
-      acknowledged events_ does not include the considered event, reject.
-   3. Fall-through.
-
-This rule exists to ensure that a consistent history is provided for
-the _denied server_. It removes the avenue for the denied server to
-reference stale state to append an infinite number of soft failed
-events to the DAG. It also prevents the sender of the deny event from
-placing the deny earlier in history to remove the target server's
-events. Doing so will have the same effect as using the current
-state.
 
 [^revocation]:
     This rule enforces that the owner of the key has total
@@ -417,6 +403,16 @@ avoid soft failure and the problems discussed in MSC4104.
 ## Security considerations
 
 See [Impositions on client UI](#impositions-on-client-ui).
+
+### Room admins as causal authority may successfully use stolen keys to impersonate
+
+If a room admin steals a server key, they may still use the stolen key
+by denying the key as an admin, and then use the stolen the key to add
+events that are concurrent to the deny. If the room admin also serves
+as the causal authority in the room, then this would allow them to
+fake valid events.
+
+Without being the causal authority this attack would fail.
 
 ## Unstable prefix
 
