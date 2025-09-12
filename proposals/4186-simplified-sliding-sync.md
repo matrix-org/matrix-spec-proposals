@@ -222,15 +222,6 @@ Examples of extensions, which will be specified elsewhere, are:
 
 The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/org.matrix.simplified_msc3575/sync`.
 
-## Request URL parameters
-
-| Name | Type | Required | Comment |
-| - | - | - | - |
-| `pos` | string | No | Omitted if this is the first request of a connection. Otherwise, the `pos` token from the previous call to `/sync` |
-| `timeout` | int | No | How long to wait for new events in milliseconds. If omitted the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
-| `set_presence` | string | No | Same as in sync v2, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. |
-
-
 ## Request Body
 
 ### Top-level
@@ -238,6 +229,9 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `conn_id` | `string` | No | An optional string to identify this connection to the server. Only one sliding sync connection is allowed per given conn_id (empty or not). |
+| `pos` | string | No | Omitted if this is the first request of a connection. Otherwise, the `pos` token from the previous call to `/sync` |
+| `timeout` | int | No | How long to wait for new events in milliseconds. If omitted the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
+| `set_presence` | string | No | Same as in sync v2, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. |
 | `lists` | `{string: SyncListConfig}` | No | Sliding window API. A map of list key to list information (`SyncListConfig`). Max lists: 100. The list keys should be arbitrary strings which the client is using to refer to the list. Max length: 64 bytes. |
 | `room_subscriptions` | `{string: RoomSubscription}` | No | A map of room ID to room subscription information. Used to subscribe to a specific room. Sometimes clients know exactly which room they want to get information about e.g by following a permalink or by refreshing a webapp currently viewing a specific room. The sliding window API alone is insufficient for this use case because there's no way to say "please track this room explicitly". |
 | `extensions` | `{string: ExtensionConfig}` | No | A map of extension key to extension config. Different extensions have different configuration formats. |
@@ -570,8 +564,8 @@ this can be done.
 
 When the client is expecting a fast response (e.g. while expanding the lists), it should set the `timeout` parameter to
 0 to ensure the server doesn't block waiting for new data. This can easily happen if the app starts and sends the first
-request with a `since` parameter, if the client shows a spinner but doesn't set a timeout then the request may take a
-long time to return (if there were no updates to return).
+request with a `pos` parameter, if the client shows a spinner but doesn't set a timeout then the request may take a long
+time to return (if there were no updates to return).
 
 # Alternatives
 
@@ -633,8 +627,8 @@ in `/_matrix/client/versions` is `org.matrix.simplified_msc3575`.
    this themselves, and Synapse currently doesn't implement it nor does Element X use it.
 1. Should we support subscribing to rooms the user is not a member of, i.e. peeking for world readable rooms.
 1. Should we support timeline filtering?
-1. Should we move `pos`, and other URL params, into the request body? This would allow web clients to cache the CORS
-   requests, rather than having to pre-flight each request.
+1. <del>Should we move `pos`, and other URL params, into the request body? This would allow web clients to cache the CORS
+   requests, rather than having to pre-flight each request.</del>
 1. How do we make it so that the clients don't have to send up the same body each time?
 
 ## TODOs
@@ -655,3 +649,5 @@ Changes from the initial implementation of simplified sliding sync.
 5. Add `lists` to room response
 6. Add `membership` field to room response.
 7. Change the format of `required_state` in the request.
+8. Move URL parameters to the request body. This is so that on web every request doesn't need to be pre-flighted for
+   CORS.
