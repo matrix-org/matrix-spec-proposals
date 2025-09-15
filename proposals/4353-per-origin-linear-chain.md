@@ -1,4 +1,4 @@
-# MSC0000: Per origin linear chain
+# MSC4353: Per origin linear chain
 
 Currently, servers can produce events that are disconnected from the
 server's own causal history. This allows servers to produce events
@@ -13,7 +13,7 @@ malice or inconsistency.
 
 ## Example using today's room model
 
-![](./images/xxxx-current-matrix-ban-and-key.png)
+![](./images/4353-current-matrix-ban-and-key.png)
 
 Consider A scenario where there are three servers in a room: Blue,
 Green, and Yellow. Consider that Blue immediately bans Yellow after
@@ -85,14 +85,14 @@ future:
 
 ### An example of bans with linear origin chain
 
-![](./images/xxxx-linear-origin-chain-ban.png)
+![](./images/4353-linear-origin-chain-ban.png)
 
 Now with a linear origin chain in place, we can determine that Blue's
 ban on Yellow was not an attempt to erase Yellow.
 
 ### An example of erasure with linear origin chain
 
-![](./images/xxxx-linear-origin-chain-equivocator.png)
+![](./images/4353-linear-origin-chain-equivocator.png)
 
 If Blue does attempt to retroactively erase Yellow, it must explicitly
 create an event that is concurrent with its own origin chain. And thus
