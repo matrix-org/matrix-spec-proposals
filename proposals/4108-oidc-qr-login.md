@@ -9,6 +9,41 @@ This MSC supersedes [MSC3906](https://github.com/matrix-org/matrix-spec-proposal
 [MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886) which achieved a similar feature but did not
 work with a homeserver using [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api).
 
+Table of contents:
+
+- [Proposal](#proposal)
+    - [Insecure rendezvous session](#insecure-rendezvous-session)
+        - [High-level description](#high-level-description)
+        - [The send mechanism](#the-send-mechanism)
+        - [Expiry](#expiry)
+        - [API](#api)
+        - [Example API usage](#example-api-usage)
+        - [Threat analysis](#threat-analysis)
+    - [Secure channel](#secure-channel)
+        - [Establishment](#establishment)
+        - [Sequence diagram](#sequence-diagram)
+        - [Secure operations](#secure-operations)
+        - [Threat analysis](#threat-analysis)
+    - [The OAuth login part and set up of E2EE](#the-oauth-login-part-and-set-up-of-e2ee)
+        - [Login via OAuth Device Authorization Grant](#login-via-oauth-device-authorization-grant)
+        - [Secret sharing and device verification](#secret-sharing-and-device-verification)
+        - [Message reference](#message-reference)
+    - [QR code format](#qr-code-format)
+        - [Example for QR code generated on new device](#example-for-qr-code-generated-on-new-device)
+        - [Example for QR code generated on existing device](#example-for-qr-code-generated-on-existing-device)
+    - [Discoverability of the capability](#discoverability-of-the-capability)
+- [Potential issues](#potential-issues)
+- [Alternatives](#alternatives)
+    - [Alternative to the rendezvous session protocol](#alternative-to-the-rendezvous-session-protocol)
+        - [Send-to-Device messaging](#send-to-device-messaging)
+        - [Other existing protocols](#other-existing-protocols)
+        - [Implementation details](#implementation-details)
+    - [Alternative method of secret sharing](#alternative-method-of-secret-sharing)
+- [Security considerations](#security-considerations)
+    - [Malicious session spawning](#malicious-session-spawning)
+- [Unstable prefix](#unstable-prefix)
+- [Dependencies](#dependencies)
+
 ## Proposal
 
 Depending on the pair of devices used, it may be preferable to scan the QR code on either the new or existing device,
