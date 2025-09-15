@@ -60,15 +60,36 @@ Clients MUST validate that the discovered value is a valid HTTPS origin and MUST
 
 ### 3. Generation algorithm (normative)
 
-When a client needs an HTTPS permalink (e.g., for emails, social platforms, or contexts without a `matrix:` handler):
+**Scope:** This algorithm applies **only** to generating HTTPS permalinks for **outside‑Matrix** contexts (e.g. email,
+social networks, the web). Clients **MUST NOT** use resolver‑based HTTPS links for in‑app mentions/links/navigation.
 
-1.  Determine `permalink_base_url` by the precedence above.
-2.  Construct the permalink path using the **matrix.to navigation grammar** from the spec (identifier encoding, optional
-    event segment, `via` routing parameters, etc.).
-3.  Produce `https://permalink_base_url/#/<encoded identifier>[/<encoded event>][?<args>]`.
+1.  Determine `permalink_base_url` by the precedence in Section 2 (user override → well‑known → client default).
+2.  Construct the path using the matrix.to navigation grammar defined by the spec (identifier encoding, optional event
+    segment, routing parameters like `via`, etc.).
+3.  Produce `https://<permalink_base_url>/#/<encoded identifier>[/<encoded event>][?<args>]`.
 
-> Note: Clients SHOULD continue to prefer the `matrix:` URI scheme where appropriate (in-app deep linking, OS-level
-> handlers). HTTPS permalinks remain the web-friendly representation.
+Clients **SHOULD** continue to prefer the `matrix:` URI scheme for deep‑linking whenever appropriate.
+
+#### In‑app usage (normative)
+
+Clients **MUST NOT** use resolver‑based HTTPS permalinks for in‑app links (mentions, room/event links, or any links
+displayed to Matrix users). Clients **MUST** prefer the `matrix:` URI scheme (or native navigation) for all in‑app UX.
+
+#### Sending links in Matrix (normative)
+
+When a user types/pastes a resolver‑style HTTPS permalink in a message composer, the client **SHOULD** preserve the
+visible text but **MUST** emit, in `formatted_body`, an anchor whose `href` is the equivalent `matrix:` URI, to ensure
+cross‑client interoperability. The plain‑text `body` may keep the original text.
+
+#### Receiving (parsing)
+
+Clients **MUST** handle `matrix:` URIs. Clients **MAY** additionally recognise HTTPS permalinks that follow the
+matrix.to navigation grammar regardless of hostname, but this is **not required** by this MSC.
+
+#### Non‑goals
+
+This MSC does **not** standardise applying resolver prefixes to in‑app mentions or in‑app permalinks. Clients **MUST
+NOT** rewrite mentions or in‑app links to use resolver domains.
 
 ### 4. Resolution behavior
 
