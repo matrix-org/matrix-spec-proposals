@@ -53,6 +53,8 @@ Add an optional query parameter `action` to `GET /_matrix/client/v3/login/sso/re
 
 e.g. `https://matrix-client.matrix.org/_matrix/client/v3/login/sso/redirect?action=register`
 
+The client might determine the value based on whether the user clicked a "Login" or "Register" button.
+
 n.b. we don't need to add this to the [Login Fallback](https://spec.matrix.org/v1.15/client-server-api/#login-fallback) as that isn't used for registration.
 
 ### Definition of OAuth 2.0 aware
