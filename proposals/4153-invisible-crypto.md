@@ -45,9 +45,9 @@ key backup key (if available).
 ### Verifying individual devices of other users is deprecated
 
 When one user verifies a different user, the verification SHOULD verify the
-users’ cross-signing keys.  Any flow that verifies only the device keys of
-different users is deprecated without verifying the cross-signing keys.
-Verifying a user’s own device keys is still supported.
+users’ cross-signing keys.  Any flow between different users that does not
+verify the users' cross-signing keys (it verifies only the device keys) is
+deprecated.  Verifying a user’s own device keys is still supported.
 
 ### Devices SHOULD be cross-signed
 
