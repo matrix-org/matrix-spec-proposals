@@ -66,7 +66,8 @@ For a client to be considered fully *OAuth 2.0 aware* it **must**:
 - check and honour the `m.3pid_changes` [capability](https://spec.matrix.org/v1.15/client-server-api/#m3pid_changes-capability) so that the user is not offered the ability to add or remove 3PIDs when the server has the OAuth 2.0 API enabled
 - if the user wishes to sign out a device session other than it's own then the client **must**:
   - link the user to the `account_management_uri` given by [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/pull/4191) if provided
-  - append the `action` and `device_id` to the web UI link parameters described by [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/blob/quenting/account-deeplink/proposals/4191-account-deeplink.md#account-management-url-parameters) so that the web UI knows that the user wishes to sign out a device and which one it is. e.g. `?action=session_end&device_id=<device_id>`
+  - append the `action` and `device_id` to the web UI link parameters described by [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/blob/quenting/account-deeplink/proposals/4191-account-deeplink.md#account-management-url-parameters) so that the web UI knows that the user wishes to sign out a device and which one it is. e.g. `?action=org.matrix.session_end&device_id=<device_id>`
+  - n.b. an earlier version of this MSC used the `session_end` value instead of `org.matrix.session_end`. This has changed for consistency with MSC4191.
 
 Optionally, an *OAuth 2.0 aware* client **could**:
 
@@ -108,6 +109,9 @@ While this feature is in development the following unstable prefixes should be u
 
 - In the /login response body: `org.matrix.msc3824.delegated_oidc_compatibility` instead of `delegated_oidc_compatibility`
 - On the SSO redirect: `org.matrix.msc3824.action` instead of `action` query parameter
+
+An earlier version of this MSC used the `session_end` value instead of the [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/pull/4191)
+value `org.matrix.session_end`. This should be resolved once the feature gets stabilised.
 
 ## Dependencies
 
