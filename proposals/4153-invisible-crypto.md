@@ -208,11 +208,11 @@ The following bots support cross-signing:
 
 - [meowlnir](https://github.com/maunium/meowlnir)
 - [Arnie](https://gitlab.com/andybalaam/arnie)
+- [maubot](https://github.com/maubot/maubot)
 
 The following bot SDKs support, or plan to support, cross-signing such that any
 bots written using them will support cross-signing:
 
-- [maubot](https://github.com/maubot/maubot) (planned)
 - [mautrix-go](https://github.com/mautrix/go) (planned support for Application Services)
 
 ## Alternatives
