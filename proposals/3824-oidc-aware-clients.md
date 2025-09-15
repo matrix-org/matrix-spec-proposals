@@ -79,7 +79,7 @@ For an OIDC enabled homeserver to provide support for *OAuth 2.0 aware* clients 
 - support the [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api)
 - provide a compatibility layer for `m.login.password` and `m.login.sso`
 - indicate that the `m.login.sso` is preferred by setting `delegated_oidc_compatibility` to `true`
-- make use of the `action` param on the SSO redirect endpoints
+- provides a value for the `action` param on the SSO redirect endpoints as defined above
 
 Additionally, the homeserver **should**:
 
