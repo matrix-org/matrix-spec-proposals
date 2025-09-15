@@ -148,6 +148,17 @@ Otherwise, none identified.
 
 I'm not aware of any other standardised OAuth grant types that would be suitable as an alternative.
 
+### Requiring support for the new grant type
+
+We could make it mandatory that new grant type is supported by Matrix homeservers.
+
+As currently proposed it is optional and discoverable via the `grant_types_supported` metadata.
+
+### Make `verification_uri_complete` be mandatory
+
+RFC 8628 makes makes `verification_uri_complete` optional, but we could make it mandatory. This could improve the UX for some
+use cases.
+
 ## Security considerations
 
 [RFC 8628 section 5](https://datatracker.ietf.org/doc/html/rfc8628#section-5) contains various security considerations
