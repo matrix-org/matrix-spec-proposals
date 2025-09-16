@@ -323,7 +323,7 @@ implement the map-like semantics should they wish to.
 [^ttl]: Earlier designs had servers inject a new `unsigned.ttl_ms` field into the PDU to say how many milliseconds were left.
 This was problematic because it would have to be modified every time the server attempted delivery of the event to another server.
 Furthermore, it didn’t really add any more protection because it assumed servers honestly set the value.
-Malicious servers could set the TTL to be the maximum allowed time all the time, ensuring maximum divergence
+Malicious servers could set the TTL to be 0 ~ `sticky.duration_ms` , ensuring maximum divergence
 on whether or not an event was sticky. In contrast, using `origin_server_ts` is a consistent reference point
 that all servers are guaranteed to see, limiting the ability for malicious servers to cause divergence as all
 servers approximately track NTP.
