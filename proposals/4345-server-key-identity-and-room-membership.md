@@ -169,6 +169,9 @@ A user with the _ban_ power level, may change the
 level to `denied`. This power level comparison is the sending user's
 power level compared to the denied server's ambient power level.
 
+Once a key is denied, if a Matrix homeserver is to participate again
+it must rejoin the room with a new keypair.
+
 #### Denied participation when set by the key controller
 
 The server may revoke its own key at any time by setting its own
@@ -272,19 +275,12 @@ check for `m.room.member`.
 	  3. Otherwise, reject.
    4. If `participation` is `permitted`:
       1. If the _target server_'s current participation state is `accepted`, reject.
-      2. If the _target server_'s current participation state is `denied`:
-         1. If the origin of the current participation state is the target key, reject[^revocation].
-         2. If the `sender`'s power level is less than the _ban
-            level_ or is less than the target server's ambient power
-            level, reject[^denied-removal-ie-unbanning].
+      2. If the _target server_'s current participation state is `denied`, reject[^revocation].
       3. If the `sender`'s power level is greater than or equal to
          the _invite level_, allow.
 	  4. Otherwise, reject.
    5. Otherwise, reject.
 2. If the `sender`'s current participation state is not `accepted`, reject.
-
-[^denied-removal-ie-unbanning]:
-	This allows server to be unbanned.
 
 [^room-creator]:
 	This rule allows the room creator to set their own participation.
@@ -294,10 +290,11 @@ check for `m.room.member`.
     the key from setting the participation to accept
 
 [^revocation]:
-    This rule enforces that the owner of the key has total
+    This rule enforces that any controller of the key has total
     autonomy over its revocation. Room admins cannot steal a key and
-    override this, and even if server admins set the server to deny,
-    the key owner can still revoke the key.
+    override this, once the key is denied, it has been permanently
+    revoked.
+
 
 ### The `/request_participation` endpoint
 
@@ -326,7 +323,7 @@ The following query parameters are supported:
 
 The response is identical to `send_join`.
 
-### Changes to `/_matrix/key/v3/query`
+### Introducing `/_matrix/key/v3/query`
 
 `valid_until_ts` is removed. Keys are never time-bounded and
 revocation is explicit via DAG state.
@@ -342,7 +339,12 @@ To verify domain ownership from an `m.server.participation` event:
    from the `advertised_domain`
 
 The server that performed verification of domain ownership may now
-permanently cache the mapping.
+cache the mapping. But may not wish to do so permanently, as the keys
+may be stolen or revoked in the future.
+
+The requested server should make sure to only admit ownership of keys
+for which the requesting server can access through participation
+within a room where the requested server is using said keys.
 
 ### Changes to the user ID format
 
@@ -404,7 +406,18 @@ avoid soft failure and the problems discussed in MSC4104.
 
 See [Impositions on client UI](#impositions-on-client-ui).
 
-### Room admins as causal authority may successfully use stolen keys to impersonate
+### Why server bans are implemented as key revocation
+
+It's not clear whether Matrix will be able to prevent room admins
+becoming a causal authority. In that instance, banning and unbanning a
+server can be used to successfully use a stolen identity without the
+original controller being able to stop it. See below. If denial is
+revocation, then the original key controller can deny their own key in
+any branch that the room admins try to create where the key is still
+valid.
+
+Room admins as causal authority may successfully use stolen keys to
+impersonate if `denied` participation is not key revocation
 
 If a room admin steals a server key, they may still use the stolen key
 by denying the key as an admin, and then use the stolen the key to add
@@ -412,7 +425,8 @@ events that are concurrent to the deny. If the room admin also serves
 as the causal authority in the room, then this would allow them to
 fake valid events.
 
-Without being the causal authority this attack would fail.
+Without being the causal authority this attack would fail. Without
+the ability to "unban" a server identity, this attack fails.
 
 ## Unstable prefix
 
