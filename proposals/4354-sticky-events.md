@@ -18,7 +18,8 @@ really just wants per-user last-write-wins behaviour.
 There currently exists no good communication primitive in Matrix to send this kind of data. EDUs are
 almost the right primitive, but:
 
-* They can’t be sent via clients (there is no concept of EDUs in the Client-Server API\!)  
+* They can’t be sent via clients (there is no concept of EDUs in the Client-Server API\!
+  [MSC2477](https://github.com/matrix-org/matrix-spec-proposals/pull/2477) tries to change that)  
 * They aren’t extensible.   
 * They do not guarantee delivery. Each EDU type has slightly different persistence/delivery guarantees,
   all of which currently fall short of guaranteeing delivery.
@@ -145,7 +146,8 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 ```
 
 Sticky messages MAY be sent in the timeline section of the `/sync` response, regardless of whether
-or not they exceed the timeline limit[^ordering].
+or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
+omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
 
 Servers SHOULD rate limit sticky events over federation. If the rate limit kicks in, servers MUST
 return a non-2xx status code from `/send` such that the sending server *retries the request* in order
