@@ -97,7 +97,7 @@ The new sync section looks like:
         "ephemeral": { ... },
         "state": { ... },
         "timeline": { ... },
-        "sticky_events": {
+        "sticky": {
             "events": [
                 {
                     "sender": "@bob:example.com",
