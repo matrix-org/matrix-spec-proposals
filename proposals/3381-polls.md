@@ -373,9 +373,11 @@ If a client/user wishes to make a poll statically visible, they should check out
 
 Notifications support for polls have been moved to [MSC3930](https://github.com/matrix-org/matrix-spec-proposals/pull/3930).
 
-Normally extensible events would only be permitted in a specific room version, however as a known-lossy chat
-feature, this proposal's events are permitted in any room version. The stable event types should only be sent
-in a room version which supports extensible events, however.
+Normally extensible events would only be permitted in a specific room version. However, unlike other proposals
+related to extensible events, this proposal's events don't replace any existing events in the spec. Additionally,
+the only extensible events component this proposal depends on is `m.text` which has already entered the spec via
+[MSC3765](https://github.com/matrix-org/matrix-spec-proposals/pull/3765) in version 1.15. Therefore, this proposal's
+events are permitted in any room version.
 
 ## Unstable prefix
 
@@ -453,15 +455,3 @@ Examples of unstable events are:
   }
 }
 ```
-
-### Implementation considerations
-
-Client authors should note that as a feature using the Extensible Events system,
-usage of the *stable* event types in regular room versions is not permitted. As
-of writing (December 2023), Extensible Events does not have a *stable* room version
-which supports such events, therefore meaning that clients will have to use the
-*unstable* event types if they intend to support polls in existing room versions.
-
-When Extensible Events as a system is released in a dedicated room version, clients
-will be able to use the stable event types there. The unstable event types should
-not be used in that dedicated room version.
