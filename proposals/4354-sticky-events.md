@@ -53,8 +53,8 @@ with a valid value makes the event “sticky”[^stickyobj]. Valid values are th
 This key can be set by clients in the CS API by a new query parameter `stick_duration_ms`, which is
 added to the following endpoints:
 
-* `PUT /\_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`
-* `PUT /\_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`
+* `PUT /_matrix/client/v3/rooms/{roomId}/send/{eventType}/{txnId}`
+* `PUT /_matrix/client/v3/rooms/{roomId}/state/{eventType}/{stateKey}`
 
 To calculate if any sticky event is still sticky:
 
@@ -97,33 +97,28 @@ The new sync section looks like:
         "ephemeral": { ... },
         "state": { ... },
         "timeline": { ... },
-        "sticky_events": [
-          {
-     "event": {
-              "sender": "@bob:example.com",
-              "type": "m.foo",
-              "sticky": {
-                "duration_ms": 300000
-              },
-              "origin_server_ts": 1757920344000,
-              "content": { ... }
-     },
-     "prev_batch": "s1234_5678_90123"
-          },
-          {
-     "event": {
-              "sender": "@alice:example.com",
-              "type": "m.foo",
-              "sticky": {
-                "duration_ms": 300000
-              },
-              "origin_server_ts": 1757920311020,
-              "content": { ... }
-     },
-     "prev_batch": "s1234_5678_90125"
-          }
-        ],
-      }
+        "sticky_events": {
+            "events": [
+                {
+                    "sender": "@bob:example.com",
+                    "type": "m.foo",
+                    "sticky": {
+                      "duration_ms": 300000
+                    },
+                    "origin_server_ts": 1757920344000,
+                    "content": { ... }
+                },
+                {
+                    "sender": "@alice:example.com",
+                    "type": "m.foo",
+                    "sticky": {
+                      "duration_ms": 300000
+                    },
+                    "origin_server_ts": 1757920311020,
+                    "content": { ... }
+                }
+            ]
+        }
     }
   }
 }
@@ -134,10 +129,8 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 ```json
 {
   "rooms": {
-      "!726s6s6q:example.com": [
-        {
-          "prev_batch": "s1234_5678_90125",
-          "event": {
+      "!726s6s6q:example.com": {
+          "events": [{
               "sender": "@bob:example.com",
               "type": "m.foo",
               "sticky": {
@@ -145,15 +138,14 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
               },
               "origin_server_ts": 1757920344000,
               "content": { ... }
-          }
-        }
-      ]
+          }]
+      }
   }
 }
 ```
 
 Sticky messages MAY be sent in the timeline section of the `/sync` response, regardless of whether
-or not they exceed the timeline limit[^ordering]. 
+or not they exceed the timeline limit[^ordering].
 
 Servers SHOULD rate limit sticky events over federation. If the rate limit kicks in, servers MUST
 return a non-2xx status code from `/send` such that the sending server *retries the request* in order
