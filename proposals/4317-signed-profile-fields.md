@@ -1,17 +1,23 @@
 # MSC4317: Signed profile data
 
 [MSC4133] introduced the ability to store custom data beyond `avatar_url` and `displayname` in user
-profiles. In some cases home servers might want to manage certain profile data. In a corporate
-setup, for instance, some employee data such as a person's role, location or telephone number might
-be sourced from a central HR system. The spec doesn't forbid managed profile properties and
-[MSC4133] allows users to understand which properties they can modify through the `m.profile_fields`
-capability. There is, however, no way to tell which properties are managed in *another* user's
-profile, especially when they're on a different home server. In environments where a user's trust
-into home servers is larger than their trust into other users this prevents users from identifying
-impersonation attacks.
+profiles. This enables many novel use cases but also aggravates the problem of impersonation where
+users (or their servers) lie about profile data.
 
-This proposal aims to resolve this shortcoming by introducing a scheme for cryptographically binding
-profile data to an externally verifiable entity via the mechanism introduced in [MSC4316].
+Consider as an example a closed federation for communication between medical professionals and
+patients. The user profile of a medical professional may contain information such as their name and
+specialisation. It is crucial in such a system that this data is genuine so that patients can be
+sure that they are in fact talking to a doctor instead of a malicious user who faked their user
+profile.
+
+This requires a way for users to gain trust in profile data. In situations where users trust
+homeservers, this could be achieved by servers managing parts of profiles with modification being
+prohibited for clients. If homeservers are untrusted, users could instead trust an external entity
+to attest profile data. Both scenarios require a way for profile fields to be authenticated that is
+currently missing in Matrix.
+
+The present proposal aims to resolve this shortcoming by introducing a scheme for cryptographically
+binding profile data to a trusted entity.
 
 ## Proposal
 
