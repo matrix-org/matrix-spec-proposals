@@ -33,7 +33,9 @@ When an emoji is used in a message or an annotation, the sending client moves (o
 beginning of the `recent_emoji` array and increments (or initializes) its counter.
 
 As new emoji are being used, clients SHOULD limit the length of the `recent_emoji` array by dropping
-elements from the end. A RECOMMENDED maximum length is 100 emoji.
+elements from the end. A RECOMMENDED maximum length is 100 emoji. Apart from this, no other
+mechanism for resetting counters is mandated. [RFC7159] suggests an upper boundary of 2^53-1 for
+interoperable integers which seems sufficiently large for all practical purposes.
 
 Clients MAY freely customise the logic for generating recommendations from the stored emoji. As an
 example, they could select the 24 first (= most recently used) emoji and stably sort them by their
@@ -63,3 +65,5 @@ While this MSC is not considered stable, `m.recent_emoji` should be referred to 
 ## Dependencies
 
 None.
+
+  [RFC7159]: https://datatracker.ietf.org/doc/html/rfc7159
