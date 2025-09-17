@@ -14,8 +14,8 @@ enable emoji suggestions across clients.
 
 A new global account data event `m.recent_emoji` is introduced. In `content`, it contains a single
 property `recent_emoji` that is an array where each element is itself an array. The first element in
-this nested array is the emoji, the second element is a counter for how often it was used. The outer
-`recent_emoji` array is ordered descendingly by last usage time.
+this nested array is the emoji, the second element is a counter (\<= 2^53-1) for how often it was
+used. The outer `recent_emoji` array is ordered descendingly by last usage time.
 
 ``` json5
 {
@@ -39,8 +39,8 @@ display to the user, while still preserving them when modifying the list.
 
 As new emoji are being used, clients SHOULD limit the length of the `recent_emoji` array by dropping
 elements from the end. A RECOMMENDED maximum length is 100 emoji. Apart from this, no other
-mechanism for resetting counters is mandated. [RFC7159] suggests an upper boundary of 2^53-1 for
-interoperable integers which seems sufficiently large for all practical purposes.
+mechanism for resetting counters is mandated as the upper boundary of 2^53-1 seems sufficiently
+large for all practical purposes.
 
 Clients MAY freely customise the logic for generating recommendations from the stored emoji. As an
 example, they could select the 24 first (= most recently used) emoji and stably sort them by their
@@ -72,4 +72,3 @@ While this MSC is not considered stable, `m.recent_emoji` should be referred to 
 None.
 
   [MSC4027]: https://github.com/matrix-org/matrix-spec-proposals/pull/4027
-  [RFC7159]: https://datatracker.ietf.org/doc/html/rfc7159
