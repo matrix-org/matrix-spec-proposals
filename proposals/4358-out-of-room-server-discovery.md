@@ -6,7 +6,7 @@ branch that is not communicated to any other server.
 
 Consider the following scenario:
 
-![](./images/xxxx-out-of-room-server-discovery.png)
+![](./images/4358-out-of-room-server-discovery.png)
 
 A room has several members, Blue, Green, Yellow, and Bronze. They have
 been participating for some time.
