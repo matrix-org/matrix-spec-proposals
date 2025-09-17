@@ -1,6 +1,7 @@
 # MSC4198: Usage of OIDC login_hint
 
-[MSC3861] proposes using OAuth 2.0/OpenID Connect for authentication APIs.
+This proposal builds on the [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) that was
+added in v1.15 of the spec.
 
 [OpenID Connect Core 1.0] specifies an optional `login_hint`
 authorization request parameter but leaves the contents of the parameter vague and "to the OP's discretion".
@@ -38,9 +39,9 @@ Example valid hint value: `mxid:@example-user:example.com`
 ### Usage
 
 A client can start the login flow by asking the user for their MXID.
-It can then parse the domain, discover the homeserver and its auth issuer ([MSC2965]),
-register itself with the homeserver ([MSC2966])
-and send the user to the authorization endpoint ([MSC2964]), all in one step.
+It can then parse the domain, discover the homeserver and its auth metadata ([OAuth 2.0 API Server metadata discovery]),
+register itself with the homeserver ([OAuth 2.0 API Client registration])
+and send the user to the authorization endpoint ([OAuth 2.0 API Login flow]), all in one step.
 
 To improve the UX of this flow, the MXID may be sent to the homeserver with the authorization request in the `login_hint`
 query parameter, following the format specified above using the `mxid` hint type.
@@ -57,7 +58,7 @@ The client may inform the user about ending up on a different account than inten
 
 ### Example authorization request
 
-Expanding on the example request in [MSC2964] (broken down into multiple lines for readability),
+Expanding on the example authorization request shown in [OAuth 2.0 API Login flow] (broken down into multiple lines for readability),
 with the following additional parameters:
 
 - `login_hint` set to `mxid:@example-user:example.com`
@@ -148,12 +149,10 @@ No unstable prefix is necessary, as the format of the MXID is already stable wit
 
 ## Dependencies
 
-This MSC builds on [MSC3861] and its dependencies (which at the time of writing have not yet been accepted
-into the spec).
+This MSC does not have any dependencies.
 
-[MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
 [OpenID Connect Core 1.0]: https://openid.net/specs/openid-connect-core-1_0.html
 [MXID]: https://spec.matrix.org/v1.11/appendices/#user-identifiers
-[MSC2965]: https://github.com/matrix-org/matrix-spec-proposals/pull/2965
-[MSC2966]: https://github.com/matrix-org/matrix-spec-proposals/pull/2966
-[MSC2964]: https://github.com/matrix-org/matrix-spec-proposals/pull/2964
+[OAuth 2.0 API Server metadata discovery]: https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery
+[OAuth 2.0 API Client registration]: https://spec.matrix.org/v1.15/client-server-api/#client-registration
+[OAuth 2.0 API Login flow]: https://spec.matrix.org/v1.15/client-server-api/#login-flow
