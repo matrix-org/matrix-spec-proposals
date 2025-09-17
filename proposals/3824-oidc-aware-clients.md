@@ -65,6 +65,7 @@ For a client to be considered fully *OAuth 2.0 aware* it **must**:
 - where a `delegated_oidc_compatibility` value of `true` is present on an `m.login.sso` then *only* offer that auth flow to the user
 - append `action=login` and `action=register` parameters to the SSO redirect URLs
 - link users to manage their account at the `account_management_uri` given by [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/pull/4191) instead of native UI
+- do not offer the user the function to deactivate their account and instead refer them to the account management URL described above
 - check and honour the `m.3pid_changes` [capability](https://spec.matrix.org/v1.15/client-server-api/#m3pid_changes-capability) so that the user is not offered the ability to add or remove 3PIDs when the server has the OAuth 2.0 API enabled
 - if the user wishes to sign out a device session other than it's own then the client **must**:
   - link the user to the `account_management_uri` given by [MSC4191](https://github.com/matrix-org/matrix-spec-proposals/pull/4191) if provided
