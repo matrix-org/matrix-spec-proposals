@@ -38,27 +38,29 @@ Example valid hint value: `mxid:@example-user:example.com`
 
 ### Usage
 
-A client can start the login flow by asking the user for their MXID.
-It can then parse the domain, discover the homeserver and its auth metadata ([OAuth 2.0 API Server metadata discovery]),
+A client MAY start the login flow by asking the user for their MXID.
+It SHOULD then parse the domain, discover the homeserver and its auth metadata ([OAuth 2.0 API Server metadata discovery]),
 register itself with the homeserver ([OAuth 2.0 API Client registration])
 and send the user to the authorization endpoint ([OAuth 2.0 API Login flow]), all in one step.
 
-To improve the UX of this flow, the MXID may be sent to the homeserver with the authorization request in the `login_hint`
-query parameter, following the format specified above using the `mxid` hint type.
+To improve the UX of this flow, the MXID MAY be sent to the homeserver with the authorization request in the OPTIONAL
+`login_hint` query parameter from [OpenID Connect Core 1.0], following the format specified above using the `mxid` hint
+type.
 
 Despite the `login_hint` parameter being defined in the OpenID Connect specification, homeservers supporting this proposal
-must handle the parameter even without the `openid` scope.
+MUST handle the parameter even without the `openid` scope.
 
-The homeserver should then assist the user to complete the login flow with the correct account.
+The homeserver SHOULD then assist the user to complete the login flow with the correct account.
 
-The client must be prepared to handle a case where the account that the user signs into will not be the one that was
-initially suggested, especially if the homeserver does not support the `login_hint` parameter and/or
-the user mistakenly uses the wrong credentials.
-The client may inform the user about ending up on a different account than intended and present an option to try again.
+The client MUST be prepared to handle a case where the account that the user signs into will not be the one that was
+initially suggested, especially if the homeserver does not support the `login_hint` parameter and/or the user mistakenly
+uses the wrong credentials.
+The client MAY inform the user about ending up on a different account than intended and present an option to try again.
 
 ### Example authorization request
 
-Expanding on the example authorization request shown in [OAuth 2.0 API Login flow] (broken down into multiple lines for readability),
+Expanding on the example authorization request shown in [OAuth 2.0 API Login flow] (broken down into multiple lines for
+readability),
 with the following additional parameters:
 
 - `login_hint` set to `mxid:@example-user:example.com`
