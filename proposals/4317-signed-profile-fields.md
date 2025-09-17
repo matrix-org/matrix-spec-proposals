@@ -106,7 +106,8 @@ still store it locally to be able to present the data to their user again upon r
 ## Security considerations
 
 If signed profile data is leaked during a security breach, the authenticity of the data can be
-verified by anyone which prevents deniability.
+verified by anyone which prevents deniability. Servers SHOULD mitigate this risk by limiting access
+to profiles using the mechanism from [MSC4170].
 
 ## Unstable prefix
 
@@ -123,3 +124,4 @@ This proposal depends on [MSC4316].
   [signing specification]: https://spec.matrix.org/v1.15/appendices/#signing-json
   [`/_matrix/client/v3/keys/query`]: https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3keysquery
   [QR-code verification]: https://spec.matrix.org/v1.15/client-server-api/#qr-codes
+  [MSC4170]: https://github.com/matrix-org/matrix-spec-proposals/pull/4170
