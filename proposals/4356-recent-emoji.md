@@ -32,6 +32,11 @@ this nested array is the emoji, the second element is a counter for how often it
 When an emoji is used in a message or an annotation, the sending client moves (or adds) it to the
 beginning of the `recent_emoji` array and increments (or initializes) its counter.
 
+When an image is sent as an inline image or in a reaction (using [MSC4027]), the `mxc://` URI of the
+image MAY be used as the "emoji" in this event. Clients which do not support such use of images MUST
+tolerate the existence of `mxc://` entries, e.g. by ignoring the entries when deciding what to
+display to the user, while still preserving them when modifying the list.
+
 As new emoji are being used, clients SHOULD limit the length of the `recent_emoji` array by dropping
 elements from the end. A RECOMMENDED maximum length is 100 emoji. Apart from this, no other
 mechanism for resetting counters is mandated. [RFC7159] suggests an upper boundary of 2^53-1 for
@@ -66,4 +71,5 @@ While this MSC is not considered stable, `m.recent_emoji` should be referred to 
 
 None.
 
+  [MSC4027]: https://github.com/matrix-org/matrix-spec-proposals/pull/4027
   [RFC7159]: https://datatracker.ietf.org/doc/html/rfc7159
