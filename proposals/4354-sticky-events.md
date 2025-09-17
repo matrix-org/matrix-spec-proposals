@@ -89,7 +89,7 @@ Note: policy servers and other similar antispam techniques still apply to these 
 
 The new sync section looks like:
 
-```json
+```js
 {
   "rooms": {
     "join": {
@@ -123,11 +123,12 @@ The new sync section looks like:
     }
   }
 }
+
 ```
 
 Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_events`, which has the following response shape:
 
-```json
+```js
 {
   "rooms": {
       "!726s6s6q:example.com": {
@@ -163,7 +164,7 @@ is distinct from that of delayed events. The purpose of the sticky duration in t
 MatrixRTC relies on a per-user, per-device map of RTC member events. To implement this, this MSC proposes
 a standardised mechanism for determining keys on sticky events, the `content.sticky_key` property:
 
-```json
+```js
 {
     "type": "m.rtc.member",
     "sticky": {
@@ -195,7 +196,7 @@ some clients will believe the state is K and others will have no state. This wil
 
 Note that encrypted sticky events will encrypt some parts of the 4-uple. An encrypted sticky event only exposes the room ID and sender to the server:
 
-```json
+```js
 {
   "content": {
 	"algorithm": "m.megolm.v1.aes-sha2",
