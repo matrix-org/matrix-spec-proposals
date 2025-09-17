@@ -1,4 +1,4 @@
-# MSC0000: Out-of-room server discovery
+# MSC4358: Out-of-room server discovery
 
 Currently in Matrix, it is possible for the servers which a new joiner
 trusts during the join process to place the joiner into a parallel
@@ -84,7 +84,7 @@ the create event.
 
 ## Unstable prefix
 
-- The endpoint `/_matrix/federation/v1/discover_common`_rooms is `/_matrix/federation/v1/org.matrix.msc0000/discover_common_rooms`
+- The endpoint `/_matrix/federation/v1/discover_common`_rooms is `/_matrix/federation/v1/org.matrix.msc4358/discover_common_rooms`
 
 ## Dependencies
 
