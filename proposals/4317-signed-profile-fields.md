@@ -34,9 +34,8 @@ Any other properties in `m.signed` are optional and extend the data under signat
   "avatar_url": "mxc://...",
   ...
   "m.signed": {
-    "displayname": "Alice Liddell",
-    "role": "Head of Culture & People",
-    "telephone": "+1 (555) 555-1234",
+    "displayname": "Dr. Alice Liddell",
+    "role": "General Practioner",
     ...
     "user_id": "@alice:matrix.org",
     "signatures": {
