@@ -1,4 +1,4 @@
-# MSC4191: Account management deep-linking
+# MSC4191: Account management deep-linking for OAuth 2.0 API
 
 This proposal builds on the [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) that was
 added in v1.15 of the spec.
