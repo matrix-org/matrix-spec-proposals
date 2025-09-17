@@ -1,4 +1,4 @@
-MSCXXXX: Threads extension to Sliding Sync
+MSC4360: Threads extension to Sliding Sync
 ===
 
 ## Background and Summary
@@ -234,8 +234,8 @@ in the `threads` extension response.
 
 Whilst this proposal is unstable, a few unstable prefixes must be observed by experimental implementations:
 
-- the Sliding Sync extension is called `io.element.mscXXXX.threads` instead of `threads`
-- the companion endpoint is called `/_matrix/client/unstable/io.element.mscXXXX/thread_updates` instead of `/_matrix/client/v1/thread_updates`
+- the Sliding Sync extension is called `io.element.msc4360.threads` instead of `threads`
+- the companion endpoint is called `/_matrix/client/unstable/io.element.msc4360/thread_updates` instead of `/_matrix/client/v1/thread_updates`
 
 
 ## Dependencies
