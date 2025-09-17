@@ -35,7 +35,7 @@ Any other properties in `m.signed` are optional and extend the data under signat
   ...
   "m.signed": {
     "displayname": "Dr. Alice Liddell",
-    "role": "General Practioner",
+    "role": "General Practitioner",
     ...
     "user_id": "@alice:matrix.org",
     "signatures": {
