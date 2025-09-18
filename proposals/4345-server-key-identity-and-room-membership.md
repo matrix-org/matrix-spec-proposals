@@ -103,7 +103,7 @@ enforcement](https://github.com/matrix-org/matrix-spec-proposals/pull/4349).
 
 ### The `m.server.participation` state event, `state_key: ${origin_server_key}`
 
-#### The `advertised_domain` property
+#### The `unverified_domain` property
 
 This is a string representing the domain of the server. This is not an
 attestation that ownership has been verified by the sender of the
@@ -144,11 +144,11 @@ inconsistent this text takes precedence.
 The purpose of the `accepted` participation state is to bring the
 `m.server.participation` event into a _subject controlled state_.
 This means that only the controller of the keypair for which the
-participation describes can change the `advertised_domain` in the
+participation describes can change the `unverified_domain` in the
 event.
 
 This stops other room participants with the _invite_ power level from
-changing the `advertised_domain`.
+changing the `unverified_domain`.
 
 #### Permitted participation
 
@@ -200,7 +200,7 @@ action communicated in client UI.
 
 After creating the room, the room creator's origin server should set
 its own `participation` via the room creator's account to `accepted`,
-and set the advertised `advertised_domain` property of their
+and set the advertised `unverified_domain` property of their
 participation event to include a domain for which they can prove
 ownership.
 
@@ -212,7 +212,7 @@ joining server's public key.
 
 The joining server uses the response from this endpoint to create a
 `participation` event that sets the current participation to
-`accepted`. The joining server should also set the `advertised_domain`
+`accepted`. The joining server should also set the `unverified_domain`
 that they are advertising their public key from.
 
 Servers MUST accept or deny their own participation before emitting
@@ -303,7 +303,7 @@ verify that the joining server is claiming ownership of the provided
 server key. The request should also be signed using the same server key.
 
 Then, the requested server will emit an `m.server.participation` event
-into the room with the key and the `advertised_domain` property filled
+into the room with the key and the `unverified_domain` property filled
 for the request origin.
 
 Once this is complete, the requested server will respond with the information
@@ -311,7 +311,7 @@ required to begin interacting with the room.
 
 When the joining server gets this response, it should immediately
 change its own participation to `accepted` in order to prevent users
-from overwriting the `advertised_domain`.
+from overwriting the `unverified_domain`.
 
 The following endpoint is defined: GET `/_matrix/federation/v1/request_participation/{roomId}/{serverKey}`.
 
@@ -331,12 +331,12 @@ revocation is explicit via DAG state.
 To verify domain ownership from an `m.server.participation` event:
 
 1. The event must have a `participation` of `accepted`.
-2. The event must contain an `advertised_domain` property.
+2. The event must contain an `unverified_domain` property.
 3. The event must be signed with the private key associated with the
    public key found in the state_key (auth rules also enforce the
    state key is consistent with the origin server key).
 4. The same public key is advertised in `/_matrix/key/v3/query` when requested
-   from the `advertised_domain`
+   from the `unverified_domain`
 
 The server that performed verification of domain ownership may now
 cache the mapping. But may not wish to do so permanently, as the keys
@@ -362,7 +362,7 @@ within a room where the requested server is using said keys.
 Homeserver's must verify domain ownership before events are annotated
 with `unsigned.server_domain`. Clients then use this to show a user's
 server domain user ID rather than a user's server key user ID. Clients
-should never use the `m.server.participation` `advertised_domain` to
+should never use the `m.server.participation` `unverified_domain` to
 show the origin of events.
 
 Clients should encode the public key for displaying unverified
