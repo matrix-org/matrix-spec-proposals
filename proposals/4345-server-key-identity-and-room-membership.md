@@ -429,9 +429,8 @@ the ability to "unban" a server identity, this attack fails.
 
 ## Unstable prefix
 
-`m.server.participation` -> `org.matrix.msc4345.participation`
-
-`_matrix` => `_matrix/msc4345/` or whatever the norm is here.
+- `m.server.participation` -> `org.matrix.msc4345.participation`
+- `/_matrix/key/v3/query` => `_matrix/key/v3/org.matrix.msc4345/query`
 
 ## Dependencies
 
