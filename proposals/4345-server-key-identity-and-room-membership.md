@@ -57,9 +57,9 @@ In addition to this, we strengthen the conditions of server
 participation in the DAG:
 
 - We also introduce server participation, which allows servers to be
-  denied access to the room at the DAG level. This allows both public
+  revoked access to the room at the DAG level. This allows both public
   and private rooms to benefit from DAG reproducibility and preemptive
-  access control. Denied participation forms a _casual barrier_.
+  access control. Revoked participation forms a _casual barrier_.
 
 - Servers are unable to participate within a room until their key has
   been added by an existing participant. This principally ensures the
@@ -90,7 +90,7 @@ that in future MSCs in this series either.
   enforced locally by soft failure. A causal barrier can be scoped to
   a specific sender, like the ban event is. In this proposal, we
   introduce a barrier scoped to a specific server. Which is an
-  `m.server.participation` event with a `participation` of `denied`.
+  `m.server.participation` event with a `participation` of `revoked`.
 
 #### A note on _causal barriers_
 
@@ -110,15 +110,15 @@ attestation that ownership has been verified by the sender of the
 event. This property is protected from redaction.
 
 This property is not required, as it may be desirable to hide the
-domain when setting the server's participation to `denied`. Particularly
+domain when setting the server's participation to `revoked`. Particularly
 in the event of attempted impersonation or an abusive domain name.
 
 #### The `participation` property
 
 `participation` can be one of `permitted`, `accepted` or
-`denied`. `participation` is protected from redaction.
+`revoked`. `participation` is protected from redaction.
 
-A denied server must not be sent a `m.server.participation` event
+A revoked server must not be sent a `m.server.participation` event
 unless the targeted server is already present within the room. This is
 to prevent malicious servers being made aware of rooms that they have
 not yet discovered.
@@ -126,7 +126,7 @@ not yet discovered.
 #### The `reason` property
 
 An optional reason property may be present in order to explain the
-reason why a server has been denied or permitted to participate.
+reason why a server has been revoked or permitted to participate.
 
 ### Participation semantics
 
@@ -162,24 +162,22 @@ provides participants that have invite permission the opportunity to
 challenge previously undiscovered homeservers. Whereas there is no
 current protocol step to enable this for public rooms.
 
-#### Denied participation when set by room admins
+#### Revoked participation when set by room admins
 
 A user with the _ban_ power level, may change the
 `m.server.participation` event of any server with less ambient power
-level to `denied`. This power level comparison is the sending user's
-power level compared to the denied server's ambient power level.
+level to `revoked`. This power level comparison is the sending user's
+power level compared to the revoked server's ambient power level.
 
-Once a key is denied, if a Matrix homeserver is to participate again
+Once a key is revoked, if a Matrix homeserver is to participate again
 it must rejoin the room with a new keypair.
 
-#### Denied participation when set by the key controller
+#### Revoked participation when set by the key controller
 
 The server may revoke its own key at any time by setting its own
-participation to `denied`. A server can do this even if its current
-participation is already `denied` becasue a server admin banned them.
-This allows for keys that have been stolen by room admins to still be
-revoked.  The effect of a server setting its own participation to
-`denied` is permanent, to rejoin the room, a new keypair must be
+participation to `revoked`.  This allows for keys that have been
+stolen to be revoked by any key controller.  The effect of a key being
+revoked is permanent, to rejoin the room, a new keypair must be
 created. If keys are stolen to invoke revoction maliciously, then that
 is a good thing that they only stole the key for that purpose.
 
@@ -190,7 +188,7 @@ indirectly as a part of another client-server API interaction, such as
 accepting an invitation. Most flows have no need for dedicated client
 UI or management with exception of:
 
-- Banning servers via setting the state to `denied`.
+- Banning servers via setting the state to `revoked`.
 - Revoking the server key.
 
 In these situations, the event is sent as a direct result of a user's
@@ -215,7 +213,7 @@ The joining server uses the response from this endpoint to create a
 `accepted`. The joining server should also set the `unverified_domain`
 that they are advertising their public key from.
 
-Servers MUST accept or deny their own participation before emitting
+Servers MUST accept or revoke their own participation before emitting
 any events to the room. This is enforced by authorization rules.
 
 #### Room invitation flow
@@ -237,11 +235,11 @@ We define a _key revocation event_ to be an `m.server.participation`
 event with the following properties:
 
 1. The event's signature can be verified with the key found in the `state_key`.
-2. The event's `participation` is `denied`.
+2. The event's `participation` is `revoked`.
 
 Key revocations are enforced by auth rules to be immutable.
 
-### Additional causal restrictions on `m.server.participation` when participation is `denied`
+### Additional causal restrictions on `m.server.participation` when participation is `revoked`
 
 These restrictions can be enforced locally or by another causal
 authority. See
@@ -260,21 +258,21 @@ check for `m.room.member`.
    1. If the sender's signature matches the `state_key` of the
       considered event:
       1. If the `participation` field of the considered event is
-         `denied` AND the current participation is not `denied`, allow.
+         `revoked` AND the current participation is not `revoked`, allow.
       2. If the `participation` field of the considered event is not
          `accepted`, reject.
       3. If the sender is a room creator, allow[^room-creator].
       4. If the current participation state for the target is `permitted`, allow.
       5. Otherwise, reject.
    2. If `participation` is `accepted`, reject[^participation-accept].
-   3. If `partcipation` is `denied`:
+   3. If `partcipation` is `revoked`:
       1. If the origin of the current participation state is the target key, reject[^revocation].
 	  2. If the `sender`'s power level is greater than or equal to the _ban level_,
             is greater than or equal to the target server's ambient power level, allow.
 	  3. Otherwise, reject.
    4. If `participation` is `permitted`:
       1. If the _target server_'s current participation state is `accepted`, reject.
-      2. If the _target server_'s current participation state is `denied`, reject[^revocation].
+      2. If the _target server_'s current participation state is `revoked`, reject[^revocation].
       3. If the `sender`'s power level is greater than or equal to
          the _invite level_, allow.
 	  4. Otherwise, reject.
@@ -291,7 +289,7 @@ check for `m.room.member`.
 [^revocation]:
     This rule enforces that any controller of the key has total
     autonomy over its revocation. Room admins cannot steal a key and
-    override this, once the key is denied, it has been permanently
+    override this, once the key is revoked, it has been permanently
     revoked.
 
 
@@ -398,8 +396,8 @@ data to the DAG.
 
 ### MSC4104: Auth Lock: Soft-failure-be-gone!
 
-This proposal encodes a special auth rule for `denied` participation to
-avoid soft failure and the problems discussed in MSC4104.
+This proposal encodes a special auth rule for `revoked` participation
+to avoid soft failure and the problems discussed in MSC4104.
 
 ## Security considerations
 
@@ -410,19 +408,19 @@ See [Impositions on client UI](#impositions-on-client-ui).
 It's not clear whether Matrix will be able to prevent room admins
 becoming a causal authority. In that instance, banning and unbanning a
 server can be used to successfully use a stolen identity without the
-original controller being able to stop it. See below. If denial is
-revocation, then the original key controller can deny their own key in
-any branch that the room admins try to create where the key is still
-valid.
+original controller being able to stop it. See below. If banning
+servers is revocation, then the original key controller can revoke
+their own key in any branch that the room admins try to create where
+the key is still valid.
 
 Room admins as causal authority may successfully use stolen keys to
-impersonate if `denied` participation is not key revocation
+impersonate if banning servers is not key revocation.
 
 If a room admin steals a server key, they may still use the stolen key
-by denying the key as an admin, and then use the stolen the key to add
-events that are concurrent to the deny. If the room admin also serves
-as the causal authority in the room, then this would allow them to
-fake valid events.
+by banning the server as an admin, and then use the stolen the key to
+add events that are concurrent to the ban. If the room admin also
+serves as the causal authority in the room, then this would allow them
+to fake valid events.
 
 Without being the causal authority this attack would fail. Without
 the ability to "unban" a server identity, this attack fails.
