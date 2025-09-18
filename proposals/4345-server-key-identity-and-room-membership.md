@@ -139,6 +139,8 @@ inconsistent this text takes precedence.
 - Reminder: In this MSC _Server_ refers to the controller of a ed25519
   keypair, not a particular domain or deployment.
 
+![](./images/4345-participation-state.png)
+
 #### Accepted participation
 
 The purpose of the `accepted` participation state is to bring the
