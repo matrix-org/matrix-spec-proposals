@@ -221,6 +221,18 @@ Note that encrypted sticky events will encrypt some parts of the 4-uple. An encr
 
 The decrypted event would contain the `type` and `content.sticky_key`.
 
+If a client wishes to implement access control in this key-value map based on the power levels event,
+they must ensure that they accept all writes in order to ensure all clients converge. For an example
+where this goes wrong if you don't, consider the case where two events are sent concurrently:
+ - Alice sets a key in this map which requires PL100,
+ - Alice is granted PL100 from PL0.
+
+If clients only update the map for authorised actions, then clients which see Alice setting a key before the
+PL event will not update the map and hence forget the value. Clients which see the PL event first would then
+accept Alice setting the key and the net result is divergence between clients. By always updating the map even
+for unauthorised updates, we ensure that the arrival order doesn't affect the end result. Clients can then
+choose whether or not to materialise/show/process a given key based on the current PL event.
+
 ## Potential issues
 
 ### Time
