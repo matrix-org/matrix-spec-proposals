@@ -52,6 +52,11 @@ client can complete the stage without further parameters.
 }
 ```
 
+To facilitate the navigation, a new action `org.matrix.cross_signing_reset` is introduced and MAY be
+used in the `account_management_actions_supported` authorization server metadata field from
+[MSC4191]. Servers SHOULD use this action to deep link the user if the authorization server supports
+it.
+
 ## Potential issues
 
 Semantically, resetting cross-signing keys doesn't fall into the authorization server's domain. The
