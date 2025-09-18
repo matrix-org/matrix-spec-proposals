@@ -120,6 +120,7 @@ The new sync section looks like:
                 }
             ]
         }
+      }
     }
   }
 }
