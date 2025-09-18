@@ -7,7 +7,7 @@ Some other chat protocols, like Discord or Telegram, offer a way to hide potenti
 
 In the event that a message has both a spoiler on the body and the image, clients should reveal the spoilers separate from each other.
 
-In events with an image, there will be an optional `m.spoiler` field as a boolean. If true, then clients should show a blurred version of the image. If not present, it will be assumed to be false. There will also be a `m.spoiler.reason` field as a text value that will optionally display text for why the image has a spoiler.
+In events with an image, video, or audio file, there will be an optional `m.spoiler` field as a boolean. If true, then clients should show a blurred version of the image. If not present, it will be assumed to be false. There will also be a `m.spoiler.reason` field as a text value that will optionally display text for why the image has a spoiler.
 ## Example
 ```
     "body": "amazing-test.png",
