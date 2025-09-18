@@ -144,11 +144,11 @@ inconsistent this text takes precedence.
 The purpose of the `accepted` participation state is to bring the
 `m.server.participation` event into a _subject controlled state_.
 This means that only the controller of the keypair for which the
-participation describes can change the `unverified_domain` in the
-event.
+participation describes can set the `unverified_domain` in the event.
 
 This stops other room participants with the _invite_ power level from
-changing the `unverified_domain`.
+providing an incorrect `unverified_domain` while the server is
+participaiting in the room.
 
 #### Permitted participation
 
@@ -264,8 +264,7 @@ check for `m.room.member`.
       2. If the `participation` field of the considered event is not
          `accepted`, reject.
       3. If the sender is a room creator, allow[^room-creator].
-      4. If the current participation state for the target is `permitted`
-         or `accepted`, allow.
+      4. If the current participation state for the target is `permitted`, allow.
       5. Otherwise, reject.
    2. If `participation` is `accepted`, reject[^participation-accept].
    3. If `partcipation` is `denied`:
