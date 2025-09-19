@@ -71,183 +71,163 @@ end-to-end confidentiality nor authenticity by itself---these are layered on top
 
 Suppose that Device A wants to establish communications with Device B. Device A can do so by creating a
 _rendezvous session_ via a `POST /_matrix/client/v1/rendezvous` call to an appropriate homeserver. Its response includes
-an HTTP _rendezvous URL_ which should be shared out-of-band with Device B. (This URL may be located on a different
-domain to the initial `POST`.)
+an _rendezvous ID_ which, along with the server name, should be shared out-of-band with Device B.
 
-The rendezvous URL points to an arbitrary data resource (the "payload"), which is initially populated using data from
-A's initial `POST` request. There are no restrictions on the payload itself, but the rendezvous server SHOULD impose a
-maximum size limit.
+The rendezvous ID points to an arbitrary data resource (the "payload") on the homeserver, which is initially populated
+using data from A's initial `POST` request. The payload is a string which the homeserver must enforce a maximum length on.
 
-Anyone who is able to reach the rendezvous URL - including: Device A; Device B; or a third party; - can then "receive"
-the payload by polling via a `GET` request, and "send" a new a new payload by making a `PUT` request.
+Anyone who is able to reach the homeserver and has the rendezvous ID - including: Device A; Device B; or a third party; -
+can then "receive" the payload by polling via a `GET` request, and "send" a new a new payload by making a `PUT` request.
 
-In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous URL.
+In this way, Device A and Device B can communicate by repeatedly inspecting and updating the payload at the rendezvous session.
 
 #### The send mechanism
 
-Every send request MUST include an `If-Match` header whose value is the `ETag` header in the last `GET`
-response seen by the requester. (The initiating device may also use the `ETag` supplied in the initial `POST` response
-to immediately update the payload.) Sends will succeed only if the supplied `ETag` matches the server's current
+Every send request MUST include an `sequence_token` value whose value is the `sequence_token` from the last `GET`
+response seen by the requester. (The initiating device may also use the `sequence_token` supplied in the initial `POST` response
+to immediately update the payload.) Sends will succeed only if the supplied `sequence_token` matches the server's current
 revision of the payload. This prevents concurrent writes to the payload.
-
-The `ETag` header is standard, described by [RFC9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-etag). In this
-proposal we only accept strong, single-valued `ETag` values; anything else constitutes a malformed request.
 
 n.b. Once a new payload has been sent there is no mechanism to retrieve previous payloads.
 
 #### Expiry
 
-The rendezvous session (i.e. the payload) SHOULD expire after a period of time communicated to clients via the `Expires`
-header. After this point, any further attempts to query or update the payload MUST fail. The rendezvous session can be
-manually expired with a `DELETE` call to the rendezvous session.
+The rendezvous session (i.e. the payload) SHOULD expire after a period of time communicated to clients via the
+`expires_ts` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
+the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
 ####  API
-
-##### Common HTTP response headers
-
-- `ETag` - required, ETag for the current payload at the rendezvous session as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.etag)
-- `Expires` - required, the expiry time of the rendezvous as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.expires)
-- `Last-Modified` - required, the last modified date of the payload as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.last-modified)
-- `Cache-Control` - required, `no-store` as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.cache-control)
-- `Pragma` - required, `no-cache` as per [RFC7234](https://httpwg.org/specs/rfc7234.html#header.pragma)
 
 ##### Create a rendezvous session and send initial payload: `POST /_matrix/client/v1/rendezvous`
 
 This would be part of the Client-Server API.
 
-HTTP request headers:
+Request body is `application/json` with contents:
 
-- `Content-Length` - required
-- `Content-Type` - required, must be `text/plain`
+|Field|Type||
+|-|-|-|
+|`data`|required `string`|The data payload to be sent|
 
-HTTP request body:
+For example:
 
-- any data up to maximum size allowed by the server
+```http
+POST /_matrix/client/v1/rendezvous HTTP/1.1
+Content-Type: application/json
+
+{
+    "data": "initial data"
+}
+```
 
 HTTP response codes, and Matrix error codes:
 
-- `201 Created` - rendezvous session created
-- `400 Bad Request` (``M_MISSING_PARAM``) - either `Content-Length` and/or `Content-Type` was not provided.
-- `400 Bad Request` (`M_INVALID_PARAM`) - an invalid `Content-Type` was given.
-- `403 Forbidden` (``M_FORBIDDEN``) - forbidden by server policy
-- `413 Payload Too Large` (``M_TOO_LARGE``) - the supplied payload is too large
-- `429 Too Many Requests` (``M_UNKNOWN``) - the request has been rate limited
-- `307 Temporary Redirect` - if the request should be served from somewhere else specified in the `Location` response header
+- `200 OK` - rendezvous session created
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
+- `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
-n.b. the [`307 Temporary Redirect`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/307) response code has been
-chosen explicitly for the behaviour of ensuring that the method and body will not change whilst the user-agent follows
-the redirect. For this reason, no other `30x` response codes are allowed.
+Response body for `200 OK` is `application/json` with contents:
 
-HTTP response headers for `201 Created`:
-
-- `Content-Type`- required, application/json
-- common headers as defined above
-
-HTTP response body for `201 Created`:
-
-- a JSON object with a single key `url` whose value is the absolute URL of the rendezvous session
+|Field|Type||
+|-|-|-|
+|`id`|required `string`|Opaque identifier for the rendezvous session|
+|`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
+|`expires_ts`|required `integer`|The timestamp (in milliseconds since the epoch) at which the rendezvous session will expire|
 
 Example response:
 
 ```http
-HTTP 201 Created
+HTTP 200 OK
 Content-Type: application/json
-ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
-Expires: Wed, 07 Sep 2022 14:28:51 GMT
-Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
-Cache-Control: no-store
-Pragma: no-cache
 
 {
-    "url": "http://example.org/abcdEFG12345"
+    "id": "abcdEFG12345",
+    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
+    "expires_ts": 1662560931000
 }
 ```
 
-##### Send a payload to the rendezvous session: `PUT <rendezvous session URL>`
+##### Send a payload to the rendezvous session: `PUT /_matrix/client/v1/rendezvous/{rendezvousId}`
 
-HTTP request headers:
+Request body is `application/json` with contents:
 
-- `Content-Length` - required
-- `Content-Type` - required, must be `text/plain`
-- `If-Match` - required. The ETag of the last payload seen by the requesting device.
+|Field|Type||
+|-|-|-|
+|`sequence_token`|required `string`|The value of `sequence_token` from the last payload seen by the requesting device.|
+|`data`|required `string`|The data payload to be sent.|
 
-HTTP request body:
+For example:
 
-- any data up to maximum size allowed by the server
+```http
+PUT /_matrix/client/v1/rendezvous/abcdEFG12345 HTTP/1.1
+Content-Type: application/json
+
+{
+    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
+    "data": "new data"
+}
+```
 
 HTTP response codes, and Matrix error codes:
 
-- `202 Accepted` - payload updated
-- `400 Bad Request` (`M_MISSING_PARAM`) - a required header was not provided.
-- `400 Bad Request` (`M_INVALID_PARAM`) - a malformed 
-[`ETag`](https://github.com/matrix-org/matrix-spec-proposals/blob/hughns/simple-rendezvous-capability/proposals/3886-simple-rendezvous-capability.md#the-update-mechanism)
-header was provided or invalid `Content-Type`.
-- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
-- `412 Precondition Failed` (`M_CONCURRENT_WRITE`, a new error code) - when the ETag does not match
+- `200 OK` - payload updated
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `409 Conflict` (`M_CONCURRENT_WRITE`, a new error code) - when the `sequence_token` does not match
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
-HTTP response headers for `202 Accepted` and `412 Precondition Failed`:
+The response body for `200 OK` is `application/json` with contents:
 
-- common headers as defined above
+|Field|Type||
+|-|-|-|
+|`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
 
-##### Receive a payload from the rendezvous session: `GET <rendezvous session URL>`
+For example:
 
-HTTP request headers:
+```http
+HTTP 200 OK
+Content-Type: application/json
 
-- `If-None-Match` - optional, as per [RFC7232](https://httpwg.org/specs/rfc7232.html#header.if-none-match) server will
-only return data if given ETag does not match
+{
+    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o="
+}
+```
+
+##### Receive a payload from the rendezvous session: `GET /_matrix/client/v1/rendezvous/{rendezvousId}`
 
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload returned
-- `304 Not Modified` - when `If-None-Match` is supplied and the ETag matched the existing payload
-- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
-HTTP response headers for `200 OK`:
+Response body for `200 OK` is `application/json` with contents:
 
-- `Content-Type` - required, `text/plain`
-- common headers as defined above
-
-HTTP response headers for `304 Not Modified`:
-
-- common headers as defined above
-
-HTTP response body for `200 OK`::
-
-- The payload last set for this rendezvous session, either via the creation POST request or a subsequent PUT request, up
-to the maximum size allowed by the server.
-
-Example responses:
+|Field|Type||
+|-|-|-|
+|`data`|required `string`|The data payload from the last POST or PUT.|
+|`sequence_token`|required `string`|The token opaque token to identify if the payload has changed|
+|`expires_ts`|required `integer`|The timestamp (in milliseconds since the epoch) at which the rendezvous session will expire|
 
 ```http
 HTTP 200 OK
-Content-Type: text/plain
-ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
-Expires: Wed, 07 Sep 2022 14:28:51 GMT
-Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
-Cache-Control: no-store
-Pragma: no-cache
+Content-Type: application/json
 
-foo
+{
+    "data": "data from the previous POST/PUT",
+    "sequence_token": "VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=",
+    "expires_ts": 1662560931000
+}
 ```
 
-```http
-HTTP 304 Not Modified
-ETag: VmbxF13QDusTgOCt8aoa0d2PQcnBOXeIxEqhw5aQ03o=
-Expires: Wed, 07 Sep 2022 14:28:51 GMT
-Last-Modified: Wed, 07 Sep 2022 14:27:51 GMT
-Cache-Control: no-store
-Pragma: no-cache
-```
+A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
+and then the server returns when the is new data or some timeout has passed.
 
-##### Cancel a rendezvous session: `DELETE <rendezvous session URL>`
+##### Cancel a rendezvous session: `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}`
 
 HTTP response codes:
 
-- `204 No Content` - rendezvous session cancelled
-- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session URL is not valid (it could have expired)
+- `200 OK` - rendezvous session cancelled
+- `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
 
 ##### Authentication
@@ -257,9 +237,14 @@ described later.
 
 ##### Maximum payload size
 
-The server enforce a maximum payload size of 4KB.
+The server MUST enforce a maximum payload size of 4KB.
 
-###### Maximum duration of a rendezvous
+##### `sequence_token` values
+
+The `sequence_token` values should be unique to the rendezvous session and the last modified time so that two clients can
+distinguish between identical payloads sent by either client.
+
+##### Maximum duration of a rendezvous
 
 The rendezvous session needs to persist for the duration of the login including allowing the user another time to
 confirm that the secure channel has been established and complete any extra homeserver mandated login steps such as MFA.
@@ -270,34 +255,6 @@ The server MUST enforce a timeout on each rendezvous. When picking a value to us
 
 - the minimum timeout SHOULD be 120 seconds for usability
 - the maximum timeout SHOULD be 300 seconds for security
-
-###### ETags
-
-The ETag generated should be unique to the rendezvous session and the last modified time so that two clients can 
-distinguish between identical payloads sent by either client.
-
-In order to make sure that no intermediate caches manipulate the ETags, the rendezvous server MUST include the HTTP
-`Cache-Control` response header with a value of `no-store` and  `Pragma` response header with a value of `no-cache`.
-
-###### CORS
-
-For the `POST /_matrix/client/v1/rendezvous` API endpoint, in addition to the standard Client-Server API [CORS](https://spec.matrix.org/v1.4/client-server-api/#web-browser-clients)
-headers, the ETag response header should also be allowed by exposing the following CORS header:
-
-```http
-Access-Control-Expose-Headers: ETag
-```
-
-To support usage from web browsers the rendezvous URLs should allow CORS requests from any origin and expose the headers
-which aren't on the CORS [request header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_request_header) and 
-[response header](https://developer.mozilla.org/en-US/docs/Glossary/CORS-safelisted_response_header) safelists:
-
-```http
-Access-Control-Allow-Headers: If-Match,If-None-Match
-Access-Control-Allow-Methods: GET, PUT, DELETE
-Access-Control-Allow-Origin: *
-Access-Control-Expose-Headers: ETag
-```
 
 ##### Choice of server
 
@@ -312,63 +269,59 @@ of preference:
 
 #### Example API usage
 
-n.b. This example demonstrates how the 307 response can be used to delegate the rendezvous session to a different server.
-
 ```mermaid
 sequenceDiagram
   participant A as Device A
   participant HS as Homeserver
-  participant R as Rendezvous Server<br>https://rz.example.com
   participant B as Device B
   Note over A: Device A determines which rendezvous server to use
 
-  A->>+HS: POST /_matrix/client/v1/rendezvous<br>Content-Type: text/plain<br>"Hello from A"
-  HS->>-A: 307 Temporary Redirect<br>Location: https://rz.example.com/foo
-  A->>+R: POST /foo<br>Content-Type: text/plain<br>"Hello from A"
-  R->>-A: 201 Created<br>ETag: 1<br>{"url":"https://rz.example.com/abc-def-123-456"}
+  A->>+HS: POST /_matrix/client/v1/rendezvous<br>{"data":"Hello from A"}
+  HS->>-A: 200 OK<br>{"id":"abc-def-123-456","sequence_token": "1", "expires_ts": 1234567}
 
-  A-->>B: Rendezvous URL shared out of band as QR code: e.g. https://rz.example.com/abc-def-123-456
+  A-->>B: Rendezvous ID and homeserver shared out of band as QR code: e.g. id=abc-def-123-456 servername=example.com
 
-  Note over A: Device A starts polling for new payloads at the<br>rendezvous session using the returned ETag
+  Note over A: Device A starts polling for new payloads at the<br>rendezvous session using the returned `sequence_token`
   activate A
 
-  B->>+R: GET /abc-def-123-456
-  R->>-B: 200 OK<br>ETag: 1<br>Content-Type: text/plain<br>"Hello from A"
+  Note over B: Device B resolves the servername to the homeserver
 
+  B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
+  HS->>-B: 200 OK<br>{"sequence_token": "1", "data": "Hello from A"}
   loop Device A polls the rendezvous session for a new payload
-    A->>+R: GET /abc-def-123-456<br>If-None-Match: 1
+    A->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
     alt is not modified
-      R->>-A: 304 Not Modified
+      HS->>-A: 200 OK<br>{"sequence_token": "1", "data": "Hello from A", "expires_ts": 1234567}
     end
   end
 
   note over B: Device B sends a new payload
-  B->>+R: PUT /abc-def-123-456<br>If-Match: 1<br>Content-Type: text/plain<br>"Hello from B"
-  R->>-B: 202 Accepted<br>ETag: 2
+  B->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "1", "data": "Hello from B"}
+  HS->>-B: 200 OK<br>{"sequence_token": "2"}
 
-  Note over B: Device B starts polling for new payloads at the<br>rendezvous session using the new ETag
+  Note over B: Device B starts polling for new payloads at the<br>rendezvous session using the new `sequence_token`
   activate B
 
   loop Device B polls the rendezvous session for a new payload
-    B->>+R: GET /abc-def-123-456<br>If-None-Match: 2
+    B->>+HS: GET /_matrix/client/v1/rendezvous/abc-def-123-456
     alt is not modified
-      R->>-B: 304 Not Modified
+      HS->>-B: 200 OK<br>{"sequence_token": "2", "data": "Hello from A", "expires_ts": 1234567}
     end
   end
 
   note over A: Device A then receives the new payload
   opt modified
-      R->>A: 200 OK<br>ETag: 2<br>Content-Type: text/plain<br>"Hello from B"
+      HS->>A: 200 OK<br>{"sequence_token": "2", "data": "Hello from B", "expires_ts": 1234567}
   end
   deactivate A
 
   note over A: Device A sends a new payload
-    A->>+R: PUT /abc-def-123-456<br>If-None-Match: 2<br>Content-Type: text/plain<br>"Hello again from A"
-    R->>-A: 202 Accepted<br>ETag: 3
+    A->>+HS: PUT /_matrix/client/v1/rendezvous/abc-def-123-456<br>{"sequence_token": "2", "data": "Hello again from A"}
+    HS->>-A: 200 OK<br>{"sequence_token": "3"}
 
   note over B: Device B then receives the new payload
   opt modified
-      R->>B: 200 OK<br>ETag: 3<br>Content-Type: text/plain<br>...
+      HS->>B: 200 OK<br>{"sequence_token": "3", "data": "Hello again from B", "expires_ts": 1234567}
   end
 
   deactivate B
@@ -408,14 +361,12 @@ Mitigations that are included in this proposal:
 - the low maximum payload size
 - restricted allowed content type
 - the rendezvous session should be short-lived
-- the ability for the rendezvous session to be hosted on a different domain to the homeserver (via
-the `307 Temporary Redirect` response behaviour)
 
 ### Secure channel
 
 The above rendezvous session is insecure, providing no confidentiality nor authenticity against the rendezvous server or
-even arbitrary network participants which possess the rendezvous session URL. To provide a secure channel on
-top of this insecure rendezvous session transport, we propose the following scheme.
+even arbitrary network participants which possess the rendezvous session ID and server name.
+To provide a secure channel on top of this insecure rendezvous session transport, we propose the following scheme.
 
 This scheme is essentially [ECIES](https://en.wikipedia.org/wiki/Integrated_Encryption_Scheme#Formal_description_of_ECIES)
 instantiated with X25519, HKDF-SHA256 for the KDF and ChaCha20-Poly1305 (as specified by
@@ -453,17 +404,17 @@ separate deterministic, monotonically-incrementing nonce is used for each sender
 2. **Create rendezvous session**
 
 Device G creates a rendezvous session by making a `POST` request (as described previously) to the nominated homeserver
-with an empty payload. It parses the **url** received.
+with an empty payload. It parses the **ID** received.
 
 3. **Initial key exchange**
 
 Device G displays a QR code containing:
 
 - Its public key **Gp**
-- The insecure rendezvous session **URL**
+- The insecure rendezvous session **ID**
 - An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
 that wishes to "reciprocate" a login
-- If the intent is to reciprocate a login, then the Matrix homeserver **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**
+- the Matrix homeserver **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**
 
 To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
 similar structure to that of the existing Device Verification QR code encoding described in [Client-Server
@@ -471,7 +422,7 @@ API](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
 
 This is defined in detail in a separate section of this proposal.
 
-Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **URL**, **intent** and optionally the Matrix homeserver
+Device S scans and parses the QR code to obtain **Gp**, the rendezvous session **ID**, **intent** and the Matrix homeserver
 **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**.
 
 At this point Device S should check that the received intent matches what the user has asked to do on the device.
@@ -516,8 +467,7 @@ Nonce_S := Nonce_S + 1
 LoginInitiateMessage := UnpaddedBase64(TaggedCiphertext) || "|" || UnpaddedBase64(Sp)
 ```
 
-Device S then sends the **LoginInitiateMessage** as the payload to the rendezvous session using a `PUT` request with
-`Content-Type` header set to `text/plain`.
+Device S then sends the **LoginInitiateMessage** as the `data` payload to the rendezvous session using a `PUT` request.
 
 5. **Device G confirms**
 
@@ -541,8 +491,7 @@ Nonce_G := Nonce_G + 1
 LoginOkMessage := UnpaddedBase64Encode(TaggedCiphertext)
 ```
 
-Device G sends **LoginOkMessage** as the payload via `PUT` request with `Content-Type` header set to `text/plain` to the
-insecure rendezvous session.
+Device G sends **LoginOkMessage** as the `data` payload via a `PUT` request to the insecure rendezvous session.
 
 6. **Verification by Device S**
 
@@ -605,48 +554,47 @@ The sequence diagram for the above is as follows:
 ```mermaid
 sequenceDiagram
     participant G as Device G
-    participant Z as Homeserver with embedded Rendezvous Server<br>matrix.example.com
+    participant Z as Homeserver
     participant S as Device S
 
     note over G,S: 1) Devices G and S each generate an ephemeral Curve25519 key pair
 
     activate G
     note over G: 2) Device G creates a rendezvous session as follows
-    G->>+Z: POST /_matrix/client/v1/rendezvous
-    Z->>-G: 201 Created<br>ETag: 1<br>{"url": "https://matrix.example.com/_synapse/client/rendezvous/abc-def"}
+    G->>+Z: POST /_matrix/client/v1/rendezvous <br>{"data": ""}
+    Z->>-G: 200 OK<br>{"id": "abc-def", "sequence_token": "1", "expires_ts": 1234567}
 
-    note over G: 3) Device G generates and displays a QR code containing<br>its ephemeral public key and the rendezvous session URL
+    note over G: 3) Device G generates and displays a QR code containing:<br>its ephemeral public key, the rendezvous session ID, the server name
 
     G-->>S: Device S scans the QR code shown by Device G
     deactivate G
 
     activate S
-    note over S: Device S validates QR scanned and the rendezvous session URL
+    note over S: Device S validates QR scanned and the rendezvous session ID
 
-    S->>+Z: GET /_synapse/client/rendezvous/abc-def
-    Z->>-S: 200 OK<br>ETag: 1
+    S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
+    Z->>-S: 200 OK<br>{"sequence_token": "1", "expires_ts": 1234567, "data": ""}
 
     note over S: 4) Device S computes SH, EncKey_S, EncKey_G and LoginInitiateMessage.<br>It sends LoginInitiateMessage via the rendezvous session
-    S->>+Z: PUT /_synapse/client/rendezvous/abc-def<br>If-Match: 1<br>Body: LoginInitiateMessage
-    Z->>-S: 202 Accepted<br>ETag: 2
+    S->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "1", "data": "<LoginInitiateMessage>"}
+    Z->>-S: 200 OK<br>{"sequence_token": "2"}
     deactivate S
 
-    G->>+Z: GET /_synapse/client/rendezvous/abc-def<br>If-None-Match: 1
+    G->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
     activate G
-    Z->>-G: 200 OK<br>ETag: 2<br>Body: Data
-
+    Z->>-G: 200 OK<br>{"sequence_token": "2", "expires_ts": 1234567, "data": "<LoginInitiateMessage>"}
     note over G: 5) Device G attempts to parse Data as LoginInitiateMessage after calculating SH, EncKey_S and EncKey_G
     note over G: Device G checks that the plaintext matches MATRIX_QR_CODE_LOGIN_INITIATE
 
     note over G: Device G computes LoginOkMessage and sends to the rendezvous session
 
-    G->>+Z: PUT /_synapse/client/rendezvous/abc-def<br>If-Match: 2<br>Body: LoginOkMessage
-    Z->>-G: 202 Accepted<br>ETag: 3
+    G->>+Z: PUT /_matrix/client/v1/rendezvous/abc-def<br>{"sequence_token": "2", "data": "<LoginOkMessage>"}
+    Z->>-G: 200 OK<br>{"sequence_token": "3"}
     deactivate G
 
     activate S
-    S->>+Z: GET /_synapse/client/rendezvous/abc-def<br>If-None-Match: 2
-    Z->>-S: 200 OK<br>ETag: 3<br>Body: Data
+    S->>+Z: GET /_matrix/client/v1/rendezvous/abc-def
+    Z->>-S: 200 OK<br>{"sequence_token": "3", "expires_ts": 1234567, "data": "<LoginOkMessage>"}
 
     note over S: 6) Device S attempts to parse Data as LoginOkMessage
     note over S: Device S checks that the plaintext matches MATRIX_QR_CODE_LOGIN_OK
@@ -1417,53 +1365,69 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - `0x03` a new device wishing to initiate a login and self-verify
   - `0x04` an existing device wishing to reciprocate the login of a new device and self-verify that other device
 - the ephemeral Curve25519 public key, as 32 bytes
-- the rendezvous session URL encoded as:
-  - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session URL as a UTF-8
+- the rendezvous session ID encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
   string
-  - the rendezvous session URL as a UTF-8 string
-- If the QR code intent/mode is `0x04` then the [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the homeserver encoded as:
+  - the rendezvous session ID as a UTF-8 string
+- the [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the homeserver encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the server name as a UTF-8 string
   - the server name as a UTF-8 string
-
-For example, if Alice displays a QR code encoding the following binary string:
-
-This indicates that Alice is a new device that wishes to initiate a login using her ephemeral public key of 
-`0001020304050607...` (which is `AAECAwQFBg…` in base64), via the rendezvous session at URL `https:/…`.
 
 #### Example for QR code generated on new device
 
 A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded) at rendezvous session `https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668` is as follows: 
+encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`matrix.org` is as follows: 
 (Whitespace is for readability only)
 
 ```
 4D 41 54 52 49 58 02  03
 d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 47
-68 74 74 70 73 3a 2f 2f 72 65 6e 64 65 7a 76 6f 75 73 2e 6c 61 62 2e 65 6c 65 6d 65 6e 74 2e 64 65 76 2f 65 38 64 61 36 33 35 35 2d 35 35 30 62 2d 34 61 33 32 2d 61 31 39 33 2d 31 36 31 39 64 39 38 33 30 36 36 38
-```
-
-Which looks as follows as a QR with error correction level Q:
-
-![Example QR for mode 0x03](images/4108-qr-mode03.png)
-
-#### Example for QR code generated on existing device
-
-A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded), at rendezvous session `https://rendezvous.lab.element.dev/e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows: (Whitespace is for readability only)
-
-```
-4D 41 54 52 49 58 02  04
-d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 47
-68 74 74 70 73 3a 2f 2f 72 65 6e 64 65 7a 76 6f 75 73 2e 6c 61 62 2e 65 6c 65 6d 65 6e 74 2e 64 65 76 2f 65 38 64 61 36 33 35 35 2d 35 35 30 62 2d 34 61 33 32 2d 61 31 39 33 2d 31 36 31 39 64 39 38 33 30 36 36 38
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
 00 0A
 6d 61 74 72 69 78 2e 6f 72 67
 ```
 
 Which looks as follows as a QR with error correction level Q:
+<!--
+Generated with:
 
+nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  03
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode03.png'
+-->
+![Example QR for mode 0x03](images/4108-qr-mode03.png)
+
+#### Example for QR code generated on existing device
+
+A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`matrix.org` is as follows: (Whitespace is for readability only)
+
+```
+4D 41 54 52 49 58 02  04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67
+```
+
+Which looks as follows as a QR with error correction level Q:
+<!--
+Generated with:
+
+nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode04.png'
+-->
 ![Example QR for mode 0x04](images/4108-qr-mode04.png)
 
 ### Discoverability of the capability
@@ -1493,6 +1457,20 @@ The proposed protocol requires the devices to have IP connectivity to the server
 ## Alternatives
 
 ### Alternative to the rendezvous session protocol
+
+#### ETag based rendezvous API
+
+An earlier iteration of this MSC used an alternative rendezvous API that was based on
+[MSC3886](https://github.com/matrix-org/matrix-spec-proposals/pull/3886).
+
+However, it was found to have issues including:
+
+- the ETags were getting mangled by proxies and load balancers
+- the semantics of the API are different from the rest of the Matrix Client-Server API
+- the CORS header changes required additional configuration work
+
+The present iteration of the rendezvous API described in this MSC attempts to "feel" more like a Matrix Client-Server
+API.
 
 #### Send-to-Device messaging
 
@@ -1588,9 +1566,9 @@ Recommendations to mitigate this are:
 
 ## Unstable prefix
 
-While this feature is in development the new `POST` endpoint should be exposed using the following unstable prefix:
+While this feature is in development the new API endpoints should be exposed using the following unstable prefix:
 
-- `/_matrix/client/unstable/org.matrix.msc4108/rendezvous`
+- `/_matrix/client/unstable/org.matrix.msc4108/rendezvous` instead of `/_matrix/client/v1/rendezvous`
 
 Additionally, the feature is to be advertised as unstable feature in the GET /_matrix/client/versions response, with the
 key org.matrix.msc4108 set to true. So, the response could look then as following:
