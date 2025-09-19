@@ -257,20 +257,39 @@ receiving server to think the sender is joined (so it passes auth checks). Unenc
 require the receiving server to think the sender is joined.
 
 The lack of historical room key sharing may make some encrypted sticky events undecryptable when new users join the room. 
+[MSC4268: Sharing room keys for past messages](https://github.com/matrix-org/matrix-spec-proposals/pull/4268) would
+help with this.
 
 ### Spam
 
 Servers may send every event as a sticky event, causing a higher amount of events to be sent eagerly over federation
 and to be sent down `/sync` to clients. The former is already an issue as servers can simply `/send` many events.
 The latter is a new abuse vector, as up until this point the `timeline_limit` would restrict the amount of events
-that arrive on client devices (only state events are unbounded and setting state is a privileged operation).
-This proposal has the following protections in place:
+that arrive on client devices (only state events are unbounded and setting state is a privileged operation). Even so,
+if a client was actively syncing then they would see all these events anyway, so it's only really a concern for "gappy"
+incremental syncs when the client was not actively syncing and has now started their application. This proposal has the
+following protections in place:
 
 * All sticky events expire, with a hard limit of 1 hour. The hard limit ensures that servers cannot set years-long expiry times.
   This ensures that the data in the `/sync` response can go down and not grow unbounded.  
 * All sticky events are subject to normal PDU checks, meaning that the sender must be authorised to send events into the room.  
 * Servers sending lots of sticky events may be asked to try again later as a form of rate-limiting.
   Due to data expiring, subsequent requests will gradually have less data.
+
+We could add a layer of indirection to the `/sync` response where we only announce the number of sticky events, and
+expect the client to fetch them when they are ready via a different endpoint. This has roughly the same bandwidth cost, but
+the client chooses when to pull in this information, reducing the time-to-interactivity. This has a few problems:
+ - It assumes sticky events are not urgently required when opening the application. This may be true for something like live
+   location sharing but may not be true for VoIP calls.
+ - It's not clear that there is a strong need for the extra indirection, given the strong rate limits and expirations already in
+   place.
+ - Adding the indirection increases complexity and friction when using the API, and presupposes the standard `/sync` model.
+   For [MSC4186: Simplified Sliding Sync](https://github.com/matrix-org/matrix-spec-proposals/pull/4186), clients can already indirect
+   if they wish to by simply not enabling the extension until they are ready to receive the data. Therefore, any new `/get_sticky_events`
+   API would really only be useful for A) applications which do not sync, B) users of the existing `/sync` API. The use case for applications
+   which do not sync is weak, given the entire point of sticky events is to ensure rapid synchronisation of temporary data. This heavily
+   implies the use of some kind of syncing mechanism to receive timely updates, which polling a `/get_sticky_events` endpoint subverts.
+
 
 ## Alternatives
 
