@@ -549,7 +549,7 @@ encrypted with **EncKey_S**, incrementing the corresponding nonce for each messa
 
 #### Sequence diagram
 
-The sequence diagram for the above is as follows:
+The sequence diagram for the secure channel establishment is as follows:
 
 ```mermaid
 sequenceDiagram
@@ -816,7 +816,6 @@ _New device scanned QR code:_
 sequenceDiagram
     title: Variant: New device scanned QR code
     participant E as Existing device <br>already signed in
-    participant Z as Rendezvous server
     participant N as New device <br>wanting to sign in
     participant HS as Homeserver
 
@@ -830,9 +829,9 @@ sequenceDiagram
     #    note over E: Existing device completes step 6
     #    note over E: Existing device displays checkmark and CheckCode
     #    note over E: 1) Existing device sends m.login.protocols message
-    #    E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"})
+    #    E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"})
     #    note over N: New device waits for user to confirm secure channel from step 7
-    #    Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"}
+    #    HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"}
     #    note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
 
@@ -848,7 +847,7 @@ sequenceDiagram
         N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
         HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
+        N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
     deactivate N
     end
@@ -860,7 +859,7 @@ sequenceDiagram
     end
 
     rect rgba(0,255,0, 0.1)
-        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
+        HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
     end
 
     rect rgba(255,0,0, 0.1)
@@ -884,7 +883,6 @@ _Existing device scanned QR code:_
 sequenceDiagram
     title: Variant: Existing device scanned QR code
     participant E as Existing device <br>already signed in
-    participant Z as Rendezvous server
     participant N as New device <br>wanting to sign in
     participant HS as Homeserver
 
@@ -898,9 +896,9 @@ sequenceDiagram
         note over E: Existing device completes step 6
         note over E: Existing device displays checkmark and CheckCode
         note over E: 1) Existing device sends m.login.protocols message
-        E->>Z: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"})
+        E->>HS: SecureSend({"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"})
         note over N: New device waits for user to confirm secure channel from step 7
-        Z->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"}
+        HS->>N: SecureReceive() => {"type":"m.login.protocols", "protocols":["device_authorization_grant],<br> "homeserver": "matrix.org"}
         note over N: If user enters the correct CheckCode and confirms checkmark<br>then new device now trusts the channel, and uses the homeserver provided
     end
 
@@ -916,7 +914,7 @@ sequenceDiagram
         N->>+HS: POST /auth/device client_id=xyz&scope=openid+urn:matrix:api:*+urn:matrix:device:ABCDEFGH...
         HS->>-N: 200 OK {"user_code": "123456",<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"expires_in_ms": 120000, "device_code": "XYZ", "interval": 1}
         note over N: 3) New device informs existing device of choice of protocol:
-        N->>Z: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
+        N->>HS: SecureSend({"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"})
 
     deactivate N
     end
@@ -927,7 +925,7 @@ sequenceDiagram
     #end
 
     rect rgba(0,255,0, 0.1)
-        Z->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
+        HS->>E: SecureReceive() => {"type": "m.login.protocol", "protocol": "device_authorization_grant",<br> "device_authorization_grant":{<br>"verification_uri_complete": "https://id.matrix.org/device/abcde",<br>"verification_uri": ...}, "device_id": "ABCDEFGH"}
     end
 
     # alt if New device scanned QR code
@@ -1009,6 +1007,9 @@ Note that the existing device does not see the new access token. This is one of 
 
 The sequence diagram for steps 4 and 5 is as follows:
 
+(for readability a pair of `SecureSend,SecureReceive` operations via the Homeserver is represented by a single
+`SecureSendReceive` between the two devices)
+
 ```mermaid
 sequenceDiagram
     participant E as Existing device <br>already signed in
@@ -1021,12 +1022,12 @@ sequenceDiagram
         E->>HS: GET /_matrix/client/v3/devices/{device_id}
         alt device already exists
             HS->>E: 200 OK
-            E->>N: SecureSend({ "type": "m.login.failure", "reason": "device_already_exists" })
+            E->>N: SecureSendReceive({ "type": "m.login.failure", "reason": "device_already_exists" })
         else device not found
             HS->>E: 404 Not Found
         end
         par
-            E->>N: SecureSend({"type":"m.login.protocol_accepted"})
+            E->>N: SecureSendReceive({"type":"m.login.protocol_accepted"})
         note over N: 4) New device polls the homeserver awaiting the outcome as per RFC 8628 / MSC4341
             loop Poll for result at interval <interval> seconds
                 N->>HS: POST /token client_id=xyz<br>&grant_type=urn:ietf:params:oauth:grant-type:device_code<br>&device_code=XYZ
@@ -1034,14 +1035,14 @@ sequenceDiagram
                     HS-->>N: 400 Bad Request {"error": "authorization_pending"}
                 else granted
                     HS-->>N: 200 OK {"access_token": "...", "token_type": "Bearer", ...}
-                    N->>E: SecureSend({ "type": "m.login.success" })
+                    N->>E: SecureSendReceive({ "type": "m.login.success" })
                     Note over N: Device now has an access_token and can start to talk to the homeserver
                 else denied
                     HS-->>N: 400 Bad Request {"error": "authorization_declined"}
-                    N->>E: SecureSend({"type":"m.login.declined"})
+                    N->>E: SecureSendReceive({"type":"m.login.declined"})
                 else expired
                     HS-->>N: 400 Bad Request {"error": "expired_token"}
-                    N->>E: SecureSend({"type":"m.login.failure", "reason": "authorization_expired"})
+                    N->>E: SecureSendReceive({"type":"m.login.failure", "reason": "authorization_expired"})
                 end
             end
         and
@@ -1147,6 +1148,9 @@ Content-Type: application/json
 
 The sequence diagram for this would look as follows:
 
+(for readability a pair of `SecureSend,SecureReceive` operations via the Homeserver is represented by a single
+`SecureSendReceive` between the two devices)
+
 ```mermaid
 sequenceDiagram
     participant E as Existing device <br>already signed in
@@ -1156,7 +1160,7 @@ sequenceDiagram
     rect rgba(0,255,0, 0.1)
             rect rgb(191, 223, 255)
 note over N,E: This step is duplicated from the previous section for readability
-              N-->>+E: { "type": "m.login.success" }
+              N-->>+E: SecureSendReceive({ "type": "m.login.success" })
             end
 
             Note over E: 1) Existing device checks that the device is actually online
@@ -1166,12 +1170,12 @@ activate HS
             alt is device not found
               note over E: We should wait and retry for 10 seconds
               HS->>E: 404 Not Found
-              E->>N: { "type": "m.login.failure", "reason": "device_not_found" }
+              E->>N: SecureSendReceive({ "type": "m.login.failure", "reason": "device_not_found" })
             else is device found
               HS->>E: 200 OK
 deactivate HS
 
-              E->>-N: 2) { "type": "m.login.secrets", "cross_signing": {...}, "backup": {...} }
+              E->>-N: 2) SecureSendReceive({ "type": "m.login.secrets", "cross_signing": {...}, "backup": {...} })
 
               activate N
               note over N: 3) New device stores the secrets locally
