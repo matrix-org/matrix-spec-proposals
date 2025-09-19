@@ -13,7 +13,8 @@ events in the timeline has to be paginated through to attempt discovery of any t
 This is both cumbersome for the client and slow.
 
 This MSC proposes an 'extension' to Sliding Sync that allows clients to opt-in to receiving real-time updates to threads
-in the user's joined rooms.
+in the user's joined rooms. The new `extension` provides a mechanism for clients to quickly and easily "catch up" to any
+missed thread updates.
 
 To handle the case in which there have been many thread updates and there are too many to return in
 Sliding Sync, a new companion endpoint is proposed to allow backpaginating thread updates across all
