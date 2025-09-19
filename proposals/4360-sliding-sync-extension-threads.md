@@ -45,7 +45,7 @@ If there are more threads containing updates than can be included in the respons
 with the list of threads. This `prev_batch` token can be used with the new `/thread_updates` companion endpoint as the
 `from` parameter, with `dir`=`b`, to obtain other missed thread updates across all of the user's joined rooms.
 
-There are a number of cases to consider when generating the `threads` extention response to a `/sync`:
+There are a number of cases to consider when generating the `threads` extension response to a `/sync`:
 
 
 ##### `include_roots` is set to `false`
@@ -168,7 +168,7 @@ The response format is then extended to compensate:
 A new `/thread_updates` endpoint is added to allow a client to obtain missing thread updates for a client.
 The new endpoint operates as a bulk fetch endpoint, operating across all of a user's joined rooms, allowing
 a client to obtain only relevant information with minimal amounts of network requests.
-There is an existing `/threads`  enpoint, but it returns all thread roots for a room, not just threads
+There is an existing `/threads`  endpoint, but it returns all thread roots for a room, not just threads
 which contain updates relevant for a client. The existing endpoint also operates on a per-room basis which
 means a client would need to perform at least one network request per-room that the user is joined to.
 
