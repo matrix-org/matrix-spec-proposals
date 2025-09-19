@@ -7,37 +7,79 @@ Threads were introduced in [version 1.4 of the Matrix Specification](https://spe
 
 Sliding Sync is proposed in [MSC4186](https://github.com/matrix-org/matrix-spec-proposals/blob/erikj/sss/proposals/4186-simplified-sliding-sync.md) as a paginated replacement to `/_matrix/client/v3/sync` with smaller response bodies and lower latency.
 
-It is currently a hassle, or nearly impossible, to be able to determine which threads have been updated in a user's
-joined rooms when a client returns after having been offline for a period of time. The full set of events in the
-timeline has to be paginated through to attempt to discover any threaded events that may have been missed. This is both
-cumbersome and slow.
+It is currently a hassle, or nearly impossible, to be able to determine which threads in a user's joined rooms contain
+updates. This is especially true when a client returns after having been offline for a period of time. The full set of
+events in the timeline has to be paginated through to attempt discovery of any thread events that may have been missed.
+This is both cumbersome for the client and slow.
 
-This MSC proposes an 'extension' to Sliding Sync that allows clients to opt-in to receiving real-time updates to threads in the user's joined rooms.
+This MSC proposes an 'extension' to Sliding Sync that allows clients to opt-in to receiving real-time updates to threads
+in the user's joined rooms.
 
 To handle the case in which there have been many thread updates and there are too many to return in
-Sliding Sync, a new companion endpoint is proposed to allow backpaginating thread updates across all of the user's joined rooms on the client's terms.
+Sliding Sync, a new companion endpoint is proposed to allow backpaginating thread updates across all
+of the user's joined rooms on the client's terms.
 
 
 ## Proposal
 
-The `threads` Sliding Sync extension alleviates the issue presented above of a client returning after a period of time
-by having the homeserver track which threads have had updates since the last sync and present a list of those threads to
-the client during sync. The presented list of threads containing updates can cover a larger scope of the timeline than
-just the normal sync response would be able to handle, thus allowing the client to quickly gather information on which
-threads may need to be specifically targeted for further inquery, ie. by using the `/relations` endpoint.
+The `threads` Sliding Sync extension adds additional output to the `/sync` response as well as a new `/thread_updates` companion endpoint
+that can be used to paginate thread updates across all of a user's joined rooms. A client's homeserver will track which threads
+have had updates since the last time `/sync` was called and present a list of threads containing updates to
+the client the next time `/sync` is called. 
+The presented list of threads containing updates can cover a larger portion of the timeline than
+just the normal sync response would be able to handle, thus allowing clients to quickly gather information on which
+threads have updates without having to paginate through the entire timeline of events. 
 
-In addition to the scenario of a user returning after a period of time, the proposed solution also enables a client to
-monitor the latest events across all threads via the `include_roots` option. If `include_roots` is set to `true` then
-the `threads` extension of Sliding Sync will always include any thread updates, even if the latest event/s of those
-threads are included in the normal sync response. This is to ensure things such as edits to the thread root are captured
+
+### Sliding Sync extension
+
+The new Sliding Sync `threads` extension is an optional addition that provides a list of updated threads to a client.
+If the client hasn't missed any thread updates, then this whole section of the response is omitted.
+
+When generating the content of the `threads` extension response, if a particular thread contains more than one
+update for the client, a `prev_batch` token is provided for that thread. This `prev_batch` token can be used
+with the `/relations` endpoint as the `from` parameter, with `dir`=`b`, to obtain other missed updates in that thread.
+
+If there are more threads containing updates than can be included in the response, a `prev_batch` token is provided
+with the list of threads. This `prev_batch` token can be used with the new `/thread_updates` companion endpoint as the
+`from` parameter, with `dir`=`b`, to obtain other missed thread updates across all of the user's joined rooms.
+
+There are a number of cases to consider when generating the `threads` extention response to a `/sync`:
+
+
+##### `include_roots` is set to `false`
+
+When `include_roots` is `false` the `thread_root` fields are always omitted from the thread updates.
+If a client receives the event/s in the normal response section of `/sync` that would result
+in a thread being considered updated, then that thread is omitted from list of updated threads in the extension response.
+> ie. When `include_roots` is `false`, only threads with updates that haven't otherwise been presented to
+the client via the normal `/sync` response are included in the extension response.
+
+Under normal client operation where a client is online and continually syncing, this has the desirable
+effect of making the `threads` extension zero overhead for the client. This assumes that the client is
+receiving small, untruncated, batches of new events down `/sync` such that any event/s which would result
+in a thread being considered updated are already being passed down to the client and can be omitted from the
+`threads` extension. It is only in the case of events being omitted from the normal `/sync` response or a
+client falling behind that updates would be included in the `threads` extension.
+
+
+##### `include_roots` is set to `true`
+
+When `include_roots` is `true` the `thread_root` fields are always included in the thread updates, and thread
+updates that would have been otherwise omitted are included in the extension response.
+This is true even in the case where the thread update event/s are included in the normal response section
+of `/sync`. This may result in some amount of duplicate data in the `/sync` response since the `thread_root`
+event contains a copy of the `latest_event` of the thread in it's `unsigned` fields.
+
+Setting `include_roots` to `true` can be useful to ensure thread root changes, such as edits to the thread root, are captured
 and passed down in a useful way to the client. The thread root events also include a copy of the latest event in that
 thread to make it extremely easy for a client to present a view of threads, whether there are updates, and a preview of
 the latest content in each thread.
 
-### Sliding Sync extension
+
+#### Extension Format
 
 The Sliding Sync request format is extended to include the `threads` extension as follows:
-
 
 ```jsonc
 {
@@ -75,14 +117,7 @@ The response format is then extended to compensate:
 
     // Returns a limited window of changes to updated threads.
     // Only the latest changes are returned in this window.
-    // If the client hasn't missed anything, then this whole
-    // section of the response is omitted.
-    // If a client receives the event/s in the normal response section of `/sync` that would result
-    // in a thread being considered updated, then that thread is omitted from the extension response.
-    // This is true unless `include_roots` is set to `true` in which case all thread updates will be
-    // reported in the extension response.
-    // ie. When `include_roots` is `false, only threads with updates that haven't otherwise been
-    // presented to the client via the normal `/sync` response are included in the extension response.
+    // If the client hasn't missed anything, then this whole section of the response is omitted.
     "threads": {
       "updates": {
         "!roomid:example.org": {
@@ -114,7 +149,7 @@ The response format is then extended to compensate:
       // that occurred in any thread, in any room, since the last sync but that were not
       // included in this response.
       //
-      // The token is to be used with the new `/threads` endpoint
+      // The token is to be used with the new `/thread_updates` endpoint
       // as `from`, with `dir`=`b`.
       // The `pos` parameter in the **request** would be used for the `to`
       // parameter.
@@ -128,6 +163,13 @@ The response format is then extended to compensate:
 ```
 
 ### Companion endpoint for backpaginating thread updates across all rooms
+
+A new `/thread_updates` endpoint is added to allow a client to obtain missing thread updates for a client.
+The new endpoint operates as a bulk fetch endpoint, operating across all of a user's joined rooms, allowing
+a client to obtain only relevant information with minimal amounts of network requests.
+There is an existing `/threads`  enpoint, but it returns all thread roots for a room, not just threads
+which contain updates relevant for a client. The existing endpoint also operates on a per-room basis which
+means a client would need to perform at least one network request per-room that the user is joined to.
 
 ```
 GET /_matrix/client/v1/thread_updates
@@ -150,8 +192,8 @@ URL parameters:
 - `limit` (int, optional; default `100`): a maximum number of thread updates to fetch
   in one response. \
   Must be greater than zero. Servers may impose a smaller limit than requested.
-
   
+
 Response body:
 
 ```jsonc
@@ -159,7 +201,6 @@ Response body:
   "chunk": {
     "!roomid:example.org": {
       "$threadrootid:example.org": {
-        // Only included if the request contains `include_roots: true`.
         // A `BundledThreadEvent` (as outlined in https://spec.matrix.org/v1.15/client-server-api/#server-side-aggregation-of-mthread-relationships)
         // is a thread root event which contains the `m.thread` aggregation included under the
         // `m.relations` property in the `unsigned` field of the event.
@@ -204,7 +245,7 @@ The homeserver would respond to the `/sync` request and give a list of all the t
 The homeserver responds with a list of N updated threads and a `prev_batch` token if there were any thread updates
 omitted from the list. If there were thread updates omitted, the client keeps on paginating `/thread_updates` with the
 `from={prev_batch}&to={pos}` (similar to the usage in [MSC4308](https://github.com/matrix-org/matrix-spec-proposals/pull/4308) until it
-exhausts the list of thread updates since the previous time (ie. when pagination has reached `pos`).
+exhausts the list of thread updates since the previous time, ie. when pagination has reached `pos`).
 The client then sets `include_roots` to `false` to limit the amount of duplicate data being sent down `/sync`.
 Further updates to threads will come down the normal `/sync` response, and not be included in the `threads` extension
 unless there are too many events in the normal `/sync` response, in which case, any thread update events not included
