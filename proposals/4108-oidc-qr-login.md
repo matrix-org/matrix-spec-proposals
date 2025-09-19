@@ -499,7 +499,7 @@ The keys are generated with the following HKDF parameters:
 With this, Device S has established its side of the secure channel. Device S then derives a confirmation payload that
 Device G can use to confirm that the channel is secure. It contains:
 
-- The string `MATRIX_QR_CODE_LOGIN_ENCKEY_S`, encrypted and authenticated with ChaCha20-Poly1305.
+- The string `MATRIX_QR_CODE_LOGIN_INITIATE`, encrypted and authenticated with ChaCha20-Poly1305.
 - Its public ephemeral key **Sp**.
 
 ```
