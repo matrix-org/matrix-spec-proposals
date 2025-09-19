@@ -26,7 +26,7 @@ almost the right primitive, but:
 
 This proposal adds such a primitive, called Sticky Events, which provides the following guarantees:
 
-* Eventual delivery (with timeouts) and convergence.  
+* Eventual delivery (with timeouts) with convergence.  
 * Access control tied to the joined members in the room.  
 * Extensible, able to be sent by clients.
 
@@ -34,7 +34,7 @@ This new primitive can be used to implement MatrixRTC participation, live locati
 
 ## Proposal
 
-Message events can be annotated with a new top-level `sticky` key, which MUST have a `duration_ms`,
+Message events can be annotated with a new top-level `sticky` key[^toplevel], which MUST have a `duration_ms`,
 which is the number of milliseconds for the event to be sticky. The presence of `sticky.duration_ms`
 with a valid value makes the event “sticky”[^stickyobj]. Valid values are the integer range 0-3600000 (1 hour).
 For use cases that require stickiness beyond this limit, the application is responsible for sending another
@@ -70,7 +70,7 @@ To calculate if any sticky event is still sticky:
 * If the end time is in the future, the event remains sticky.
 
 Sticky events are like normal message events and are authorised using normal PDU checks. They have the
-following _additional_ properties:
+following _additional_ properties[^prop]:
 
 * They are eagerly synchronised with all other servers.[^partial]  
 * They must appear in the `/sync` response.[^sync]  
@@ -319,7 +319,12 @@ dropped updates for the latter scenario.
 - The `/sync` response section is `msc4354_sticky_events`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
 
+[^toplevel]: This has to be at the top-level as we want to support _encrypted_ sticky events, and therefore metadata the server
+needs cannot be within `content`.
 [^stickyobj]: The presence of the `sticky` object alone is insufficient.  
+[^prop]: An interesting observation is that these additional properties are entirely to handle edge cases. In the happy case,
+events _are sent_ to others over federation, they _aren't_ soft-failed and they _do appear_ down `/sync`. This MSC just makes this
+reliable.
 [^partial]: Over federation, servers are not required to send all timeline events to every other server.
 Servers mostly lazy load timeline events, and will rely on clients hitting `/messages` which in turn
 hits`/backfill` to request events from federated servers.  
