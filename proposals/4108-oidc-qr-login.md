@@ -875,7 +875,8 @@ sequenceDiagram
     note over E: Existing device checks that requested protocol is supported
 
     alt if requested protocol is not valid
-        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
+        E->>HS: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
+        HS->>N: SecureReceive({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
     end
     end
 ```
@@ -940,7 +941,8 @@ sequenceDiagram
     note over E: Existing device checks that requested protocol is supported
 
     alt if requested protocol is not valid
-        E->>N: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
+        E->>HS: SecureSend({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
+        HS->>N: SecureReceive({"type":"m.login.failure", "reason":"unsupported_protocol",<br>"homeserver": "matrix.org})
     end
     end
 ```
