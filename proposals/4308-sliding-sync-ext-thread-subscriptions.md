@@ -30,6 +30,8 @@ The Sliding Sync request format is extended to include the `thread_subscriptions
 
     // Used to opt-in to receiving changes to thread subscriptions.
     "thread_subscriptions": {
+      // Must be specified and true to enable the extension.
+      "enabled": true,
       // Maximum number of thread subscription changes to receive
       // in the response.
       // Defaults to 100.
