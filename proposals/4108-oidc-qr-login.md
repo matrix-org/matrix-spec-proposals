@@ -832,8 +832,10 @@ At this point the new device knows that, subject to the user consenting, it shou
 
 3. **New device informs existing device that it wants to use the `device_authorization_grant`**
 
-The new device send the `verification_uri` and, if present, the `verification_uri_complete` over to the existing device and
-indicates that want to use protocol `device_authorization_grant` along with the `device_id` that will be used:
+The new device sends the `verification_uri` and, if present, the `verification_uri_complete` over to the existing device and
+indicates that it wants to use protocol `device_authorization_grant` and that it will be authenticating as the Matrix
+device with ID `device_id` (i.e. it will be requesting the [OAuth 2.0 API scope](https://spec.matrix.org/v1.16/client-server-api/#login-flow)
+containing the specified device ID):
 
 *New device => Existing device via secure channel*
 
@@ -1116,7 +1118,8 @@ This is achieved as following:
 
 1. **Existing device confirms that the new device has indeed logged in successfully**
 
-On receipt of an `m.login.success` message the existing device queries the homeserver to check that the is a device online
+On receipt of an `m.login.success` message the existing device queries the homeserver to check that there is a device online
+
 with the corresponding device_id (from the `m.login.protocol` message).
 
 It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
@@ -1563,8 +1566,8 @@ A threat analysis has been done within each of the key layers in the proposal ab
 This mechanism could be used by an attacker who has gained temporary access to a client to escalate the attack to creation
 of a new client session that has ongoing access.
 
-For example, if you leave your if you leave your phone unlocked briefly someone could quickly use QR code login to login on
-their device.
+For example, if you leave your phone unlocked briefly someone could quickly use QR code login to sign in on their device
+as you.
 
 It also makes it easier to get the private keys of the user from an unlocked client, as you can login with a new device,
 extract the keys from that, and logout again to cover your tracks.
