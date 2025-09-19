@@ -196,6 +196,8 @@ above they do not have any special meaning.
 Notably, `bump_stamp`s MUST NOT be compared between different threads, because servers MAY
 treat `bump_stamp`s as per-thread.
 
+`bump_stamp` MUST be an ECMAScript-compatible (Canonical JSON-compatible) integer.
+
 `bump_stamp`s are independent of the sliding sync session and remain valid for comparison
 even if the sliding sync connection is reset, or if the device is changed.
 Servers do not need to make `bump_stamp`s consistent across different users.
