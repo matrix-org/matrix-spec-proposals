@@ -1,4 +1,4 @@
-# MSC4108: Mechanism to allow OAuth sign in and E2EE set up via QR code
+# MSC4108: Mechanism to allow OAuth 2.0 API sign in and E2EE set up via QR code
 
 We propose a method to allow an existing authenticated Matrix client to sign in a new client by scanning a QR code. The
 new client will be a fully bootstrapped Matrix cryptographic device, possessing all the necessary secrets, namely the
@@ -24,8 +24,8 @@ Table of contents:
         - [Sequence diagram](#sequence-diagram)
         - [Secure operations](#secure-operations)
         - [Threat analysis](#threat-analysis)
-    - [The OAuth login part and set up of E2EE](#the-oauth-login-part-and-set-up-of-e2ee)
-        - [Login via OAuth Device Authorization Grant](#login-via-oauth-device-authorization-grant)
+    - [The OAuth 2.0 login part and set up of E2EE](#the-oauth-20-login-part-and-set-up-of-e2ee)
+        - [Login via OAuth 2.0 Device Authorization Grant from MSC4341](#login-via-oauth-20-device-authorization-grant-from-msc4341)
         - [Secret sharing and device verification](#secret-sharing-and-device-verification)
         - [Message reference](#message-reference)
     - [QR code format](#qr-code-format)
@@ -35,6 +35,7 @@ Table of contents:
 - [Potential issues](#potential-issues)
 - [Alternatives](#alternatives)
     - [Alternative to the rendezvous session protocol](#alternative-to-the-rendezvous-session-protocol)
+        - [ETag based rendezvous API](#etag-based-rendezvous-api)
         - [Send-to-Device messaging](#send-to-device-messaging)
         - [Other existing protocols](#other-existing-protocols)
         - [Implementation details](#implementation-details)
@@ -59,7 +60,7 @@ This proposal is split into three parts:
 
 1. An insecure rendezvous session API to allow the two devices to exchange the necessary data
 2. A secure channel to protect the data exchanged over the rendezvous session
-3. The OAuth login part and set up of E2EE
+3. The OAuth 2.0 login part and set up of E2EE
 
 ### Insecure rendezvous session
 
@@ -96,7 +97,7 @@ The rendezvous session (i.e. the payload) SHOULD expire after a period of time c
 `expires_ts` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
-####  API
+#### API
 
 ##### Create a rendezvous session and send initial payload: `POST /_matrix/client/v1/rendezvous`
 
@@ -668,13 +669,15 @@ Whilst the could be other uses for the secure channel mechanism or we might esta
 using another mechanism (e.g. NFC or sound), this proposal only considers the scenario where the communication is
 initiated via QR code and we make the prefix explicitly named to match.
 
-### The OAuth login part and set up of E2EE
+### The OAuth 2.0 login part and set up of E2EE
 
 Once the secure channel has been established, the two devices can then communicate securely.
 
-#### Login via OAuth Device Authorization Grant
+#### Login via OAuth 2.0 Device Authorization Grant from MSC4341
 
 In this section the sequence of steps depends on whether the new device generated or scanned the QR code.
+
+This is where we start to make use of [MSC4341] Support for RFC 8628 Device Authorization Grant.
 
 For example, in the case that the new device scanned the QR code it is the first to do a `SecureSend` whereas if the new
 device generated the QR then the existing device is the first to do a `SecureSend`.
@@ -1003,7 +1006,7 @@ The existing device then sends an acknowledgement message to let the other devic
 The user is then prompted to consent by the homeserver. They may be prompted to undertake additional actions by the
 homeserver such as 2FA, but this is all handled within the browser.
 
-Note that the existing device does not see the new access token. This is one of the benefits of the OAuth architecture.
+Note that the existing device does not see the new access token. This is one of the benefits of the OAuth 2.0 API.
 
 The sequence diagram for steps 4 and 5 is as follows:
 
@@ -1455,7 +1458,7 @@ Where the homeserver is known:
 
 For a new device it would need to know the homeserver ahead of time in order to do these checks.
 
-Additionally the new device needs to either have an existing (i.e. static) OAuth client registered with the homeserver
+Additionally the new device needs to either have an existing (i.e. static) OAuth 2.0 client registered with the homeserver
 already, or the homeserver must support and allow dynamic client registration as described in the [spec](https://spec.matrix.org/v1.15/client-server-api/#client-registration).
 
 The feature is also only available where a user has cross-signing set up and the existing device to be used has the
