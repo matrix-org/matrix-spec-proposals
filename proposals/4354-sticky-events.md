@@ -76,6 +76,7 @@ following _additional_ properties[^prop]:
 * They are eagerly synchronised with all other servers.[^partial]  
 * They must appear in the `/sync` response.[^sync]  
 * The soft-failure checks MUST be re-evaluated when the membership state changes for a user with unexpired sticky events.[^softfail]
+* They ignore history visibility checks. Any joined user is authorised to see sticky events for the duration they remain sticky.
 
 To implement these properties, servers MUST:
 
