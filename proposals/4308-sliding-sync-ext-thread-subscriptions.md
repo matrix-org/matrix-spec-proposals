@@ -128,7 +128,9 @@ URL parameters:
   If this token is not provided, then backpagination starts from the 'end'.
 
 - `to` (string, optional): a token used to limit the backpagination \
-  The token can be acquired from a Sliding Sync response.
+  The token, originally acquired from `pos` in a Sliding Sync response,
+  would be the same one used as the `pos` **request** parameter in the
+  Sliding Sync request that returned the `prev_batch`.
 
 - `limit` (int, optional; default `100`): a maximum number of thread subscriptions to fetch
   in one response. \
