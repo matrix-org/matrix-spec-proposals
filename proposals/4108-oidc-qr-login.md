@@ -659,6 +659,15 @@ own key.
 - The attack is only thwarted in step 7, because Device S won't ever display the indicator of success to the user. The
 user then must cancel the process on Device G, preventing it from sharing any sensitive material.
 
+#### Choice of message prefix
+
+During the secure channel establishment the messages have been prefixed with `MATRIX_QR_CODE_LOGIN_` rather than
+something more generic. The purpose is to bind the protocol to this specific application.
+
+Whilst the could be other uses for the secure channel mechanism or we might establish communication between devices
+using another mechanism (e.g. NFC or sound), this proposal only considers the scenario where the communication is
+initiated via QR code and we make the prefix explicitly named to match.
+
 ### The OAuth login part and set up of E2EE
 
 Once the secure channel has been established, the two devices can then communicate securely.
