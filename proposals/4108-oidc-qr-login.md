@@ -173,7 +173,7 @@ HTTP response codes, and Matrix error codes:
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
 - `409 Conflict` (`M_CONCURRENT_WRITE`, a new error code) - when the `sequence_token` does not match
 - `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
-- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
+- `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 The response body for `200 OK` is `application/json` with contents:
 
@@ -198,7 +198,7 @@ HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload returned
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
-- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
+- `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 Response body for `200 OK` is `application/json` with contents:
 
@@ -228,7 +228,7 @@ HTTP response codes:
 
 - `200 OK` - rendezvous session cancelled
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
-- `429 Too Many Requests` (`M_UNKNOWN`) - the request has been rate limited
+- `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 ##### Authentication
 
