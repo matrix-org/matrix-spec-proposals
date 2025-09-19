@@ -534,7 +534,7 @@ It then responds with a dummy payload containing the string `MATRIX_QR_CODE_LOGI
 as follows:
 
 ```
-Nonce_G := 1
+Nonce_G := 0
 NonceBytes_G := ToLowEndianBytes(Nonce_G)[..12]
 TaggedCiphertext := ChaCha20Poly1305_Encrypt(EncKey_G, NonceBytes_G, "MATRIX_QR_CODE_LOGIN_OK")
 Nonce_G := Nonce_G + 1
