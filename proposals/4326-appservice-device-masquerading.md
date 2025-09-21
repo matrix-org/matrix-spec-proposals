@@ -21,7 +21,7 @@ details for the remainder of the request. For many endpoints this means updating
 and "last seen timestamp" for the device, though for some endpoints it may mean interacting with the
 device specifically (such as when uploading one-time keys).
 
-If the `device_id` does not already exist on the `user_id`, the server returns a `400 M_EXCLUSIVE`
+If the `device_id` does not already exist on the `user_id`, the server returns a `400 M_UNKNOWN_DEVICE`
 standard error response.
 
 If the `device_id` is present without a `user_id`, the `user_id` is assumed to be the appservice's
@@ -110,6 +110,7 @@ they could log out whatever devices they don't want and register new ones accord
 For historical reasons, unstable implementations of this proposal should use `org.matrix.msc3202.device_id`
 instead of `device_id`.
 
+`ORG.MATRIX.MSC4326.M_UNKNOWN_DEVICE` is used as the error code instead of `M_UNKNOWN_DEVICE`.
 
 ## Dependencies
 
