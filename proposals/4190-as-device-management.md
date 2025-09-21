@@ -54,6 +54,18 @@ This endpoint no longer requires User-Interactive Authentication for application
 
 This endpoint no longer requires User-Interactive Authentication for application services.
 
+### **`POST /_matrix/client/v3/keys/device_signing/upload`**
+
+This endpoint no longer requires User-Interactive Authentication for application services,
+even if cross-signing keys already exist.
+
+This is not technically a part of device management, but appservices will need
+to be able to verify themselves including generating cross-signing keys for
+[MSC4153] and replacing cross-signing keys is necessary in some cases (e.g. if
+the appservice recovery key is misplaced).
+
+[MSC4153]: https://github.com/matrix-org/matrix-spec-proposals/pull/4153
+
 ### **`POST /_matrix/client/v3/login`**
 
 Logins with the `m.login.application_service` type will return HTTP 400 with a
@@ -88,9 +100,9 @@ a server switches to OAuth2 entirely.
 
 ## Security considerations
 
-This MSC lets application services delete devices without the usual
-re-authentication requirement. It is considered an acceptable risk, as
-application services have to be registered by the server admin.
+This MSC lets application services delete devices and replace cross-signing keys
+without the usual re-authentication requirement. It is considered an acceptable
+risk, as application services have to be registered by the server admin.
 
 ## Alternatives
 
