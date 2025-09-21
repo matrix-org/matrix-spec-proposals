@@ -33,7 +33,7 @@ To opt into this new behavior, the appservice registration has a new
 OAuth2, it MUST treat all appservices as having the flag enabled, as the old
 login methods will not work in any case.
 
-### **`PUT /_matrix/client/v3/devices/{deviceId}`**
+### [**`PUT /_matrix/client/v3/devices/{deviceId}`**](https://spec.matrix.org/v1.16/client-server-api/#put_matrixclientv3devicesdeviceid)
 
 This endpoint is updated to allow the creation of a new device for a user, if
 the device ID does not exist. This behavior is only available to application
@@ -46,15 +46,15 @@ The endpoint is rate limited. Servers may want to use login rate limits for
 device creation, although in most cases application services will disable all
 rate limits anyway.
 
-### **`DELETE /_matrix/client/v3/devices/{deviceId}`**
+### [**`DELETE /_matrix/client/v3/devices/{deviceId}`**](https://spec.matrix.org/v1.16/client-server-api/#delete_matrixclientv3devicesdeviceid)
 
 This endpoint no longer requires User-Interactive Authentication for application services.
 
-### **`POST /_matrix/client/v3/delete_devices`**
+### [**`POST /_matrix/client/v3/delete_devices`**](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3delete_devices)
 
 This endpoint no longer requires User-Interactive Authentication for application services.
 
-### **`POST /_matrix/client/v3/keys/device_signing/upload`**
+### [**`POST /_matrix/client/v3/keys/device_signing/upload`**](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3keysdevice_signingupload)
 
 This endpoint no longer requires User-Interactive Authentication for application services,
 even if cross-signing keys already exist.
@@ -66,13 +66,15 @@ the appservice recovery key is misplaced).
 
 [MSC4153]: https://github.com/matrix-org/matrix-spec-proposals/pull/4153
 
-### **`POST /_matrix/client/v3/login`**
+### [**`POST /_matrix/client/v3/login`**](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3login)
 
-Logins with the `m.login.application_service` type will return HTTP 400 with a
+Logins with the [`m.login.application_service` type] will return HTTP 400 with a
 new `M_APPSERVICE_LOGIN_UNSUPPORTED` error code if the appservice has opted into
 this MSC.
 
-### **`POST /_matrix/client/v3/register`**
+[`m.login.application_service` type]: https://spec.matrix.org/v1.16/client-server-api/#appservice-login
+
+### [**`POST /_matrix/client/v3/register`**](https://spec.matrix.org/v1.16/client-server-api/#post_matrixclientv3register)
 
 Currently, the default behavior for `/register` is to create a new device and
 access token (i.e. login) in addition to creating the user. Similar to `/login`,
