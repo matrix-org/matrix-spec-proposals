@@ -1,9 +1,8 @@
 # MSC4190: Device management for application services
 
-[MSC3202] allows application services to handle and send encrypted events.
-One part of [MSC3202] is the ability to masquerade devices using the `device_id`
-query parameter on C-S API requests, which eliminates the need to maintain
-individual access tokens for each application service user.
+[MSC4326] gives appservices the ability to masquerade devices using the
+`device_id` query parameter on C-S API requests, which eliminates the need to
+maintain individual access tokens for each application service user.
 
 However, application services don't have an endpoint to create devices for their
 users, which means that, in practice, encrypted application services still use
@@ -13,8 +12,8 @@ their users.
 Consequently, such application services leave many unused but active access
 tokens for those users.
 
-Furthermore, if [MSC3861] were adopted, the `/login` endpoint would no longer be
-available for application services to use.
+Furthermore, the `/login` endpoint is longer available for application services
+to use on servers that have switched to OAuth2 ([MSC3861]).
 
 This MSC proposes a dedicated API endpoint for application services to create
 and delete devices for users, addressing the existing gap to enable encrypted
@@ -28,6 +27,11 @@ create and delete devices for their users without relying on the `/login` and
 
 As all changes here only apply to application services, guest access is not
 relevant.
+
+To opt into this new behavior, the appservice registration has a new
+`device_management: true` flag. However, if the homeserver has switched to
+OAuth2, it MUST treat all appservices as having the flag enabled, as the old
+login methods will not work in any case.
 
 ### **`PUT /_matrix/client/v3/devices/{deviceId}`**
 
@@ -50,17 +54,24 @@ This endpoint no longer requires User-Interactive Authentication for application
 
 This endpoint no longer requires User-Interactive Authentication for application services.
 
+### **`POST /_matrix/client/v3/login`**
+
+Logins with the `m.login.application_service` type will return HTTP 400 with a
+new `M_APPSERVICE_LOGIN_UNSUPPORTED` error code if the appservice has opted into
+this MSC.
+
 ### **`POST /_matrix/client/v3/register`**
 
 Currently, the default behavior for `/register` is to create a new device and
 access token (i.e. login) in addition to creating the user. Similar to `/login`,
-creating an access token would no longer be possible with [MSC3861]. However,
-creating users via the endpoint is still required, so unlike `/login`, `/register`
-will not be removed entirely.
+creating an access token is no longer possible on servers that have switched to
+OAuth2. However, creating users via the endpoint is still required, so unlike
+`/login`, `/register` will not be removed entirely.
 
-Therefore, application services MUST call the endpoint with `inhibit_login=true`.
-Calls without the parameter, or with a different value than `true`, will return
-HTTP 400 with a new `M_APPSERVICE_LOGIN_UNSUPPORTED` error code.
+Therefore, application services that have opted into this MSC MUST call the
+endpoint with `inhibit_login=true`. Calls without the parameter, or with a
+different value than `true`, will return HTTP 400 with the
+`M_APPSERVICE_LOGIN_UNSUPPORTED` error code.
 
 ## Potential issues
 
@@ -71,6 +82,9 @@ would not be useful.
 The endpoint could just stop returning access tokens to avoid breaking existing
 appservices that don't read that field, but an explicit error was chosen to
 avoid silent breakage of appservices that do depend on the field.
+
+The opt-in registration flag allows all old appservices to keep working until
+a server switches to OAuth2 entirely.
 
 ## Security considerations
 
@@ -92,8 +106,11 @@ to use device IDs as a part of identity assertion, as defined by [MSC4326].
 
 ## Unstable prefix
 
-Until this MSC is stable, application services must opt-in to the new behavior
-by setting the `io.element.msc4190` flag to `true` in their registration file.
+Until this MSC is stable, the opt-in flag in the registration file is
+`io.element.msc4190` instead of `device_management`.
+
+Also, `IO.ELEMENT.MSC4190.M_APPSERVICE_LOGIN_UNSUPPORTED` should be used as the
+error code instead of `M_APPSERVICE_LOGIN_UNSUPPORTED`.
 
 [MSC4326]: https://github.com/matrix-org/matrix-spec-proposals/pull/4326
 [MSC3861]: https://github.com/matrix-org/matrix-spec-proposals/pull/3861
