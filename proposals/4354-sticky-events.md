@@ -315,7 +315,11 @@ Non-expiring sticky events could be added later if the above issues are resolved
 ### Have a dedicated ‘ephemeral user state’ section
 
 Early prototypes of this proposal devised a key-value map with timeouts maintained over EDUs rather than PDUs.
-This early proposal had much the same feature set as this proposal but with one major difference: equivocation.
+This early proposal had a similar overall feature set as this proposal but with two differences:
+ - The early proposal never persisted anything, whereas this one persists by default to the DAG (which could be deleted via message retention).
+   Some use cases would like to have persistence.
+ - The lack of any persistence enabled equivocation attacks.
+
 Servers could broadcast different values for the same key to different servers, causing the map to not converge:
 the Byzantine Broadcast problem. Matrix already has a data structure to agree on shared state: the room DAG.
 As such, this led to the prototype to the current proposal. By putting the data into the DAG, other servers
