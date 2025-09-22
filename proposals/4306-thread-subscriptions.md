@@ -247,6 +247,7 @@ We need a new push rule kind ordered between `content` and `room` because:
   the ones underlying 'Mentions only' or 'Mentions & Keywords' settings available in common clients.
 
 For the time being, servers MUST ensure that clients MUST NOT be able to create custom rules with this push rule kind.
+If a client attempts to do this, a 400 / `M_INVALID_PARAM` error response MUST be produced by the server.
 
 ## Limitations and Potential Future Expansions
 
