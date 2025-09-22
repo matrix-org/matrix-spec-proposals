@@ -120,7 +120,7 @@ In either case, servers must ensure that an automatic subscription cannot keep g
 ### New Client Behaviour: subscribe when sending in a thread
 
 When a user is sending a message in a thread, the user's client SHOULD simultaneously perform a manual subscription to that thread using `PUT /subscription`.
-The subscription is not considered automamtic, because it was initiated by a user action (sending a message). Further, it'd be best for latency to perform the subscription concurrently with sending the message, so the client doesn't yet have an event ID to attach a hypothetical automatic subscription to anyway.
+The subscription is not considered automatic, because it was initiated by a user action (sending a message). Further, it'd be best for latency to perform the subscription concurrently with sending the message, as the client doesn't yet have an event ID to attach a hypothetical automatic subscription to anyway.
 
 Clients MUST only perform these subscriptions for messages sent by the same client and at the time of the messages being sent. In other words, client MUST NOT apply them for existing messages or messages sent by other devices.
 
