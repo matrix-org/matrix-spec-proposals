@@ -958,7 +958,16 @@ existing device then asserts that there is no existing device corresponding to t
 It does so by calling [GET /_matrix/client/v3/devices/<device_id>](https://spec.matrix.org/v1.9/client-server-api/#get_matrixclientv3devicesdeviceid)
 and expecting to receive an HTTP 404 response.
 
-If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`.
+If the device already exists then the login request should be rejected with an `m.login.failure` and reason `device_already_exists`:
+
+*Existing device => New device via secure channel*
+
+```json
+{
+    "type": "m.login.failure",
+    "reason": "device_already_exists"
+}
+```
 
 If no existing device was found then the existing device opens the `verification_uri_complete` - falling back to the
 `verification_uri`, if `verification_uri_complete` isn't present - in a system browser.
