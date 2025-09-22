@@ -949,36 +949,7 @@ sequenceDiagram
 
 Then we continue with the actual login:
 
-4. **New device waits for approval from homeserver**
-
-On receipt of the `m.login.protocol_accepted` message:
-
-- In accordance with [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.3.1) the new device must display
-the `user_code` in order that the user can confirm it on the homeserver if required.
-- The new device then starts to poll the homeserver by making
-[Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the interval and bounded
-by `expires_in`.
-
-The above is as per [MSC4341].
-
-*New device => Homeserver via HTTP*
-
-```http
-POST /oauth2/token HTTP/1.1
-Host: auth-oidc.lab.element.dev
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
-      &device_code=GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS
-      &client_id=my_client_id
-```
-
-- It then parses the [Device Access Token Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.5) and
-handles the different responses
-- If the user consents in the next step then the new device will receive an `access_token` and `refresh_token` etc. as
-normal as per [MSC4341].
-
-5. **User is asked by homeserver to consent on existing device**
+4. **Existing device checks device_id and accepts protocol to use**
 
 On receipt of the `m.login.protocol` message above, and having completed step 7 of the secure channel establishment, the
 existing device then asserts that there is no existing device corresponding to the `device_id` from the
@@ -1005,12 +976,43 @@ The existing device then sends an acknowledgement message to let the other devic
 }
 ```
 
+5. **User is asked by homeserver to consent on existing device**
+
 The user is then prompted to consent by the homeserver. They may be prompted to undertake additional actions by the
 homeserver such as 2FA, but this is all handled within the browser.
 
 Note that the existing device does not see the new access token. This is one of the benefits of the OAuth 2.0 API.
 
-The sequence diagram for steps 4 and 5 is as follows:
+6. **New device waits for approval from homeserver**
+
+In parallel to step 5, on receipt of the `m.login.protocol_accepted` message the new device:
+
+- In accordance with [RFC8628](https://datatracker.ietf.org/doc/html/rfc8628#section-3.3.1) the new device must display
+the `user_code` in order that the user can confirm it on the homeserver if required.
+- The new device then starts to poll the homeserver by making
+[Device Access Token Requests](https://datatracker.ietf.org/doc/html/rfc8628#section-3.4) using the interval and bounded
+by `expires_in`.
+
+The above is as per [MSC4341].
+
+*New device => Homeserver via HTTP*
+
+```http
+POST /oauth2/token HTTP/1.1
+Host: auth-oidc.lab.element.dev
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+      &device_code=GmRhmhcxhwAzkoEqiMEg_DnyEysNkuNhszIySk9eS
+      &client_id=my_client_id
+```
+
+- It then parses the [Device Access Token Response](https://datatracker.ietf.org/doc/html/rfc8628#section-3.5) and
+handles the different responses
+- If the user consents in the next step then the new device will receive an `access_token` and `refresh_token` etc. as
+normal as per [MSC4341].
+
+The sequence diagram for steps 4, 5 and 6 is as follows:
 
 (for readability a pair of `SecureSend,SecureReceive` operations via the Homeserver is represented by a single
 `SecureSendReceive` between the two devices)
@@ -1023,17 +1025,28 @@ sequenceDiagram
     participant HS as Homeserver
 
     rect rgba(0,255,0, 0.1)
-
+        note over E: 4) Existing device checks device_id from m.login.protocol message
         E->>HS: GET /_matrix/client/v3/devices/{device_id}
         alt device already exists
             HS->>E: 200 OK
             E->>N: SecureSendReceive({ "type": "m.login.failure", "reason": "device_already_exists" })
         else device not found
             HS->>E: 404 Not Found
+            E->>UA: Existing device opens <br>verification_uri_complete (with fallback to verification_uri)<br> in the system web browser/ASWebAuthenticationSession:
+            Note over E: n.b. in the case of a Web Browser the user needs to have<br> clicked a button in order for the navigation to happen
+            E->>HS: SecureSend({"type":"m.login.protocol_accepted"})
         end
         par
-            E->>N: SecureSendReceive({"type":"m.login.protocol_accepted"})
-        note over N: 4) New device polls the homeserver awaiting the outcome as per RFC 8628 / MSC4341
+            Note over UA: 5) User is asked by the homeserver to consent
+            rect rgba(240,240,240,0.5)
+                UA->>HS: GET https://id.matrix.org/device/abcde
+                HS->>UA: <html/> consent screen showing the user_code
+                UA->>HS: Allow or Deny
+            end
+            Note over UA: User closes browser
+        and
+            HS->>N: SecureReceive({"type":"m.login.protocol_accepted"})
+        note over N: 6) New device polls the homeserver awaiting the outcome as per RFC 8628 / MSC4341
             loop Poll for result at interval <interval> seconds
                 N->>HS: POST /token client_id=xyz<br>&grant_type=urn:ietf:params:oauth:grant-type:device_code<br>&device_code=XYZ
                 alt pending
@@ -1050,15 +1063,6 @@ sequenceDiagram
                     N->>E: SecureSendReceive({"type":"m.login.failure", "reason": "authorization_expired"})
                 end
             end
-        and
-            E->>UA: 5) Existing device opens <br>verification_uri_complete (with fallback to verification_uri)<br> in the system web browser/ASWebAuthenticationSession:
-            Note over E: n.b. in the case of a Web Browser the user needs to have<br> clicked a button in order for the navigation to happen
-            rect rgba(240,240,240,0.5)
-                UA->>HS: GET https://id.matrix.org/device/abcde
-                HS->>UA: <html/> consent screen showing the user_code
-                UA->>HS: POST /allow or /deny
-            end
-            Note over UA: User closes browser
         end
     end
 ```
