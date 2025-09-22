@@ -16,7 +16,11 @@ Table of contents:
         - [High-level description](#high-level-description)
         - [The send mechanism](#the-send-mechanism)
         - [Expiry](#expiry)
-        - [API](#api)
+        - [POST /_matrix/client/v1/rendezvous](#rz-post)
+        - [PUT /_matrix/client/v1/rendezvous/{rendezvousId}](#rz-put)
+        - [GET /_matrix/client/v1/rendezvous/{rendezvousId}](#rz-get)
+        - [DELETE /_matrix/client/v1/rendezvous/{rendezvousId}](#rz-delete)
+        - [Implementation notes](#rz-implementation-notes)
         - [Example API usage](#example-api-usage)
         - [Threat analysis](#threat-analysis)
     - [Secure channel](#secure-channel)
@@ -68,6 +72,8 @@ It is proposed that an HTTP-based protocol be used to establish an ephemeral bi-
 which the two devices can exchange the necessary data. This session is described as "insecure" as it provides no
 end-to-end confidentiality nor authenticity by itself---these are layered on top of it.
 
+New optional HTTP endpoints are to be added to the Client-Server API.
+
 #### High-level description
 
 Suppose that Device A wants to establish communications with Device B. Device A can do so by creating a
@@ -97,11 +103,10 @@ The rendezvous session (i.e. the payload) SHOULD expire after a period of time c
 `expires_ts` field on the `POST` and `GET` response bodies. After this point, any further attempts to query or update
 the payload MUST fail. The rendezvous session can be manually expired with a `DELETE` call to the rendezvous session.
 
-#### API
+#### `POST /_matrix/client/v1/rendezvous` - Create a rendezvous session and send initial payload {#rz-post}
 
-##### Create a rendezvous session and send initial payload: `POST /_matrix/client/v1/rendezvous`
-
-This would be part of the Client-Server API.
+Rate-limited: Yes
+Requires authentication: Optional - depending on server policy
 
 Request body is `application/json` with contents:
 
@@ -123,7 +128,9 @@ Content-Type: application/json
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - rendezvous session created
-- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
+- `403 Forbidden` (`M_FORBIDDEN`) - the requester is not authorized to create the rendezvous session
+- `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 UTF8 character limit
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 Response body for `200 OK` is `application/json` with contents:
@@ -147,7 +154,20 @@ Content-Type: application/json
 }
 ```
 
-##### Send a payload to the rendezvous session: `PUT /_matrix/client/v1/rendezvous/{rendezvousId}`
+The server can chose what level of authentication is required to create a rendezvous session. Suitable policies might
+include:
+
+- Public/open - anyone can create a rendezvous session without an access token. This allows for the QR code to be
+  created on either the new or existing Matrix client.
+- Requires authenticated user - this would reduce abuse to known users, but would restrict the mechanism so that the QR
+  code must be created on the existing Matrix client (and therefore the new Matrix client must have a camera).
+
+The expiry time is detailed [below](#rz-ttl).
+
+#### `PUT /_matrix/client/v1/rendezvous/{rendezvousId}` - Send a payload to an existing rendezvous {#rz-put}
+
+Rate-limited: Yes
+Requires authentication: No
 
 Request body is `application/json` with contents:
 
@@ -172,8 +192,9 @@ HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload updated
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `409 Conflict` (`M_CONCURRENT_WRITE`, a new error code) - when the `sequence_token` does not match
-- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied payload is too large
+- `413 Payload Too Large` (`M_TOO_LARGE`) - the supplied `data` value is larger than the 4096 UTF8 character limit
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 The response body for `200 OK` is `application/json` with contents:
@@ -193,12 +214,17 @@ Content-Type: application/json
 }
 ```
 
-##### Receive a payload from the rendezvous session: `GET /_matrix/client/v1/rendezvous/{rendezvousId}`
+#### `GET /_matrix/client/v1/rendezvous/{rendezvousId}` - Receive a payload from a rendezvous session {#rz-get}
+
+Rate-limited: Yes
+Requires authentication: No
 
 HTTP response codes, and Matrix error codes:
 
 - `200 OK` - payload returned
+- `403 Forbidden` (`M_FORBIDDEN`) - request is not allowed due to the unsafe content policy (see below)
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
 Response body for `200 OK` is `application/json` with contents:
@@ -220,21 +246,23 @@ Content-Type: application/json
 }
 ```
 
-A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
-and then the server returns when the is new data or some timeout has passed.
+To help mitigate the threat of [unsafe content](#unsafe-content), the server SHOULD inspect the `Sec-Fetch-*`
+[Fetch Metadata Request Headers](https://www.w3.org/TR/fetch-metadata/) (or other suitable headers) to identify
+top-level navigation requests and return a `403` HTTP response with error code `M_FORBIDDEN` instead.
 
-##### Cancel a rendezvous session: `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}`
+#### `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}` - cancel a rendezvous session {#rz-delete}
+
+Rate-limited: Yes
+Requires authentication: No
 
 HTTP response codes:
 
 - `200 OK` - rendezvous session cancelled
 - `404 Not Found` (`M_NOT_FOUND`) - rendezvous session ID is not valid (it could have expired)
+- `404 Not Found` (`M_UNRECOGNIZED`) - the rendezvous API is not enabled
 - `429 Too Many Requests` (`M_LIMIT_EXCEEDED`) - the request has been rate limited
 
-##### Authentication
-
-These API endpoints do not require authentication because trust is established at the secure channel layer which is
-described later.
+#### Implementation notes {#rz-implementation-notes}
 
 ##### Maximum payload size
 
@@ -245,7 +273,7 @@ The server MUST enforce a maximum payload size of 4KB.
 The `sequence_token` values should be unique to the rendezvous session and the last modified time so that two clients can
 distinguish between identical payloads sent by either client.
 
-##### Maximum duration of a rendezvous
+##### Maximum duration of a rendezvous {#rz-ttl}
 
 The rendezvous session needs to persist for the duration of the login including allowing the user another time to
 confirm that the secure channel has been established and complete any extra homeserver mandated login steps such as MFA.
@@ -339,8 +367,9 @@ As such, the following standard mitigations such as the following may be deemed 
 implementations and administrators:
 
 - rate limiting of requests
-- imposing a low maximum payload size (e.g. kilobytes not megabytes)
 - limiting the number of concurrent sessions
+
+Furthermore, this proposal limits the maximum payload size to 4KB.
 
 ##### Data exfiltration
 
@@ -350,7 +379,7 @@ is possible to use it to circumvent firewalls and other network security measure
 Implementation may want to block their production IP addresses from being able to make requests to the rendezvous
 endpoints in order to avoid attackers using it as a dead-drop for exfiltrating data.
 
-##### Unsafe content
+##### Unsafe content {#unsafe-content}
 
 Because the rendezvous session is not authenticated, it is possible for an attacker to use it to distribute malicious
 content.
@@ -359,9 +388,10 @@ This could lead to a reputational problem for the homeserver domain or IPs, as w
 
 Mitigations that are included in this proposal:
 
-- the low maximum payload size
-- restricted allowed content type
+- the low maximum payload size (4KB)
+- payload is restricted to string
 - the rendezvous session should be short-lived
+- use of `Sec-Fetch-*` headers to not return payload content when browser has navigated to the session URL
 
 ### Secure channel
 
