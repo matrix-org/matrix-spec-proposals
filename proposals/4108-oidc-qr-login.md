@@ -1567,6 +1567,34 @@ One could try and do something with STUN or TURN or [COAP](https://datatracker.i
 
 Rather than requiring the devices to poll for updates, "long-polling" could be used instead similar to `/sync`. Or WebSockets.
 
+#### Unauthenticated device could crated "redirect channel" without payload
+
+In the current proposal the server operator may choose to not allow unauthenticated devices to create a rendezvous
+session to reduce abuse/attack vectors.
+
+In this scenario it means that the unauthenticated client cannot create the QR code.
+
+An alternative would be to do something like this:
+
+1. Unauthenticated device (UD) creates a "redirect channel" on HS1 and sets that in the QR code.
+1. The authenticated device (AD) creates a rendezvous channel on HS2.
+1. HS2 POSTS to the redirect channel on HS1 with the homeserver and rendezvous channel ID. HS1 validates its from HS2.
+1. HS1 returns the homeserver (HS2) and rendezvous channel ID to UD, who then uses that channel as normal.
+
+This has the following properties:
+
+1. It limits how much information can be persisted on an unauthenticated channel. We can severely restrict the size
+   of the request ID for example.
+1. An abuser must use a domain they own if they want to encode dodgy data in the rendezvous channel ID. We can then ban
+   abusive domains.
+1. An unauthenticated device can only receive information, rather than create a 2-way channel. Not sure that's at all
+   useful thing to assert, but it is nonetheless a property.
+1. For each redirect channel created, you can only send one payload. This makes it easier to heavily ratelimit.
+
+Erik [said](https://github.com/matrix-org/matrix-spec-proposals/pull/4108#discussion_r2336295451):
+> I think this sort of flow would reduce potential abuse vectors, but equally makes things more complicated and may not
+> be worth it.
+
 ### Alternative method of secret sharing
 
 Instead of the existing device sharing the secrets bundle instead the existing device could cross-sign the new device
