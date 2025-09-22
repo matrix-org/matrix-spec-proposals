@@ -343,6 +343,7 @@ dropped updates for the latter scenario.
 - The `sticky` key in the PDU is `msc4354_sticky`.
 - The `/sync` response section is `msc4354_sticky_events`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
+- To enable this in SSS, the extension name is `org.matrix.msc4308.sticky_events`.
 
 [^toplevel]: This has to be at the top-level as we want to support _encrypted_ sticky events, and therefore metadata the server
 needs cannot be within `content`.
