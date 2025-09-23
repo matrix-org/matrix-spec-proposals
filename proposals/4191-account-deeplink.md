@@ -1,13 +1,16 @@
-# MSC4191: Account management deep-linking for OAuth 2.0 API
+# MSC4191: Account management for OAuth 2.0 API
 
 This proposal builds on the [OAuth 2.0 API](https://spec.matrix.org/v1.15/client-server-api/#oauth-20-api) that was
 added in v1.15 of the spec.
 
-This proposal introduce a way to deep-link to the account management capabilities of the homeserver to allow the user to
-complete the account management operations in a browser independently of the client.
+The current spec makes reference to the "homeserver's web UI" in several places without defining how that is discovered
+nor what you can use it for.
 
-This proposal also attempts to resolve the issue that the API endpoints to delete devices are not supported when using
-the OAuth 2.0 API.
+This proposal defines how that discovery happens and a way to deep-link to the account management capabilities of the
+homeserver to allow the user to complete the account management operations in a browser independently of the client.
+
+In doing so, this proposal also resolves the issue that the is currently no specced way to delete devices using the
+OAuth 2.0 API (becuase the API endpoints to delete devices are not supported when using the OAuth 2.0 API).
 
 ## Proposal
 
@@ -17,7 +20,7 @@ This proposal introduces two new optional fields in the authentication
 [server metadata discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery):
 
 - `account_management_uri`: the URL where the user is able to access the account management capabilities of the
-   authentication server
+   homeserver. This is what is currently referred to as the "homeserver's web UI"
 - `account_management_actions_supported`: a JSON array of actions that the account management URL supports
 
 Note that the intent of this proposal is for these values to potentially end up in a OpenID Connect specification, or at
@@ -55,6 +58,9 @@ advertised in the `account_management_actions_supported` array.
 ## Alternatives
 
 ### Add UIA support to OAuth 2.0 API so that the existing delete devices endpoints can be used
+
+n.b. This isn't a complete alternative to this full MSC and is instead just considers an alternative way for device
+deletion to happen.
 
 The following endpoints are currently not supported when using the OAuth 2.0 API:
 
