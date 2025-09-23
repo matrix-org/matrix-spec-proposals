@@ -341,7 +341,7 @@ dropped updates for the latter scenario.
 
 - The `stick_duration_ms` query param is `msc4354_stick_duration_ms`.
 - The `sticky` key in the PDU is `msc4354_sticky`.
-- The `/sync` response section is `msc4354_sticky_events`.
+- The `/sync` response section is `msc4354_sticky`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
 - To enable this in SSS, the extension name is `org.matrix.msc4354.sticky_events`.
 
