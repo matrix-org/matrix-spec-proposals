@@ -84,7 +84,7 @@ To implement these properties, servers MUST:
   Large volumes of events to send MUST NOT cause the sticky event to be dropped from the send queue on the server.  
 * Ensure all sticky events are delivered to clients via `/sync` in a new section of the sync response,
   regardless of whether the sticky event falls within the timeline limit of the request.  
-* When a new server joins the room, the server MUST attempt delivery of all sticky events immediately.  
+* When a new server joins the room, existing servers MUST attempt delivery of all sticky events _originating from their server only_[^newjoiner].  
 * Remember sticky events per-user, per-room such that the soft-failure checks can be re-evaluated.
 
 When an event loses its stickiness, these properties disappear with the stickiness. Servers SHOULD NOT
@@ -360,7 +360,10 @@ To ensure all servers agree on which events are sticky, we need to re-evaluate t
 This becomes particularly important when room state is rolled back. For example, if Charlie sends some sticky event E and
 then Bob kicks Charlie, but concurrently Alice kicks Bob then whether or not a receiving server would accept E would depend
 on whether they saw “Alice kicks Bob” or “Bob kicks Charlie”. If they saw “Alice kicks Bob” then E would be accepted. If they
-saw “Bob kicks Charlie” then E would be rejected, and would need to be rolled back when they see “Alice kicks Bob”.  
+saw “Bob kicks Charlie” then E would be rejected, and would need to be rolled back when they see “Alice kicks Bob”.
+[^newjoiner]: We restrict delivery of sticky events to ones sent locally to reduce the number of events sent on join. If
+we sent all active sticky events then the number of received events by the new joiner would be `O(nm)` where `n` = number of joined servers,
+`m` = number of active sticky events.
 [^ordering]: Sticky events expose gaps in the timeline which cannot be expressed using the current sync API. If sync used
 something like [stitched ordering](https://codeberg.org/andybalaam/stitched-order)
 or [MSC3871](https://github.com/matrix-org/matrix-spec-proposals/pull/3871) then sticky events could be inserted straight
