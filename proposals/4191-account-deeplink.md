@@ -10,7 +10,7 @@ This proposal defines how that discovery happens and a way to deep-link to the a
 homeserver to allow the user to complete the account management operations in a browser independently of the client.
 
 In doing so, this proposal also resolves the issue that the is currently no specced way to delete devices using the
-OAuth 2.0 API (becuase the API endpoints to delete devices are not supported when using the OAuth 2.0 API).
+OAuth 2.0 API (because the API endpoints to delete devices are not supported when using the OAuth 2.0 API).
 
 ## Proposal
 
