@@ -242,7 +242,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
-| `required_state` | [RequiredStateRequest] | Yes | Required state for each room returned. |
+| `required_state` | `RequiredStateRequest` | Yes | Required state for each room returned. |
 | `ranges` | `[[int, int]]` | No | Sliding window ranges. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*, and are 0-indexed. (This is a list of 2-tuples.) |
 | `filters` | `SlidingRoomFilter` | No | Filters to apply to the list before sorting. |
 
@@ -251,7 +251,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | Name | Type | Required | Comment |
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | Same as in `SyncListConfig` |
-| `required_state` | [RequiredStateRequest] | Yes | Same as in `SyncListConfig` |
+| `required_state` | `RequiredStateRequest` | Yes | Same as in `SyncListConfig` |
 
 ### `RequiredStateRequest`
 
@@ -259,7 +259,7 @@ Describes the set of state that the server should return for the room.
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `include` | `[RequiredStateElement]` | Yes | The set of state to return (unless filtered out by `exclude`). |
+| `include` | `[RequiredStateElement]` | No | The set of state to return (unless filtered out by `exclude`), if any. |
 | `exclude` | `[RequiredStateElement]` | No | The set of state to filter out before returning, if any. |
 | `lazy_members` | `bool` | No | Whether to enable lazy loaded membership behaviour. Defaults to false. |
 
