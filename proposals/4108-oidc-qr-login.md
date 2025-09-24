@@ -63,7 +63,7 @@ In order for the new device to be fully set up, it needs to exchange information
 This proposal is split into four parts:
 
 1. An insecure rendezvous session API to allow the two devices to exchange the necessary data
-2. How the location of the rendezvous session is represented as a QR
+2. The structure of the QR code that contains the rendezvous session details
 3. A secure channel to protect the data exchanged over the rendezvous session
 4. The OAuth 2.0 login part and set up of E2EE
 
@@ -400,7 +400,8 @@ Mitigations that are included in this proposal:
 ### QR code format
 
 Once a device creates the rendezvous session it then generates a QR code that contains sufficient information for the
-scanning device to locate the rendezvous session.
+scanning device to locate the rendezvous session and establish the secure channel (as described in the
+[next section](#secure-channel)).
 
 It is proposed that the QR code format that is currently used in the Client-Server API for
 [device verification](https://spec.matrix.org/v1.16/client-server-api/#qr-code-format) be extended to be more general
@@ -418,7 +419,7 @@ The QR codes to be displayed and scanned using this format will encode binary st
 - one byte indicating the QR code mode. Should be one of the following values:
   - `0x03` a new device wishing to login and self-verify
   - `0x04` an existing device wishing to facilitate the login of a new device and self-verify that other device
-- the ephemeral Curve25519 public key, as 32 bytes
+- the ephemeral Curve25519 public key that will be used for [secure channel establishment](#establishment), as 32 bytes
 - the rendezvous session ID encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
   string
