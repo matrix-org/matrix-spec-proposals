@@ -338,7 +338,7 @@ An example that returns all the state except the create event:
 | `not_room_types` | `[string \| null]` | No | Same as `room_types` but inverted.<br/><br/> This can be used to filter out spaces from the room list. If a type is in both `room_types` and `not_room_types`, then `not_room_types` wins and they are not included in the result. |
 | `room_name_like` | `string` | No | Filter the room name. <br/><br/>Case-insensitive partial matching e.g 'foo' matches 'abFooab'. The term 'like' is inspired by SQL 'LIKE', and the text here is similar to '%foo%'. |
 | `tags` | `[string]` | No | Filter the room based on its room tags.<br/><br/> If multiple tags are  present, a room can have any one of the listed tags (OR'd). |
-| `not_tags` | `[string]` | No | Filter the room based on its room tags.<br/><br/> Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful if your rooms list does NOT include the list of favourite rooms again. |
+| `not_tags` | `[string]` | No | Filter the room based on its [room tags](https://spec.matrix.org/v1.16/client-server-api/#room-tagging).<br/><br/> Takes priority over `tags`. For example, a room with tags A and B with filters `tags: [A]` `not_tags: [B]` would NOT be included because `not_tags` takes priority over `tags`. This filter is useful if your rooms list does NOT include the list of favourite rooms again. |
 
 ### Example request
 
