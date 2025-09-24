@@ -405,8 +405,8 @@ purpose and accommodate this new use case.
 
 The "QR code verification mode" would be changed to be something more general like "QR code mode".
 
-We then define two new modes to allow for the two login device dispositions: the new device wishing to login; existing
-device wishing to facilitate the login;
+We then define two new modes to allow for the two login device dispositions: the new device wishing to login; an existing
+device wishing to facilitate the login of the new device;
 
 The QR codes to be displayed and scanned using this format will encode binary strings in the general form:
 
