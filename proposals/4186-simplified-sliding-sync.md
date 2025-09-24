@@ -116,7 +116,7 @@ ordering is determined by the server implementation.
 
 ### Subscriptions
 
-Subscriptions are a rule that simply matches against a specified room ID, i.e. they allow the client to specify that a
+Subscriptions are a rule that matches against a specified room ID, i.e. they allow the client to specify that a
 given room should always be returned (if there are updates). This is useful if e.g. the user has opened the room and the
 client always wants to get the latest data for that room.
 
@@ -161,7 +161,7 @@ before being applied.
 
 The fields are combined by taking the "superset", i.e.:
 - Timeline limit — take the maximum timeline limit across all room configs.
-- Required state — take the superset of the required state fields, i.e. if a state event would be returned by any room
+- Required state — take the union of the required state fields, i.e. if a state event would be returned by any room
   config it is returned by the combined room config.
 
 
@@ -209,7 +209,7 @@ response. The server MAY chose not to send that state if the client has previous
 For requesting data other than room events (such as account data or typing notifications), clients can use "extensions".
 These are split out into separate sections to a) make it easier for clients to specify just what they need, and b) to make it easier to extend in the future.
 
-Examples of extensions, which will be specified elsewhere, are:
+Examples of extensions, which will be specified in future MSCs, are:
 - To Device Messaging
 - End-to-End Encryption
 - Typing Notifications
@@ -276,7 +276,7 @@ Describes the set of state that the server should return for the room.
 #### Lazy loaded memberships
 
 Room members can be lazily-loaded by using the `lazy_members` flag is set. Typically, when you view a room, you want to
-retrieve all state events except for m.room.member events which you want to lazily load. To get this behaviour, clients
+retrieve all state events except for `m.room.member` events which you want to lazily load. To get this behaviour, clients
 can send the following:
 
 This is (almost) the same as lazy loaded memberships in sync v2. When specified, the server will return the membership
@@ -396,7 +396,7 @@ An example that returns all the state except the create event:
 
 Not all fields will be returned depending on the user's membership in the room.
 
-All fields in this section may be omitted. When `initial` is set to `false` then an omitted filed means that the field
+All fields in this section may be omitted. When `initial` is set to `false` then an omitted field means that the field
 remains unchanged from its previous value. When `initial` is set to `true` then an omitted field means that the field is
 not set, e.g. if `initial` is true and `name` is not set then the room has no name. Care must be taken by clients to
 ensure that if they previously saw that the room had a name, then it MUST be cleared if it receives a room response with
@@ -442,7 +442,7 @@ When a user is or has been in the room, the following field are also returned:
 
 #### Invite/knock
 
-For rooms the user is invited to or has knocked on, the client also gets the stripped state event:
+For rooms the user is invited to or has knocked on, the client also gets the stripped state events:
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
