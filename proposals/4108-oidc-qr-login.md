@@ -432,8 +432,10 @@ additional "mode" values can be added.
 
 #### Example for QR code generated on new device
 
-A full example for a new device at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows: (Whitespace is for readability only)
+A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`matrix.org` is as follows:
+(Whitespace is for readability only)
 
 ```
 4D 41 54 52 49 58 02  03
@@ -459,8 +461,8 @@ d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14
 
 #### Example for QR code generated on existing device
 
-A full example for an existing device at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows: (Whitespace is for readability only)
+A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver`matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
 4D 41 54 52 49 58 02  04
