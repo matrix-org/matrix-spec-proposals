@@ -602,6 +602,9 @@ We can also add a flag to disable attempting to backfill over pagination (to mat
 Care must be taken, as with sync v2, to ensure that only the data that the user is authorized to see is returned in the
 response.
 
+Servers SHOULD limit the amount of data that they store per-user to guard against resource exhaustion, e.g. limiting the
+number of connections a device can have active.
+
 
 # Unstable prefix
 
