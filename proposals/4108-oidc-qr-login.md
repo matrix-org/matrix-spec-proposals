@@ -396,19 +396,25 @@ Mitigations that are included in this proposal:
 
 ### QR code format
 
-The proposed format of the QR code intends to be similar to that which is already described in the Client-Server API for
-[device verification](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
+Once a device creates the rendezvous session it then generates a QR code that contains sufficient information for the
+scanning device to locate the rendezvous session.
 
-Additional modes are added to the byte used for "QR code verification mode" to allow for the two login intents: initiate
-on a new device; reciprocate on an existing device;
+It is proposed that the QR code format that is currently used in the Client-Server API for
+[device verification](https://spec.matrix.org/v1.16/client-server-api/#qr-code-format) be extended to be more general
+purpose and accommodate this new use case.
+
+The "QR code verification mode" would be changed to be something more general like "QR code mode".
+
+We then define two new modes to allow for the two login device dispositions: the new device wishing to login; existing
+device wishing to facilitate the login;
 
 The QR codes to be displayed and scanned using this format will encode binary strings in the general form:
 
 - the ASCII string `MATRIX`
 - one byte indicating the QR code version (must be `0x02`)
-- one byte indicating the QR code intent/mode. Should be one of the following values:
-  - `0x03` a new device wishing to initiate a login and self-verify
-  - `0x04` an existing device wishing to reciprocate the login of a new device and self-verify that other device
+- one byte indicating the QR code mode. Should be one of the following values:
+  - `0x03` a new device wishing to login and self-verify
+  - `0x04` an existing device wishing to facilitate the login of a new device and self-verify that other device
 - the ephemeral Curve25519 public key, as 32 bytes
 - the rendezvous session ID encoded as:
   - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
@@ -418,12 +424,13 @@ The QR codes to be displayed and scanned using this format will encode binary st
   - two bytes in network byte order (big-endian) indicating the length in bytes of the server name as a UTF-8 string
   - the server name as a UTF-8 string
 
+If a new version of this QR sign in capability is needed in future (perhaps with updated secure channel protocol) then
+additional "mode" values can be added.
+
 #### Example for QR code generated on new device
 
-A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows: 
-(Whitespace is for readability only)
+A full example for a new device at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
 4D 41 54 52 49 58 02  03
@@ -449,8 +456,7 @@ d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14
 
 #### Example for QR code generated on existing device
 
-A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+A full example for an existing device at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
 `matrix.org` is as follows: (Whitespace is for readability only)
 
 ```
@@ -1616,6 +1622,18 @@ mechanism does not offer.
 chance of other devices seeing the new device as unverified, incorrectly prompting the user to verify the device that
 will soon be verified.
 
+### Alternative QR code formats
+
+Instead of extending the existing QR code format and adding new "modes", alternatives include:
+
+- using a different prefix to namespace the data (e.g. `MATRIX_LOGIN` instead of `MATRIX`)
+- keep the `MATRIX` prefix and repurpose the current "version" byte to be something like "type". For example:
+  - type = `0x02` could be the verification format described in the current spec
+  - type = `0x03` could be for this proposal
+
+The purpose being that we end up with the QR being better namespaced (whilst also remaining compact) making future
+versioning simpler.
+
 ## Security considerations
 
 This proposed mechanism has been designed to protects users and their devices from the following threats:
@@ -1657,6 +1675,8 @@ Recommendations to mitigate this are:
 
 ## Unstable prefix
 
+### Rendezvous API prefix
+
 While this feature is in development the new API endpoints should be exposed using the following unstable prefix:
 
 - `/_matrix/client/unstable/org.matrix.msc4108/rendezvous` instead of `/_matrix/client/v1/rendezvous`
@@ -1672,6 +1692,13 @@ key org.matrix.msc4108 set to true. So, the response could look then as followin
     }
 }
 ```
+
+### Unstable QR code format
+
+It would be helpful to make it clear that the QR code format is unstable, but need some guidance on what would be the
+best way to do this. See notes above about QR format/versioning.
+
+### M_CONCURRENT_WRITE errcode
 
 Furthermore, where a new `errcode` is being introduced the existing `M_UNKNOWN` code should be used instead, with the new
 code placed in a `org.matrix.msc4108.errcode` field instead. For example, instead of:
