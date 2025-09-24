@@ -1497,9 +1497,10 @@ Before offering this capability it would make sense that the device can check th
 
 Where the homeserver is known:
 
-1. Check if the homeserver has a rendezvous session API available (/versions) from this MSC
 1. Check that the homeserver is using the OAuth 2.0 API using [server metadata discovery](https://spec.matrix.org/v1.15/client-server-api/#server-metadata-discovery)
 1. Check that the Device Authorization Grant is available as per [MSC4341]
+1. Check if the homeserver has a rendezvous session API available by attempting a POST to the create rendezvous endpoint
+   from this MSC.
 
 For a new device it would need to know the homeserver ahead of time in order to do these checks.
 
