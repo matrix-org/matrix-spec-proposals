@@ -606,6 +606,9 @@ Servers SHOULD limit the amount of data that they store per-user to guard agains
 the number of connections a device can have active. This protects against malicious clients creating large numbers of
 connections that get persisted to the database.
 
+Servers MAY decide to expire the sync connection if the generated response on an incremental request is likely very
+large or expensive to compute.
+
 
 # Unstable prefix
 
