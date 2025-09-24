@@ -23,6 +23,9 @@ Table of contents:
         - [Implementation notes](#rz-implementation-notes)
         - [Example API usage](#example-api-usage)
         - [Threat analysis](#threat-analysis)
+    - [QR code format](#qr-code-format)
+        - [Example for QR code generated on new device](#example-for-qr-code-generated-on-new-device)
+        - [Example for QR code generated on existing device](#example-for-qr-code-generated-on-existing-device)
     - [Secure channel](#secure-channel)
         - [Establishment](#establishment)
         - [Sequence diagram](#sequence-diagram)
@@ -32,9 +35,6 @@ Table of contents:
         - [Login via OAuth 2.0 Device Authorization Grant from MSC4341](#login-via-oauth-20-device-authorization-grant-from-msc4341)
         - [Secret sharing and device verification](#secret-sharing-and-device-verification)
         - [Message reference](#message-reference)
-    - [QR code format](#qr-code-format)
-        - [Example for QR code generated on new device](#example-for-qr-code-generated-on-new-device)
-        - [Example for QR code generated on existing device](#example-for-qr-code-generated-on-existing-device)
     - [Discoverability of the capability](#discoverability-of-the-capability)
 - [Potential issues](#potential-issues)
 - [Alternatives](#alternatives)
@@ -60,11 +60,12 @@ In order for the new device to be fully set up, it needs to exchange information
 - The existing device can facilitate the new device in getting an access token
 - The existing device shares the secrets necessary to set up end-to-end encryption
 
-This proposal is split into three parts:
+This proposal is split into four parts:
 
 1. An insecure rendezvous session API to allow the two devices to exchange the necessary data
-2. A secure channel to protect the data exchanged over the rendezvous session
-3. The OAuth 2.0 login part and set up of E2EE
+2. How the location of the rendezvous session is represented as a QR
+3. A secure channel to protect the data exchanged over the rendezvous session
+4. The OAuth 2.0 login part and set up of E2EE
 
 ### Insecure rendezvous session
 
@@ -392,6 +393,87 @@ Mitigations that are included in this proposal:
 - payload is restricted to string
 - the rendezvous session should be short-lived
 - use of `Sec-Fetch-*` headers to not return payload content when browser has navigated to the session URL
+
+### QR code format
+
+The proposed format of the QR code intends to be similar to that which is already described in the Client-Server API for
+[device verification](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
+
+Additional modes are added to the byte used for "QR code verification mode" to allow for the two login intents: initiate
+on a new device; reciprocate on an existing device;
+
+The QR codes to be displayed and scanned using this format will encode binary strings in the general form:
+
+- the ASCII string `MATRIX`
+- one byte indicating the QR code version (must be `0x02`)
+- one byte indicating the QR code intent/mode. Should be one of the following values:
+  - `0x03` a new device wishing to initiate a login and self-verify
+  - `0x04` an existing device wishing to reciprocate the login of a new device and self-verify that other device
+- the ephemeral Curve25519 public key, as 32 bytes
+- the rendezvous session ID encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
+  string
+  - the rendezvous session ID as a UTF-8 string
+- the [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the homeserver encoded as:
+  - two bytes in network byte order (big-endian) indicating the length in bytes of the server name as a UTF-8 string
+  - the server name as a UTF-8 string
+
+#### Example for QR code generated on new device
+
+A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`matrix.org` is as follows: 
+(Whitespace is for readability only)
+
+```
+4D 41 54 52 49 58 02  03
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67
+```
+
+Which looks as follows as a QR with error correction level Q:
+<!--
+Generated with:
+
+nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  03
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode03.png'
+-->
+![Example QR for mode 0x03](images/4108-qr-mode03.png)
+
+#### Example for QR code generated on existing device
+
+A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
+encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
+`matrix.org` is as follows: (Whitespace is for readability only)
+
+```
+4D 41 54 52 49 58 02  04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67
+```
+
+Which looks as follows as a QR with error correction level Q:
+<!--
+Generated with:
+
+nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  04
+d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
+00 24
+65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
+00 0A
+6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode04.png'
+-->
+![Example QR for mode 0x04](images/4108-qr-mode04.png)
 
 ### Secure channel
 
@@ -1409,87 +1491,6 @@ Example:
     }
 }
 ```
-
-### QR code format
-
-The proposed format of the QR code intends to be similar to that which is already described in the Client-Server API for
-[device verification](https://spec.matrix.org/v1.9/client-server-api/#qr-code-format).
-
-Additional modes are added to the byte used for "QR code verification mode" to allow for the two login intents: initiate
-on a new device; reciprocate on an existing device;
-
-The QR codes to be displayed and scanned using this format will encode binary strings in the general form:
-
-- the ASCII string `MATRIX`
-- one byte indicating the QR code version (must be `0x02`)
-- one byte indicating the QR code intent/mode. Should be one of the following values:
-  - `0x03` a new device wishing to initiate a login and self-verify
-  - `0x04` an existing device wishing to reciprocate the login of a new device and self-verify that other device
-- the ephemeral Curve25519 public key, as 32 bytes
-- the rendezvous session ID encoded as:
-  - two bytes in network byte order (big-endian) indicating the length in bytes of the rendezvous session ID as a UTF-8
-  string
-  - the rendezvous session ID as a UTF-8 string
-- the [server name](https://spec.matrix.org/v1.15/appendices/#server-name) of the homeserver encoded as:
-  - two bytes in network byte order (big-endian) indicating the length in bytes of the server name as a UTF-8 string
-  - the server name as a UTF-8 string
-
-#### Example for QR code generated on new device
-
-A full example for a new device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded) at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows: 
-(Whitespace is for readability only)
-
-```
-4D 41 54 52 49 58 02  03
-d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
-65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67
-```
-
-Which looks as follows as a QR with error correction level Q:
-<!--
-Generated with:
-
-nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  03
-d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
-65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode03.png'
--->
-![Example QR for mode 0x03](images/4108-qr-mode03.png)
-
-#### Example for QR code generated on existing device
-
-A full example for an existing device using ephemeral public key `2IZoarIZe3gOMAqdSiFHSAcA15KfOasxueUUNwJI7Ws` (base64
-encoded), at rendezvous session ID `e8da6355-550b-4a32-a193-1619d9830668` on homeserver
-`matrix.org` is as follows: (Whitespace is for readability only)
-
-```
-4D 41 54 52 49 58 02  04
-d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
-65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67
-```
-
-Which looks as follows as a QR with error correction level Q:
-<!--
-Generated with:
-
-nix-shell -p qrencode --run 'echo "4D 41 54 52 49 58 02  04
-d8 86 68 6a b2 19 7b 78 0e 30 0a 9d 4a 21 47 48 07 00 d7 92 9f 39 ab 31 b9 e5 14 37 02 48 ed 6b
-00 24
-65 38 64 61 36 33 35 35 2D 35 35 30 62 2D 34 61 33 32 2D 61 31 39 33 2D 31 36 31 39 64 39 38 33 30 36 36 38
-00 0A
-6d 61 74 72 69 78 2e 6f 72 67" | xxd -r -p | qrencode -8 -l Q -t PNG -o ./proposals/images/4108-qr-mode04.png'
--->
-![Example QR for mode 0x04](images/4108-qr-mode04.png)
 
 ### Discoverability of the capability
 
