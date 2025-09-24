@@ -270,7 +270,7 @@ HTTP response codes:
 
 ##### Maximum payload size
 
-The server MUST enforce a maximum payload size of 4KB.
+The server MUST enforce a maximum payload size of 4096 UTF8 characters.
 
 ##### `sequence_token` values
 
