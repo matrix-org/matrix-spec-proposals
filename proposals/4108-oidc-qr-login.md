@@ -251,6 +251,9 @@ To help mitigate the threat of [unsafe content](#unsafe-content), the server SHO
 [Fetch Metadata Request Headers](https://www.w3.org/TR/fetch-metadata/) (or other suitable headers) to identify
 top-level navigation requests and return a `403` HTTP response with error code `M_FORBIDDEN` instead.
 
+A future optimisation could be allow the client to "long-poll" by sending the previous `sequence_token` as a query parameter
+and then the server returns when the is new data or some timeout has passed.
+
 #### `DELETE /_matrix/client/v1/rendezvous/{rendezvousId}` - cancel a rendezvous session {#rz-delete}
 
 Rate-limited: Yes
