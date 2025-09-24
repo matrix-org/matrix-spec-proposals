@@ -244,7 +244,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
 | `required_state` | [RequiredStateRequest] | Yes | Required state for each room returned. |
 | `ranges` | `[[int, int]]` | No | Sliding window ranges. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*, and are 0-indexed. (This is a list of 2-tuples.) |
-| `filters` | `RoomFilter` | No | Filters to apply to the list before sorting. |
+| `filters` | `SlidingRoomFilter` | No | Filters to apply to the list before sorting. |
 
 ### `RoomSubscription`
 
@@ -325,7 +325,7 @@ An example that returns all the state except the create event:
 
 
 
-### `RoomFilter`
+### `SlidingRoomFilter`
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
