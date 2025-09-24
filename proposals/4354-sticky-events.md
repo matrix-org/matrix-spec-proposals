@@ -164,7 +164,7 @@ These messages may be combined with [MSC4140: Delayed Events](https://github.com
 to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
 is distinct from that of delayed events. The purpose of the sticky duration in this proposal is to ensure sticky events are cleaned up.
 
-### Implementing a map
+### Implementing an ephemeral map
 
 MatrixRTC relies on a per-user, per-device map of RTC member events. To implement this, this MSC proposes
 a standardised mechanism for determining keys on sticky events, the `content.sticky_key` property:
@@ -194,10 +194,46 @@ implement this behaviour MUST:
 - pick the one with the highest `origin_server_ts`,  
 - tie break on the one with the highest lexicographical event ID (A < Z).
 
-When overwriting keys, clients SHOULD use the same sticky duration as the previous sticky event to avoid clients diverging.
-This can happen when a client sends a sticky event with key K with a long timeout, then overwrites it with the same key K’
-with a short timeout. If the sticky event K’ fails to be sent to all servers before the short timeout is hit,
-some clients will believe the state is K and others will have no state. This will only resolve once the long timeout is hit.
+Clients SHOULD expire sticky events in maps when their stickiness ends. They should use the algorithm described in this proposal
+to determine if an event is still sticky. Clients may diverge if they do not expire sticky events as in the following scenario:
+```mermaid
+sequenceDiagram
+    HS1->>+HS2: Sticky event S (1h sticky)
+    HS2->>Client: Sticky event S (1h sticky)
+    HS2->>-HS1: OK
+    HS2->>+HS2: Goes offline
+    HS1->>+HS2: Sticky event S' (1h sticky)
+    HS1->>+HS2: Retry Sticky event S' (1h sticky)
+    HS1->>+HS2: Retry Sticky event S' (1h sticky)
+    HS1->>HS1: Sticky event S' expires
+    HS2->>HS2: Back online
+    Client->>Client: Sticky event S still valid!
+```
+
+When clients create multiple events with the same `sticky_key`, they SHOULD use the same sticky duration as the previous
+sticky event to avoid clients diverging. This can happen when a client sends a sticky event S with a long timeout, then overwrites it with S’
+with a short timeout. If S’ fails to be sent to all servers before the short timeout is hit,
+some clients will believe the state is S and others will have no state. This will only resolve once the long timeout is hit.
+To illustrate this, consider the scenario when clients use the _same sticky duration_:
+```
+Event        Lifetime
+  S       [=========|==]  |
+  S'           [====|=====|=]
+                    |     |
+                    A     B
+```
+At the time `A`, the possible states on clients is `{ _, S, S'}` where `_` is nothing due to not seeing either event. At time `B`,
+the possible states on clients is `{ _, S'}`.
+Contrast with:
+```
+Event        Lifetime
+  S       [=======|====|=]
+  S'           [==|=]  |
+                  |    |
+                  A    B
+```
+Just like before, at time `A` the possible states are `{ _, S, S'}`, but now at time `B` the possible states are `{ _, S }`.
+This is problematic if you're trying to agree on the "latest" values, like you would in a k:v map.
 
 Note that encrypted sticky events will encrypt some parts of the 4-uple. An encrypted sticky event only exposes the room ID and sender to the server:
 
@@ -350,7 +386,8 @@ needs cannot be within `content`.
 [^stickyobj]: The presence of the `sticky` object alone is insufficient.  
 [^prop]: An interesting observation is that these additional properties are entirely to handle edge cases. In the happy case,
 events _are sent_ to others over federation, they _aren't_ soft-failed and they _do appear_ down `/sync`. This MSC just makes this
-reliable.
+reliable. These properties are also properties which _state events_ already have, so we need the equivalent functionality if this
+proposal wants to replace [MSC3757: Restricting who can overwrite a state event](https://github.com/matrix-org/matrix-spec-proposals/pull/3757).
 [^partial]: Over federation, servers are not required to send all timeline events to every other server.
 Servers mostly lazy load timeline events, and will rely on clients hitting `/messages` which in turn
 hits`/backfill` to request events from federated servers.  
