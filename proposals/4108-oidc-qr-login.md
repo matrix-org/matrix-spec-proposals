@@ -531,8 +531,8 @@ Device G displays a QR code containing:
 
 - Its public key **Gp**
 - The insecure rendezvous session **ID**
-- An indicator (the **intent**) to say if this is a new device which wishes to "initiate" a login, or an existing device
-that wishes to "reciprocate" a login
+- An indicator (the **intent**) to say if this is the new device which wishes to login, or an existing device
+that wishes to facilitate the login of the new device
 - the Matrix homeserver **[server name](https://spec.matrix.org/v1.15/appendices/#server-name)**
 
 To get a good trade-off between visual compactness and high level of error correction we use a binary mode QR with a
