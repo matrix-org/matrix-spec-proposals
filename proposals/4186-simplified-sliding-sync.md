@@ -279,8 +279,9 @@ Room members can be lazily-loaded by using the `lazy_members` flag is set. Typic
 retrieve all state events except for `m.room.member` events which you want to lazily load. To get this behaviour, clients
 can send the following:
 
-This is (almost) the same as lazy loaded memberships in sync v2. When specified, the server will return the membership
-events for:
+This is (almost) the same as [lazy loaded
+memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in sync v2. When specified, the
+server will return the membership events for:
 1. All the senders of events in `timeline_events` unless previously returned. This ensures that the client can render
    all the timeline events without having to fetch more events from the server.
 1. The target (i.e. `state_key`) of all membership events in `timeline_events`.
