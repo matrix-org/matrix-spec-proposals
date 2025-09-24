@@ -109,7 +109,7 @@ endpoints.
 
 The new query parameter is used to configure the event scheduling:
 
-- `delay` - Optional number of milliseconds the homeserver should wait before sending the event. If no `delay` is provided,
+- `delay` - Optional number of positive non-zero milliseconds the homeserver should wait before sending the event. If no `delay` is provided,
 the event is sent immediately as normal.
 
 The body of the request is the same as it is currently.
