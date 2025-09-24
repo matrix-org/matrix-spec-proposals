@@ -30,9 +30,10 @@ cross-signing keys.
 The spec currently does not give recommendations for what information is stored
 in Secret Storage, or even whether Secret Storage is available to users.  Secret
 Storage allows users to keep secrets on the server so that they are accessible
-when the user logs in to a new device and does not have an existing device that
-can share the secrets with the new device.  Therefore users SHOULD have Secret
-storage set up.
+when the user logs in to a new device. This is necessary to retrieve secrets when
+the user does not have an existing device that can then share the secrets with the
+new device. Therefore users SHOULD have Secret storage set up to avoid needing
+to reset their cryptographic identity in this case.
 
 The user’s Secret Storage SHOULD contain the user’s cross-signing secret keys
 and the key backup decryption key (if the user is using key backup).  This
@@ -96,7 +97,7 @@ belongs to the user, and server admins can trivially create new devices for
 users, clients MUST not send encrypted to-device messages, such as room keys or
 secrets (via Secret Sharing), to non-cross-signed devices by default.  When
 sending room keys, clients can use a [`m.room_key.withheld`
-message](https://spec.matrix.org/unstable/client-server-api/#reporting-that-decryption-keys-are-withheld)
+message](https://spec.matrix.org/v1.15/client-server-api/#reporting-that-decryption-keys-are-withheld)
 with a code of `m.unverified` to indicate to the non-cross-signed device why it
 is not receiving the room key.
 
@@ -136,7 +137,7 @@ due to the presence of non-cryptographic devices.
 
 The intent of this is to smoothly support and minimise interference from
 applications which choose to set up E2EE only on demand (e.g.
-[WorkAdventure](https://workadventu.re/article-en/managing-e2e-encryption-with-matrix-in-a-simple-way/).
+[WorkAdventure](https://workadventu.re/article-en/managing-e2e-encryption-with-matrix-in-a-simple-way/)).
 Such clients should initially create a non-cryptographic device until they are
 ready to set up E2EE. Only when they are ready will they create the device
 identity keys for the device and upload them to the homeserver, converting the
@@ -149,8 +150,8 @@ Some bridges are structured in a way such that only one user controlled by the
 bridge (often called the bridge bot) participates in encryption, and encrypted
 messages from other bridge users are encrypted by the bridge bot.  Thus
 encrypted messages sent by one user could be encrypted by a Megolm session sent
-by a different user.  Clients MAY accept such messages, provided the bridge
-bot's device is cross-signed. However, the client MUST annotate the message with
+by a different user.  Clients MAY accept such messages, provided the session
+creator's device is cross-signed. However, the client MUST annotate the message with
 a warning, unless the client has a way to check that the bridge bot is permitted
 to encrypt messages on behalf of the user.
 
@@ -184,6 +185,7 @@ The following clients support cross-signing:
 The following encryption-capable clients do not support cross-signing:
 
 - kazv
+- Quaternion (versions prior to 0.98)
 
 ### Bots and application services
 
