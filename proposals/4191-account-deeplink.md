@@ -98,9 +98,14 @@ For the `org.matrix.session_end` action the
 [security considerations](https://spec.matrix.org/v1.15/client-server-api/#security-considerations-6) that are already
 stated for device management apply.
 
-Consequently for the destructive `org.matrix.session_end` and `org.matrix.account_deactivate` actions the server should
+Consequently for the destructive `org.matrix.session_end` and `org.matrix.account_deactivate` actions the server SHOULD
 require re-authentication (or authentication through an additional factor) before allowing the user to complete the
 action.
+
+Because the format of these links are public and the device IDs are visible to other Matrix users it is trivial for an
+attacker to craft a "malicious" link that targets a destructive action. To mitigate this risk, for the destructive
+actions (`org.matrix.session_end` and `org.matrix.account_deactivate`) the server MUST inform the user of what the
+action is prior to it being executed (in addition to any re-authentication as above).
 
 ## Unstable prefixes
 
