@@ -20,7 +20,7 @@ documents these workarounds.
 
 Clients that have authenticated via the new [OAuth APIs] continue to use
 [`/_matrix/client/v3/keys/device_signing/upload`] to replace cross-signing keys. Homeservers
-continue to enforce UIA on the endpoint but MUST only use a single stage `m.cross_signing_reset`
+continue to enforce UIA on the endpoint but MUST only use a single stage `m.oauth`
 together with a URL that points to the authorization server's account management UI.
 
 ``` json5
