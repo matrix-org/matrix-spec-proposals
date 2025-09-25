@@ -91,7 +91,18 @@ When an event loses its stickiness, these properties disappear with the stickine
 eagerly synchronise such events anymore, nor send them down `/sync`, nor re-evaluate their soft-failure status.
 Note: policy servers and other similar antispam techniques still apply to these events.
 
-The new sync section looks like:
+Servers SHOULD rate limit sticky events over federation. If the rate limit kicks in, servers MUST
+return a non-2xx status code from `/send` such that the sending server *retries the request* in order
+to guarantee that the sticky event is eventually delivered. Servers MUST NOT silently drop sticky events
+and return 200 OK from `/send`, as this breaks the eventual delivery guarantee.
+
+These messages may be combined with [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
+to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
+is distinct from that of delayed events. The purpose of the sticky duration in this proposal is to ensure sticky events are cleaned up.
+
+### Sync API changes
+
+The new `/sync` section looks like:
 
 ```js
 {
@@ -128,8 +139,11 @@ The new sync section looks like:
     }
   }
 }
-
 ```
+Sticky messages MAY be sent in the timeline section of the `/sync` response, regardless of whether
+or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
+omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
+
 
 Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_events`, which has the following response shape:
 
@@ -151,18 +165,8 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 }
 ```
 
-Sticky messages MAY be sent in the timeline section of the `/sync` response, regardless of whether
-or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
-omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
-
-Servers SHOULD rate limit sticky events over federation. If the rate limit kicks in, servers MUST
-return a non-2xx status code from `/send` such that the sending server *retries the request* in order
-to guarantee that the sticky event is eventually delivered. Servers MUST NOT silently drop sticky events
-and return 200 OK from `/send`, as this breaks the eventual delivery guarantee.
-
-These messages may be combined with [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
-to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
-is distinct from that of delayed events. The purpose of the sticky duration in this proposal is to ensure sticky events are cleaned up.
+Sticky events are expected to be encrypted and so there is no "state filter" equivalent provided for sticky events
+e.g to filter sticky events by event type.
 
 ### Implementing an ephemeral map
 
@@ -259,6 +263,22 @@ Note that encrypted sticky events will encrypt some parts of the 4-uple. An encr
 
 The decrypted event would contain the `type` and `content.sticky_key`.
 
+#### Spam
+
+Under normal circumstances for the MatrixRTC use case there will be a window of time where clients will receive
+sticky events that are not useful. MatrixRTC defines an `m.rtc.member` event with an empty content (and optional `leave_reason`)
+as having [left the session](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#leaving-a-session).
+This is conceptually the same as deleting a key from the map. However, as the server is unaware of the `sticky_key`, it
+cannot perform the delete operation for clients, and will instead send the empty content event down `/sync`. This means if
+N users leave a call, there will be N sticky events present in `/sync` for the sticky duration specified.
+
+This is the tradeoff for providing the ability to encrypt sticky events to reduce metadata visible to the server. It's worth
+noting that this increase in inactionable sticky events only applies in a small time window. Had the client synced earlier when the
+call was active, then the `m.rtc.member` events would be actionable. Had the client synced later when the inactionable sticky events
+had expired, then the client wouldn't see them at all.
+
+#### Access control
+
 If a client wishes to implement access control in this key-value map based on the power levels event,
 they must ensure that they accept all writes in order to ensure all clients converge. For an example
 where this goes wrong if you don't, consider the case where two events are sent concurrently:
@@ -326,7 +346,6 @@ the client chooses when to pull in this information, reducing the time-to-intera
    API would really only be useful for A) applications which do not sync, B) users of the existing `/sync` API. The use case for applications
    which do not sync is weak, given the entire point of sticky events is to ensure rapid synchronisation of temporary data. This heavily
    implies the use of some kind of syncing mechanism to receive timely updates, which polling a `/get_sticky_events` endpoint subverts.
-
 
 ## Alternatives
 
