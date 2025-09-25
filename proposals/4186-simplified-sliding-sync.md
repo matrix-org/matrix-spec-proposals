@@ -185,7 +185,7 @@ If the server does send down extra events, it MUST set the `expanded_timeline` t
 the room.
 
 This behaviour is useful to reduce bandwidth in various cases. For example, a client may specify a list with range
-`[0,99]` and a timeline limit of 10, plus a list with range `[100, <MAX>]` and timeline limit `1`. This would cause the
+`[0,99]` and a `timeline_limit` of 10, plus a list with range `[100, <MAX>]` and `timeline_limit` of `1`. This would cause the
 server to return the most recent 10 events for rooms with recent activity, but only 1 event for older rooms (that the
 user is unlikely to visit). If an older room that we previously only returned with one timeline event receives a new
 event, we'll end up sending it down with not just the new event but the previous 10 events as well (despite having sent
