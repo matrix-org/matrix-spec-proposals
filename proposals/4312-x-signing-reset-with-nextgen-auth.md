@@ -27,10 +27,10 @@ together with a URL that points to the authorization server's account management
 {
   "session": "$ARBITRARY",
   "flows": [{
-    "stages": ["m.cross_signing_reset"]
+    "stages": ["m.oauth"]
   }],
   "params": {
-    "m.cross_signing_reset": {
+    "m.oauth": {
       "url": "$AUTHORIZATION_SERVER_ACCOUNT_MANAGEMENT_URL"
     }
   }
@@ -83,7 +83,7 @@ attacker with an access token could take over the account.
 
 ## Unstable prefix
 
-While this MSC is not considered stable, `m.cross_signing_reset` should be referred to as
+While this MSC is not considered stable, `m.oauth` should be referred to as
 `org.matrix.cross_signing_reset`.
 
 ## Dependencies
