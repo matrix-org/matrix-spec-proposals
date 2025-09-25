@@ -85,6 +85,10 @@ room is returned in the response if all of the following conditions hold:
 
 This MSC specifies two types of rule: a "list" and a "subscription".
 
+Each rule also specifies a "room config", used to configure what data to return for a room that matches the rule. The
+"room config" has two fields: the "timeline limit" and "required state". The "timeline limit" specifies the maximum
+number of events to return in the timeline section of a room, and the "required state" specifies what state to return.
+
 ### Lists
 
 Lists are the primary way of specifying the rooms the client is interested in. They operate against a sequence of rooms
@@ -126,12 +130,6 @@ either be in the room, or be invited/knocked to the room. Otherwise, the room wi
 > [!Note]
 > A future MSC may relax this requirement to allow peeking into world-readable rooms.
 
-
-### Room config
-
-Each rule also specifies a "room config", used to configure what data to return for a room that matches the rule. The
-"room config" has two fields: the "timeline limit" and "required state". The "timeline limit" specifies the maximum
-number of events to return in the timeline section of a room, and the "required state" specifies what state to return.
 
 ## Room results
 
