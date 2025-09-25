@@ -66,7 +66,12 @@ makes it more difficult to use off-the-shelve OAuth authorization servers.
 ## Alternatives
 
 Rather than approving cross-signing reset specifically, the authorization server could provide
-mechanisms for temporary scope elevation.
+mechanisms for temporary scope elevation. An example of a potential mechanism that could help
+achieve this is the [RFC 9470 OAuth 2.0 Step Up Authentication Challenge Protocol]. Theoretically
+such a mechanism could act as full replacement for UIA in the CS API where protection is needed for
+sensitive actions. However, there is no proposal on how this would be applied to the CS API and
+therefore it is proposed to codify this present mechanism that does allow for the specific
+cross-signing reset action.
 
 ## Security considerations
 
@@ -89,5 +94,6 @@ This proposal doesn't strictly depend on but works better with [MSC4191].
   [User-Interactive Authentication (UIA)]: https://spec.matrix.org/v1.15/client-server-api/#user-interactive-authentication-api
   [`/_matrix/client/v3/keys/device_signing/upload`]: https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3keysdevice_signingupload
   [MSC4191]: https://github.com/matrix-org/matrix-spec-proposals/pull/4191
+  [RFC 9470 OAuth 2.0 Step Up Authentication Challenge Protocol]: https://datatracker.ietf.org/doc/rfc9470/
   [matrix-authentication-service]: https://github.com/element-hq/matrix-authentication-service
   [Synapse admin API]: https://element-hq.github.io/synapse/latest/admin_api/user_admin_api.html#allow-replacing-master-cross-signing-key-without-user-interactive-auth
