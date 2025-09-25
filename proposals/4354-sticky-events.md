@@ -76,7 +76,7 @@ following _additional_ properties[^prop]:
 * They are eagerly synchronised with all other servers.[^partial]  
 * They must appear in the `/sync` response.[^sync]  
 * The soft-failure checks MUST be re-evaluated when the membership state changes for a user with unexpired sticky events.[^softfail]
-* They ignore history visibility checks. Any joined user is authorised to see sticky events for the duration they remain sticky.
+* They ignore history visibility checks. Any joined user is authorised to see sticky events for the duration they remain sticky.[^hisvis]
 
 To implement these properties, servers MUST:
 
@@ -94,48 +94,6 @@ Note: policy servers and other similar antispam techniques still apply to these 
 These messages may be combined with [MSC4140: Delayed Events](https://github.com/matrix-org/matrix-spec-proposals/pull/4140)
 to provide heartbeat semantics (e.g required for MatrixRTC). Note that the sticky duration in this proposal
 is distinct from that of delayed events. The purpose of the sticky duration in this proposal is to ensure sticky events are cleaned up.
-
-### Rate limits
-
-As sticky events are sent to clients regardless of the timeline limit, care needs to be taken to ensure
-that other room participants cannot send large volumes of sticky events.
-
-Servers SHOULD rate limit sticky events over federation. Servers can choose one of two options to do this:
- - A) Do not persist the sticky events and expect the other server to retry later.
- - B) Persist the sticky events but wait a while before delivering them to clients.
-
-Option A means servers don't need to store sticky events in their database, protecting disk usage at the cost of more bandwidth.
-To implement this, servers MUST return a non-2xx status code from `/send` such that the sending server
-*retries the request* in order to guarantee that the sticky event is eventually delivered. Servers MUST NOT
-silently drop sticky events and return 200 OK from `/send`, as this breaks the eventual delivery guarantee.
-Care must be taken with this approach as all the PDUs in the transaction will be retried, even ones for different rooms / not sticky events.
-
-Option B means servers have to store the sticky event in their database, protecting bandwidth at the cost of more disk usage.
-This provides fine-grained control over when to deliver the sticky events to clients as the server doesn't need
-to wait for another request. Servers SHOULD deliver the event to clients before the sticky event expires. This may not
-always be possible if the remaining time is very short.
-
-### Federation behaviour
-
-Servers are only responsible for sending sticky events originating from their own server. This ensures the server is aware
-of the `prev_events` of all sticky events they send to other servers. This is important because the receiving server will
-attempt to fetch those previous events if they are unaware of them, _rejecting the transaction_ if the sending server fails
-to provide them. For this reason, it is not possible for servers to reliably deliver _other server's_ sticky events.
-
-In the common case, sticky events are sent over federation like any other event and do not cause any behavioural changes.
-The two cases where this is different is:
- - when sending sticky events to newly joined servers
- - when sending "old" but unexpired sticky events
-
-Servers tend to maintain a sliding window of events to deliver to other servers e.g the most recent 50 PDUs. Sticky events
-can fall outside this range, which is what we define as "old". On the receiving server, old events appear to have unknown
-`prev_events`, which cannot be connected to any known part of the room DAG. Sending sticky events to newly joined servers can be seen
-as a form of sending old but unexpired sticky events, and so this proposal only considers this case. Sending these old events
-will potentially increase the number of forward extremities in the room for the receiving server. This may impact state resolution
-performance if there are many forward extremities. Servers MAY send dummy events to remove forward extremities (Synapse has the
-option to do this since 2019). Alternatively, servers MAY choose not to add old sticky events to their forward extremities, but
-this A) reduces eventual delivery guarantees by reducing the frequency of transitive delivery of events, B) reduces the convergence
-rate when implementing ephemeral maps (see "Implementing an ephemeral map"), as that relies on servers referencing sticky events from other servers.
 
 ### Sync API changes
 
@@ -204,6 +162,48 @@ Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_eve
 
 Sticky events are expected to be encrypted and so there is no "state filter" equivalent provided for sticky events
 e.g to filter sticky events by event type.
+
+### Rate limits
+
+As sticky events are sent to clients regardless of the timeline limit, care needs to be taken to ensure
+that other room participants cannot send large volumes of sticky events.
+
+Servers SHOULD rate limit sticky events over federation. Servers can choose one of two options to do this:
+ - A) Do not persist the sticky events and expect the other server to retry later.
+ - B) Persist the sticky events but wait a while before delivering them to clients.
+
+Option A means servers don't need to store sticky events in their database, protecting disk usage at the cost of more bandwidth.
+To implement this, servers MUST return a non-2xx status code from `/send` such that the sending server
+*retries the request* in order to guarantee that the sticky event is eventually delivered. Servers MUST NOT
+silently drop sticky events and return 200 OK from `/send`, as this breaks the eventual delivery guarantee.
+Care must be taken with this approach as all the PDUs in the transaction will be retried, even ones for different rooms / not sticky events.
+
+Option B means servers have to store the sticky event in their database, protecting bandwidth at the cost of more disk usage.
+This provides fine-grained control over when to deliver the sticky events to clients as the server doesn't need
+to wait for another request. Servers SHOULD deliver the event to clients before the sticky event expires. This may not
+always be possible if the remaining time is very short.
+
+### Federation behaviour
+
+Servers are only responsible for sending sticky events originating from their own server. This ensures the server is aware
+of the `prev_events` of all sticky events they send to other servers. This is important because the receiving server will
+attempt to fetch those previous events if they are unaware of them, _rejecting the transaction_ if the sending server fails
+to provide them. For this reason, it is not possible for servers to reliably deliver _other server's_ sticky events.
+
+In the common case, sticky events are sent over federation like any other event and do not cause any behavioural changes.
+The two cases where this is different is:
+ - when sending sticky events to newly joined servers
+ - when sending "old" but unexpired sticky events
+
+Servers tend to maintain a sliding window of events to deliver to other servers e.g the most recent 50 PDUs. Sticky events
+can fall outside this range, which is what we define as "old". On the receiving server, old events appear to have unknown
+`prev_events`, which cannot be connected to any known part of the room DAG. Sending sticky events to newly joined servers can be seen
+as a form of sending old but unexpired sticky events, and so this proposal only considers this case. Sending these old events
+will potentially increase the number of forward extremities in the room for the receiving server. This may impact state resolution
+performance if there are many forward extremities. Servers MAY send dummy events to remove forward extremities (Synapse has the
+option to do this since 2019). Alternatively, servers MAY choose not to add old sticky events to their forward extremities, but
+this A) reduces eventual delivery guarantees by reducing the frequency of transitive delivery of events, B) reduces the convergence
+rate when implementing ephemeral maps (see "Implementing an ephemeral map"), as that relies on servers referencing sticky events from other servers.
 
 ### Implementing an ephemeral map
 
@@ -454,6 +454,8 @@ This becomes particularly important when room state is rolled back. For example,
 then Bob kicks Charlie, but concurrently Alice kicks Bob then whether or not a receiving server would accept E would depend
 on whether they saw “Alice kicks Bob” or “Bob kicks Charlie”. If they saw “Alice kicks Bob” then E would be accepted. If they
 saw “Bob kicks Charlie” then E would be rejected, and would need to be rolled back when they see “Alice kicks Bob”.
+[^hisvis]: This ensures that newly joined servers can see sticky events sent from before they were joined to the room, regardless
+of the history visibility setting. This matches the behaviour of state events.
 [^origin]: That is, the domain of the sender of the sticky event is the sending server.
 [^newjoiner]: We restrict delivery of sticky events to ones sent locally to reduce the number of events sent on join. If
 we sent all active sticky events then the number of received events by the new joiner would be `O(nm)` where `n` = number of joined servers,
