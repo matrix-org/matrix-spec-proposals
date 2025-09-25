@@ -1,8 +1,9 @@
 # MSC4153: Exclude non-cross-signed devices
 
-End-to-end encryption was first introduced to Matrix in 2016. Over the years,
-more encryption-related features have been added, such as key verification,
-cross-signing, key backup, and secure storage/sharing.
+End-to-end encryption was [first introduced to Matrix in
+2016](https://matrix.org/blog/2016/11/21/matrix-s-olm-end-to-end-encryption-security-assessment-released-and-implemented-cross-platform-on-riot-at-last/). Over
+the years, more encryption-related features have been added, such as key
+verification, cross-signing, key backup, and secure storage/sharing.
 
 The current spec allows clients freedom to choose what features to implement.
 And while clients should be able to make decisions based on their threat model,
@@ -18,22 +19,25 @@ warnings that users will encounter by taking advantage of cross-signing.
 
 ## Proposal
 
-Note: The changes below only apply to clients that support encryption.
+Note: The changes below only apply to clients that support
+[encryption](https://spec.matrix.org/v1.15/client-server-api/#end-to-end-encryption).
 
 ### Users SHOULD have cross-signing keys
 
-Clients SHOULD create new cross-signing keys for users who do not yet have
-cross-signing keys.
+Clients SHOULD create new [cross-signing
+keys](https://spec.matrix.org/v1.15/client-server-api/#cross-signing) for users
+who do not yet have cross-signing keys.
 
 ### Users SHOULD have Secret Storage
 
-The spec currently does not give recommendations for what information is stored
-in Secret Storage, or even whether Secret Storage is available to users.  Secret
-Storage allows users to keep secrets on the server so that they are accessible
-when the user logs in to a new device. This is necessary to retrieve secrets when
-the user does not have an existing device that can then share the secrets with the
-new device. Therefore users SHOULD have Secret storage set up to avoid needing
-to reset their cryptographic identity in this case.
+The [spec](https://spec.matrix.org/v1.15/client-server-api/#storage) currently
+does not give recommendations for what information is stored in Secret Storage,
+or even whether Secret Storage is available to users.  Secret Storage allows
+users to keep secrets on the server so that they are accessible when the user
+logs in to a new device. This is necessary to retrieve secrets when the user
+does not have an existing device that can then share the secrets with the new
+device. Therefore users SHOULD have Secret storage set up to avoid needing to
+reset their cryptographic identity in this case.
 
 The user’s Secret Storage SHOULD contain the user’s cross-signing secret keys
 and the key backup decryption key (if the user is using key backup).  This
@@ -49,6 +53,16 @@ When one user verifies a different user, the verification SHOULD verify the
 users’ cross-signing keys.  Any flow between different users that does not
 verify the users' cross-signing keys (it verifies only the device keys) is
 deprecated.  Verifying a user’s own device keys is still supported.
+
+Specifically, for the currently specced verification methods:
+
+- In Step 15 of (SAS
+  verification)[https://spec.matrix.org/v1.15/client-server-api/#short-authentication-string-sas-verification],
+  the master cross-signing key SHOULD be included when two different users are
+  verifying it other.
+- [QR code
+  verification](https://spec.matrix.org/v1.15/client-server-api/#qr-codes)
+  already satisfies this requirement.
 
 ### Devices SHOULD be cross-signed
 
@@ -128,7 +142,7 @@ device identity keys uploaded to the homeserver) should not have any impact on
 a client's E2EE behaviour. For all intents and purposes, non-cryptographic
 devices are a completely separate concept and do not exist from the perspective
 of the cryptography layer since they do not have identity keys, so it is
-impossible to send them encrypted messages.
+impossible to send them decryption keys.
 
 In particular, Matrix clients MUST NOT consider non-cryptographic devices to be
 equivalent to non-cross-signed cryptographic devices for purposes of enforcing
