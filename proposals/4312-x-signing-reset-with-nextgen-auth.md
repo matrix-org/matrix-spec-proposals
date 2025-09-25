@@ -14,7 +14,7 @@ consequently, the spec labels this endpoint as unusable:
 
 This is obviously not practical and unofficial workarounds have been invented to enable resetting
 one's cross-signing keys in the client / homeserver / authorization server triangle. This proposal
-documents these workarounds.
+documents these workarounds as a low-effort interim workaround until better solutions are available.
 
 ## Proposal
 
