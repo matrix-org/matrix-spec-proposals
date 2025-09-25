@@ -545,10 +545,8 @@ When the app starts up it configures a single list with a range of `[0, 19]` (to
 `timeline_limit` of 1. This returns quickly with the top 20 rooms (or just the changes in the top 20 rooms if a token
 was specified).
 
-The client then increases the range (in the next request) to `[0, 99]`, which will return the next 80 rooms. The server
-may sort the rooms differently than they are returned by the server (e.g. they may ignore reactions for sorting
-purposes). Note: the range here matches 100 rooms, however we only send the 80 rooms that we didn't send down in the
-previous request.
+The client then increases the range (in the next request) to `[0, 99]`, which will return the next 80 rooms. Note: the
+range here matches 100 rooms, however we only send the 80 rooms that we didn't send down in the previous request.
 
 The client can use room subscriptions, with a `timeline_limit` of 20, to preload history for the top rooms. This means
 that if the user clicks on one of the top rooms the app can immediately display a screens worth of history. (An
