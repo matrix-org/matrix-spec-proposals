@@ -419,7 +419,7 @@ When a user is or has been in the room, the following field are also returned:
 | - | - | - | - |
 | `name` | `string` | No | Room name or calculated room name. |
 | `avatar` | `string` | No | Room avatar |
-| `heroes` | `[StrippedHero]` | No | A truncated list of users in the room that can be used to calculate the room name. Will first include joined users, then invited users, and then finally left users. |
+| `heroes` | `[StrippedHero]` | No | A truncated list of users in the room that can be used to calculate the room name. Will first include joined users, then invited users, and then finally left users. c.f. `m.heroes` section in the sync v2 [specification](https://spec.matrix.org/v1.16/client-server-api/#get_matrixclientv3sync_response-200_roomsummary) |
 | `is_dm` | `bool` | No | Flag to specify whether the room is a direct-message room (according to account data). If absent the room is not a DM room. |
 | `initial` | `bool` | No | Flag which is set when this is the first time the server is sending this data on this connection, or if the client should replace all room data with what is returned. Clients can use this flag to replace or update their local state. The absence of this flag means `false`. |
 | `expanded_timeline` | `bool` | No | Flag which is set if we're returning more historic events due to the timeline limit having increased. See "Changing room configs" section. |
