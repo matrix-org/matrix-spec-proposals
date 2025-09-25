@@ -529,7 +529,7 @@ Pagination of the room list is achieved by the client increasing the range of on
 
 For example an initial request might have a list called `all_rooms` specifying a range of `[0,19]` in the initial
 request, and the server will respond with the top 20 rooms (by most recently updated). On the second request the client
-may change the range to `[0,99]`, at which point the server will respond with the top 100 rooms that either a) weren’t
+may change the range to `[0,99]`, at which point the server will use the top 100 rooms and respond with the ones that either a) weren’t
 sent down in the first request, or b) have updates since the first request.
 
 Clients can increase and decrease the range as they see fit. A common approach would be to start with a small window
