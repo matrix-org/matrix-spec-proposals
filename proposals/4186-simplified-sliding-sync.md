@@ -30,7 +30,7 @@ During initial design, the following goals were taken into account:
 - Time from opening of the app (when already logged in) to confident usability should be as low as possible.
 - Time from login on existing accounts to usability should be as low as possible.
 - Bandwidth should be minimized.
-- Support lazy-loading of things like read receipts (and avoid sending unnecessary data to the client)
+- Support lazy-loading of things like membership and read receipts (and avoid sending unnecessary data to the client)
 - Support informing the client when room state changes from under it, due to state resolution.
 - Clients should be able to work correctly without ever syncing in the full set of rooms they’re in.
 - Don’t incremental sync rooms you don’t care about.
@@ -98,7 +98,7 @@ ordering semantics).
 
 Rooms that the user has been in but left are only included if the room was previously sent to the client in that
 connection. Rooms the user has been kicked or banned from will always be included. We do not include rooms the user has
-left to save bandwidth and general efficiency (as the user knows they've left), but we still include kicked and banned
+left themselves to save bandwidth and general efficiency (as the user knows they've left), but we still include kicked and banned
 rooms as a) this should be uncommon, and b) the user may not have seen that they've been kicked/banned from the room
 otherwise.
 
@@ -227,8 +227,8 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 
 | Name | Type | Required | Comment |
 | - | - | - | - |
-| `conn_id` | `string` | No | An optional string to identify this connection to the server. Only one sliding sync connection is allowed per given conn_id (empty or not). |
-| `pos` | string | No | Omitted if this is the first request of a connection. Otherwise, the `pos` token from the previous call to `/sync` |
+| `conn_id` | `string` | No | An optional string to identify this connection to the server. Only one sliding sync connection is allowed per given `conn_id` (empty or not). |
+| `pos` | string | No | Omitted if this is the first request of a connection (initial sync). Otherwise, the `pos` token from the previous call to `/sync` |
 | `timeout` | int | No | How long to wait for new events in milliseconds. If omitted the response is always returned immediately, even if there are no changes. Ignored when no `pos` is set. |
 | `set_presence` | string | No | Same as in sync v2, controls whether the client is automatically marked as online by polling this API. <br/><br/> If this parameter is omitted then the client is automatically marked as online when it uses this API. Otherwise if the parameter is set to “offline” then the client is not marked as being online when it uses this API. When set to “unavailable”, the client is marked as being idle. |
 | `lists` | `{string: SyncListConfig}` | No | Sliding window API. A map of list key to list information (`SyncListConfig`). Max lists: 100. The list keys should be arbitrary strings which the client is using to refer to the list. Max length: 64 bytes. |
@@ -243,7 +243,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
 | `required_state` | `RequiredStateRequest` | Yes | Required state for each room returned. |
 | `range` | `[int, int]` | No | Sliding window range. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*, and are 0-indexed. (This is a 2-tuple.) |
-| `filters` | `SlidingRoomFilter` | No | Filters to apply to the list before sorting. |
+| `filters` | `SlidingRoomFilter` | No | Filters to apply to the list. |
 
 ### `RoomSubscription`
 
@@ -260,7 +260,7 @@ Describes the set of state that the server should return for the room.
 | - | - | - | - |
 | `include` | `[RequiredStateElement]` | No | The set of state to return (unless filtered out by `exclude`), if any. |
 | `exclude` | `[RequiredStateElement]` | No | The set of state to filter out before returning, if any. |
-| `lazy_members` | `bool` | No | Whether to enable lazy loaded membership behaviour. Defaults to false. |
+| `lazy_members` | `bool` | No | Whether to enable lazy loaded membership behaviour. Defaults to `false`. |
 
 
 #### `RequiredStateElement`
@@ -281,7 +281,7 @@ can send the following:
 This is (almost) the same as [lazy loaded
 memberships](https://spec.matrix.org/v1.16/client-server-api/#lazy-loading-room-members) in sync v2. When specified, the
 server will return the membership events for:
-1. All the senders of events in `timeline_events` unless previously returned. This ensures that the client can render
+1. All the `senders` of events in `timeline_events` unless previously returned. This ensures that the client can render
    all the timeline events without having to fetch more events from the server.
 1. The target (i.e. `state_key`) of all membership events in `timeline_events`.
 1. All membership updates since the last sync when `limited` is false (i.e. non-gappy syncs). This allows the client to
@@ -331,7 +331,7 @@ An example that returns all the state except the create event:
 | - | - | - | - |
 | `is_dm` | `bool` | No | Flag which only returns rooms present (or not) in the DM section of account data.<br/><br/> If unset, both DM rooms and non-DM rooms are returned. If False, only non-DM rooms are returned. If True, only DM rooms are returned. |
 | `spaces` | `[string]` | No | Filter the room based on the space they belong to according to `m.space.child` state events. <br/><br/> If multiple spaces are present, a room can be part of any one of the listed spaces (OR'd). The server will inspect the `m.space.child` state events for the JOINED space room IDs given. Servers MUST NOT navigate subspaces. It is up to the client to give a complete list of spaces to navigate. Only rooms directly mentioned as `m.space.child` events in these spaces will be returned. Unknown spaces or spaces the user is not joined to will be ignored. |
-| `is_encrypted` | `bool` | No | Flag which only returns rooms which have an `m.room.encryption` state event. <br/><br/> If unset, both encrypted and unencrypted rooms are returned. If `False`, only unencrypted rooms are returned. If `True`, only encrypted rooms are returned. |
+| `is_encrypted` | `bool` | No | Flag which only returns rooms which have an `m.room.encryption` state event. <br/><br/> If unset, both encrypted and unencrypted rooms are returned. If `false`, only unencrypted rooms are returned. If `True`, only encrypted rooms are returned. |
 | `is_invite` | `bool` | No | Flag which only returns rooms the user is currently invited to. <br/><br/> If unset, both invited and joined rooms are returned. If `False`, no invited rooms are returned. If `True`, only invited rooms are returned. |
 | `room_types` | `[string \| null]` | No | If specified, only rooms where the `m.room.create` event has a `type` matching one of the strings in this array will be returned. <br/><br/> If this field is unset, all rooms are returned regardless of type. This can be used to get the initial set of spaces for an account. For rooms which do not have a room type, use `null` to include them. |
 | `not_room_types` | `[string \| null]` | No | Same as `room_types` but inverted.<br/><br/> This can be used to filter out spaces from the room list. If a type is in both `room_types` and `not_room_types`, then `not_room_types` wins and they are not included in the result. |
@@ -398,8 +398,8 @@ Not all fields will be returned depending on the user's membership in the room.
 
 All fields in this section may be omitted. When `initial` is set to `false` then an omitted field means that the field
 remains unchanged from its previous value. When `initial` is set to `true` then an omitted field means that the field is
-not set, e.g. if `initial` is true and `name` is not set then the room has no name. Care must be taken by clients to
-ensure that if they previously saw that the room had a name, then it MUST be cleared if it receives a room response with
+not set, e.g. if `initial` is `true` and `name` is not set then the room has no name. Care must be taken by clients to
+ensure that if they previously saw that the room had a `name`, then it MUST be cleared if it receives a room response with
 `initial: true` and no `name` field.
 
 #### Common fields
