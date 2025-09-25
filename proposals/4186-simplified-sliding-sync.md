@@ -86,8 +86,8 @@ room is returned in the response if all of the following conditions hold:
 This MSC specifies two types of rule: a "list" and a "subscription".
 
 Each rule also specifies a "room config", used to configure what data to return for a room that matches the rule. The
-"room config" has two fields: the "timeline limit" and "required state". The "timeline limit" specifies the maximum
-number of events to return in the timeline section of a room, and the "required state" specifies what state to return.
+"room config" has two fields: the `timeline_limit` and `required_state`. The `timeline_limit` specifies the maximum
+number of events to return in the timeline section of a room, and the `required_state` specifies what state to return.
 
 ### Lists
 
