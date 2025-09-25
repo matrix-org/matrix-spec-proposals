@@ -588,8 +588,8 @@ separately.
 
 ## Timeline event trickling
 
-If the `timeline_limit` is increased then the server will send down historic data (c.f. "Changing room configs"), which
-allows the clients to easily preload more history in recent rooms.
+If the `timeline_limit` is increased then the server will send down historic data (c.f. "Changing room configs") with
+`expanded_timeline` set, which allows the clients to easily preload more history in recent rooms.
 
 This mechanism is fiddly to implement, and ends up resending down events that we have previously sent to the client.
 
