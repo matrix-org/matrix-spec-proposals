@@ -448,6 +448,10 @@ For rooms the user is invited to or has knocked on, the client also gets the str
 | - | - | - | - |
 | `stripped_state` | `[StrippedState]` | Yes  | Stripped state events (for rooms where the user is invited). Same as `rooms.invite.$room_id.invite_state` for invites in sync v2. |
 
+The reason these can't be included is because we don't have any of that information for remote invites and the user
+isn't participating in the room yet so we shouldn't leak anything to them. We can only rely on the information in the
+invite event.
+
 > [!Note]
 > Synapse currently may inadvertently return extra fields from the previous section.
 
