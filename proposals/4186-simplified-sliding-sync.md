@@ -244,7 +244,7 @@ The endpoint is a `POST` request with a JSON body to `/_matrix/client/unstable/o
 | - | - | - | - |
 | `timeline_limit` | `int` | Yes | The maximum number of timeline events to return per response. The server may cap this number. |
 | `required_state` | `RequiredStateRequest` | Yes | Required state for each room returned. |
-| `ranges` | `[[int, int]]` | No | Sliding window ranges. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*, and are 0-indexed. (This is a list of 2-tuples.) |
+| `range` | `[int, int]` | No | Sliding window range. If this field is missing, no sliding window is used and all rooms are returned in this list. Integers are *inclusive*, and are 0-indexed. (This is a 2-tuple.) |
 | `filters` | `SlidingRoomFilter` | No | Filters to apply to the list before sorting. |
 
 ### `RoomSubscription`
@@ -350,7 +350,7 @@ An example that returns all the state except the create event:
     // Sliding Window API
     "lists": {
         "foo-list": {
-            "ranges": [ [0, 99] ],
+            "range": [0, 99],
             "required_state": {
                 "include": [
                     {"type": "m.room.create", "state_key": ""},
@@ -527,14 +527,14 @@ Below are some potentially common patterns that clients may wish to use.
 
 ## Paginating room list
 
-Pagination of the room list is achieved by the client increasing the ranges of one (or more) lists.
+Pagination of the room list is achieved by the client increasing the range of one (or more) lists.
 
 For example an initial request might have a list called `all_rooms` specifying a range of `[0,19]` in the initial
 request, and the server will respond with the top 20 rooms (by most recently updated). On the second request the client
 may change the range to `[0,99]`, at which point the server will respond with the top 100 rooms that either a) weren’t
 sent down in the first request, or b) have updates since the first request.
 
-Clients can increase and decrease the ranges as they see fit. A common approach would be to start with a small window
+Clients can increase and decrease the range as they see fit. A common approach would be to start with a small window
 and grow that until the range covers all the rooms. After some threshold of the app being offline it may reduce the
 range back down and incrementally grow it again. This allows for ensuring that a limited amount of data is requested at
 once, to improve response times.
@@ -573,7 +573,7 @@ time to return (if there were no updates to return).
 
 ## Pagination
 
-In practice, having the client specify the ranges to use for the lists is often sub-optimal. The client generally wants
+In practice, having the client specify the range to use for the lists is often sub-optimal. The client generally wants
 to have the sync request return as quickly as possible, but it doesn't know how much data the server has to return and
 so whether to increase or decrease the range.
 
@@ -660,3 +660,4 @@ Changes from the initial implementation of simplified sliding sync.
 7. Change the format of `required_state` in the request.
 8. Move URL parameters to the request body. This is so that on web every request doesn't need to be pre-flighted for
    CORS.
+9. Convert `ranges` to `range` in `SyncListConfig` in the request.
