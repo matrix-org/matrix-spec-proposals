@@ -75,8 +75,11 @@ cross-signing reset action.
 
 ## Security considerations
 
-Lifting UIA temporarily creates a time window in which an attacker with an access token could take
-over the account.
+Since the details of how approval is communicated between the authorization server and the
+homeserver are left unspecified, implementations could introduce security risks through their
+concrete choice of protocol. The temporary lifting of UIA that happens between
+[matrix-authentication-service] and Synapse, for instance, creates a time window in which an
+attacker with an access token could take over the account.
 
 ## Unstable prefix
 
