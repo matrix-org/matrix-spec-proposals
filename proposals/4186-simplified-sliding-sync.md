@@ -120,11 +120,12 @@ Subscriptions are a rule that matches against a specified room ID, i.e. they all
 given room should always be returned (if there are updates). This is useful if e.g. the user has opened the room and the
 client always wants to get the latest data for that room.
 
-The server MUST ensure that user has permission to see any information the server returns. However, the user need not be
-in the room, e.g.clients can specify room IDs for world-readable rooms and they would be returned.
+The server MUST ensure that user has permission to see any information the server returns. Currently, the user must
+either be in the room, or be invited/knocked to the room. Otherwise, the room will not be returned in the response.
 
 > [!Note]
-> Synapse currently does not support subscribing to rooms that the user is not part of.
+> A future MSC may relax this requirement to allow peeking into world-readable rooms.
+
 
 ### Room config
 
