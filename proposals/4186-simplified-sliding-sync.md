@@ -285,7 +285,9 @@ server will return the membership events for:
    all the timeline events without having to fetch more events from the server.
 1. The target (i.e. `state_key`) of all membership events in `timeline_events`.
 1. All membership updates since the last sync when `limited` is false (i.e. non-gappy syncs). This allows the client to
-   cache the membership list without requiring the server to send all membership updates for large gaps.
+   cache the membership list without requiring the server to send all membership updates for large gaps. Note that
+   clients can't rely on seeing membership changes in the `timeline` section to keep the current state up-to-date, due
+   to state resolution.
 
 
 Memberships returned to the client due to `lazy_members` are *not* filtered by `exclude`.
