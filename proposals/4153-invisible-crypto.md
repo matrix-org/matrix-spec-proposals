@@ -28,6 +28,11 @@ Clients SHOULD create new [cross-signing
 keys](https://spec.matrix.org/v1.15/client-server-api/#cross-signing) for users
 who do not yet have cross-signing keys.
 
+Since [replacing a cross-signing
+key](https://spec.matrix.org/v1.15/client-server-api/#post_matrixclientv3keysdevice_signingupload)
+requires User-Interactive Authentication, this will prevent clients from
+conflicting if they try to create cross-signing keys at the same time.
+
 ### Users SHOULD have Secret Storage
 
 The [spec](https://spec.matrix.org/v1.15/client-server-api/#storage) currently
