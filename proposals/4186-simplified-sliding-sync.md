@@ -431,8 +431,8 @@ When a user is or has been in the room, the following field are also returned:
 | `num_live` | `int` | No | The number of timeline events which have "just occurred" and are not historical, i.e. that have happened since the previous sync request. The last `N` events are 'live' and should be treated as such.<br/><br/> This is mostly useful to e.g. determine whether a given `@mention` event should make a noise or not. Clients cannot rely solely on the absence of `initial: true` to determine live events because if a room not in the sliding window bumps into the window because of an `@mention` it will have `initial: true` yet contain a single live event (with potentially other old events in the timeline). |
 | `joined_count` | `int` | No | The number of users with membership of join, including the client's own user ID. (same as sync `v2 m.joined_member_count`) |
 | `invited_count` | `int` | No |  The number of users with membership of invite. (same as sync v2 `m.invited_member_count`) |
-| `notification_count` | `int` | No | The total number of unread notifications for this room. (same as sync v2) |
-| `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as sync v2) |
+| `notification_count` | `int` | No | The total number of unread notifications for this room. (same as sync v2). <br/><br/> Does not included threaded notifications, which are returned in an extension. |
+| `highlight_count` | `int` | No | The number of unread notifications for this room with the highlight flag set. (same as sync v2) <br/><br/> Does not included threaded notifications, which are returned in an extension. |
 | `lists` | `[string]` | No | The name of the lists that match this room. The field is omitted if it doesn't match any list and is included only due to a subscription. |
 
 
