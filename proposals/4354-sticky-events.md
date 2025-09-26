@@ -347,7 +347,7 @@ a standardised mechanism for determining keys on sticky events, the `content.sti
 ```
 
 `content.sticky_key` is ignored server-side[^encryption] and is purely informational. Clients which
-receive a sticky event with a sticky key SHOULD keep a map with keys determined via the 3-uple[^4uple]
+receive a sticky event with a `sticky_key` SHOULD keep a map with keys determined via the 3-uple[^4uple]
 `(room_id, sender, content.sticky_key)` to track the current values in the map. Nothing stops
 users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
 implement this behaviour MUST:
