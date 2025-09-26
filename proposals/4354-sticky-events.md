@@ -22,7 +22,7 @@ almost the right primitive, but:
   [MSC2477](https://github.com/matrix-org/matrix-spec-proposals/pull/2477) tries to change that)  
 * They aren’t extensible.   
 * They do not guarantee delivery. Each EDU type has slightly different persistence/delivery guarantees,
-  all of which currently fall short of guaranteeing delivery.
+  all of which currently fall short of guaranteeing delivery, with the exception of to-device messages.
 
 This proposal adds such a primitive, called Sticky Events, which provides the following guarantees:
 
@@ -203,102 +203,7 @@ will potentially increase the number of forward extremities in the room for the 
 performance if there are many forward extremities. Servers MAY send dummy events to remove forward extremities (Synapse has the
 option to do this since 2019). Alternatively, servers MAY choose not to add old sticky events to their forward extremities, but
 this A) reduces eventual delivery guarantees by reducing the frequency of transitive delivery of events, B) reduces the convergence
-rate when implementing ephemeral maps (see "Implementing an ephemeral map"), as that relies on servers referencing sticky events from other servers.
-
-### Implementing an ephemeral map
-
-MatrixRTC relies on a per-user, per-device map of RTC member events. To implement this, this MSC proposes
-a standardised mechanism for determining keys on sticky events, the `content.sticky_key` property:
-
-```js
-{
-    "type": "m.rtc.member",
-    "sticky": {
-        "duration_ms": 300000
-    },
-    "sender": "@alice:example.com",
-    "room_id": "!foo",
-    "origin_server_ts": 1757920344000,
-    "content": {
-        "sticky_key": "LAPTOPXX123",
-        ...
-    }
-}
-```
-
-`content.sticky_key` is ignored server-side[^encryption] and is purely informational. Clients which
-receive a sticky event with a sticky key SHOULD keep a map with keys determined via the 4-uple
-`(room_id, sender, type, content.sticky_key)` to track the current values in the map. Nothing stops
-users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
-implement this behaviour MUST:
-
-- pick the one with the highest `origin_server_ts`,  
-- tie break on the one with the highest lexicographical event ID (A < Z).
-
-Clients SHOULD expire sticky events in maps when their stickiness ends. They should use the algorithm described in this proposal
-to determine if an event is still sticky. Clients may diverge if they do not expire sticky events as in the following scenario:
-```mermaid
-sequenceDiagram
-    HS1->>+HS2: Sticky event S (1h sticky)
-    HS2->>Client: Sticky event S (1h sticky)
-    HS2->>-HS1: OK
-    HS2->>+HS2: Goes offline
-    HS1->>+HS2: Sticky event S' (1h sticky)
-    HS1->>+HS2: Retry Sticky event S' (1h sticky)
-    HS1->>+HS2: Retry Sticky event S' (1h sticky)
-    HS1->>HS1: Sticky event S' expires
-    HS2->>HS2: Back online
-    Client->>Client: Sticky event S still valid!
-```
-
-When clients create multiple events with the same `sticky_key`, they SHOULD use the same sticky duration as the previous
-sticky event to avoid clients diverging. This can happen when a client sends a sticky event S with a long timeout, then overwrites it with S’
-with a short timeout. If S’ fails to be sent to all servers before the short timeout is hit,
-some clients will believe the state is S and others will have no state. This will only resolve once the long timeout is hit.
-To illustrate this, consider the scenario when clients use the _same sticky duration_:
-```
-Event        Lifetime
-  S       [=========|==]  |
-  S'           [====|=====|=]
-                    |     |
-                    A     B
-```
-At the time `A`, the possible states on clients is `{ _, S, S'}` where `_` is nothing due to not seeing either event. At time `B`,
-the possible states on clients is `{ _, S'}`.
-Contrast with:
-```
-Event        Lifetime
-  S       [=======|====|=]
-  S'           [==|=]  |
-                  |    |
-                  A    B
-```
-Just like before, at time `A` the possible states are `{ _, S, S'}`, but now at time `B` the possible states are `{ _, S }`.
-This is problematic if you're trying to agree on the "latest" values, like you would in a k:v map.
-
-Note that encrypted sticky events will encrypt some parts of the 4-uple. An encrypted sticky event only exposes the room ID and sender to the server:
-
-```js
-{
-  "content": {
-	"algorithm": "m.megolm.v1.aes-sha2",
-	"ciphertext": "AwgCEqABubgx7p8AThCNreFNHqo2XJCG8cMUxwVepsuXAfrIKpdo8UjxyAsA50IOYK6T5cDL4s/OaiUQdyrSGoK5uFnn52vrjMI/+rr8isPzl7+NK3hk1Tm5QEKgqbDJROI7/8rX7I/dK2SfqN08ZUEhatAVxznUeDUH3kJkn+8Onx5E0PmQLSzPokFEi0Z0Zp1RgASX27kGVDl1D4E0vb9EzVMRW1PrbdVkFlGIFM8FE8j3yhNWaWE342eaj24NqnnWJ5VG9l2kT/hlNwUenoGJFMzozjaUlyjRIMpQXqbodjgyQkGacTEdhBuwAQ",
-	"device_id": "AAvTvsyf5F",
-	"sender_key": "KVMNIv/HyP0QMT11EQW0X8qB7U817CUbqrZZCsDgeFE",
-	"session_id": "c4+O+eXPf0qze1bUlH4Etf6ifzpbG3YeDEreTVm+JZU"
-  },
-  "origin_server_ts": 1757948616527,
-  "sender": "@alice:example.com",
-  "type": "m.room.encrypted",
-  "sticky": {
-      "duration_ms": 600000
-  },
-  "event_id": "$lsFIWE9JcIMWUrY3ZTOKAxT_lIddFWLdK6mqwLxBchk",
-  "room_id": "!ffCSThQTiVQJiqvZjY:matrix.org"
-}
-```
-
-The decrypted event would contain the `type` and `content.sticky_key`.
+rate when implementing ephemeral maps (see "Addendum: Implementing an ephemeral map"), as that relies on servers referencing sticky events from other servers.
 
 #### Spam
 
@@ -437,6 +342,109 @@ dropped updates for the latter scenario.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
 - To enable this in SSS, the extension name is `org.matrix.msc4354.sticky_events`.
 
+## Addendum
+
+This section explains how sticky events can be used to implement a short-lived, per-user, per-room key-value store.
+This technique would be used by MatrixRTC to synchronise RTC members.
+
+### Implementing an ephemeral map
+
+MatrixRTC relies on a per-user, per-device map of RTC member events. To implement this, this MSC proposes
+a standardised mechanism for determining keys on sticky events, the `content.sticky_key` property:
+
+```js
+{
+    "type": "m.rtc.member",
+    "sticky": {
+        "duration_ms": 300000
+    },
+    "sender": "@alice:example.com",
+    "room_id": "!foo",
+    "origin_server_ts": 1757920344000,
+    "content": {
+        "sticky_key": "LAPTOPXX123",
+        ...
+    }
+}
+```
+
+`content.sticky_key` is ignored server-side[^encryption] and is purely informational. Clients which
+receive a sticky event with a sticky key SHOULD keep a map with keys determined via the 3-uple[^4uple]
+`(room_id, sender, content.sticky_key)` to track the current values in the map. Nothing stops
+users sending multiple events with the same `sticky_key`. To deterministically tie-break, clients which
+implement this behaviour MUST:
+
+- pick the one with the highest `origin_server_ts`,  
+- tie break on the one with the highest lexicographical event ID (A < Z).
+
+Clients SHOULD expire sticky events in maps when their stickiness ends. They should use the algorithm described in this proposal
+to determine if an event is still sticky. Clients may diverge if they do not expire sticky events as in the following scenario:
+```mermaid
+sequenceDiagram
+    HS1->>+HS2: Sticky event S (1h sticky)
+    HS2->>Client: Sticky event S (1h sticky)
+    HS2->>-HS1: OK
+    HS2->>+HS2: Goes offline
+    HS1->>+HS2: Sticky event S' (1h sticky)
+    HS1->>+HS2: Retry Sticky event S' (1h sticky)
+    HS1->>+HS2: Retry Sticky event S' (1h sticky)
+    HS1->>HS1: Sticky event S' expires
+    HS2->>HS2: Back online
+    Client->>Client: Sticky event S still valid!
+```
+
+There is no mechanism for sticky events to expire earlier than their timeout value. To remove entries in the map, clients SHOULD
+send another sticky event with just `content.sticky_key` set, with all the other application-specific fields omitted.
+
+When clients create multiple events with the same `sticky_key`, they SHOULD use the same sticky duration as the previous
+sticky event to avoid clients diverging. This can happen when a client sends a sticky event S with a long timeout, then overwrites it with S’
+with a short timeout. If S’ fails to be sent to all servers before the short timeout is hit,
+some clients will believe the state is S and others will have no state. This will only resolve once the long timeout is hit.
+To illustrate this, consider the scenario when clients use the _same sticky duration_:
+```
+Event        Lifetime
+  S       [=========|==]  |
+  S'           [====|=====|=]
+                    |     |
+                    A     B
+```
+At the time `A`, the possible states on clients is `{ _, S, S'}` where `_` is nothing due to not seeing either event. At time `B`,
+the possible states on clients is `{ _, S'}`.
+Contrast with:
+```
+Event        Lifetime
+  S       [=======|====|=]
+  S'           [==|=]  |
+                  |    |
+                  A    B
+```
+Just like before, at time `A` the possible states are `{ _, S, S'}`, but now at time `B` the possible states are `{ _, S }`.
+This is problematic if you're trying to agree on the "latest" values, like you would in a k:v map.
+
+Note that encrypted sticky events will encrypt some parts of the 4-uple. An encrypted sticky event only exposes the room ID and sender to the server:
+
+```js
+{
+  "content": {
+	"algorithm": "m.megolm.v1.aes-sha2",
+	"ciphertext": "AwgCEqABubgx7p8AThCNreFNHqo2XJCG8cMUxwVepsuXAfrIKpdo8UjxyAsA50IOYK6T5cDL4s/OaiUQdyrSGoK5uFnn52vrjMI/+rr8isPzl7+NK3hk1Tm5QEKgqbDJROI7/8rX7I/dK2SfqN08ZUEhatAVxznUeDUH3kJkn+8Onx5E0PmQLSzPokFEi0Z0Zp1RgASX27kGVDl1D4E0vb9EzVMRW1PrbdVkFlGIFM8FE8j3yhNWaWE342eaj24NqnnWJ5VG9l2kT/hlNwUenoGJFMzozjaUlyjRIMpQXqbodjgyQkGacTEdhBuwAQ",
+	"device_id": "AAvTvsyf5F",
+	"sender_key": "KVMNIv/HyP0QMT11EQW0X8qB7U817CUbqrZZCsDgeFE",
+	"session_id": "c4+O+eXPf0qze1bUlH4Etf6ifzpbG3YeDEreTVm+JZU"
+  },
+  "origin_server_ts": 1757948616527,
+  "sender": "@alice:example.com",
+  "type": "m.room.encrypted",
+  "sticky": {
+      "duration_ms": 600000
+  },
+  "event_id": "$lsFIWE9JcIMWUrY3ZTOKAxT_lIddFWLdK6mqwLxBchk",
+  "room_id": "!ffCSThQTiVQJiqvZjY:matrix.org"
+}
+```
+
+The decrypted event would contain the `type` and `content.sticky_key`.
+
 [^toplevel]: This has to be at the top-level as we want to support _encrypted_ sticky events, and therefore metadata the server
 needs cannot be within `content`.
 [^stickyobj]: The presence of the `sticky` object alone is insufficient.  
@@ -475,3 +483,6 @@ Malicious servers could set the TTL to be 0 ~ `sticky.duration_ms` , ensuring ma
 on whether or not an event was sticky. In contrast, using `origin_server_ts` is a consistent reference point
 that all servers are guaranteed to see, limiting the ability for malicious servers to cause divergence as all
 servers approximately track NTP.
+[^4uple]: Earlier versions of this proposal had the key be the 4-uple `(room_id, sender, **type**, content.sticky_key)`, but there may
+be valid use cases for a key to have different event types as values. Given you can emulate the 4-uple by string-packing the event type
+into the `content.sticky_key`, for proposing a standard map mechanism it makes sense to just use the 3-uple form.
