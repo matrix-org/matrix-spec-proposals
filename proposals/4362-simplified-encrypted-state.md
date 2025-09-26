@@ -17,9 +17,10 @@ proposal improve Matrix?" - the answer could reveal a small impact, and that is 
 This proposal builds upon the earlier MSC3414, aiming to provide a simplified approach to encrypted
 state events in Matrix. Currently, all room state is unencrypted and accessible to everyone in the
 room, and occasionally people outside the room (such as via the public room directory, invite state,
-or peekable rooms). Most events in room state could be encrypted to provide confidentiality, which
-is what this MSC seeks to achieve more straightforwardly. Some parts, however, cannot be encrypted
-to maintain a functioning protocol.
+or peekable rooms). The server also has access to these state events in order to perform state
+resolution, and so is visible to server administrators. Most events in room state could be encrypted
+to provide confidentiality, which is what this MSC seeks to achieve more straightforwardly. Some
+parts, however, cannot be encrypted to maintain a functioning protocol.
 
 ## Proposal
 
