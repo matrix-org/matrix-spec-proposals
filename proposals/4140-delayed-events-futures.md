@@ -44,6 +44,7 @@ time and then distributing it as normal via federation.
   - [Don't provide a `send` action](#dont-provide-a-send-action)
   - [Use `DELETE` HTTP method for `cancel` action](#use-delete-http-method-for-cancel-action)
   - [[Ab]use typing notifications](#abuse-typing-notifications)
+  - [Syncing failed delayed events](#syncing-failed-delayed-events)
 - [Security considerations](#security-considerations)
 - [Unstable prefix](#unstable-prefix)
 - [Dependencies](#dependencies)
@@ -725,6 +726,12 @@ Some alternatives for the `running_since` field on the `GET` response are:
 - `delayed_since`
 - `delaying_since`
 - `last_restart` - but this feels less clear than `running_since` for a delayed event that hasn't been restarted
+
+### Syncing failed delayed events
+
+Currently, clients have to fetch the delayed event info after the timeout to find an error in case the event failed.
+We could instead define a new method to push failed delayed events down `/sync` to the sender. However, this could be
+complicated and it's not clear whether clients actually need immediate notifications about failed delayed events.
 
 ## Security considerations
 
