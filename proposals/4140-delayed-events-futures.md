@@ -70,9 +70,8 @@ that the participant has left.
 The motivation for this MSC is to allow updating call member state events after the user disconnected by allowing to
 schedule/delay/timeout/expire events in a generic way.
 
-The ["reliability requirements for the room state"](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#reliability-requirements-for-the-room-state)
-section of [MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) has more details on the
-use case.
+The "reliability requirements for the room state" section of
+[MSC4143: MatrixRTC](https://github.com/matrix-org/matrix-spec-proposals/pull/4143) has more details on the use case.
 
 There are numerous possible solution to solve the call member event expiration. They are covered in detail
 in the [Use case specific considerations/MatrixRTC](#use-case-specific-considerations) section, because they are not part
@@ -109,8 +108,8 @@ endpoints.
 
 The new query parameter is used to configure the event scheduling:
 
-- `delay` - Optional number of positive non-zero milliseconds the homeserver should wait before sending the event. If no `delay` is provided,
-the event is sent immediately as normal.
+- `delay` - Optional number of positive non-zero milliseconds the homeserver should wait before sending the event. If
+  no `delay` is provided, the event is sent immediately as normal.
 
 The body of the request is the same as it is currently.
 
@@ -125,6 +124,8 @@ Content-Type: application/json
   "delay_id": "1234567890"
 }
 ```
+
+The server MAY round the delay up to a maximum of 30 seconds away from the request.
 
 The homeserver can optionally enforce a maximum delay duration. If the requested delay exceeds the maximum, the homeserver
 can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) status code
@@ -190,15 +191,10 @@ Where the `action` is `send`, the homeserver **should** apply rate limiting to p
 Once a delayed event has been sent or canceled, it is finalized and cannot be
 accessed via this endpoint.
 
-The server will return a `M_NOT_FOUND` error.
+The server will return a `M_NOT_FOUND` error if the `delay_id` is not recognized.
 
-Managing the delayed events does not require rate limits.
-The rate limits will be applied when evets are send after the delay times out (or when the event is send by calling `send`).
-
-If the user has scheduled a large amount of delayed events they can cancel all of them without rate limiting,
-because scheduling of the events itself is rate limited this is not causing issues.
-Implementers should make cancelling delayed events similarly
-expensive as sending a rate limit error response.
+The primary point of rate limiting is event sending when the delay times out or the event is sent using the `send`
+action. However, servers can choose to rate limit the the management endpoints themselves as well if necessary.
 
 ### Getting delayed events
 
@@ -736,9 +732,8 @@ Some alternatives for the `running_since` field on the `GET` response are:
 
 All new endpoints are authenticated.
 
-To mitigate the risk of users flooding the delayed events database, servers **must** make it possible to configure
-the values for the maximum amount and the maximum timeout value for scheduled delayed events.
-(When the server returns the `M_MAX_DELAYED_EVENTS_EXCEEDED` and the `M_MAX_DELAY_EXCEEDED` error)
+To mitigate the risk of users flooding the delayed events database, servers MUST impose limits on the number and
+timeout duration of scheduled delayed events. The exact limits are left as an implementation detail.
 
 It is the server maintainers responsibility to evaluate the best tradoff between what usecases
 their users have for delayed events for and the resources they are able to provide.
@@ -835,6 +830,10 @@ the key `org.matrix.msc4140` set to `true`. So, the response could then look as 
     }
 }
 ```
+
+Once the MSC is accepted, but before the server advertises the spec version that includes the MSC, the server should
+advertise `org.matrix.msc4140.stable` as an unstable feature flag to let clients know that they can use the stable
+endpoints for sending and managing delayed events.
 
 ## Dependencies
 
