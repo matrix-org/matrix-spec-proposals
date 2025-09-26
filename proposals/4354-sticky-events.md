@@ -211,34 +211,6 @@ this A) reduces eventual delivery guarantees by reducing the frequency of transi
 rate when implementing ephemeral maps (see "Addendum: Implementing an ephemeral map"), as that relies on servers referencing sticky
 events from other servers.
 
-#### Spam
-
-Under normal circumstances for the MatrixRTC use case there will be a window of time where clients will receive
-sticky events that are not useful. MatrixRTC defines an `m.rtc.member` event with an empty content (and optional `leave_reason`)
-as having [left the session](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#leaving-a-session).
-This is conceptually the same as deleting a key from the map. However, as the server is unaware of the `sticky_key`, it
-cannot perform the delete operation for clients, and will instead send the empty content event down `/sync`. This means if
-N users leave a call, there will be N sticky events present in `/sync` for the sticky duration specified.
-
-This is the tradeoff for providing the ability to encrypt sticky events to reduce metadata visible to the server. It's worth
-noting that this increase in inactionable sticky events only applies in a small time window. Had the client synced earlier when the
-call was active, then the `m.rtc.member` events would be actionable. Had the client synced later when the inactionable sticky events
-had expired, then the client wouldn't see them at all.
-
-#### Access control
-
-If a client wishes to implement access control in this key-value map based on the power levels event,
-they must ensure that they accept all writes in order to ensure all clients converge. For an example
-where this goes wrong if you don't, consider the case where two events are sent concurrently:
- - Alice sets a key in this map which requires PL100,
- - Alice is granted PL100 from PL0.
-
-If clients only update the map for authorised actions, then clients which see Alice setting a key before the
-PL event will not update the map and hence forget the value. Clients which see the PL event first would then
-accept Alice setting the key and the net result is divergence between clients. By always updating the map even
-for unauthorised updates, we ensure that the arrival order doesn't affect the end result. Clients can then
-choose whether or not to materialise/show/process a given key based on the current PL event.
-
 ## Potential issues
 
 ### Time
@@ -450,6 +422,34 @@ Note that encrypted sticky events will encrypt some parts of the 4-uple. An encr
 ```
 
 The decrypted event would contain the `type` and `content.sticky_key`.
+
+#### Spam
+
+Under normal circumstances for the MatrixRTC use case there will be a window of time where clients will receive
+sticky events that are not useful. MatrixRTC defines an `m.rtc.member` event with an empty content (and optional `leave_reason`)
+as having [left the session](https://github.com/matrix-org/matrix-spec-proposals/blob/toger5/matrixRTC/proposals/4143-matrix-rtc.md#leaving-a-session).
+This is conceptually the same as deleting a key from the map. However, as the server is unaware of the `sticky_key`, it
+cannot perform the delete operation for clients, and will instead send the empty content event down `/sync`. This means if
+N users leave a call, there will be N sticky events present in `/sync` for the sticky duration specified.
+
+This is the tradeoff for providing the ability to encrypt sticky events to reduce metadata visible to the server. It's worth
+noting that this increase in inactionable sticky events only applies in a small time window. Had the client synced earlier when the
+call was active, then the `m.rtc.member` events would be actionable. Had the client synced later when the inactionable sticky events
+had expired, then the client wouldn't see them at all.
+
+#### Access control
+
+If a client wishes to implement access control in this key-value map based on the power levels event,
+they must ensure that they accept all writes in order to ensure all clients converge. For an example
+where this goes wrong if you don't, consider the case where two events are sent concurrently:
+ - Alice sets a key in this map which requires PL100,
+ - Alice is granted PL100 from PL0.
+
+If clients only update the map for authorised actions, then clients which see Alice setting a key before the
+PL event will not update the map and hence forget the value. Clients which see the PL event first would then
+accept Alice setting the key and the net result is divergence between clients. By always updating the map even
+for unauthorised updates, we ensure that the arrival order doesn't affect the end result. Clients can then
+choose whether or not to materialise/show/process a given key based on the current PL event.
 
 [^toplevel]: This has to be at the top-level as we want to support _encrypted_ sticky events, and therefore metadata the server
 needs cannot be within `content`.
