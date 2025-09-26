@@ -127,9 +127,8 @@ Content-Type: application/json
 
 The server MAY round the delay up to a maximum of 30 seconds away from the request.
 
-The homeserver can optionally enforce a maximum delay duration. If the requested delay exceeds the maximum, the homeserver
-can respond with a [`400`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400) status code
-and a body with a new Matrix error code `M_MAX_DELAY_EXCEEDED` and the maximum allowed delay (`max_delay` in milliseconds).
+If the requested delay exceeds the maximum delay defined by the homeserver, the server will respond with HTTP 400,
+a new `M_MAX_DELAY_EXCEEDED` error code, and the maximum allowed delay in milliseconds in a new `max_delay` field.
 
 For example, the following specifies a maximum delay of 24 hours:
 
@@ -147,9 +146,8 @@ Content-Type: application/json
 The homeserver **should** apply rate limiting to the scheduling of delayed events to provide mitigation against the
 [High Volume of Messages](https://spec.matrix.org/v1.11/appendices/#threat-high-volume-of-messages) threat.
 
-The homeserver **may** apply a limit on the maximum number of
-outstanding delayed events in which case a new Matrix error code
-`M_MAX_DELAYED_EVENTS_EXCEEDED` can be returned:
+If the user has too many outstanding delayed events, the server will respond with HTTP 400 and a new
+`M_MAX_DELAYED_EVENTS_EXCEEDED` error code:
 
 ```http
 400 Bad Request
