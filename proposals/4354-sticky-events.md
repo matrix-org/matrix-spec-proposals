@@ -34,7 +34,7 @@ This new primitive can be used to implement MatrixRTC participation, live locati
 
 ## Proposal
 
-Message events can be annotated with a new top-level `sticky` key[^toplevel], which MUST have a `duration_ms`,
+Message events can be annotated with a new top-level `sticky` object[^toplevel], which MUST have a `duration_ms`,
 which is the number of milliseconds for the event to be sticky. The presence of `sticky.duration_ms`
 with a valid value makes the event “sticky”[^stickyobj]. Valid values are the integer range 0-3600000 (1 hour).
 For use cases that require stickiness beyond this limit, the application is responsible for sending another
