@@ -139,6 +139,9 @@ Sticky messages MAY be sent in the timeline section of the `/sync` response, reg
 or not they exceed the timeline limit[^ordering]. If a sticky event is in the timeline, it MAY be
 omitted from the `sticky.events` section. This ensures we minimise duplication in the `/sync` response JSON.
 
+When sending sticky events down `/sync`, the `unsigned` section SHOULD have a `sticky_duration_ttl_ms` to indicate
+how many milliseconds until the sticky event expires. This provides a way to reduce clock skew between a local homeserver
+and their connected clients. Clients SHOULD use this value to determine when the sticky event expires.
 
 Over Simplified Sliding Sync, Sticky Events have their own extension `sticky_events`, which has the following response shape:
 
@@ -312,6 +315,12 @@ to their own clients to produce the same outcome. Federation equivocation is mit
 persisted in the DAG, as servers can talk to each other to fetch all events. There is no way to protect against
 dropped updates for the latter scenario.
 
+Servers may lie to their own clients about the `unsigned.sticky_duration_ttl_ms` value, with the aim of making
+certain sticky events last longer or shorter than intended. Servers can already maliciously drop sticky events
+to lose updates, and the lack of any verification of the event hash means servers can also maliciously alter the
+`origin_server_ts`. Therefore, adding `unsigned.sticky_duration_ttl_ms` doesn't materially make the situation worse.
+In the common case, it provides protection against clock skew when clients have the wrong time. 
+
 ## Unstable Prefix
 
 - The `stick_duration_ms` query param is `msc4354_stick_duration_ms`.
@@ -319,6 +328,7 @@ dropped updates for the latter scenario.
 - The `/sync` response section is `msc4354_sticky`.
 - The sticky key in the `content` of the PDU is `msc4354_sticky_key`.
 - To enable this in SSS, the extension name is `org.matrix.msc4354.sticky_events`.
+- The `unsigned.sticky_duration_ttl_ms` field is `unsigned.msc4354_sticky_duration_ttl_ms`
 
 ## Addendum
 
